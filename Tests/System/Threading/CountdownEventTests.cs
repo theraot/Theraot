@@ -383,11 +383,11 @@ namespace MonoTests.System.Threading
         [Test]
         public void Signal_Concurrent()
         {
-            for (int r = 0; r < 100; ++r)
+            for (var r = 0; r < 100; ++r)
             {
                 using (var ce = new CountdownEvent(500))
                 {
-                    for (int i = 0; i < ce.InitialCount; ++i)
+                    for (var i = 0; i < ce.InitialCount; ++i)
                     {
                         ThreadPool.QueueUserWorkItem(delegate
                         {

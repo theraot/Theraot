@@ -64,7 +64,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var m = typeof(ExpressionTest_Lifting).GetMethods(BindingFlags.Static | BindingFlags.Public);
 
-            foreach (MethodInfo mm in m)
+            foreach (var mm in m)
             {
                 if (mm.Name == n)
                 {

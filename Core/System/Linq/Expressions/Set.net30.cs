@@ -25,7 +25,7 @@ namespace System.Linq.Expressions
         internal Set(IList<T> list)
         {
             _data = new Dictionary<T, object>(list.Count);
-            foreach (T t in list)
+            foreach (var t in list)
             {
                 Add(t);
             }
@@ -34,7 +34,7 @@ namespace System.Linq.Expressions
         internal Set(IEnumerable<T> list)
         {
             _data = new Dictionary<T, object>();
-            foreach (T t in list)
+            foreach (var t in list)
             {
                 Add(t);
             }

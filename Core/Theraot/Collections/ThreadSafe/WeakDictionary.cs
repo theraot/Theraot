@@ -160,7 +160,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("updateValueFactory");
             }
-            WeakNeedle<TKey> needle = PrivateGetNeedle(key);
+            var needle = PrivateGetNeedle(key);
             Func<WeakNeedle<TKey>, TValue, TValue> factory = (pairKey, foundValue) =>
             {
                 TKey foundKey;
@@ -192,7 +192,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("updateValueFactory");
             }
-            WeakNeedle<TKey> needle = PrivateGetNeedle(key);
+            var needle = PrivateGetNeedle(key);
             Func<WeakNeedle<TKey>, TValue, TValue> factory = (pairKey, foundValue) =>
             {
                 TKey foundKey;
@@ -227,7 +227,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("updateValueFactory");
             }
-            WeakNeedle<TKey> needle = PrivateGetNeedle(key);
+            var needle = PrivateGetNeedle(key);
             Func<WeakNeedle<TKey>, TValue, TValue> factory = (pairKey, foundValue) =>
             {
                 TKey foundKey;
@@ -258,7 +258,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("updateValueFactory");
             }
-            WeakNeedle<TKey> needle = PrivateGetNeedle(key);
+            var needle = PrivateGetNeedle(key);
             Func<WeakNeedle<TKey>, TValue, TValue> factory = (pairKey, foundValue) =>
             {
                 TKey foundKey;
@@ -487,7 +487,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("valueFactory");
             }
-            WeakNeedle<TKey> needle = PrivateGetNeedle(key);
+            var needle = PrivateGetNeedle(key);
             TValue result;
             TKey foundKey;
             Func<WeakNeedle<TKey>, TValue, TValue> factory = (pairKey, foundValue) => result = valueFactory(PrivateTryGetValue(pairKey, out foundKey) ? foundKey : key);

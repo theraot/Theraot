@@ -238,7 +238,7 @@ namespace MonoTests.System.Threading
         [Test]
         public void Wait_SetConcurrent()
         {
-            for (int i = 0; i < 10000; ++i)
+            for (var i = 0; i < 10000; ++i)
             {
                 var mre = new ManualResetEventSlim(); // Leaked
                 var b = true;
@@ -290,7 +290,7 @@ namespace MonoTests.System.Threading
             {
                 mre.WaitHandle.WaitOne(0);
 
-                for (int i = 0; i < 10000; i++)
+                for (var i = 0; i < 10000; i++)
                 {
                     var count = 2;
                     var wait = new SpinWait();
@@ -327,7 +327,7 @@ namespace MonoTests.System.Threading
                 if (Interlocked.Increment(ref count) % 2 == 0)
                 {
                     Thread.Sleep(50);
-                    for (int i = 0; i < 10; i++)
+                    for (var i = 0; i < 10; i++)
                     {
                         if (i % 2 == 0)
                         {

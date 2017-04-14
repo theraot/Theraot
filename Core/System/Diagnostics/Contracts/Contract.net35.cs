@@ -216,7 +216,7 @@ namespace System.Diagnostics.Contracts
             }
             EndContractBlock();
 
-            for (int i = fromInclusive; i < toExclusive; i++)
+            for (var i = fromInclusive; i < toExclusive; i++)
             {
                 if (predicate(i))
                 {
@@ -250,7 +250,7 @@ namespace System.Diagnostics.Contracts
             }
             EndContractBlock();
 
-            foreach (T t in collection)
+            foreach (var t in collection)
             {
                 if (predicate(t))
                 {
@@ -284,7 +284,7 @@ namespace System.Diagnostics.Contracts
             }
             EndContractBlock();
 
-            for (int i = fromInclusive; i < toExclusive; i++)
+            for (var i = fromInclusive; i < toExclusive; i++)
             {
                 if (!predicate(i))
                 {
@@ -318,7 +318,7 @@ namespace System.Diagnostics.Contracts
             }
             EndContractBlock();
 
-            foreach (T t in collection)
+            foreach (var t in collection)
             {
                 if (!predicate(t))
                 {

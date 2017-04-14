@@ -157,7 +157,7 @@ namespace System.Linq.Expressions.Interpreter
             var handlers = _handlers;
             Debug.Assert(handlers != null, "we should have at least one handler if the method gets called");
             handler = null;
-            foreach (ExceptionHandler candidateHandler in handlers)
+            foreach (var candidateHandler in handlers)
             {
                 if (candidateHandler.Matches(exception.GetType()))
                 {
@@ -537,7 +537,7 @@ namespace System.Linq.Expressions.Interpreter
                 locals = _emptyLocals;
             }
 
-            for (int i = 0; i < node.Expressions.Count - 1; i++)
+            for (var i = 0; i < node.Expressions.Count - 1; i++)
             {
                 CompileAsVoid(node.Expressions[i]);
             }
@@ -1580,7 +1580,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             _instructions.EmitBranch(end.GetLabel(this), false, hasValue);
 
-            for (int i = 0; i < node.Cases.Count; i++)
+            for (var i = 0; i < node.Cases.Count; i++)
             {
                 var switchCase = node.Cases[i];
 
@@ -1627,7 +1627,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             _instructions.EmitBranch(end.GetLabel(this), false, hasValue);
 
-            for (int i = 0; i < node.Cases.Count; i++)
+            for (var i = 0; i < node.Cases.Count; i++)
             {
                 var switchCase = node.Cases[i];
 
@@ -1816,7 +1816,7 @@ namespace System.Linq.Expressions.Interpreter
                     // scope for the whole switch. This allows "goto case" and
                     // "goto default" to be considered as local jumps.
                     var @switch = (SwitchExpression)node;
-                    foreach (SwitchCase c in @switch.Cases)
+                    foreach (var c in @switch.Cases)
                     {
                         DefineBlockLabels(c.Body);
                     }
@@ -1849,7 +1849,7 @@ namespace System.Linq.Expressions.Interpreter
                 return;
             }
             var n = block.Expressions.Count;
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 var e = block.Expressions[i];
 
@@ -1875,7 +1875,7 @@ namespace System.Linq.Expressions.Interpreter
         private void CheckRethrow()
         {
             // Rethrow is only valid inside a catch.
-            for (LabelScopeInfo j = _labelBlock; j != null; j = j.Parent)
+            for (var j = _labelBlock; j != null; j = j.Parent)
             {
                 if (j.Kind == LabelScopeKind.Catch)
                 {
@@ -2125,7 +2125,7 @@ namespace System.Linq.Expressions.Interpreter
 
             Debug.Assert(parameters.Length == node.Arguments.Count);
 
-            for (int i = 0; i < node.Arguments.Count; i++)
+            for (var i = 0; i < node.Arguments.Count; i++)
             {
                 var arg = node.Arguments[i];
 
@@ -2239,7 +2239,7 @@ namespace System.Linq.Expressions.Interpreter
 
                         var indexLocals = new List<LocalDefinition>();
                         // Do not convert to foreach, the loop modifies the list
-                        for (int i = 0; i < indexNode.Arguments.Count; i++)
+                        for (var i = 0; i < indexNode.Arguments.Count; i++)
                         {
                             Compile(indexNode.Arguments[i]);
 
@@ -2330,7 +2330,7 @@ namespace System.Linq.Expressions.Interpreter
 
             var indexLocals = new List<LocalDefinition>();
             // Do not convert to foreach, the loop modifies the list
-            for (int i = 0; i < arguments.Count; i++)
+            for (var i = 0; i < arguments.Count; i++)
             {
                 Compile(arguments[i]);
 
@@ -2355,7 +2355,7 @@ namespace System.Linq.Expressions.Interpreter
                 var parameters = node.Constructor.GetParameters();
                 List<ByRefUpdater> updaters = null;
 
-                for (int i = 0; i < parameters.Length; i++)
+                for (var i = 0; i < parameters.Length; i++)
                 {
                     if (parameters[i].ParameterType.IsByRef)
                     {
@@ -2528,7 +2528,7 @@ namespace System.Linq.Expressions.Interpreter
 
             if (compiler._locals.ClosureVariables != null)
             {
-                foreach (ParameterExpression variable in compiler._locals.ClosureVariables.Keys)
+                foreach (var variable in compiler._locals.ClosureVariables.Keys)
                 {
                     EnsureAvailableForClosure(variable);
                     CompileGetBoxedVariable(variable);
@@ -3356,7 +3356,7 @@ namespace System.Linq.Expressions.Interpreter
         public override void Update(InterpretedFrame frame, object value)
         {
             var args = new object[_args.Length + 1];
-            for (int i = 0; i < args.Length - 1; i++)
+            for (var i = 0; i < args.Length - 1; i++)
             {
                 args[i] = frame.Data[_args[i].Index];
             }
@@ -3374,7 +3374,7 @@ namespace System.Linq.Expressions.Interpreter
                 locals.UndefineLocal(_obj.Value, instructions.Count);
             }
 
-            for (int i = 0; i < _args.Length; i++)
+            for (var i = 0; i < _args.Length; i++)
             {
                 locals.UndefineLocal(_args[i], instructions.Count);
             }

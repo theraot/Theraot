@@ -490,7 +490,7 @@ namespace MonoTests.System.Threading
             }
 
             /* Extra up to 2s of sleep to ensure all threads got the chance to enter the lock */
-            for (int i = 0; i < 200 && v.WaitingReadCount != thread_count; ++i)
+            for (var i = 0; i < 200 && v.WaitingReadCount != thread_count; ++i)
             {
                 Thread.Sleep(10);
             }

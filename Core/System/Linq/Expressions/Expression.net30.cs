@@ -239,7 +239,7 @@ namespace System.Linq.Expressions
         {
             get
             {
-                using (IO.StringWriter writer = new IO.StringWriter(CultureInfo.CurrentCulture))
+                using (var writer = new IO.StringWriter(CultureInfo.CurrentCulture))
                 {
                     DebugViewWriter.WriteTo(this, writer);
                     return writer.ToString();

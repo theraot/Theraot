@@ -102,7 +102,7 @@ namespace Theraot.Threading
 
         private static void ExecutePending(SafeQueue<Action> queue, RuntimeUniqueIdProdiver.UniqueId id)
         {
-            bool didEnter = false;
+            var didEnter = false;
             try
             {
                 didEnter = ReentryGuardHelper.Enter(id);

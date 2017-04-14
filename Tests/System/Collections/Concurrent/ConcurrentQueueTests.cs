@@ -41,7 +41,7 @@ namespace MonoTests.System.Collections.Concurrent
         public void Setup()
         {
             _queue = new ConcurrentQueue<int>();
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 _queue.Enqueue(i);
             }
@@ -164,7 +164,7 @@ namespace MonoTests.System.Collections.Concurrent
             var s = string.Empty;
             var builder = new StringBuilder();
             builder.Append(s);
-            foreach (int i in _queue)
+            foreach (var i in _queue)
             {
                 builder.Append(i);
             }
@@ -217,7 +217,7 @@ namespace MonoTests.System.Collections.Concurrent
             var s = string.Empty;
             var builder = new StringBuilder();
             builder.Append(s);
-            foreach (int i in array)
+            foreach (var i in array)
             {
                 builder.Append(i);
             }
@@ -227,7 +227,7 @@ namespace MonoTests.System.Collections.Concurrent
             s = string.Empty;
             builder = new StringBuilder();
             builder.Append(s);
-            foreach (int i in array)
+            foreach (var i in array)
             {
                 builder.Append(i);
             }

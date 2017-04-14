@@ -46,7 +46,7 @@ namespace System.Linq.Expressions.Compiler
                 if (_freeTemps != null)
                 {
                     // Recycle from the free-list if possible.
-                    for (int i = _freeTemps.Count - 1; i >= 0; i--)
+                    for (var i = _freeTemps.Count - 1; i >= 0; i--)
                     {
                         temp = _freeTemps[i];
                         if (temp.Type == type)
@@ -164,7 +164,7 @@ namespace System.Linq.Expressions.Compiler
             internal void Add(IList<Expression> expressions)
             {
                 var count = expressions.Count;
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     Add(expressions[i]);
                 }
@@ -173,7 +173,7 @@ namespace System.Linq.Expressions.Compiler
             internal void AddArguments(IArgumentProvider expressions)
             {
                 var count = expressions.ArgumentCount;
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     Add(expressions.GetArgument(i));
                 }
@@ -191,7 +191,7 @@ namespace System.Linq.Expressions.Compiler
                         var clone = _expressions;
                         var count = clone.Length;
                         var comma = new List<Expression>(count + 1);
-                        for (int i = 0; i < count; i++)
+                        for (var i = 0; i < count; i++)
                         {
                             if (clone[i] != null)
                             {

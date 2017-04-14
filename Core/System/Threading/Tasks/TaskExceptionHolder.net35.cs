@@ -74,14 +74,14 @@ namespace System.Threading.Tasks
                 // We don't want to crash the finalizer thread if any ThreadAbortExceptions
                 // occur in the list or in any nested AggregateExceptions.
                 // (Don't rethrow ThreadAbortExceptions.)
-                foreach (ExceptionDispatchInfo edi in _faultExceptions)
+                foreach (var edi in _faultExceptions)
                 {
                     var exp = edi.SourceException;
                     var aggExp = exp as AggregateException;
                     if (aggExp != null)
                     {
                         var flattenedAggExp = aggExp.Flatten();
-                        foreach (Exception innerExp in flattenedAggExp.InnerExceptions)
+                        foreach (var innerExp in flattenedAggExp.InnerExceptions)
                         {
                             if (innerExp is ThreadAbortException)
                             {
@@ -174,7 +174,7 @@ namespace System.Threading.Tasks
             // Otherwise, the caller wants a specific exception to be included,
             // so return an aggregate containing that exception and the rest.
             var combinedExceptions = new Exception[exceptions.Count + 1];
-            for (int i = 0; i < combinedExceptions.Length - 1; i++)
+            for (var i = 0; i < combinedExceptions.Length - 1; i++)
             {
                 combinedExceptions[i] = exceptions[i].SourceException;
             }
@@ -335,7 +335,7 @@ namespace System.Threading.Tasks
             // probe to propagate them, so we consider the holder to be
             // handled.  If a subsequent exception comes in of a different
             // kind, we will reactivate the holder.
-            for (int i = 0; i < exceptions.Count; i++)
+            for (var i = 0; i < exceptions.Count; i++)
             {
                 var t = exceptions[i].SourceException.GetType();
                 if (t != typeof(ThreadAbortException) && t != typeof(AppDomainUnloadedException))

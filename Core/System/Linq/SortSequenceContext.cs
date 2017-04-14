@@ -66,7 +66,7 @@ namespace System.Linq
                 ChildContext.Initialize(elements);
             }
             _keys = new TKey[elements.Length];
-            for (int i = 0; i < _keys.Length; i++)
+            for (var i = 0; i < _keys.Length; i++)
             {
                 _keys[i] = _selector(elements[i]);
             }

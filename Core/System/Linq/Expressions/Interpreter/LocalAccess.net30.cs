@@ -528,7 +528,7 @@ namespace System.Linq.Expressions.Interpreter
         public override int Run(InterpretedFrame frame)
         {
             var ret = new IStrongBox[_count];
-            for (int i = ret.Length - 1; i >= 0; i--)
+            for (var i = ret.Length - 1; i >= 0; i--)
             {
                 ret[i] = (IStrongBox)frame.Pop();
             }

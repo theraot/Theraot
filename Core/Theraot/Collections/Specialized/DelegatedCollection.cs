@@ -81,7 +81,7 @@ namespace Theraot.Collections.Specialized
 
         public IEnumerator<T> GetEnumerator()
         {
-            ICollection<T> collection = Instance;
+            var collection = Instance;
             foreach (var item in collection)
             {
                 if (!ReferenceEquals(collection, Instance))

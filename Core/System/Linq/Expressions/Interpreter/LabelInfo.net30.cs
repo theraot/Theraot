@@ -60,7 +60,7 @@ namespace System.Linq.Expressions.Interpreter
             // Prevent the label from being shadowed, which enforces cleaner
             // trees. Also we depend on this for simplicity (keeping only one
             // active IL Label per LabelInfo)
-            for (LabelScopeInfo j = block; j != null; j = j.Parent)
+            for (var j = block; j != null; j = j.Parent)
             {
                 if (j.ContainsTarget(_node))
                 {
@@ -98,7 +98,7 @@ namespace System.Linq.Expressions.Interpreter
         private void ValidateJump(LabelScopeInfo reference)
         {
             // look for a simple jump out
-            for (LabelScopeInfo j = reference; j != null; j = j.Parent)
+            for (var j = reference; j != null; j = j.Parent)
             {
                 if (DefinedIn(j))
                 {
@@ -123,7 +123,7 @@ namespace System.Linq.Expressions.Interpreter
             var common = CommonNode(def, reference, b => b.Parent);
 
             // Validate that we aren't jumping across a finally
-            for (LabelScopeInfo j = reference; j != common; j = j.Parent)
+            for (var j = reference; j != common; j = j.Parent)
             {
                 if (j.Kind == LabelScopeKind.Finally)
                 {
@@ -136,7 +136,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             // Valdiate that we aren't jumping into a catch or an expression
-            for (LabelScopeInfo j = def; j != common; j = j.Parent)
+            for (var j = def; j != common; j = j.Parent)
             {
                 if (!j.CanJumpInto)
                 {
@@ -234,11 +234,11 @@ namespace System.Linq.Expressions.Interpreter
                 return first;
             }
             var set = new HashSet<T>(cmp);
-            for (T t = first; t != null; t = parent(t))
+            for (var t = first; t != null; t = parent(t))
             {
                 set.Add(t);
             }
-            for (T t = second; t != null; t = parent(t))
+            for (var t = second; t != null; t = parent(t))
             {
                 if (set.Contains(t))
                 {

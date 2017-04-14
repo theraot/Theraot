@@ -122,7 +122,7 @@ namespace System.Linq.Expressions.Interpreter
                 var cookieEnumerator = (debugCookies ?? new KeyValuePair<int, object>[0]).GetEnumerator();
                 var hasCookie = cookieEnumerator.MoveNext();
 
-                for (int i = 0; i < instructions.Count; i++)
+                for (var i = 0; i < instructions.Count; i++)
                 {
                     object cookie = null;
                     while (hasCookie && cookieEnumerator.Current.Key == i)
@@ -987,7 +987,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             var result = new RuntimeLabel[_runtimeLabelCount + 1];
-            foreach (BranchLabel label in _labels)
+            foreach (var label in _labels)
             {
                 if (label.HasRuntimeLabel)
                 {

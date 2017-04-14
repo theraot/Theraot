@@ -609,14 +609,14 @@ namespace MonoTests.System.Collections.Generic
         {
             var lookup = new HashSet<string>();
 
-            for (int i = 0; i < 10000; i++)
+            for (var i = 0; i < 10000; i++)
             {
                 lookup.Add(i.ToString());
             }
 
             lookup.Remove(3.ToString());
 
-            for (int i = 0; i < 1000; i++)
+            for (var i = 0; i < 1000; i++)
             {
                 lookup.TrimExcess();
             }

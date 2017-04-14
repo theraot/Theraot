@@ -1058,7 +1058,7 @@ namespace System.Linq.Expressions
         {
             var count = 0;
             method = null;
-            foreach (MethodInfo mi in methods)
+            foreach (var mi in methods)
             {
                 var moo = ApplyTypeArgs(mi, typeArgs);
                 if (moo != null && IsCompatible(moo, args))
@@ -1176,7 +1176,7 @@ namespace System.Linq.Expressions
                 throw Error.IncorrectNumberOfIndexes();
             }
 
-            foreach (Expression e in indexList)
+            foreach (var e in indexList)
             {
                 RequiresCanRead(e, "indexes");
                 if (e.Type != typeof(int))

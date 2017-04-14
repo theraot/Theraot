@@ -697,7 +697,7 @@ namespace MonoTests.System.Threading
         [Test]
         public void DisposeRace()
         {
-            for (int i = 0; i < 1000; ++i)
+            for (var i = 0; i < 1000; ++i)
             {
                 using (var c1 = new CancellationTokenSource())
                 {

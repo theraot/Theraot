@@ -60,7 +60,7 @@ namespace MonoTests.System.Threading
         {
             var taken = false;
 
-            for (int i = 0; i < 50000; i++)
+            for (var i = 0; i < 50000; i++)
             {
                 _sl.Enter(ref taken);
                 Assert.IsTrue(taken, "#" + i.ToString());
@@ -128,7 +128,7 @@ namespace MonoTests.System.Threading
                     }
 
                     var sw = new SpinWait();
-                    for (int i = 0; i < 200; i++)
+                    for (var i = 0; i < 200; i++)
                     {
                         sw.SpinOnce();
                     }

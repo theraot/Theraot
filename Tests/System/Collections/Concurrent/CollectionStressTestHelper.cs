@@ -55,7 +55,7 @@ namespace MonoTests.System.Collections.Concurrent
                 ParallelTestHelper.ParallelStressTest(coll, (q) =>
                 {
                     var t = Interlocked.Increment(ref amount);
-                    for (int i = 0; i < count; i++)
+                    for (var i = 0; i < count; i++)
                     {
                         coll.TryAdd(t);
                     }
@@ -69,7 +69,7 @@ namespace MonoTests.System.Collections.Concurrent
                     values[temp]++;
                 }
 
-                for (int i = 0; i < threads; i++)
+                for (var i = 0; i < threads; i++)
                 {
                     Assert.AreEqual(count, values[i], "#" + i);
                 }
@@ -84,7 +84,7 @@ namespace MonoTests.System.Collections.Concurrent
                 const int threads = 5;
                 const int delta = 5;
 
-                for (int i = 0; i < (count + delta) * threads; i++)
+                for (var i = 0; i < (count + delta) * threads; i++)
                 {
                     while (!coll.TryAdd(i))
                     {
@@ -100,7 +100,7 @@ namespace MonoTests.System.Collections.Concurrent
                     var s = true;
                     int t;
 
-                    for (int i = 0; i < count; i++)
+                    for (var i = 0; i < count; i++)
                     {
                         s &= coll.TryTake(out t);
                         // try again in case it was a transient failure

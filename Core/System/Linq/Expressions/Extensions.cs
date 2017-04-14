@@ -53,7 +53,7 @@ namespace System.Linq.Expressions
         {
             var parameters = self.GetParameters();
             var types = new Type[parameters.Length];
-            for (int index = 0; index < types.Length; index++)
+            for (var index = 0; index < types.Length; index++)
             {
                 types[index] = parameters[index].ParameterType;
             }

@@ -98,7 +98,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(variables, "variables");
 
             var vars = variables.ToReadOnly();
-            for (int i = 0; i < vars.Count; i++)
+            for (var i = 0; i < vars.Count; i++)
             {
                 Expression v = vars[i];
                 if (v == null)

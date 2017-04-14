@@ -91,7 +91,7 @@ namespace System.Linq.Expressions
             var count = bindings.Count;
             var block = new Expression[count + 2];
             block[0] = Assign(objVar, objExpression);
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 block[i + 1] = ReduceMemberBinding(objVar, bindings[i]);
             }
@@ -105,7 +105,7 @@ namespace System.Linq.Expressions
             var count = initializers.Count;
             var block = new Expression[count + 2];
             block[0] = Assign(listVar, listExpression);
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 var element = initializers[i];
                 block[i + 1] = Call(listVar, element.AddMethod, element.Arguments);

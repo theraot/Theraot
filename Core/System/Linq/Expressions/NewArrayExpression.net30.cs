@@ -151,7 +151,7 @@ namespace System.Linq.Expressions
 
             Expression[] newList = null;
             var n = initializerList.Count;
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 var expr = initializerList[i];
                 RequiresCanRead(expr, "initializers");
@@ -165,7 +165,7 @@ namespace System.Linq.Expressions
                     if (newList == null)
                     {
                         newList = new Expression[n];
-                        for (int j = 0; j < i; j++)
+                        for (var j = 0; j < i; j++)
                         {
                             newList[j] = initializerList[j];
                         }
@@ -223,7 +223,7 @@ namespace System.Linq.Expressions
                 throw Error.BoundsCannotBeLessThanOne();
             }
 
-            for (int i = 0; i < dimensions; i++)
+            for (var i = 0; i < dimensions; i++)
             {
                 var expr = boundsList[i];
                 RequiresCanRead(expr, "bounds");

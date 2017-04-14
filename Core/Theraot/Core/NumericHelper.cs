@@ -34,7 +34,7 @@ namespace Theraot.Core
                 {
                     return left;
                 }
-                for (int cv = CvMax; ;)
+                for (var cv = CvMax; ;)
                 {
                     left -= right;
                     if (left < right)
@@ -82,7 +82,7 @@ namespace Theraot.Core
                 {
                     return uu1;
                 }
-                for (int cv = CvMax; ;)
+                for (var cv = CvMax; ;)
                 {
                     uu1 -= uu2;
                     if (uu1 < uu2)
@@ -245,10 +245,10 @@ namespace Theraot.Core
         {
             // Newton's  method  aproximation  for  positive  integers
             // if  (number  ==  0)  return  0;
-            int _x = number >> 1;
+            var _x = number >> 1;
             while (true)
             {
-                int x = (_x + (number / _x)) >> 1;
+                var x = (_x + (number / _x)) >> 1;
                 if (x >= _x)
                 {
                     return _x;

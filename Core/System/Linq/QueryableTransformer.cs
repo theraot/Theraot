@@ -148,7 +148,7 @@ namespace System.Linq
             {
                 return false;
             }
-            for (int index = 1; index < candidateParameters.Length; ++index)
+            for (var index = 1; index < candidateParameters.Length; ++index)
             {
                 if (!TypeMatch(candidateParameters[index], parameters[index]))
                 {
@@ -210,7 +210,7 @@ namespace System.Linq
             var method = ReplaceQueryableMethod(old.Method);
             var parameters = method.GetParameters();
             var arguments = new Expression[old.Arguments.Count];
-            for (int index = 0; index < arguments.Length; index++)
+            for (var index = 0; index < arguments.Length; index++)
             {
                 arguments[index] = UnquoteIfNeeded
                     (

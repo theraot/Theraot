@@ -16,11 +16,11 @@ namespace Tests.Theraot.Threading.Needles
         [Test]
         public void CountdownEvent_Signal_Concurrent()
         {
-            for (int r = 0; r < 100; ++r)
+            for (var r = 0; r < 100; ++r)
             {
                 using (var ce = new CountdownEvent(500))
                 {
-                    for (int i = 0; i < ce.InitialCount; ++i)
+                    for (var i = 0; i < ce.InitialCount; ++i)
                     {
                         Task.Factory.StartNew(delegate
                         {
@@ -92,7 +92,7 @@ namespace Tests.Theraot.Threading.Needles
         [Test]
         public void ManualResetEventSlim_Wait_SetConcurrent()
         {
-            for (int i = 0; i < 10000; ++i)
+            for (var i = 0; i < 10000; ++i)
             {
                 using (var mre = new ManualResetEventSlim())
                 {

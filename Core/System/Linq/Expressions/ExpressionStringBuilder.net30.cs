@@ -177,7 +177,7 @@ namespace System.Linq.Expressions
             if (expressions != null)
             {
                 var isFirst = true;
-                foreach (T e in expressions)
+                foreach (var e in expressions)
                 {
                     if (isFirst)
                     {
@@ -445,7 +445,7 @@ namespace System.Linq.Expressions
             Visit(node.NewExpression);
             Out(" {");
             var n = node.Initializers.Count;
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 if (i > 0)
                 {
@@ -554,7 +554,7 @@ namespace System.Linq.Expressions
             }
             Out(" {");
             var n = node.Bindings.Count;
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 var b = node.Bindings[i];
                 if (i > 0)
@@ -580,7 +580,7 @@ namespace System.Linq.Expressions
             Out(node.Member.Name);
             Out(" = {");
             var n = node.Initializers.Count;
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 if (i > 0)
                 {
@@ -597,7 +597,7 @@ namespace System.Linq.Expressions
             Out(node.Member.Name);
             Out(" = {");
             var n = node.Bindings.Count;
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 if (i > 0)
                 {
@@ -623,7 +623,7 @@ namespace System.Linq.Expressions
             Visit(node.Expression);
             const string sep = ", ";
             var n = node.Arguments.Count;
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 Out(sep);
                 Visit(node.Arguments[i]);
@@ -651,7 +651,7 @@ namespace System.Linq.Expressions
             Out(node.Method.Name);
             Out("(");
             var n = node.Arguments.Count;
-            for (int i = start; i < n; i++)
+            for (var i = start; i < n; i++)
             {
                 if (i > start)
                 {
@@ -688,7 +688,7 @@ namespace System.Linq.Expressions
             Out("new " + node.Type.Name);
             Out("(");
             var members = node.Members;
-            for (int i = 0; i < node.Arguments.Count; i++)
+            for (var i = 0; i < node.Arguments.Count; i++)
             {
                 if (i > 0)
                 {

@@ -41,7 +41,7 @@ namespace System.Linq.Expressions.Interpreter
             if (ConsumedStack > 0)
             {
                 closure = new IStrongBox[ConsumedStack];
-                for (int i = closure.Length - 1; i >= 0; i--)
+                for (var i = closure.Length - 1; i >= 0; i--)
                 {
                     closure[i] = (IStrongBox)frame.Pop();
                 }
@@ -87,7 +87,7 @@ namespace System.Linq.Expressions.Interpreter
         public override int Run(InterpretedFrame frame)
         {
             var args = new object[_argCount];
-            for (int i = _argCount - 1; i >= 0; i--)
+            for (var i = _argCount - 1; i >= 0; i--)
             {
                 args[i] = frame.Pop();
             }
@@ -143,7 +143,7 @@ namespace System.Linq.Expressions.Interpreter
         public sealed override int Run(InterpretedFrame frame)
         {
             var args = new object[_argCount];
-            for (int i = _argCount - 1; i >= 0; i--)
+            for (var i = _argCount - 1; i >= 0; i--)
             {
                 args[i] = frame.Pop();
             }
@@ -2688,7 +2688,7 @@ namespace System.Linq.Expressions.Interpreter
                 var boxes = new List<IStrongBox>();
                 var vars = new List<ParameterExpression>();
                 var indexes = new int[count];
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     LocalVariable var;
                     if (_variables.TryGetValue(node.Variables[i], out var))

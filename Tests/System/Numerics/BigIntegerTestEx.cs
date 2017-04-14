@@ -434,7 +434,7 @@ namespace MonoTests.System.Numerics
                     255
                 }
             };
-            for (int index = 0; index < values.Length; index++)
+            for (var index = 0; index < values.Length; index++)
             {
                 Check(values[index], arrays[index]);
             }

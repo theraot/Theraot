@@ -29,7 +29,7 @@ namespace Tests.Theraot.Core
                 0, 0, 0, 1, 1, 1, 1, 1, 1, 1
             };
             Assert.AreEqual(input.Length, output.Length, "setup");
-            for (int index = 0; index < output.Length; index++)
+            for (var index = 0; index < output.Length; index++)
             {
                 Assert.AreEqual(output[index] == 1, PrimeHelper.IsPrime(input[index]));
             }
@@ -71,7 +71,7 @@ namespace Tests.Theraot.Core
                 1683899359, 883641893, 114883661, 1000000009, 1000000021, 1000000033, 1000000087, 1000000093, 1000000097
             };
             Assert.AreEqual(input.Length, output.Length, "setup");
-            for (int index = 0; index < output.Length; index++)
+            for (var index = 0; index < output.Length; index++)
             {
                 Assert.AreEqual(output[index], PrimeHelper.NextPrime(input[index]));
                 Assert.IsTrue(PrimeHelper.IsPrime(output[index]));
@@ -100,7 +100,7 @@ namespace Tests.Theraot.Core
                 1683899359, 883641893, 114883661, 1000000007, 1000000009, 1000000021, 1000000033, 1000000087, 1000000093
             };
             Assert.AreEqual(input.Length, output.Length, "setup");
-            for (int index = 0; index < output.Length; index++)
+            for (var index = 0; index < output.Length; index++)
             {
                 Assert.AreEqual(output[index], PrimeHelper.ToPrime(input[index]));
                 Assert.IsTrue(PrimeHelper.IsPrime(output[index]));

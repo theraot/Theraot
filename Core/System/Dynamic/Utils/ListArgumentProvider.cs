@@ -36,7 +36,7 @@ namespace System.Dynamic.Utils
                 return 0;
             }
 
-            for (int i = 1; i < _provider.ArgumentCount; i++)
+            for (var i = 1; i < _provider.ArgumentCount; i++)
             {
                 if (_provider.GetArgument(i) == item)
                 {
@@ -94,7 +94,7 @@ namespace System.Dynamic.Utils
         public void CopyTo(Expression[] array, int arrayIndex)
         {
             array[arrayIndex++] = _arg0;
-            for (int i = 1; i < _provider.ArgumentCount; i++)
+            for (var i = 1; i < _provider.ArgumentCount; i++)
             {
                 array[arrayIndex++] = _provider.GetArgument(i);
             }
@@ -123,7 +123,7 @@ namespace System.Dynamic.Utils
         {
             yield return _arg0;
 
-            for (int i = 1; i < _provider.ArgumentCount; i++)
+            for (var i = 1; i < _provider.ArgumentCount; i++)
             {
                 yield return _provider.GetArgument(i);
             }
@@ -137,7 +137,7 @@ namespace System.Dynamic.Utils
         {
             yield return _arg0;
 
-            for (int i = 1; i < _provider.ArgumentCount; i++)
+            for (var i = 1; i < _provider.ArgumentCount; i++)
             {
                 yield return _provider.GetArgument(i);
             }

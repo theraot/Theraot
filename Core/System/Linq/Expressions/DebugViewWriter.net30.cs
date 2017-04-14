@@ -273,7 +273,7 @@ namespace System.Linq.Expressions
             {
                 Indent();
                 var isFirst = true;
-                foreach (T e in expressions)
+                foreach (var e in expressions)
                 {
                     if (isFirst)
                     {
@@ -1411,7 +1411,7 @@ namespace System.Linq.Expressions
 
         private static bool ContainsWhiteSpace(string name)
         {
-            foreach (char c in name)
+            foreach (var c in name)
             {
                 if (char.IsWhiteSpace(c))
                 {

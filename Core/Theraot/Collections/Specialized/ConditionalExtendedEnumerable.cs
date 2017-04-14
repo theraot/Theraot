@@ -28,14 +28,14 @@ namespace Theraot.Collections.Specialized
         {
             if (_enumerateTarget.Invoke())
             {
-                foreach (T item in Target)
+                foreach (var item in Target)
                 {
                     yield return item;
                 }
             }
             if (_enumerateAppend.Invoke())
             {
-                foreach (T item in Append)
+                foreach (var item in Append)
                 {
                     yield return item;
                 }

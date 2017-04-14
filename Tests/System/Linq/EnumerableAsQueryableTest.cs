@@ -96,7 +96,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void Contains()
         {
-            for (int i = 1; i < 20; ++i)
+            for (var i = 1; i < 20; ++i)
             {
                 Assert.AreEqual(_src.Contains<int>(i), _array.Contains<int>(i));
             }
@@ -118,7 +118,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void ElementAt()
         {
-            for (int i = 0; i < 10; ++i)
+            for (var i = 0; i < 10; ++i)
             {
                 Assert.AreEqual(_src.ElementAt<int>(i), _array.ElementAt<int>(i));
             }
@@ -127,7 +127,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void ElementAtOrDefault()
         {
-            for (int i = 0; i < 10; ++i)
+            for (var i = 0; i < 10; ++i)
             {
                 Assert.AreEqual(_src.ElementAtOrDefault<int>(i), _array.ElementAtOrDefault<int>(i));
             }
@@ -160,7 +160,7 @@ namespace MonoTests.System.Linq
         {
             var grouping = _src.GroupBy<int, bool>((n) => n > 5);
             Assert.AreEqual(grouping.Count(), 2);
-            foreach (IGrouping<bool, int> group in grouping)
+            foreach (var group in grouping)
             {
                 Assert.AreEqual(group.Count(), 5);
             }

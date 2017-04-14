@@ -48,7 +48,7 @@ namespace System.Dynamic.Utils
             var parameters = delegateInvokeMethod.GetParameters();
             var paramTypes = new Type[parameters.Length + 1];
             paramTypes[0] = typeof(Func<object[], object>);
-            for (int i = 0; i < parameters.Length; i++)
+            for (var i = 0; i < parameters.Length; i++)
             {
                 paramTypes[i + 1] = parameters[i].ParameterType;
             }
@@ -66,7 +66,7 @@ namespace System.Dynamic.Utils
 
             // populate object array
             var hasRefArgs = false;
-            for (int i = 0; i < parameters.Length; i++)
+            for (var i = 0; i < parameters.Length; i++)
             {
                 var paramIsByReference = parameters[i].ParameterType.IsByRef;
                 var paramType = parameters[i].ParameterType;
@@ -110,7 +110,7 @@ namespace System.Dynamic.Utils
             {
                 // copy back ref/out args
                 ilgen.BeginFinallyBlock();
-                for (int i = 0; i < parameters.Length; i++)
+                for (var i = 0; i < parameters.Length; i++)
                 {
                     if (parameters[i].ParameterType.IsByRef)
                     {

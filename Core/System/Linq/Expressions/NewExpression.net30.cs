@@ -233,7 +233,7 @@ namespace System.Linq.Expressions
                 Expression[] newArguments = null;
                 MemberInfo[] newMembers = null;
                 var n = arguments.Count;
-                for (int i = 0; i < n; i++)
+                for (var i = 0; i < n; i++)
                 {
                     var arg = arguments[i];
                     RequiresCanRead(arg, "argument");

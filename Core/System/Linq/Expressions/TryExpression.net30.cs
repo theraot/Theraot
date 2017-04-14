@@ -223,7 +223,7 @@ namespace System.Linq.Expressions
             else if (tryBody == null || tryBody.Type == typeof(void))
             {
                 //The body of every try block must be null or have void type.
-                foreach (CatchBlock cb in handlers)
+                foreach (var cb in handlers)
                 {
                     if (cb.Body != null && cb.Body.Type != typeof(void))
                     {
@@ -235,7 +235,7 @@ namespace System.Linq.Expressions
             {
                 //Body of every catch must have the same type of body of try.
                 type = tryBody.Type;
-                foreach (CatchBlock cb in handlers)
+                foreach (var cb in handlers)
                 {
                     if (cb.Body == null || cb.Body.Type != type)
                     {

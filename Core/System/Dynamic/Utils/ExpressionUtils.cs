@@ -78,7 +78,7 @@ namespace System.Dynamic.Utils
 
             Expression[] newArgs = null;
             var n = pis.Length;
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 var arg = arguments[i];
                 var pi = pis[i];

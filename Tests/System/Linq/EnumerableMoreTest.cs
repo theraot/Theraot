@@ -622,7 +622,7 @@ namespace MonoTests.System.Linq
 
             // Contains<TSource> (TSource)
             Assert.IsTrue(data.Contains(2));
-            for (int i = 0; i < 50; ++i)
+            for (var i = 0; i < 50; ++i)
             {
                 Console.WriteLine(icoll.Contains(0));//Console.WriteLine (data.Contains (0));
             }

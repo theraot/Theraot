@@ -26,7 +26,7 @@ namespace System.Collections.Generic
             else
             {
                 _wrapped = new NullAwareDictionary<T, object>();
-                foreach (T item in collection)
+                foreach (var item in collection)
                 {
                     _wrapped[item] = null;
                 }
@@ -47,7 +47,7 @@ namespace System.Collections.Generic
             else
             {
                 _wrapped = new NullAwareDictionary<T, object>(comparer);
-                foreach (T item in collection)
+                foreach (var item in collection)
                 {
                     _wrapped[item] = null;
                 }
@@ -166,7 +166,7 @@ namespace System.Collections.Generic
             {
                 var copiedCount = 0;
                 var currentIndex = arrayIndex;
-                foreach (T item in this)
+                foreach (var item in this)
                 {
                     array[currentIndex] = item;
                     currentIndex++;
@@ -187,7 +187,7 @@ namespace System.Collections.Generic
             }
             else
             {
-                foreach (T item in other)
+                foreach (var item in other)
                 {
                     _wrapped.Remove(item);
                 }
@@ -260,7 +260,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("other");
             }
-            foreach (T item in other)
+            foreach (var item in other)
             {
                 if (_wrapped.ContainsKey(item))
                 {
@@ -294,7 +294,7 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException("other");
             }
             var containsCount = 0;
-            foreach (T item in ToHashSet(other))
+            foreach (var item in ToHashSet(other))
             {
                 if (!_wrapped.ContainsKey(item))
                 {
@@ -315,7 +315,7 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException("other");
             }
             var tmpSet = new HashSet<T>(other);
-            foreach (T item in tmpSet)
+            foreach (var item in tmpSet)
             {
                 if (_wrapped.ContainsKey(item))
                 {
@@ -339,7 +339,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("other");
             }
-            foreach (T item in other)
+            foreach (var item in other)
             {
                 if (!_wrapped.ContainsKey(item))
                 {
@@ -358,7 +358,7 @@ namespace System.Collections.Generic
             {
                 var elementCount = 0;
                 var matchCount = 0;
-                foreach (T item in other)
+                foreach (var item in other)
                 {
                     elementCount++;
                     if (_wrapped.ContainsKey(item))
@@ -386,7 +386,7 @@ namespace System.Collections.Generic
             else
             {
                 var elementCount = 0;
-                foreach (T item in other)
+                foreach (var item in other)
                 {
                     elementCount++;
                     if (!_wrapped.ContainsKey(item))

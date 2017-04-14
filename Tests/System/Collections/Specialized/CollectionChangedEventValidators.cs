@@ -48,7 +48,7 @@ namespace MonoTests.System.Collections.Specialized
 
             Assert.AreEqual(expected.Count, actual.Count, "LISTEQ_2::" + message);
 
-            for (int i = 0; i < expected.Count; i++)
+            for (var i = 0; i < expected.Count; i++)
             {
                 Assert.AreEqual(expected[i], actual[i], "LISTEQ_3::" + message);
             }

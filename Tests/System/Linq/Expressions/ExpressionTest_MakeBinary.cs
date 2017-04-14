@@ -60,7 +60,7 @@ namespace MonoTests.System.Linq.Expressions
             var methods = typeof(ExpressionTest_MakeBinary).GetMethods(
                 BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
 
-            foreach (MethodInfo m in methods)
+            foreach (var m in methods)
             {
                 if (m.Name == n)
                 {

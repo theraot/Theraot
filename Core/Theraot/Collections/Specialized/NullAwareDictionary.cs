@@ -361,8 +361,8 @@ namespace Theraot.Collections.Specialized
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
-            TKey key = item.Key;
-            TValue value = item.Value;
+            var key = item.Key;
+            var value = item.Value;
             if (ReferenceEquals(key, null))
             {
                 if (_valueComparer.Equals(_valueForNull[0], value))
