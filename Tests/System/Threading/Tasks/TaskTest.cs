@@ -2488,20 +2488,16 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WhenAny()
         {
-            using (var t1 = new Task(ActionHelper.GetNoopAction()))
-            {
-                using (var t2 = new Task(t1.Start))
-                {
-                    var tasks = new Task[] { t1, t2 };
+            var t1 = new Task(ActionHelper.GetNoopAction());
+            var t2 = new Task(t1.Start);
+            var tasks = new Task[] { t1, t2 };
 
-                    var t = Task.WhenAny(tasks);
-                    Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
-                    t2.Start();
+            var t = Task.WhenAny(tasks);
+            Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
+            t2.Start();
 
-                    Assert.IsTrue(t.Wait(1000), "#2");
-                    Assert.IsNotNull(t.Result, "#3");
-                }
-            }
+            Assert.IsTrue(t.Wait(1000), "#2");
+            Assert.IsNotNull(t.Result, "#3");
         }
 
         [Test]
