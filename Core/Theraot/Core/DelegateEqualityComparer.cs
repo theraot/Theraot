@@ -30,47 +30,12 @@ namespace Theraot.Core
         public int GetHashCode(Delegate obj)
         {
             // obj can be null
-            if (ReferenceEquals(obj, null))
-            {
-                return 0;
-            }
-            else
-            {
-                if (ReferenceEquals(obj.Target, null))
-                {
-                    return obj.Method.GetHashCode();
-                }
-                else
-                {
-                    return obj.Method.GetHashCode() ^ obj.Target.GetHashCode();
-                }
-            }
+            return ReferenceEquals(obj, null) ? 0 : ReferenceEquals(obj.Target, null) ? obj.Method.GetHashCode() : obj.Method.GetHashCode() ^ obj.Target.GetHashCode();
         }
 
         private static bool CompareInternal(Delegate x, Delegate y)
         {
-            if (ReferenceEquals(x, null))
-            {
-                return ReferenceEquals(y, null);
-            }
-            else
-            {
-                if (ReferenceEquals(y, null))
-                {
-                    return false;
-                }
-                else
-                {
-                    if (!ReferenceEquals(x.Target, y.Target))
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return x.Method == y.Method;
-                    }
-                }
-            }
+            return ReferenceEquals(x, null) ? ReferenceEquals(y, null) : !ReferenceEquals(y, null) && ReferenceEquals(x.Target, y.Target) && x.Method == y.Method;
         }
     }
 }

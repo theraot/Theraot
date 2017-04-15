@@ -473,14 +473,8 @@ namespace Theraot.Core
             }
             if (stringList.Count > 0)
             {
-                if (start == null)
-                {
-                    start = string.Empty;
-                }
-                if (end == null)
-                {
-                    end = string.Empty;
-                }
+                start = start ?? string.Empty;
+                end = end ?? string.Empty;
                 return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
             }
             return string.Empty;
@@ -503,14 +497,8 @@ namespace Theraot.Core
             }
             if (stringList.Count > 0)
             {
-                if (start == null)
-                {
-                    start = string.Empty;
-                }
-                if (end == null)
-                {
-                    end = string.Empty;
-                }
+                start = start ?? string.Empty;
+                end = end ?? string.Empty;
                 return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
             }
             return string.Empty;
@@ -537,14 +525,8 @@ namespace Theraot.Core
             }
             if (stringList.Count > 0)
             {
-                if (start == null)
-                {
-                    start = string.Empty;
-                }
-                if (end == null)
-                {
-                    end = string.Empty;
-                }
+                start = start ?? string.Empty;
+                end = end ?? string.Empty;
                 return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
             }
             return string.Empty;

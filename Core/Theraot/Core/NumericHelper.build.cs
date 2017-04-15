@@ -129,7 +129,7 @@ namespace Theraot.Core
                     {
                         // Normal numbers; leave exponent as it is but add extra
                         // bit to the front of the mantissa
-                        mantissa = mantissa | (1 << 23);
+                        mantissa |= 1 << 23;
                     }
                     // Bias the exponent. It's actually biased by 127, but we're
                     // treating the mantissa as m.0 rather than 0.m, so we need

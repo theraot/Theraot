@@ -7,7 +7,7 @@ namespace Theraot.Core
 {
     public static class StreamExtensions
     {
-        private const int INT_DefaultBufferSize = 4096;
+        private const int _defaultBufferSize = 4096;
 
 #if NET20 || NET30 || NET35
 
@@ -22,11 +22,11 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("output");
             }
-            var buffer = new byte[INT_DefaultBufferSize];
+            var buffer = new byte[_defaultBufferSize];
             int read;
             do
             {
-                read = input.Read(buffer, 0, INT_DefaultBufferSize);
+                read = input.Read(buffer, 0, _defaultBufferSize);
                 output.Write(buffer, 0, read);
             }
             while (read != 0);

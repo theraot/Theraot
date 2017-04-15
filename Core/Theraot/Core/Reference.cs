@@ -6,26 +6,12 @@ namespace Theraot.Core
     {
         public static bool Equals<T>(T objA, T objB)
         {
-            if (typeof(T).IsValueType)
-            {
-                return false;
-            }
-            else
-            {
-                return ReferenceEquals(objA, objB);
-            }
+            return typeof(T).IsValueType ? false : ReferenceEquals(objA, objB);
         }
 
         public static bool IsNull<T>(T objA)
         {
-            if (typeof(T).IsValueType)
-            {
-                return false;
-            }
-            else
-            {
-                return objA == null;
-            }
+            return typeof(T).IsValueType ? false : ReferenceEquals(objA, null);
         }
     }
 }

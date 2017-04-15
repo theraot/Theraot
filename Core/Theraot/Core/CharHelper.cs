@@ -1,11 +1,8 @@
-﻿//
-
-
-namespace Theraot.Core
+﻿namespace Theraot.Core
 {
     public static class CharHelper
     {
-        private static readonly string classicWhitespace =
+        private static readonly string _classicWhitespace =
             "\u0009" + // Tab
             "\u000A" + // NewLine
             "\u000B" + // Vertical Tab
@@ -15,7 +12,7 @@ namespace Theraot.Core
 
         public static bool IsClassicWhitespace(char character)
         {
-            return classicWhitespace.IndexOf(character) >= 0;
+            return _classicWhitespace.IndexOf(character) >= 0;
         }
     }
 }
