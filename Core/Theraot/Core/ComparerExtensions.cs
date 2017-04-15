@@ -30,14 +30,7 @@ namespace Theraot.Core
         public static IComparer<T> Reverse<T>(this IComparer<T> comparer)
         {
             var originalAsReverse = comparer as ReverseComparer<T>;
-            if (ReferenceEquals(originalAsReverse, null))
-            {
-                return new ReverseComparer<T>(comparer ?? Comparer<T>.Default);
-            }
-            else
-            {
-                return originalAsReverse.Wrapped;
-            }
+            return ReferenceEquals(originalAsReverse, null) ? new ReverseComparer<T>(comparer ?? Comparer<T>.Default) : originalAsReverse.Wrapped;
         }
 
         public static IComparer<T> ToComparer<T>(this Func<T, T, int> comparison)

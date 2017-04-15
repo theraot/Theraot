@@ -569,7 +569,6 @@
     <Compile Include="Theraot\Core\EnumerableHelper.cs" />
     <Compile Include="Theraot\Core\EnumHelper.cs" />
     <Compile Include="Theraot\Core\EqualityComparerHelper.cs" />
-    <Compile Include="Theraot\Core\EqualityComparerHelper1.cs" />
     <Compile Include="Theraot\Core\ErsatzAction.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

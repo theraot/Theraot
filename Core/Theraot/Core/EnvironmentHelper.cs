@@ -9,7 +9,7 @@ namespace Theraot.Core
         // Every request to Environment.ProcessorCount will result in an external call
         // EnvironmentHelper.ProcessorCount is a cached result.
         // TODO: can this value change for a running process / without reboot?
-        private static readonly int ProcessorCount = Environment.ProcessorCount;
+        private static readonly int _processorCount = Environment.ProcessorCount;
 
         public static bool Is64BitProcess
         {
@@ -24,7 +24,7 @@ namespace Theraot.Core
         {
             get
             {
-                return ProcessorCount == 1;
+                return _processorCount == 1;
             }
         }
     }

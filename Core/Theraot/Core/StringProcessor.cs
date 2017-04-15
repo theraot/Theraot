@@ -20,7 +20,6 @@ namespace Theraot.Core
         private readonly int _length;
 
         private readonly string _string;
-        private bool _greedy;
         private int _position;
 
         /// <summary>
@@ -63,14 +62,7 @@ namespace Theraot.Core
 
         public bool Greedy
         {
-            get
-            {
-                return _greedy;
-            }
-            set
-            {
-                _greedy = value;
-            }
+            get; set;
         }
 
         /// <summary>
@@ -505,12 +497,12 @@ namespace Theraot.Core
         /// <remarks>The string that is returned does not contain the terminating carriage return or line feed.</remarks>
         public string ReadLine()
         {
-            var oldGreedy = _greedy;
-            _greedy = true;
+            var oldGreedy = Greedy;
+            Greedy = true;
             var result = PrivateReadUntil(new[] { '\r', '\n' });
             Read('\r');
             Read('\n');
-            _greedy = oldGreedy;
+            Greedy = oldGreedy;
             return result;
         }
 
@@ -576,7 +568,7 @@ namespace Theraot.Core
                     return PrivateReadToPosition(position);
                 }
             }
-            if (_greedy)
+            if (Greedy)
             {
                 return ReadToEnd();
             }
@@ -596,7 +588,7 @@ namespace Theraot.Core
             {
                 return PrivateReadToPosition(position);
             }
-            if (_greedy)
+            if (Greedy)
             {
                 return ReadToEnd();
             }
@@ -755,7 +747,7 @@ namespace Theraot.Core
                     return PrivateReadToPosition(position + target.Length);
                 }
             }
-            if (_greedy)
+            if (Greedy)
             {
                 return ReadToEnd();
             }
@@ -775,7 +767,7 @@ namespace Theraot.Core
             {
                 return PrivateReadToPosition(position + 1);
             }
-            if (_greedy)
+            if (Greedy)
             {
                 return ReadToEnd();
             }
@@ -882,7 +874,7 @@ namespace Theraot.Core
                     return true;
                 }
             }
-            if (_greedy)
+            if (Greedy)
             {
                 _position = 0;
             }
@@ -902,7 +894,7 @@ namespace Theraot.Core
                 _position = position;
                 return true;
             }
-            if (_greedy)
+            if (Greedy)
             {
                 _position = 0;
             }
@@ -942,7 +934,7 @@ namespace Theraot.Core
                     return true;
                 }
             }
-            if (_greedy)
+            if (Greedy)
             {
                 _position = 0;
             }
@@ -962,7 +954,7 @@ namespace Theraot.Core
                 _position = position + 1;
                 return true;
             }
-            if (_greedy)
+            if (Greedy)
             {
                 _position = 0;
             }
@@ -973,10 +965,10 @@ namespace Theraot.Core
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         public bool SkipLine()
         {
-            var oldGreedy = _greedy;
-            _greedy = true;
+            var oldGreedy = Greedy;
+            Greedy = true;
             var result = PrivateSkipUntil(new[] { '\r', '\n' }) || Read('\r') || Read('\n');
-            _greedy = oldGreedy;
+            Greedy = oldGreedy;
             return result;
         }
 
@@ -1015,7 +1007,7 @@ namespace Theraot.Core
                     return true;
                 }
             }
-            if (_greedy)
+            if (Greedy)
             {
                 _position = _length;
             }
@@ -1036,7 +1028,7 @@ namespace Theraot.Core
             {
                 _position = position;
             }
-            else if (_greedy)
+            else if (Greedy)
             {
                 _position = _length;
             }
@@ -1096,7 +1088,7 @@ namespace Theraot.Core
             {
                 _position = bestPosition;
             }
-            else if (_greedy)
+            else if (Greedy)
             {
                 _position = _length;
             }
@@ -1160,7 +1152,7 @@ namespace Theraot.Core
             {
                 _position = bestPosition;
             }
-            else if (_greedy)
+            else if (Greedy)
             {
                 _position = _length;
             }
@@ -1199,7 +1191,7 @@ namespace Theraot.Core
             {
                 _position = bestPosition;
             }
-            else if (_greedy)
+            else if (Greedy)
             {
                 _position = _length;
             }
@@ -1290,7 +1282,7 @@ namespace Theraot.Core
                     return true;
                 }
             }
-            if (_greedy)
+            if (Greedy)
             {
                 _position = _length;
             }
@@ -1310,7 +1302,7 @@ namespace Theraot.Core
                 _position = position + 1;
                 return true;
             }
-            if (_greedy)
+            if (Greedy)
             {
                 _position = _length;
             }
@@ -1467,7 +1459,7 @@ namespace Theraot.Core
             {
                 return PrivateReadToPosition(position);
             }
-            if (_greedy)
+            if (Greedy)
             {
                 return ReadToEnd();
             }
@@ -1482,7 +1474,7 @@ namespace Theraot.Core
             {
                 _position = position;
             }
-            else if (_greedy)
+            else if (Greedy)
             {
                 _position = _length;
             }

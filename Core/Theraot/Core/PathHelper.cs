@@ -55,9 +55,9 @@ namespace Theraot.Core
                 {
                     if (combine.Count > 0)
                     {
-                        if (!paths[index].EndsWith(_directorySeparatorString) &&
-                            !paths[index].EndsWith(_altDirectorySeparatorString) &&
-                            !paths[index].EndsWith(_volumeSeparatorString))
+                        if (!paths[index].EndsWith(_directorySeparatorString)
+                            && !paths[index].EndsWith(_altDirectorySeparatorString)
+                            && !paths[index].EndsWith(_volumeSeparatorString))
                         {
                             paths[index] += _directorySeparatorString;
                         }
@@ -92,9 +92,9 @@ namespace Theraot.Core
             }
             if (string.Empty != path1)
             {
-                if (!path1.EndsWith(_directorySeparatorString) &&
-                    !path1.EndsWith(_altDirectorySeparatorString) &&
-                    !path1.EndsWith(_volumeSeparatorString))
+                if (!path1.EndsWith(_directorySeparatorString)
+                    && !path1.EndsWith(_altDirectorySeparatorString)
+                    && !path1.EndsWith(_volumeSeparatorString))
                 {
                     path1 += _directorySeparatorString;
                 }
@@ -121,9 +121,9 @@ namespace Theraot.Core
             }
             if (string.Empty != path2)
             {
-                if (!path2.EndsWith(_directorySeparatorString) &&
-                    !path2.EndsWith(_altDirectorySeparatorString) &&
-                    !path2.EndsWith(_volumeSeparatorString))
+                if (!path2.EndsWith(_directorySeparatorString)
+                    && !path2.EndsWith(_altDirectorySeparatorString)
+                    && !path2.EndsWith(_volumeSeparatorString))
                 {
                     path2 += _directorySeparatorString;
                 }
@@ -134,9 +134,9 @@ namespace Theraot.Core
             }
             if (string.Empty != path1)
             {
-                if (!path1.EndsWith(_directorySeparatorString) &&
-                    !path1.EndsWith(_altDirectorySeparatorString) &&
-                    !path1.EndsWith(_volumeSeparatorString))
+                if (!path1.EndsWith(_directorySeparatorString)
+                    && !path1.EndsWith(_altDirectorySeparatorString)
+                    && !path1.EndsWith(_volumeSeparatorString))
                 {
                     path1 += _directorySeparatorString;
                 }
@@ -163,9 +163,9 @@ namespace Theraot.Core
             }
             if (string.Empty != path3)
             {
-                if (!path3.EndsWith(_directorySeparatorString) &&
-                    !path3.EndsWith(_altDirectorySeparatorString) &&
-                    !path3.EndsWith(_volumeSeparatorString))
+                if (!path3.EndsWith(_directorySeparatorString)
+                    && !path3.EndsWith(_altDirectorySeparatorString)
+                    && !path3.EndsWith(_volumeSeparatorString))
                 {
                     path3 += _directorySeparatorString;
                 }
@@ -176,9 +176,9 @@ namespace Theraot.Core
             }
             if (string.Empty != path2)
             {
-                if (!path2.EndsWith(_directorySeparatorString) &&
-                    !path2.EndsWith(_altDirectorySeparatorString) &&
-                    !path2.EndsWith(_volumeSeparatorString))
+                if (!path2.EndsWith(_directorySeparatorString)
+                    && !path2.EndsWith(_altDirectorySeparatorString)
+                    && !path2.EndsWith(_volumeSeparatorString))
                 {
                     path2 += _directorySeparatorString;
                 }
@@ -189,9 +189,9 @@ namespace Theraot.Core
             }
             if (string.Empty != path1)
             {
-                if (!path1.EndsWith(_directorySeparatorString) &&
-                    !path1.EndsWith(_altDirectorySeparatorString) &&
-                    !path1.EndsWith(_volumeSeparatorString))
+                if (!path1.EndsWith(_directorySeparatorString)
+                    && !path1.EndsWith(_altDirectorySeparatorString)
+                    && !path1.EndsWith(_volumeSeparatorString))
                 {
                     path1 += _directorySeparatorString;
                 }

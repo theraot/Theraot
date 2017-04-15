@@ -10,7 +10,7 @@ namespace Theraot.Core
     {
         public static ICloner<T> GetCloner()
         {
-            Type type = typeof(T);
+            var type = typeof(T);
             if (type.IsValueTypeRecursive())
             {
                 return StructCloner.Instance;

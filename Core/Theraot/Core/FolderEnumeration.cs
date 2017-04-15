@@ -33,14 +33,7 @@ namespace Theraot.Core
             {
                 // Empty
             }
-            if (fileEntries != null)
-            {
-                return fileEntries;
-            }
-            else
-            {
-                return ArrayReservoir<string>.EmptyArray;
-            }
+            return fileEntries ?? (IEnumerable<string>)ArrayReservoir<string>.EmptyArray;
         }
 
         public static IEnumerable<string> GetFilesAndFoldersRecursive(string folder, string pattern)
@@ -78,8 +71,8 @@ namespace Theraot.Core
                 return
                     directories.Where(
                         subFolder =>
-                            ((File.GetAttributes(subFolder) & FileAttributes.ReparsePoint) !=
-                             FileAttributes.ReparsePoint));
+                            ((File.GetAttributes(subFolder) & FileAttributes.ReparsePoint)
+                             != FileAttributes.ReparsePoint));
             }
             catch
             {
