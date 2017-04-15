@@ -215,7 +215,6 @@ namespace System.Linq.Expressions.Interpreter
         [Conditional("DEBUG")]
         public void SetDebugCookie(object cookie)
         {
-#if DEBUG
             if (_debugCookies == null)
             {
                 _debugCookies = new List<KeyValuePair<int, object>>();
@@ -223,7 +222,6 @@ namespace System.Linq.Expressions.Interpreter
 
             Debug.Assert(Count > 0);
             _debugCookies.Add(new KeyValuePair<int, object>(Count - 1, cookie));
-#endif
         }
 
         public int Count
