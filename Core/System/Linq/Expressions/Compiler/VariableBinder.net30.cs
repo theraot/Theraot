@@ -163,7 +163,7 @@ namespace System.Linq.Expressions.Compiler
                     if (currentScope.MergedScopes == null)
                     {
                         currentScope.MergedScopes =
-                            new HashSet<BlockExpression>(ReferenceEqualityComparer<BlockExpression>.Instance);
+                            new Set<object>(ReferenceEqualityComparer<object>.Instance);
                     }
                     currentScope.MergedScopes.Add(block);
                     foreach (var v in block.Variables)
