@@ -15,6 +15,24 @@ namespace Theraot.Collections
     [System.Diagnostics.DebuggerNonUserCode]
     public static partial class Extensions
     {
+        public static void Add<T>(this Stack<T> stack, T item)
+        {
+            if (stack == null)
+            {
+                throw new ArgumentNullException("stack");
+            }
+            stack.Push(item);
+        }
+
+        public static void Add<T>(this Queue<T> queue, T item)
+        {
+            if (queue == null)
+            {
+                throw new ArgumentNullException("queue");
+            }
+            queue.Enqueue(item);
+        }
+
         public static T[] AddFirst<T>(this IList<T> list, T item)
         {
             if (list == null)
@@ -2394,6 +2412,24 @@ namespace Theraot.Collections
             return new ReadOnlyCollection<TSource>(source.ToArray());
         }
 
+        public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        {
+            if (dictionary == null)
+            {
+                throw new ArgumentNullException("dictionary");
+            }
+            try
+            {
+                dictionary.Add(key, value);
+                return true;
+            }
+            catch (ArgumentException ex)
+            {
+                GC.KeepAlive(ex);
+                return false;
+            }
+        }
+
         public static bool TryFind<T>(this IEnumerable<T> source, int index, int count, Predicate<T> predicate, out T founT)
         {
             if (predicate == null)
@@ -2594,6 +2630,42 @@ namespace Theraot.Collections
                     }
                 }
                 return found;
+            }
+        }
+
+        public static bool TryTake<T>(this Stack<T> stack, out T item)
+        {
+            if (stack == null)
+            {
+                throw new ArgumentNullException("stack");
+            }
+            try
+            {
+                item = stack.Pop();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default(T);
+                return false;
+            }
+        }
+
+        public static bool TryTake<T>(this Queue<T> queue, out T item)
+        {
+            if (queue == null)
+            {
+                throw new ArgumentNullException("queue");
+            }
+            try
+            {
+                item = queue.Dequeue();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default(T);
+                return false;
             }
         }
 

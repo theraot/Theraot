@@ -162,7 +162,8 @@ namespace System.Linq.Expressions.Compiler
                     // Otherwise, merge it
                     if (currentScope.MergedScopes == null)
                     {
-                        currentScope.MergedScopes = new Set<object>(ReferenceEqualityComparer<object>.Instance);
+                        currentScope.MergedScopes =
+                            new Set<object>(ReferenceEqualityComparer<object>.Instance);
                     }
                     currentScope.MergedScopes.Add(block);
                     foreach (var v in block.Variables)
@@ -184,7 +185,7 @@ namespace System.Linq.Expressions.Compiler
             // it is used a lot.
             //
             CompilerScope referenceScope = null;
-            foreach (CompilerScope scope in _scopes)
+            foreach (var scope in _scopes)
             {
                 //
                 // There are two times we care about references:
@@ -224,7 +225,7 @@ namespace System.Linq.Expressions.Compiler
         private void Reference(ParameterExpression node, VariableStorageKind storage)
         {
             CompilerScope definition = null;
-            foreach (CompilerScope scope in _scopes)
+            foreach (var scope in _scopes)
             {
                 if (scope.Definitions.ContainsKey(node))
                 {

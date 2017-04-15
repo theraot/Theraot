@@ -191,7 +191,7 @@ namespace System.Linq.Expressions
                 throw Error.IncorrectNumberOfIndexes();
             }
 
-            foreach (Expression e in indexList)
+            foreach (var e in indexList)
             {
                 RequiresCanRead(e, "indexes");
                 if (e.Type != typeof(int))
@@ -252,7 +252,7 @@ namespace System.Linq.Expressions
         {
             var argTypesStr = new StringBuilder();
             argTypesStr.Append('(');
-            for (int i = 0; i < arguments.Length; i++)
+            for (var i = 0; i < arguments.Length; i++)
             {
                 if (i != 0)
                 {
@@ -294,7 +294,7 @@ namespace System.Linq.Expressions
         {
             var count = 0;
             property = null;
-            foreach (PropertyInfo pi in properties)
+            foreach (var pi in properties)
             {
                 if (pi != null && IsCompatible(pi, args))
                 {
@@ -342,7 +342,7 @@ namespace System.Linq.Expressions
                 return false;
             }
 
-            for (int i = 0; i < args.Length; i++)
+            for (var i = 0; i < args.Length; i++)
             {
                 if (args[i] == null)
                 {
@@ -454,7 +454,7 @@ namespace System.Linq.Expressions
                         throw Error.IndexesOfSetGetMustMatch();
                     }
 
-                    for (int i = 0; i < getParameters.Length; i++)
+                    for (var i = 0; i < getParameters.Length; i++)
                     {
                         if (getParameters[i].ParameterType != setParameters[i].ParameterType)
                         {
@@ -515,7 +515,7 @@ namespace System.Linq.Expressions
                 }
                 Expression[] newArgs = null;
                 var n = indexes.Length;
-                for (int i = 0; i < n; i++)
+                for (var i = 0; i < n; i++)
                 {
                     var arg = arguments[i];
                     var pi = indexes[i];
@@ -539,7 +539,7 @@ namespace System.Linq.Expressions
                     if (newArgs == null && arg != arguments[i])
                     {
                         newArgs = new Expression[arguments.Count];
-                        for (int j = 0; j < i; j++)
+                        for (var j = 0; j < i; j++)
                         {
                             newArgs[j] = arguments[j];
                         }

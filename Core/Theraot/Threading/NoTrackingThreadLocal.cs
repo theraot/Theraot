@@ -59,7 +59,7 @@ namespace Theraot.Threading
                     try
                     {
                         Thread.SetData(_slot, ThreadLocalHelper<T>.RecursionGuardNeedle);
-                        T result = _valueFactory.Invoke();
+                        var result = _valueFactory.Invoke();
                         Thread.SetData(_slot, new ReadOnlyStructNeedle<T>(result));
                         return result;
                     }

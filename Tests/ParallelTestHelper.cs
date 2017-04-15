@@ -40,7 +40,7 @@ namespace MonoTests
             ParallelStressTest(collection, (IProducerConsumerCollection<int> c) =>
             {
                 var start = Interlocked.Add(ref startIndex, 10);
-                for (int i = start; i < start + 10; i++)
+                for (var i = start; i < start + 10; i++)
                 {
                     c.TryAdd(i);
                 }
@@ -73,14 +73,14 @@ namespace MonoTests
                 return;
             }
             var threads = new Thread[numThread];
-            for (int i = 0; i < numThread; i++)
+            for (var i = 0; i < numThread; i++)
             {
                 threads[i] = new Thread(() => action(obj));
                 threads[i].Start();
             }
 
             // Wait for the completion
-            for (int i = 0; i < numThread; i++)
+            for (var i = 0; i < numThread; i++)
             {
                 threads[i].Join();
             }
@@ -97,7 +97,7 @@ namespace MonoTests
             {
                 return;
             }
-            for (int i = 0; i < numRun; i++)
+            for (var i = 0; i < numRun; i++)
             {
                 action();
             }

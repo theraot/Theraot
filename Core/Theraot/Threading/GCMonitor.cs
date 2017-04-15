@@ -18,7 +18,7 @@ namespace Theraot.Threading
 
         static GCMonitor()
         {
-            AppDomain currentAppDomain = AppDomain.CurrentDomain;
+            var currentAppDomain = AppDomain.CurrentDomain;
             currentAppDomain.ProcessExit += ReportApplicationDomainExit;
             currentAppDomain.DomainUnload += ReportApplicationDomainExit;
         }

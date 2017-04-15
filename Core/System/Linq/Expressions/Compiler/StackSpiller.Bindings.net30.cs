@@ -63,7 +63,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 _bindings = memberBinding.Bindings;
                 _bindingRewriters = new BindingRewriter[_bindings.Count];
-                for (int i = 0; i < _bindings.Count; i++)
+                for (var i = 0; i < _bindings.Count; i++)
                 {
                     var br = Create(_bindings[i], stackSpiller, stack);
                     RewriteAction |= br.Action;
@@ -80,7 +80,7 @@ namespace System.Linq.Expressions.Compiler
 
                     case RewriteAction.Copy:
                         var newBindings = new MemberBinding[_bindings.Count];
-                        for (int i = 0; i < _bindings.Count; i++)
+                        for (var i = 0; i < _bindings.Count; i++)
                         {
                             newBindings[i] = _bindingRewriters[i].AsBinding();
                         }
@@ -103,7 +103,7 @@ namespace System.Linq.Expressions.Compiler
                 var block = new Expression[_bindings.Count + 2];
                 block[0] = Expression.Assign(memberTemp, member);
 
-                for (int i = 0; i < _bindings.Count; i++)
+                for (var i = 0; i < _bindings.Count; i++)
                 {
                     var br = _bindingRewriters[i];
                     block[i + 1] = br.AsExpression(memberTemp);
@@ -136,7 +136,7 @@ namespace System.Linq.Expressions.Compiler
                 _inits = memberBinding.Initializers;
 
                 _childRewriters = new ChildRewriter[_inits.Count];
-                for (int i = 0; i < _inits.Count; i++)
+                for (var i = 0; i < _inits.Count; i++)
                 {
                     var init = _inits[i];
 
@@ -157,7 +157,7 @@ namespace System.Linq.Expressions.Compiler
 
                     case RewriteAction.Copy:
                         var newInits = new ElementInit[_inits.Count];
-                        for (int i = 0; i < _inits.Count; i++)
+                        for (var i = 0; i < _inits.Count; i++)
                         {
                             var cr = _childRewriters[i];
                             if (cr.Action == RewriteAction.None)
@@ -188,7 +188,7 @@ namespace System.Linq.Expressions.Compiler
                 var block = new Expression[_inits.Count + 2];
                 block[0] = Expression.Assign(memberTemp, member);
 
-                for (int i = 0; i < _inits.Count; i++)
+                for (var i = 0; i < _inits.Count; i++)
                 {
                     var cr = _childRewriters[i];
                     var add = cr.Finish(Expression.Call(memberTemp, _inits[i].AddMethod, cr[0, -1]));

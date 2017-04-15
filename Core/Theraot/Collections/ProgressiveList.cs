@@ -76,15 +76,15 @@ namespace Theraot.Collections
 
         public int IndexOf(T item)
         {
-            int cacheIndex = _cache.IndexOf(item, Comparer);
+            var cacheIndex = _cache.IndexOf(item, Comparer);
             if (cacheIndex >= 0)
             {
                 return cacheIndex;
             }
             else
             {
-                int index = _cache.Count - 1;
-                bool found = false;
+                var index = _cache.Count - 1;
+                var found = false;
                 Progressor.While
                 (
                     input =>

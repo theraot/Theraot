@@ -24,7 +24,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static TypeInfo NextTypeInfo(Type initialArg, TypeInfo curTypeInfo)
         {
-            Type lookingUp = initialArg;
+            var lookingUp = initialArg;
             TypeInfo nextTypeInfo;
             if (curTypeInfo.TypeChain == null)
             {
@@ -107,7 +107,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 needCustom = false;
 
-                for (int i = 0; i < types.Length; i++)
+                for (var i = 0; i < types.Length; i++)
                 {
                     if (types[i].IsByRef)
                     {

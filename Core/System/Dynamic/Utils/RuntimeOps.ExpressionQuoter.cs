@@ -119,7 +119,7 @@ namespace System.Runtime.CompilerServices
                 var boxes = new List<IStrongBox>();
                 var vars = new List<ParameterExpression>();
                 var indexes = new int[count];
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     var box = GetBox(node.Variables[i]);
                     if (box == null)
@@ -169,7 +169,7 @@ namespace System.Runtime.CompilerServices
             private IStrongBox GetBox(ParameterExpression variable)
             {
                 // Skip variables that are shadowed by a nested scope/lambda
-                foreach (Set<ParameterExpression> hidden in _shadowedVars)
+                foreach (var hidden in _shadowedVars)
                 {
                     if (hidden.Contains(variable))
                     {

@@ -243,7 +243,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             GC.Collect();
             GC.Collect();
 
-            for (int i = 0; i < res.Count; ++i)
+            for (var i = 0; i < res.Count; ++i)
             {
                 Assert.IsFalse(res[i].IsAlive, "#r" + i);
             }
@@ -266,12 +266,12 @@ namespace MonoTests.System.Runtime.CompilerServices
             // This list references all keys for the duration of the program, so none
             // should be collected ever.
             //
-            for (int x = 0; x < 1000; x++)
+            for (var x = 0; x < 1000; x++)
             {
                 keys.Add(new Key { Foo = x });
             }
 
-            for (int i = 0; i < 1000; ++i)
+            for (var i = 0; i < 1000; ++i)
             {
                 // Insert all keys into the ConditionalWeakTable
                 foreach (var key in keys)
@@ -323,17 +323,17 @@ namespace MonoTests.System.Runtime.CompilerServices
 
             GC.Collect();
 
-            for (int i = 0; i < res.Count; ++i)
+            for (var i = 0; i < res.Count; ++i)
             {
                 Assert.IsFalse(res[i].IsAlive, "#r0-" + i);
             }
 
-            for (int i = 0; i < res2.Count; ++i)
+            for (var i = 0; i < res2.Count; ++i)
             {
                 Assert.IsFalse(res2[i].IsAlive, "#r1-" + i);
             }
 
-            for (int i = 0; i < k.Count; ++i)
+            for (var i = 0; i < k.Count; ++i)
             {
                 object val;
                 Assert.IsTrue(cwt[0].TryGetValue(k[i], out val), "k0-" + i);
@@ -422,7 +422,7 @@ namespace MonoTests.System.Runtime.CompilerServices
         private static List<object> FillReachable(ConditionalWeakTable<object, object>[] cwt)
         {
             var res = new List<object>();
-            for (int i = 0; i < 10; ++i)
+            for (var i = 0; i < 10; ++i)
             {
                 res.Add(new object());
                 cwt[0].Add(res[i], i);
@@ -479,7 +479,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             cwt.Add(a, "foo");
             cwt.Add(b, "bar");
 
-            for (int i = 1; i < 20; ++i)
+            for (var i = 1; i < 20; ++i)
             {
                 b = new FinalizableLink(i, b, cwt);
                 cwt.Add(b, i);
@@ -490,7 +490,7 @@ namespace MonoTests.System.Runtime.CompilerServices
         {
             const int K = 500;
             var keys = new object[K];
-            for (int i = 0; i < K; ++i)
+            for (var i = 0; i < K; ++i)
             {
                 keys[i] = new object();
             }
@@ -498,14 +498,14 @@ namespace MonoTests.System.Runtime.CompilerServices
             var rand = new Random();
 
             /*produce a complex enough network of links*/
-            for (int i = 0; i < K; ++i)
+            for (var i = 0; i < K; ++i)
             {
                 cwt.Add(keys[i], new Link(keys[rand.Next(K)]));
             }
 
             var res = new List<WeakReference>();
 
-            for (int i = 0; i < 10; ++i)
+            for (var i = 0; i < 10; ++i)
             {
                 res.Add(new WeakReference(keys[rand.Next(K)]));
             }
@@ -529,7 +529,7 @@ namespace MonoTests.System.Runtime.CompilerServices
 
         private static void ForceMinor()
         {
-            for (int i = 0; i < 64000; ++i)
+            for (var i = 0; i < 64000; ++i)
             {
                 var x = new object();
                 GC.KeepAlive(x);
@@ -540,7 +540,7 @@ namespace MonoTests.System.Runtime.CompilerServices
         {
             var o = new object[64000];
 
-            for (int i = 0; i < 64000; ++i)
+            for (var i = 0; i < 64000; ++i)
             {
                 o[i] = new int[10];
             }
@@ -549,7 +549,7 @@ namespace MonoTests.System.Runtime.CompilerServices
         [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         private static void MakeObjMovable(List<GCHandle> handles)
         {
-            for (int i = 0; i < handles.Count; ++i)
+            for (var i = 0; i < handles.Count; ++i)
             {
                 var o = handles[i].Target;
                 handles[i].Free();

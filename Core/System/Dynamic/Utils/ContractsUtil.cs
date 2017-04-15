@@ -51,7 +51,7 @@ namespace System.Dynamic.Utils
             Debug.Assert(arrayName != null);
             RequiresNotNull(array, arrayName);
 
-            for (int i = 0; i < array.Count; i++)
+            for (var i = 0; i < array.Count; i++)
             {
                 if (ReferenceEquals(array[i], null))
                 {

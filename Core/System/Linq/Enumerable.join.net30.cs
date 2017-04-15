@@ -28,12 +28,12 @@ namespace System.Linq
             // NOTICE this method has no null check
             var innerKeys = ToLookup(inner, innerKeySelector, comparer);
 
-            foreach (TOuter element in outer)
+            foreach (var element in outer)
             {
                 var outerKey = outerKeySelector(element);
                 if (!ReferenceEquals(outerKey, null) && innerKeys.Contains(outerKey))
                 {
-                    foreach (TInner innerElement in innerKeys[outerKey])
+                    foreach (var innerElement in innerKeys[outerKey])
                     {
                         yield return resultSelector(element, innerElement);
                     }

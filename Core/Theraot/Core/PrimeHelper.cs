@@ -27,8 +27,8 @@ namespace Theraot.Core
                     {
                         return false;
                     }
-                    int max = NumericHelper.Sqrt(number) + 1;
-                    int index = 2;
+                    var max = NumericHelper.Sqrt(number) + 1;
+                    var index = 2;
                     for (; index < _smallPrimes.Length; index++)
                     {
                         if (number % _smallPrimes[index] == 0)
@@ -40,7 +40,7 @@ namespace Theraot.Core
                             return true;
                         }
                     }
-                    int test = index - (index % 6) + 5;
+                    var test = index - (index % 6) + 5;
                     while (test < max)
                     {
                         if (number % test == 0 || number % (test += 2) == 0)
@@ -110,7 +110,7 @@ namespace Theraot.Core
                 {
                     fromNumber++;
                 }
-                for (int index = fromNumber; index < int.MaxValue; index += 2)
+                for (var index = fromNumber; index < int.MaxValue; index += 2)
                 {
                     if (IsPrime(index))
                     {

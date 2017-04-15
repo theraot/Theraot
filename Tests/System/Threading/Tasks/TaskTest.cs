@@ -932,11 +932,11 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WaitAll_ManyTasks()
         {
-            for (int r = 0; r < 2000; ++r)
+            for (var r = 0; r < 2000; ++r)
             {
                 var tasks = new Task[60];
 
-                for (int i = 0; i < tasks.Length; i++)
+                for (var i = 0; i < tasks.Length; i++)
                 {
                     tasks[i] = Task.Factory.StartNew(() => Thread.Sleep(0));
                 }
@@ -1592,7 +1592,7 @@ namespace MonoTests.System.Threading.Tasks
 
         private void InitWithDelegate(Action action)
         {
-            for (int i = 0; i < _max; i++)
+            for (var i = 0; i < _max; i++)
             {
                 _tasks[i] = Task.Factory.StartNew(action);
             }
@@ -2488,20 +2488,16 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WhenAny()
         {
-            using (var t1 = new Task(ActionHelper.GetNoopAction()))
-            {
-                using (var t2 = new Task(t1.Start))
-                {
-                    var tasks = new Task[] { t1, t2 };
+            var t1 = new Task(ActionHelper.GetNoopAction());
+            var t2 = new Task(t1.Start);
+            var tasks = new Task[] { t1, t2 };
 
-                    var t = Task.WhenAny(tasks);
-                    Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
-                    t2.Start();
+            var t = Task.WhenAny(tasks);
+            Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
+            t2.Start();
 
-                    Assert.IsTrue(t.Wait(1000), "#2");
-                    Assert.IsNotNull(t.Result, "#3");
-                }
-            }
+            Assert.IsTrue(t.Wait(1000), "#2");
+            Assert.IsNotNull(t.Result, "#3");
         }
 
         [Test]

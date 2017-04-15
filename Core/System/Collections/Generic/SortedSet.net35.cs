@@ -309,7 +309,7 @@ namespace System.Collections.Generic
                     {
                         throw new SerializationException();
                     }
-                    foreach (T item in value)
+                    foreach (var item in value)
                     {
                         Add(item);
                     }

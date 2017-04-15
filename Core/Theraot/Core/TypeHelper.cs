@@ -445,7 +445,7 @@ namespace Theraot.Core
             }
             if (type.IsGenericType)
             {
-                foreach (Type genericArgument in type.GetGenericArguments())
+                foreach (var genericArgument in type.GetGenericArguments())
                 {
                     if (!CanCache(genericArgument))
                     {
@@ -515,7 +515,7 @@ namespace Theraot.Core
             }
             if (type.IsValueType)
             {
-                foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+                foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
                 {
                     if (!IsValueTypeRecursiveExtracted(field.FieldType))
                     {

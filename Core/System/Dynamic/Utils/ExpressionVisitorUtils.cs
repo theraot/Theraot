@@ -13,7 +13,7 @@ namespace System.Dynamic.Utils
         {
             Expression[] newNodes = null;
             var n = nodes.ArgumentCount;
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 var curNode = nodes.GetArgument(i);
                 var node = visitor.Visit(curNode);
@@ -25,7 +25,7 @@ namespace System.Dynamic.Utils
                 else if (!ReferenceEquals(node, curNode))
                 {
                     newNodes = new Expression[n];
-                    for (int j = 0; j < i; j++)
+                    for (var j = 0; j < i; j++)
                     {
                         newNodes[j] = nodes.GetArgument(j);
                     }

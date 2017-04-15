@@ -631,7 +631,7 @@ namespace System.Linq.Expressions.Compiler
 
             var cloneCrs = new ChildRewriter[inits.Count];
 
-            for (int i = 0; i < inits.Count; i++)
+            for (var i = 0; i < inits.Count; i++)
             {
                 var init = inits[i];
 
@@ -650,7 +650,7 @@ namespace System.Linq.Expressions.Compiler
 
                 case RewriteAction.Copy:
                     var newInits = new ElementInit[inits.Count];
-                    for (int i = 0; i < inits.Count; i++)
+                    for (var i = 0; i < inits.Count; i++)
                     {
                         var cr = cloneCrs[i];
                         if (cr.Action == RewriteAction.None)
@@ -672,7 +672,7 @@ namespace System.Linq.Expressions.Compiler
                     var comma = new Expression[inits.Count + 2];
                     comma[0] = Expression.Assign(tempNew, rewrittenNew);
 
-                    for (int i = 0; i < inits.Count; i++)
+                    for (var i = 0; i < inits.Count; i++)
                     {
                         var cr = cloneCrs[i];
                         var add = cr.Finish(Expression.Call(tempNew, inits[i].AddMethod, cr[0, -1]));
@@ -701,7 +701,7 @@ namespace System.Linq.Expressions.Compiler
 
             var bindings = node.Bindings;
             var bindingRewriters = new BindingRewriter[bindings.Count];
-            for (int i = 0; i < bindings.Count; i++)
+            for (var i = 0; i < bindings.Count; i++)
             {
                 var binding = bindings[i];
                 //bindings run on nonempty stack
@@ -717,7 +717,7 @@ namespace System.Linq.Expressions.Compiler
 
                 case RewriteAction.Copy:
                     var newBindings = new MemberBinding[bindings.Count];
-                    for (int i = 0; i < bindings.Count; i++)
+                    for (var i = 0; i < bindings.Count; i++)
                     {
                         newBindings[i] = bindingRewriters[i].AsBinding();
                     }
@@ -730,7 +730,7 @@ namespace System.Linq.Expressions.Compiler
                     var tempNew = MakeTemp(rewrittenNew.Type);
                     var comma = new Expression[bindings.Count + 2];
                     comma[0] = Expression.Assign(tempNew, rewrittenNew);
-                    for (int i = 0; i < bindings.Count; i++)
+                    for (var i = 0; i < bindings.Count; i++)
                     {
                         var cr = bindingRewriters[i];
                         var initExpr = cr.AsExpression(tempNew);
@@ -758,7 +758,7 @@ namespace System.Linq.Expressions.Compiler
             var count = node.ExpressionCount;
             var action = RewriteAction.None;
             Expression[] clone = null;
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 var expression = node.GetExpression(i);
                 // All statements within the block execute at the
@@ -862,13 +862,13 @@ namespace System.Linq.Expressions.Compiler
             var action = switchValue.Action;
             var cases = node.Cases;
             SwitchCase[] clone = null;
-            for (int i = 0; i < cases.Count; i++)
+            for (var i = 0; i < cases.Count; i++)
             {
                 var @case = cases[i];
 
                 Expression[] cloneTests = null;
                 var testValues = @case.TestValues;
-                for (int j = 0; j < testValues.Count; j++)
+                for (var j = 0; j < testValues.Count; j++)
                 {
                     // All tests execute at the same stack state as the switch.
                     // This is guarenteed by the compiler (to simplify spilling)
@@ -942,7 +942,7 @@ namespace System.Linq.Expressions.Compiler
             var action = body.Action;
             if (handlers != null)
             {
-                for (int i = 0; i < handlers.Count; i++)
+                for (var i = 0; i < handlers.Count; i++)
                 {
                     var curAction = body.Action;
 
@@ -1022,7 +1022,7 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(max < original.Count);
 
             var clone = new T[original.Count];
-            for (int j = 0; j < max; j++)
+            for (var j = 0; j < max; j++)
             {
                 clone[j] = original[j];
             }

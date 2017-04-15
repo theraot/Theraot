@@ -67,7 +67,7 @@ namespace MonoTests.System
         [Test]
         public void WeakReference_Object()
         {
-            using (Stream s = Stream.Null)
+            using (var s = Stream.Null)
             {
                 var wr = new WeakReference(s);
                 Assert.IsTrue(wr.IsAlive, "IsAlive");
@@ -79,7 +79,7 @@ namespace MonoTests.System
         [Test]
         public void WeakReference_Object_TrackResurrection_True()
         {
-            using (Stream s = Stream.Null)
+            using (var s = Stream.Null)
             {
                 var wr = new WeakReference(s, true);
                 Assert.IsTrue(wr.IsAlive, "IsAlive");
@@ -91,7 +91,7 @@ namespace MonoTests.System
         [Test]
         public void WeakReference_Object_TrackResurrection_False()
         {
-            using (Stream s = Stream.Null)
+            using (var s = Stream.Null)
             {
                 var wr = new WeakReference(s, false);
                 Assert.IsTrue(wr.IsAlive, "IsAlive");

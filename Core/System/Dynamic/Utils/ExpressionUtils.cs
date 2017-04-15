@@ -78,7 +78,7 @@ namespace System.Dynamic.Utils
 
             Expression[] newArgs = null;
             var n = pis.Length;
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 var arg = arguments[i];
                 var pi = pis[i];
@@ -198,9 +198,8 @@ namespace System.Dynamic.Utils
             // quote (produce a new tree closed over parameter values), only
             // works consistently for lambdas
             var quoteable = typeof(LambdaExpression);
-            // TODO: check generics?
             if (parameterType.IsSameOrSubclassOf(quoteable)
-                && parameterType.IsAssignableFrom(argument.GetType()))
+                && parameterType.IsInstanceOfType(argument))
             {
                 argument = Expression.Quote(argument);
                 return true;

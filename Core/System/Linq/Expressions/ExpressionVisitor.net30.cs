@@ -530,7 +530,7 @@ namespace System.Linq.Expressions
         {
             var count = node.ExpressionCount;
             Expression[] nodes = null;
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 var oldNode = node.GetExpression(i);
                 var newNode = Visit(oldNode);
@@ -552,7 +552,7 @@ namespace System.Linq.Expressions
             }
             else
             {
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     if (nodes[i] == null)
                     {
@@ -941,7 +941,7 @@ namespace System.Linq.Expressions
         {
             Expression[] newNodes = null;
             var n = nodes.Count;
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 var node = Visit(nodes[i]);
 
@@ -952,7 +952,7 @@ namespace System.Linq.Expressions
                 else if (!ReferenceEquals(node, nodes[i]))
                 {
                     newNodes = new Expression[n];
-                    for (int j = 0; j < i; j++)
+                    for (var j = 0; j < i; j++)
                     {
                         newNodes[j] = nodes[j];
                     }
@@ -985,7 +985,7 @@ namespace System.Linq.Expressions
             // NOTICE this method has no null check
             T[] newNodes = null;
             var n = nodes.Count;
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 var node = elementVisitor(nodes[i]);
                 if (newNodes != null)
@@ -995,7 +995,7 @@ namespace System.Linq.Expressions
                 else if (!ReferenceEquals(node, nodes[i]))
                 {
                     newNodes = new T[n];
-                    for (int j = 0; j < i; j++)
+                    for (var j = 0; j < i; j++)
                     {
                         newNodes[j] = nodes[j];
                     }
@@ -1045,7 +1045,7 @@ namespace System.Linq.Expressions
         {
             T[] newNodes = null;
             var n = nodes.Count;
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 var node = Visit(nodes[i]) as T;
                 if (node == null)
@@ -1060,7 +1060,7 @@ namespace System.Linq.Expressions
                 else if (!ReferenceEquals(node, nodes[i]))
                 {
                     newNodes = new T[n];
-                    for (int j = 0; j < i; j++)
+                    for (var j = 0; j < i; j++)
                     {
                         newNodes[j] = nodes[j];
                     }

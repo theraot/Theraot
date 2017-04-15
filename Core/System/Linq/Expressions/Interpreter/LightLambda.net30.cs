@@ -251,7 +251,7 @@ namespace System.Linq.Expressions.Interpreter
         public object Run(params object[] arguments)
         {
             var frame = MakeFrame();
-            for (int i = 0; i < arguments.Length; i++)
+            for (var i = 0; i < arguments.Length; i++)
             {
                 frame.Data[i] = arguments[i];
             }
@@ -262,7 +262,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             finally
             {
-                for (int i = 0; i < arguments.Length; i++)
+                for (var i = 0; i < arguments.Length; i++)
                 {
                     arguments[i] = frame.Data[i];
                 }
@@ -275,7 +275,7 @@ namespace System.Linq.Expressions.Interpreter
         public object RunVoid(params object[] arguments)
         {
             var frame = MakeFrame();
-            for (int i = 0; i < arguments.Length; i++)
+            for (var i = 0; i < arguments.Length; i++)
             {
                 frame.Data[i] = arguments[i];
             }
@@ -286,7 +286,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             finally
             {
-                for (int i = 0; i < arguments.Length; i++)
+                for (var i = 0; i < arguments.Length; i++)
                 {
                     arguments[i] = frame.Data[i];
                 }

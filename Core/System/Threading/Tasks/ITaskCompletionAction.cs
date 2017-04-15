@@ -111,7 +111,7 @@ namespace System.Threading.Tasks
                     return;
                 }
                 // Do not use IndexOf
-                for (int index = 0; index < tasks.Length; index++)
+                for (var index = 0; index < tasks.Length; index++)
                 {
                     if (tasks[index] == completingTask)
                     {

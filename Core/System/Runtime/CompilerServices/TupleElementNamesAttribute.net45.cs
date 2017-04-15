@@ -22,12 +22,12 @@ namespace System.Runtime.CompilerServices
         /// </summary>
         /// <param name="transformNames">
         /// Specifies, in a pre-order depth-first traversal of a type's
-        /// construction, which <see cref="System.ValueType"/> occurrences are
+        /// construction, which <see cref="ValueType"/> occurrences are
         /// meant to carry element names.
         /// </param>
         /// <remarks>
         /// This constructor is meant to be used on types that contain an
-        /// instantiation of <see cref="System.ValueType"/> that contains
+        /// instantiation of <see cref="ValueType"/> that contains
         /// element names.  For instance, if <c>C</c> is a generic type with
         /// two type parameters, then a use of the constructed type <c>C{<see cref="System.ValueTuple{T1, T2}"/>, <see cref="System.ValueTuple{T1, T2, T3}"/></c> might be intended to
         /// treat the first type argument as a tuple with element names and the

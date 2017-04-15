@@ -34,7 +34,7 @@ namespace Theraot.Collections.ThreadSafe
                 _emptyArray = new T[0];
             }
             _pools = new Pool<T[]>[_capacityCount];
-            for (int index = 0; index < _capacityCount; index++)
+            for (var index = 0; index < _capacityCount; index++)
             {
                 var currentIndex = index;
                 _pools[index] = new Pool<T[]>

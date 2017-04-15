@@ -125,7 +125,7 @@ namespace System.Linq.Expressions
             {
                 throw Error.ElementInitializerMethodStatic();
             }
-            foreach (ParameterInfo pi in pis)
+            foreach (var pi in pis)
             {
                 if (pi.ParameterType.IsByRef)
                 {

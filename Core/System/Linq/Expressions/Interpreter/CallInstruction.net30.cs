@@ -258,7 +258,7 @@ namespace System.Linq.Expressions.Interpreter
         private static object[] SkipFirstArg(object[] args)
         {
             var newArgs = new object[args.Length - 1];
-            for (int i = 0; i < newArgs.Length; i++)
+            for (var i = 0; i < newArgs.Length; i++)
             {
                 newArgs[i] = args[i + 1];
             }
@@ -269,7 +269,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             var first = frame.StackIndex - _argumentCount;
             var args = new object[_argumentCount];
-            for (int i = 0; i < args.Length; i++)
+            for (var i = 0; i < args.Length; i++)
             {
                 args[i] = frame.Data[first + i];
             }
@@ -322,7 +322,7 @@ namespace System.Linq.Expressions.Interpreter
                 if (_target.IsStatic)
                 {
                     args = new object[_argumentCount];
-                    for (int i = 0; i < args.Length; i++)
+                    for (var i = 0; i < args.Length; i++)
                     {
                         args[i] = frame.Data[first + i];
                     }
@@ -338,7 +338,7 @@ namespace System.Linq.Expressions.Interpreter
                 else
                 {
                     args = new object[_argumentCount - 1];
-                    for (int i = 0; i < args.Length; i++)
+                    for (var i = 0; i < args.Length; i++)
                     {
                         args[i] = frame.Data[first + i + 1];
                     }

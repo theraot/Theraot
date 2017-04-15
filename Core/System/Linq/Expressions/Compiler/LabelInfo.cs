@@ -96,7 +96,7 @@ namespace System.Linq.Expressions.Compiler
             // Prevent the label from being shadowed, which enforces cleaner
             // trees. Also we depend on this for simplicity (keeping only one
             // active IL Label per LabelInfo)
-            for (LabelScopeInfo j = block; j != null; j = j.Parent)
+            for (var j = block; j != null; j = j.Parent)
             {
                 if (j.ContainsTarget(_node))
                 {
@@ -137,7 +137,7 @@ namespace System.Linq.Expressions.Compiler
             _opCode = _canReturn ? OpCodes.Ret : OpCodes.Br;
 
             // look for a simple jump out
-            for (LabelScopeInfo j = reference; j != null; j = j.Parent)
+            for (var j = reference; j != null; j = j.Parent)
             {
                 if (_definitions.Contains(j))
                 {
@@ -175,7 +175,7 @@ namespace System.Linq.Expressions.Compiler
             _opCode = _canReturn ? OpCodes.Ret : OpCodes.Br;
 
             // Validate that we aren't jumping across a finally
-            for (LabelScopeInfo j = reference; j != common; j = j.Parent)
+            for (var j = reference; j != common; j = j.Parent)
             {
                 if (j.Kind == LabelScopeKind.Finally)
                 {
@@ -193,7 +193,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // Validate that we aren't jumping into a catch or an expression
-            for (LabelScopeInfo j = def; j != common; j = j.Parent)
+            for (var j = def; j != common; j = j.Parent)
             {
                 if (!j.CanJumpInto)
                 {

@@ -49,7 +49,7 @@ namespace System.Linq
         {
             var sorter = new QuickSort<TElement>(source, context);
             sorter.PerformSort();
-            foreach (int item in sorter._indexes)
+            foreach (var item in sorter._indexes)
             {
                 yield return sorter._elements[item];
             }
@@ -58,7 +58,7 @@ namespace System.Linq
         private static int[] CreateIndexes(int length)
         {
             var indexes = new int[length];
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
             {
                 indexes[i] = i;
             }
@@ -73,7 +73,7 @@ namespace System.Linq
 
         private void InsertionSort(int left, int right)
         {
-            for (int i = left + 1; i <= right; i++)
+            for (var i = left + 1; i <= right; i++)
             {
                 int j, tmp = _indexes[i];
 

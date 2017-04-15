@@ -81,9 +81,9 @@ namespace MonoTests.System.Numerics
         public void Mul()
         {
             var values = new long[] { -1000000000L, -1000, -1, 0, 1, 1000, 100000000L };
-            for (int i = 0; i < values.Length; ++i)
+            for (var i = 0; i < values.Length; ++i)
             {
-                for (int j = 0; j < values.Length; ++j)
+                for (var j = 0; j < values.Length; ++j)
                 {
                     var a = new BigInteger(values[i]);
                     var b = new BigInteger(values[j]);
@@ -105,9 +105,9 @@ namespace MonoTests.System.Numerics
         public void DivRem()
         {
             var values = new long[] { -10000000330L, -5000, -1, 0, 1, 1000, 333, 10234544400L };
-            for (int i = 0; i < values.Length; ++i)
+            for (var i = 0; i < values.Length; ++i)
             {
-                for (int j = 0; j < values.Length; ++j)
+                for (var j = 0; j < values.Length; ++j)
                 {
                     if (values[j] == 0)
                     {
@@ -263,7 +263,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestAdd()
         {
-            for (int i = 0; i < _addA.Length; ++i)
+            for (var i = 0; i < _addA.Length; ++i)
             {
                 var a = new BigInteger(_addA[i]);
                 var b = new BigInteger(_addB[i]);
@@ -280,9 +280,9 @@ namespace MonoTests.System.Numerics
         public void TestAdd2()
         {
             var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (int i = 0; i < values.Length; ++i)
+            for (var i = 0; i < values.Length; ++i)
             {
-                for (int j = 0; j < values.Length; ++j)
+                for (var j = 0; j < values.Length; ++j)
                 {
                     var a = new BigInteger(values[i]);
                     var b = new BigInteger(values[j]);
@@ -305,9 +305,9 @@ namespace MonoTests.System.Numerics
         public void TestSub()
         {
             var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (int i = 0; i < values.Length; ++i)
+            for (var i = 0; i < values.Length; ++i)
             {
-                for (int j = 0; j < values.Length; ++j)
+                for (var j = 0; j < values.Length; ++j)
                 {
                     var a = new BigInteger(values[i]);
                     var b = new BigInteger(values[j]);
@@ -324,9 +324,9 @@ namespace MonoTests.System.Numerics
         public void TestMin()
         {
             var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (int i = 0; i < values.Length; ++i)
+            for (var i = 0; i < values.Length; ++i)
             {
-                for (int j = 0; j < values.Length; ++j)
+                for (var j = 0; j < values.Length; ++j)
                 {
                     var a = new BigInteger(values[i]);
                     var b = new BigInteger(values[j]);
@@ -341,9 +341,9 @@ namespace MonoTests.System.Numerics
         public void TestMax()
         {
             var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (int i = 0; i < values.Length; ++i)
+            for (var i = 0; i < values.Length; ++i)
             {
-                for (int j = 0; j < values.Length; ++j)
+                for (var j = 0; j < values.Length; ++j)
                 {
                     var a = new BigInteger(values[i]);
                     var b = new BigInteger(values[j]);
@@ -358,7 +358,7 @@ namespace MonoTests.System.Numerics
         public void TestAbs()
         {
             var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (int i = 0; i < values.Length; ++i)
+            for (var i = 0; i < values.Length; ++i)
             {
                 var a = new BigInteger(values[i]);
                 var c = BigInteger.Abs(a);
@@ -371,7 +371,7 @@ namespace MonoTests.System.Numerics
         public void TestNegate()
         {
             var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (int i = 0; i < values.Length; ++i)
+            for (var i = 0; i < values.Length; ++i)
             {
                 var a = new BigInteger(values[i]);
                 var c = -a;
@@ -386,7 +386,7 @@ namespace MonoTests.System.Numerics
         public void TestInc()
         {
             var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (int i = 0; i < values.Length; ++i)
+            for (var i = 0; i < values.Length; ++i)
             {
                 var a = new BigInteger(values[i]);
                 var b = ++a;
@@ -399,7 +399,7 @@ namespace MonoTests.System.Numerics
         public void TestDec()
         {
             var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (int i = 0; i < values.Length; ++i)
+            for (var i = 0; i < values.Length; ++i)
             {
                 var a = new BigInteger(values[i]);
                 var b = --a;
@@ -412,9 +412,9 @@ namespace MonoTests.System.Numerics
         public void TestBitwiseOps()
         {
             var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L, 0xFFFF00000000L };
-            for (int i = 0; i < values.Length; ++i)
+            for (var i = 0; i < values.Length; ++i)
             {
-                for (int j = 0; j < values.Length; ++j)
+                for (var j = 0; j < values.Length; ++j)
                 {
                     var a = new BigInteger(values[i]);
                     var b = new BigInteger(values[j]);
@@ -484,9 +484,9 @@ namespace MonoTests.System.Numerics
         public void CompareOps()
         {
             var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (int i = 0; i < values.Length; ++i)
+            for (var i = 0; i < values.Length; ++i)
             {
-                for (int j = 0; j < values.Length; ++j)
+                for (var j = 0; j < values.Length; ++j)
                 {
                     var a = new BigInteger(values[i]);
                     var b = new BigInteger(values[j]);
@@ -522,9 +522,9 @@ namespace MonoTests.System.Numerics
         {
             var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L, 0xAA00000000L };
             var uvalues = new ulong[] { 0, 1, 1000, 100000000000L, 999999, 28282828282, 0xAA00000000, ulong.MaxValue };
-            for (int i = 0; i < values.Length; ++i)
+            for (var i = 0; i < values.Length; ++i)
             {
-                for (int j = 0; j < uvalues.Length; ++j)
+                for (var j = 0; j < uvalues.Length; ++j)
                 {
                     var a = new BigInteger(values[i]);
                     var b = uvalues[j];
@@ -554,9 +554,9 @@ namespace MonoTests.System.Numerics
         {
             var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 9999999, 100000000000L, 0xAA00000000, long.MaxValue, long.MinValue };
 
-            for (int i = 0; i < values.Length; ++i)
+            for (var i = 0; i < values.Length; ++i)
             {
-                for (int j = 0; j < values.Length; ++j)
+                for (var j = 0; j < values.Length; ++j)
                 {
                     var a = new BigInteger(values[i]);
                     var b = values[j];
@@ -1436,7 +1436,7 @@ namespace MonoTests.System.Numerics
         public void Bug10887()
         {
             BigInteger b = 0;
-            for (int i = 1; i <= 16; i++)
+            for (var i = 1; i <= 16; i++)
             {
                 b = (b * 256) + i;
             }

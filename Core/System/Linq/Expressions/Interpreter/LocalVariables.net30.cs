@@ -171,7 +171,7 @@ namespace System.Linq.Expressions.Interpreter
             _variables[variable].Variable.IsBoxed = true;
 
             var curChild = 0;
-            for (int i = scope.Start; i < scope.Stop && i < instructions.Count; i++)
+            for (var i = scope.Start; i < scope.Stop && i < instructions.Count; i++)
             {
                 if (scope.ChildScopes != null && scope.ChildScopes[curChild].Start == i)
                 {

@@ -67,7 +67,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             var indexes = new Dictionary<Expression, int>(vars.Count);
-            for (int i = 0; i < vars.Count; i++)
+            for (var i = 0; i < vars.Count; i++)
             {
                 indexes.Add(vars[i], i);
             }

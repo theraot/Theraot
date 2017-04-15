@@ -304,7 +304,7 @@ namespace System.Linq.Expressions
             // NOTICE this method has no null check
             List<TElement> list = null;
             var count = original.Count;
-            for (int index = 0; index < count; index++)
+            for (var index = 0; index < count; index++)
             {
                 var element = visit(original[index]);
                 if (list != null)
@@ -314,7 +314,7 @@ namespace System.Linq.Expressions
                 else if (!EqualityComparer<TElement>.Default.Equals(element, original[index]))
                 {
                     list = new List<TElement>(count);
-                    for (int subIndex = 0; subIndex < index; subIndex++)
+                    for (var subIndex = 0; subIndex < index; subIndex++)
                     {
                         list.Add(original[subIndex]);
                     }

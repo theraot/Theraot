@@ -300,7 +300,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private bool RegisterForAutoRemoveDeadItemsExtracted()
         {
-            bool result = false;
+            var result = false;
             EventHandler eventHandler;
             if (ReferenceEquals(_eventHandler.Value, null))
             {

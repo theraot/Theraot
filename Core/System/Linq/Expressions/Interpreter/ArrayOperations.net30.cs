@@ -34,7 +34,7 @@ namespace System.Linq.Expressions.Interpreter
         public override int Run(InterpretedFrame frame)
         {
             var array = Array.CreateInstance(_elementType, _elementCount);
-            for (int i = _elementCount - 1; i >= 0; i--)
+            for (var i = _elementCount - 1; i >= 0; i--)
             {
                 array.SetValue(frame.Pop(), i);
             }
@@ -109,7 +109,7 @@ namespace System.Linq.Expressions.Interpreter
         public override int Run(InterpretedFrame frame)
         {
             var lengths = new int[_rank];
-            for (int i = _rank - 1; i >= 0; i--)
+            for (var i = _rank - 1; i >= 0; i--)
             {
                 lengths[i] = ConvertHelper.ToInt32NoNull(frame.Pop());
             }

@@ -427,7 +427,7 @@ namespace MonoTests.System.Linq
 
             Assert.AreEqual(0, stream.Position);
 
-            foreach (byte b in AsEnumerable(stream).Take(2))
+            foreach (var b in AsEnumerable(stream).Take(2))
             {
                 ;
             }
@@ -606,7 +606,7 @@ namespace MonoTests.System.Linq
         private static void AssertIsOrdered(IEnumerable<int> e)
         {
             var f = int.MinValue;
-            foreach (int i in e)
+            foreach (var i in e)
             {
                 Assert.IsTrue(f <= i);
                 f = i;

@@ -331,7 +331,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else if (_keysAndValues != null)
             {
-                for (int i = 0; i < _keysAndValues.Length; i++)
+                for (var i = 0; i < _keysAndValues.Length; i++)
                 {
                     if (_keysAndValues[i].Key == key)
                     {
@@ -354,7 +354,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else if (_keysAndValues != null)
             {
-                for (int i = 0; i < _keysAndValues.Length; i++)
+                for (var i = 0; i < _keysAndValues.Length; i++)
                 {
                     if (_keysAndValues[i].Key == key)
                     {
@@ -378,7 +378,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else if (_keysAndValues != null)
             {
-                for (int i = 0; i < _keysAndValues.Length; i++)
+                for (var i = 0; i < _keysAndValues.Length; i++)
                 {
                     if (_keysAndValues[i].Key == key)
                     {
@@ -416,7 +416,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_keysAndValues != null)
             {
-                for (int i = 0; i < _keysAndValues.Length; i++)
+                for (var i = 0; i < _keysAndValues.Length; i++)
                 {
                     if (_keysAndValues[i].Key != null)
                     {
@@ -454,7 +454,7 @@ namespace System.Linq.Expressions.Interpreter
                     if (_keysAndValues != null)
                     {
                         index = -1;
-                        for (int i = 0; i < _keysAndValues.Length; i++)
+                        for (var i = 0; i < _keysAndValues.Length; i++)
                         {
                             if (_keysAndValues[i].Key == key)
                             {
@@ -481,7 +481,7 @@ namespace System.Linq.Expressions.Interpreter
                     else
                     {
                         _dict = new Dictionary<TKey, TValue>();
-                        for (int i = 0; i < _keysAndValues.Length; i++)
+                        for (var i = 0; i < _keysAndValues.Length; i++)
                         {
                             _dict[_keysAndValues[i].Key] = _keysAndValues[i].Value;
                         }
@@ -583,7 +583,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             var cmp = EqualityComparer<T>.Default;
             var h = 6551;
-            foreach (T t in list)
+            foreach (var t in list)
             {
                 h ^= (h << 5) ^ cmp.GetHashCode(t);
             }

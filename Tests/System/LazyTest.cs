@@ -132,7 +132,7 @@ namespace MonoTests.System
 
             var monitor = new object();
             var threads = new Thread[10];
-            for (int i = 0; i < 10; ++i)
+            for (var i = 0; i < 10; ++i)
             {
                 threads[i] = new Thread(() =>
                 {
@@ -143,7 +143,7 @@ namespace MonoTests.System
                     var val = l.Value;
                 });
             }
-            for (int i = 0; i < 10; ++i)
+            for (var i = 0; i < 10; ++i)
             {
                 threads[i].Start();
             }

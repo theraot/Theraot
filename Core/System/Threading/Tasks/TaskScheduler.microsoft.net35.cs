@@ -143,7 +143,7 @@ namespace System.Threading.Tasks
             var activeTasksArray = activeTasksSource as Task[] ?? (new List<Task>(activeTasksSource)).ToArray();
 
             // touch all Task.Id fields so that the debugger doesn't need to do a lot of cross-proc calls to generate them
-            foreach (Task t in activeTasksArray)
+            foreach (var t in activeTasksArray)
             {
                 GC.KeepAlive(t.Id);
             }

@@ -20,7 +20,7 @@ namespace Tests.System
                     // Get the size of an array element.
                     const int size = sizeof(int);
                     var index = 0;
-                    for (int ctr = 0; ctr < arr.Length; ctr++)
+                    for (var ctr = 0; ctr < arr.Length; ctr++)
                     {
                         var newPtr = IntPtrHelper.Add(ptr, ctr * size);
                         Assert.AreEqual(arr[index], Marshal.ReadInt32(newPtr));
@@ -42,7 +42,7 @@ namespace Tests.System
                     const int size = sizeof(int);
                     var ptr = IntPtrHelper.Add(new IntPtr(parr), size * (arr.Length - 1));
                     var index = arr.Length - 1;
-                    for (int ctr = 0; ctr < arr.Length; ctr++)
+                    for (var ctr = 0; ctr < arr.Length; ctr++)
                     {
                         var newPtr = IntPtrHelper.Subtract(ptr, ctr * size);
                         Assert.AreEqual(arr[index], Marshal.ReadInt32(newPtr));
