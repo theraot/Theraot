@@ -88,7 +88,7 @@ namespace System.Threading.Tasks
         {
             return
                 _task != null ? _task.GetHashCode() :
-                _result != null ? _result.GetHashCode() :
+                !ReferenceEquals(_result, null) ? _result.GetHashCode() :
                 0;
         }
 
@@ -130,7 +130,7 @@ namespace System.Threading.Tasks
             // Return the task if we were constructed from one, otherwise manufacture one.  We don't
             // cache the generated task into _task as it would end up changing both equality comparison
             // and the hash code we generate in GetHashCode.
-            return _task ?? Task.FromResult(_result);
+            return _task ?? TaskEx.FromResult(_result);
         }
 
         /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> represents a completed operation.</summary>
