@@ -10,7 +10,7 @@ namespace Theraot.Collections
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public sealed class ExtendedStack<T> : IDropPoint<T>, ICloneable, IEnumerable<T>, ICollection<T>, ICloneable<ExtendedStack<T>>
+    public sealed class ExtendedStack<T> : IDropPoint<T>, IEnumerable<T>, ICollection<T>, ICloneable<ExtendedStack<T>>
     {
         private readonly IReadOnlyCollection<T> _readOnly;
         private readonly Stack<T> _wrapped;

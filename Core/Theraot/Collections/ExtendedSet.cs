@@ -12,7 +12,7 @@ namespace Theraot.Collections
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
 #if FAT
-    public sealed class ExtendedSet<T> : IExtendedSet<T>, ICloneable, ICollection<T>, ISet<T>, ICloneable<ExtendedSet<T>>
+    public sealed class ExtendedSet<T> : IExtendedSet<T>, ICollection<T>, ISet<T>, ICloneable<ExtendedSet<T>>
     {
         private readonly IReadOnlySet<T> _readOnly;
         private readonly HashSet<T> _wrapped;

@@ -10,7 +10,7 @@ namespace Theraot.Collections
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public sealed class ExtendedQueue<T> : IDropPoint<T>, IEnumerable<T>, ICloneable, ICollection<T>, ICloneable<ExtendedQueue<T>>
+    public sealed class ExtendedQueue<T> : IDropPoint<T>, IEnumerable<T>, ICollection<T>, ICloneable<ExtendedQueue<T>>
     {
         private readonly IReadOnlyCollection<T> _readOnly;
         private readonly Queue<T> _wrapped;
