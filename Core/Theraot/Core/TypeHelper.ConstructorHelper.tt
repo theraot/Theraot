@@ -97,7 +97,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo()
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>(CreateMissingMemberException());
                 }
             }
 
