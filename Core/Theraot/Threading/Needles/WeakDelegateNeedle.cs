@@ -32,7 +32,7 @@ namespace Theraot.Threading.Needles
                 var value = Value;
                 if (IsAlive)
                 {
-                    return value.Method;
+                    return value.GetMethodInfo();
                 }
                 return null;
             }
@@ -40,7 +40,8 @@ namespace Theraot.Threading.Needles
 
         public bool Equals(Delegate other)
         {
-            return !ReferenceEquals(null, other) && Equals(other.Method, other.Target);
+            var method = other.GetMethodInfo();
+            return !ReferenceEquals(null, other) && Equals(method, other.Target);
         }
 
         public bool Equals(MethodInfo method, object target)
@@ -48,7 +49,7 @@ namespace Theraot.Threading.Needles
             var value = Value;
             if (IsAlive)
             {
-                return value.Method.Equals(method) && ReferenceEquals(value.Target, target);
+                return value.GetMethodInfo().Equals(method) && ReferenceEquals(value.Target, target);
             }
             return false;
         }
@@ -65,7 +66,8 @@ namespace Theraot.Threading.Needles
                 var otherValue = other.Value;
                 if (other.IsAlive)
                 {
-                    return value.Method.Equals(otherValue.Method) && ReferenceEquals(value.Target, otherValue.Target);
+                    var method = otherValue.GetMethodInfo();
+                    return value.GetMethodInfo().Equals(method) && ReferenceEquals(value.Target, otherValue.Target);
                 }
                 return false;
             }
