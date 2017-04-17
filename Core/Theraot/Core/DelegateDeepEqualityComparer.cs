@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Theraot.Core
 {
@@ -30,7 +31,7 @@ namespace Theraot.Core
             {
                 return 0;
             }
-            var methodBody = obj.Method.GetMethodBody();
+            var methodBody = obj.GetMethodInfo().GetMethodBody();
             if (ReferenceEquals(methodBody, null))
             {
                 return 0;
@@ -76,8 +77,8 @@ namespace Theraot.Core
             {
                 return false;
             }
-            var leftBody = x.Method.GetMethodBody();
-            var rightBody = y.Method.GetMethodBody();
+            var leftBody = x.GetMethodInfo().GetMethodBody();
+            var rightBody = y.GetMethodInfo().GetMethodBody();
             if (ReferenceEquals(leftBody, null))
             {
                 if (ReferenceEquals(rightBody, null))
