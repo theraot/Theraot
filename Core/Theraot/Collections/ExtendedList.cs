@@ -146,10 +146,12 @@ namespace Theraot.Collections
             return _comparer.GetHashCode(obj);
         }
 
+#if !NETCOREAPP1_1
         object ICloneable.Clone()
         {
             return Clone();
         }
+#endif
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {

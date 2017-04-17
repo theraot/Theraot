@@ -13,7 +13,11 @@ namespace Theraot.Threading
 
         public static void MemoryBarrier()
         {
+#if NETCOREAPP1_1
+            Interlocked.MemoryBarrier();
+#else
             Thread.MemoryBarrier();
+#endif
         }
 
         internal static long Milliseconds(long ticks)

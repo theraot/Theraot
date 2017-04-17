@@ -243,10 +243,12 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+#if !NETCOREAPP1_1
         object ICloneable.Clone()
         {
             return Clone();
         }
+#endif
 
         void ICollection<bool>.Add(bool item)
         {

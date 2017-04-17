@@ -137,10 +137,12 @@ namespace Theraot.Collections
             return _wrapped.GetEnumerator();
         }
 
+#if !NETCOREAPP1_1
         object ICloneable.Clone()
         {
             return Clone();
         }
+#endif
 
         void ICollection<T>.Add(T item)
         {

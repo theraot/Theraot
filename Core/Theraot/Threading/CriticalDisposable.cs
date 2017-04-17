@@ -1,14 +1,16 @@
 #if FAT
 
 using System;
-using System.Runtime.ConstrainedExecution;
 
 using Theraot.Core;
 
 namespace Theraot.Threading
 {
     [System.Diagnostics.DebuggerNonUserCode]
-    public sealed partial class CriticalDisposable : CriticalFinalizerObject
+    public sealed partial class CriticalDisposable
+#if !NETCOREAPP1_1
+        : System.Runtime.ConstrainedExecution.CriticalFinalizerObject
+#endif
     {
         private Action _release;
 
