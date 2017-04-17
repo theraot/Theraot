@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Theraot.Collections.Specialized;
 
 namespace Theraot.Collections
 {
@@ -15,8 +16,14 @@ namespace Theraot.Collections
 
         public static IEnumerable<IGrouping<TKey, TSource>> GroupProgressiveBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
         {
-            LinqCheck.SourceAndKeySelector(source, keySelector);
-
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (keySelector == null)
+            {
+                throw new ArgumentNullException("keySelector");
+            }
             return CreateGroupByIterator(source, keySelector, comparer);
         }
 
@@ -25,11 +32,21 @@ namespace Theraot.Collections
             return GroupProgressiveBy(source, keySelector, elementSelector, null);
         }
 
-        public static IEnumerable<IGrouping<TKey, TElement>> GroupProgressiveBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
+        public static IEnumerable<IGrouping<TKey, TElement>> GroupProgressiveBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector, IEqualityComparer<TKey> comparer)
         {
-            LinqCheck.SourceAndKeyElementSelectors(source, keySelector, elementSelector);
-
-            return CreateGroupByIterator(source, keySelector, elementSelector, comparer);
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (keySelector == null)
+            {
+                throw new ArgumentNullException("keySelector");
+            }
+            if (resultSelector == null)
+            {
+                throw new ArgumentNullException("resultSelector");
+            }
+            return CreateGroupByIterator(source, keySelector, resultSelector, comparer);
         }
 
         public static IEnumerable<TResult> GroupProgressiveBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
@@ -39,8 +56,22 @@ namespace Theraot.Collections
 
         public static IEnumerable<TResult> GroupProgressiveBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
         {
-            LinqCheck.GroupBySelectors(source, keySelector, elementSelector, resultSelector);
-
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (keySelector == null)
+            {
+                throw new ArgumentNullException("keySelector");
+            }
+            if (elementSelector == null)
+            {
+                throw new ArgumentNullException("elementSelector");
+            }
+            if (resultSelector == null)
+            {
+                throw new ArgumentNullException("resultSelector");
+            }
             return CreateGroupByIterator(source, keySelector, elementSelector, resultSelector, comparer);
         }
 
@@ -51,8 +82,18 @@ namespace Theraot.Collections
 
         public static IEnumerable<TResult> GroupProgressiveBy<TSource, TKey, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TKey, IEnumerable<TSource>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
         {
-            LinqCheck.SourceAndKeyResultSelectors(source, keySelector, resultSelector);
-
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (keySelector == null)
+            {
+                throw new ArgumentNullException("keySelector");
+            }
+            if (resultSelector == null)
+            {
+                throw new ArgumentNullException("resultSelector");
+            }
             return CreateGroupByIterator(source, keySelector, resultSelector, comparer);
         }
     }
