@@ -69,8 +69,8 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("type");
             }
-            var _type = type;
-            return !_type.IsValueType || !ReferenceEquals(Nullable.GetUnderlyingType(_type), null);
+            var info = type.GetTypeInfo();
+            return !info.IsValueType || !ReferenceEquals(Nullable.GetUnderlyingType(type), null);
         }
 
         public static TTarget Cast<TTarget>(object source)
@@ -138,7 +138,8 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("type");
             }
-            return (TAttribute[])type.GetCustomAttributes(typeof(TAttribute), inherit);
+            var info = type.GetTypeInfo();
+            return (TAttribute[])info.GetCustomAttributes(typeof(TAttribute), inherit);
         }
 
         public static Func<TReturn> GetDefault<TReturn>()
@@ -152,7 +153,8 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("delegateType");
             }
-            if (delegateType.BaseType != typeof(MulticastDelegate))
+            var delegateTypeInfo = delegateType.GetTypeInfo();
+            if (delegateTypeInfo.BaseType != typeof(MulticastDelegate))
             {
                 throw new ArgumentException("Not a delegate.");
             }
@@ -253,7 +255,8 @@ namespace Theraot.Core
 
         public static bool IsAtomic(Type type)
         {
-            return type.IsClass || (type.IsPrimitive && Marshal.SizeOf(type) <= IntPtr.Size);
+            var info = type.GetTypeInfo();
+            return info.IsClass || (info.IsPrimitive && Marshal.SizeOf(type) <= IntPtr.Size);
         }
 
         public static bool IsBinaryPortable(this Type type)
@@ -290,7 +293,8 @@ namespace Theraot.Core
         {
             foreach (var currentInterface in type.GetInterfaces())
             {
-                if (currentInterface.IsGenericTypeDefinition)
+                var info = currentInterface.GetTypeInfo();
+                if (info.IsGenericTypeDefinition)
                 {
                     var match = currentInterface.GetGenericTypeDefinition();
                     if (Array.Exists(interfaceGenericTypeDefinitions, item => item == match))
@@ -334,7 +338,8 @@ namespace Theraot.Core
 
         public static bool IsGenericInstanceOf(this Type type, Type genericTypeDefinition)
         {
-            if (!type.IsGenericType)
+            var info = type.GetTypeInfo();
+            if (!info.IsGenericType)
             {
                 return false;
             }
@@ -413,7 +418,8 @@ namespace Theraot.Core
             }
             while (type != null)
             {
-                type = type.BaseType;
+                var info = type.GetTypeInfo();
+                type = info.BaseType;
                 if (type == baseType)
                 {
                     return true;
@@ -438,12 +444,13 @@ namespace Theraot.Core
 
         internal static bool CanCache(this Type type)
         {
-            var assembly = type.Assembly;
+            var info = type.GetTypeInfo();
+            var assembly = info.Assembly;
             if (Array.IndexOf(_knownAssembies, assembly) == -1)
             {
                 return false;
             }
-            if (type.IsGenericType)
+            if (info.IsGenericType)
             {
                 foreach (var genericArgument in type.GetGenericArguments())
                 {
@@ -458,14 +465,15 @@ namespace Theraot.Core
 
         private static bool GetBinaryPortableResult(Type type)
         {
-            if (type.IsPrimitive)
+            var info = type.GetTypeInfo();
+            if (info.IsPrimitive)
             {
                 return type != typeof(IntPtr)
                     && type != typeof(UIntPtr)
                     && type != typeof(char)
                     && type != typeof(bool);
             }
-            if (type.IsValueType)
+            if (info.IsValueType)
             {
                 foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
                 {
@@ -474,14 +482,15 @@ namespace Theraot.Core
                         return false;
                     }
                 }
-                return !type.IsAutoLayout && type.StructLayoutAttribute.Pack > 0;
+                return !info.IsAutoLayout && info.StructLayoutAttribute.Pack > 0;
             }
             return false;
         }
 
         private static bool GetBlittableResult(Type type)
         {
-            if (type.IsPrimitive)
+            var info = type.GetTypeInfo();
+            if (info.IsPrimitive)
             {
                 if
                 (
@@ -493,7 +502,7 @@ namespace Theraot.Core
                 }
                 return true;
             }
-            if (type.IsValueType)
+            if (info.IsValueType)
             {
                 foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
                 {
@@ -509,11 +518,12 @@ namespace Theraot.Core
 
         private static bool GetValueTypeRecursiveResult(Type type)
         {
-            if (type.IsPrimitive)
+            var info = type.GetTypeInfo();
+            if (info.IsPrimitive)
             {
                 return true;
             }
-            if (type.IsValueType)
+            if (info.IsValueType)
             {
                 foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
                 {
@@ -529,7 +539,8 @@ namespace Theraot.Core
 
         private static bool IsBinaryPortableExtracted(Type type)
         {
-            if (!type.IsValueType)
+            var info = type.GetTypeInfo();
+            if (!info.IsValueType)
             {
                 return false;
             }
@@ -543,7 +554,8 @@ namespace Theraot.Core
 
         private static bool IsBlittableExtracted(Type type)
         {
-            if (!type.IsValueType)
+            var info = type.GetTypeInfo();
+            if (!info.IsValueType)
             {
                 return false;
             }
@@ -557,7 +569,8 @@ namespace Theraot.Core
 
         private static bool IsValueTypeRecursiveExtracted(Type type)
         {
-            if (!type.IsValueType)
+            var info = type.GetTypeInfo();
+            if (!info.IsValueType)
             {
                 return false;
             }
