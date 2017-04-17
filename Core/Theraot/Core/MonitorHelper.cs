@@ -17,7 +17,7 @@ namespace Theraot.Core
         {
             Monitor.Enter(obj);
             GC.KeepAlive(taken);
-            Thread.MemoryBarrier();
+            ThreadingHelper.MemoryBarrier();
             taken = true;
         }
 

@@ -32,9 +32,9 @@ namespace Theraot.Threading.Needles
                 if (_context.TryGetSlot(out slot))
                 {
                     CaptureAndWait(slot);
-                    Thread.MemoryBarrier();
+                    ThreadingHelper.MemoryBarrier();
                     base.Value = value;
-                    Thread.MemoryBarrier();
+                    ThreadingHelper.MemoryBarrier();
                 }
                 else
                 {
@@ -60,9 +60,9 @@ namespace Theraot.Threading.Needles
             {
                 return false;
             }
-            Thread.MemoryBarrier();
+            ThreadingHelper.MemoryBarrier();
             base.Value = newValue;
-            Thread.MemoryBarrier();
+            ThreadingHelper.MemoryBarrier();
             return true;
         }
 
@@ -73,9 +73,9 @@ namespace Theraot.Threading.Needles
             {
                 return false;
             }
-            Thread.MemoryBarrier();
+            ThreadingHelper.MemoryBarrier();
             base.Value = newValue;
-            Thread.MemoryBarrier();
+            ThreadingHelper.MemoryBarrier();
             return true;
         }
 

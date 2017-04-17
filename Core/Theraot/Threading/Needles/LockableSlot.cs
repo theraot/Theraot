@@ -59,7 +59,7 @@ namespace Theraot.Threading.Needles
                 needleLocks.Clear();
             }
             lockslot.Close();
-            Thread.MemoryBarrier();
+            ThreadingHelper.MemoryBarrier();
             _parent = null;
             GC.SuppressFinalize(this);
         }

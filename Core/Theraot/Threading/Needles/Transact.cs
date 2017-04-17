@@ -69,7 +69,7 @@ namespace Theraot.Threading.Needles
                             //Nothing to commit
                             return true;
                         }
-                        Thread.MemoryBarrier();
+                        ThreadingHelper.MemoryBarrier();
                         if (!CheckCapture() || !CheckValue())
                         {
                             //the resources has been claimed by another thread
