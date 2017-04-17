@@ -56,7 +56,7 @@ namespace Theraot.Core
             }
         }
 
-        public static TOutput SafeInvoke<TInput, TOutput>(this Converter<TInput, TOutput> method, TInput input, TOutput def)
+        public static TOutput SafeInvoke<TInput, TOutput>(this Func<TInput, TOutput> method, TInput input, TOutput def)
         {
             if (method != null)
             {
@@ -68,7 +68,7 @@ namespace Theraot.Core
             }
         }
 
-        public static TOutput SafeInvoke<TInput, TOutput>(this Converter<TInput, TOutput> method, TInput input, Func<TOutput> alternative, TOutput def)
+        public static TOutput SafeInvoke<TInput, TOutput>(this Func<TInput, TOutput> method, TInput input, Func<TOutput> alternative, TOutput def)
         {
             if (method != null)
             {
@@ -423,30 +423,6 @@ namespace Theraot.Core
             if (method != null)
             {
                 return method.Invoke();
-            }
-            else
-            {
-                return SafeInvoke(alternative, def);
-            }
-        }
-
-        public static TResult SafeInvoke<T, TResult>(this Func<T, TResult> method, T arg, TResult def)
-        {
-            if (method != null)
-            {
-                return method.Invoke(arg);
-            }
-            else
-            {
-                return def;
-            }
-        }
-
-        public static TResult SafeInvoke<T, TResult>(this Func<T, TResult> method, T arg, Func<TResult> alternative, TResult def)
-        {
-            if (method != null)
-            {
-                return method.Invoke(arg);
             }
             else
             {

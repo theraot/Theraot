@@ -10,19 +10,19 @@ namespace Theraot.Collections
     [System.Diagnostics.DebuggerNonUserCode]
     public class ConversionSet<TInput, TOutput> : ProgressiveSet<TOutput>
     {
-        public ConversionSet(IEnumerable<TInput> wrapped, Converter<TInput, TOutput> converter)
+        public ConversionSet(IEnumerable<TInput> wrapped, Func<TInput, TOutput> converter)
             : base(BuildEnumerable(wrapped, converter))
         {
             //Empty
         }
 
-        public ConversionSet(IEnumerable<TInput> wrapped, Converter<TInput, TOutput> converter, Predicate<TInput> filter)
+        public ConversionSet(IEnumerable<TInput> wrapped, Func<TInput, TOutput> converter, Predicate<TInput> filter)
             : base(BuildEnumerable(wrapped, converter, filter))
         {
             //Empty
         }
 
-        private static IEnumerable<TOutput> BuildEnumerable(IEnumerable<TInput> wrapped, Converter<TInput, TOutput> converter)
+        private static IEnumerable<TOutput> BuildEnumerable(IEnumerable<TInput> wrapped, Func<TInput, TOutput> converter)
         {
             if (wrapped == null)
             {
@@ -38,7 +38,7 @@ namespace Theraot.Collections
             }
         }
 
-        private static IEnumerable<TOutput> BuildEnumerable(IEnumerable<TInput> wrapped, Converter<TInput, TOutput> converter, Predicate<TInput> filter)
+        private static IEnumerable<TOutput> BuildEnumerable(IEnumerable<TInput> wrapped, Func<TInput, TOutput> converter, Predicate<TInput> filter)
         {
             if (wrapped == null)
             {

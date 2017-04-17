@@ -409,7 +409,7 @@ namespace Theraot.Collections
             get { return _tryTake == null; }
         }
 
-        public static Progressor<T> CreateConverted<TInput>(Progressor<TInput> wrapped, Converter<TInput, T> converter)
+        public static Progressor<T> CreateConverted<TInput>(Progressor<TInput> wrapped, Func<TInput, T> converter)
         {
             if (wrapped == null)
             {
@@ -541,7 +541,7 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static Progressor<T> CreatedFilteredConverted<TInput>(Progressor<TInput> wrapped, Predicate<TInput> filter, Converter<TInput, T> converter)
+        public static Progressor<T> CreatedFilteredConverted<TInput>(Progressor<TInput> wrapped, Predicate<TInput> filter, Func<TInput, T> converter)
         {
             if (wrapped == null)
             {

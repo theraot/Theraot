@@ -210,7 +210,7 @@ namespace Theraot.Core
             return Overlaps(range, comparer) || range.Overlaps(this, comparer) || range.Contains(this, comparer) || Contains(range, comparer) || Touches(range, comparer);
         }
 
-        public IEnumerable<T> Iterate(Converter<T, T> increment)
+        public IEnumerable<T> Iterate(Func<T, T> increment)
         {
             yield return _minimun;
             T item = increment.Invoke(_minimun);
@@ -222,7 +222,7 @@ namespace Theraot.Core
             }
         }
 
-        public IEnumerable<T> Iterate(Converter<T, T> increment, IComparer<T> comparer)
+        public IEnumerable<T> Iterate(Func<T, T> increment, IComparer<T> comparer)
         {
             if (comparer == null)
             {
@@ -247,7 +247,7 @@ namespace Theraot.Core
             return Contains(range._minimun, comparer) || Contains(range._maximun, comparer) || range.Contains(_minimun, comparer) || range.Contains(_maximun, comparer);
         }
 
-        public IEnumerable<T> ReverseIterate(Converter<T, T> decrement)
+        public IEnumerable<T> ReverseIterate(Func<T, T> decrement)
         {
             yield return _maximun;
             T item = decrement.Invoke(_maximun);
@@ -259,7 +259,7 @@ namespace Theraot.Core
             }
         }
 
-        public IEnumerable<T> ReverseIterate(Converter<T, T> decrement, IComparer<T> comparer)
+        public IEnumerable<T> ReverseIterate(Func<T, T> decrement, IComparer<T> comparer)
         {
             if (comparer == null)
             {

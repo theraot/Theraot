@@ -9,10 +9,10 @@ namespace Theraot.Collections
     [Serializable]
     public sealed class ConvertedObserver<TInput, TOutput> : IObserver<TInput>
     {
-        private readonly Converter<TInput, TOutput> _converter;
+        private readonly Func<TInput, TOutput> _converter;
         private readonly IObserver<TOutput> _observer;
 
-        public ConvertedObserver(IObserver<TOutput> observer, Converter<TInput, TOutput> converter)
+        public ConvertedObserver(IObserver<TOutput> observer, Func<TInput, TOutput> converter)
         {
             if (observer == null)
             {

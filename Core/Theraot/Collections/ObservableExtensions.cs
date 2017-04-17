@@ -17,7 +17,7 @@ namespace Theraot.Collections
             return observable.Subscribe(listener.ToObserver());
         }
 
-        public static IDisposable SubscribeAction<TInput, TOutput>(this IObservable<TInput> observable, Action<TOutput> listener, Converter<TInput, TOutput> converter)
+        public static IDisposable SubscribeAction<TInput, TOutput>(this IObservable<TInput> observable, Action<TOutput> listener, Func<TInput, TOutput> converter)
         {
             if (observable == null)
             {
@@ -26,7 +26,7 @@ namespace Theraot.Collections
             return observable.Subscribe(listener.ToObserver(converter));
         }
 
-        public static IDisposable SubscribeConverted<TInput, TOutput>(this IObservable<TInput> observable, IObserver<TOutput> observer, Converter<TInput, TOutput> converter)
+        public static IDisposable SubscribeConverted<TInput, TOutput>(this IObservable<TInput> observable, IObserver<TOutput> observer, Func<TInput, TOutput> converter)
         {
             if (observable == null)
             {
@@ -44,7 +44,7 @@ namespace Theraot.Collections
             return observable.Subscribe(new FilteredObserver<T>(observer, filter));
         }
 
-        public static IDisposable SubscribeFilteredConverted<TInput, TOutput>(this IObservable<TInput> observable, IObserver<TOutput> observer, Predicate<TInput> filter, Converter<TInput, TOutput> converter)
+        public static IDisposable SubscribeFilteredConverted<TInput, TOutput>(this IObservable<TInput> observable, IObserver<TOutput> observer, Predicate<TInput> filter, Func<TInput, TOutput> converter)
         {
             if (observable == null)
             {
@@ -62,7 +62,7 @@ namespace Theraot.Collections
             return new CustomObserver<T>(listener);
         }
 
-        public static IObserver<TInput> ToObserver<TInput, TOutput>(this Action<TOutput> listener, Converter<TInput, TOutput> converter)
+        public static IObserver<TInput> ToObserver<TInput, TOutput>(this Action<TOutput> listener, Func<TInput, TOutput> converter)
         {
             if (converter == null)
             {

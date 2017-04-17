@@ -29,31 +29,6 @@ namespace Theraot.Core
             } while (_condition.Invoke(currentState));
         }
 
-        public static IEnumerable<TResult> Create<TState, TResult>(TState initialState, Func<TState, bool> condition, Func<TState, TState> iterate, Converter<TState, TResult> resultSelector)
-        {
-            if (condition == null)
-            {
-                throw new ArgumentNullException("condition");
-            }
-            var _condition = condition;
-            if (iterate == null)
-            {
-                throw new ArgumentNullException("iterate");
-            }
-            var _iterate = iterate;
-            if (resultSelector == null)
-            {
-                throw new ArgumentNullException("resultSelector");
-            }
-            var _resultSelector = resultSelector;
-            var currentState = initialState;
-            do
-            {
-                currentState = _iterate.Invoke(currentState);
-                yield return _resultSelector.Invoke(currentState);
-            } while (_condition.Invoke(currentState));
-        }
-
         public static IEnumerable<TResult> Create<TState, TResult>(TState initialState, Func<TState, bool> condition, Func<TState, TState> iterate, Func<TState, TResult> resultSelector)
         {
             if (condition == null)
@@ -97,29 +72,6 @@ namespace Theraot.Core
             }
         }
 
-        public static IEnumerable<TResult> Create<TState, TResult>(Func<bool> condition, Func<TState> iterate, Converter<TState, TResult> resultSelector)
-        {
-            if (condition == null)
-            {
-                throw new ArgumentNullException("condition");
-            }
-            var _condition = condition;
-            if (iterate == null)
-            {
-                throw new ArgumentNullException("iterate");
-            }
-            var _iterate = iterate;
-            if (resultSelector == null)
-            {
-                throw new ArgumentNullException("resultSelector");
-            }
-            var _resultSelector = resultSelector;
-            while (_condition.Invoke())
-            {
-                yield return _resultSelector(_iterate.Invoke());
-            }
-        }
-
         public static IEnumerable<TResult> Create<TState, TResult>(Func<bool> condition, Func<TState> iterate, Func<TState, TResult> resultSelector)
         {
             if (condition == null)
@@ -157,7 +109,7 @@ namespace Theraot.Core
             }
         }
 
-        public static IEnumerable<TResult> Create<TState, TResult>(TryTake<TState> tryTake, Converter<TState, TResult> converter)
+        public static IEnumerable<TResult> Create<TState, TResult>(TryTake<TState> tryTake, Func<TState, TResult> converter)
         {
             if (tryTake == null)
             {
@@ -192,44 +144,21 @@ namespace Theraot.Core
             // Infinite Loop - This method creates an endless IEnumerable<T>
         }
 
-        public static IEnumerable<TResult> CreateInfinite<TState, TResult>(TState initialState, Func<TState, TState> iterate, Converter<TState, TResult> resultSelector)
-        {
-            if (iterate == null)
-            {
-                throw new ArgumentNullException("iterate");
-            }
-            var _iterate = iterate;
-            if (resultSelector == null)
-            {
-                throw new ArgumentNullException("resultSelector");
-            }
-            var _resultSelector = resultSelector;
-            var currentState = initialState;
-            while (true)
-            {
-                currentState = _iterate.Invoke(currentState);
-                yield return _resultSelector.Invoke(currentState);
-            }
-            // Infinite Loop - This method creates an endless IEnumerable<T>
-        }
-
         public static IEnumerable<TResult> CreateInfinite<TState, TResult>(TState initialState, Func<TState, TState> iterate, Func<TState, TResult> resultSelector)
         {
             if (iterate == null)
             {
                 throw new ArgumentNullException("iterate");
             }
-            var _iterate = iterate;
             if (resultSelector == null)
             {
                 throw new ArgumentNullException("resultSelector");
             }
-            var _resultSelector = resultSelector;
             var currentState = initialState;
             while (true)
             {
-                currentState = _iterate.Invoke(currentState);
-                yield return _resultSelector.Invoke(currentState);
+                currentState = iterate.Invoke(currentState);
+                yield return resultSelector.Invoke(currentState);
             }
             // Infinite Loop - This method creates an endless IEnumerable<T>
         }
@@ -248,40 +177,19 @@ namespace Theraot.Core
             // Infinite Loop - This method creates an endless IEnumerable<T>
         }
 
-        public static IEnumerable<TResult> CreateInfinite<TState, TResult>(Func<TState> iterate, Converter<TState, TResult> resultSelector)
-        {
-            if (iterate == null)
-            {
-                throw new ArgumentNullException("iterate");
-            }
-            var _iterate = iterate;
-            if (resultSelector == null)
-            {
-                throw new ArgumentNullException("resultSelector");
-            }
-            var _resultSelector = resultSelector;
-            while (true)
-            {
-                yield return _resultSelector(_iterate.Invoke());
-            }
-            // Infinite Loop - This method creates an endless IEnumerable<T>
-        }
-
         public static IEnumerable<TResult> CreateInfinite<TState, TResult>(Func<TState> iterate, Func<TState, TResult> resultSelector)
         {
             if (iterate == null)
             {
                 throw new ArgumentNullException("iterate");
             }
-            var _iterate = iterate;
             if (resultSelector == null)
             {
                 throw new ArgumentNullException("resultSelector");
             }
-            var _resultSelector = resultSelector;
             while (true)
             {
-                yield return _resultSelector(_iterate.Invoke());
+                yield return resultSelector(iterate.Invoke());
             }
             // Infinite Loop - This method creates an endless IEnumerable<T>
         }

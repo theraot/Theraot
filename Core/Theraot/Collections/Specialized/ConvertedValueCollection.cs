@@ -10,9 +10,9 @@ namespace Theraot.Collections.Specialized
     public sealed class ConvertedValueCollection<TKey, TInput, TValue> : ICollection<TValue>, ICollection, IReadOnlyCollection<TValue>
     {
         private readonly IDictionary<TKey, TInput> _wrapped;
-        private readonly Converter<TInput, TValue> _converter;
+        private readonly Func<TInput, TValue> _converter;
 
-        internal ConvertedValueCollection(IDictionary<TKey, TInput> wrapped, Converter<TInput, TValue> converter)
+        internal ConvertedValueCollection(IDictionary<TKey, TInput> wrapped, Func<TInput, TValue> converter)
         {
             if (wrapped == null)
             {
