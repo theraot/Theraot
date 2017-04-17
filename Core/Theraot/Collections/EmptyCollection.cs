@@ -7,7 +7,6 @@ using Theraot.Collections.ThreadSafe;
 namespace Theraot.Collections
 {
     [System.Diagnostics.DebuggerNonUserCode]
-    [System.ComponentModel.ImmutableObject(true)]
     public sealed class EmptyCollection<T> : ReadOnlyCollection<T>, IReadOnlyCollection<T>
     {
         private static readonly EmptyCollection<T> _instance = new EmptyCollection<T>();
