@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Theraot.Core
 {
@@ -27,12 +28,12 @@ namespace Theraot.Core
         public int GetHashCode(Delegate obj)
         {
             // obj can be null
-            return ReferenceEquals(obj, null) ? 0 : ReferenceEquals(obj.Target, null) ? obj.Method.GetHashCode() : obj.Method.GetHashCode() ^ obj.Target.GetHashCode();
+            return ReferenceEquals(obj, null) ? 0 : ReferenceEquals(obj.Target, null) ? obj.GetMethodInfo().GetHashCode() : obj.GetMethodInfo().GetHashCode() ^ obj.Target.GetHashCode();
         }
 
         private static bool CompareInternal(Delegate x, Delegate y)
         {
-            return ReferenceEquals(x, null) ? ReferenceEquals(y, null) : !ReferenceEquals(y, null) && ReferenceEquals(x.Target, y.Target) && x.Method == y.Method;
+            return ReferenceEquals(x, null) ? ReferenceEquals(y, null) : !ReferenceEquals(y, null) && ReferenceEquals(x.Target, y.Target) && x.GetMethodInfo() == y.GetMethodInfo();
         }
     }
 }
