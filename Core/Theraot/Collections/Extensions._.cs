@@ -184,7 +184,7 @@ namespace Theraot.Collections
             return false;
         }
 
-        public static List<TOutput> ConvertAll<T, TOutput>(this IEnumerable<T> source, Converter<T, TOutput> converter)
+        public static List<TOutput> ConvertAll<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter)
         {
             if (source == null)
             {
@@ -202,7 +202,7 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static TList ConvertAll<T, TOutput, TList>(this IEnumerable<T> source, Converter<T, TOutput> converter)
+        public static TList ConvertAll<T, TOutput, TList>(this IEnumerable<T> source, Func<T, TOutput> converter)
             where TList : ICollection<TOutput>, new()
         {
             if (source == null)
@@ -221,7 +221,7 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static List<TOutput> ConvertFiltered<T, TOutput>(this IEnumerable<T> source, Converter<T, TOutput> converter, Predicate<T> filter)
+        public static List<TOutput> ConvertFiltered<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)
         {
             if (source == null)
             {
@@ -246,7 +246,7 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static List<TOutput> ConvertFiltered<T, TOutput>(this IEnumerable<T> source, Converter<T, TOutput> converter, Func<T, int, bool> filter)
+        public static List<TOutput> ConvertFiltered<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Func<T, int, bool> filter)
         {
             if (source == null)
             {
@@ -273,7 +273,7 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static TList ConvertFiltered<T, TOutput, TList>(this IEnumerable<T> source, Converter<T, TOutput> converter, Predicate<T> filter)
+        public static TList ConvertFiltered<T, TOutput, TList>(this IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)
             where TList : ICollection<TOutput>, new()
         {
             if (source == null)
@@ -299,7 +299,7 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static TList ConvertFiltered<T, TOutput, TList>(this IEnumerable<T> source, Converter<T, TOutput> converter, Func<T, int, bool> filter)
+        public static TList ConvertFiltered<T, TOutput, TList>(this IEnumerable<T> source, Func<T, TOutput> converter, Func<T, int, bool> filter)
             where TList : ICollection<TOutput>, new()
         {
             if (source == null)
@@ -327,7 +327,7 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static List<KeyValuePair<int, TOutput>> ConvertIndexed<T, TOutput>(this IEnumerable<T> source, Converter<T, TOutput> converter, Predicate<T> filter)
+        public static List<KeyValuePair<int, TOutput>> ConvertIndexed<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)
         {
             if (source == null)
             {
@@ -354,7 +354,7 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static List<KeyValuePair<int, TOutput>> ConvertIndexed<T, TOutput>(this IEnumerable<T> source, Converter<T, TOutput> converter, Func<T, int, bool> filter)
+        public static List<KeyValuePair<int, TOutput>> ConvertIndexed<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Func<T, int, bool> filter)
         {
             if (source == null)
             {
@@ -381,7 +381,7 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static TList ConvertIndexed<T, TOutput, TList>(this IEnumerable<T> source, Converter<T, TOutput> converter, Predicate<T> filter)
+        public static TList ConvertIndexed<T, TOutput, TList>(this IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)
             where TList : ICollection<KeyValuePair<int, TOutput>>, new()
         {
             if (source == null)
@@ -409,7 +409,7 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static TList ConvertIndexed<T, TOutput, TList>(this IEnumerable<T> source, Converter<T, TOutput> converter, Func<T, int, bool> filter)
+        public static TList ConvertIndexed<T, TOutput, TList>(this IEnumerable<T> source, Func<T, TOutput> converter, Func<T, int, bool> filter)
             where TList : ICollection<KeyValuePair<int, TOutput>>, new()
         {
             if (source == null)
@@ -437,7 +437,7 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static IEnumerable<TOutput> ConvertProgressive<T, TOutput>(this IEnumerable<T> source, Converter<T, TOutput> converter)
+        public static IEnumerable<TOutput> ConvertProgressive<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter)
         {
             if (source == null)
             {
@@ -453,7 +453,7 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<TOutput> ConvertProgressiveFiltered<T, TOutput>(this IEnumerable<T> source, Converter<T, TOutput> converter, Predicate<T> filter)
+        public static IEnumerable<TOutput> ConvertProgressiveFiltered<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)
         {
             if (source == null)
             {
@@ -476,7 +476,7 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<TOutput> ConvertProgressiveFiltered<T, TOutput>(this IEnumerable<T> source, Converter<T, TOutput> converter, Func<T, int, bool> filter)
+        public static IEnumerable<TOutput> ConvertProgressiveFiltered<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Func<T, int, bool> filter)
         {
             if (source == null)
             {
@@ -501,7 +501,7 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<KeyValuePair<int, TOutput>> ConvertProgressiveIndexed<T, TOutput>(this IEnumerable<T> source, Converter<T, TOutput> converter, Predicate<T> filter)
+        public static IEnumerable<KeyValuePair<int, TOutput>> ConvertProgressiveIndexed<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)
         {
             if (source == null)
             {
@@ -526,7 +526,7 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<KeyValuePair<int, TOutput>> ConvertProgressiveIndexed<T, TOutput>(this IEnumerable<T> source, Converter<T, TOutput> converter, Func<T, int, bool> filter)
+        public static IEnumerable<KeyValuePair<int, TOutput>> ConvertProgressiveIndexed<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Func<T, int, bool> filter)
         {
             if (source == null)
             {
@@ -1988,7 +1988,6 @@ namespace Theraot.Collections
             }
         }
 
-        [System.Diagnostics.Contracts.Pure]
         public static bool ListEquals<T>(this ICollection<T> first, ICollection<T> second)
         {
             if (first == null)
@@ -2238,7 +2237,7 @@ namespace Theraot.Collections
             return RemoveWhere(source, items => Where(items, predicate));
         }
 
-        public static int RemoveWhere<T>(this ICollection<T> source, Converter<IEnumerable<T>, IEnumerable<T>> converter)
+        public static int RemoveWhere<T>(this ICollection<T> source, Func<IEnumerable<T>, IEnumerable<T>> converter)
         {
             if (source == null)
             {
@@ -2264,7 +2263,7 @@ namespace Theraot.Collections
             return RemoveWhereEnumerable(source, items => Where(items, predicate));
         }
 
-        public static IEnumerable<T> RemoveWhereEnumerable<T>(this ICollection<T> source, Converter<IEnumerable<T>, IEnumerable<T>> converter)
+        public static IEnumerable<T> RemoveWhereEnumerable<T>(this ICollection<T> source, Func<IEnumerable<T>, IEnumerable<T>> converter)
         {
             if (source == null)
             {

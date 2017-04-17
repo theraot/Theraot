@@ -23,8 +23,9 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace System.Linq
+namespace Theraot.Collections.Specialized
 {
     internal class Grouping<TK, T> : IGrouping<TK, T>
     {

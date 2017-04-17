@@ -11,9 +11,9 @@ namespace Theraot.Collections.Specialized
     public class ConversionComparer<TInput, TOutput> : IComparer<TInput>
     {
         private readonly IComparer<TOutput> _comparer;
-        private readonly Converter<TInput, TOutput> _converter;
+        private readonly Func<TInput, TOutput> _converter;
 
-        public ConversionComparer(IComparer<TOutput> comparer, Converter<TInput, TOutput> converter)
+        public ConversionComparer(IComparer<TOutput> comparer, Func<TInput, TOutput> converter)
         {
             if (comparer == null)
             {

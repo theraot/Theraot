@@ -93,7 +93,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo();
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<TReturn>(CreateMissingMemberException());
                 }
             }
 
@@ -231,7 +232,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T, TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T, TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo();
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T, TReturn>(CreateMissingMemberException());
                 }
             }
 
@@ -369,7 +371,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo();
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, TReturn>(CreateMissingMemberException());
                 }
             }
 
@@ -507,7 +510,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo();
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, TReturn>(CreateMissingMemberException());
                 }
             }
 
@@ -645,7 +649,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo();
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, TReturn>(CreateMissingMemberException());
                 }
             }
 
@@ -783,7 +788,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo();
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, TReturn>(CreateMissingMemberException());
                 }
             }
 
@@ -921,7 +927,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo();
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, TReturn>(CreateMissingMemberException());
                 }
             }
 
@@ -1059,7 +1066,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo();
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, TReturn>(CreateMissingMemberException());
                 }
             }
 
@@ -1197,7 +1205,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo();
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>(CreateMissingMemberException());
                 }
             }
 
@@ -1335,7 +1344,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo();
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>(CreateMissingMemberException());
                 }
             }
 
@@ -1473,7 +1483,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo();
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>(CreateMissingMemberException());
                 }
             }
 
@@ -1611,7 +1622,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo();
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>(CreateMissingMemberException());
                 }
             }
 
@@ -1749,7 +1761,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo();
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>(CreateMissingMemberException());
                 }
             }
 
@@ -1887,7 +1900,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo();
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>(CreateMissingMemberException());
                 }
             }
 
@@ -2025,7 +2039,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo();
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>(CreateMissingMemberException());
                 }
             }
 
@@ -2163,7 +2178,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo();
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>(CreateMissingMemberException());
                 }
             }
 
@@ -2301,7 +2317,8 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>(CreateMissingMemberException());
+                    var info = typeof(TReturn).GetTypeInfo();
+                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>(CreateMissingMemberException());
                 }
             }
 

@@ -2,6 +2,7 @@
 
 using System;
 using System.Reflection;
+using Theraot.Core;
 
 namespace Theraot.Collections.ThreadSafe
 {
@@ -47,7 +48,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             try
             {
-                Delegate value = Delegate.CreateDelegate(typeof(EventHandler<TEventArgs>), target, method);
+                Delegate value = method.CreateDelegate(typeof(EventHandler<TEventArgs>), target);
                 _eventHandlers.Add(value);
             }
             catch (NullReferenceException)
@@ -82,7 +83,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             try
             {
-                Delegate value = Delegate.CreateDelegate(typeof(EventHandler<TEventArgs>), target, method);
+                Delegate value = method.CreateDelegate(typeof(EventHandler<TEventArgs>), target);
                 _eventHandlers.Remove(value);
             }
             catch (NullReferenceException)

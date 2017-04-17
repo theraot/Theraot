@@ -169,9 +169,9 @@ namespace Theraot.Threading.Needles
         [System.Diagnostics.DebuggerNonUserCode]
         protected bool UnDispose()
         {
-            if (System.Threading.Thread.VolatileRead(ref _status) == -1)
+            if (System.Threading.Volatile.Read(ref _status) == -1)
             {
-                System.Threading.Thread.VolatileWrite(ref _status, 0);
+                System.Threading.Volatile.Write(ref _status, 0);
                 return true;
             }
             return false;

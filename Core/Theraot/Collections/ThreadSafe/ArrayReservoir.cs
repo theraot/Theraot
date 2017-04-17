@@ -47,7 +47,7 @@ namespace Theraot.Collections.ThreadSafe
                         }
                     );
             }
-            Thread.VolatileWrite(ref _done, 1);
+            Volatile.Write(ref _done, 1);
         }
 
         public static T[] EmptyArray
@@ -93,7 +93,7 @@ namespace Theraot.Collections.ThreadSafe
                 capacity = _minCapacity;
             }
             capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
-            if (capacity <= _maxCapacity && Thread.VolatileRead(ref _done) == 1)
+            if (capacity <= _maxCapacity && Volatile.Read(ref _done) == 1)
             {
                 var index = NumericHelper.Log2(capacity) - _minCapacityLog2;
                 T[] result;

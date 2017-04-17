@@ -146,7 +146,7 @@ namespace Theraot.Core
                         contribution = int.MaxValue;
                     }
                     intContribution = (int)contribution;
-                    Array.Copy(source, index, buffer, offset, intContribution);
+                    Array.Copy(source, (int)index, buffer, offset, intContribution);
                 }
                 progress += intContribution;
                 offset += intContribution;
@@ -270,7 +270,7 @@ namespace Theraot.Core
                         break;
                     }
                     intContribution = (int)contribution;
-                    Array.Copy(buffer, offset, source, index, intContribution);
+                    Array.Copy(buffer, offset, source, (int)index, intContribution);
                     offset += intContribution;
                     count -= intContribution;
                     _position += intContribution;
@@ -292,7 +292,7 @@ namespace Theraot.Core
                 var diff = (1 << _sectorBits) - index;
                 var contribution = diff > count ? count : diff;
                 var intContribution = (int)contribution;
-                Array.Copy(buffer, offset, left, index, intContribution);
+                Array.Copy(buffer, offset, left, (int)index, intContribution);
                 if (!Add(bytes, left, out pair))
                 {
                     goto again;

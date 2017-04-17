@@ -26,7 +26,7 @@ namespace Theraot.Collections
 
             var control = 0;
 
-            Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
+            Predicate<T> newFilter = item => Volatile.Read(ref control) == 0;
             var buffer = new SafeQueue<T>();
             wrapped.SubscribeAction
             (
@@ -82,7 +82,7 @@ namespace Theraot.Collections
             var control = 0;
             var guard = 0;
 
-            Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
+            Predicate<T> newFilter = item => Volatile.Read(ref control) == 0;
             var buffer = new SafeQueue<T>();
             wrapped.SubscribeAction
             (
@@ -121,7 +121,7 @@ namespace Theraot.Collections
             _tryTake = (out T value) =>
             {
                 value = default(T);
-                if (Thread.VolatileRead(ref guard) == 0)
+                if (Volatile.Read(ref guard) == 0)
                 {
                     bool result;
                     // We need a lock, there is no way around it. IEnumerator is just awful. Use another overload if possible.
@@ -144,7 +144,7 @@ namespace Theraot.Collections
                 if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
                 {
                     _tryTake = tryTakeReplacement;
-                    Thread.VolatileWrite(ref guard, 3);
+                    Volatile.Write(ref guard, 3);
                 }
                 else
                 {
@@ -176,7 +176,7 @@ namespace Theraot.Collections
             _tryTake = (out T value) =>
             {
                 value = default(T);
-                if (Thread.VolatileRead(ref guard) == 0)
+                if (Volatile.Read(ref guard) == 0)
                 {
                     var currentIndex = Interlocked.Increment(ref index);
                     if (currentIndex < wrapped.Length)
@@ -210,7 +210,7 @@ namespace Theraot.Collections
             var guard = 0;
             var index = -1;
 
-            Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
+            Predicate<T> newFilter = item => Volatile.Read(ref control) == 0;
             var buffer = new SafeQueue<T>();
             wrapped.SubscribeAction
             (
@@ -248,7 +248,7 @@ namespace Theraot.Collections
 
             _tryTake = (out T value) =>
             {
-                if (Thread.VolatileRead(ref guard) == 0)
+                if (Volatile.Read(ref guard) == 0)
                 {
                     var currentIndex = Interlocked.Increment(ref index);
                     if (currentIndex < preface.Length)
@@ -262,7 +262,7 @@ namespace Theraot.Collections
                 if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
                 {
                     _tryTake = tryTakeReplacement;
-                    Thread.VolatileWrite(ref guard, 3);
+                    Volatile.Write(ref guard, 3);
                 }
                 else
                 {
@@ -298,7 +298,7 @@ namespace Theraot.Collections
             _tryTake = (out T value) =>
             {
                 value = default(T);
-                if (Thread.VolatileRead(ref guard) == 0)
+                if (Volatile.Read(ref guard) == 0)
                 {
                     bool result;
                     // We need a lock, there is no way around it. IEnumerator is just awful. Use another overload if possible.
@@ -409,7 +409,7 @@ namespace Theraot.Collections
             get { return _tryTake == null; }
         }
 
-        public static Progressor<T> CreateConverted<TInput>(Progressor<TInput> wrapped, Converter<TInput, T> converter)
+        public static Progressor<T> CreateConverted<TInput>(Progressor<TInput> wrapped, Func<TInput, T> converter)
         {
             if (wrapped == null)
             {
@@ -422,7 +422,7 @@ namespace Theraot.Collections
 
             var control = 0;
 
-            Predicate<TInput> newFilter = item => Thread.VolatileRead(ref control) == 0;
+            Predicate<TInput> newFilter = item => Volatile.Read(ref control) == 0;
             var buffer = new SafeQueue<T>();
             var proxy = new ProxyObservable<T>();
 
@@ -485,14 +485,14 @@ namespace Theraot.Collections
 
             var control = 0;
 
-            Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0 && filter(item);
+            Predicate<T> newFilter = item => Volatile.Read(ref control) == 0 && filter(item);
             var buffer = new SafeQueue<T>();
             var proxy = new ProxyObservable<T>();
 
             var result = new Progressor<T>(
                 (out T value) =>
                 {
-                    Thread.VolatileWrite(ref control, 1);
+                    Volatile.Write(ref control, 1);
                     try
                     {
                         again:
@@ -541,7 +541,7 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static Progressor<T> CreatedFilteredConverted<TInput>(Progressor<TInput> wrapped, Predicate<TInput> filter, Converter<TInput, T> converter)
+        public static Progressor<T> CreatedFilteredConverted<TInput>(Progressor<TInput> wrapped, Predicate<TInput> filter, Func<TInput, T> converter)
         {
             if (wrapped == null)
             {
@@ -558,7 +558,7 @@ namespace Theraot.Collections
 
             var control = 0;
 
-            Predicate<TInput> newFilter = item => Thread.VolatileRead(ref control) == 0 && filter(item);
+            Predicate<TInput> newFilter = item => Volatile.Read(ref control) == 0 && filter(item);
             var buffer = new SafeQueue<T>();
             var proxy = new ProxyObservable<T>();
 
@@ -626,7 +626,7 @@ namespace Theraot.Collections
             var control = 0;
 
             var buffer = new SafeDictionary<T, bool>();
-            Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
+            Predicate<T> newFilter = item => Volatile.Read(ref control) == 0;
             var proxy = new ProxyObservable<T>();
 
             var result = new Progressor<T>(

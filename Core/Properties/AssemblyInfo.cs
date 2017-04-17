@@ -4,14 +4,19 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Theraot.Core")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
+
+#if !NETCOREAPP1_1
 [assembly: AssemblyCompany("Theraot")]
-[assembly: AssemblyProduct("Theraot.Core")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyCopyright("Copyright 2010 - 2017 by Theraot")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+[assembly: AssemblyFileVersion("1.0.3.0")]
+[assembly: AssemblyProduct("Theraot.Core")]
+[assembly: AssemblyTitle("Theraot.Core")]
+[assembly: AssemblyVersion("1.0.3.0")]
+#endif
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from
@@ -20,16 +25,3 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("c9c38e25-42f4-460a-a956-fd605fba20e5")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.3.0")]
-[assembly: AssemblyFileVersion("1.0.3.0")]

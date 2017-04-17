@@ -1,7 +1,6 @@
 #if FAT
 
 using System;
-using System.Runtime.ConstrainedExecution;
 using System.Threading;
 
 using Theraot.Core;
@@ -9,7 +8,11 @@ using Theraot.Core;
 namespace Theraot.Threading
 {
     [System.Diagnostics.DebuggerNonUserCode]
-    public sealed class DisposableAkin : CriticalFinalizerObject, IDisposable
+    public sealed class DisposableAkin :
+#if !NETCOREAPP1_1
+        System.Runtime.ConstrainedExecution.CriticalFinalizerObject,
+#endif
+        IDisposable
     {
         private Action _release;
         private Thread _thread;

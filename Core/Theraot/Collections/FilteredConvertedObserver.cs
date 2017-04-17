@@ -7,11 +7,11 @@ namespace Theraot.Collections
     [Serializable]
     public sealed class FilteredConvertedObserver<TInput, TOutput> : IObserver<TInput>
     {
-        private readonly Converter<TInput, TOutput> _converter;
+        private readonly Func<TInput, TOutput> _converter;
         private readonly IObserver<TOutput> _observer;
         private readonly Predicate<TInput> _filter;
 
-        public FilteredConvertedObserver(IObserver<TOutput> observer, Predicate<TInput> filter, Converter<TInput, TOutput> converter)
+        public FilteredConvertedObserver(IObserver<TOutput> observer, Predicate<TInput> filter, Func<TInput, TOutput> converter)
         {
             if (observer == null)
             {

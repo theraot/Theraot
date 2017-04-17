@@ -1,6 +1,7 @@
 ﻿// Needed for NET40
 
 using System;
+using System.Runtime.InteropServices;
 
 namespace Theraot.Core
 {
@@ -20,14 +21,14 @@ namespace Theraot.Core
                     sign = -sign;
                 }
                 var tmpMantissa = (ulong)mantissa;
-                return System.Numerics.NumericsHelpers.GetDoubleFromParts(sign, exponent, tmpMantissa);
+                return GetDoubleFromParts(sign, exponent, tmpMantissa);
             }
         }
 
         [CLSCompliant(false)]
         public static double BuildDouble(int sign, ulong mantissa, int exponent)
         {
-            return System.Numerics.NumericsHelpers.GetDoubleFromParts(sign, exponent, mantissa);
+            return GetDoubleFromParts(sign, exponent, mantissa);
         }
 
         public static long BuildInt64(int hi, int lo)
@@ -56,6 +57,102 @@ namespace Theraot.Core
         public static ulong BuildUInt64(uint hi, uint lo)
         {
             return (ulong)hi << 32 | lo;
+        }
+
+        [CLSCompliant(false)]
+        public static double GetDoubleFromParts(int sign, int exp, ulong man)
+        {
+            DoubleUlong du;
+            du.Dbl = 0;
+
+            if (man == 0)
+            {
+                du.Uu = 0;
+            }
+            else
+            {
+                // Normalize so that 0x0010 0000 0000 0000 is the highest bit set.
+                var cbitShift = CbitHighZero(man) - 11;
+                if (cbitShift < 0)
+                {
+                    man >>= -cbitShift;
+                }
+                else
+                {
+                    man <<= cbitShift;
+                }
+
+                exp -= cbitShift;
+
+                // Move the point to just behind the leading 1: 0x001.0 0000 0000 0000
+                // (52 bits) and skew the exponent (by 0x3FF == 1023).
+                exp += 1075;
+
+                if (exp >= 0x7FF)
+                {
+                    // Infinity.
+                    du.Uu = 0x7FF0000000000000;
+                }
+                else if (exp <= 0)
+                {
+                    // Denormalized.
+                    exp--;
+                    if (exp < -52)
+                    {
+                        // Underflow to zero.
+                        du.Uu = 0;
+                    }
+                    else
+                    {
+                        du.Uu = man >> -exp;
+                    }
+                }
+                else
+                {
+                    // Mask off the implicit high bit.
+                    du.Uu = (man & 0x000FFFFFFFFFFFFF) | ((ulong)exp << 52);
+                }
+            }
+
+            if (sign < 0)
+            {
+                du.Uu |= 0x8000000000000000;
+            }
+
+            return du.Dbl;
+        }
+
+        [CLSCompliant(false)]
+        public static void GetDoubleParts(double dbl, out int sign, out int exp, out ulong man, out bool fFinite)
+        {
+            DoubleUlong du;
+            du.Uu = 0;
+            du.Dbl = dbl;
+
+            sign = 1 - ((int)(du.Uu >> 62) & 2);
+            man = du.Uu & 0x000FFFFFFFFFFFFF;
+            exp = (int)(du.Uu >> 52) & 0x7FF;
+            if (exp == 0)
+            {
+                // Denormalized number.
+                fFinite = true;
+                if (man != 0)
+                {
+                    exp = -1074;
+                }
+            }
+            else if (exp == 0x7FF)
+            {
+                // NaN or Inifite.
+                fFinite = false;
+                exp = int.MaxValue;
+            }
+            else
+            {
+                fFinite = true;
+                man |= 0x0010000000000000;
+                exp -= 1075;
+            }
         }
 
         public static void GetParts(long value, out int lo, out int hi)
@@ -150,8 +247,53 @@ namespace Theraot.Core
         public static void GetParts(double value, out int sign, out long mantissa, out int exponent, out bool finite)
         {
             ulong tmpMantissa;
-            System.Numerics.NumericsHelpers.GetDoubleParts(value, out sign, out exponent, out tmpMantissa, out finite);
+            GetDoubleParts(value, out sign, out exponent, out tmpMantissa, out finite);
             mantissa = (long)tmpMantissa;
+        }
+
+        internal static int CbitHighZero(uint u)
+        {
+            if (u == 0)
+            {
+                return 32;
+            }
+
+            var cbit = 0;
+            if ((u & 0xFFFF0000) == 0)
+            {
+                cbit += 16;
+                u <<= 16;
+            }
+            if ((u & 0xFF000000) == 0)
+            {
+                cbit += 8;
+                u <<= 8;
+            }
+            if ((u & 0xF0000000) == 0)
+            {
+                cbit += 4;
+                u <<= 4;
+            }
+            if ((u & 0xC0000000) == 0)
+            {
+                cbit += 2;
+                u <<= 2;
+            }
+            if ((u & 0x80000000) == 0)
+            {
+                cbit += 1;
+            }
+
+            return cbit;
+        }
+
+        internal static int CbitHighZero(ulong uu)
+        {
+            if ((uu & 0xFFFFFFFF00000000) == 0)
+            {
+                return 32 + CbitHighZero((uint)uu);
+            }
+            return CbitHighZero((uint)(uu >> 32));
         }
 
         internal static int CbitLowZero(uint u)
@@ -186,6 +328,16 @@ namespace Theraot.Core
                 cbit += 1;
             }
             return cbit;
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        private struct DoubleUlong
+        {
+            [FieldOffset(0)]
+            public double Dbl;
+
+            [FieldOffset(0)]
+            public ulong Uu;
         }
     }
 }

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 
 namespace Theraot.Collections.Specialized
 {
@@ -39,7 +40,8 @@ namespace Theraot.Collections.Specialized
         private static Type CheckType()
         {
             var type = typeof(TEnum);
-            if (type.IsEnum)
+            var info = type.GetTypeInfo();
+            if (info.IsEnum)
             {
                 return type;
             }

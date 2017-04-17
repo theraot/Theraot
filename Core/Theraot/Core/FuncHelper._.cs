@@ -6,7 +6,7 @@ namespace Theraot.Core
 {
     public static partial class FuncHelper
     {
-        public static Func<TOutput> ChainConversion<TInput, TOutput>(this Func<TInput> source, Converter<TInput, TOutput> converter)
+        public static Func<TOutput> ChainConversion<TInput, TOutput>(this Func<TInput> source, Func<TInput, TOutput> converter)
         {
             if (converter == null)
             {

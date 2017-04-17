@@ -20,7 +20,9 @@ namespace Theraot.Core
             {
                 return true;
             }
-            if (!target.IsValueType && !source.IsValueType && target.IsAssignableFrom(source))
+            var targetInfo = target.GetTypeInfo();
+            var sourceInfo = source.GetTypeInfo();
+            if (!targetInfo.IsValueType && !sourceInfo.IsValueType && target.IsAssignableFrom(source))
             {
                 return true;
             }
@@ -55,7 +57,8 @@ namespace Theraot.Core
             var knownAssembies = new List<Assembly>();
             foreach (var type in _known)
             {
-                var assembly = type.Assembly;
+                var info = type.GetTypeInfo();
+                var assembly = info.Assembly;
                 if (!knownAssembies.Contains(assembly))
                 {
                     knownAssembies.Add(assembly);
@@ -94,9 +97,11 @@ namespace Theraot.Core
                 {
                     return type;
                 }
-                if (definition.IsInterface)
+                var definitionInfo = definition.GetTypeInfo();
+                var info = type.GetTypeInfo();
+                if (definitionInfo.IsInterface)
                 {
-                    foreach (var interfaceType in type.GetInterfaces())
+                    foreach (var interfaceType in info.GetInterfaces())
                     {
                         var found = FindGenericType(definition, interfaceType);
                         if (found != null)
@@ -105,7 +110,7 @@ namespace Theraot.Core
                         }
                     }
                 }
-                type = type.BaseType;
+                type = info.BaseType;
             }
             return null;
         }
@@ -157,7 +162,8 @@ namespace Theraot.Core
                 {
                     return result;
                 }
-                type = type.BaseType;
+                var info = type.GetTypeInfo();
+                type = info.BaseType;
             } while (type != null);
             return null;
         }
@@ -195,7 +201,8 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("type");
             }
-            if (type.IsValueType && !IsNullableType(type))
+            var info = type.GetTypeInfo();
+            if (info.IsValueType && !IsNullableType(type))
             {
                 return typeof(Nullable<>).MakeGenericType(type);
             }
@@ -221,9 +228,17 @@ namespace Theraot.Core
             {
                 return TypeCode.Empty;
             }
-            while (type.IsEnum)
+            while (true)
             {
-                type = Enum.GetUnderlyingType(type);
+                var info = type.GetTypeInfo();
+                if (info.IsEnum)
+                {
+                    type = Enum.GetUnderlyingType(type);
+                }
+                else
+                {
+                    break;
+                }
             }
             if (type == typeof(bool))
             {
@@ -325,15 +340,17 @@ namespace Theraot.Core
 
         public static bool HasBuiltInEqualityOperator(Type left, Type right)
         {
-            if (left.IsInterface && !right.IsValueType)
+            var leftInfo = left.GetTypeInfo();
+            var rightInfo = right.GetTypeInfo();
+            if (leftInfo.IsInterface && !rightInfo.IsValueType)
             {
                 return true;
             }
-            if (right.IsInterface && !left.IsValueType)
+            if (rightInfo.IsInterface && !leftInfo.IsValueType)
             {
                 return true;
             }
-            if (!left.IsValueType && !right.IsValueType)
+            if (!leftInfo.IsValueType && !rightInfo.IsValueType)
             {
                 if (IsReferenceAssignableFrom(left, right) || IsReferenceAssignableFrom(right, left))
                 {
@@ -345,42 +362,12 @@ namespace Theraot.Core
                 return false;
             }
             var notNullable = GetNonNullableType(left);
-            if (notNullable == typeof(bool) || IsNumeric(notNullable) || notNullable.IsEnum)
+            var info = notNullable.GetTypeInfo();
+            if (notNullable == typeof(bool) || IsNumeric(notNullable) || info.IsEnum)
             {
                 return true;
             }
             return false;
-        }
-
-        /// <summary>
-        /// Creates a closed delegate for the given (dynamic)method.
-        /// </summary>
-        /// <param name="methodInfo">The MethodInfo for the target method.</param>
-        /// <param name="delegateType">Delegate type with a matching signature.</param>
-        public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType)
-        {
-            var dynamicMethod = methodInfo as DynamicMethod;
-            if (dynamicMethod != null)
-            {
-                return dynamicMethod.CreateDelegate(delegateType);
-            }
-            return Delegate.CreateDelegate(delegateType, methodInfo);
-        }
-
-        /// <summary>
-        /// Creates a closed delegate for the given (dynamic)method.
-        /// </summary>
-        /// <param name="methodInfo">The MethodInfo for the target method.</param>
-        /// <param name="delegateType">Delegate type with a matching signature.</param>
-        /// <param name="target">The object to which the delegate is bound, or null to treat method as static.</param>
-        public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
-        {
-            var dynamicMethod = methodInfo as DynamicMethod;
-            if (dynamicMethod != null)
-            {
-                return dynamicMethod.CreateDelegate(delegateType, target);
-            }
-            return Delegate.CreateDelegate(delegateType, target, methodInfo);
         }
 
         public static bool HasIdentityPrimitiveOrNullableConversion(Type source, Type target)
@@ -450,7 +437,9 @@ namespace Theraot.Core
                 return true;
             }
             // Interface conversion
-            if (source.IsInterface || target.IsInterface)
+            var sourceInfo = source.GetTypeInfo();
+            var targetInfo = target.GetTypeInfo();
+            if (sourceInfo.IsInterface || targetInfo.IsInterface)
             {
                 return true;
             }
@@ -469,7 +458,9 @@ namespace Theraot.Core
 
         public static bool HasReferenceEquality(Type left, Type right)
         {
-            if (left.IsValueType || right.IsValueType)
+            var leftInfo = left.GetTypeInfo();
+            var rightInfo = right.GetTypeInfo();
+            if (leftInfo.IsValueType || rightInfo.IsValueType)
             {
                 return false;
             }
@@ -477,8 +468,8 @@ namespace Theraot.Core
             // reference equality.
             // If we have two reference types and one is assignable to the
             // other then we can do reference equality.
-            return left.IsInterface
-                || right.IsInterface
+            return leftInfo.IsInterface
+                || rightInfo.IsInterface
                 || IsReferenceAssignableFrom(left, right)
                 || IsReferenceAssignableFrom(right, left);
         }
@@ -510,7 +501,8 @@ namespace Theraot.Core
 
         public static bool IsConstructedGenericType(this Type type)
         {
-            return type.IsGenericType && !type.IsGenericTypeDefinition;
+            var info = type.GetTypeInfo();
+            return info.IsGenericType && !info.IsGenericTypeDefinition;
         }
 
         public static bool IsContravariant(Type type)
@@ -525,7 +517,8 @@ namespace Theraot.Core
         public static bool IsConvertible(Type type)
         {
             type = GetNonNullableType(type);
-            if (type.IsEnum)
+            var info = type.GetTypeInfo();
+            if (info.IsEnum)
             {
                 return true;
             }
@@ -570,11 +563,12 @@ namespace Theraot.Core
 
         public static bool IsImplicitBoxingConversion(Type source, Type target)
         {
-            if (source.IsValueType && (target == typeof(object) || target == typeof(ValueType)))
+            var info = source.GetTypeInfo();
+            if (info.IsValueType && (target == typeof(object) || target == typeof(ValueType)))
             {
                 return true;
             }
-            if (source.IsEnum && target == typeof(Enum))
+            if (info.IsEnum && target == typeof(Enum))
             {
                 return true;
             }
@@ -779,8 +773,9 @@ namespace Theraot.Core
             //     to Ti via an identify conversion,  implicit reference conversion, or explicit reference conversion.
             //   o If type parameter Xi is declared to be contravariant ("in") then either Si must be identical to Ti,
             //     or Si and Ti must both be reference types.
-
-            if (!PrivateIsDelegate(source) || !PrivateIsDelegate(target) || !source.IsGenericType || !target.IsGenericType)
+            var sourceInfo = source.GetTypeInfo();
+            var targetInfo = target.GetTypeInfo();
+            if (!PrivateIsDelegate(source) || !PrivateIsDelegate(target) || !sourceInfo.IsGenericType || !targetInfo.IsGenericType)
             {
                 return false;
             }
@@ -817,7 +812,9 @@ namespace Theraot.Core
                 }
                 else if (PrivateIsContravariant(genericParameter))
                 {
-                    if (sourceArgument.IsValueType || destArgument.IsValueType)
+                    var sourceArgumentInfo = sourceArgument.GetTypeInfo();
+                    var destArgumentInfo = destArgument.GetTypeInfo();
+                    if (sourceArgumentInfo.IsValueType || destArgumentInfo.IsValueType)
                     {
                         return false;
                     }
@@ -883,7 +880,8 @@ namespace Theraot.Core
             {
                 return true;
             }
-            if (instanceType.IsValueType)
+            var instanceInfo = instanceType.GetTypeInfo();
+            if (instanceInfo.IsValueType)
             {
                 if (IsReferenceAssignableFrom(targetType, typeof(object)))
                 {
@@ -893,13 +891,14 @@ namespace Theraot.Core
                 {
                     return true;
                 }
-                if (instanceType.IsEnum && IsReferenceAssignableFrom(targetType, typeof(Enum)))
+                if (instanceInfo.IsEnum && IsReferenceAssignableFrom(targetType, typeof(Enum)))
                 {
                     return true;
                 }
                 // A call to an interface implemented by a struct is legal whether the struct has
                 // been boxed or not.
-                if (targetType.IsInterface)
+                var targetInfo = targetType.GetTypeInfo();
+                if (targetInfo.IsInterface)
                 {
                     foreach (var interfaceType in instanceType.GetInterfaces())
                     {
@@ -919,9 +918,11 @@ namespace Theraot.Core
             {
                 return true;
             }
+            var info = type.GetTypeInfo();
+            var sourceInfo = source.GetTypeInfo();
             if (
-                !type.IsValueType
-                && !source.IsValueType
+                !info.IsValueType
+                && !sourceInfo.IsValueType
                 && type.IsAssignableFrom(source)
                 )
             {
@@ -1001,11 +1002,12 @@ namespace Theraot.Core
             if (type != typeof(void))
             {
                 // A check to avoid a bunch of reflection (currently not supported) during cctor
-                if (type.IsGenericTypeDefinition)
+                var info = type.GetTypeInfo();
+                if (info.IsGenericTypeDefinition)
                 {
                     throw new ArgumentException("type is Generic");
                 }
-                if (type.ContainsGenericParameters)
+                if (info.ContainsGenericParameters)
                 {
                     throw new ArgumentException("type contains generic parameters.");
                 }
@@ -1014,22 +1016,64 @@ namespace Theraot.Core
 
         private static bool PrivateIsContravariant(Type type)
         {
-            return 0 != (type.GenericParameterAttributes & GenericParameterAttributes.Contravariant);
+            var info = type.GetTypeInfo();
+            return 0 != (info.GenericParameterAttributes & GenericParameterAttributes.Contravariant);
         }
 
         private static bool PrivateIsCovariant(Type type)
         {
-            return 0 != (type.GenericParameterAttributes & GenericParameterAttributes.Covariant);
+            var info = type.GetTypeInfo();
+            return 0 != (info.GenericParameterAttributes & GenericParameterAttributes.Covariant);
         }
 
         private static bool PrivateIsDelegate(Type type)
         {
-            return type.IsSubclassOf(typeof(MulticastDelegate));
+            var info = type.GetTypeInfo();
+            return info.IsSubclassOf(typeof(MulticastDelegate));
         }
 
         private static bool PrivateIsInvariant(Type type)
         {
-            return 0 == (type.GenericParameterAttributes & GenericParameterAttributes.VarianceMask);
+            var info = type.GetTypeInfo();
+            return 0 == (info.GenericParameterAttributes & GenericParameterAttributes.VarianceMask);
         }
+    }
+
+    public static partial class TypeHelper
+    {
+#if NET20 || NET30 || NET35 || NET40 || NET45
+
+        /// <summary>
+        /// Creates a closed delegate for the given (dynamic)method.
+        /// </summary>
+        /// <param name="methodInfo">The MethodInfo for the target method.</param>
+        /// <param name="delegateType">Delegate type with a matching signature.</param>
+        public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType)
+        {
+            var dynamicMethod = methodInfo as DynamicMethod;
+            if (dynamicMethod != null)
+            {
+                return dynamicMethod.CreateDelegate(delegateType);
+            }
+            return Delegate.CreateDelegate(delegateType, methodInfo);
+        }
+
+        /// <summary>
+        /// Creates a closed delegate for the given (dynamic)method.
+        /// </summary>
+        /// <param name="methodInfo">The MethodInfo for the target method.</param>
+        /// <param name="delegateType">Delegate type with a matching signature.</param>
+        /// <param name="target">The object to which the delegate is bound, or null to treat method as static.</param>
+        public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
+        {
+            var dynamicMethod = methodInfo as DynamicMethod;
+            if (dynamicMethod != null)
+            {
+                return dynamicMethod.CreateDelegate(delegateType, target);
+            }
+            return Delegate.CreateDelegate(delegateType, target, methodInfo);
+        }
+
+#endif
     }
 }

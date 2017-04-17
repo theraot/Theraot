@@ -319,7 +319,7 @@ namespace Theraot.Threading.Needles
 
         private void ReportManagedDisposal()
         {
-            Thread.VolatileWrite(ref _managedDisposal, 1);
+            Volatile.Write(ref _managedDisposal, 1);
         }
 
         private void WriteTarget(object target)

@@ -243,10 +243,12 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+#if !NETCOREAPP1_1
         object ICloneable.Clone()
         {
             return Clone();
         }
+#endif
 
         void ICollection<bool>.Add(bool item)
         {
@@ -294,7 +296,7 @@ namespace Theraot.Collections.Specialized
 
         private bool GetBit(int index, int mask)
         {
-            return (Thread.VolatileRead(ref _entries[index]) & mask) != 0;
+            return (Volatile.Read(ref _entries[index]) & mask) != 0;
         }
 
         private int GetLength(int length)
@@ -316,7 +318,7 @@ namespace Theraot.Collections.Specialized
         private void SetBit(int index, int mask)
         {
             again:
-            var readed = Thread.VolatileRead(ref _entries[index]);
+            var readed = Volatile.Read(ref _entries[index]);
             if ((readed & mask) == 0)
             {
                 if (Interlocked.CompareExchange(ref _entries[index], readed | mask, readed) != readed)
@@ -329,7 +331,7 @@ namespace Theraot.Collections.Specialized
         private void UnsetBit(int index, int mask)
         {
             again:
-            var readed = Thread.VolatileRead(ref _entries[index]);
+            var readed = Volatile.Read(ref _entries[index]);
             if ((readed & mask) != 0)
             {
                 if (Interlocked.CompareExchange(ref _entries[index], readed & ~mask, readed) != readed)

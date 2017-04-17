@@ -1,7 +1,6 @@
 ﻿// Needed for Workaround
 
 using System;
-using System.Runtime.ConstrainedExecution;
 using System.Threading;
 
 namespace Theraot.Threading
@@ -16,12 +15,14 @@ namespace Theraot.Threading
         private const int _statusReady = 0;
         private static int _status = _statusNotReady;
 
+#if !NETCOREAPP1_1
         static GCMonitor()
         {
             var currentAppDomain = AppDomain.CurrentDomain;
             currentAppDomain.ProcessExit += ReportApplicationDomainExit;
             currentAppDomain.DomainUnload += ReportApplicationDomainExit;
         }
+#endif
 
         public static event EventHandler Collected
         {
@@ -43,7 +44,7 @@ namespace Theraot.Threading
             }
             remove
             {
-                if (Thread.VolatileRead(ref _status) == _statusReady)
+                if (Volatile.Read(ref _status) == _statusReady)
                 {
                     try
                     {
@@ -66,7 +67,11 @@ namespace Theraot.Threading
             get
             {
                 // If you need to get rid of this, just set this property to return false
+#if !NETCOREAPP1_1
                 return AppDomain.CurrentDomain.IsFinalizingForUnload();
+#else
+                return false;
+#endif
             }
         }
 
@@ -77,7 +82,7 @@ namespace Theraot.Threading
             {
                 case _statusNotReady:
                     GC.KeepAlive(new GCProbe());
-                    Thread.VolatileWrite(ref _status, _statusReady);
+                    Volatile.Write(ref _status, _statusReady);
                     break;
 
                 case _statusPending:
@@ -86,13 +91,18 @@ namespace Theraot.Threading
             }
         }
 
+#if !NETCOREAPP1_1
         private static void ReportApplicationDomainExit(object sender, EventArgs e)
         {
-            Thread.VolatileWrite(ref _status, _statusFinished);
+            Volatile.Write(ref _status, _statusFinished);
         }
+#endif
 
         [System.Diagnostics.DebuggerNonUserCode]
-        private sealed class GCProbe : CriticalFinalizerObject
+        private sealed class GCProbe
+#if !NETCOREAPP1_1
+            : System.Runtime.ConstrainedExecution.CriticalFinalizerObject
+#endif
         {
             ~GCProbe()
             {
@@ -104,7 +114,7 @@ namespace Theraot.Threading
                 {
                     try
                     {
-                        var check = Thread.VolatileRead(ref _status);
+                        var check = Volatile.Read(ref _status);
                         if (check == _statusReady)
                         {
                             GC.ReRegisterForFinalize(this);

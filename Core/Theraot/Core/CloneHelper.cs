@@ -3,8 +3,11 @@
 using System;
 using System.IO;
 using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
+
+#if !NETCOREAPP1_1
+using System.Runtime.Serialization.Formatters.Binary;
+#endif
 
 namespace Theraot.Core
 {
@@ -14,12 +17,17 @@ namespace Theraot.Core
         {
             var type = typeof(T);
             return GetStructCloner(type)
-                ?? GetGenericCloner(type)
-                ?? GetObjectCloner(type)
-                ?? GetMockCloner(type)
-                ?? GetConstructorCloner(type)
-                ?? GetDeconstructCloner(type)
-                ?? GetSerializerCloner(type);
+                   ?? GetGenericCloner(type)
+#if !NETCOREAPP1_1
+                   ?? GetObjectCloner(type)
+#endif
+                   ?? GetMockCloner(type)
+                   ?? GetConstructorCloner(type)
+                   ?? GetDeconstructCloner(type)
+#if !NETCOREAPP1_1
+                   ?? GetSerializerCloner(type)
+#endif
+                ;
         }
 
         private static ICloner<T> GetConstructorCloner(Type type)
@@ -61,6 +69,7 @@ namespace Theraot.Core
             return null;
         }
 
+#if !NETCOREAPP1_1
         private static ICloner<T> GetObjectCloner(Type type)
         {
             if (type.IsImplementationOf(typeof(ICloneable)))
@@ -78,6 +87,7 @@ namespace Theraot.Core
             }
             return null;
         }
+#endif
 
         private static ICloner<T> GetStructCloner(Type type)
         {
@@ -88,6 +98,7 @@ namespace Theraot.Core
             return null;
         }
 
+#if !NETCOREAPP1_1
         private class Cloner : ICloner<T>
         {
             private static readonly ICloner<T> _instance = new Cloner(); // We need a cloner per T type.
@@ -109,6 +120,7 @@ namespace Theraot.Core
                 return (T)(target as ICloneable).Clone();
             }
         }
+#endif
 
         private class ConstructorCloner : ICloner<T>
         {
@@ -232,6 +244,7 @@ namespace Theraot.Core
             }
         }
 
+#if !NETCOREAPP1_1
         private class SerializerCloner : ICloner<T>
         {
             private static readonly ICloner<T> _instance = new SerializerCloner(); // We need a cloner per T type.
@@ -257,6 +270,7 @@ namespace Theraot.Core
                 }
             }
         }
+#endif
 
         private class StructCloner : ICloner<T>
         {
