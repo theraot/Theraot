@@ -88,7 +88,7 @@ namespace Theraot.Threading.Needles
             CaptureAndWait();
             var result = updateValueFactory(base.Value);
             base.Value = result;
-            Thread.MemoryBarrier();
+            ThreadingHelper.MemoryBarrier();
             return result;
         }
 

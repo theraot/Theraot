@@ -52,7 +52,7 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(_currentTransaction, this))
             {
-                Thread.MemoryBarrier();
+                ThreadingHelper.MemoryBarrier();
                 try
                 {
                     if (!CheckValue())
