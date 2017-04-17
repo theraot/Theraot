@@ -767,7 +767,7 @@
     <Compile Include="System\Linq\Expressions\NewArrayExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\ParameterExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\TypeBinaryExpression.net30.cs" />
-    <Compile Include="System\Linq\Grouping.cs" />
+    <Compile Include="Theraot\Collections\Specialized\Grouping.cs" />
     <Compile Include="System\Linq\IOrderedQueryable.cs" />
     <Compile Include="System\Linq\IOrderedQueryable1.net30.cs" />
     <Compile Include="System\Linq\IQueryable1.net30.cs" />
