@@ -43,7 +43,7 @@ namespace Theraot.Threading
             }
             remove
             {
-                if (Thread.VolatileRead(ref _status) == _statusReady)
+                if (Volatile.Read(ref _status) == _statusReady)
                 {
                     try
                     {
@@ -77,7 +77,7 @@ namespace Theraot.Threading
             {
                 case _statusNotReady:
                     GC.KeepAlive(new GCProbe());
-                    Thread.VolatileWrite(ref _status, _statusReady);
+                    Volatile.Write(ref _status, _statusReady);
                     break;
 
                 case _statusPending:
@@ -88,7 +88,7 @@ namespace Theraot.Threading
 
         private static void ReportApplicationDomainExit(object sender, EventArgs e)
         {
-            Thread.VolatileWrite(ref _status, _statusFinished);
+            Volatile.Write(ref _status, _statusFinished);
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
@@ -104,7 +104,7 @@ namespace Theraot.Threading
                 {
                     try
                     {
-                        var check = Thread.VolatileRead(ref _status);
+                        var check = Volatile.Read(ref _status);
                         if (check == _statusReady)
                         {
                             GC.ReRegisterForFinalize(this);
