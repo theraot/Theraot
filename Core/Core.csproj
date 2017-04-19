@@ -365,12 +365,12 @@
     <Compile Include="System\Numerics\ReverseStringBuilder.cs" />
     <Compile Include="System\Reflection\IntrospectionExtensions.net40.cs" />
     <Compile Include="System\Reflection\RuntimeReflectionExtensions.net40.cs" />
-    <Compile Include="System\Runtime\CompilerServices\AsyncMethodBuilderAttribute.net45.cs" />
+    <Compile Include="System\Runtime\CompilerServices\AsyncMethodBuilderAttribute.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\AsyncMethodBuilderCore.cs" />
     <Compile Include="System\Runtime\CompilerServices\AsyncMethodTaskCache.cs" />
     <Compile Include="System\Runtime\CompilerServices\AsyncStateMachineAttribute.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\AsyncTaskMethodBuilder.net40.cs" />
-    <Compile Include="System\Runtime\CompilerServices\AsyncValueTaskMethodBuilder.net45.cs" />
+    <Compile Include="System\Runtime\CompilerServices\AsyncValueTaskMethodBuilder.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\AsyncVoidMethodBuilder.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\CallerFilePathAttribute.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\CallerLineNumberAttribute.net40.cs" />
@@ -378,7 +378,7 @@
     <Compile Include="System\Runtime\CompilerServices\Closure.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ConditionalWeakTable.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ConfiguredTaskAwaitable.net40.cs" />
-    <Compile Include="System\Runtime\CompilerServices\ConfiguredValueTaskAwaitable.net45.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ConfiguredValueTaskAwaitable.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\ContractHelperEx.cs" />
     <Compile Include="System\Runtime\CompilerServices\IAsyncMethodBuilder.cs" />
     <Compile Include="System\Runtime\CompilerServices\IAsyncStateMachine.net40.cs" />
@@ -389,8 +389,8 @@
     <Compile Include="System\Runtime\CompilerServices\IteratorStateMachineAttribute.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\StateMachineAttribute.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\TaskAwaiter.net40.cs" />
-    <Compile Include="System\Runtime\CompilerServices\TupleElementNamesAttribute.net45.cs" />
-    <Compile Include="System\Runtime\CompilerServices\ValueTaskAwaiter.net45.cs" />
+    <Compile Include="System\Runtime\CompilerServices\TupleElementNamesAttribute.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ValueTaskAwaiter.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\VoidTaskResult.cs" />
     <Compile Include="System\Runtime\CompilerServices\YieldAwaitable.net40.cs" />
     <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfo.net40.cs" />
@@ -441,9 +441,9 @@
     <Compile Include="System\Threading\Tasks\TaskSchedulerException.net35.cs" />
     <Compile Include="System\Threading\Tasks\ThreadPoolTaskScheduler.net35.cs" />
     <Compile Include="System\Threading\Tasks\UnobservedTaskExceptionEventArgs.net35.cs" />
-    <Compile Include="System\Threading\Tasks\ValueTask.net45.cs" />
-    <Compile Include="System\ValueTuple.net45.cs" />
-    <Compile Include="System\TupleExtensions.net45.cs" />
+    <Compile Include="System\Threading\Tasks\ValueTask.net40.cs" />
+    <Compile Include="System\ValueTuple.net40.cs" />
+    <Compile Include="System\TupleExtensions.net40.cs" />
     <Compile Include="Theraot\Collections\ConversionSet.cs" />
     <Compile Include="Theraot\Collections\ConvertedObserver.cs" />
     <Compile Include="Theraot\Collections\CustomObserver.cs" />
