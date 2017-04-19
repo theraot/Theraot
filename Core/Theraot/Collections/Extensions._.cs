@@ -590,7 +590,7 @@ namespace Theraot.Collections
             }
             catch (IndexOutOfRangeException exception)
             {
-                throw new ArgumentException("array", exception.Message);
+                throw new ArgumentException(exception.Message, "array");
             }
         }
 

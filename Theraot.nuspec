@@ -7,8 +7,9 @@
     <owners>Theraot</owners>
     <licenseUrl>https://github.com/theraot/Theraot/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/theraot/Theraot/</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/theraot/Theraot/master/icon.jpg</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>.NET Backport</description>
+    <description>.NET Backport (ValueTask, ValueTuple, Task, Expressions, Linq, ThreadLocal, etc...) for .NET 2.0, 3.0, 3.5, 4.0, 4.5</description>
     <copyright>Copyright 2017</copyright>
   </metadata>
 </package>

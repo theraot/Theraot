@@ -1,4 +1,4 @@
-#if NET20 || NET30 || NET35 || NET40 ||NET45
+#if NET20 || NET30 || NET35 || NET40
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -16,6 +16,7 @@ namespace System.Runtime.CompilerServices
     {
         /// <summary>The wrapped <see cref="ValueTask{TResult}"/>.</summary>
         private readonly ValueTask<TResult> _value;
+
         /// <summary>true to attempt to marshal the continuation back to the original context captured; otherwise, false.</summary>
         private readonly bool _continueOnCapturedContext;
 
@@ -42,6 +43,7 @@ namespace System.Runtime.CompilerServices
         {
             /// <summary>The value being awaited.</summary>
             private readonly ValueTask<TResult> _value;
+
             /// <summary>The value to pass to ConfigureAwait.</summary>
             private readonly bool _continueOnCapturedContext;
 
@@ -60,8 +62,8 @@ namespace System.Runtime.CompilerServices
             /// <summary>Gets the result of the ValueTask.</summary>
             public TResult GetResult()
             {
-                return _value._task == null ? 
-                    _value._result : 
+                return _value._task == null ?
+                    _value._result :
                     _value._task.GetAwaiter().GetResult();
             }
 

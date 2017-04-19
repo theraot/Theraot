@@ -1,3 +1,5 @@
+#if NET20 || NET30 || NET35 || NET40
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -23,8 +25,8 @@ namespace System.Runtime.CompilerServices
         /// <summary>Gets the result of the ValueTask.</summary>
         public TResult GetResult()
         {
-            return _value._task == null ? 
-                _value._result : 
+            return _value._task == null ?
+                _value._result :
                 _value._task.GetAwaiter().GetResult();
         }
 
@@ -41,3 +43,5 @@ namespace System.Runtime.CompilerServices
         }
     }
 }
+
+#endif
