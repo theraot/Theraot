@@ -11,5 +11,6 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>.NET Backport (ValueTask, ValueTuple, Task, Expressions, Linq, ThreadLocal, etc...) for .NET 2.0, 3.0, 3.5, 4.0, 4.5</description>
     <copyright>Copyright 2017</copyright>
+    <tags>Backport ValueTask ValueTuple Async Task Linq Expressions ThreadLocal</tags>
   </metadata>
 </package>
