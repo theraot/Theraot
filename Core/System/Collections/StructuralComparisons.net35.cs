@@ -46,7 +46,7 @@ namespace System.Collections
                         return comparable.Equals(y, this);
                     }
                     var typeX = x.GetType();
-                    var typeY = x.GetType();
+                    var typeY = y.GetType();
                     if (typeX.IsArray && typeY.IsArray)
                     {
                         if (typeX.GetElementType() == typeY.GetElementType())
