@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using Theraot.Collections.ThreadSafe;
-using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
 {

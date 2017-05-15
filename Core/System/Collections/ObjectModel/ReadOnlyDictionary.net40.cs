@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 
 using Theraot.Collections.Specialized;
-using Theraot.Core;
 
 namespace System.Collections.ObjectModel
 {
