@@ -82,24 +82,21 @@ namespace System.Threading
             // Call this to notify that there is room in the semaphore
             // Allow sync waiters to proceed
             _event.Set();
-            while (Thread.VolatileRead(ref _count) < _maxCount)
+            TaskCompletionSource<bool> waiter;
+            while (Thread.VolatileRead(ref _count) < _maxCount && _asyncWaiters.TryTake(out waiter))
             {
-                TaskCompletionSource<bool> waiter;
-                if (_asyncWaiters.TryTake(out waiter))
+                if (waiter.Task.IsCompleted)
                 {
-                    if (waiter.Task.IsCompleted)
-                    {
-                        // Skip - either canceled or timed out
-                        continue;
-                    }
-                    if (TryEnter())
-                    {
-                        waiter.SetResult(true);
-                    }
-                    else
-                    {
-                        _asyncWaiters.Add(waiter);
-                    }
+                    // Skip - either canceled or timed out
+                    continue;
+                }
+                if (TryEnter())
+                {
+                    waiter.SetResult(true);
+                }
+                else
+                {
+                    _asyncWaiters.Add(waiter);
                 }
             }
         }
