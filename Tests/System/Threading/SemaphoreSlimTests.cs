@@ -451,6 +451,7 @@ namespace System.Threading.Tests
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public static void RunSemaphoreSlimTest8_ConcWaitAndRelease()
         {
             RunSemaphoreSlimTest8_ConcWaitAndRelease_Private(5, 1000, 50, 50, 50, 0, 5, 1000);
