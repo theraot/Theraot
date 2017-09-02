@@ -168,7 +168,8 @@ namespace System.Threading
             // Should only be called when there is room in the semaphore
             // No check is done to verify that
             var result = Thread.VolatileRead(ref _count) + 1;
-            if (Interlocked.CompareExchange(ref _count, result, _count) == _count)
+            var found = Interlocked.CompareExchange(ref _count, result, _count);
+            if (found == result - 1)
             {
                 // It may be the case that there is no longer room in the semaphore because we just took one slot
                 if (Thread.VolatileRead(ref _count) == _maxCount)
