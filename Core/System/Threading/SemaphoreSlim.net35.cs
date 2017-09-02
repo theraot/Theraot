@@ -193,6 +193,11 @@ namespace System.Threading
         {
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
+            if (TryEnter())
+            {
+                source.SetResult(true);
+                return source.Task;
+            }
             _asyncWaiters.Add(source);
             return source.Task;
         }
@@ -205,6 +210,11 @@ namespace System.Threading
                 return Task.FromCancellation(cancellationToken);
             }
             var source = new TaskCompletionSource<bool>();
+            if (TryEnter())
+            {
+                source.SetResult(true);
+                return source.Task;
+            }
             cancellationToken.Register(() => source.SetCanceled());
             _asyncWaiters.Add(source);
             return source.Task;
@@ -214,6 +224,11 @@ namespace System.Threading
         {
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
+            if (TryEnter())
+            {
+                source.SetResult(true);
+                return source.Task;
+            }
             Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout);
             _asyncWaiters.Add(source);
             return source.Task;
@@ -223,6 +238,11 @@ namespace System.Threading
         {
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
+            if (TryEnter())
+            {
+                source.SetResult(true);
+                return source.Task;
+            }
             Theraot.Threading.Timeout.Launch(() => source.SetResult(false), timeout);
             _asyncWaiters.Add(source);
             return source.Task;
@@ -236,6 +256,11 @@ namespace System.Threading
             }
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
+            if (TryEnter())
+            {
+                source.SetResult(true);
+                return source.Task;
+            }
             Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout, cancellationToken);
             cancellationToken.Register(() => source.SetCanceled());
             _asyncWaiters.Add(source);
@@ -250,6 +275,11 @@ namespace System.Threading
             }
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
+            if (TryEnter())
+            {
+                source.SetResult(true);
+                return source.Task;
+            }
             Theraot.Threading.Timeout.Launch
             (
                 () =>
