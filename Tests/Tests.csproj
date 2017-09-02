@@ -292,6 +292,7 @@
     <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfoTestEx.cs" />
     <Compile Include="System\Threading\CancellationTokenSourceTestEx.cs" />
     <Compile Include="System\Threading\ReaderWriterLockSlimTest.cs" />
+    <Compile Include="System\Threading\SemaphoreSlimTests.cs" />
     <Compile Include="System\Threading\Tasks\ContinueWithTaskTests.cs" />
     <Compile Include="System\Threading\Tasks\ExceptionScheduler.cs" />
     <Compile Include="System\Threading\Tasks\MinimalTaskTestsEx.cs" />
