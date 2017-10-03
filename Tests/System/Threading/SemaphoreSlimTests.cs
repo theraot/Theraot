@@ -70,6 +70,8 @@ namespace System.Threading.Tests
                (10, 10, new TimeSpan(0, 0, Int32.MaxValue), true, typeof(ArgumentOutOfRangeException));
         }
 
+#if !NET40
+
         [Test]
         public static void RunSemaphoreSlimTest1_WaitAsync()
         {
@@ -97,6 +99,8 @@ namespace System.Threading.Tests
                (10, 10, new TimeSpan(0, 0, Int32.MaxValue), true, typeof(ArgumentOutOfRangeException));
         }
 
+#endif
+
         [Test]
         public static void RunSemaphoreSlimTest2_Release()
         {
@@ -118,6 +122,8 @@ namespace System.Threading.Tests
             RunSemaphoreSlimTest2_Release(5, 10, 6, typeof(SemaphoreFullException));
             RunSemaphoreSlimTest2_Release(int.MaxValue - 1, int.MaxValue, 10, typeof(SemaphoreFullException));
         }
+
+#if !NET40
 
         [Test]
         public static void RunSemaphoreSlimTest4_Dispose()
@@ -158,6 +164,8 @@ namespace System.Threading.Tests
             RunSemaphoreSlimTest7_AvailableWaitHandle(5, 10, SemaphoreSlimActions.WaitAsync, true);
             RunSemaphoreSlimTest7_AvailableWaitHandle(0, 10, SemaphoreSlimActions.Release, true);
         }
+
+#endif
 
         /// <summary>
         /// Test SemaphoreSlim constructor
@@ -221,6 +229,8 @@ namespace System.Threading.Tests
                 Assert.IsInstanceOfType(exceptionType, ex);
             }
         }
+
+#if !NET40
 
         /// <summary>
         /// Test SemaphoreSlim WaitAsync
@@ -300,6 +310,8 @@ namespace System.Threading.Tests
             Assert.False(nonZeroObserved, "RunSemaphoreSlimTest1_WaitAsync2:  FAILED.  SemaphoreSlim.Release() seems to have synchronously invoked a continuation.");
         }
 
+#endif
+
         /// <summary>
         /// Test SemaphoreSlim Release
         /// </summary>
@@ -325,6 +337,8 @@ namespace System.Threading.Tests
                 Assert.IsInstanceOfType(exceptionType, ex);
             }
         }
+
+#if !NET40
 
         /// <summary>
         /// Call specific SemaphoreSlim method or property
@@ -450,6 +464,8 @@ namespace System.Threading.Tests
             Assert.AreEqual(state, semaphore.AvailableWaitHandle.WaitOne(0));
         }
 
+#endif
+
         [Test]
         [Category("RaceCondition")] // This test creates a race condition
         public static void RunSemaphoreSlimTest8_ConcWaitAndRelease()
@@ -510,6 +526,8 @@ namespace System.Threading.Tests
             Assert.AreEqual(finalCount, semaphore.CurrentCount);
         }
 
+#if !NET40
+
         [Test]
         [Category("RaceCondition")] // This test creates a race condition
         public static void RunSemaphoreSlimTest8_ConcWaitAsyncAndRelease()
@@ -547,7 +565,7 @@ namespace System.Threading.Tests
                 }
                 else
                 {
-                    tasks[i] = Task.Run(delegate
+                    tasks[i] = TaskEx.Run(delegate
                     {
                         mre.WaitOne();
                         semaphore.Release();
@@ -583,7 +601,7 @@ namespace System.Threading.Tests
             int randSeed = unchecked((int)DateTime.Now.Ticks);
             for (int i = 0; i < syncWaiters; i++)
             {
-                tasks[i] = Task.Run(delegate
+                tasks[i] = TaskEx.Run(delegate
                 {
                     //Random rand = new Random(Interlocked.Increment(ref randSeed));
                     for (int iter = 0; iter < ITERS; iter++)
@@ -609,5 +627,7 @@ namespace System.Threading.Tests
             semaphore.Release(totalWaiters / 2);
             Task.WaitAll(tasks);
         }
+
+#endif
     }
 }
