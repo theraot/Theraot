@@ -74,7 +74,10 @@ namespace System.Dynamic.Utils
                 {
                     paramType = paramType.GetElementType();
                 }
-
+                if (paramType == null)
+                {
+                    throw new ArgumentException("Valid parameter types required");
+                }
                 hasRefArgs = hasRefArgs || paramIsByReference;
 
                 ilgen.Emit(OpCodes.Ldloc, argArray);
@@ -115,7 +118,10 @@ namespace System.Dynamic.Utils
                     if (parameters[i].ParameterType.IsByRef)
                     {
                         var byrefToType = parameters[i].ParameterType.GetElementType();
-
+                        if (byrefToType == null)
+                        {
+                            throw new ArgumentException("Valid parameter types required");
+                        }
                         // update parameter
                         ilgen.Emit(OpCodes.Ldarg, i + 1);
                         ilgen.Emit(OpCodes.Ldloc, argArray);
