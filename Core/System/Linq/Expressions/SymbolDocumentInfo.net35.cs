@@ -1,7 +1,11 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+#if NET20 || NET30 || NET35
+
 using System.Dynamic.Utils;
+
+#endif
 
 namespace System.Linq.Expressions
 {

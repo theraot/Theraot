@@ -1,8 +1,13 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Runtime.Serialization;
-using System.Threading;
 using System.Threading.Tasks;
+
+#if NET20 || NET30 || NET35 || NET45
+
+using System.Threading;
+
+#endif
 
 namespace MonoTests.System.Threading.Tasks
 {

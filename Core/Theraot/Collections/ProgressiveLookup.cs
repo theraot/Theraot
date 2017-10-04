@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
-using Theraot.Core;
 
 namespace Theraot.Collections
 {

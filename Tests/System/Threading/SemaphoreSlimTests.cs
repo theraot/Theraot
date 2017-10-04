@@ -4,7 +4,6 @@
 
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Theraot.Core;
 
 namespace System.Threading.Tests
 {

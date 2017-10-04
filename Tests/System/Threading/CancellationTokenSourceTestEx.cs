@@ -1,6 +1,16 @@
 ﻿using NUnit.Framework;
+
+#if NET20 || NET30 || NET35 || NET45
+
 using System.Threading;
+
+#endif
+
+#if FAT && (NET20 || NET30 || NET35)
+
 using System.Threading.Tasks;
+
+#endif
 
 namespace MonoTests.System.Threading
 {

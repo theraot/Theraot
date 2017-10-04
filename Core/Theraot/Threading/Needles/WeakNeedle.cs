@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Threading;
-using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
