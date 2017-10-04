@@ -1,6 +1,8 @@
 ﻿#if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using Theraot.Core;
 
 namespace System.Collections
@@ -44,7 +46,7 @@ namespace System.Collections
                     return comparable.Equals(y, this);
                 }
                 var typeX = x.GetType();
-                var typeY = x.GetType();
+                var typeY = y.GetType();
                 if (typeX.IsArray && typeY.IsArray)
                 {
                     if (typeX.GetElementType() == typeY.GetElementType())
@@ -52,6 +54,11 @@ namespace System.Collections
                         CheckRank(x, y, typeX, typeY);
                         var xLengthInfo = typeX.GetProperty("Length");
                         var yLengthInfo = typeY.GetProperty("Length");
+                        if (xLengthInfo == null || yLengthInfo == null)
+                        {
+                            // should never happen
+                            throw new ArgumentException("Valid arrays required");
+                        }
                         if ((int)xLengthInfo.GetValue(x, TypeHelper.EmptyObjects) != (int)yLengthInfo.GetValue(y, TypeHelper.EmptyObjects))
                         {
                             return false;
@@ -111,6 +118,11 @@ namespace System.Collections
             {
                 var xRankInfo = typeX.GetProperty("Rank");
                 var yRankInfo = typeY.GetProperty("Rank");
+                if (xRankInfo == null || yRankInfo == null)
+                {
+                    // should never happen
+                    throw new ArgumentException("Valid arrays required");
+                }
                 if ((int)xRankInfo.GetValue(x, TypeHelper.EmptyObjects) != 1)
                 {
                     throw new ArgumentException("Only one-dimensional arrays are supported", "x");
