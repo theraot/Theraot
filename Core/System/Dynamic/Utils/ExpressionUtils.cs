@@ -26,7 +26,7 @@ namespace System.Dynamic.Utils
             }
 
             // otherwise make sure only readonly collection every gets exposed
-            Interlocked.CompareExchange<IList<T>>(
+            Interlocked.CompareExchange(
                 ref collection,
                 value.ToReadOnly(),
                 value
