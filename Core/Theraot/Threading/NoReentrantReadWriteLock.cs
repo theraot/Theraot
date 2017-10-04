@@ -76,16 +76,13 @@ namespace Theraot.Threading
                 Interlocked.Increment(ref _readCount);
                 return true;
             }
-            else
+            if (Interlocked.CompareExchange(ref _master, 1, 0) >= 0)
             {
-                if (Interlocked.CompareExchange(ref _master, 1, 0) >= 0)
-                {
-                    _freeToWrite.Reset();
-                    Interlocked.Increment(ref _readCount);
-                    return true;
-                }
-                return false;
+                _freeToWrite.Reset();
+                Interlocked.Increment(ref _readCount);
+                return true;
             }
+            return false;
         }
 
         private bool CanWrite()
@@ -95,20 +92,17 @@ namespace Theraot.Threading
                 Interlocked.Increment(ref _writeCount);
                 return true;
             }
-            else
+            if (Interlocked.CompareExchange(ref _master, -1, 0) == 0)
             {
-                if (Interlocked.CompareExchange(ref _master, -1, 0) == 0)
+                _freeToRead.Reset();
+                if (Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null) == null)
                 {
-                    _freeToRead.Reset();
-                    if (Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null) == null)
-                    {
-                        // Success
-                        Interlocked.Increment(ref _writeCount);
-                        return true;
-                    }
+                    // Success
+                    Interlocked.Increment(ref _writeCount);
+                    return true;
                 }
-                return false;
             }
+            return false;
         }
 
         private void DoneRead()

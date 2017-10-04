@@ -247,10 +247,7 @@ namespace Theraot.Collections
                 {
                     return _wrapped.Remove(key);
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
             catch (KeyNotFoundException)
             {

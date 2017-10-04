@@ -67,10 +67,7 @@ namespace System.Threading
                 {
                     throw new ObjectDisposedException(GetType().FullName);
                 }
-                else
-                {
-                    return _wrapped.IsValueCreated;
-                }
+                return _wrapped.IsValueCreated;
             }
         }
 
@@ -82,10 +79,7 @@ namespace System.Threading
                 {
                     throw new ObjectDisposedException(GetType().FullName);
                 }
-                else
-                {
-                    return _wrapped.Value;
-                }
+                return _wrapped.Value;
             }
             set
             {
@@ -93,10 +87,7 @@ namespace System.Threading
                 {
                     throw new ObjectDisposedException(GetType().FullName);
                 }
-                else
-                {
-                    _wrapped.Value = value;
-                }
+                _wrapped.Value = value;
             }
         }
 

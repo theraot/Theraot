@@ -313,10 +313,10 @@ namespace System.Threading
                 throw new ArgumentOutOfRangeException("participantCount", participantCount,
                     "The participantCount argument must be a positive value.");
             }
-            else if (participantCount > _maxParticipants) //overflow
+            if (participantCount > _maxParticipants) //overflow
             {
                 throw new ArgumentOutOfRangeException("participantCount",
-                        "Adding participantCount participants would result in the number of participants exceeding the maximum number allowed.");
+                    "Adding participantCount participants would result in the number of participants exceeding the maximum number allowed.");
             }
 
             // in case of this is called from the PHA
@@ -725,10 +725,7 @@ namespace System.Threading
                         {
                             throw new NewOperationCanceledException("The operation was canceled.", cancellationToken);
                         }
-                        else
-                        {
-                            return false;
-                        }
+                        return false;
                     }
                     spinner.SpinOnce();
                 }

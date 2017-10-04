@@ -95,10 +95,12 @@ namespace Theraot.Collections
         }
 
 #if !NETCOREAPP1_1
+
         object ICloneable.Clone()
         {
             return Clone();
         }
+
 #endif
 
         void ICollection<T>.Add(T item)
@@ -137,10 +139,7 @@ namespace Theraot.Collections
                 _wrapped.Pop();
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
     }
 }

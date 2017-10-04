@@ -538,59 +538,56 @@ namespace System.Numerics
                             {
                                 break;
                             }
-                            else if (num9 < num12 || num9 + num11 > high21 - num6)
+                            if (num9 < num12 || num9 + num11 > high21 - num6)
                             {
                                 break;
                             }
-                            else
+                            num4 = (uint)num11;
+                            num5 = (uint)num12;
+                            high2 = num9;
+                            if (high2 > num5)
                             {
-                                num4 = (uint)num11;
-                                num5 = (uint)num12;
-                                high2 = num9;
-                                if (high2 > num5)
+                                num8 = 1;
+                                num9 = high21 - high2;
+                                while (num9 >= high2 && num8 < 32)
                                 {
-                                    num8 = 1;
-                                    num9 = high21 - high2;
-                                    while (num9 >= high2 && num8 < 32)
+                                    num9 = num9 - high2;
+                                    num8++;
+                                }
+                                if (num9 >= high2)
+                                {
+                                    var num13 = high21 / high2;
+                                    if (num13 <= uint.MaxValue)
                                     {
-                                        num9 = num9 - high2;
-                                        num8++;
+                                        num8 = (uint)num13;
+                                        num9 = high21 - num8 * high2;
                                     }
-                                    if (num9 >= high2)
-                                    {
-                                        var num13 = high21 / high2;
-                                        if (num13 <= uint.MaxValue)
-                                        {
-                                            num8 = (uint)num13;
-                                            num9 = high21 - num8 * high2;
-                                        }
-                                        else
-                                        {
-                                            break;
-                                        }
-                                    }
-                                    num11 = num7 + num8 * (ulong)num5;
-                                    num12 = num6 + num8 * (ulong)num4;
-                                    if (num11 > 2147483647 || num12 > 2147483647)
-                                    {
-                                        break;
-                                    }
-                                    if (num9 < num12 || num9 + num11 > high2 - num5)
-                                    {
-                                        break;
-                                    }
-                                    num7 = (uint)num11;
-                                    num6 = (uint)num12;
-                                    high21 = num9;
-                                    if (high21 <= num6)
+                                    else
                                     {
                                         break;
                                     }
                                 }
-                                else
+                                num11 = num7 + num8 * (ulong)num5;
+                                num12 = num6 + num8 * (ulong)num4;
+                                if (num11 > 2147483647 || num12 > 2147483647)
                                 {
                                     break;
                                 }
+                                if (num9 < num12 || num9 + num11 > high2 - num5)
+                                {
+                                    break;
+                                }
+                                num7 = (uint)num11;
+                                num6 = (uint)num12;
+                                high21 = num9;
+                                if (high21 <= num6)
+                                {
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                break;
                             }
                         }
                         if (num5 != 0)

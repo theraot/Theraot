@@ -70,10 +70,7 @@ namespace System
                 {
                     throw new SerializationException("Deserialization Failure");
                 }
-                else
-                {
-                    _innerExceptions = new ReadOnlyCollection<Exception>(value);
-                }
+                _innerExceptions = new ReadOnlyCollection<Exception>(value);
             }
             else
             {

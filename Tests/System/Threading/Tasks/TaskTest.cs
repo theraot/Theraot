@@ -560,10 +560,7 @@ namespace MonoTests.System.Threading.Tasks
                                         {
                                             break;
                                         }
-                                        else
-                                        {
-                                            Monitor.Wait(monitor);
-                                        }
+                                        Monitor.Wait(monitor);
                                     }
                                 }
                             }

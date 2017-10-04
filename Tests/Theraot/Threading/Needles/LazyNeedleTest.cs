@@ -23,10 +23,7 @@ namespace Tests.Theraot.Threading.Needles
                     count[0]++;
                     throw new InvalidOperationException();
                 }
-                else
-                {
-                    return count[0];
-                }
+                return count[0];
             });
             Assert.Throws(typeof(InvalidOperationException), () => GC.KeepAlive(a.Value));
             Assert.IsTrue(a.IsFaulted);
@@ -44,10 +41,7 @@ namespace Tests.Theraot.Threading.Needles
                     count[0]++;
                     throw new InvalidOperationException();
                 }
-                else
-                {
-                    return count[0];
-                }
+                return count[0];
             }, true);
             Assert.Throws(typeof(InvalidOperationException), () => GC.KeepAlive(a.Value));
             Assert.IsTrue(a.IsFaulted);
@@ -313,11 +307,8 @@ namespace Tests.Theraot.Threading.Needles
                 {
                     return 0;
                 }
-                else
-                {
-                    needle[0].Wait();
-                    return 0;
-                }
+                needle[0].Wait();
+                return 0;
             });
             Assert.Throws(typeof(InvalidOperationException), needle[0].Initialize);
         }

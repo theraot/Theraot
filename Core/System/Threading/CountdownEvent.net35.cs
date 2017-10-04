@@ -19,15 +19,12 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException("initialCount");
             }
-            else
+            _initialCount = initialCount;
+            _currentCount = initialCount;
+            _event = new ManualResetEventSlim();
+            if (initialCount == 0)
             {
-                _initialCount = initialCount;
-                _currentCount = initialCount;
-                _event = new ManualResetEventSlim();
-                if (initialCount == 0)
-                {
-                    _event.Set();
-                }
+                _event.Set();
             }
         }
 
@@ -90,18 +87,15 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException("count");
             }
+            Thread.VolatileWrite(ref _currentCount, count);
+            _initialCount = count;
+            if (count == 0)
+            {
+                _event.Set();
+            }
             else
             {
-                Thread.VolatileWrite(ref _currentCount, count);
-                _initialCount = count;
-                if (count == 0)
-                {
-                    _event.Set();
-                }
-                else
-                {
-                    _event.Reset();
-                }
+                _event.Reset();
             }
         }
 
@@ -112,26 +106,17 @@ namespace System.Threading
             {
                 throw new InvalidOperationException("Below Zero");
             }
-            else
+            var currentCount = Interlocked.Decrement(ref _currentCount);
+            if (currentCount == 0)
             {
-                var currentCount = Interlocked.Decrement(ref _currentCount);
-                if (currentCount == 0)
-                {
-                    _event.Set();
-                    return true;
-                }
-                else
-                {
-                    if (currentCount < 0)
-                    {
-                        throw new InvalidOperationException("Below Zero");
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
+                _event.Set();
+                return true;
             }
+            if (currentCount < 0)
+            {
+                throw new InvalidOperationException("Below Zero");
+            }
+            return false;
         }
 
         public bool Signal(int signalCount)
@@ -140,28 +125,19 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException("signalCount");
             }
-            else
+            CheckDisposed();
+            int lastValue;
+            if (ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _currentCount, -signalCount, out lastValue))
             {
-                CheckDisposed();
-                int lastValue;
-                if (ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _currentCount, -signalCount, out lastValue))
+                var result = lastValue - signalCount;
+                if (result == 0)
                 {
-                    var result = lastValue - signalCount;
-                    if (result == 0)
-                    {
-                        _event.Set();
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    _event.Set();
+                    return true;
                 }
-                else
-                {
-                    throw new InvalidOperationException("Below Zero");
-                }
+                return false;
             }
+            throw new InvalidOperationException("Below Zero");
         }
 
         public bool TryAddCount()
@@ -175,26 +151,17 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException("signalCount");
             }
-            else
+            CheckDisposed();
+            int lastValue;
+            if (ThreadingHelper.SpinWaitRelativeExchangeBounded(ref _currentCount, signalCount, 1, int.MaxValue, out lastValue))
             {
-                CheckDisposed();
-                int lastValue;
-                if (ThreadingHelper.SpinWaitRelativeExchangeBounded(ref _currentCount, signalCount, 1, int.MaxValue, out lastValue))
-                {
-                    return true;
-                }
-                else
-                {
-                    if (lastValue < 1)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("Max");
-                    }
-                }
+                return true;
             }
+            if (lastValue < 1)
+            {
+                return false;
+            }
+            throw new InvalidOperationException("Max");
         }
 
         public void Wait()
@@ -214,10 +181,7 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException("timeout");
             }
-            else
-            {
-                return Wait((int)totalMilliseconds, CancellationToken.None);
-            }
+            return Wait((int)totalMilliseconds, CancellationToken.None);
         }
 
         public bool Wait(TimeSpan timeout, CancellationToken cancellationToken)

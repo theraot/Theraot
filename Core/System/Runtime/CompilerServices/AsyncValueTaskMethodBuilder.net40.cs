@@ -80,11 +80,8 @@ namespace System.Runtime.CompilerServices
                 {
                     return new ValueTask<TResult>(_result);
                 }
-                else
-                {
-                    _useBuilder = true;
-                    return new ValueTask<TResult>(_methodBuilder.Task);
-                }
+                _useBuilder = true;
+                return new ValueTask<TResult>(_methodBuilder.Task);
             }
         }
 

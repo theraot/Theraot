@@ -237,29 +237,26 @@ namespace Theraot.Threading.Needles
                 {
                     return base.Value;
                 }
-                else
+                object value;
+                Volatile.Write(ref _inUse, 1);
+                if (transaction._writeLog.TryGetValue(this, out value))
                 {
-                    object value;
-                    Volatile.Write(ref _inUse, 1);
-                    if (transaction._writeLog.TryGetValue(this, out value))
-                    {
-                        return (T)value;
-                    }
-                    if (transaction._readLog.TryGetValue(this, out value))
-                    {
-                        return (T)value;
-                    }
-                    var original = RetrieveValue(transaction._parentTransaction);
-                    var clone = _cloner.Clone(original);
-                    if (!_comparer.Equals(clone, original))
-                    {
-                        transaction._writeLog.Set(this, clone);
-                    }
-
-                    transaction._readLog.TryAdd(this, original);
-
-                    return clone;
+                    return (T)value;
                 }
+                if (transaction._readLog.TryGetValue(this, out value))
+                {
+                    return (T)value;
+                }
+                var original = RetrieveValue(transaction._parentTransaction);
+                var clone = _cloner.Clone(original);
+                if (!_comparer.Equals(clone, original))
+                {
+                    transaction._writeLog.Set(this, clone);
+                }
+
+                transaction._readLog.TryAdd(this, original);
+
+                return clone;
             }
 
             private T RetrieveValue(Transact transaction)
@@ -268,24 +265,21 @@ namespace Theraot.Threading.Needles
                 {
                     return base.Value;
                 }
-                else
+                object value;
+                Volatile.Write(ref _inUse, 1);
+                if (transaction._writeLog.TryGetValue(this, out value))
                 {
-                    object value;
-                    Volatile.Write(ref _inUse, 1);
-                    if (transaction._writeLog.TryGetValue(this, out value))
-                    {
-                        return (T)value;
-                    }
-                    if (transaction._readLog.TryGetValue(this, out value))
-                    {
-                        return (T)value;
-                    }
-                    var original = RetrieveValue(transaction._parentTransaction);
-
-                    transaction._readLog.TryAdd(this, original);
-
-                    return original;
+                    return (T)value;
                 }
+                if (transaction._readLog.TryGetValue(this, out value))
+                {
+                    return (T)value;
+                }
+                var original = RetrieveValue(transaction._parentTransaction);
+
+                transaction._readLog.TryAdd(this, original);
+
+                return original;
             }
 
             private void StoreValue(Transact transaction, T value)

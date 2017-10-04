@@ -25,10 +25,7 @@ namespace Theraot.Threading.Needles
                 {
                     throw new ArgumentNullException("value", "NotNull cannot have a null value.");
                 }
-                else
-                {
-                    SetTargetValue(value);
-                }
+                SetTargetValue(value);
             }
         }
     }

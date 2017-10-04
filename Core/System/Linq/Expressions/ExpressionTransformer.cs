@@ -43,87 +43,84 @@ namespace System.Linq.Expressions
             {
                 return null;
             }
-            else
+            switch (exp.NodeType)
             {
-                switch (exp.NodeType)
-                {
-                    case ExpressionType.Negate:
-                    case ExpressionType.NegateChecked:
-                    case ExpressionType.Not:
-                    case ExpressionType.Convert:
-                    case ExpressionType.ConvertChecked:
-                    case ExpressionType.ArrayLength:
-                    case ExpressionType.Quote:
-                    case ExpressionType.TypeAs:
-                    case ExpressionType.UnaryPlus:
-                        return VisitUnary((UnaryExpression)exp);
+                case ExpressionType.Negate:
+                case ExpressionType.NegateChecked:
+                case ExpressionType.Not:
+                case ExpressionType.Convert:
+                case ExpressionType.ConvertChecked:
+                case ExpressionType.ArrayLength:
+                case ExpressionType.Quote:
+                case ExpressionType.TypeAs:
+                case ExpressionType.UnaryPlus:
+                    return VisitUnary((UnaryExpression)exp);
 
-                    case ExpressionType.Add:
-                    case ExpressionType.AddChecked:
-                    case ExpressionType.Subtract:
-                    case ExpressionType.SubtractChecked:
-                    case ExpressionType.Multiply:
-                    case ExpressionType.MultiplyChecked:
-                    case ExpressionType.Divide:
-                    case ExpressionType.Power:
-                    case ExpressionType.Modulo:
-                    case ExpressionType.And:
-                    case ExpressionType.AndAlso:
-                    case ExpressionType.Or:
-                    case ExpressionType.OrElse:
-                    case ExpressionType.LessThan:
-                    case ExpressionType.LessThanOrEqual:
-                    case ExpressionType.GreaterThan:
-                    case ExpressionType.GreaterThanOrEqual:
-                    case ExpressionType.Equal:
-                    case ExpressionType.NotEqual:
-                    case ExpressionType.Coalesce:
-                    case ExpressionType.ArrayIndex:
-                    case ExpressionType.RightShift:
-                    case ExpressionType.LeftShift:
-                    case ExpressionType.ExclusiveOr:
-                        return VisitBinary((BinaryExpression)exp);
+                case ExpressionType.Add:
+                case ExpressionType.AddChecked:
+                case ExpressionType.Subtract:
+                case ExpressionType.SubtractChecked:
+                case ExpressionType.Multiply:
+                case ExpressionType.MultiplyChecked:
+                case ExpressionType.Divide:
+                case ExpressionType.Power:
+                case ExpressionType.Modulo:
+                case ExpressionType.And:
+                case ExpressionType.AndAlso:
+                case ExpressionType.Or:
+                case ExpressionType.OrElse:
+                case ExpressionType.LessThan:
+                case ExpressionType.LessThanOrEqual:
+                case ExpressionType.GreaterThan:
+                case ExpressionType.GreaterThanOrEqual:
+                case ExpressionType.Equal:
+                case ExpressionType.NotEqual:
+                case ExpressionType.Coalesce:
+                case ExpressionType.ArrayIndex:
+                case ExpressionType.RightShift:
+                case ExpressionType.LeftShift:
+                case ExpressionType.ExclusiveOr:
+                    return VisitBinary((BinaryExpression)exp);
 
-                    case ExpressionType.TypeIs:
-                        return VisitTypeIs((TypeBinaryExpression)exp);
+                case ExpressionType.TypeIs:
+                    return VisitTypeIs((TypeBinaryExpression)exp);
 
-                    case ExpressionType.Conditional:
-                        return VisitConditional((ConditionalExpression)exp);
+                case ExpressionType.Conditional:
+                    return VisitConditional((ConditionalExpression)exp);
 
-                    case ExpressionType.Constant:
-                        return VisitConstant((ConstantExpression)exp);
+                case ExpressionType.Constant:
+                    return VisitConstant((ConstantExpression)exp);
 
-                    case ExpressionType.Parameter:
-                        return VisitParameter((ParameterExpression)exp);
+                case ExpressionType.Parameter:
+                    return VisitParameter((ParameterExpression)exp);
 
-                    case ExpressionType.MemberAccess:
-                        return VisitMemberAccess((MemberExpression)exp);
+                case ExpressionType.MemberAccess:
+                    return VisitMemberAccess((MemberExpression)exp);
 
-                    case ExpressionType.Call:
-                        return VisitMethodCall((MethodCallExpression)exp);
+                case ExpressionType.Call:
+                    return VisitMethodCall((MethodCallExpression)exp);
 
-                    case ExpressionType.Lambda:
-                        return VisitLambda((LambdaExpression)exp);
+                case ExpressionType.Lambda:
+                    return VisitLambda((LambdaExpression)exp);
 
-                    case ExpressionType.New:
-                        return VisitNew((NewExpression)exp);
+                case ExpressionType.New:
+                    return VisitNew((NewExpression)exp);
 
-                    case ExpressionType.NewArrayInit:
-                    case ExpressionType.NewArrayBounds:
-                        return VisitNewArray((NewArrayExpression)exp);
+                case ExpressionType.NewArrayInit:
+                case ExpressionType.NewArrayBounds:
+                    return VisitNewArray((NewArrayExpression)exp);
 
-                    case ExpressionType.Invoke:
-                        return VisitInvocation((InvocationExpression)exp);
+                case ExpressionType.Invoke:
+                    return VisitInvocation((InvocationExpression)exp);
 
-                    case ExpressionType.MemberInit:
-                        return VisitMemberInit((MemberInitExpression)exp);
+                case ExpressionType.MemberInit:
+                    return VisitMemberInit((MemberInitExpression)exp);
 
-                    case ExpressionType.ListInit:
-                        return VisitListInit((ListInitExpression)exp);
+                case ExpressionType.ListInit:
+                    return VisitListInit((ListInitExpression)exp);
 
-                    default:
-                        throw new Exception(string.Format("Unhandled expression type: '{0}'", exp.NodeType));
-                }
+                default:
+                    throw new Exception(string.Format("Unhandled expression type: '{0}'", exp.NodeType));
             }
         }
 

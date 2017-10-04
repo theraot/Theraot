@@ -39,17 +39,11 @@ namespace Theraot.Threading
                             {
                                 return def;
                             }
-                            else
-                            {
-                                return action.Invoke(disposable);
-                            }
+                            return action.Invoke(disposable);
                         }
                     );
             }
-            else
-            {
-                return def;
-            }
+            return def;
         }
 
         public static TReturn DisposableSafeWith<T, TReturn>(this T disposable, Func<T, TReturn> action, Func<TReturn> alternative, TReturn def)
@@ -66,17 +60,11 @@ namespace Theraot.Threading
                             {
                                 return def;
                             }
-                            else
-                            {
-                                return action.Invoke(disposable);
-                            }
+                            return action.Invoke(disposable);
                         }
                     );
             }
-            else
-            {
-                return alternative == null ? alternative.Invoke() : def;
-            }
+            return alternative == null ? alternative.Invoke() : def;
         }
 
         public static void DisposedConditional(this IExtendedDisposable disposable, string exceptionMessageWhenDisposed, Action whenNotDisposed)
@@ -111,14 +99,11 @@ namespace Theraot.Threading
             {
                 return whenDisposed();
             }
-            else
-            {
-                return disposable.DisposedConditional
-                (
-                    whenDisposed,
-                    whenNotDisposed
-                );
-            }
+            return disposable.DisposedConditional
+            (
+                whenDisposed,
+                whenNotDisposed
+            );
         }
 
         public static void Run(Func<IDisposable> allocationCode, Action<IDisposable> bodyCode)
@@ -167,15 +152,9 @@ namespace Theraot.Threading
                 {
                     return def;
                 }
-                else
-                {
-                    return action.Invoke(obj);
-                }
+                return action.Invoke(obj);
             }
-            else
-            {
-                return def;
-            }
+            return def;
         }
 
         public static TReturn SafeWith<T, TReturn>(this T obj, Func<T, TReturn> action, Func<TReturn> alternative, TReturn def)
@@ -188,27 +167,15 @@ namespace Theraot.Threading
                     {
                         return def;
                     }
-                    else
-                    {
-                        return alternative.Invoke();
-                    }
-                }
-                else
-                {
-                    return action.Invoke(obj);
-                }
-            }
-            else
-            {
-                if (alternative == null)
-                {
-                    return def;
-                }
-                else
-                {
                     return alternative.Invoke();
                 }
+                return action.Invoke(obj);
             }
+            if (alternative == null)
+            {
+                return def;
+            }
+            return alternative.Invoke();
         }
 
         public static void With<T>(this T obj, Action<T> action)

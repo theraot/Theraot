@@ -356,27 +356,27 @@ namespace System.Threading.Tests
                 {
                     return semaphore.Wait((TimeSpan)param);
                 }
-                else if (param is int)
+                if (param is int)
                 {
                     return semaphore.Wait((int)param);
                 }
                 semaphore.Wait();
                 return null;
             }
-            else if (action == SemaphoreSlimActions.WaitAsync)
+            if (action == SemaphoreSlimActions.WaitAsync)
             {
                 if (param is TimeSpan)
                 {
                     return semaphore.WaitAsync((TimeSpan)param).Result;
                 }
-                else if (param is int)
+                if (param is int)
                 {
                     return semaphore.WaitAsync((int)param).Result;
                 }
                 semaphore.WaitAsync().Wait();
                 return null;
             }
-            else if (action == SemaphoreSlimActions.Release)
+            if (action == SemaphoreSlimActions.Release)
             {
                 if (param != null)
                 {
@@ -384,16 +384,16 @@ namespace System.Threading.Tests
                 }
                 return semaphore.Release();
             }
-            else if (action == SemaphoreSlimActions.Dispose)
+            if (action == SemaphoreSlimActions.Dispose)
             {
                 semaphore.Dispose();
                 return null;
             }
-            else if (action == SemaphoreSlimActions.CurrentCount)
+            if (action == SemaphoreSlimActions.CurrentCount)
             {
                 return semaphore.CurrentCount;
             }
-            else if (action == SemaphoreSlimActions.AvailableWaitHandle)
+            if (action == SemaphoreSlimActions.AvailableWaitHandle)
             {
                 return semaphore.AvailableWaitHandle;
             }

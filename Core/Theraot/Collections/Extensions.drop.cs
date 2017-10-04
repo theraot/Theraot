@@ -18,10 +18,7 @@ namespace Theraot.Collections
             {
                 return item;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static bool TryTakeAndIgnore<T>(this IDropPoint<T> dropPoint)
@@ -51,15 +48,9 @@ namespace Theraot.Collections
                 {
                     return true;
                 }
-                else
-                {
-                    goto back;
-                }
+                goto back;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public static bool TryTakeUntil<T>(this IDropPoint<T> dropPoint, Predicate<T> check, ICollection<T> trail)
@@ -84,16 +75,10 @@ namespace Theraot.Collections
                 {
                     return true;
                 }
-                else
-                {
-                    trail.Add(item);
-                    goto back;
-                }
+                trail.Add(item);
+                goto back;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
     }
 }

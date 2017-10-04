@@ -124,15 +124,12 @@ namespace System.Linq
             {
                 return _enumerable.ToString();
             }
-            else if (_expression == null)
+            if (_expression == null)
             {
                 return base.ToString();
             }
-            else
-            {
-                var constant = _expression as ConstantExpression;
-                return constant != null && constant.Value == this ? base.ToString() : _expression.ToString();
-            }
+            var constant = _expression as ConstantExpression;
+            return constant != null && constant.Value == this ? base.ToString() : _expression.ToString();
         }
 
         private static Expression TransformQueryable(Expression expression)

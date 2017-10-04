@@ -190,10 +190,7 @@ namespace MonoTests.System
                 {
                     throw new Exception();
                 }
-                else
-                {
-                    return 99;
-                }
+                return 99;
             }, LazyThreadSafetyMode.None);
             try
             {
@@ -264,10 +261,7 @@ namespace MonoTests.System
                 {
                     throw new Exception();
                 }
-                else
-                {
-                    return 99;
-                }
+                return 99;
             }, LazyThreadSafetyMode.PublicationOnly);
 
             try
@@ -322,10 +316,7 @@ namespace MonoTests.System
                 {
                     throw new Exception();
                 }
-                else
-                {
-                    return 99;
-                }
+                return 99;
             }, LazyThreadSafetyMode.ExecutionAndPublication);
 
             try

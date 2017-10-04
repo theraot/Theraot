@@ -33,10 +33,7 @@ namespace System.Threading
                 {
                     throw new InvalidOperationException("Thread ownership tracking is disabled");
                 }
-                else
-                {
-                    return IsHeld && ReferenceEquals(_ownerThread, Thread.CurrentThread);
-                }
+                return IsHeld && ReferenceEquals(_ownerThread, Thread.CurrentThread);
             }
         }
 
@@ -52,39 +49,33 @@ namespace System.Threading
                 lockTaken = false;
                 throw new ArgumentException();
             }
-            else
+            if (_disableThreadTracking)
             {
-                if (_disableThreadTracking)
+                var check = Interlocked.CompareExchange(ref _isHeld, 1, 0);
+                if (check == 0)
                 {
-                    var check = Interlocked.CompareExchange(ref _isHeld, 1, 0);
-                    if (check == 0)
-                    {
-                        lockTaken = true;
-                    }
-                    else
-                    {
-                        //Deadlock on recursion
-                        TryEnter(-1, ref lockTaken);
-                    }
+                    lockTaken = true;
                 }
                 else
                 {
-                    if (IsHeldByCurrentThread)
-                    {
-                        //Throw on recursion
-                        throw new LockRecursionException();
-                    }
-                    else
-                    {
-                        if (Interlocked.CompareExchange(ref _isHeld, 1, 0) == 0 && ReferenceEquals(Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null), null))
-                        {
-                            lockTaken = true;
-                        }
-                        else
-                        {
-                            TryEnter(-1, ref lockTaken);
-                        }
-                    }
+                    //Deadlock on recursion
+                    TryEnter(-1, ref lockTaken);
+                }
+            }
+            else
+            {
+                if (IsHeldByCurrentThread)
+                {
+                    //Throw on recursion
+                    throw new LockRecursionException();
+                }
+                if (Interlocked.CompareExchange(ref _isHeld, 1, 0) == 0 && ReferenceEquals(Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null), null))
+                {
+                    lockTaken = true;
+                }
+                else
+                {
+                    TryEnter(-1, ref lockTaken);
                 }
             }
         }
@@ -144,10 +135,7 @@ namespace System.Threading
                     //Throw on recursion
                     throw new LockRecursionException();
                 }
-                else
-                {
-                    lockTaken |= (ThreadingHelper.SpinWaitSet(ref _isHeld, 1, 0, millisecondsTimeout) && ReferenceEquals(Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null), null));
-                }
+                lockTaken |= (ThreadingHelper.SpinWaitSet(ref _isHeld, 1, 0, millisecondsTimeout) && ReferenceEquals(Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null), null));
             }
         }
 
