@@ -13,9 +13,9 @@ namespace Theraot.Collections
     [Serializable]
     public sealed class Progressor<T> : IObservable<T>
     {
+        private bool _done;
         private ProxyObservable<T> _proxy;
         private TryTake<T> _tryTake;
-        private bool _done;
 
         public Progressor(Progressor<T> wrapped)
         {
@@ -332,19 +332,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("tryTake");
             }
-            var tryTakeCopy = tryTake;
             _proxy = new ProxyObservable<T>();
-            _tryTake = (out T value) =>
-            {
-                // This is not an overridable method, and it is not being called on the constructor.
-                if (tryTakeCopy(out value))
-                {
-                    _proxy.OnNext(value);
-                    return true;
-                }
-                _done = doneOnFalse;
-                return false;
-            };
+            _tryTake = GetTryTake(tryTake, doneOnFalse, this);
         }
 
         public Progressor(TryTake<T> tryTake, Func<bool> isDone)
@@ -357,19 +346,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("isDone");
             }
-            var tryTakeCopy = tryTake;
             _proxy = new ProxyObservable<T>();
-            _tryTake = (out T value) =>
-            {
-                // This is not an overridable method, and it is not being called on the constructor.
-                if (tryTakeCopy(out value))
-                {
-                    _proxy.OnNext(value);
-                    return true;
-                }
-                _done = new ValueFuncClosure<bool>(isDone).InvokeReturn();
-                return false;
-            };
+            _tryTake = GetTryTake(tryTake, isDone, this);
         }
 
         public Progressor(IObservable<T> wrapped)
@@ -779,6 +757,36 @@ namespace Theraot.Collections
                     break;
                 }
             }
+        }
+
+        private static TryTake<T> GetTryTake(TryTake<T> tryTake, bool doneOnFalse, Progressor<T> that)
+        {
+            var tryTakeCopy = tryTake;
+            return (out T value) =>
+            {
+                if (tryTakeCopy(out value))
+                {
+                    that._proxy.OnNext(value);
+                    return true;
+                }
+                that._done = doneOnFalse;
+                return false;
+            };
+        }
+
+        private static TryTake<T> GetTryTake(TryTake<T> tryTake, Func<bool> isDone, Progressor<T> that)
+        {
+            var tryTakeCopy = tryTake;
+            return (out T value) =>
+            {
+                if (tryTakeCopy(out value))
+                {
+                    that._proxy.OnNext(value);
+                    return true;
+                }
+                that._done = new ValueFuncClosure<bool>(isDone).InvokeReturn();
+                return false;
+            };
         }
     }
 }
