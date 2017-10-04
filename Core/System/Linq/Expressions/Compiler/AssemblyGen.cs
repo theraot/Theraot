@@ -15,7 +15,6 @@ namespace System.Linq.Expressions.Compiler
     {
         private static AssemblyGen _assembly;
 
-        private readonly AssemblyBuilder _assemblyBuilder;
         private readonly ModuleBuilder _moduleBuilder;
 
         private int _index;
@@ -41,8 +40,8 @@ namespace System.Linq.Expressions.Compiler
                 new CustomAttributeBuilder(typeof(SecurityTransparentAttribute).GetConstructor(Type.EmptyTypes), ArrayReservoir<object>.EmptyArray)
             };
 
-            _assemblyBuilder = AssemblyBuilderEx.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run, attributes);
-            _moduleBuilder = _assemblyBuilder.DefineDynamicModule(name.Name);
+            var assemblyBuilder = AssemblyBuilderEx.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run, attributes);
+            _moduleBuilder = assemblyBuilder.DefineDynamicModule(name.Name);
         }
 
         private TypeBuilder DefineType(string name, Type parent, TypeAttributes attr)
