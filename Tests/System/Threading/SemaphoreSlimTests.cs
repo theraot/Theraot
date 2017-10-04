@@ -4,6 +4,7 @@
 
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Theraot.Core;
 
 namespace System.Threading.Tests
 {
@@ -187,7 +188,7 @@ namespace System.Threading.Tests
             catch (Exception ex)
             {
                 Assert.NotNull(exceptionType);
-                Assert.IsInstanceOfType(exceptionType, ex);
+                Assert.IsTrue(ex.GetType().IsInstanceOfType(exceptionType));
                 exception = ex;
             }
         }
@@ -226,7 +227,7 @@ namespace System.Threading.Tests
             catch (Exception ex)
             {
                 Assert.NotNull(exceptionType);
-                Assert.IsInstanceOfType(exceptionType, ex);
+                Assert.IsTrue(ex.GetType().IsInstanceOfType(exceptionType));
             }
         }
 
@@ -266,7 +267,7 @@ namespace System.Threading.Tests
             catch (Exception ex)
             {
                 Assert.NotNull(exceptionType);
-                Assert.IsInstanceOfType(exceptionType, ex);
+                Assert.IsTrue(ex.GetType().IsInstanceOfType(exceptionType));
             }
         }
 
@@ -334,7 +335,7 @@ namespace System.Threading.Tests
             catch (Exception ex)
             {
                 Assert.NotNull(exceptionType);
-                Assert.IsInstanceOfType(exceptionType, ex);
+                Assert.IsTrue(ex.GetType().IsInstanceOfType(exceptionType));
             }
         }
 
@@ -421,7 +422,7 @@ namespace System.Threading.Tests
             catch (Exception ex)
             {
                 Assert.NotNull(exceptionType);
-                Assert.IsInstanceOfType(exceptionType, ex);
+                Assert.IsTrue(ex.GetType().IsInstanceOfType(exceptionType));
             }
         }
 
