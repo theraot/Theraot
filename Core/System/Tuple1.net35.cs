@@ -63,18 +63,12 @@ namespace System
             {
                 return 1;
             }
-            else
+            var tuple = other as Tuple<T1>;
+            if (tuple == null)
             {
-                var tuple = other as Tuple<T1>;
-                if (tuple == null)
-                {
-                    throw new ArgumentException("other");
-                }
-                else
-                {
-                    return comparer.Compare(_item1, tuple._item1);
-                }
+                throw new ArgumentException("other");
             }
+            return comparer.Compare(_item1, tuple._item1);
         }
     }
 }

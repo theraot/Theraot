@@ -93,43 +93,28 @@ namespace Theraot.Threading
                 {
                     return default(TReturn);
                 }
-                else
-                {
-                    return whenDisposed.Invoke();
-                }
+                return whenDisposed.Invoke();
             }
-            else
+            if (whenNotDisposed == null)
             {
-                if (whenNotDisposed == null)
+                return default(TReturn);
+            }
+            if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
+            {
+                try
                 {
-                    return default(TReturn);
+                    return whenNotDisposed.Invoke();
                 }
-                else
+                finally
                 {
-                    if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
-                    {
-                        try
-                        {
-                            return whenNotDisposed.Invoke();
-                        }
-                        finally
-                        {
-                            System.Threading.Interlocked.Decrement(ref _status);
-                        }
-                    }
-                    else
-                    {
-                        if (whenDisposed == null)
-                        {
-                            return default(TReturn);
-                        }
-                        else
-                        {
-                            return whenDisposed.Invoke();
-                        }
-                    }
+                    System.Threading.Interlocked.Decrement(ref _status);
                 }
             }
+            if (whenDisposed == null)
+            {
+                return default(TReturn);
+            }
+            return whenDisposed.Invoke();
         }
 
         [System.Diagnostics.DebuggerNonUserCode]

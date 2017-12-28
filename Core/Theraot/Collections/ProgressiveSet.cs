@@ -55,10 +55,7 @@ namespace Theraot.Collections
                         }
                         return true;
                     }
-                    else
-                    {
-                        return false;
-                    }
+                    return false;
                 },
                 cache,
                 comparer
@@ -82,12 +79,9 @@ namespace Theraot.Collections
                         }
                         return true;
                     }
-                    else
-                    {
-                        enumerator.Dispose();
-                        value = default(T);
-                        return false;
-                    }
+                    enumerator.Dispose();
+                    value = default(T);
+                    return false;
                 },
                 cache,
                 comparer

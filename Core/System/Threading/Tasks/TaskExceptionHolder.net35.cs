@@ -343,7 +343,7 @@ namespace System.Threading.Tasks
                     MarkAsUnhandled();
                     break;
                 }
-                else if (i == exceptions.Count - 1)
+                if (i == exceptions.Count - 1)
                 {
                     MarkAsHandled(false);
                 }

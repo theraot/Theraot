@@ -18,59 +18,50 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("destination");
             }
-            else
+            if (callback == null)
             {
-                if (callback == null)
+                throw new ArgumentNullException("callback");
+            }
+            var syncroot = new object();
+            var buffer = new byte[_bufferSize];
+            var options = new PingOptions(1, true);
+            var ping = new Ping();
+            ping.PingCompleted += (sender, e) =>
+            {
+                var address = e.Reply.Address;
+                var status = e.Reply.Status;
+                back:
+                var done = !callback.Invoke(destination, new TracertNode(address, status, e.Reply.Options.Ttl)) || address.Equals(destination);
+                if (done)
                 {
-                    throw new ArgumentNullException("callback");
+                    try
+                    {
+                        if (ping != null)
+                        {
+                            ping.Dispose();
+                        }
+                    }
+                    finally
+                    {
+                        ping = null;
+                    }
                 }
                 else
                 {
-                    var syncroot = new object();
-                    var buffer = new byte[_bufferSize];
-                    var options = new PingOptions(1, true);
-                    var ping = new Ping();
-                    ping.PingCompleted += (sender, e) =>
+                    lock (syncroot)
                     {
-                        var address = e.Reply.Address;
-                        var status = e.Reply.Status;
-                        back:
-                        var done = !callback.Invoke(destination, new TracertNode(address, status, e.Reply.Options.Ttl)) || address.Equals(destination);
-                        if (done)
+                        if (ping == null)
                         {
-                            try
-                            {
-                                if (ping != null)
-                                {
-                                    ping.Dispose();
-                                }
-                            }
-                            finally
-                            {
-                                ping = null;
-                            }
+                            address = destination;
+                            status = IPStatus.Unknown;
+                            goto back;
                         }
-                        else
-                        {
-                            lock (syncroot)
-                            {
-                                if (ping == null)
-                                {
-                                    address = destination;
-                                    status = IPStatus.Unknown;
-                                    goto back;
-                                }
-                                else
-                                {
-                                    options.Ttl++;
-                                    ping.SendAsync(destination, _timeoutMilliseconds, buffer, options, null);
-                                }
-                            }
-                        }
-                    };
-                    ping.SendAsync(destination, _timeoutMilliseconds, buffer, options, null);
+                        options.Ttl++;
+                        ping.SendAsync(destination, _timeoutMilliseconds, buffer, options, null);
+                    }
                 }
-            }
+            };
+            ping.SendAsync(destination, _timeoutMilliseconds, buffer, options, null);
         }
     }
 }

@@ -144,7 +144,7 @@ namespace System
         /// <returns>A 0-tuple.</returns>
         public static ValueTuple Create()
         {
-            return new ValueTuple();
+            return default(ValueTuple);
         }
 
         /// <summary>Creates a new struct 1-tuple, or singleton.</summary>

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Threading;
-using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
@@ -200,10 +199,7 @@ namespace Theraot.Threading.Needles
             {
                 return target.ToString();
             }
-            else
-            {
-                return "<Dead Needle>";
-            }
+            return "<Dead Needle>";
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
@@ -243,10 +239,7 @@ namespace Theraot.Threading.Needles
             {
                 return ReferenceEquals(right, null);
             }
-            else
-            {
-                return !ReferenceEquals(right, null) && EqualsExtractedExtracted(left, right);
-            }
+            return !ReferenceEquals(right, null) && EqualsExtractedExtracted(left, right);
         }
 
         private static bool EqualsExtractedExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
@@ -266,10 +259,7 @@ namespace Theraot.Threading.Needles
             {
                 return !ReferenceEquals(right, null);
             }
-            else
-            {
-                return ReferenceEquals(right, null) || NotEqualsExtractedExtracted(left, right);
-            }
+            return ReferenceEquals(right, null) || NotEqualsExtractedExtracted(left, right);
         }
 
         private static bool NotEqualsExtractedExtracted(WeakNeedle<T> left, WeakNeedle<T> right)

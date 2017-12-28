@@ -11,47 +11,41 @@ namespace Theraot.Core
             {
                 return false;
             }
-            else
+            if (number < _smallPrimes[_smallPrimes.Length - 1])
             {
-                if (number < _smallPrimes[_smallPrimes.Length - 1])
+                return Array.BinarySearch(_smallPrimes, number) >= 0;
+            }
+            if (number == 2 || number == 3)
+            {
+                return true;
+            }
+            if ((number & 1) == 0 || number % 3 == 0)
+            {
+                return false;
+            }
+            var max = NumericHelper.Sqrt(number) + 1;
+            var index = 2;
+            for (; index < _smallPrimes.Length; index++)
+            {
+                if (number % _smallPrimes[index] == 0)
                 {
-                    return Array.BinarySearch(_smallPrimes, number) >= 0;
+                    return false;
                 }
-                else
+                if (_smallPrimes[index] > max)
                 {
-                    if (number == 2 || number == 3)
-                    {
-                        return true;
-                    }
-                    if ((number & 1) == 0 || number % 3 == 0)
-                    {
-                        return false;
-                    }
-                    var max = NumericHelper.Sqrt(number) + 1;
-                    var index = 2;
-                    for (; index < _smallPrimes.Length; index++)
-                    {
-                        if (number % _smallPrimes[index] == 0)
-                        {
-                            return false;
-                        }
-                        if (_smallPrimes[index] > max)
-                        {
-                            return true;
-                        }
-                    }
-                    var test = index - (index % 6) + 5;
-                    while (test < max)
-                    {
-                        if (number % test == 0 || number % (test += 2) == 0)
-                        {
-                            return false;
-                        }
-                        test += 4;
-                    }
                     return true;
                 }
             }
+            var test = index - (index % 6) + 5;
+            while (test < max)
+            {
+                if (number % test == 0 || number % (test += 2) == 0)
+                {
+                    return false;
+                }
+                test += 4;
+            }
+            return true;
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
@@ -65,11 +59,8 @@ namespace Theraot.Core
             {
                 throw new OverflowException("2147483629 is the last prime below int.MaxValue");
             }
-            else
-            {
-                fromNumber++;
-                return ToPrimeInternal(fromNumber);
-            }
+            fromNumber++;
+            return ToPrimeInternal(fromNumber);
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
@@ -83,10 +74,7 @@ namespace Theraot.Core
             {
                 return 2147483629;
             }
-            else
-            {
-                return ToPrimeInternal(fromNumber);
-            }
+            return ToPrimeInternal(fromNumber);
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
@@ -99,26 +87,20 @@ namespace Theraot.Core
                 {
                     return _smallPrimes[-index - 1];
                 }
-                else
-                {
-                    return fromNumber;
-                }
-            }
-            else
-            {
-                if (fromNumber % 2 == 0)
-                {
-                    fromNumber++;
-                }
-                for (var index = fromNumber; index < int.MaxValue; index += 2)
-                {
-                    if (IsPrime(index))
-                    {
-                        return index;
-                    }
-                }
                 return fromNumber;
             }
+            if (fromNumber % 2 == 0)
+            {
+                fromNumber++;
+            }
+            for (var index = fromNumber; index < int.MaxValue; index += 2)
+            {
+                if (IsPrime(index))
+                {
+                    return index;
+                }
+            }
+            return fromNumber;
         }
     }
 }

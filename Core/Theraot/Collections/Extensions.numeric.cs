@@ -34,10 +34,7 @@ namespace Theraot.Collections
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static long Max(this IEnumerable<long> source, IComparer<long> comparer)
@@ -64,10 +61,7 @@ namespace Theraot.Collections
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static double Max(this IEnumerable<double> source, IComparer<double> comparer)
@@ -94,10 +88,7 @@ namespace Theraot.Collections
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static float Max(this IEnumerable<float> source, IComparer<float> comparer)
@@ -124,10 +115,7 @@ namespace Theraot.Collections
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static decimal Max(this IEnumerable<decimal> source, IComparer<decimal> comparer)
@@ -154,10 +142,7 @@ namespace Theraot.Collections
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static int? Max(this IEnumerable<int?> source, IComparer<int> comparer)
@@ -316,33 +301,27 @@ namespace Theraot.Collections
                 }
                 return max;
             }
-            else
+            var found = false;
+            foreach (var element in source)
             {
-                var found = false;
-                foreach (var element in source)
-                {
-                    if (found)
-                    {
-                        if (comparer.Compare(element, max) > 0)
-                        {
-                            max = element;
-                        }
-                    }
-                    else
-                    {
-                        max = element;
-                        found = true;
-                    }
-                }
                 if (found)
                 {
-                    return max;
+                    if (comparer.Compare(element, max) > 0)
+                    {
+                        max = element;
+                    }
                 }
                 else
                 {
-                    throw new InvalidOperationException();
+                    max = element;
+                    found = true;
                 }
             }
+            if (found)
+            {
+                return max;
+            }
+            throw new InvalidOperationException();
         }
 
         public static int Max<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector, IComparer<int> comparer)
@@ -374,10 +353,7 @@ namespace Theraot.Collections
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static long Max<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector, IComparer<long> comparer)
@@ -409,10 +385,7 @@ namespace Theraot.Collections
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static double Max<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector, IComparer<double> comparer)
@@ -444,10 +417,7 @@ namespace Theraot.Collections
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static float Max<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector, IComparer<float> comparer)
@@ -479,10 +449,7 @@ namespace Theraot.Collections
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static decimal Max<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector, IComparer<decimal> comparer)
@@ -514,10 +481,7 @@ namespace Theraot.Collections
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static int? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector, IComparer<int> comparer)
@@ -737,10 +701,7 @@ namespace Theraot.Collections
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static long Min(this IEnumerable<long> source, IComparer<long> comparer)
@@ -767,10 +728,7 @@ namespace Theraot.Collections
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static double Min(this IEnumerable<double> source, IComparer<double> comparer)
@@ -797,10 +755,7 @@ namespace Theraot.Collections
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static float Min(this IEnumerable<float> source, IComparer<float> comparer)
@@ -827,10 +782,7 @@ namespace Theraot.Collections
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static decimal Min(this IEnumerable<decimal> source, IComparer<decimal> comparer)
@@ -857,10 +809,7 @@ namespace Theraot.Collections
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static int? Min(this IEnumerable<int?> source, IComparer<int> comparer)
@@ -1019,33 +968,27 @@ namespace Theraot.Collections
                 }
                 return min;
             }
-            else
+            var found = false;
+            foreach (var element in source)
             {
-                var found = false;
-                foreach (var element in source)
-                {
-                    if (found)
-                    {
-                        if (comparer.Compare(min, element) > 0)
-                        {
-                            min = element;
-                        }
-                    }
-                    else
-                    {
-                        min = element;
-                        found = true;
-                    }
-                }
                 if (found)
                 {
-                    return min;
+                    if (comparer.Compare(min, element) > 0)
+                    {
+                        min = element;
+                    }
                 }
                 else
                 {
-                    throw new InvalidOperationException();
+                    min = element;
+                    found = true;
                 }
             }
+            if (found)
+            {
+                return min;
+            }
+            throw new InvalidOperationException();
         }
 
         public static int Min<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector, IComparer<int> comparer)
@@ -1077,10 +1020,7 @@ namespace Theraot.Collections
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static long Min<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector, IComparer<long> comparer)
@@ -1112,10 +1052,7 @@ namespace Theraot.Collections
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static double Min<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector, IComparer<double> comparer)
@@ -1147,10 +1084,7 @@ namespace Theraot.Collections
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static float Min<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector, IComparer<float> comparer)
@@ -1182,10 +1116,7 @@ namespace Theraot.Collections
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static decimal Min<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector, IComparer<decimal> comparer)
@@ -1217,10 +1148,7 @@ namespace Theraot.Collections
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static int? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector, IComparer<int> comparer)

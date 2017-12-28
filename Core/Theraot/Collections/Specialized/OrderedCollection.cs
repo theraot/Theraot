@@ -98,10 +98,7 @@ namespace Theraot.Collections.Specialized
                 _count--;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public bool Remove(T item, IEqualityComparer<T> comparer)
@@ -111,10 +108,7 @@ namespace Theraot.Collections.Specialized
                 _count--;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

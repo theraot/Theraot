@@ -46,10 +46,7 @@ namespace Theraot.Threading
                                Dispose();
                                return true;
                            }
-                           else
-                           {
-                               return false;
-                           }
+                           return false;
                        }
                    );
         }

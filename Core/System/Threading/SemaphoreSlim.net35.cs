@@ -1,5 +1,6 @@
 #if NET20 || NET30 || NET35
 
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
@@ -11,17 +12,23 @@ namespace System.Threading
     {
         private SafeQueue<TaskCompletionSource<bool>> _asyncWaiters;
         private ManualResetEventSlim _event;
-        private readonly int _maxCount;
+        private readonly int? _maxCount;
         private int _count;
         private bool _disposed;
 
         public SemaphoreSlim(int initialCount)
-            : this(initialCount, int.MaxValue)
+            : this(initialCount, null)
         {
-            //Empty
+            // Empty
         }
 
         public SemaphoreSlim(int initialCount, int maxCount)
+            : this(initialCount, (int?)maxCount)
+        {
+            // Empty
+        }
+
+        private SemaphoreSlim(int initialCount, int? maxCount)
         {
             if (initialCount < 0 || initialCount > maxCount)
             {
@@ -33,8 +40,8 @@ namespace System.Threading
             }
             _maxCount = maxCount;
             _asyncWaiters = new SafeQueue<TaskCompletionSource<bool>>();
-            _count = maxCount - initialCount;
-            _event = new ManualResetEventSlim(_count < maxCount);
+            _count = initialCount;
+            _event = new ManualResetEventSlim(_count > 0);
         }
 
         public WaitHandle AvailableWaitHandle
@@ -48,7 +55,7 @@ namespace System.Threading
 
         public int CurrentCount
         {
-            get { return _maxCount - Thread.VolatileRead(ref _count); }
+            get { return Thread.VolatileRead(ref _count); }
         }
 
         public void Dispose()
@@ -68,38 +75,46 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException("releaseCount", "releaseCount is less than 1");
             }
-            int oldValue;
-            if (ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _count, -releaseCount, out oldValue))
+            var spinWait = new SpinWait();
+            while (true)
             {
-                Awake();
-                return oldValue;
+                var expected = Thread.VolatileRead(ref _count);
+                var result = expected + releaseCount;
+                if (result < 0)
+                {
+                    throw new SemaphoreFullException();
+                }
+                var found = Interlocked.CompareExchange(ref _count, result, expected);
+                if (found == expected)
+                {
+                    Awake(releaseCount);
+                    return expected;
+                }
+                spinWait.SpinOnce();
             }
-            throw new SemaphoreFullException();
         }
 
-        private void Awake()
+        private void Awake(int releaseCount)
         {
             // Call this to notify that there is room in the semaphore
             // Allow sync waiters to proceed
             _event.Set();
-            while (Thread.VolatileRead(ref _count) < _maxCount)
+            TaskCompletionSource<bool> waiter;
+            while (releaseCount > 0 && _asyncWaiters.TryTake(out waiter))
             {
-                TaskCompletionSource<bool> waiter;
-                if (_asyncWaiters.TryTake(out waiter))
+                releaseCount--;
+                if (waiter.Task.IsCompleted)
                 {
-                    if (waiter.Task.IsCompleted)
-                    {
-                        // Skip - either canceled or timed out
-                        continue;
-                    }
-                    if (TryEnter())
-                    {
-                        waiter.SetResult(true);
-                    }
-                    else
-                    {
-                        _asyncWaiters.Add(waiter);
-                    }
+                    // Skip - either canceled or timed out
+                    continue;
+                }
+                if (TryEnter())
+                {
+                    waiter.SetResult(true);
+                }
+                else
+                {
+                    _asyncWaiters.Add(waiter);
                 }
             }
         }
@@ -141,7 +156,11 @@ namespace System.Threading
             GC.KeepAlive(cancellationToken.WaitHandle);
             if (millisecondsTimeout == -1)
             {
-                ThreadingHelper.SpinWaitRelativeSet(ref _count, 1);
+                var spinWait = new SpinWait();
+                while (!TryEnter())
+                {
+                    spinWait.SpinOnce();
+                }
                 return true;
             }
             var start = ThreadingHelper.TicksNow();
@@ -167,17 +186,23 @@ namespace System.Threading
         {
             // Should only be called when there is room in the semaphore
             // No check is done to verify that
-            var result = Thread.VolatileRead(ref _count) + 1;
-            if (Interlocked.CompareExchange(ref _count, result, _count) == _count)
+            var expected = Thread.VolatileRead(ref _count);
+            var result = expected - 1;
+            if (result < 0)
+            {
+                return false;
+            }
+            var found = Interlocked.CompareExchange(ref _count, result, expected);
+            if (found == expected)
             {
                 // It may be the case that there is no longer room in the semaphore because we just took one slot
-                if (Thread.VolatileRead(ref _count) == _maxCount)
+                if (Thread.VolatileRead(ref _count) == 0)
                 {
                     // Cause sync waitets to halt
                     _event.Reset();
                     // It is possible that another thread has just released more slots and called _event.Set() and we have just undone it...
                     // Check if that is the case
-                    if (Thread.VolatileRead(ref _count) < _maxCount)
+                    if (Thread.VolatileRead(ref _count) > 0)
                     {
                         // Allow sync waiters to proceed
                         _event.Set();
@@ -192,6 +217,11 @@ namespace System.Threading
         {
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
+            if (TryEnter())
+            {
+                source.SetResult(true);
+                return source.Task;
+            }
             _asyncWaiters.Add(source);
             return source.Task;
         }
@@ -204,6 +234,11 @@ namespace System.Threading
                 return Task.FromCancellation(cancellationToken);
             }
             var source = new TaskCompletionSource<bool>();
+            if (TryEnter())
+            {
+                source.SetResult(true);
+                return source.Task;
+            }
             cancellationToken.Register(() => source.SetCanceled());
             _asyncWaiters.Add(source);
             return source.Task;
@@ -213,6 +248,11 @@ namespace System.Threading
         {
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
+            if (TryEnter())
+            {
+                source.SetResult(true);
+                return source.Task;
+            }
             Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout);
             _asyncWaiters.Add(source);
             return source.Task;
@@ -222,6 +262,11 @@ namespace System.Threading
         {
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
+            if (TryEnter())
+            {
+                source.SetResult(true);
+                return source.Task;
+            }
             Theraot.Threading.Timeout.Launch(() => source.SetResult(false), timeout);
             _asyncWaiters.Add(source);
             return source.Task;
@@ -235,6 +280,11 @@ namespace System.Threading
             }
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
+            if (TryEnter())
+            {
+                source.SetResult(true);
+                return source.Task;
+            }
             Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout, cancellationToken);
             cancellationToken.Register(() => source.SetCanceled());
             _asyncWaiters.Add(source);
@@ -249,6 +299,11 @@ namespace System.Threading
             }
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
+            if (TryEnter())
+            {
+                source.SetResult(true);
+                return source.Task;
+            }
             Theraot.Threading.Timeout.Launch
             (
                 () =>

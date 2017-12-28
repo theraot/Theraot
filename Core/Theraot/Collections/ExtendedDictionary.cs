@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Theraot.Core;
-
 namespace Theraot.Collections
 {
     [System.Serializable]
@@ -249,10 +247,7 @@ namespace Theraot.Collections
                 {
                     return _wrapped.Remove(key);
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
             catch (KeyNotFoundException)
             {

@@ -2,8 +2,6 @@
 
 using System;
 
-using Theraot.Core;
-
 namespace Theraot.Collections
 {
     public static class ObservableExtensions

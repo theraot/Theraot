@@ -45,10 +45,7 @@ namespace Theraot.Collections.Specialized
             {
                 return type;
             }
-            else
-            {
-                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "{0} is not an Enum", type.Name));
-            }
+            throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "{0} is not an Enum", type.Name));
         }
     }
 }
