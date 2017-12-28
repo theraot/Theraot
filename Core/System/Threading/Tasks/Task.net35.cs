@@ -674,6 +674,7 @@ namespace System.Threading.Tasks
         private void PrivateWait(CancellationToken cancellationToken, bool throwIfExceptional)
         {
             var done = false;
+            var spinWait = new SpinWait();
             while (!done)
             {
                 CancellationCheck(cancellationToken);
@@ -708,6 +709,7 @@ namespace System.Threading.Tasks
                         done = true;
                         break;
                 }
+                spinWait.SpinOnce();
             }
 #if DEBUG
             if (!IsCompleted)
