@@ -198,12 +198,6 @@ namespace MonoTests.System.Linq.Expressions
             // These are invalid:
             InvalidOperation<byte>(byte.MaxValue, 2);
             InvalidOperation<sbyte>(sbyte.MaxValue, 2);
-#if NET35
-            // Stuff that just fits in 32 bits, does not overflow:
-            MustNotOverflow<short>(Int16.MaxValue, 2);
-            MustNotOverflow<short>(Int16.MaxValue, 2);
-            MustNotOverflow<ushort>(UInt16.MaxValue, 2);
-#endif
             // Doubles, floats, do not overflow
             MustNotOverflow<float>(float.MaxValue, 1);
             MustNotOverflow<double>(double.MaxValue, 1);

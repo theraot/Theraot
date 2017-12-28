@@ -75,9 +75,6 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(ExpressionType.Equal, expr.NodeType);
             Assert.AreEqual(typeof(bool), expr.Type);
             Assert.IsNull(expr.Method);
-#if NET35
-            Assert.AreEqual("(1 = 2)", expr.ToString());
-#endif
         }
 
         [Test]
