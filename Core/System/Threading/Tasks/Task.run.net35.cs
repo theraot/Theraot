@@ -105,13 +105,13 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException();
             }
-            var source = new TaskCompletionSource<TResult>(TaskCreationOptions.DenyChildAttach);
+            var source = new TaskCompletionSource<TResult>();
             var result = source.Task;
             ThreadPool.QueueUserWorkItem(_ =>
             {
                 function().ContinueWith(task => source.SetResult(task.InternalResult));
             });
-            // result.Wait();
+            result.Wait();
             return result;
         }
 
@@ -121,13 +121,13 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException();
             }
-            var source = new TaskCompletionSource<TResult>(TaskCreationOptions.DenyChildAttach);
+            var source = new TaskCompletionSource<TResult>();
             var result = source.Task;
             ThreadPool.QueueUserWorkItem(_ =>
             {
                 function().ContinueWith(task => source.SetResult(task.InternalResult), cancellationToken);
             });
-            // result.Wait(cancellationToken);
+            result.Wait(cancellationToken);
             return result;
         }
     }

@@ -30,7 +30,7 @@ namespace System.Threading.Tasks
 
         internal Task(object state, TaskCreationOptions creationOptions)
         {
-            if ((creationOptions & ~(TaskCreationOptions.AttachedToParent | TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.DenyChildAttach)) != 0)
+            if ((creationOptions & ~(TaskCreationOptions.AttachedToParent | TaskCreationOptions.RunContinuationsAsynchronously)) != 0)
             {
                 throw new ArgumentOutOfRangeException("creationOptions");
             }
@@ -40,7 +40,7 @@ namespace System.Threading.Tasks
                 _parent = InternalCurrent;
             }
             State = state;
-            _creationOptions = creationOptions;
+            _creationOptions = creationOptions | TaskCreationOptions.DenyChildAttach;
             _status = (int)TaskStatus.WaitingForActivation;
             _internalOptions = InternalTaskOptions.PromiseTask;
             ExecutingTaskScheduler = TaskScheduler.Default;
