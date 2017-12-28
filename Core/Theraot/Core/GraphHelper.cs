@@ -17,8 +17,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            var branches = new Queue<TInput>();
-            branches.Enqueue(initial);
+            var branches = new[] { initial };
             return ExploreBreadthFirstGraphExtracted(branches, next, resultSelector);
         }
 
@@ -32,7 +31,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            var branches = new Queue<TInput>(initial);
+            var branches = initial;
             return ExploreBreadthFirstGraphExtracted(branches, next, resultSelector);
         }
 
@@ -42,8 +41,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            var branches = new Queue<T>();
-            branches.Enqueue(initial);
+            var branches = new[] { initial };
             return ExploreBreadthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
@@ -53,7 +51,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            var branches = new Queue<T>(initial);
+            var branches = initial;
             return ExploreBreadthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
@@ -67,8 +65,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            var branches = new Queue<TInput>();
-            branches.Enqueue(initial);
+            var branches = new[] { initial };
             return ExploreBreadthFirstTreeExtracted(branches, next, resultSelector);
         }
 
@@ -82,7 +79,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            var branches = new Queue<TInput>(initial);
+            var branches = initial;
             return ExploreBreadthFirstTreeExtracted(branches, next, resultSelector);
         }
 
@@ -92,8 +89,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            var branches = new Queue<T>();
-            branches.Enqueue(initial);
+            var branches = new[] { initial };
             return ExploreBreadthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
@@ -103,7 +99,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            var branches = new Queue<T>(initial);
+            var branches = initial;
             return ExploreBreadthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
