@@ -415,7 +415,7 @@ namespace System.Threading.Tasks
                     case TaskStatus.Running:
                     case TaskStatus.WaitingForChildrenToComplete:
                         var waitHandle = _waitHandle.Value;
-                        if (_waitHandle.IsAlive)
+                        if (!ReferenceEquals(waitHandle, null))
                         {
                             waitHandle.Wait
                                 (
@@ -579,7 +579,7 @@ namespace System.Threading.Tasks
         internal void MarkCompleted()
         {
             var waitHandle = _waitHandle.Value;
-            if (_waitHandle.IsAlive)
+            if (!ReferenceEquals(waitHandle, null))
             {
                 waitHandle.Set();
             }
@@ -690,7 +690,7 @@ namespace System.Threading.Tasks
                     case TaskStatus.Running:
                     case TaskStatus.WaitingForChildrenToComplete:
                         var waitHandle = _waitHandle.Value;
-                        if (_waitHandle.IsAlive)
+                        if (!ReferenceEquals(waitHandle, null))
                         {
                             waitHandle.Wait(cancellationToken);
                         }
