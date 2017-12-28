@@ -107,8 +107,11 @@ namespace System.Threading.Tasks
             }
             var source = new TaskCompletionSource<TResult>(TaskCreationOptions.DenyChildAttach);
             var result = source.Task;
-            function().ContinueWith(task => source.SetResult(task.InternalResult));
-            result.Wait();
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                function().ContinueWith(task => source.SetResult(task.InternalResult));
+            });
+            // result.Wait();
             return result;
         }
 
@@ -120,8 +123,11 @@ namespace System.Threading.Tasks
             }
             var source = new TaskCompletionSource<TResult>(TaskCreationOptions.DenyChildAttach);
             var result = source.Task;
-            function().ContinueWith(task => source.SetResult(task.InternalResult), cancellationToken);
-            result.Wait(cancellationToken);
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                function().ContinueWith(task => source.SetResult(task.InternalResult), cancellationToken);
+            });
+            // result.Wait(cancellationToken);
             return result;
         }
     }
