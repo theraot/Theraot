@@ -139,116 +139,64 @@ namespace Theraot.Core
     {
         public static IEnumerable<TOutput> ExploreDepthFirstGraph<TInput, TOutput>(TInput initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException("next");
-            }
-            var temp = next;
-            if (resultSelector == null)
-            {
-                throw new ArgumentNullException("next");
-            }
-            var temp1 = resultSelector;
-            var stack = new Stack<TInput>();
-            stack.Push(initial);
-            return ExploreDepthFirstGraphExtracted(stack, next, resultSelector);
+            var branches = new[] { initial };
+            return ExploreDepthFirstGraphExtracted(branches, next, resultSelector);
         }
 
         public static IEnumerable<TOutput> ExploreDepthFirstGraph<TInput, TOutput>(IEnumerable<TInput> initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException("next");
-            }
-            var temp = next;
-            if (resultSelector == null)
-            {
-                throw new ArgumentNullException("next");
-            }
-            var temp1 = resultSelector;
-            return ExploreDepthFirstGraphExtracted(new Stack<TInput>(initial), next, resultSelector);
+            var branches = initial;
+            return ExploreDepthFirstGraphExtracted(branches, next, resultSelector);
         }
 
         public static IEnumerable<T> ExploreDepthFirstGraph<T>(T initial, Func<T, IEnumerable<T>> next)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException("next");
-            }
-            var temp = next;
-            var stack = new Stack<T>();
-            stack.Push(initial);
-            return ExploreDepthFirstGraphExtracted(stack, next);
+            var branches = new[] { initial };
+            return ExploreDepthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
         public static IEnumerable<T> ExploreDepthFirstGraph<T>(IEnumerable<T> initial, Func<T, IEnumerable<T>> next)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException("next");
-            }
-            var temp = next;
-            return ExploreDepthFirstGraphExtracted(new Stack<T>(initial), next);
+            var branches = initial;
+            return ExploreDepthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
         public static IEnumerable<TOutput> ExploreDepthFirstTree<TInput, TOutput>(TInput initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException("next");
-            }
-            var temp = next;
-            if (resultSelector == null)
-            {
-                throw new ArgumentNullException("next");
-            }
-            var temp1 = resultSelector;
-            var stack = new Stack<TInput>();
-            stack.Push(initial);
-            return ExploreDepthFirstTreeExtracted(stack, next, resultSelector);
+            var branches = new[] { initial };
+            return ExploreDepthFirstTreeExtracted(branches, next, resultSelector);
         }
 
         public static IEnumerable<TOutput> ExploreDepthFirstTree<TInput, TOutput>(IEnumerable<TInput> initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException("next");
-            }
-            var temp = next;
-            if (resultSelector == null)
-            {
-                throw new ArgumentNullException("next");
-            }
-            var temp1 = resultSelector;
-            return ExploreDepthFirstTreeExtracted(new Stack<TInput>(initial), next, resultSelector);
+            var branches = initial;
+            return ExploreDepthFirstTreeExtracted(branches, next, resultSelector);
         }
 
         public static IEnumerable<T> ExploreDepthFirstTree<T>(T initial, Func<T, IEnumerable<T>> next)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException("next");
-            }
-            var temp = next;
-            var stack = new Stack<T>();
-            stack.Push(initial);
-            return ExploreDepthFirstTreeExtracted(stack, next);
+            var branches = new[] { initial };
+            return ExploreDepthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
         public static IEnumerable<T> ExploreDepthFirstTree<T>(IEnumerable<T> initial, Func<T, IEnumerable<T>> next)
         {
+            var branches = initial;
+            return ExploreDepthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
+        }
+
+        private static IEnumerable<TOutput> ExploreDepthFirstGraphExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
+        {
             if (next == null)
             {
                 throw new ArgumentNullException("next");
             }
-            var temp = next;
-            return ExploreDepthFirstTreeExtracted(new Stack<T>(initial), next);
-        }
-
-        private static IEnumerable<TOutput> ExploreDepthFirstGraphExtracted<TInput, TOutput>(Stack<TInput> stack, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
-        {
+            if (resultSelector == null)
+            {
+                throw new ArgumentNullException("next");
+            }
             var known = new HashSet<TInput>();
-            IEnumerator<TInput> branches = null;
+            var stack = new Stack<TInput>();
             while (true)
             {
                 if (branches == null)
@@ -256,48 +204,40 @@ namespace Theraot.Core
                     if (stack.Count > 0)
                     {
                         var found = stack.Pop();
-                        if (known.Add(found))
+                        branches = next(found);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    foreach (var found in branches)
+                    {
+                        if (!known.Contains(found))
                         {
-                            yield return resultSelector.Invoke(found);
-                            branches = next.Invoke(found).GetEnumerator();
+                            known.Add(found);
+                            yield return resultSelector(found);
                         }
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    bool advanced;
-                    try
-                    {
-                        advanced = branches.MoveNext();
-                    }
-                    catch
-                    {
-                        // Regardless of what exception it is
-                        branches.Dispose();
-                        throw;
-                    }
-                    if (advanced)
-                    {
-                        var found = branches.Current;
                         stack.Push(found);
                     }
-                    else
-                    {
-                        branches.Dispose();
-                        branches = null;
-                    }
+                    branches = null;
                 }
             }
         }
 
-        private static IEnumerable<T> ExploreDepthFirstGraphExtracted<T>(Stack<T> stack, Func<T, IEnumerable<T>> next)
+        private static IEnumerable<TOutput> ExploreDepthFirstTreeExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
-            var known = new HashSet<T>();
-            IEnumerator<T> branches = null;
+            if (next == null)
+            {
+                throw new ArgumentNullException("next");
+            }
+            if (resultSelector == null)
+            {
+                throw new ArgumentNullException("next");
+            }
+            var stack = new Stack<TInput>();
             while (true)
             {
                 if (branches == null)
@@ -305,11 +245,7 @@ namespace Theraot.Core
                     if (stack.Count > 0)
                     {
                         var found = stack.Pop();
-                        if (known.Add(found))
-                        {
-                            yield return found;
-                            branches = next.Invoke(found).GetEnumerator();
-                        }
+                        branches = next(found);
                     }
                     else
                     {
@@ -318,117 +254,12 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    bool advanced;
-                    try
+                    foreach (var found in branches)
                     {
-                        advanced = branches.MoveNext();
-                    }
-                    catch
-                    {
-                        // Regardless of what exception it is
-                        branches.Dispose();
-                        throw;
-                    }
-                    if (advanced)
-                    {
-                        var found = branches.Current;
+                        yield return resultSelector(found);
                         stack.Push(found);
                     }
-                    else
-                    {
-                        branches.Dispose();
-                        branches = null;
-                    }
-                }
-            }
-        }
-
-        private static IEnumerable<TOutput> ExploreDepthFirstTreeExtracted<TInput, TOutput>(Stack<TInput> stack, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
-        {
-            IEnumerator<TInput> branches = null;
-            while (true)
-            {
-                if (branches == null)
-                {
-                    if (stack.Count > 0)
-                    {
-                        var found = stack.Pop();
-                        yield return resultSelector.Invoke(found);
-                        branches = next.Invoke(found).GetEnumerator();
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    bool advanced;
-                    try
-                    {
-                        advanced = branches.MoveNext();
-                    }
-                    catch
-                    {
-                        // Regardless of what exception it is
-                        branches.Dispose();
-                        throw;
-                    }
-                    if (advanced)
-                    {
-                        var found = branches.Current;
-                        stack.Push(found);
-                    }
-                    else
-                    {
-                        branches.Dispose();
-                        branches = null;
-                    }
-                }
-            }
-        }
-
-        private static IEnumerable<T> ExploreDepthFirstTreeExtracted<T>(Stack<T> stack, Func<T, IEnumerable<T>> next)
-        {
-            IEnumerator<T> branches = null;
-            while (true)
-            {
-                if (branches == null)
-                {
-                    if (stack.Count > 0)
-                    {
-                        var found = stack.Pop();
-                        yield return found;
-                        branches = next.Invoke(found).GetEnumerator();
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    bool advanced;
-                    try
-                    {
-                        advanced = branches.MoveNext();
-                    }
-                    catch
-                    {
-                        // Regardless of what exception it is
-                        branches.Dispose();
-                        throw;
-                    }
-                    if (advanced)
-                    {
-                        var found = branches.Current;
-                        stack.Push(found);
-                    }
-                    else
-                    {
-                        branches.Dispose();
-                        branches = null;
-                    }
+                    branches = null;
                 }
             }
         }
