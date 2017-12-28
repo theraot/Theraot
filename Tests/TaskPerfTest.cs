@@ -9,6 +9,7 @@ namespace Tests
     [TestFixture]
     internal class TaskPerfTest
     {
+#if !NET40
         [Test]
         public static async Task RunAsync()
         {
@@ -29,5 +30,6 @@ namespace Tests
               })).ToArray();
             var allTask = await Task.WhenAll(tasks);
         }
+#endif
     }
 }
