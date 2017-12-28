@@ -63,7 +63,7 @@ namespace Theraot.Core
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException("resultSelector");
             }
             var known = new HashSet<TInput>();
             var queue = new Queue<TInput>();
@@ -105,7 +105,7 @@ namespace Theraot.Core
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException("resultSelector");
             }
             var queue = new Queue<TInput>();
             while (true)
@@ -193,7 +193,7 @@ namespace Theraot.Core
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException("resultSelector");
             }
             var known = new HashSet<TInput>();
             var stack = new Stack<TInput>();
@@ -235,7 +235,7 @@ namespace Theraot.Core
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException("resultSelector");
             }
             var stack = new Stack<TInput>();
             while (true)
