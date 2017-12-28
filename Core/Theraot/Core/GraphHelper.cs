@@ -107,10 +107,10 @@ namespace Theraot.Core
             return ExploreBreadthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
-        private static IEnumerable<TOutput> ExploreBreadthFirstGraphExtracted<TInput, TOutput>(Queue<TInput> queue, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
+        private static IEnumerable<TOutput> ExploreBreadthFirstGraphExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
             var known = new HashSet<TInput>();
-            IEnumerator<TInput> branches = null;
+            var queue = new Queue<TInput>();
             while (true)
             {
                 if (branches == null)
@@ -118,7 +118,7 @@ namespace Theraot.Core
                     if (queue.Count > 0)
                     {
                         var found = queue.Dequeue();
-                        branches = next.Invoke(found).GetEnumerator();
+                        branches = next(found);
                     }
                     else
                     {
@@ -127,38 +127,23 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    bool advanced;
-                    try
+                    foreach (var found in branches)
                     {
-                        advanced = branches.MoveNext();
-                    }
-                    catch
-                    {
-                        // Regardless of what exception it is
-                        branches.Dispose();
-                        throw;
-                    }
-                    if (advanced)
-                    {
-                        var found = branches.Current;
-                        if (known.Add(found))
+                        if (!known.Contains(found))
                         {
-                            yield return resultSelector.Invoke(found);
-                            queue.Enqueue(found);
+                            known.Add(found);
+                            yield return resultSelector(found);
                         }
+                        queue.Enqueue(found);
                     }
-                    else
-                    {
-                        branches.Dispose();
-                        branches = null;
-                    }
+                    branches = null;
                 }
             }
         }
 
-        private static IEnumerable<TOutput> ExploreBreadthFirstTreeExtracted<TInput, TOutput>(Queue<TInput> queue, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
+        private static IEnumerable<TOutput> ExploreBreadthFirstTreeExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
-            IEnumerator<TInput> branches = null;
+            var queue = new Queue<TInput>();
             while (true)
             {
                 if (branches == null)
@@ -166,7 +151,7 @@ namespace Theraot.Core
                     if (queue.Count > 0)
                     {
                         var found = queue.Dequeue();
-                        branches = next.Invoke(found).GetEnumerator();
+                        branches = next(found);
                     }
                     else
                     {
@@ -175,28 +160,12 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    bool advanced;
-                    try
+                    foreach (var found in branches)
                     {
-                        advanced = branches.MoveNext();
-                    }
-                    catch
-                    {
-                        // Regardless of what exception it is
-                        branches.Dispose();
-                        throw;
-                    }
-                    if (advanced)
-                    {
-                        var found = branches.Current;
-                        yield return resultSelector.Invoke(found);
+                        yield return resultSelector(found);
                         queue.Enqueue(found);
                     }
-                    else
-                    {
-                        branches.Dispose();
-                        branches = null;
-                    }
+                    branches = null;
                 }
             }
         }
