@@ -9,68 +9,54 @@ namespace Theraot.Core
     {
         public static IEnumerable<TOutput> ExploreBreadthFirstGraph<TInput, TOutput>(TInput initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException("next");
-            }
-            if (resultSelector == null)
-            {
-                throw new ArgumentNullException("next");
-            }
             var branches = new[] { initial };
             return ExploreBreadthFirstGraphExtracted(branches, next, resultSelector);
         }
 
         public static IEnumerable<TOutput> ExploreBreadthFirstGraph<TInput, TOutput>(IEnumerable<TInput> initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException("next");
-            }
-            if (resultSelector == null)
-            {
-                throw new ArgumentNullException("next");
-            }
             var branches = initial;
             return ExploreBreadthFirstGraphExtracted(branches, next, resultSelector);
         }
 
         public static IEnumerable<T> ExploreBreadthFirstGraph<T>(T initial, Func<T, IEnumerable<T>> next)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException("next");
-            }
             var branches = new[] { initial };
             return ExploreBreadthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
         public static IEnumerable<T> ExploreBreadthFirstGraph<T>(IEnumerable<T> initial, Func<T, IEnumerable<T>> next)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException("next");
-            }
             var branches = initial;
             return ExploreBreadthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
         public static IEnumerable<TOutput> ExploreBreadthFirstTree<TInput, TOutput>(TInput initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException("next");
-            }
-            if (resultSelector == null)
-            {
-                throw new ArgumentNullException("next");
-            }
             var branches = new[] { initial };
             return ExploreBreadthFirstTreeExtracted(branches, next, resultSelector);
         }
 
         public static IEnumerable<TOutput> ExploreBreadthFirstTree<TInput, TOutput>(IEnumerable<TInput> initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
+            var branches = initial;
+            return ExploreBreadthFirstTreeExtracted(branches, next, resultSelector);
+        }
+
+        public static IEnumerable<T> ExploreBreadthFirstTree<T>(T initial, Func<T, IEnumerable<T>> next)
+        {
+            var branches = new[] { initial };
+            return ExploreBreadthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
+        }
+
+        public static IEnumerable<T> ExploreBreadthFirstTree<T>(IEnumerable<T> initial, Func<T, IEnumerable<T>> next)
+        {
+            var branches = initial;
+            return ExploreBreadthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
+        }
+
+        private static IEnumerable<TOutput> ExploreBreadthFirstGraphExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
+        {
             if (next == null)
             {
                 throw new ArgumentNullException("next");
@@ -79,32 +65,6 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            var branches = initial;
-            return ExploreBreadthFirstTreeExtracted(branches, next, resultSelector);
-        }
-
-        public static IEnumerable<T> ExploreBreadthFirstTree<T>(T initial, Func<T, IEnumerable<T>> next)
-        {
-            if (next == null)
-            {
-                throw new ArgumentNullException("next");
-            }
-            var branches = new[] { initial };
-            return ExploreBreadthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
-        }
-
-        public static IEnumerable<T> ExploreBreadthFirstTree<T>(IEnumerable<T> initial, Func<T, IEnumerable<T>> next)
-        {
-            if (next == null)
-            {
-                throw new ArgumentNullException("next");
-            }
-            var branches = initial;
-            return ExploreBreadthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
-        }
-
-        private static IEnumerable<TOutput> ExploreBreadthFirstGraphExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
-        {
             var known = new HashSet<TInput>();
             var queue = new Queue<TInput>();
             while (true)
@@ -139,6 +99,14 @@ namespace Theraot.Core
 
         private static IEnumerable<TOutput> ExploreBreadthFirstTreeExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
+            if (next == null)
+            {
+                throw new ArgumentNullException("next");
+            }
+            if (resultSelector == null)
+            {
+                throw new ArgumentNullException("next");
+            }
             var queue = new Queue<TInput>();
             while (true)
             {
