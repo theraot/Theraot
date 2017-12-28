@@ -13,15 +13,13 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            var temp = next;
             if (resultSelector == null)
             {
                 throw new ArgumentNullException("next");
             }
-            var temp1 = resultSelector;
-            var queue = new Queue<TInput>();
-            queue.Enqueue(initial);
-            return ExploreBreadthFirstGraphExtracted(queue, next, resultSelector);
+            var branches = new Queue<TInput>();
+            branches.Enqueue(initial);
+            return ExploreBreadthFirstGraphExtracted(branches, next, resultSelector);
         }
 
         public static IEnumerable<TOutput> ExploreBreadthFirstGraph<TInput, TOutput>(IEnumerable<TInput> initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
@@ -30,13 +28,12 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            var temp = next;
             if (resultSelector == null)
             {
                 throw new ArgumentNullException("next");
             }
-            var temp1 = resultSelector;
-            return ExploreBreadthFirstGraphExtracted(new Queue<TInput>(initial), next, resultSelector);
+            var branches = new Queue<TInput>(initial);
+            return ExploreBreadthFirstGraphExtracted(branches, next, resultSelector);
         }
 
         public static IEnumerable<T> ExploreBreadthFirstGraph<T>(T initial, Func<T, IEnumerable<T>> next)
@@ -45,10 +42,9 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            var temp = next;
-            var queue = new Queue<T>();
-            queue.Enqueue(initial);
-            return ExploreBreadthFirstGraphExtracted(queue, next);
+            var branches = new Queue<T>();
+            branches.Enqueue(initial);
+            return ExploreBreadthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
         public static IEnumerable<T> ExploreBreadthFirstGraph<T>(IEnumerable<T> initial, Func<T, IEnumerable<T>> next)
@@ -57,8 +53,8 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            var temp = next;
-            return ExploreBreadthFirstGraphExtracted(new Queue<T>(initial), next);
+            var branches = new Queue<T>(initial);
+            return ExploreBreadthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
         public static IEnumerable<TOutput> ExploreBreadthFirstTree<TInput, TOutput>(TInput initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
@@ -67,15 +63,13 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            var temp = next;
             if (resultSelector == null)
             {
                 throw new ArgumentNullException("next");
             }
-            var temp1 = resultSelector;
-            var queue = new Queue<TInput>();
-            queue.Enqueue(initial);
-            return ExploreBreadthFirstTreeExtracted(queue, next, resultSelector);
+            var branches = new Queue<TInput>();
+            branches.Enqueue(initial);
+            return ExploreBreadthFirstTreeExtracted(branches, next, resultSelector);
         }
 
         public static IEnumerable<TOutput> ExploreBreadthFirstTree<TInput, TOutput>(IEnumerable<TInput> initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
@@ -84,13 +78,12 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            var temp = next;
             if (resultSelector == null)
             {
                 throw new ArgumentNullException("next");
             }
-            var temp1 = resultSelector;
-            return ExploreBreadthFirstTreeExtracted(new Queue<TInput>(initial), next, resultSelector);
+            var branches = new Queue<TInput>(initial);
+            return ExploreBreadthFirstTreeExtracted(branches, next, resultSelector);
         }
 
         public static IEnumerable<T> ExploreBreadthFirstTree<T>(T initial, Func<T, IEnumerable<T>> next)
@@ -99,10 +92,9 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            var temp = next;
-            var queue = new Queue<T>();
-            queue.Enqueue(initial);
-            return ExploreBreadthFirstTreeExtracted(queue, next);
+            var branches = new Queue<T>();
+            branches.Enqueue(initial);
+            return ExploreBreadthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
         public static IEnumerable<T> ExploreBreadthFirstTree<T>(IEnumerable<T> initial, Func<T, IEnumerable<T>> next)
@@ -111,8 +103,8 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            var temp = next;
-            return ExploreBreadthFirstTreeExtracted(new Queue<T>(initial), next);
+            var branches = new Queue<T>(initial);
+            return ExploreBreadthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
         private static IEnumerable<TOutput> ExploreBreadthFirstGraphExtracted<TInput, TOutput>(Queue<TInput> queue, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
@@ -164,55 +156,6 @@ namespace Theraot.Core
             }
         }
 
-        private static IEnumerable<T> ExploreBreadthFirstGraphExtracted<T>(Queue<T> queue, Func<T, IEnumerable<T>> next)
-        {
-            var known = new HashSet<T>();
-            IEnumerator<T> branches = null;
-            while (true)
-            {
-                if (branches == null)
-                {
-                    if (queue.Count > 0)
-                    {
-                        var found = queue.Dequeue();
-                        branches = next.Invoke(found).GetEnumerator();
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    bool advanced;
-                    try
-                    {
-                        advanced = branches.MoveNext();
-                    }
-                    catch
-                    {
-                        // Regardless of what exception it is
-                        branches.Dispose();
-                        throw;
-                    }
-                    if (advanced)
-                    {
-                        var found = branches.Current;
-                        if (known.Add(found))
-                        {
-                            yield return found;
-                            queue.Enqueue(found);
-                        }
-                    }
-                    else
-                    {
-                        branches.Dispose();
-                        branches = null;
-                    }
-                }
-            }
-        }
-
         private static IEnumerable<TOutput> ExploreBreadthFirstTreeExtracted<TInput, TOutput>(Queue<TInput> queue, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
             IEnumerator<TInput> branches = null;
@@ -247,51 +190,6 @@ namespace Theraot.Core
                     {
                         var found = branches.Current;
                         yield return resultSelector.Invoke(found);
-                        queue.Enqueue(found);
-                    }
-                    else
-                    {
-                        branches.Dispose();
-                        branches = null;
-                    }
-                }
-            }
-        }
-
-        private static IEnumerable<T> ExploreBreadthFirstTreeExtracted<T>(Queue<T> queue, Func<T, IEnumerable<T>> next)
-        {
-            IEnumerator<T> branches = null;
-            while (true)
-            {
-                if (branches == null)
-                {
-                    if (queue.Count > 0)
-                    {
-                        var found = queue.Dequeue();
-                        branches = next.Invoke(found).GetEnumerator();
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    bool advanced;
-                    try
-                    {
-                        advanced = branches.MoveNext();
-                    }
-                    catch
-                    {
-                        // Regardless of what exception it is
-                        branches.Dispose();
-                        throw;
-                    }
-                    if (advanced)
-                    {
-                        var found = branches.Current;
-                        yield return found;
                         queue.Enqueue(found);
                     }
                     else
