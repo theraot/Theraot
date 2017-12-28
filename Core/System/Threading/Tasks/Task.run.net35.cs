@@ -105,9 +105,12 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException();
             }
-            var source = new TaskCompletionSource<TResult>(TaskCreationOptions.DenyChildAttach);
+            var source = new TaskCompletionSource<TResult>();
             var result = source.Task;
-            function().ContinueWith(task => source.SetResult(task.InternalResult));
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                function().ContinueWith(task => source.SetResult(task.InternalResult));
+            });
             result.Wait();
             return result;
         }
@@ -118,9 +121,12 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException();
             }
-            var source = new TaskCompletionSource<TResult>(TaskCreationOptions.DenyChildAttach);
+            var source = new TaskCompletionSource<TResult>();
             var result = source.Task;
-            function().ContinueWith(task => source.SetResult(task.InternalResult), cancellationToken);
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                function().ContinueWith(task => source.SetResult(task.InternalResult), cancellationToken);
+            });
             result.Wait(cancellationToken);
             return result;
         }

@@ -9,11 +9,13 @@ namespace Tests
     [TestFixture]
     internal class TaskPerfTest
     {
+#if !NET40
+
         [Test]
         public static async Task RunAsync()
         {
             ThreadPool.SetMaxThreads(10, 10);
-            var tasks = Enumerable.Range(0, 1000).Select(x =>
+            var tasks = Enumerable.Range(0, 10).Select(x =>
               Task.Run(async () =>
               {
                   var guid = Guid.NewGuid();
@@ -29,5 +31,7 @@ namespace Tests
               })).ToArray();
             var allTask = await Task.WhenAll(tasks);
         }
+
+#endif
     }
 }
