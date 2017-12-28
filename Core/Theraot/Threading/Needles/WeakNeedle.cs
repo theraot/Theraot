@@ -199,10 +199,7 @@ namespace Theraot.Threading.Needles
             {
                 return target.ToString();
             }
-            else
-            {
-                return "<Dead Needle>";
-            }
+            return "<Dead Needle>";
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
@@ -242,10 +239,7 @@ namespace Theraot.Threading.Needles
             {
                 return ReferenceEquals(right, null);
             }
-            else
-            {
-                return !ReferenceEquals(right, null) && EqualsExtractedExtracted(left, right);
-            }
+            return !ReferenceEquals(right, null) && EqualsExtractedExtracted(left, right);
         }
 
         private static bool EqualsExtractedExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
@@ -265,10 +259,7 @@ namespace Theraot.Threading.Needles
             {
                 return !ReferenceEquals(right, null);
             }
-            else
-            {
-                return ReferenceEquals(right, null) || NotEqualsExtractedExtracted(left, right);
-            }
+            return ReferenceEquals(right, null) || NotEqualsExtractedExtracted(left, right);
         }
 
         private static bool NotEqualsExtractedExtracted(WeakNeedle<T> left, WeakNeedle<T> right)

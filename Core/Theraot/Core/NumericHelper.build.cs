@@ -13,16 +13,13 @@ namespace Theraot.Core
             {
                 return 0.0;
             }
-            else
+            if (mantissa < 0)
             {
-                if (mantissa < 0)
-                {
-                    mantissa = -mantissa;
-                    sign = -sign;
-                }
-                var tmpMantissa = (ulong)mantissa;
-                return GetDoubleFromParts(sign, exponent, tmpMantissa);
+                mantissa = -mantissa;
+                sign = -sign;
             }
+            var tmpMantissa = (ulong)mantissa;
+            return GetDoubleFromParts(sign, exponent, tmpMantissa);
         }
 
         [CLSCompliant(false)]

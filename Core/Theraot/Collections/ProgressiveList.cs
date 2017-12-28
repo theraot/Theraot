@@ -81,35 +81,26 @@ namespace Theraot.Collections
             {
                 return cacheIndex;
             }
-            else
-            {
-                var index = _cache.Count - 1;
-                var found = false;
-                Progressor.While
-                (
-                    input =>
+            var index = _cache.Count - 1;
+            var found = false;
+            Progressor.While
+            (
+                input =>
+                {
+                    index++;
+                    if (Comparer.Equals(input, item))
                     {
-                        index++;
-                        if (Comparer.Equals(input, item))
-                        {
-                            found = true;
-                            return false;
-                        }
-                        else
-                        {
-                            return true;
-                        }
+                        found = true;
+                        return false;
                     }
-                ).Consume();
-                if (found)
-                {
-                    return index;
+                    return true;
                 }
-                else
-                {
-                    return -1;
-                }
+            ).Consume();
+            if (found)
+            {
+                return index;
             }
+            return -1;
         }
 
         void ICollection<T>.Add(T item)

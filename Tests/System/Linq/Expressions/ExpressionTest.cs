@@ -31,7 +31,12 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+
+#if NET35
+
 using System.Runtime.CompilerServices;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {

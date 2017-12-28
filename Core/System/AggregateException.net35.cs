@@ -63,22 +63,12 @@ namespace System
         protected AggregateException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            if (info != null)
+            var value = info.GetValue("InnerExceptions", typeof(Exception[])) as Exception[];
+            if (value == null)
             {
-                var value = info.GetValue("InnerExceptions", typeof(Exception[])) as Exception[];
-                if (value == null)
-                {
-                    throw new SerializationException("Deserialization Failure");
-                }
-                else
-                {
-                    _innerExceptions = new ReadOnlyCollection<Exception>(value);
-                }
+                throw new SerializationException("Deserialization Failure");
             }
-            else
-            {
-                throw new ArgumentNullException("info");
-            }
+            _innerExceptions = new ReadOnlyCollection<Exception>(value);
         }
 
         private AggregateException(CreationInfo creationInfo)

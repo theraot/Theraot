@@ -17,6 +17,7 @@ namespace System.Threading.Tasks
             _status = (int)taskStatus;
             _internalOptions = internalTaskOptions;
             ExecutingTaskScheduler = TaskScheduler.Default;
+            _waitHandle = new ManualResetEventSlim(false);
         }
 
         internal Task()
@@ -24,11 +25,12 @@ namespace System.Threading.Tasks
             _status = (int)TaskStatus.WaitingForActivation;
             _internalOptions = InternalTaskOptions.PromiseTask;
             ExecutingTaskScheduler = TaskScheduler.Default;
+            _waitHandle = new ManualResetEventSlim(false);
         }
 
         internal Task(object state, TaskCreationOptions creationOptions)
         {
-            if ((creationOptions & ~(TaskCreationOptions.AttachedToParent | TaskCreationOptions.RunContinuationsAsynchronously)) != 0)
+            if ((creationOptions & ~(TaskCreationOptions.AttachedToParent | TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.DenyChildAttach)) != 0)
             {
                 throw new ArgumentOutOfRangeException("creationOptions");
             }
@@ -42,6 +44,7 @@ namespace System.Threading.Tasks
             _status = (int)TaskStatus.WaitingForActivation;
             _internalOptions = InternalTaskOptions.PromiseTask;
             ExecutingTaskScheduler = TaskScheduler.Default;
+            _waitHandle = new ManualResetEventSlim(false);
         }
 
         public static Task FromCanceled(CancellationToken cancellationToken)

@@ -12,7 +12,7 @@ namespace System.Linq.Expressions.Compiler
     {
 #if FEATURE_CORECLR
         private const MethodAttributes _ctorAttributes = MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public;
-        private const MethodImplAttributes _implAttributes = MethodImplAttributes.Runtime | MethodImplAttributes.Managed;
+        private const MethodImplAttributes _implAttributes = (MethodImplAttributes)((int)MethodImplAttributes.Runtime | (int)MethodImplAttributes.Managed);
         private const MethodAttributes _invokeAttributes = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual;
         private static readonly Type[] _delegateCtorSignature = { typeof(object), typeof(IntPtr) };
 #endif

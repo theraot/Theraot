@@ -45,11 +45,8 @@ namespace Theraot.Core
             {
                 return funcWrapper.Func;
             }
-            else
-            {
-                var wrapper = new PredicateWrapper<T>(predicate);
-                return wrapper.Invoke;
-            }
+            var wrapper = new PredicateWrapper<T>(predicate);
+            return wrapper.Invoke;
         }
 
         public static Predicate<T> ToPredicate<T>(this Func<T, bool> func)
@@ -60,11 +57,8 @@ namespace Theraot.Core
             {
                 return predicateWrapper.Predicate;
             }
-            else
-            {
-                var wrapper = new FuncWrapper<T>(func);
-                return wrapper.Invoke;
-            }
+            var wrapper = new FuncWrapper<T>(func);
+            return wrapper.Invoke;
         }
 
         private static class HelperFallacyPredicate<T>

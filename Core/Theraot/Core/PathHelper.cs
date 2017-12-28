@@ -1,9 +1,14 @@
 ﻿// Needed for Workaround
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Theraot.Collections;
+
+#if NET20 || NET30 || NET35 || NET40
+
+using System.Collections.Generic;
+
+#endif
 
 namespace Theraot.Core
 {
@@ -62,7 +67,7 @@ namespace Theraot.Core
             }
             return StringHelper.Concat(combine);
 #else
-            return Path.Combine (paths);
+            return Path.Combine(paths);
 #endif
         }
 
@@ -92,7 +97,7 @@ namespace Theraot.Core
             }
             return string.Concat(path1, path2);
 #else
-            return Path.Combine (path1, path2);
+            return Path.Combine(path1, path2);
 #endif
         }
 
@@ -134,7 +139,7 @@ namespace Theraot.Core
             }
             return string.Concat(path1, path2, path3);
 #else
-            return Path.Combine (path1, path2, path3);
+            return Path.Combine(path1, path2, path3);
 #endif
         }
 
@@ -189,7 +194,7 @@ namespace Theraot.Core
             }
             return string.Concat(path1, path2, path3, path4);
 #else
-            return Path.Combine (path1, path2, path3, path4);
+            return Path.Combine(path1, path2, path3, path4);
 #endif
         }
 

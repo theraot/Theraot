@@ -201,10 +201,7 @@ namespace System.Linq.Expressions.Compiler
                     {
                         throw Error.ControlCannotEnterExpression();
                     }
-                    else
-                    {
-                        throw Error.ControlCannotEnterTry();
-                    }
+                    throw Error.ControlCannotEnterTry();
                 }
             }
         }

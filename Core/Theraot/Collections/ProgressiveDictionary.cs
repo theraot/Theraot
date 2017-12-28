@@ -52,10 +52,7 @@ namespace Theraot.Collections
                     }
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }, cache, new KeyValuePairEqualityComparer<TKey, TValue>(keyComparer, valueComparer))
         {
             if (cache == null)
@@ -82,12 +79,9 @@ namespace Theraot.Collections
                     }
                     return true;
                 }
-                else
-                {
-                    enumerator.Dispose();
-                    pair = default(KeyValuePair<TKey, TValue>);
-                    return false;
-                }
+                enumerator.Dispose();
+                pair = default(KeyValuePair<TKey, TValue>);
+                return false;
             }, cache, comparer)
         {
             //Empty
@@ -192,18 +186,15 @@ namespace Theraot.Collections
             {
                 return true;
             }
-            else
+            KeyValuePair<TKey, TValue> item;
+            while (Progressor.TryTake(out item))
             {
-                KeyValuePair<TKey, TValue> item;
-                while (Progressor.TryTake(out item))
+                if (_keyComparer.Equals(key, item.Key))
                 {
-                    if (_keyComparer.Equals(key, item.Key))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
-                return false;
             }
+            return false;
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)

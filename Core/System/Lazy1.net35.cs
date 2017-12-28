@@ -144,15 +144,12 @@ namespace System
                     thread = null;
                 }
             }
-            else
+            if (ReferenceEquals(thread, Thread.CurrentThread))
             {
-                if (ReferenceEquals(thread, Thread.CurrentThread))
-                {
-                    throw new InvalidOperationException();
-                }
-                waitHandle.WaitOne();
-                return _valueFactory.Invoke();
+                throw new InvalidOperationException();
             }
+            waitHandle.WaitOne();
+            return _valueFactory.Invoke();
         }
 
         private T CachingNoneMode(Func<T> valueFactory, HashSet<Thread> threads)
@@ -189,10 +186,7 @@ namespace System
                     }
                 }
             }
-            else
-            {
-                return _valueFactory.Invoke();
-            }
+            return _valueFactory.Invoke();
         }
 
         private T FullMode(Func<T> valueFactory, ManualResetEvent waitHandle, ref Thread thread, ref int preIsValueCreated)
@@ -220,25 +214,16 @@ namespace System
                     thread = null;
                 }
             }
-            else
+            if (ReferenceEquals(thread, Thread.CurrentThread))
             {
-                if (ReferenceEquals(thread, Thread.CurrentThread))
-                {
-                    throw new InvalidOperationException();
-                }
-                else
-                {
-                    waitHandle.WaitOne();
-                    if (Thread.VolatileRead(ref _isValueCreated) == 1)
-                    {
-                        return _valueFactory.Invoke();
-                    }
-                    else
-                    {
-                        goto back;
-                    }
-                }
+                throw new InvalidOperationException();
             }
+            waitHandle.WaitOne();
+            if (Thread.VolatileRead(ref _isValueCreated) == 1)
+            {
+                return _valueFactory.Invoke();
+            }
+            goto back;
         }
 
         private T NoneMode(Func<T> valueFactory, HashSet<Thread> threads)
@@ -255,10 +240,7 @@ namespace System
                         {
                             throw new InvalidOperationException();
                         }
-                        else
-                        {
-                            threads.Add(currentThread);
-                        }
+                        threads.Add(currentThread);
                     }
                     _target = valueFactory();
                     _valueFactory = FuncHelper.GetReturnFunc(_target);
@@ -278,10 +260,7 @@ namespace System
                     }
                 }
             }
-            else
-            {
-                return _valueFactory.Invoke();
-            }
+            return _valueFactory.Invoke();
         }
 
         private T PublicationOnlyMode(Func<T> valueFactory)

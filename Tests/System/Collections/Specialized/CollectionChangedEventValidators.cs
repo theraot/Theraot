@@ -41,10 +41,7 @@ namespace MonoTests.System.Collections.Specialized
                 Assert.IsNull(actual, "LISTEQ_1A::" + message);
                 return;
             }
-            else
-            {
-                Assert.IsNotNull(actual, "LISTEQ_1B::" + message);
-            }
+            Assert.IsNotNull(actual, "LISTEQ_1B::" + message);
 
             Assert.AreEqual(expected.Count, actual.Count, "LISTEQ_2::" + message);
 

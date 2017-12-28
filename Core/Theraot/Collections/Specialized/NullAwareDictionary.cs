@@ -66,18 +66,15 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException("dictionary", "dictionary is null.");
             }
+            _dictionary = new Dictionary<TKey, TValue>(dictionary);
+            if (typeof(TKey).CanBeNull())
+            {
+                InitializeNullable();
+                TakeValueForNull(dictionary);
+            }
             else
             {
-                _dictionary = new Dictionary<TKey, TValue>(dictionary);
-                if (typeof(TKey).CanBeNull())
-                {
-                    InitializeNullable();
-                    TakeValueForNull(dictionary);
-                }
-                else
-                {
-                    InitializeNotNullable();
-                }
+                InitializeNotNullable();
             }
         }
 
@@ -87,18 +84,15 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException("dictionary", "dictionary is null.");
             }
+            _dictionary = new Dictionary<TKey, TValue>(dictionary, comparer);
+            if (typeof(TKey).CanBeNull())
+            {
+                InitializeNullable();
+                TakeValueForNull(dictionary);
+            }
             else
             {
-                _dictionary = new Dictionary<TKey, TValue>(dictionary, comparer);
-                if (typeof(TKey).CanBeNull())
-                {
-                    InitializeNullable();
-                    TakeValueForNull(dictionary);
-                }
-                else
-                {
-                    InitializeNotNullable();
-                }
+                InitializeNotNullable();
             }
         }
 
@@ -110,12 +104,9 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException("info");
             }
-            else
-            {
-                _dictionary = (Dictionary<TKey, TValue>)info.GetValue("dictionary", typeof(Dictionary<TKey, TValue>));
-                _hasNull = info.GetBoolean("_hasNull");
-                _valueForNull[0] = (TValue)info.GetValue("valueForNull", typeof(TValue));
-            }
+            _dictionary = (Dictionary<TKey, TValue>)info.GetValue("dictionary", typeof(Dictionary<TKey, TValue>));
+            _hasNull = info.GetBoolean("_hasNull");
+            _valueForNull[0] = (TValue)info.GetValue("valueForNull", typeof(TValue));
         }
 
         public IReadOnlyDictionary<TKey, TValue> AsReadOnly
@@ -159,15 +150,9 @@ namespace Theraot.Collections.Specialized
                     {
                         return _valueForNull[0];
                     }
-                    else
-                    {
-                        throw new KeyNotFoundException();
-                    }
+                    throw new KeyNotFoundException();
                 }
-                else
-                {
-                    return _dictionary[key];
-                }
+                return _dictionary[key];
             }
             set
             {
@@ -192,10 +177,7 @@ namespace Theraot.Collections.Specialized
                 {
                     throw new ArgumentException();
                 }
-                else
-                {
-                    SetForNull(value);
-                }
+                SetForNull(value);
             }
             else
             {
@@ -226,21 +208,15 @@ namespace Theraot.Collections.Specialized
                 {
                     return _valueComparer.Equals(_valueForNull[0], value);
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-            else
+            try
             {
-                try
-                {
-                    return _valueComparer.Equals(_dictionary[key], value);
-                }
-                catch (KeyNotFoundException)
-                {
-                    return false;
-                }
+                return _valueComparer.Equals(_dictionary[key], value);
+            }
+            catch (KeyNotFoundException)
+            {
+                return false;
             }
         }
 
@@ -256,10 +232,7 @@ namespace Theraot.Collections.Specialized
             {
                 return _hasNull;
             }
-            else
-            {
-                return _dictionary.ContainsKey(key);
-            }
+            return _dictionary.ContainsKey(key);
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -348,15 +321,9 @@ namespace Theraot.Collections.Specialized
                     ClearForNull();
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-            else
-            {
-                return _dictionary.Remove(key);
-            }
+            return _dictionary.Remove(key);
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
@@ -370,28 +337,19 @@ namespace Theraot.Collections.Specialized
                     ClearForNull();
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-            else
+            try
             {
-                try
+                if (_valueComparer.Equals(_dictionary[key], value))
                 {
-                    if (_valueComparer.Equals(_dictionary[key], value))
-                    {
-                        return _dictionary.Remove(key);
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return _dictionary.Remove(key);
                 }
-                catch (KeyNotFoundException)
-                {
-                    return false;
-                }
+                return false;
+            }
+            catch (KeyNotFoundException)
+            {
+                return false;
             }
         }
 
@@ -404,15 +362,9 @@ namespace Theraot.Collections.Specialized
                     ClearForNull();
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-            else
-            {
-                return _dictionary.Remove(item, comparer);
-            }
+            return _dictionary.Remove(item, comparer);
         }
 
         public bool SetEquals(IEnumerable<KeyValuePair<TKey, TValue>> other)
@@ -435,16 +387,10 @@ namespace Theraot.Collections.Specialized
                     value = _valueForNull[0];
                     return true;
                 }
-                else
-                {
-                    value = default(TValue);
-                    return false;
-                }
+                value = default(TValue);
+                return false;
             }
-            else
-            {
-                return _dictionary.TryGetValue(key, out value);
-            }
+            return _dictionary.TryGetValue(key, out value);
         }
 
         public void UnionWith(IEnumerable<KeyValuePair<TKey, TValue>> other)

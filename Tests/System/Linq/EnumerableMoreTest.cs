@@ -677,7 +677,7 @@ namespace MonoTests.System.Linq
 
             // Sum<TSource> (Func<TSource, int>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Sum<string>(x => 0));
-            AssertException<ArgumentNullException>(() => data.Sum<string>(null));
+            AssertException<ArgumentNullException>(() => data.Sum<string>((Func<string, int>)null));
 
             // Sum<TSource> (Func<TSource, Nullable<int>>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Sum<string>(x => (int?)0));
@@ -844,7 +844,7 @@ namespace MonoTests.System.Linq
 
             // Min<TSource> (Func<TSource, int>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Min<string>(x => 0));
-            AssertException<ArgumentNullException>(() => data.Min<string>(null));
+            AssertException<ArgumentNullException>(() => data.Min<string>((Func<string, int>)null));
 
             // Min<TSource> (Func<TSource, Nullable<int>>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Min<string>(x => (int?)0));
@@ -999,7 +999,7 @@ namespace MonoTests.System.Linq
 
             // Max<TSource> (Func<TSource, int>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Max<string>(x => 0));
-            AssertException<ArgumentNullException>(() => data.Max<string>(null));
+            AssertException<ArgumentNullException>(() => data.Max<string>((Func<string, int>)null));
 
             // Max<TSource> (Func<TSource, Nullable<int>>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Max<string>(x => (int?)0));
@@ -1151,7 +1151,7 @@ namespace MonoTests.System.Linq
 
             // Average<TSource> (Func<TSource, int>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Average<string>(x => 0));
-            AssertException<ArgumentNullException>(() => data.Average<string>(null));
+            AssertException<ArgumentNullException>(() => data.Average<string>((Func<string, int>)null));
 
             // Average<TSource> (Func<TSource, Nullable<int>>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Average<string>(x => (int?)0));

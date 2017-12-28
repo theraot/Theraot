@@ -115,10 +115,7 @@ namespace Theraot.Collections
                 {
                     return grouping;
                 }
-                else
-                {
-                    return ArrayReservoir<T>.EmptyArray;
-                }
+                return ArrayReservoir<T>.EmptyArray;
             }
         }
 
@@ -153,18 +150,15 @@ namespace Theraot.Collections
             {
                 return true;
             }
-            else
+            IGrouping<TKey, T> item;
+            while (_progressor.TryTake(out item))
             {
-                IGrouping<TKey, T> item;
-                while (_progressor.TryTake(out item))
+                if (_keyComparer.Equals(key, item.Key))
                 {
-                    if (_keyComparer.Equals(key, item.Key))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
-                return false;
             }
+            return false;
         }
 
         public void CopyTo(KeyValuePair<TKey, IGrouping<TKey, T>>[] array)

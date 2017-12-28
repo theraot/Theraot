@@ -38,72 +38,68 @@ namespace System.Collections
                 {
                     return result;
                 }
-                else
+                var comparable = x as IStructuralEquatable;
+                if (comparable != null)
                 {
-                    var comparable = x as IStructuralEquatable;
-                    if (comparable != null)
+                    return comparable.Equals(y, this);
+                }
+                var typeX = x.GetType();
+                var typeY = y.GetType();
+                if (typeX.IsArray && typeY.IsArray)
+                {
+                    if (typeX.GetElementType() == typeY.GetElementType())
                     {
-                        return comparable.Equals(y, this);
-                    }
-                    var typeX = x.GetType();
-                    var typeY = y.GetType();
-                    if (typeX.IsArray && typeY.IsArray)
-                    {
-                        if (typeX.GetElementType() == typeY.GetElementType())
+                        CheckRank(x, y, typeX, typeY);
+                        var xLengthInfo = typeX.GetProperty("Length");
+                        var yLengthInfo = typeY.GetProperty("Length");
+                        if (xLengthInfo == null || yLengthInfo == null)
                         {
-                            CheckRank(x, y, typeX, typeY);
-                            var xLengthInfo = typeX.GetProperty("Length");
-                            var yLengthInfo = typeY.GetProperty("Length");
-                            if ((int)xLengthInfo.GetValue(x, TypeHelper.EmptyObjects) != (int)yLengthInfo.GetValue(y, TypeHelper.EmptyObjects))
-                            {
-                                return false;
-                            }
-                            else
-                            {
-                                var xEnumeratorInfo = typeX.GetMethod("GetEnumerator");
-                                var yEnumeratorInfo = typeX.GetMethod("GetEnumerator");
-                                IEnumerator firstEnumerator = null;
-                                IEnumerator secondEnumerator = null;
-                                var comparer = this as IEqualityComparer;
-                                try
-                                {
-                                    firstEnumerator = (IEnumerator)xEnumeratorInfo.Invoke(x, TypeHelper.EmptyObjects);
-                                    secondEnumerator = (IEnumerator)yEnumeratorInfo.Invoke(y, TypeHelper.EmptyObjects);
-                                    while (firstEnumerator.MoveNext())
-                                    {
-                                        if (!secondEnumerator.MoveNext())
-                                        {
-                                            return false;
-                                        }
-                                        if (!comparer.Equals(firstEnumerator.Current, secondEnumerator.Current))
-                                        {
-                                            return false;
-                                        }
-                                    }
-                                    return !secondEnumerator.MoveNext();
-                                }
-                                finally
-                                {
-                                    var disposableX = firstEnumerator as IDisposable;
-                                    if (disposableX != null)
-                                    {
-                                        disposableX.Dispose();
-                                    }
-                                    var disposableY = secondEnumerator as IDisposable;
-                                    if (disposableY != null)
-                                    {
-                                        disposableY.Dispose();
-                                    }
-                                }
-                            }
+                            // should never happen
+                            throw new ArgumentException("Valid arrays required");
                         }
-                        else
+                        if ((int)xLengthInfo.GetValue(x, TypeHelper.EmptyObjects) != (int)yLengthInfo.GetValue(y, TypeHelper.EmptyObjects))
                         {
                             return false;
                         }
+                        var xEnumeratorInfo = typeX.GetMethod("GetEnumerator");
+                        var yEnumeratorInfo = typeX.GetMethod("GetEnumerator");
+                        IEnumerator firstEnumerator = null;
+                        IEnumerator secondEnumerator = null;
+                        var comparer = this as IEqualityComparer;
+                        try
+                        {
+                            firstEnumerator = (IEnumerator)xEnumeratorInfo.Invoke(x, TypeHelper.EmptyObjects);
+                            secondEnumerator = (IEnumerator)yEnumeratorInfo.Invoke(y, TypeHelper.EmptyObjects);
+                            while (firstEnumerator.MoveNext())
+                            {
+                                if (!secondEnumerator.MoveNext())
+                                {
+                                    return false;
+                                }
+                                if (!comparer.Equals(firstEnumerator.Current, secondEnumerator.Current))
+                                {
+                                    return false;
+                                }
+                            }
+                            return !secondEnumerator.MoveNext();
+                        }
+                        finally
+                        {
+                            var disposableX = firstEnumerator as IDisposable;
+                            if (disposableX != null)
+                            {
+                                disposableX.Dispose();
+                            }
+                            var disposableY = secondEnumerator as IDisposable;
+                            if (disposableY != null)
+                            {
+                                disposableY.Dispose();
+                            }
+                        }
                     }
-                    return EqualityComparer<object>.Default.Equals(x, y);
+                    return false;
                 }
+                return EqualityComparer<object>.Default.Equals(x, y);
             }
 
             int IEqualityComparer.GetHashCode(object obj)
@@ -120,6 +116,11 @@ namespace System.Collections
             {
                 var xRankInfo = typeX.GetProperty("Rank");
                 var yRankInfo = typeY.GetProperty("Rank");
+                if (xRankInfo == null || yRankInfo == null)
+                {
+                    // should never happen
+                    throw new ArgumentException("Valid arrays required");
+                }
                 if ((int)xRankInfo.GetValue(x, TypeHelper.EmptyObjects) != 1)
                 {
                     throw new ArgumentException("Only one-dimensional arrays are supported", "x");

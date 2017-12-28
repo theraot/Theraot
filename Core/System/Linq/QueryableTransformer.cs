@@ -131,7 +131,7 @@ namespace System.Linq
             {
                 return false;
             }
-            else if (method.IsGenericMethod)
+            if (method.IsGenericMethod)
             {
                 if (!candidate.IsGenericMethod || candidate.GetGenericArguments().Length != method.GetGenericArguments().Length)
                 {
