@@ -40,7 +40,7 @@ namespace System.Threading.Tasks
                 _parent = InternalCurrent;
             }
             State = state;
-            _creationOptions = creationOptions | TaskCreationOptions.DenyChildAttach;
+            _creationOptions = creationOptions;
             _status = (int)TaskStatus.WaitingForActivation;
             _internalOptions = InternalTaskOptions.PromiseTask;
             ExecutingTaskScheduler = TaskScheduler.Default;
