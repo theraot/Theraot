@@ -187,7 +187,7 @@ namespace System.Threading.Tests
             catch (Exception ex)
             {
                 Assert.NotNull(exceptionType);
-                Assert.IsTrue(ex.GetType().IsInstanceOfType(exceptionType));
+                Assert.IsTrue(exceptionType.IsInstanceOfType(ex));
                 exception = ex;
             }
         }
@@ -226,7 +226,7 @@ namespace System.Threading.Tests
             catch (Exception ex)
             {
                 Assert.NotNull(exceptionType);
-                Assert.IsTrue(ex.GetType().IsInstanceOfType(exceptionType));
+                Assert.IsTrue(exceptionType.IsInstanceOfType(ex));
             }
         }
 
@@ -266,7 +266,7 @@ namespace System.Threading.Tests
             catch (Exception ex)
             {
                 Assert.NotNull(exceptionType);
-                Assert.IsTrue(ex.GetType().IsInstanceOfType(exceptionType));
+                Assert.IsTrue(exceptionType.IsInstanceOfType(ex));
             }
         }
 
@@ -334,7 +334,7 @@ namespace System.Threading.Tests
             catch (Exception ex)
             {
                 Assert.NotNull(exceptionType);
-                Assert.IsTrue(ex.GetType().IsInstanceOfType(exceptionType));
+                Assert.IsTrue(exceptionType.IsInstanceOfType(ex));
             }
         }
 
@@ -421,7 +421,7 @@ namespace System.Threading.Tests
             catch (Exception ex)
             {
                 Assert.NotNull(exceptionType);
-                Assert.IsTrue(ex.GetType().IsInstanceOfType(exceptionType));
+                Assert.IsTrue(exceptionType.IsInstanceOfType(ex));
             }
         }
 
