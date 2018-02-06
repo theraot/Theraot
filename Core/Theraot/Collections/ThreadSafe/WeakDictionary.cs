@@ -977,6 +977,17 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
+        public bool TryUpdate(TKey key, Func<TValue, TValue> newValue)
+        {
+            var needle = PrivateGetNeedle(key);
+            if (_wrapped.TryUpdate(needle, newValue))
+            {
+                return true;
+            }
+            _reservoir.DonateNeedle(needle);
+            return false;
+        }
+
         /// <summary>
         /// Returns the values where the key satisfies the predicate.
         /// </summary>

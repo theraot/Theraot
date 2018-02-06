@@ -921,6 +921,35 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
+        public bool TryUpdate(TKey key, Func<TValue, TValue> newValue)
+        {
+            if (newValue == null)
+            {
+                throw new ArgumentNullException("newValue");
+            }
+            var hashCode = GetHashCode(key);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                var keyMatch = false;
+                ExtendProbingIfNeeded(attempts);
+                Predicate<KeyValuePair<TKey, TValue>> check = found =>
+                {
+                    keyMatch = _keyComparer.Equals(found.Key, key);
+                    return keyMatch;
+                };
+                bool isEmpty;
+                if (_bucket.Update(hashCode + attempts, existing => new KeyValuePair<TKey, TValue>(key, newValue(existing.Value)), check, out isEmpty))
+                {
+                    return true;
+                }
+                if (keyMatch)
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+
         /// <summary>
         /// Returns the values where the key satisfies the predicate.
         /// </summary>
