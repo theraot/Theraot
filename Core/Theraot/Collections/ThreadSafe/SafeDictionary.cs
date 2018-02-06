@@ -508,7 +508,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Removes a key by hash code, key predicate and value predicate.
+        /// Removes the specified key if the value predicate passes.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="valueCheck">The value predicate.</param>
