@@ -222,6 +222,7 @@ namespace System.Threading
                 source.SetResult(true);
                 return source.Task;
             }
+            Thread.MemoryBarrier();
             _asyncWaiters.Add(source);
             return source.Task;
         }
@@ -239,6 +240,7 @@ namespace System.Threading
                 source.SetResult(true);
                 return source.Task;
             }
+            Thread.MemoryBarrier();
             cancellationToken.Register(() => source.SetCanceled());
             _asyncWaiters.Add(source);
             return source.Task;
@@ -253,6 +255,7 @@ namespace System.Threading
                 source.SetResult(true);
                 return source.Task;
             }
+            Thread.MemoryBarrier();
             Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout);
             _asyncWaiters.Add(source);
             return source.Task;
@@ -267,6 +270,7 @@ namespace System.Threading
                 source.SetResult(true);
                 return source.Task;
             }
+            Thread.MemoryBarrier();
             Theraot.Threading.Timeout.Launch(() => source.SetResult(false), timeout);
             _asyncWaiters.Add(source);
             return source.Task;
@@ -285,6 +289,7 @@ namespace System.Threading
                 source.SetResult(true);
                 return source.Task;
             }
+            Thread.MemoryBarrier();
             Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout, cancellationToken);
             cancellationToken.Register(() => source.SetCanceled());
             _asyncWaiters.Add(source);
@@ -304,6 +309,7 @@ namespace System.Threading
                 source.SetResult(true);
                 return source.Task;
             }
+            Thread.MemoryBarrier();
             Theraot.Threading.Timeout.Launch
             (
                 () =>
