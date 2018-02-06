@@ -853,7 +853,7 @@ namespace Tests.Theraot.Threading
                 {
                     int[] z = { 0 };
                     var threads = new Thread[5];
-                    for (int index = 0; index < 5; index++)
+                    for (var index = 0; index < 5; index++)
                     {
                         threads[index] = new Thread
                         (
@@ -868,12 +868,12 @@ namespace Tests.Theraot.Threading
                             }
                         );
                     }
-                    for (int index = 0; index < 5; index++)
+                    for (var index = 0; index < 5; index++)
                     {
                         threads[index].Start();
                     }
                     w.Set();
-                    for (int index = 0; index < 5; index++)
+                    for (var index = 0; index < 5; index++)
                     {
                         threads[index].Join();
                     }
@@ -892,7 +892,7 @@ namespace Tests.Theraot.Threading
                     int[] z = { 0 };
                     var ok = true;
                     var threads = new Thread[5];
-                    for (int index = 0; index < 5; index++)
+                    for (var index = 0; index < 5; index++)
                     {
                         threads[index] = new Thread
                         (
@@ -908,12 +908,12 @@ namespace Tests.Theraot.Threading
                             }
                         );
                     }
-                    for (int index = 0; index < 5; index++)
+                    for (var index = 0; index < 5; index++)
                     {
                         threads[index].Start();
                     }
                     w.Set();
-                    for (int index = 0; index < 5; index++)
+                    for (var index = 0; index < 5; index++)
                     {
                         threads[index].Join();
                     }
@@ -1031,18 +1031,18 @@ namespace Tests.Theraot.Threading
                         Interlocked.Increment(ref doneCount);
                     };
                     var threads = new Thread[5];
-                    for (int index = 0; index < 5; index++)
+                    for (var index = 0; index < 5; index++)
                     {
                         threads[index] = new Thread(tmp);
                     }
-                    for (int index = 0; index < 5; index++)
+                    for (var index = 0; index < 5; index++)
                     {
                         threads[index].Start();
                     }
                     Thread.Sleep(10);
                     Assert.AreEqual(5, enterCount);
                     w.Set();
-                    for (int index = 0; index < 5; index++)
+                    for (var index = 0; index < 5; index++)
                     {
                         threads[index].Join();
                     }
@@ -1088,11 +1088,11 @@ namespace Tests.Theraot.Threading
                         Interlocked.Increment(ref doneCount);
                     };
                     var threads = new Thread[5];
-                    for (int index = 0; index < 5; index++)
+                    for (var index = 0; index < 5; index++)
                     {
                         threads[index] = new Thread(tmp);
                     }
-                    for (int index = 0; index < 5; index++)
+                    for (var index = 0; index < 5; index++)
                     {
                         threads[index].Start();
                     }
@@ -1101,7 +1101,7 @@ namespace Tests.Theraot.Threading
                         Thread.Sleep(10);
                     } while (enterCount < 5);
                     w.Set();
-                    for (int index = 0; index < 5; index++)
+                    for (var index = 0; index < 5; index++)
                     {
                         threads[index].Join();
                     }
@@ -1124,7 +1124,7 @@ namespace Tests.Theraot.Threading
                         var ok = false;
                         int[] z = { 0 };
                         var threads = new Thread[5];
-                        for (int index = 0; index < 5; index++)
+                        for (var index = 0; index < 5; index++)
                         {
                             threads[index] = new Thread
                             (
@@ -1152,13 +1152,13 @@ namespace Tests.Theraot.Threading
                                 }
                             }
                         );
-                        for (int index = 0; index < 5; index++)
+                        for (var index = 0; index < 5; index++)
                         {
                             threads[index].Start();
                         }
                         a.Start();
                         w0.Set();
-                        for (int index = 0; index < 5; index++)
+                        for (var index = 0; index < 5; index++)
                         {
                             threads[index].Join();
                         }

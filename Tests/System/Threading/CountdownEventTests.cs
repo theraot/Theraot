@@ -381,6 +381,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void Signal_Concurrent()
         {
             for (var r = 0; r < 100; ++r)

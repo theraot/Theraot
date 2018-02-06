@@ -11,9 +11,11 @@ using Theraot.Threading.Needles;
 namespace Tests.Theraot.Threading.Needles
 {
     [TestFixture]
-    public class WorkTest
+    public class
+        WorkTest
     {
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void CountdownEvent_Signal_Concurrent()
         {
             for (var r = 0; r < 100; ++r)
@@ -90,6 +92,7 @@ namespace Tests.Theraot.Threading.Needles
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void ManualResetEventSlim_Wait_SetConcurrent()
         {
             for (var i = 0; i < 10000; ++i)

@@ -177,12 +177,14 @@ namespace System.Threading.Tests
         /// <returns>True if the test succeeded, false otherwise</returns>
         private static void RunSemaphoreSlimTest0_Ctor(int initial, int maximum, Type exceptionType)
         {
-            string methodFailed = "RunSemaphoreSlimTest0_Ctor(" + initial + "," + maximum + "):  FAILED.  ";
+            var methodFailed = "RunSemaphoreSlimTest0_Ctor(" + initial + "," + maximum + "):  FAILED.  ";
             Exception exception = null;
             try
             {
-                SemaphoreSlim semaphore = new SemaphoreSlim(initial, maximum);
-                Assert.AreEqual(initial, semaphore.CurrentCount);
+                using (var semaphore = new SemaphoreSlim(initial, maximum))
+                {
+                    Assert.AreEqual(initial, semaphore.CurrentCount);
+                }
             }
             catch (Exception ex)
             {
@@ -205,28 +207,30 @@ namespace System.Threading.Tests
         private static void RunSemaphoreSlimTest1_Wait
             (int initial, int maximum, object timeout, bool returnValue, Type exceptionType)
         {
-            SemaphoreSlim semaphore = new SemaphoreSlim(initial, maximum);
-            try
+            using (var semaphore = new SemaphoreSlim(initial, maximum))
             {
-                bool result = false;
-                if (timeout is TimeSpan)
+                try
                 {
-                    result = semaphore.Wait((TimeSpan)timeout);
+                    var result = false;
+                    if (timeout is TimeSpan)
+                    {
+                        result = semaphore.Wait((TimeSpan)timeout);
+                    }
+                    else
+                    {
+                        result = semaphore.Wait((int)timeout);
+                    }
+                    Assert.AreEqual(returnValue, result);
+                    if (result)
+                    {
+                        Assert.AreEqual(initial - 1, semaphore.CurrentCount);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    result = semaphore.Wait((int)timeout);
+                    Assert.NotNull(exceptionType);
+                    Assert.IsTrue(exceptionType.IsInstanceOfType(ex));
                 }
-                Assert.AreEqual(returnValue, result);
-                if (result)
-                {
-                    Assert.AreEqual(initial - 1, semaphore.CurrentCount);
-                }
-            }
-            catch (Exception ex)
-            {
-                Assert.NotNull(exceptionType);
-                Assert.IsTrue(exceptionType.IsInstanceOfType(ex));
             }
         }
 
@@ -245,28 +249,30 @@ namespace System.Threading.Tests
         private static void RunSemaphoreSlimTest1_WaitAsync
             (int initial, int maximum, object timeout, bool returnValue, Type exceptionType)
         {
-            SemaphoreSlim semaphore = new SemaphoreSlim(initial, maximum);
-            try
+            using (var semaphore = new SemaphoreSlim(initial, maximum))
             {
-                bool result = false;
-                if (timeout is TimeSpan)
+                try
                 {
-                    result = semaphore.WaitAsync((TimeSpan)timeout).Result;
+                    var result = false;
+                    if (timeout is TimeSpan)
+                    {
+                        result = semaphore.WaitAsync((TimeSpan)timeout).Result;
+                    }
+                    else
+                    {
+                        result = semaphore.WaitAsync((int)timeout).Result;
+                    }
+                    Assert.AreEqual(returnValue, result);
+                    if (result)
+                    {
+                        Assert.AreEqual(initial - 1, semaphore.CurrentCount);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    result = semaphore.WaitAsync((int)timeout).Result;
+                    Assert.NotNull(exceptionType);
+                    Assert.IsTrue(exceptionType.IsInstanceOfType(ex));
                 }
-                Assert.AreEqual(returnValue, result);
-                if (result)
-                {
-                    Assert.AreEqual(initial - 1, semaphore.CurrentCount);
-                }
-            }
-            catch (Exception ex)
-            {
-                Assert.NotNull(exceptionType);
-                Assert.IsTrue(exceptionType.IsInstanceOfType(ex));
             }
         }
 
@@ -278,36 +284,45 @@ namespace System.Threading.Tests
         [Category("NotWorking")] // The current implementation allows WaitAsync to awake concurrently
         public static void RunSemaphoreSlimTest1_WaitAsync2()
         {
-            SemaphoreSlim semaphore = new SemaphoreSlim(1);
-            ThreadLocal<int> counter = new ThreadLocal<int>(() => 0);
-            bool nonZeroObserved = false;
-
-            const int asyncActions = 20;
-            int remAsyncActions = asyncActions;
-            ManualResetEvent mre = new ManualResetEvent(false);
-
-            Action<int> doWorkAsync = async delegate (int i)
+            using (var semaphore = new SemaphoreSlim(1))
             {
-                await semaphore.WaitAsync();
-                if (counter.Value > 0)
+                using (var counter = new ThreadLocal<int>(() => 0))
                 {
-                    nonZeroObserved = true;
+                    using (var mre = new ManualResetEvent(false))
+                    {
+                        var nonZeroObserved = false;
+
+                        const int AsyncActions = 20;
+                        var remAsyncActions = AsyncActions;
+                        Func<int, Task> doWorkAsync = async (int i) =>
+                        {
+                            await semaphore.WaitAsync();
+                            if (counter.Value > 0)
+                            {
+                                nonZeroObserved = true;
+                            }
+
+                            counter.Value = counter.Value + 1;
+                            semaphore.Release();
+                            counter.Value = counter.Value - 1;
+
+                            if (Interlocked.Decrement(ref remAsyncActions) == 0) mre.Set();
+                        };
+
+                        semaphore.Wait();
+                        for (var i = 0; i < AsyncActions; i++)
+                        {
+                            doWorkAsync(i);
+                        }
+                        semaphore.Release();
+
+                        mre.WaitOne();
+
+                        Assert.False(nonZeroObserved,
+                            "RunSemaphoreSlimTest1_WaitAsync2:  FAILED.  SemaphoreSlim.Release() seems to have synchronously invoked a continuation.");
+                    }
                 }
-
-                counter.Value = counter.Value + 1;
-                semaphore.Release();
-                counter.Value = counter.Value - 1;
-
-                if (Interlocked.Decrement(ref remAsyncActions) == 0) mre.Set();
-            };
-
-            semaphore.Wait();
-            for (int i = 0; i < asyncActions; i++) doWorkAsync(i);
-            semaphore.Release();
-
-            mre.WaitOne();
-
-            Assert.False(nonZeroObserved, "RunSemaphoreSlimTest1_WaitAsync2:  FAILED.  SemaphoreSlim.Release() seems to have synchronously invoked a continuation.");
+            }
         }
 
 #endif
@@ -324,17 +339,19 @@ namespace System.Threading.Tests
         private static void RunSemaphoreSlimTest2_Release
            (int initial, int maximum, int releaseCount, Type exceptionType)
         {
-            SemaphoreSlim semaphore = new SemaphoreSlim(initial, maximum);
-            try
+            using (var semaphore = new SemaphoreSlim(initial, maximum))
             {
-                int oldCount = semaphore.Release(releaseCount);
-                Assert.AreEqual(initial, oldCount);
-                Assert.AreEqual(initial + releaseCount, semaphore.CurrentCount);
-            }
-            catch (Exception ex)
-            {
-                Assert.NotNull(exceptionType);
-                Assert.IsTrue(exceptionType.IsInstanceOfType(ex));
+                try
+                {
+                    var oldCount = semaphore.Release(releaseCount);
+                    Assert.AreEqual(initial, oldCount);
+                    Assert.AreEqual(initial + releaseCount, semaphore.CurrentCount);
+                }
+                catch (Exception ex)
+                {
+                    Assert.NotNull(exceptionType);
+                    Assert.IsTrue(exceptionType.IsInstanceOfType(ex));
+                }
             }
         }
 
@@ -412,7 +429,7 @@ namespace System.Threading.Tests
         /// <returns>True if the test succeeded, false otherwise</returns>
         private static void RunSemaphoreSlimTest4_Dispose(int initial, int maximum, SemaphoreSlimActions? action, Type exceptionType)
         {
-            SemaphoreSlim semaphore = new SemaphoreSlim(initial, maximum);
+            var semaphore = new SemaphoreSlim(initial, maximum);
             try
             {
                 semaphore.Dispose();
@@ -434,7 +451,7 @@ namespace System.Threading.Tests
         /// <returns>True if the test succeeded, false otherwise</returns>
         private static void RunSemaphoreSlimTest5_CurrentCount(int initial, int maximum, SemaphoreSlimActions? action)
         {
-            SemaphoreSlim semaphore = new SemaphoreSlim(initial, maximum);
+            var semaphore = new SemaphoreSlim(initial, maximum);
 
             CallSemaphoreAction(semaphore, action, null);
             if (action == null)
@@ -457,7 +474,7 @@ namespace System.Threading.Tests
         /// <returns>True if the test succeeded, false otherwise</returns>
         private static void RunSemaphoreSlimTest7_AvailableWaitHandle(int initial, int maximum, SemaphoreSlimActions? action, bool state)
         {
-            SemaphoreSlim semaphore = new SemaphoreSlim(initial, maximum);
+            var semaphore = new SemaphoreSlim(initial, maximum);
 
             CallSemaphoreAction(semaphore, action, null);
             Assert.NotNull(semaphore.AvailableWaitHandle);
@@ -478,52 +495,56 @@ namespace System.Threading.Tests
         private static void RunSemaphoreSlimTest8_ConcWaitAndRelease_Private(int initial, int maximum,
             int waitThreads, int releaseThreads, int succeededWait, int failedWait, int finalCount, int timeout)
         {
-            SemaphoreSlim semaphore = new SemaphoreSlim(initial, maximum);
-            Task[] threads = new Task[waitThreads + releaseThreads];
-            int succeeded = 0;
-            int failed = 0;
-            ManualResetEvent mre = new ManualResetEvent(false);
-            // launch threads
-            for (int i = 0; i < threads.Length; i++)
+            using (var semaphore = new SemaphoreSlim(initial, maximum))
             {
-                if (i < waitThreads)
+                var threads = new Task[waitThreads + releaseThreads];
+                var succeeded = 0;
+                var failed = 0;
+                using (var mre = new ManualResetEvent(false))
                 {
-                    // We are creating the Task using TaskCreationOptions.LongRunning to
-                    // force usage of another thread (which will be the case on the default scheduler
-                    // with its current implementation).  Without this, the release tasks will likely get
-                    // queued behind the wait tasks in the pool, making it very likely that the wait tasks
-                    // will starve the very tasks that when run would unblock them.
-                    threads[i] = new Task(delegate ()
-                       {
-                           mre.WaitOne();
-                           if (semaphore.Wait(timeout))
-                           {
-                               Interlocked.Increment(ref succeeded);
-                           }
-                           else
-                           {
-                               Interlocked.Increment(ref failed);
-                           }
-                       }, TaskCreationOptions.LongRunning);
-                }
-                else
-                {
-                    threads[i] = new Task(delegate ()
-                       {
-                           mre.WaitOne();
-                           semaphore.Release();
-                       });
-                }
-                threads[i].Start(TaskScheduler.Default);
-            }
+                    // launch threads
+                    for (var i = 0; i < threads.Length; i++)
+                    {
+                        if (i < waitThreads)
+                        {
+                            // We are creating the Task using TaskCreationOptions.LongRunning to
+                            // force usage of another thread (which will be the case on the default scheduler
+                            // with its current implementation).  Without this, the release tasks will likely get
+                            // queued behind the wait tasks in the pool, making it very likely that the wait tasks
+                            // will starve the very tasks that when run would unblock them.
+                            threads[i] = new Task(delegate ()
+                            {
+                                mre.WaitOne();
+                                if (semaphore.Wait(timeout))
+                                {
+                                    Interlocked.Increment(ref succeeded);
+                                }
+                                else
+                                {
+                                    Interlocked.Increment(ref failed);
+                                }
+                            }, TaskCreationOptions.LongRunning);
+                        }
+                        else
+                        {
+                            threads[i] = new Task(delegate ()
+                            {
+                                mre.WaitOne();
+                                semaphore.Release();
+                            });
+                        }
+                        threads[i].Start(TaskScheduler.Default);
+                    }
 
-            mre.Set();
-            //wait work to be done;
-            Task.WaitAll(threads);
-            //check the number of succeeded and failed wait
-            Assert.AreEqual(succeededWait, succeeded);
-            Assert.AreEqual(failedWait, failed);
-            Assert.AreEqual(finalCount, semaphore.CurrentCount);
+                    mre.Set();
+                    //wait work to be done;
+                    Task.WaitAll(threads);
+                    //check the number of succeeded and failed wait
+                    Assert.AreEqual(succeededWait, succeeded);
+                    Assert.AreEqual(failedWait, failed);
+                    Assert.AreEqual(finalCount, semaphore.CurrentCount);
+                }
+            }
         }
 
 #if !NET40
@@ -540,46 +561,52 @@ namespace System.Threading.Tests
         private static void RunSemaphoreSlimTest8_ConcWaitAsyncAndRelease_Private(int initial, int maximum,
             int waitThreads, int releaseThreads, int succeededWait, int failedWait, int finalCount, int timeout)
         {
-            SemaphoreSlim semaphore = new SemaphoreSlim(initial, maximum);
-            Task[] tasks = new Task[waitThreads + releaseThreads];
-            int succeeded = 0;
-            int failed = 0;
-            ManualResetEvent mre = new ManualResetEvent(false);
-            // launch threads
-            for (int i = 0; i < tasks.Length; i++)
+            using (var semaphore = new SemaphoreSlim(initial, maximum))
             {
-                if (i < waitThreads)
+                var tasks = new Task[waitThreads + releaseThreads];
+                var succeeded = 0;
+                var failed = 0;
+                var semaphorea = new[] { semaphore };
+                using (var mre = new ManualResetEvent(false))
                 {
-                    tasks[i] = Task.Run(async delegate
+                    var mrea = new[] { mre };
+                    // launch threads
+                    for (var i = 0; i < tasks.Length; i++)
                     {
-                        mre.WaitOne();
-                        if (await semaphore.WaitAsync(timeout))
+                        if (i < waitThreads)
                         {
-                            Interlocked.Increment(ref succeeded);
+                            tasks[i] = Task.Run(async delegate
+                            {
+                                mrea[0].WaitOne();
+                                if (await semaphorea[0].WaitAsync(timeout))
+                                {
+                                    Interlocked.Increment(ref succeeded);
+                                }
+                                else
+                                {
+                                    Interlocked.Increment(ref failed);
+                                }
+                            });
                         }
                         else
                         {
-                            Interlocked.Increment(ref failed);
+                            tasks[i] = TaskEx.Run(delegate
+                            {
+                                mrea[0].WaitOne();
+                                semaphorea[0].Release();
+                            });
                         }
-                    });
-                }
-                else
-                {
-                    tasks[i] = TaskEx.Run(delegate
-                    {
-                        mre.WaitOne();
-                        semaphore.Release();
-                    });
+                    }
+
+                    mre.Set();
+                    //wait work to be done;
+                    Task.WaitAll(tasks);
+
+                    Assert.AreEqual(succeededWait, succeeded);
+                    Assert.AreEqual(failedWait, failed);
+                    Assert.AreEqual(finalCount, semaphore.CurrentCount);
                 }
             }
-
-            mre.Set();
-            //wait work to be done;
-            Task.WaitAll(tasks);
-
-            Assert.AreEqual(succeededWait, succeeded);
-            Assert.AreEqual(failedWait, failed);
-            Assert.AreEqual(finalCount, semaphore.CurrentCount);
         }
 
         [Test]
@@ -592,40 +619,42 @@ namespace System.Threading.Tests
 
         private static void TestConcurrentWaitAndWaitAsync_Private(int syncWaiters, int asyncWaiters)
         {
-            int totalWaiters = syncWaiters + asyncWaiters;
+            var totalWaiters = syncWaiters + asyncWaiters;
 
-            var semaphore = new SemaphoreSlim(0);
-            Task[] tasks = new Task[totalWaiters];
-
-            const int ITERS = 10;
-            int randSeed = unchecked((int)DateTime.Now.Ticks);
-            for (int i = 0; i < syncWaiters; i++)
+            using (var semaphore = new SemaphoreSlim(0))
             {
-                tasks[i] = TaskEx.Run(delegate
-                {
-                    //Random rand = new Random(Interlocked.Increment(ref randSeed));
-                    for (int iter = 0; iter < ITERS; iter++)
-                    {
-                        semaphore.Wait();
-                        semaphore.Release();
-                    }
-                });
-            }
-            for (int i = syncWaiters; i < totalWaiters; i++)
-            {
-                tasks[i] = Task.Run(async delegate
-                {
-                    //Random rand = new Random(Interlocked.Increment(ref randSeed));
-                    for (int iter = 0; iter < ITERS; iter++)
-                    {
-                        await semaphore.WaitAsync();
-                        semaphore.Release();
-                    }
-                });
-            }
+                var tasks = new Task[totalWaiters];
 
-            semaphore.Release(totalWaiters / 2);
-            Task.WaitAll(tasks);
+                const int ITERS = 10;
+                var randSeed = unchecked((int)DateTime.Now.Ticks);
+                for (var i = 0; i < syncWaiters; i++)
+                {
+                    tasks[i] = TaskEx.Run(delegate
+                    {
+                        //Random rand = new Random(Interlocked.Increment(ref randSeed));
+                        for (var iter = 0; iter < ITERS; iter++)
+                        {
+                            semaphore.Wait();
+                            semaphore.Release();
+                        }
+                    });
+                }
+                for (var i = syncWaiters; i < totalWaiters; i++)
+                {
+                    tasks[i] = Task.Run(async delegate
+                    {
+                        //Random rand = new Random(Interlocked.Increment(ref randSeed));
+                        for (var iter = 0; iter < ITERS; iter++)
+                        {
+                            await semaphore.WaitAsync();
+                            semaphore.Release();
+                        }
+                    });
+                }
+
+                semaphore.Release(totalWaiters / 2);
+                Task.WaitAll(tasks);
+            }
         }
 
 #endif

@@ -1,4 +1,6 @@
 ﻿using NUnit.Framework;
+using System;
+using System.CodeDom.Compiler;
 using System.IO;
 using Theraot.Core;
 
@@ -22,9 +24,10 @@ namespace Tests.Theraot.Threading
                 PathHelper.Combine(null, "two", "three");
                 Assert.Fail("#A1-1");
             }
-            catch
+            catch (Exception)
             {
                 // success
+                GC.KeepAlive(sep);
             }
 
             try
@@ -32,9 +35,10 @@ namespace Tests.Theraot.Threading
                 PathHelper.Combine("one", null, "three");
                 Assert.Fail("#A1-2");
             }
-            catch
+            catch (Exception)
             {
                 // success
+                GC.KeepAlive(sep);
             }
 
             try
@@ -42,9 +46,10 @@ namespace Tests.Theraot.Threading
                 PathHelper.Combine("one", "two", null);
                 Assert.Fail("#A1-3");
             }
-            catch
+            catch (Exception)
             {
                 // success
+                GC.KeepAlive(sep);
             }
 
             Assert.AreEqual(Concat(sep, "one", "two", "three"), PathHelper.Combine("one", "two", "three"), "#A2-1");
@@ -73,9 +78,10 @@ namespace Tests.Theraot.Threading
                 PathHelper.Combine(null, "two", "three", "four");
                 Assert.Fail("#A1-1");
             }
-            catch
+            catch (Exception)
             {
                 // success
+                GC.KeepAlive(sep);
             }
 
             try
@@ -83,9 +89,10 @@ namespace Tests.Theraot.Threading
                 PathHelper.Combine("one", null, "three", "four");
                 Assert.Fail("#A1-2");
             }
-            catch
+            catch (Exception)
             {
                 // success
+                GC.KeepAlive(sep);
             }
 
             try
@@ -93,9 +100,10 @@ namespace Tests.Theraot.Threading
                 PathHelper.Combine("one", "two", null, "four");
                 Assert.Fail("#A1-3");
             }
-            catch
+            catch (Exception)
             {
                 // success
+                GC.KeepAlive(sep);
             }
 
             try
@@ -103,9 +111,10 @@ namespace Tests.Theraot.Threading
                 PathHelper.Combine("one", "two", "three", null);
                 Assert.Fail("#A1-4");
             }
-            catch
+            catch (Exception)
             {
                 // success
+                GC.KeepAlive(sep);
             }
 
             Assert.AreEqual(Concat(sep, "one", "two", "three", "four"),
@@ -137,9 +146,10 @@ namespace Tests.Theraot.Threading
                 PathHelper.Combine(null, "two", "three", "four", "five");
                 Assert.Fail("#A1-1");
             }
-            catch
+            catch (Exception)
             {
                 // success
+                GC.KeepAlive(sep);
             }
 
             try
@@ -147,9 +157,10 @@ namespace Tests.Theraot.Threading
                 PathHelper.Combine("one", null, "three", "four", "five");
                 Assert.Fail("#A1-2");
             }
-            catch
+            catch (Exception)
             {
                 // success
+                GC.KeepAlive(sep);
             }
 
             try
@@ -157,9 +168,10 @@ namespace Tests.Theraot.Threading
                 PathHelper.Combine("one", "two", null, "four", "five");
                 Assert.Fail("#A1-3");
             }
-            catch
+            catch (Exception)
             {
                 // success
+                GC.KeepAlive(sep);
             }
 
             try
@@ -167,9 +179,10 @@ namespace Tests.Theraot.Threading
                 PathHelper.Combine("one", "two", "three", null, "five");
                 Assert.Fail("#A1-4");
             }
-            catch
+            catch (Exception)
             {
                 // success
+                GC.KeepAlive(sep);
             }
 
             try
@@ -177,9 +190,10 @@ namespace Tests.Theraot.Threading
                 PathHelper.Combine("one", "two", "three", "four", null);
                 Assert.Fail("#A1-5");
             }
-            catch
+            catch (Exception)
             {
                 // success
+                GC.KeepAlive(sep);
             }
 
             Assert.AreEqual(Concat(sep, "one", "two", "three", "four", "five"),
@@ -214,8 +228,8 @@ namespace Tests.Theraot.Threading
                 var result = PathHelper.Combine(start, combination);
                 if
                 (
-                    combination.StartsWith(Path.DirectorySeparatorChar.ToString())
-                    || combination.StartsWith(Path.AltDirectorySeparatorChar.ToString())
+                    combination.StartsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal)
+                    || combination.StartsWith(Path.AltDirectorySeparatorChar.ToString(), StringComparison.Ordinal)
                 )
                 {
                     Assert.AreEqual(combination, result);

@@ -62,6 +62,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void ContinueWithOnAnyTestCase()
         {
             ParallelTestHelper.Repeat(delegate
@@ -84,6 +85,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void ContinueWithOnCompletedSuccessfullyTestCase()
         {
             ParallelTestHelper.Repeat(delegate
@@ -306,6 +308,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void WaitChildWithContinuationNotAttachedTest()
         {
             using
@@ -314,9 +317,14 @@ namespace MonoTests.System.Threading.Tasks
                 (
                     () =>
                     {
-                        Task.Factory.StartNew(() => Thread.Sleep(200),
-                        TaskCreationOptions.AttachedToParent).ContinueWith(t => Thread.Sleep(3000)
-                    );
+                        Task.Factory.StartNew
+                        (
+                            () => Thread.Sleep(200),
+                            TaskCreationOptions.AttachedToParent
+                        ).ContinueWith
+                        (
+                            t => Thread.Sleep(3000)
+                        );
                     }
                 )
             )

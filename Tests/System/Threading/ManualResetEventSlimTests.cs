@@ -184,13 +184,7 @@ namespace MonoTests.System.Threading
                     evtFinish.Signal();
                 });
 
-                var bb = evtFinish.Wait(1000);
-                if (!bb)
-                {
-                    Assert.AreEqual(true, evtFinish.IsSet);
-                }
-
-                Assert.IsTrue(bb, "#0");
+                evtFinish.Wait();
                 Assert.IsNull(disp, "#1");
                 Assert.IsNull(setting, "#2");
 
@@ -206,6 +200,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void Wait_DisposeWithCancel()
         {
             using (var token = new CancellationTokenSource())
@@ -236,6 +231,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void Wait_SetConcurrent()
         {
             for (var i = 0; i < 10000; ++i)

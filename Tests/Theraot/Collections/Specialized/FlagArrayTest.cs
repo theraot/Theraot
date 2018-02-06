@@ -44,11 +44,11 @@ namespace Theraot.Collections.Specialized
             Assert.AreEqual(2, flagarray.Count);
             Assert.IsTrue(flagarray.Contains(false));
             Assert.IsTrue(flagarray.Contains(true));
-            for (int index = 1; index < 20; index++)
+            for (var index = 1; index < 20; index++)
             {
                 flagarray[index] = true;
             }
-            for (int index = 21; index < 60; index++)
+            for (var index = 21; index < 60; index++)
             {
                 flagarray[index] = true;
             }
@@ -72,11 +72,11 @@ namespace Theraot.Collections.Specialized
             Assert.AreEqual(58, flagarray.Count);
             Assert.IsTrue(flagarray.Contains(false));
             Assert.IsTrue(flagarray.Contains(true));
-            for (int index = 1; index < 20; index++)
+            for (var index = 1; index < 20; index++)
             {
                 flagarray[index] = false;
             }
-            for (int index = 21; index < 60; index++)
+            for (var index = 21; index < 60; index++)
             {
                 flagarray[index] = false;
             }

@@ -108,15 +108,24 @@ namespace MonoTests.System.Linq
 
         public static void AssertException<T>(Action action) where T : Exception
         {
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
             try
             {
                 action();
+                Assert.Fail();
             }
             catch (T)
             {
-                return;
+                GC.KeepAlive(action);
             }
-            Assert.Fail("Expected: " + typeof(T).Name);
+            catch (Exception exception)
+            {
+                GC.KeepAlive(exception);
+                Assert.Fail("Expected: " + typeof(T).Name);
+            }
         }
 
         private static void AssertAreSame<K, V>(K expectedKey, IEnumerable<V> expectedValues, IGrouping<K, V> actual)

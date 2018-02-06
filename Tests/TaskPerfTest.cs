@@ -12,6 +12,7 @@ namespace Tests
 #if !NET40
 
         [Test]
+        [Category("Performance")]
         public static async Task RunAsync()
         {
             ThreadPool.SetMaxThreads(10, 10);

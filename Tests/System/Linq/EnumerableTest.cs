@@ -32,6 +32,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Theraot.Core;
 
 namespace MonoTests.System.Linq
 {
@@ -406,6 +407,10 @@ namespace MonoTests.System.Linq
 
         private static void AssertThrows<T>(Action action) where T : Exception
         {
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
             try
             {
                 action();
@@ -413,10 +418,12 @@ namespace MonoTests.System.Linq
             }
             catch (T)
             {
+                GC.KeepAlive(action);
             }
-            catch
+            catch (Exception exception)
             {
-                Assert.Fail();
+                GC.KeepAlive(exception);
+                Assert.Fail("Expected: " + typeof(T).Name);
             }
         }
 
@@ -429,7 +436,7 @@ namespace MonoTests.System.Linq
 
             foreach (var b in AsEnumerable(stream).Take(2))
             {
-                ;
+                GC.KeepAlive(b);
             }
 
             Assert.AreEqual(2, stream.Position);

@@ -39,7 +39,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
                 Assert.AreEqual(original, ex);
                 var stack = ex.StackTrace.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
-                for (int index = 0; index < original_stack.Length; index++)
+                for (var index = 0; index < original_stack.Length; index++)
                 {
                     Assert.AreEqual(stack[index], original_stack[index]);
                 }

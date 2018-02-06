@@ -37,30 +37,38 @@ namespace MonoTests.System.Threading
         [Category("RaceCondition")] // This test creates a race condition, that when resolved sequentially will fail
         public void RegisterWhileCancelling()
         {
-            var cts = new CancellationTokenSource();
-            var mre = new ManualResetEvent(false);
-            var mre2 = new ManualResetEvent(false);
-            var called = 0;
-
-            cts.Token.Register(() =>
+            using (var cts = new CancellationTokenSource())
             {
-                Assert.IsTrue(cts.IsCancellationRequested, "#10");
-                Assert.IsTrue(cts.Token.WaitHandle.WaitOne(0), "#11");
-                mre2.Set();
-                mre.WaitOne(3000);
-                called += 11;
-            });
+                var ctsa = new[] { cts };
+                using (var mre = new ManualResetEvent(false))
+                {
+                    using (var mre2 = new ManualResetEvent(false))
+                    {
+                        var mrea = new[] { mre, mre2 };
+                        var called = 0;
 
-            var t = Task.Factory.StartNew(() => cts.Cancel());
+                        cts.Token.Register(() =>
+                        {
+                            Assert.IsTrue(ctsa[0].IsCancellationRequested, "#10");
+                            Assert.IsTrue(ctsa[0].Token.WaitHandle.WaitOne(0), "#11");
+                            mrea[1].Set();
+                            mrea[0].WaitOne(3000);
+                            called += 11;
+                        });
 
-            Assert.IsTrue(mre2.WaitOne(1000), "#0");
-            cts.Token.Register(() => called++);
-            Assert.AreEqual(1, called, "#1");
-            Assert.IsFalse(t.IsCompleted, "#2");
+                        var t = Task.Factory.StartNew(() => ctsa[0].Cancel(), CancellationToken.None);
 
-            mre.Set();
-            Assert.IsTrue(t.Wait(1000), "#3");
-            Assert.AreEqual(12, called, "#4");
+                        Assert.IsTrue(mre2.WaitOne(1000), "#0");
+                        cts.Token.Register(() => called++);
+                        Assert.AreEqual(1, called, "#1");
+                        Assert.IsFalse(t.IsCompleted, "#2");
+
+                        mre.Set();
+                        Assert.IsTrue(t.Wait(1000), "#3");
+                        Assert.AreEqual(12, called, "#4");
+                    }
+                }
+            }
         }
 
 #endif

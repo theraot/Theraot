@@ -337,6 +337,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void ContinueWithOnAnyTestCase()
         {
             ParallelTestHelper.Repeat
@@ -357,6 +358,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void ContinueWithOnCompletedSuccessfullyTestCase()
         {
             ParallelTestHelper.Repeat
@@ -1180,6 +1182,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void WaitAny_ManyCanceled()
         {
             var cancellation = new CancellationToken(true);
@@ -1359,6 +1362,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void WaitChildWithContinuationNotAttachedTest()
         {
             using
@@ -1844,6 +1848,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void Delay_Simple()
         {
             var t = Task.Delay(300);
@@ -1875,6 +1880,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void DenyChildAttachTest()
         {
             using (var mre = new ManualResetEventSlim())
@@ -1993,6 +1999,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void Run_ExistingTask()
         {
             using
@@ -2029,6 +2036,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void Run_ExistingTaskT()
         {
             using (var t = new Task<int>(() => 5))
@@ -2485,16 +2493,20 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WhenAny()
         {
-            var t1 = new Task(ActionHelper.GetNoopAction());
-            var t2 = new Task(t1.Start);
-            var tasks = new Task[] { t1, t2 };
+            using (var t1 = new Task(ActionHelper.GetNoopAction()))
+            {
+                using (var t2 = new Task(t1.Start))
+                {
+                    var tasks = new Task[] { t1, t2 };
 
-            var t = Task.WhenAny(tasks);
-            Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
-            t2.Start();
+                    var t = Task.WhenAny(tasks);
+                    Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
+                    t2.Start();
 
-            Assert.IsTrue(t.Wait(1000), "#2");
-            Assert.IsNotNull(t.Result, "#3");
+                    Assert.IsTrue(t.Wait(1000), "#2");
+                    Assert.IsNotNull(t.Result, "#3");
+                }
+            }
         }
 
         [Test]

@@ -123,7 +123,7 @@ namespace Tests.Theraot.Collections
 
             public IEnumerator<int> GetEnumerator()
             {
-                for (int index = 0; index < _count; index++)
+                for (var index = 0; index < _count; index++)
                 {
                     _total = Total + 1;
                     yield return Total;
