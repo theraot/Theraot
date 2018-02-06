@@ -405,28 +405,6 @@ namespace MonoTests.System.Linq
             AssertAreSame(new int[0], Enumerable.Range(int.MinValue, 0));
         }
 
-        private static void AssertThrows<T>(Action action) where T : Exception
-        {
-            if (action == null)
-            {
-                throw new ArgumentNullException("action");
-            }
-            try
-            {
-                action();
-                Assert.Fail();
-            }
-            catch (T)
-            {
-                GC.KeepAlive(action);
-            }
-            catch (Exception exception)
-            {
-                GC.KeepAlive(exception);
-                Assert.Fail("Expected: " + typeof(T).Name);
-            }
-        }
-
         [Test]
         public void TestTakeTakesProperNumberOfItems()
         {
@@ -463,31 +441,31 @@ namespace MonoTests.System.Linq
 
         private class Baz
         {
-            private string name;
-            private readonly int age;
+            private string _name;
+            private readonly int _age;
 
             public string Name
             {
                 get
                 {
-                    if (string.IsNullOrEmpty(name))
+                    if (string.IsNullOrEmpty(_name))
                     {
                         return Age.ToString();
                     }
 
-                    return name + " (" + Age + ")";
+                    return _name + " (" + Age + ")";
                 }
             }
 
             public int Age
             {
-                get { return age + 1; }
+                get { return _age + 1; }
             }
 
             public Baz(string name, int age)
             {
-                this.name = name;
-                this.age = age;
+                _name = name;
+                _age = age;
             }
 
             public override int GetHashCode()

@@ -370,8 +370,8 @@ namespace MonoTests.System.Linq.Expressions
 
         public Item(T left, T right)
         {
-            this._left = left;
-            this._right = right;
+            _left = left;
+            _right = right;
         }
     }
 }

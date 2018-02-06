@@ -119,7 +119,7 @@ namespace MonoTests.System.Linq.Expressions
 #endif
         }
 
-        public class S
+        public static class S
         {
             public static int MyAdder(int a, int b)
             {

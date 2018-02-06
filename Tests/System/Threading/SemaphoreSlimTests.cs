@@ -11,7 +11,7 @@ namespace System.Threading.Tests
     /// SemaphoreSlim unit tests
     /// </summary>
     [TestFixture]
-    public class SemaphoreSlimTests
+    public static class SemaphoreSlimTests
     {
         /// <summary>
         /// SemaphoreSlim public methods and properties to be tested
@@ -67,7 +67,7 @@ namespace System.Threading.Tests
             // Invalid timeout
             RunSemaphoreSlimTest1_Wait(10, 10, -10, true, typeof(ArgumentOutOfRangeException));
             RunSemaphoreSlimTest1_Wait
-               (10, 10, new TimeSpan(0, 0, Int32.MaxValue), true, typeof(ArgumentOutOfRangeException));
+               (10, 10, new TimeSpan(0, 0, int.MaxValue), true, typeof(ArgumentOutOfRangeException));
         }
 
 #if !NET40
@@ -96,7 +96,7 @@ namespace System.Threading.Tests
             // Invalid timeout
             RunSemaphoreSlimTest1_WaitAsync(10, 10, -10, true, typeof(ArgumentOutOfRangeException));
             RunSemaphoreSlimTest1_WaitAsync
-               (10, 10, new TimeSpan(0, 0, Int32.MaxValue), true, typeof(ArgumentOutOfRangeException));
+               (10, 10, new TimeSpan(0, 0, int.MaxValue), true, typeof(ArgumentOutOfRangeException));
         }
 
 #endif
@@ -212,14 +212,7 @@ namespace System.Threading.Tests
                 try
                 {
                     var result = false;
-                    if (timeout is TimeSpan)
-                    {
-                        result = semaphore.Wait((TimeSpan)timeout);
-                    }
-                    else
-                    {
-                        result = semaphore.Wait((int)timeout);
-                    }
+                    result = timeout is TimeSpan ? semaphore.Wait((TimeSpan)timeout) : semaphore.Wait((int)timeout);
                     Assert.AreEqual(returnValue, result);
                     if (result)
                     {
@@ -254,14 +247,7 @@ namespace System.Threading.Tests
                 try
                 {
                     var result = false;
-                    if (timeout is TimeSpan)
-                    {
-                        result = semaphore.WaitAsync((TimeSpan)timeout).Result;
-                    }
-                    else
-                    {
-                        result = semaphore.WaitAsync((int)timeout).Result;
-                    }
+                    result = timeout is TimeSpan ? semaphore.WaitAsync((TimeSpan)timeout).Result : semaphore.WaitAsync((int)timeout).Result;
                     Assert.AreEqual(returnValue, result);
                     if (result)
                     {
@@ -297,16 +283,16 @@ namespace System.Threading.Tests
                         Func<int, Task> doWorkAsync = async (int i) =>
                         {
                             await semaphore.WaitAsync();
-                            if (counter.Value > 0)
-                            {
-                                nonZeroObserved = true;
-                            }
+                            nonZeroObserved |= counter.Value > 0;
 
                             counter.Value = counter.Value + 1;
                             semaphore.Release();
                             counter.Value = counter.Value - 1;
 
-                            if (Interlocked.Decrement(ref remAsyncActions) == 0) mre.Set();
+                            if (Interlocked.Decrement(ref remAsyncActions) == 0)
+                            {
+                                mre.Set();
+                            }
                         };
 
                         semaphore.Wait();
@@ -631,7 +617,6 @@ namespace System.Threading.Tests
                 {
                     tasks[i] = TaskEx.Run(delegate
                     {
-                        //Random rand = new Random(Interlocked.Increment(ref randSeed));
                         for (var iter = 0; iter < ITERS; iter++)
                         {
                             semaphore.Wait();
@@ -643,7 +628,6 @@ namespace System.Threading.Tests
                 {
                     tasks[i] = Task.Run(async delegate
                     {
-                        //Random rand = new Random(Interlocked.Increment(ref randSeed));
                         for (var iter = 0; iter < ITERS; iter++)
                         {
                             await semaphore.WaitAsync();

@@ -101,10 +101,7 @@ namespace Tests.Theraot.Threading.Needles
                 {
                     var b = true;
 
-                    Task.Factory.StartNew(delegate
-                    {
-                        mre.Set();
-                    });
+                    Task.Factory.StartNew(mre.Set);
 
                     Task.Factory.StartNew(delegate
                     {

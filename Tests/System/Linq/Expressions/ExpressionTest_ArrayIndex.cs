@@ -194,7 +194,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Bar
         {
-            private int _bar;
+            private readonly int _bar;
 
             public Bar(int b)
             {

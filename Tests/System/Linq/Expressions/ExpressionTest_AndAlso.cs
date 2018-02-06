@@ -329,7 +329,7 @@ namespace MonoTests.System.Linq.Expressions
             Expression.AndAlso(l, r, method);
         }
 
-        private class A
+        private class A // Should not be static, inheritance is needed for testing
         {
             public static bool operator true(A x)
             {

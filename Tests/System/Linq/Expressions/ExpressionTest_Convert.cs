@@ -233,7 +233,7 @@ namespace MonoTests.System.Linq.Expressions
 
             public Klang(int i)
             {
-                this._i = i;
+                _i = i;
             }
 
             public static explicit operator int(Klang k)
@@ -278,7 +278,7 @@ namespace MonoTests.System.Linq.Expressions
 
             public Kling(int i)
             {
-                this._i = i;
+                _i = i;
             }
 
             public static implicit operator int(Kling k)

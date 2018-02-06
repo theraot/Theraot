@@ -736,16 +736,17 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void Start_NullArgument()
         {
-            Task t = new Task<int>(() => 1);
-            t = new Task(ActionHelper.GetNoopAction());
-            try
+            using (Task t = new Task(ActionHelper.GetNoopAction()))
             {
-                t.Start(null);
-                Assert.Fail();
-            }
-            catch (ArgumentNullException ex)
-            {
-                GC.KeepAlive(ex);
+                try
+                {
+                    t.Start(null);
+                    Assert.Fail();
+                }
+                catch (ArgumentNullException ex)
+                {
+                    GC.KeepAlive(ex);
+                }
             }
         }
 
@@ -954,8 +955,8 @@ namespace MonoTests.System.Threading.Tasks
                 (
                     state =>
                     {
-                        // Sleep little to let task to start and hit internal wait
-                        Thread.Sleep(20);
+                    // Sleep little to let task to start and hit internal wait
+                    Thread.Sleep(20);
                         task1.Start();
                     }
                 );
@@ -1901,10 +1902,10 @@ namespace MonoTests.System.Threading.Tasks
             Assert.AreEqual(null, t.Result, "#2");
             t.Dispose();
             t.Dispose(); // Dispose should be indempotent
-            // I lament you static analysis, but avoiding double call to Dispose to avoid ObjectDisposedException is stupid
-            // my philosophy is that Dispose should hold itself to higher standards, one able to be called safely by multiple threads
-            // If Dispose can be called concurrently by multiple threads without risk, it should be possible to call it serially too
-            // This is particularly true when we talk about a class intended for threading or asynchronous operations, such as Task
+                         // I lament you static analysis, but avoiding double call to Dispose to avoid ObjectDisposedException is stupid
+                         // my philosophy is that Dispose should hold itself to higher standards, one able to be called safely by multiple threads
+                         // If Dispose can be called concurrently by multiple threads without risk, it should be possible to call it serially too
+                         // This is particularly true when we talk about a class intended for threading or asynchronous operations, such as Task
         }
 
         [Test]

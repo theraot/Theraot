@@ -270,8 +270,8 @@ namespace MonoTests.System.Linq.Expressions
 
             public EineStrukt(int left, int right)
             {
-                this.Left = left;
-                this.Right = right;
+                Left = left;
+                Right = right;
             }
         }
 
