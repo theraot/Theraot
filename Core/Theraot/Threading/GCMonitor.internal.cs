@@ -16,7 +16,7 @@ namespace Theraot.Threading
             static Internal()
             {
                 _work = _ => RaiseCollected();
-                _collectedEventHandlers = new WeakDelegateCollection(false, false, _maxProbingHint);
+                _collectedEventHandlers = new WeakDelegateCollection(false, false);
             }
 
             public static WeakDelegateCollection CollectedEventHandlers

@@ -8,7 +8,6 @@ namespace Theraot.Threading
     [System.Diagnostics.DebuggerNonUserCode]
     public static partial class GCMonitor
     {
-        private const int _maxProbingHint = 128;
         private const int _statusFinished = 1;
         private const int _statusNotReady = -2;
         private const int _statusPending = -1;
@@ -16,12 +15,14 @@ namespace Theraot.Threading
         private static int _status = _statusNotReady;
 
 #if !NETCOREAPP1_1
+
         static GCMonitor()
         {
             var currentAppDomain = AppDomain.CurrentDomain;
             currentAppDomain.ProcessExit += ReportApplicationDomainExit;
             currentAppDomain.DomainUnload += ReportApplicationDomainExit;
         }
+
 #endif
 
         public static event EventHandler Collected
@@ -92,10 +93,12 @@ namespace Theraot.Threading
         }
 
 #if !NETCOREAPP1_1
+
         private static void ReportApplicationDomainExit(object sender, EventArgs e)
         {
             Volatile.Write(ref _status, _statusFinished);
         }
+
 #endif
 
         [System.Diagnostics.DebuggerNonUserCode]
