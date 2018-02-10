@@ -28,7 +28,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         ///   The default value to use for continueOnCapturedContext.
         /// </summary>
-        internal const bool continueOnCapturedContextDefaultValue = true;
+        internal const bool ContinueOnCapturedContextDefaultValue = true;
 
         /// <summary>
         ///   Error message for GetAwaiter.

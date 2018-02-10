@@ -419,7 +419,7 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        private const int _LocalInstrCacheSize = 64;
+        private const int _localInstrCacheSize = 64;
 
         private static Instruction[] _loadLocal;
         private static Instruction[] _loadLocalBoxed;
@@ -435,7 +435,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_loadLocal == null)
             {
-                _loadLocal = new Instruction[_LocalInstrCacheSize];
+                _loadLocal = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _loadLocal.Length)
@@ -457,7 +457,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_loadLocalBoxed == null)
             {
-                _loadLocalBoxed = new Instruction[_LocalInstrCacheSize];
+                _loadLocalBoxed = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _loadLocalBoxed.Length)
@@ -474,7 +474,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_loadLocalFromClosure == null)
             {
-                _loadLocalFromClosure = new Instruction[_LocalInstrCacheSize];
+                _loadLocalFromClosure = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _loadLocalFromClosure.Length)
@@ -491,7 +491,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_loadLocalFromClosureBoxed == null)
             {
-                _loadLocalFromClosureBoxed = new Instruction[_LocalInstrCacheSize];
+                _loadLocalFromClosureBoxed = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _loadLocalFromClosureBoxed.Length)
@@ -508,7 +508,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_assignLocal == null)
             {
-                _assignLocal = new Instruction[_LocalInstrCacheSize];
+                _assignLocal = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _assignLocal.Length)
@@ -525,7 +525,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_storeLocal == null)
             {
-                _storeLocal = new Instruction[_LocalInstrCacheSize];
+                _storeLocal = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _storeLocal.Length)
@@ -547,7 +547,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_assignLocalBoxed == null)
             {
-                _assignLocalBoxed = new Instruction[_LocalInstrCacheSize];
+                _assignLocalBoxed = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _assignLocalBoxed.Length)
@@ -569,7 +569,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_storeLocalBoxed == null)
             {
-                _storeLocalBoxed = new Instruction[_LocalInstrCacheSize];
+                _storeLocalBoxed = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _storeLocalBoxed.Length)
@@ -586,7 +586,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_assignLocalToClosure == null)
             {
-                _assignLocalToClosure = new Instruction[_LocalInstrCacheSize];
+                _assignLocalToClosure = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _assignLocalToClosure.Length)
