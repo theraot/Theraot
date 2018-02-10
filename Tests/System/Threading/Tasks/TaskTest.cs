@@ -955,8 +955,8 @@ namespace MonoTests.System.Threading.Tasks
                 (
                     state =>
                     {
-                    // Sleep little to let task to start and hit internal wait
-                    Thread.Sleep(20);
+                        // Sleep little to let task to start and hit internal wait
+                        Thread.Sleep(20);
                         task1.Start();
                     }
                 );
