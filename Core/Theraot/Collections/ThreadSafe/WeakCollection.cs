@@ -146,6 +146,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Contains(Predicate<T> itemCheck)
         {
+            if (itemCheck == null)
+            {
+                throw new ArgumentNullException("itemCheck");
+            }
             foreach (var input in this)
             {
                 if (itemCheck(input))
