@@ -268,7 +268,7 @@ namespace System.Threading.Tests
         /// </summary>
         [Test]
         [Category("NotWorking")] // The current implementation allows WaitAsync to awake concurrently
-        public static void RunSemaphoreSlimTest1_WaitAsync2()
+        public static void RunSemaphoreSlimTest1_WaitAsync2() // TODO: review
         {
             using (var semaphore = new SemaphoreSlim(1))
             {
@@ -537,7 +537,7 @@ namespace System.Threading.Tests
 
         [Test]
         [Category("RaceCondition")] // This test creates a race condition
-        public static void RunSemaphoreSlimTest8_ConcWaitAsyncAndRelease()
+        public static void RunSemaphoreSlimTest8_ConcWaitAsyncAndRelease() // TODO: review
         {
             RunSemaphoreSlimTest8_ConcWaitAsyncAndRelease_Private(5, 1000, 50, 50, 50, 0, 5, 500);
             RunSemaphoreSlimTest8_ConcWaitAsyncAndRelease_Private(0, 1000, 50, 25, 25, 25, 0, 500);

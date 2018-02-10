@@ -201,7 +201,7 @@ namespace MonoTests.System.Threading
 
         [Test]
         [Category("RaceCondition")] // This test creates a race condition
-        public void Wait_DisposeWithCancel()
+        public void Wait_DisposeWithCancel() // TODO: Review
         {
             using (var token = new CancellationTokenSource())
             {
@@ -232,7 +232,7 @@ namespace MonoTests.System.Threading
 
         [Test]
         [Category("RaceCondition")] // This test creates a race condition
-        public void Wait_SetConcurrent()
+        public void Wait_SetConcurrent() // TODO: review
         {
             for (var i = 0; i < 10000; ++i)
             {
@@ -249,7 +249,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test, ExpectedException(typeof(ObjectDisposedException))]
-        public void WaitAfterDisposeTest()
+        public void WaitAfterDisposeTest() // TODO: Review
         {
             _mre.Dispose();
             _mre.Wait();

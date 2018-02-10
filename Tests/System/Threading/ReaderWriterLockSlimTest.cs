@@ -56,7 +56,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void Dispose_Errors()
+        public void Dispose_Errors() // TODO: review
         {
             var v = new ReaderWriterLockSlim();
             v.Dispose();
