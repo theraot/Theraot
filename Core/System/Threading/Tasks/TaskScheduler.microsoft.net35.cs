@@ -6,6 +6,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using Theraot.Collections.ThreadSafe;
 
 namespace System.Threading.Tasks
 {
@@ -65,7 +66,7 @@ namespace System.Threading.Tasks
         }
 
         private static readonly object _unobservedTaskExceptionLockObject = new object();
-        private static EventHandler<UnobservedTaskExceptionEventArgs> _unobservedTaskException;
+        private static SafeCollection<EventHandler<UnobservedTaskExceptionEventArgs>> _unobservedTaskException = new SafeCollection<EventHandler<UnobservedTaskExceptionEventArgs>>();
 
         /// <summary>
         /// Occurs when a faulted <see cref="System.Threading.Tasks.Task"/>'s unobserved exception is about to trigger exception escalation
@@ -84,34 +85,24 @@ namespace System.Threading.Tasks
             {
                 if (value != null)
                 {
-                    lock (_unobservedTaskExceptionLockObject)
-                    {
-                        _unobservedTaskException += value;
-                    }
+                    _unobservedTaskException.Add(value);
                 }
             }
             [Security.SecurityCritical]
             remove
             {
-                lock (_unobservedTaskExceptionLockObject)
+                if (value != null)
                 {
-                    _unobservedTaskException -= value;
+                    _unobservedTaskException.Remove(value);
                 }
             }
         }
 
         internal static void PublishUnobservedTaskException(Task sender, UnobservedTaskExceptionEventArgs ueea)
         {
-            // Lock this logic to prevent just-unregistered handlers from being called.
-            lock (_unobservedTaskExceptionLockObject)
+            foreach (var handler in _unobservedTaskException)
             {
-                // Since we are under lock, it is technically no longer necessary
-                // to make a copy.  It is done here for convenience.
-                var handler = _unobservedTaskException;
-                if (handler != null)
-                {
-                    handler(sender, ueea);
-                }
+                handler(sender, ueea);
             }
         }
 
