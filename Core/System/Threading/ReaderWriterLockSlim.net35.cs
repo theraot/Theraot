@@ -24,6 +24,23 @@ namespace System.Threading
         private const int _rwWrite = 4;
         private const int _rwRead = 8;
 
+        // This Stopwatch instance is used for all threads since .Elapsed is thread-safe
+        private static readonly Stopwatch _stopwatch;
+
+        private static int _idPool;
+
+        private readonly LockRecursionPolicy _recursionPolicy;
+        private readonly bool _noRecursion;
+        private readonly AtomicBoolean _upgradableTaken;
+
+        /* These events are just here for the sake of having a CPU-efficient sleep
+        * when the wait for acquiring the lock is too long
+        */
+        private readonly ManualResetEventSlim _upgradableEvent;
+        private readonly ManualResetEventSlim _writerDoneEvent;
+        private readonly ManualResetEventSlim _readerDoneEvent;
+        private readonly int _id;
+
         /* Some explanations: this field is the central point of the lock and keep track of all the requests
         * that are being made. The 3 lowest bits are used as flag to track "destructive" lock entries
         * (i.e attempting to take the write lock with or without having acquired an upgradeable lock beforehand).
@@ -33,31 +50,11 @@ namespace System.Threading
         */
         private int _rwlock;
 
-        private readonly LockRecursionPolicy _recursionPolicy;
-        private readonly bool _noRecursion;
-
-        private readonly AtomicBoolean _upgradableTaken = new AtomicBoolean();
-
-        /* These events are just here for the sake of having a CPU-efficient sleep
-        * when the wait for acquiring the lock is too long
-        */
-        private readonly ManualResetEventSlim _upgradableEvent = new ManualResetEventSlim(true);
-
-        private readonly ManualResetEventSlim _writerDoneEvent = new ManualResetEventSlim(true);
-        private readonly ManualResetEventSlim _readerDoneEvent = new ManualResetEventSlim(true);
-
-        // This Stopwatch instance is used for all threads since .Elapsed is thread-safe
-        private readonly static Stopwatch _stopwatch = Stopwatch.StartNew();
-
         /* For performance sake, these numbers are manipulated via classic increment and
         * decrement operations and thus are (as hinted by MSDN) not meant to be precise
         */
         private int _numReadWaiters, _numUpgradeWaiters, _numWriteWaiters;
-
         private bool _disposed;
-
-        private static int _idPool = int.MinValue;
-        private readonly int _id = Interlocked.Increment(ref _idPool);
 
         /* This dictionary is instanciated per thread for all existing ReaderWriterLockSlim instance.
         * Each instance is defined by an internal integer id value used as a key in the dictionary.
@@ -69,14 +66,18 @@ namespace System.Threading
         [ThreadStatic]
         private static Dictionary<int, ThreadLockState> _currentThreadState;
 
-        private readonly
+        /* Rwls tries to use this array as much as possible to quickly retrieve the thread-local
+        * informations so that it ends up being only an array lookup. When the number of thread
+        * using the instance goes past the length of the array, the code fallback to the normal
+        * dictionary
+        */
+        private readonly ThreadLockState[] _fastStateCache;
 
-                /* Rwls tries to use this array as much as possible to quickly retrieve the thread-local
-                * informations so that it ends up being only an array lookup. When the number of thread
-                * using the instance goes past the length of the array, the code fallback to the normal
-                * dictionary
-                */
-                ThreadLockState[] _fastStateCache = new ThreadLockState[64];
+        static ReaderWriterLockSlim()
+        {
+            _stopwatch = Stopwatch.StartNew();
+            _idPool = int.MinValue;
+        }
 
         public ReaderWriterLockSlim()
             : this(LockRecursionPolicy.NoRecursion)
@@ -87,6 +88,13 @@ namespace System.Threading
         {
             _recursionPolicy = recursionPolicy;
             _noRecursion = recursionPolicy == LockRecursionPolicy.NoRecursion;
+            // ---
+            _id = Interlocked.Increment(ref _idPool);
+            _fastStateCache = new ThreadLockState[64];
+            _upgradableTaken = new AtomicBoolean();
+            _upgradableEvent = new ManualResetEventSlim(true);
+            _writerDoneEvent = new ManualResetEventSlim(true);
+            _readerDoneEvent = new ManualResetEventSlim(true);
         }
 
         public void EnterReadLock()
