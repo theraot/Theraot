@@ -894,16 +894,6 @@ namespace System.Linq.Expressions.Interpreter
         {
             return 1;
         }
-
-        private bool Compiled // TODO: is this called?
-        {
-            get { return _loop == null; }
-        }
-
-        private void Compile(object frameObj) // TODO: is this called?
-        {
-            GC.KeepAlive(frameObj);
-        }
     }
 }
 
