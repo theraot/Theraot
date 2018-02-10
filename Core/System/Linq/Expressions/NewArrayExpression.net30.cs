@@ -34,10 +34,7 @@ namespace System.Linq.Expressions
             {
                 return new NewArrayInitExpression(type, expressions);
             }
-            else
-            {
-                return new NewArrayBoundsExpression(type, expressions);
-            }
+            return new NewArrayBoundsExpression(type, expressions);
         }
 
         /// <summary>

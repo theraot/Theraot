@@ -329,7 +329,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return _dict.TryGetValue(key, out value);
             }
-            else if (_keysAndValues != null)
+            if (_keysAndValues != null)
             {
                 for (var i = 0; i < _keysAndValues.Length; i++)
                 {
@@ -352,7 +352,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return _dict.Remove(key);
             }
-            else if (_keysAndValues != null)
+            if (_keysAndValues != null)
             {
                 for (var i = 0; i < _keysAndValues.Length; i++)
                 {
@@ -376,7 +376,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return _dict.ContainsKey(key);
             }
-            else if (_keysAndValues != null)
+            if (_keysAndValues != null)
             {
                 for (var i = 0; i < _keysAndValues.Length; i++)
                 {
@@ -461,7 +461,7 @@ namespace System.Linq.Expressions.Interpreter
                                 _keysAndValues[i] = new KeyValuePair<TKey, TValue>(key, value);
                                 return;
                             }
-                            else if (_keysAndValues[i].Key == null)
+                            if (_keysAndValues[i].Key == null)
                             {
                                 index = i;
                             }

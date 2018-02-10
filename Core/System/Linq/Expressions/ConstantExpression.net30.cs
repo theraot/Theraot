@@ -30,10 +30,7 @@ namespace System.Linq.Expressions
             {
                 return new ConstantExpression(value);
             }
-            else
-            {
-                return new TypedConstantExpression(value, type);
-            }
+            return new TypedConstantExpression(value, type);
         }
 
         /// <summary>

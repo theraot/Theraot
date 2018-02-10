@@ -730,7 +730,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     return;
                 }
-                else if (j.Kind == LabelScopeKind.Finally)
+                if (j.Kind == LabelScopeKind.Finally)
                 {
                     // Rethrow from inside finally is not verifiable
                     break;

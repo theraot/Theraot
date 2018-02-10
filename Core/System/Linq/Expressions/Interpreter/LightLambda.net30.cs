@@ -204,10 +204,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return Dynamic.Utils.DelegateHelpers.CreateObjectArrayDelegate(delegateType, RunVoid);
             }
-            else
-            {
-                return Dynamic.Utils.DelegateHelpers.CreateObjectArrayDelegate(delegateType, Run);
-            }
+            return Dynamic.Utils.DelegateHelpers.CreateObjectArrayDelegate(delegateType, Run);
 #else
             Func<LightLambda, Delegate> fastCtor = GetRunDelegateCtor(delegateType);
             if (fastCtor != null)

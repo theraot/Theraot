@@ -30,10 +30,8 @@ namespace System.Linq
                     }
                     return folded;
                 }
-                else
-                {
-                    throw new InvalidOperationException("No elements in source list");
-                }
+
+                throw new InvalidOperationException("No elements in source list");
             }
         }
 
@@ -115,10 +113,8 @@ namespace System.Linq
                     return enumerator.MoveNext();
                 }
             }
-            else
-            {
-                return collection.Count > 0;
-            }
+
+            return collection.Count > 0;
         }
 
         public static bool Any<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -157,10 +153,7 @@ namespace System.Linq
             {
                 return enumerable;
             }
-            else
-            {
-                return CastExtracted<TResult>(source);
-            }
+            return CastExtracted<TResult>(source);
         }
 
         public static IEnumerable<TSource> Concat<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second)
@@ -220,10 +213,8 @@ namespace System.Linq
                 }
                 return result;
             }
-            else
-            {
-                return collection.Count;
-            }
+
+            return collection.Count;
         }
 
         public static int Count<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -270,29 +261,27 @@ namespace System.Linq
             {
                 throw new ArgumentOutOfRangeException("index", index, "index < 0");
             }
-            else
+
+            var list = source as IList<TSource>;
+            if (list != null)
             {
-                var list = source as IList<TSource>;
-                if (list != null)
-                {
-                    return list[index];
-                }
-                var readOnlyList = source as IReadOnlyList<TSource>;
-                if (readOnlyList != null)
-                {
-                    return readOnlyList[index];
-                }
-                var count = 0L;
-                foreach (var item in source)
-                {
-                    if (index == count)
-                    {
-                        return item;
-                    }
-                    count++;
-                }
-                throw new ArgumentOutOfRangeException();
+                return list[index];
             }
+            var readOnlyList = source as IReadOnlyList<TSource>;
+            if (readOnlyList != null)
+            {
+                return readOnlyList[index];
+            }
+            var count = 0L;
+            foreach (var item in source)
+            {
+                if (index == count)
+                {
+                    return item;
+                }
+                count++;
+            }
+            throw new ArgumentOutOfRangeException();
         }
 
         public static TSource ElementAtOrDefault<TSource>(this IEnumerable<TSource> source, int index)
@@ -305,43 +294,37 @@ namespace System.Linq
             {
                 return default(TSource);
             }
-            else
+
+            var list = source as IList<TSource>;
+            if (list != null)
             {
-                var list = source as IList<TSource>;
-                if (list != null)
+                if (index < list.Count)
                 {
-                    if (index < list.Count)
-                    {
-                        return list[index];
-                    }
-                    else
-                    {
-                        return default(TSource);
-                    }
+                    return list[index];
                 }
-                var readOnlyList = source as IReadOnlyList<TSource>;
-                if (readOnlyList != null)
-                {
-                    if (index < readOnlyList.Count)
-                    {
-                        return readOnlyList[index];
-                    }
-                    else
-                    {
-                        return default(TSource);
-                    }
-                }
-                var count = 0L;
-                foreach (var item in source)
-                {
-                    if (index == count)
-                    {
-                        return item;
-                    }
-                    count++;
-                }
+
                 return default(TSource);
             }
+            var readOnlyList = source as IReadOnlyList<TSource>;
+            if (readOnlyList != null)
+            {
+                if (index < readOnlyList.Count)
+                {
+                    return readOnlyList[index];
+                }
+
+                return default(TSource);
+            }
+            var count = 0L;
+            foreach (var item in source)
+            {
+                if (index == count)
+                {
+                    return item;
+                }
+                count++;
+            }
+            return default(TSource);
         }
 
         public static IEnumerable<TResult> Empty<TResult>()
@@ -478,32 +461,26 @@ namespace System.Linq
             {
                 throw new InvalidOperationException();
             }
-            else
+
+            var list = source as IList<TSource>;
+            if (list == null)
             {
-                var list = source as IList<TSource>;
-                if (list == null)
+                var found = false;
+                var result = default(TSource);
+                foreach (var item in source)
                 {
-                    var found = false;
-                    var result = default(TSource);
-                    foreach (var item in source)
-                    {
-                        result = item;
-                        found = true;
-                    }
-                    if (found)
-                    {
-                        return result;
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException();
-                    }
+                    result = item;
+                    found = true;
                 }
-                else
+                if (found)
                 {
-                    return list[list.Count - 1];
+                    return result;
                 }
+
+                throw new InvalidOperationException();
             }
+
+            return list[list.Count - 1];
         }
 
         public static TSource Last<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -531,10 +508,8 @@ namespace System.Linq
             {
                 return result;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+
+            throw new InvalidOperationException();
         }
 
         public static TSource LastOrDefault<TSource>(this IEnumerable<TSource> source)
@@ -557,15 +532,11 @@ namespace System.Linq
                 {
                     return result;
                 }
-                else
-                {
-                    return default(TSource);
-                }
+
+                return default(TSource);
             }
-            else
-            {
-                return list.Count > 0 ? list[list.Count - 1] : default(TSource);
-            }
+
+            return list.Count > 0 ? list[list.Count - 1] : default(TSource);
         }
 
         public static TSource LastOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -609,10 +580,8 @@ namespace System.Linq
                 }
                 return count;
             }
-            else
-            {
-                return array.LongLength;
-            }
+
+            return array.LongLength;
         }
 
         public static long LongCount<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -657,10 +626,8 @@ namespace System.Linq
             {
                 throw new ArgumentOutOfRangeException("count", count, "count < 0");
             }
-            else
-            {
-                return RepeatExtracted(element, count);
-            }
+
+            return RepeatExtracted(element, count);
         }
 
         public static IEnumerable<TSource> Reverse<TSource>(this IEnumerable<TSource> source)
@@ -678,10 +645,8 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("selector");
             }
-            else
-            {
-                return Select(source, (item, i) => selector(item));
-            }
+
+            return Select(source, (item, i) => selector(item));
         }
 
         public static IEnumerable<TResult> Select<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, int, TResult> selector)
@@ -796,10 +761,7 @@ namespace System.Linq
             {
                 return result;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static TSource Single<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -831,10 +793,7 @@ namespace System.Linq
             {
                 return result;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static TSource SingleOrDefault<TSource>(this IEnumerable<TSource> source)
@@ -1312,10 +1271,7 @@ namespace System.Linq
                             }
                         }
                     }
-                    else
-                    {
-                        count++;
-                    }
+                    count++;
                 }
             }
         }

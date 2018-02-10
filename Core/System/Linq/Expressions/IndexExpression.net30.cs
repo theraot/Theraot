@@ -146,10 +146,7 @@ namespace System.Linq.Expressions
             {
                 return Property(instance, indexer, arguments);
             }
-            else
-            {
-                return ArrayAccess(instance, arguments);
-            }
+            return ArrayAccess(instance, arguments);
         }
 
         #region ArrayAccess
@@ -240,10 +237,7 @@ namespace System.Linq.Expressions
                 {
                     throw Error.InstancePropertyWithoutParameterNotDefinedForType(propertyName, type);
                 }
-                else
-                {
-                    throw Error.InstancePropertyWithSpecifiedParametersNotDefinedForType(propertyName, GetArgTypesString(arguments), type);
-                }
+                throw Error.InstancePropertyWithSpecifiedParametersNotDefinedForType(propertyName, GetArgTypesString(arguments), type);
             }
             return pi;
         }

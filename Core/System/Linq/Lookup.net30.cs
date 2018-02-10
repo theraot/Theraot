@@ -39,10 +39,7 @@ namespace System.Linq
                 {
                     return grouping;
                 }
-                else
-                {
-                    return ArrayReservoir<TElement>.EmptyArray;
-                }
+                return ArrayReservoir<TElement>.EmptyArray;
             }
         }
 

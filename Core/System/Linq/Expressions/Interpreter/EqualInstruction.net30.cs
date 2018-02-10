@@ -598,58 +598,55 @@ namespace System.Linq.Expressions.Interpreter
                         throw Error.ExpressionNotSupportedForType("Equal", type);
                 }
             }
-            else
+            switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : type.GetNonNullableType()).GetTypeCode())
             {
-                switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : type.GetNonNullableType()).GetTypeCode())
-                {
-                    case TypeCode.Boolean:
-                        return _boolean ?? (_boolean = new EqualBoolean());
+                case TypeCode.Boolean:
+                    return _boolean ?? (_boolean = new EqualBoolean());
 
-                    case TypeCode.SByte:
-                        return _sbyte ?? (_sbyte = new EqualSByte());
+                case TypeCode.SByte:
+                    return _sbyte ?? (_sbyte = new EqualSByte());
 
-                    case TypeCode.Byte:
-                        return _byte ?? (_byte = new EqualByte());
+                case TypeCode.Byte:
+                    return _byte ?? (_byte = new EqualByte());
 
-                    case TypeCode.Char:
-                        return _char ?? (_char = new EqualChar());
+                case TypeCode.Char:
+                    return _char ?? (_char = new EqualChar());
 
-                    case TypeCode.Int16:
-                        return _int16 ?? (_int16 = new EqualInt16());
+                case TypeCode.Int16:
+                    return _int16 ?? (_int16 = new EqualInt16());
 
-                    case TypeCode.Int32:
-                        return _int32 ?? (_int32 = new EqualInt32());
+                case TypeCode.Int32:
+                    return _int32 ?? (_int32 = new EqualInt32());
 
-                    case TypeCode.Int64:
-                        return _int64 ?? (_int64 = new EqualInt64());
+                case TypeCode.Int64:
+                    return _int64 ?? (_int64 = new EqualInt64());
 
-                    case TypeCode.UInt16:
-                        return _uint16 ?? (_uint16 = new EqualUInt16());
+                case TypeCode.UInt16:
+                    return _uint16 ?? (_uint16 = new EqualUInt16());
 
-                    case TypeCode.UInt32:
-                        return _uint32 ?? (_uint32 = new EqualUInt32());
+                case TypeCode.UInt32:
+                    return _uint32 ?? (_uint32 = new EqualUInt32());
 
-                    case TypeCode.UInt64:
-                        return _uint64 ?? (_uint64 = new EqualUInt64());
+                case TypeCode.UInt64:
+                    return _uint64 ?? (_uint64 = new EqualUInt64());
 
-                    case TypeCode.Single:
-                        return _single ?? (_single = new EqualSingle());
+                case TypeCode.Single:
+                    return _single ?? (_single = new EqualSingle());
 
-                    case TypeCode.Double:
-                        return _double ?? (_double = new EqualDouble());
+                case TypeCode.Double:
+                    return _double ?? (_double = new EqualDouble());
 
-                    case TypeCode.String:
-                    case TypeCode.Object:
-                        if (!type.IsValueType)
-                        {
-                            return _reference ?? (_reference = new EqualReference());
-                        }
-                        // TODO: Nullable<T>
-                        throw Error.ExpressionNotSupportedForNullableType("Equal", type);
+                case TypeCode.String:
+                case TypeCode.Object:
+                    if (!type.IsValueType)
+                    {
+                        return _reference ?? (_reference = new EqualReference());
+                    }
+                    // TODO: Nullable<T>
+                    throw Error.ExpressionNotSupportedForNullableType("Equal", type);
 
-                    default:
-                        throw Error.ExpressionNotSupportedForType("Equal", type);
-                }
+                default:
+                    throw Error.ExpressionNotSupportedForType("Equal", type);
             }
         }
 

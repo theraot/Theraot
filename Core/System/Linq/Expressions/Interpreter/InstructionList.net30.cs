@@ -464,10 +464,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return _loadLocalBoxed[index] ?? (_loadLocalBoxed[index] = new LoadLocalBoxedInstruction(index));
             }
-            else
-            {
-                return new LoadLocalBoxedInstruction(index);
-            }
+            return new LoadLocalBoxedInstruction(index);
         }
 
         public void EmitLoadLocalFromClosure(int index)
@@ -554,10 +551,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return _assignLocalBoxed[index] ?? (_assignLocalBoxed[index] = new AssignLocalBoxedInstruction(index));
             }
-            else
-            {
-                return new AssignLocalBoxedInstruction(index);
-            }
+            return new AssignLocalBoxedInstruction(index);
         }
 
         public void EmitStoreLocalBoxed(int index)
@@ -576,10 +570,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return _storeLocalBoxed[index] ?? (_storeLocalBoxed[index] = new StoreLocalBoxedInstruction(index));
             }
-            else
-            {
-                return new StoreLocalBoxedInstruction(index);
-            }
+            return new StoreLocalBoxedInstruction(index);
         }
 
         public void EmitAssignLocalToClosure(int index)

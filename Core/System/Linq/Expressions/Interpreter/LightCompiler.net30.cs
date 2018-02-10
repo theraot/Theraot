@@ -198,14 +198,11 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     return 1;
                 }
-                else if (d1.Index == d2.Index)
+                if (d1.Index == d2.Index)
                 {
                     return 0;
                 }
-                else
-                {
-                    return -1;
-                }
+                return -1;
             }
         }
 
@@ -239,10 +236,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return string.Format(CultureInfo.InvariantCulture, "{0}: clear", Index);
             }
-            else
-            {
-                return string.Format(CultureInfo.InvariantCulture, "{0}: [{1}-{2}] '{3}'", Index, StartLine, EndLine, FileName);
-            }
+            return string.Format(CultureInfo.InvariantCulture, "{0}: [{1}-{2}] '{3}'", Index, StartLine, EndLine, FileName);
         }
     }
 
@@ -373,15 +367,12 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 return local;
             }
-            else if (_parent != null)
+            if (_parent != null)
             {
                 _parent.EnsureAvailableForClosure(expr);
                 return _locals.AddClosureVariable(expr);
             }
-            else
-            {
-                throw new InvalidOperationException("unbound variable: " + expr);
-            }
+            throw new InvalidOperationException("unbound variable: " + expr);
         }
 
         private LocalVariable ResolveLocal(ParameterExpression variable)
@@ -1881,7 +1872,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     return;
                 }
-                else if (j.Kind == LabelScopeKind.Finally)
+                if (j.Kind == LabelScopeKind.Finally)
                 {
                     // Rethrow from inside finally is not verifiable
                     break;

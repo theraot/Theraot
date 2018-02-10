@@ -456,11 +456,6 @@ namespace System.Linq.Expressions.Compiler
                 // the array reference and the index are on the stack.
                 stack = Stack.NonEmpty;
             }
-            else
-            {
-                // In a case of NewArrayBounds we make no modifications to the stack
-                // before emitting bounds expressions.
-            }
 
             var cr = new ChildRewriter(this, stack, node.Expressions.Count);
             cr.Add(node.Expressions);

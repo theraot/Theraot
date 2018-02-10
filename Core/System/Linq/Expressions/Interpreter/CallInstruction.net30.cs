@@ -145,10 +145,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return targetLambda.Run(args);
             }
-            else
-            {
-                return targetLambda.RunVoid(args);
-            }
+            return targetLambda.RunVoid(args);
         }
     }
 

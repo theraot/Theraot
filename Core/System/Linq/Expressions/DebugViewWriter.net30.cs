@@ -98,17 +98,14 @@ namespace System.Linq.Expressions
                 };
                 return 1;
             }
-            else
+            int id;
+            if (!ids.TryGetValue(e, out id))
             {
-                int id;
-                if (!ids.TryGetValue(e, out id))
-                {
-                    // e is met the first time
-                    id = ids.Count + 1;
-                    ids.Add(e, id);
-                }
-                return id;
+                // e is met the first time
+                id = ids.Count + 1;
+                ids.Add(e, id);
             }
+            return id;
         }
 
         private int GetLambdaId(LambdaExpression le)
@@ -1374,10 +1371,7 @@ namespace System.Linq.Expressions
                 // Create the label target name as #Label1, #Label2, etc.
                 return string.Format(CultureInfo.CurrentCulture, "#Label{0}", GetLabelTargetId(target));
             }
-            else
-            {
-                return GetDisplayName(target.Name);
-            }
+            return GetDisplayName(target.Name);
         }
 
         private void WriteLambda(LambdaExpression lambda)
@@ -1433,10 +1427,7 @@ namespace System.Linq.Expressions
                 // if name has whitespaces in it, quote it
                 return QuoteName(name);
             }
-            else
-            {
-                return name;
-            }
+            return name;
         }
 
         #endregion The AST Output

@@ -337,46 +337,43 @@ namespace System.Linq.Expressions.Interpreter
                         throw Error.ExpressionNotSupportedForType("LessThan", type);
                 }
             }
-            else
+            switch (type.GetNonNullableType().GetTypeCode())
             {
-                switch (type.GetNonNullableType().GetTypeCode())
-                {
-                    case TypeCode.SByte:
-                        return _sbyte ?? (_sbyte = new LessThanSByte(ScriptingRuntimeHelpers.False));
+                case TypeCode.SByte:
+                    return _sbyte ?? (_sbyte = new LessThanSByte(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.Byte:
-                        return _byte ?? (_byte = new LessThanByte(ScriptingRuntimeHelpers.False));
+                case TypeCode.Byte:
+                    return _byte ?? (_byte = new LessThanByte(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.Char:
-                        return _char ?? (_char = new LessThanChar(ScriptingRuntimeHelpers.False));
+                case TypeCode.Char:
+                    return _char ?? (_char = new LessThanChar(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.Int16:
-                        return _int16 ?? (_int16 = new LessThanInt16(ScriptingRuntimeHelpers.False));
+                case TypeCode.Int16:
+                    return _int16 ?? (_int16 = new LessThanInt16(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.Int32:
-                        return _int32 ?? (_int32 = new LessThanInt32(ScriptingRuntimeHelpers.False));
+                case TypeCode.Int32:
+                    return _int32 ?? (_int32 = new LessThanInt32(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.Int64:
-                        return _int64 ?? (_int64 = new LessThanInt64(ScriptingRuntimeHelpers.False));
+                case TypeCode.Int64:
+                    return _int64 ?? (_int64 = new LessThanInt64(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.UInt16:
-                        return _uint16 ?? (_uint16 = new LessThanUInt16(ScriptingRuntimeHelpers.False));
+                case TypeCode.UInt16:
+                    return _uint16 ?? (_uint16 = new LessThanUInt16(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.UInt32:
-                        return _uint32 ?? (_uint32 = new LessThanUInt32(ScriptingRuntimeHelpers.False));
+                case TypeCode.UInt32:
+                    return _uint32 ?? (_uint32 = new LessThanUInt32(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.UInt64:
-                        return _uint64 ?? (_uint64 = new LessThanUInt64(ScriptingRuntimeHelpers.False));
+                case TypeCode.UInt64:
+                    return _uint64 ?? (_uint64 = new LessThanUInt64(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.Single:
-                        return _single ?? (_single = new LessThanSingle(ScriptingRuntimeHelpers.False));
+                case TypeCode.Single:
+                    return _single ?? (_single = new LessThanSingle(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.Double:
-                        return _double ?? (_double = new LessThanDouble(ScriptingRuntimeHelpers.False));
+                case TypeCode.Double:
+                    return _double ?? (_double = new LessThanDouble(ScriptingRuntimeHelpers.False));
 
-                    default:
-                        throw Error.ExpressionNotSupportedForType("LessThan", type);
-                }
+                default:
+                    throw Error.ExpressionNotSupportedForType("LessThan", type);
             }
         }
 
@@ -714,46 +711,43 @@ namespace System.Linq.Expressions.Interpreter
                         throw Error.ExpressionNotSupportedForType("LessThanOrEqual", type);
                 }
             }
-            else
+            switch (type.GetNonNullableType().GetTypeCode())
             {
-                switch (type.GetNonNullableType().GetTypeCode())
-                {
-                    case TypeCode.SByte:
-                        return _sbyte ?? (_sbyte = new LessThanOrEqualSByte(ScriptingRuntimeHelpers.False));
+                case TypeCode.SByte:
+                    return _sbyte ?? (_sbyte = new LessThanOrEqualSByte(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.Byte:
-                        return _byte ?? (_byte = new LessThanOrEqualByte(ScriptingRuntimeHelpers.False));
+                case TypeCode.Byte:
+                    return _byte ?? (_byte = new LessThanOrEqualByte(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.Char:
-                        return _char ?? (_char = new LessThanOrEqualChar(ScriptingRuntimeHelpers.False));
+                case TypeCode.Char:
+                    return _char ?? (_char = new LessThanOrEqualChar(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.Int16:
-                        return _int16 ?? (_int16 = new LessThanOrEqualInt16(ScriptingRuntimeHelpers.False));
+                case TypeCode.Int16:
+                    return _int16 ?? (_int16 = new LessThanOrEqualInt16(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.Int32:
-                        return _int32 ?? (_int32 = new LessThanOrEqualInt32(ScriptingRuntimeHelpers.False));
+                case TypeCode.Int32:
+                    return _int32 ?? (_int32 = new LessThanOrEqualInt32(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.Int64:
-                        return _int64 ?? (_int64 = new LessThanOrEqualInt64(ScriptingRuntimeHelpers.False));
+                case TypeCode.Int64:
+                    return _int64 ?? (_int64 = new LessThanOrEqualInt64(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.UInt16:
-                        return _uint16 ?? (_uint16 = new LessThanOrEqualUInt16(ScriptingRuntimeHelpers.False));
+                case TypeCode.UInt16:
+                    return _uint16 ?? (_uint16 = new LessThanOrEqualUInt16(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.UInt32:
-                        return _uint32 ?? (_uint32 = new LessThanOrEqualUInt32(ScriptingRuntimeHelpers.False));
+                case TypeCode.UInt32:
+                    return _uint32 ?? (_uint32 = new LessThanOrEqualUInt32(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.UInt64:
-                        return _uint64 ?? (_uint64 = new LessThanOrEqualUInt64(ScriptingRuntimeHelpers.False));
+                case TypeCode.UInt64:
+                    return _uint64 ?? (_uint64 = new LessThanOrEqualUInt64(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.Single:
-                        return _single ?? (_single = new LessThanOrEqualSingle(ScriptingRuntimeHelpers.False));
+                case TypeCode.Single:
+                    return _single ?? (_single = new LessThanOrEqualSingle(ScriptingRuntimeHelpers.False));
 
-                    case TypeCode.Double:
-                        return _double ?? (_double = new LessThanOrEqualDouble(ScriptingRuntimeHelpers.False));
+                case TypeCode.Double:
+                    return _double ?? (_double = new LessThanOrEqualDouble(ScriptingRuntimeHelpers.False));
 
-                    default:
-                        throw Error.ExpressionNotSupportedForType("LessThanOrEqual", type);
-                }
+                default:
+                    throw Error.ExpressionNotSupportedForType("LessThanOrEqual", type);
             }
         }
 

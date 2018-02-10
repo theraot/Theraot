@@ -58,17 +58,14 @@ namespace System.Linq.Expressions
                 AddLabel(label);
                 return 0;
             }
-            else
+            int id;
+            if (!_ids.TryGetValue(label, out id))
             {
-                int id;
-                if (!_ids.TryGetValue(label, out id))
-                {
-                    //label is met the first time
-                    id = _ids.Count;
-                    AddLabel(label);
-                }
-                return id;
+                //label is met the first time
+                id = _ids.Count;
+                AddLabel(label);
             }
+            return id;
         }
 
         private void AddParam(ParameterExpression p)
@@ -97,17 +94,14 @@ namespace System.Linq.Expressions
                 AddParam(p);
                 return 0;
             }
-            else
+            int id;
+            if (!_ids.TryGetValue(p, out id))
             {
-                int id;
-                if (!_ids.TryGetValue(p, out id))
-                {
-                    // p is met the first time
-                    id = _ids.Count;
-                    AddParam(p);
-                }
-                return id;
+                // p is met the first time
+                id = _ids.Count;
+                AddParam(p);
             }
+            return id;
         }
 
         #region The printing code

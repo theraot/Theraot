@@ -912,10 +912,7 @@ namespace System.Linq.Expressions
             {
                 return new MethodCallExpressionN(method, argList);
             }
-            else
-            {
-                return new InstanceMethodCallExpressionN(method, instance, argList);
-            }
+            return new InstanceMethodCallExpressionN(method, instance, argList);
         }
 
         internal static MethodCallExpression InternalCall(Expression instance, MethodInfo method, IEnumerable<Expression> arguments)
@@ -932,10 +929,7 @@ namespace System.Linq.Expressions
             {
                 return new MethodCallExpressionN(method, argList);
             }
-            else
-            {
-                return new InstanceMethodCallExpressionN(method, instance, argList);
-            }
+            return new InstanceMethodCallExpressionN(method, instance, argList);
         }
 
         private static ParameterInfo[] ValidateMethodAndGetParameters(Expression instance, MethodInfo method)
@@ -1041,10 +1035,7 @@ namespace System.Linq.Expressions
                 {
                     throw Error.GenericMethodWithArgsDoesNotExistOnType(methodName, type);
                 }
-                else
-                {
-                    throw Error.MethodWithArgsDoesNotExistOnType(methodName, type);
-                }
+                throw Error.MethodWithArgsDoesNotExistOnType(methodName, type);
             }
             if (count > 1)
             {

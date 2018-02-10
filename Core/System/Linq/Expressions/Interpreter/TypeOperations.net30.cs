@@ -1907,7 +1907,7 @@ namespace System.Linq.Expressions.Interpreter
                     }
                     return +1;
                 }
-                else if (right == null)
+                if (right == null)
                 {
                     frame.Push((bool)left ? ScriptingRuntimeHelpers.True : null);
                     return +1;
@@ -2130,7 +2130,7 @@ namespace System.Linq.Expressions.Interpreter
                     }
                     return +1;
                 }
-                else if (right == null)
+                if (right == null)
                 {
                     frame.Push((bool)left ? null : ScriptingRuntimeHelpers.False);
                     return +1;
@@ -2225,10 +2225,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     throw new InvalidOperationException();
                 }
-                else
-                {
-                    frame.Push(obj);
-                }
+                frame.Push(obj);
                 return +1;
             }
         }

@@ -23,13 +23,10 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("collection");
             }
-            else
+            _wrapped = new NullAwareDictionary<T, object>();
+            foreach (var item in collection)
             {
-                _wrapped = new NullAwareDictionary<T, object>();
-                foreach (var item in collection)
-                {
-                    _wrapped[item] = null;
-                }
+                _wrapped[item] = null;
             }
         }
 
@@ -44,13 +41,10 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("collection");
             }
-            else
+            _wrapped = new NullAwareDictionary<T, object>(comparer);
+            foreach (var item in collection)
             {
-                _wrapped = new NullAwareDictionary<T, object>(comparer);
-                foreach (var item in collection)
-                {
-                    _wrapped[item] = null;
-                }
+                _wrapped[item] = null;
             }
         }
 
@@ -62,10 +56,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("info");
             }
-            else
-            {
-                _wrapped.GetObjectData(info, context);
-            }
+            _wrapped.GetObjectData(info, context);
         }
 
         public IEqualityComparer<T> Comparer
@@ -94,11 +85,8 @@ namespace System.Collections.Generic
             {
                 return false;
             }
-            else
-            {
-                _wrapped[item] = null;
-                return true;
-            }
+            _wrapped[item] = null;
+            return true;
         }
 
         public void Clear()
@@ -117,14 +105,11 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("array");
             }
-            else if (Count > array.Length)
+            if (Count > array.Length)
             {
                 throw new ArgumentException("the Count property is larger than the size of the destination array.");
             }
-            else
-            {
-                _wrapped.Keys.CopyTo(array, 0);
-            }
+            _wrapped.Keys.CopyTo(array, 0);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
@@ -162,19 +147,17 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentException("The array can not contain the number of elements.", "array");
             }
-            else
+
+            var copiedCount = 0;
+            var currentIndex = arrayIndex;
+            foreach (var item in this)
             {
-                var copiedCount = 0;
-                var currentIndex = arrayIndex;
-                foreach (var item in this)
+                array[currentIndex] = item;
+                currentIndex++;
+                copiedCount++;
+                if (copiedCount >= count)
                 {
-                    array[currentIndex] = item;
-                    currentIndex++;
-                    copiedCount++;
-                    if (copiedCount >= count)
-                    {
-                        break;
-                    }
+                    break;
                 }
             }
         }
@@ -185,12 +168,9 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("other");
             }
-            else
+            foreach (var item in other)
             {
-                foreach (var item in other)
-                {
-                    _wrapped.Remove(item);
-                }
+                _wrapped.Remove(item);
             }
         }
 
@@ -206,10 +186,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("info");
             }
-            else
-            {
-                _wrapped.GetObjectData(info, context);
-            }
+            _wrapped.GetObjectData(info, context);
         }
 
         void ICollection<T>.Add(T item)
@@ -228,10 +205,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("other");
             }
-            else
-            {
-                this.IntersectWith(other, _wrapped.Comparer);
-            }
+            this.IntersectWith(other, _wrapped.Comparer);
         }
 
         public bool IsProperSubsetOf(IEnumerable<T> other)
@@ -276,10 +250,7 @@ namespace System.Collections.Generic
             {
                 return _wrapped.Remove(item);
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public int RemoveWhere(Predicate<T> match)
@@ -300,10 +271,7 @@ namespace System.Collections.Generic
                 {
                     return false;
                 }
-                else
-                {
-                    containsCount++;
-                }
+                containsCount++;
             }
             return containsCount == _wrapped.Count;
         }
@@ -354,27 +322,21 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("other");
             }
-            else
+            var elementCount = 0;
+            var matchCount = 0;
+            foreach (var item in other)
             {
-                var elementCount = 0;
-                var matchCount = 0;
-                foreach (var item in other)
+                elementCount++;
+                if (_wrapped.ContainsKey(item))
                 {
-                    elementCount++;
-                    if (_wrapped.ContainsKey(item))
-                    {
-                        matchCount++;
-                    }
-                }
-                if (proper)
-                {
-                    return matchCount == _wrapped.Count && elementCount > _wrapped.Count;
-                }
-                else
-                {
-                    return matchCount == _wrapped.Count;
+                    matchCount++;
                 }
             }
+            if (proper)
+            {
+                return matchCount == _wrapped.Count && elementCount > _wrapped.Count;
+            }
+            return matchCount == _wrapped.Count;
         }
 
         private bool IsSupersetOf(IEnumerable<T> other, bool proper)
@@ -383,26 +345,20 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("other");
             }
-            else
+            var elementCount = 0;
+            foreach (var item in other)
             {
-                var elementCount = 0;
-                foreach (var item in other)
+                elementCount++;
+                if (!_wrapped.ContainsKey(item))
                 {
-                    elementCount++;
-                    if (!_wrapped.ContainsKey(item))
-                    {
-                        return false;
-                    }
-                }
-                if (proper)
-                {
-                    return elementCount < _wrapped.Count;
-                }
-                else
-                {
-                    return true;
+                    return false;
                 }
             }
+            if (proper)
+            {
+                return elementCount < _wrapped.Count;
+            }
+            return true;
         }
 
         private IEnumerable<T> ToHashSet(IEnumerable<T> other)
@@ -413,10 +369,7 @@ namespace System.Collections.Generic
             {
                 return test;
             }
-            else
-            {
-                return new HashSet<T>(other, comparer);
-            }
+            return new HashSet<T>(other, comparer);
         }
 
         public struct Enumerator : IEnumerator<T>
@@ -445,10 +398,7 @@ namespace System.Collections.Generic
                     {
                         return _current;
                     }
-                    else
-                    {
-                        throw new InvalidOperationException("Call MoveNext first or use IEnumerator<T>");
-                    }
+                    throw new InvalidOperationException("Call MoveNext first or use IEnumerator<T>");
                 }
             }
 
@@ -495,24 +445,18 @@ namespace System.Collections.Generic
                 {
                     return true;
                 }
-                else
+                if (left == null || right == null || left.Count != right.Count)
                 {
-                    if (left == null || right == null || left.Count != right.Count)
+                    return false;
+                }
+                foreach (var item in left)
+                {
+                    if (!right.Contains(item))
                     {
                         return false;
                     }
-                    else
-                    {
-                        foreach (var item in left)
-                        {
-                            if (!right.Contains(item))
-                            {
-                                return false;
-                            }
-                        }
-                        return true;
-                    }
                 }
+                return true;
             }
 
             public int GetHashCode(HashSet<T> hashset)

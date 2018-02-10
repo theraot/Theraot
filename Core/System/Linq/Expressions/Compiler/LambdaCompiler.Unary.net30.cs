@@ -192,76 +192,73 @@ namespace System.Linq.Expressions.Compiler
                         throw Error.UnhandledUnary(op);
                 }
             }
-            else
+
+            switch (op)
             {
-                switch (op)
-                {
-                    case ExpressionType.Not:
-                        if (operandType == typeof(bool))
-                        {
-                            _ilg.Emit(OpCodes.Ldc_I4_0);
-                            _ilg.Emit(OpCodes.Ceq);
-                        }
-                        else
-                        {
-                            _ilg.Emit(OpCodes.Not);
-                        }
-                        break;
-
-                    case ExpressionType.OnesComplement:
-                        _ilg.Emit(OpCodes.Not);
-                        break;
-
-                    case ExpressionType.IsFalse:
+                case ExpressionType.Not:
+                    if (operandType == typeof(bool))
+                    {
                         _ilg.Emit(OpCodes.Ldc_I4_0);
                         _ilg.Emit(OpCodes.Ceq);
-                        // Not an arithmetic operation -> no conversion
-                        return;
+                    }
+                    else
+                    {
+                        _ilg.Emit(OpCodes.Not);
+                    }
+                    break;
 
-                    case ExpressionType.IsTrue:
-                        _ilg.Emit(OpCodes.Ldc_I4_1);
-                        _ilg.Emit(OpCodes.Ceq);
-                        // Not an arithmetic operation -> no conversion
-                        return;
+                case ExpressionType.OnesComplement:
+                    _ilg.Emit(OpCodes.Not);
+                    break;
 
-                    case ExpressionType.UnaryPlus:
-                        _ilg.Emit(OpCodes.Nop);
-                        break;
+                case ExpressionType.IsFalse:
+                    _ilg.Emit(OpCodes.Ldc_I4_0);
+                    _ilg.Emit(OpCodes.Ceq);
+                    // Not an arithmetic operation -> no conversion
+                    return;
 
-                    case ExpressionType.Negate:
-                    case ExpressionType.NegateChecked:
-                        _ilg.Emit(OpCodes.Neg);
-                        break;
+                case ExpressionType.IsTrue:
+                    _ilg.Emit(OpCodes.Ldc_I4_1);
+                    _ilg.Emit(OpCodes.Ceq);
+                    // Not an arithmetic operation -> no conversion
+                    return;
 
-                    case ExpressionType.TypeAs:
-                        if (operandType.IsValueType)
-                        {
-                            _ilg.Emit(OpCodes.Box, operandType);
-                        }
-                        _ilg.Emit(OpCodes.Isinst, resultType);
-                        if (resultType.IsNullableType())
-                        {
-                            _ilg.Emit(OpCodes.Unbox_Any, resultType);
-                        }
-                        // Not an arithmetic operation -> no conversion
-                        return;
+                case ExpressionType.UnaryPlus:
+                    _ilg.Emit(OpCodes.Nop);
+                    break;
 
-                    case ExpressionType.Increment:
-                        EmitConstantOne(resultType);
-                        _ilg.Emit(OpCodes.Add);
-                        break;
+                case ExpressionType.Negate:
+                case ExpressionType.NegateChecked:
+                    _ilg.Emit(OpCodes.Neg);
+                    break;
 
-                    case ExpressionType.Decrement:
-                        EmitConstantOne(resultType);
-                        _ilg.Emit(OpCodes.Sub);
-                        break;
+                case ExpressionType.TypeAs:
+                    if (operandType.IsValueType)
+                    {
+                        _ilg.Emit(OpCodes.Box, operandType);
+                    }
+                    _ilg.Emit(OpCodes.Isinst, resultType);
+                    if (resultType.IsNullableType())
+                    {
+                        _ilg.Emit(OpCodes.Unbox_Any, resultType);
+                    }
+                    // Not an arithmetic operation -> no conversion
+                    return;
 
-                    default:
-                        throw Error.UnhandledUnary(op);
-                }
+                case ExpressionType.Increment:
+                    EmitConstantOne(resultType);
+                    _ilg.Emit(OpCodes.Add);
+                    break;
 
-                EmitConvertArithmeticResult(op, resultType);
+                case ExpressionType.Decrement:
+                    EmitConstantOne(resultType);
+                    _ilg.Emit(OpCodes.Sub);
+                    break;
+
+                default:
+                    throw Error.UnhandledUnary(op);
             }
+            EmitConvertArithmeticResult(op, resultType);
         }
 
         private void EmitConstantOne(Type type)
