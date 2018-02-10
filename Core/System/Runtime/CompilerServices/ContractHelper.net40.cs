@@ -41,7 +41,7 @@ namespace System.Runtime.CompilerServices
 
         internal const int Cor_E_Codecontractfailed = unchecked((int)0x80131542);
         private static readonly object _lockObject = new object();
-        private static SafeCollection<EventHandler<ContractFailedEventArgs>> _contractFailedEvent = new SafeCollection<EventHandler<ContractFailedEventArgs>>();
+        private static readonly SafeCollection<EventHandler<ContractFailedEventArgs>> _contractFailedEvent = new SafeCollection<EventHandler<ContractFailedEventArgs>>();
 
         /// <summary>
         /// Allows a managed application environment such as an interactive interpreter (IronPython) or a
