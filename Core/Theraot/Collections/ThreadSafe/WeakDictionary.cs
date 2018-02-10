@@ -1020,6 +1020,26 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Returns the values where the value satisfies the predicate.
+        /// </summary>
+        /// <param name="valueCheck">The predicate.</param>
+        /// <returns>
+        /// An <see cref="IEnumerable{TValue}" /> that allows to iterate over the values of the matched pairs.
+        /// </returns>
+        /// <remarks>
+        /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be returned.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="valueCheck"/> is <c>null</c>.</exception>
+        public IEnumerable<TValue> WhereValue(Predicate<TValue> valueCheck)
+        {
+            if (valueCheck == null)
+            {
+                throw new ArgumentNullException("valueCheck");
+            }
+            return _wrapped.WhereValue(valueCheck);
+        }
+
+        /// <summary>
         /// Adds the specified key and associated value.
         /// </summary>
         /// <param name="key">The key.</param>
