@@ -11,7 +11,7 @@ namespace Theraot.Collections.ThreadSafe
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     [Serializable]
-    public class SafeCollection<T> : ICollection<T>
+    public sealed class SafeCollection<T> : ICollection<T>
     {
         private readonly IEqualityComparer<T> _comparer;
         private SafeDictionary<int, T> _wrapped;
