@@ -1008,7 +1008,7 @@ namespace MonoTests.System.Threading.Tasks
                     var tasks = new[] {
                         Task.Factory.StartNew (()=>{ try { throw new ApplicationException (); } finally { cde.Signal (); } }),
                         Task.Factory.StartNew (()=>{ try { throw new ApplicationException (); } finally { cde.Signal (); } }),
-                        Task.Factory.StartNew (()=>mre.WaitOne ())
+                        Task.Factory.StartNew (()=>mre.WaitOne ()) // Keep lambda
                     };
 
                     Assert.IsTrue(cde.Wait(1000), "#1");
