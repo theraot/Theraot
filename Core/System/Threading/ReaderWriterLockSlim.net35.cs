@@ -27,6 +27,7 @@ namespace System.Threading
         // This Stopwatch instance is used for all threads since .Elapsed is thread-safe
         private static readonly Stopwatch _stopwatch;
 
+        // Incremented when a new object is created, should not be readonly
         private static int _idPool;
 
         private readonly LockRecursionPolicy _recursionPolicy;
