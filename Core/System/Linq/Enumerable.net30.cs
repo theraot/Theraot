@@ -1127,6 +1127,10 @@ namespace System.Linq
 
         private static IEnumerable<TSource> IntersectExtracted<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
+            // We create a HashSet of the second IEnumerable.
+            // By doing so, duplicates are lost.
+            // Then by removing the contents of the first IEnumerable from the HashSet,
+            // Those elements that we can remove from the HashSet are the intersection of both IEnumerables
             var items = new HashSet<TSource>(second, comparer);
             foreach (var element in first)
             {
