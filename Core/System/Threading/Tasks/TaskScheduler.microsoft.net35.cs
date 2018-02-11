@@ -66,7 +66,7 @@ namespace System.Threading.Tasks
         }
 
         private static readonly object _unobservedTaskExceptionLockObject = new object();
-        private static SafeCollection<EventHandler<UnobservedTaskExceptionEventArgs>> _unobservedTaskException = new SafeCollection<EventHandler<UnobservedTaskExceptionEventArgs>>();
+        private static readonly SafeCollection<EventHandler<UnobservedTaskExceptionEventArgs>> _unobservedTaskException = new SafeCollection<EventHandler<UnobservedTaskExceptionEventArgs>>();
 
         /// <summary>
         /// Occurs when a faulted <see cref="System.Threading.Tasks.Task"/>'s unobserved exception is about to trigger exception escalation
