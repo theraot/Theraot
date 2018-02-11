@@ -198,6 +198,7 @@ namespace System.Linq.Expressions.Interpreter
 
         internal Delegate MakeDelegate(Type delegateType)
         {
+            // delegateType must be a delegate type, no check is done
 #if !NO_FEATURE_STATIC_DELEGATE
             var method = delegateType.GetMethod("Invoke");
             if (method.ReturnType == typeof(void))

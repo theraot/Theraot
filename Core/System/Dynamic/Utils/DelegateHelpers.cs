@@ -16,6 +16,7 @@ namespace System.Dynamic.Utils
 
         internal static Delegate CreateObjectArrayDelegate(Type delegateType, Func<object[], object> handler)
         {
+            // delegateType must be a delegate type, no check is done
 #if !FEATURE_DYNAMIC_DELEGATE
             return CreateObjectArrayDelegateRefEmit(delegateType, handler);
 #else
@@ -40,6 +41,7 @@ namespace System.Dynamic.Utils
         // return (TRet)ret;
         private static Delegate CreateObjectArrayDelegateRefEmit(Type delegateType, Func<object[], object> handler)
         {
+            // delegateType must be a delegate type, no check is done
             var delegateInvokeMethod = delegateType.GetMethod("Invoke");
 
             var returnType = delegateInvokeMethod.ReturnType;

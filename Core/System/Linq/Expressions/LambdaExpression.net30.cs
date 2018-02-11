@@ -38,6 +38,7 @@ namespace System.Linq.Expressions
             ReadOnlyCollection<ParameterExpression> parameters
         )
         {
+            // delegateType must be a delegate type, no check is done
             Debug.Assert(delegateType != null);
 
             _name = name;
@@ -154,6 +155,7 @@ namespace System.Linq.Expressions
         public Expression(Expression body, string name, bool tailCall, ReadOnlyCollection<ParameterExpression> parameters)
             : base(typeof(TDelegate), name, body, tailCall, parameters)
         {
+            // Should not be called without validating TDelegate
         }
 
         /// <summary>
