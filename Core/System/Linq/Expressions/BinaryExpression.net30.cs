@@ -1532,6 +1532,7 @@ namespace System.Linq.Expressions
             var delegateType = conversion.Type;
             Debug.Assert(typeof(MulticastDelegate).IsAssignableFrom(delegateType) && delegateType != typeof(MulticastDelegate));
             var method = delegateType.GetMethod("Invoke");
+            // If there comes the day where a delegate doesn't have an Invoke method, let this fail
             if (method.ReturnType == typeof(void))
             {
                 throw Error.UserDefinedOperatorMustNotBeVoid(conversion);
@@ -1686,6 +1687,7 @@ namespace System.Linq.Expressions
             var delegateType = conversion.Type;
             Debug.Assert(typeof(MulticastDelegate).IsAssignableFrom(delegateType) && delegateType != typeof(MulticastDelegate));
             var mi = delegateType.GetMethod("Invoke");
+            // If there comes the day where a delegate doesn't have an Invoke method, let this fail
             var pms = mi.GetParameters();
             Debug.Assert(pms.Length == conversion.Parameters.Count);
             if (pms.Length != 1)
