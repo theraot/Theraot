@@ -96,6 +96,7 @@ namespace System.Collections.Generic
 
         public bool Contains(T item)
         {
+            // item can be null
             return _wrapped.ContainsKey(item);
         }
 
@@ -246,6 +247,7 @@ namespace System.Collections.Generic
 
         public bool Remove(T item)
         {
+            // item can be null
             if (_wrapped.ContainsKey(item))
             {
                 return _wrapped.Remove(item);
