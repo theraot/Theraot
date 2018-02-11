@@ -31,7 +31,7 @@ namespace System.Runtime.CompilerServices
         /// <returns>The initialized instance.</returns>
         public static AsyncValueTaskMethodBuilder<TResult> Create()
         {
-            return new AsyncValueTaskMethodBuilder<TResult>() { _methodBuilder = AsyncTaskMethodBuilder<TResult>.Create() };
+            return new AsyncValueTaskMethodBuilder<TResult> { _methodBuilder = AsyncTaskMethodBuilder<TResult>.Create() };
         }
 
         /// <summary>Begins running the builder with the associated state machine.</summary>
