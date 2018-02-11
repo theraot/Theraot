@@ -910,7 +910,7 @@ namespace MonoTests.System.Threading.Tasks
                 {
                     using (var taskB = new Task(ActionHelper.GetNoopAction(), cancelation.Token))
                     {
-                        var tasks = new Task[] { taskA, taskB };
+                        var tasks = new[] { taskA, taskB };
 
                         tasks[0].Start();
 
@@ -1096,7 +1096,7 @@ namespace MonoTests.System.Threading.Tasks
                         )
                     )
                     {
-                        var tasks = new Task[] { taskA, taskB };
+                        var tasks = new[] { taskA, taskB };
 
                         tasks[0].Start();
 
@@ -1141,7 +1141,7 @@ namespace MonoTests.System.Threading.Tasks
                 var taskA = new Task(ActionHelper.GetNoopAction());
                 // Do not dispose Task
                 var taskB = new Task(ActionHelper.GetNoopAction(), cancelation.Token);
-                var tasks = new Task[] { taskA, taskB };
+                var tasks = new[] { taskA, taskB };
 
                 cancelation.Cancel();
 
@@ -1160,7 +1160,7 @@ namespace MonoTests.System.Threading.Tasks
                 var taskA = new Task(ActionHelper.GetNoopAction());
                 // Do not dispose Task
                 var taskB = new Task(ActionHelper.GetNoopAction());
-                var tasks = new Task[] { taskA, taskB };
+                var tasks = new[] { taskA, taskB };
 
                 var res = 0;
                 using (var mre = new ManualResetEventSlim(false))
@@ -1213,7 +1213,7 @@ namespace MonoTests.System.Threading.Tasks
         {
             using (var mre = new ManualResetEventSlim(false))
             {
-                var tasks = new Task[] {
+                var tasks = new[] {
                     Task.Factory.StartNew (()=>mre.Wait (5000)),
                     Task.Factory.StartNew (()=>{ throw new ApplicationException (); })
                 };
@@ -2192,7 +2192,7 @@ namespace MonoTests.System.Threading.Tasks
             {
                 using (var t2 = new Task(t1.Start))
                 {
-                    var tasks = new Task[] { t1, t2 };
+                    var tasks = new[] { t1, t2 };
 
                     var t = Task.WhenAll(tasks);
                     Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
@@ -2212,7 +2212,7 @@ namespace MonoTests.System.Threading.Tasks
                 {
                     using (var taskB = new Task(ActionHelper.GetNoopAction(), cancelation.Token))
                     {
-                        var tasks = new Task[] { taskA, taskB };
+                        var tasks = new[] { taskA, taskB };
 
                         cancelation.Cancel();
 
@@ -2259,7 +2259,7 @@ namespace MonoTests.System.Threading.Tasks
                 {
                     using (var taskB = new Task(ActionHelper.GetNoopAction(), cancelation.Token))
                     {
-                        var tasks = new Task[] { taskA, taskB, tcs.Task, tcs2.Task };
+                        var tasks = new[] { taskA, taskB, tcs.Task, tcs2.Task };
 
                         cancelation.Cancel();
 
@@ -2504,7 +2504,7 @@ namespace MonoTests.System.Threading.Tasks
             {
                 using (var t2 = new Task(t1.Start))
                 {
-                    var tasks = new Task[] { t1, t2 };
+                    var tasks = new[] { t1, t2 };
 
                     var t = Task.WhenAny(tasks);
                     Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
@@ -2525,7 +2525,7 @@ namespace MonoTests.System.Threading.Tasks
                 var taskA = new Task(ActionHelper.GetNoopAction());
                 // Do not dispose Task
                 var taskB = new Task(ActionHelper.GetNoopAction(), cancelation.Token);
-                var tasks = new Task[] { taskA, taskB };
+                var tasks = new[] { taskA, taskB };
 
                 cancelation.Cancel();
 
@@ -2553,7 +2553,7 @@ namespace MonoTests.System.Threading.Tasks
                 var taskA = new Task(ActionHelper.GetNoopAction());
                 // Do not dispose Task
                 var taskB = new Task(ActionHelper.GetNoopAction(), cancelation.Token);
-                var tasks = new Task[] { taskA, tcs.Task, taskB, tcs2.Task };
+                var tasks = new[] { taskA, tcs.Task, taskB, tcs2.Task };
 
                 cancelation.Cancel();
 
@@ -2738,7 +2738,7 @@ namespace MonoTests.System.Threading.Tasks
                     () => "",
                     cancelation.Token
                 );
-                var tasks = new Task<object>[]
+                var tasks = new[]
                 {
                     taskA,
                     tcs.Task,

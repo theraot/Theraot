@@ -100,7 +100,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileInitArrayOfInt()
         {
-            AssertCreatedArrayIsEqual(new int[] { 1, 2, 3, 4 });
+            AssertCreatedArrayIsEqual(new[] { 1, 2, 3, 4 });
         }
 
         private enum Months { Jan, Feb, Mar, Apr };
@@ -108,7 +108,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileInitArrayOfEnums()
         {
-            AssertCreatedArrayIsEqual(new Months[] { Months.Jan, Months.Feb, Months.Mar, Months.Apr });
+            AssertCreatedArrayIsEqual(new[] { Months.Jan, Months.Feb, Months.Mar, Months.Apr });
         }
 
         private class Foo
@@ -118,7 +118,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileInitArrayOfClasses()
         {
-            AssertCreatedArrayIsEqual(new Foo[] { new Foo(), new Foo(), new Foo(), new Foo() });
+            AssertCreatedArrayIsEqual(new[] { new Foo(), new Foo(), new Foo(), new Foo() });
         }
 
         private struct Bar
@@ -134,7 +134,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileInitArrayOfStructs()
         {
-            AssertCreatedArrayIsEqual(new Bar[] { new Bar(1), new Bar(2), new Bar(3), new Bar(4) });
+            AssertCreatedArrayIsEqual(new[] { new Bar(1), new Bar(2), new Bar(3), new Bar(4) });
         }
     }
 }

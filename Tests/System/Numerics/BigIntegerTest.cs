@@ -62,14 +62,14 @@ namespace MonoTests.System.Numerics
                 CurrencyDecimalDigits = 3,
                 CurrencyDecimalSeparator = ":",
                 CurrencyGroupSeparator = "/",
-                CurrencyGroupSizes = new int[] { 2, 1, 0 },
+                CurrencyGroupSizes = new[] { 2, 1, 0 },
                 CurrencyNegativePattern = 10,  // n $-
                 CurrencyPositivePattern = 3,  // n $
                 CurrencySymbol = "XYZ",
                 PercentDecimalDigits = 1,
                 PercentDecimalSeparator = ";",
                 PercentGroupSeparator = "~",
-                PercentGroupSizes = new int[] { 1 },
+                PercentGroupSizes = new[] { 1 },
                 PercentNegativePattern = 2,
                 PercentPositivePattern = 2,
                 PercentSymbol = "%%%",
@@ -80,7 +80,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void Mul()
         {
-            var values = new long[] { -1000000000L, -1000, -1, 0, 1, 1000, 100000000L };
+            var values = new[] { -1000000000L, -1000, -1, 0, 1, 1000, 100000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 for (var j = 0; j < values.Length; ++j)
@@ -104,7 +104,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void DivRem()
         {
-            var values = new long[] { -10000000330L, -5000, -1, 0, 1, 1000, 333, 10234544400L };
+            var values = new[] { -10000000330L, -5000, -1, 0, 1, 1000, 333, 10234544400L };
             for (var i = 0; i < values.Length; ++i)
             {
                 for (var j = 0; j < values.Length; ++j)
@@ -279,7 +279,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestAdd2()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 for (var j = 0; j < values.Length; ++j)
@@ -304,7 +304,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestSub()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 for (var j = 0; j < values.Length; ++j)
@@ -323,7 +323,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestMin()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 for (var j = 0; j < values.Length; ++j)
@@ -340,7 +340,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestMax()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 for (var j = 0; j < values.Length; ++j)
@@ -357,7 +357,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestAbs()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 var a = new BigInteger(values[i]);
@@ -370,7 +370,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestNegate()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 var a = new BigInteger(values[i]);
@@ -385,7 +385,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestInc()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 var a = new BigInteger(values[i]);
@@ -398,7 +398,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestDec()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 var a = new BigInteger(values[i]);
@@ -411,7 +411,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestBitwiseOps()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L, 0xFFFF00000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L, 0xFFFF00000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 for (var j = 0; j < values.Length; ++j)
@@ -483,7 +483,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void CompareOps()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 for (var j = 0; j < values.Length; ++j)
@@ -520,7 +520,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void CompareULong()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L, 0xAA00000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L, 0xAA00000000L };
             var uvalues = new ulong[] { 0, 1, 1000, 100000000000L, 999999, 28282828282, 0xAA00000000, ulong.MaxValue };
             for (var i = 0; i < values.Length; ++i)
             {
@@ -552,7 +552,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void CompareLong()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 9999999, 100000000000L, 0xAA00000000, long.MaxValue, long.MinValue };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 9999999, 100000000000L, 0xAA00000000, long.MaxValue, long.MinValue };
 
             for (var i = 0; i < values.Length; ++i)
             {
@@ -617,7 +617,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void IntCtorRoundTrip()
         {
-            var values = new int[] {
+            var values = new[] {
                 int.MinValue, -0x2F33BB, -0x1F33, -0x33, 0, 0x33,
                 0x80, 0x8190, 0xFF0011, 0x1234, 0x11BB99, 0x44BB22CC,
                 int.MaxValue };
@@ -634,7 +634,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void LongCtorRoundTrip()
         {
-            var values = new long[] {
+            var values = new[] {
                 0, long.MinValue, long.MaxValue, -1, 1L + int.MaxValue, -1L + int.MinValue, 0x1234, 0xFFFFFFFFL, 0x1FFFFFFFFL, -0xFFFFFFFFL, -0x1FFFFFFFFL,
                 0x100000000L, -0x100000000L, 0x100000001L, -0x100000001L, 4294967295L, -4294967295L, 4294967296L, -4294967296L };
             foreach (var val in values)

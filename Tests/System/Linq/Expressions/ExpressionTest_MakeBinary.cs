@@ -222,7 +222,7 @@ namespace MonoTests.System.Linq.Expressions
 
             var p = Expression.MakeBinary(node, Expression.Constant(a), Expression.Constant(b));
             var pexpr = Expression.Lambda<Func<T, T, bool>>(
-                p, new ParameterExpression[] { pa, pb });
+                p, new[] { pa, pb });
 
             var compiled = pexpr.Compile();
             Assert.AreEqual(r, compiled(a, b), string.Format("{0} ({1},{2}) == {3}", node, a, b, r));
@@ -302,7 +302,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void MakeArrayIndex()
         {
-            var array = Expression.Constant(new int[] { 1, 2 }, typeof(int[]));
+            var array = Expression.Constant(new[] { 1, 2 }, typeof(int[]));
             var index = Expression.Constant(1);
 
             var array_index = Expression.MakeBinary(

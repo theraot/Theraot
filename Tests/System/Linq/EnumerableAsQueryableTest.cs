@@ -45,7 +45,7 @@ namespace MonoTests.System.Linq
         [SetUp]
         public void MyTestCleanup()
         {
-            _array = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            _array = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
             _src = _array.AsQueryable<int>();
         }
 
@@ -245,8 +245,8 @@ namespace MonoTests.System.Linq
         [Test]
         public void SelectMany()
         {
-            var arr1 = _array.SelectMany<int, int>((n) => new int[] { n, n, n }).ToArray();
-            var arr2 = _src.SelectMany<int, int>((n) => new int[] { n, n, n }).ToArray();
+            var arr1 = _array.SelectMany<int, int>((n) => new[] { n, n, n }).ToArray();
+            var arr2 = _src.SelectMany<int, int>((n) => new[] { n, n, n }).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
@@ -405,7 +405,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void NonGenericEnumerable2()
         {
-            IEnumerable<int> nonGen = new int[] { 1, 2, 3 };
+            IEnumerable<int> nonGen = new[] { 1, 2, 3 };
             Assert.IsTrue(nonGen.AsQueryable() is IQueryable<int>);
         }
 

@@ -67,7 +67,7 @@ namespace MonoTests.System.Collections.Generic
             Assert.IsTrue(set.Remove(2));
             Assert.IsTrue(set.Remove(3));
 
-            AssertContainsOnly(new int[] { 1, 4 }, set);
+            AssertContainsOnly(new[] { 1, 4 }, set);
         }
 
         [Test]
@@ -435,7 +435,7 @@ namespace MonoTests.System.Collections.Generic
         [Test]
         public void TestHashSetEqualityComparer()
         {
-            var data = new string[] { "foo", "bar", "foobar" };
+            var data = new[] { "foo", "bar", "foobar" };
             var set1 = new HashSet<string>(data, StringComparer.Ordinal);
             var set2 = new HashSet<string>(data, StringComparer.OrdinalIgnoreCase);
 
@@ -569,7 +569,7 @@ namespace MonoTests.System.Collections.Generic
             Assert.IsTrue(set.Contains(null), "#2c");
             Assert.AreEqual(2, set.Count, "#3");
             Assert.IsTrue(set.Add("a"), "#4");
-            AssertContainsOnly(new string[] { string.Empty, null, "a" }, set);
+            AssertContainsOnly(new[] { string.Empty, null, "a" }, set);
             Assert.IsFalse(set.Add(null), "#5");
             Assert.IsTrue(set.Add("b"), "#6");
             Assert.IsFalse(set.Add("b"), "#7");
@@ -583,7 +583,7 @@ namespace MonoTests.System.Collections.Generic
             Assert.IsTrue(set.Remove("b"), "#15");
             Assert.IsFalse(set.Remove(null), "#16");
             Assert.AreEqual(3, set.Count, "#17");
-            AssertContainsOnly(new string[] { string.Empty, "a", "c" }, set);
+            AssertContainsOnly(new[] { string.Empty, "a", "c" }, set);
         }
 
         private class StringComparerOrdinalLookAlike : IEqualityComparer<string>

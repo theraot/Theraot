@@ -178,7 +178,7 @@ namespace MonoTests.System.Collections.ObjectModel
             Assert.IsTrue(changedProps.Contains("Count"), "ADD_2");
             Assert.IsTrue(changedProps.Contains("Item[]"), "ADD_3");
 
-            CollectionChangedEventValidators.ValidateAddOperation(args, new char[] { 'A' }, 0, "ADD_4");
+            CollectionChangedEventValidators.ValidateAddOperation(args, new[] { 'A' }, 0, "ADD_4");
         }
 
         [Test]
@@ -212,7 +212,7 @@ namespace MonoTests.System.Collections.ObjectModel
             Assert.IsTrue(changedProps.Contains("Count"), "REM_2");
             Assert.IsTrue(changedProps.Contains("Item[]"), "REM_3");
 
-            CollectionChangedEventValidators.ValidateRemoveOperation(args, new char[] { 'B' }, 1, "REM_4");
+            CollectionChangedEventValidators.ValidateRemoveOperation(args, new[] { 'B' }, 1, "REM_4");
         }
 
         [Test]
@@ -245,7 +245,7 @@ namespace MonoTests.System.Collections.ObjectModel
             Assert.IsTrue(propertyChanged, "SET_1");
             Assert.IsTrue(changedProps.Contains("Item[]"), "SET_2");
 
-            CollectionChangedEventValidators.ValidateReplaceOperation(args, new char[] { 'C' }, new char[] { 'I' }, 2, "SET_3");
+            CollectionChangedEventValidators.ValidateReplaceOperation(args, new[] { 'C' }, new[] { 'I' }, 2, "SET_3");
         }
 
         [Test]
@@ -297,7 +297,7 @@ namespace MonoTests.System.Collections.ObjectModel
             Assert.IsTrue(propertyChanged, "REENT_1");
             Assert.IsTrue(changedProps.Contains("Item[]"), "REENT_2");
 
-            CollectionChangedEventValidators.ValidateReplaceOperation(args, new char[] { 'C' }, new char[] { 'I' }, 2, "REENT_3");
+            CollectionChangedEventValidators.ValidateReplaceOperation(args, new[] { 'C' }, new[] { 'I' }, 2, "REENT_3");
 
             // Removing the PropertyChanged event handler should work as well:
             ((INotifyPropertyChanged)collection).PropertyChanged -= pceh;
@@ -360,7 +360,7 @@ namespace MonoTests.System.Collections.ObjectModel
 
                 // This last add should work fine.
                 Add('K');
-                CollectionChangedEventValidators.ValidateAddOperation(args, new char[] { 'K' }, 0, "REENTHELP_1");
+                CollectionChangedEventValidators.ValidateAddOperation(args, new[] { 'K' }, 0, "REENTHELP_1");
             }
         }
 

@@ -198,12 +198,12 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Add
             var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItem);
 
-            CollectionChangedEventValidators.ValidateAddOperation(args, new object[] { changedItem }, "#C01");
+            CollectionChangedEventValidators.ValidateAddOperation(args, new[] { changedItem }, "#C01");
 
             // Trying with Remove
             args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changedItem);
 
-            CollectionChangedEventValidators.ValidateRemoveOperation(args, new object[] { changedItem }, "#C02");
+            CollectionChangedEventValidators.ValidateRemoveOperation(args, new[] { changedItem }, "#C02");
 
             // Trying with Reset
 
@@ -499,12 +499,12 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Add
             var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItem, startingIndex);
 
-            CollectionChangedEventValidators.ValidateAddOperation(args, new object[] { changedItem }, startingIndex, "#F01");
+            CollectionChangedEventValidators.ValidateAddOperation(args, new[] { changedItem }, startingIndex, "#F01");
 
             // Trying with Remove
             args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changedItem, startingIndex);
 
-            CollectionChangedEventValidators.ValidateRemoveOperation(args, new object[] { changedItem }, startingIndex, "#F02");
+            CollectionChangedEventValidators.ValidateRemoveOperation(args, new[] { changedItem }, startingIndex, "#F02");
 
             // Trying with Reset
             args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, (object)null, -1);
@@ -572,14 +572,14 @@ namespace MonoTests.System.Collections.Specialized
 
             // Trying with Add
             var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem);
-            CollectionChangedEventValidators.ValidateReplaceOperation(args, new object[] { oldItem }, new object[] { newItem }, "#G01");
+            CollectionChangedEventValidators.ValidateReplaceOperation(args, new[] { oldItem }, new[] { newItem }, "#G01");
 
             // Trying null items
             args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, null, oldItem);
-            CollectionChangedEventValidators.ValidateReplaceOperation(args, new object[] { oldItem }, new object[] { null }, "#G02");
+            CollectionChangedEventValidators.ValidateReplaceOperation(args, new[] { oldItem }, new object[] { null }, "#G02");
 
             args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, null);
-            CollectionChangedEventValidators.ValidateReplaceOperation(args, new object[] { null }, new object[] { newItem }, "#G03");
+            CollectionChangedEventValidators.ValidateReplaceOperation(args, new object[] { null }, new[] { newItem }, "#G03");
 
             // Trying with Reset
             try
@@ -812,7 +812,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Replace
             var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changed, newIndex, oldIndex);
 
-            CollectionChangedEventValidators.ValidateMoveOperation(args, new object[] { changed }, newIndex, oldIndex, "#J01");
+            CollectionChangedEventValidators.ValidateMoveOperation(args, new[] { changed }, newIndex, oldIndex, "#J01");
 
             // Trying with newIndex < 0.
             try
@@ -880,7 +880,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Replace
             var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem, startIndex);
 
-            CollectionChangedEventValidators.ValidateReplaceOperation(args, new object[] { oldItem }, new object[] { newItem }, startIndex, "#K01");
+            CollectionChangedEventValidators.ValidateReplaceOperation(args, new[] { oldItem }, new[] { newItem }, startIndex, "#K01");
 
             // Trying with Reset
             try

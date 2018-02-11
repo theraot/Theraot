@@ -85,7 +85,7 @@ namespace MonoTests.System.Linq
             var c = new Bar();
 
             var foos = new Foo[] { a, b, c };
-            var result = new Bar[] { a, b, c };
+            var result = new[] { a, b, c };
 
             AssertAreSame(result, foos.Cast<Bar>());
         }
@@ -113,8 +113,8 @@ namespace MonoTests.System.Linq
         [Test]
         public void TestCastToImplementedType()
         {
-            var ints = new int[] { 42, 12 };
-            var strs = new string[] { "foo", "bar" };
+            var ints = new[] { 42, 12 };
+            var strs = new[] { "foo", "bar" };
 
             var bingo = new Bingo();
 
@@ -350,7 +350,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void TestAverageOnInt32()
         {
-            Assert.AreEqual(23.25, (new int[] { 24, 7, 28, 34 }).Average());
+            Assert.AreEqual(23.25, (new[] { 24, 7, 28, 34 }).Average());
         }
 
         [Test]
@@ -363,7 +363,7 @@ namespace MonoTests.System.Linq
         public void TestAverageInt32()
         {
             // This does not overflow, computation is done with longs
-            var x = new int[] { int.MaxValue, int.MaxValue };
+            var x = new[] { int.MaxValue, int.MaxValue };
             Assert.AreEqual((double)int.MaxValue, x.Average());
         }
 
@@ -371,7 +371,7 @@ namespace MonoTests.System.Linq
         [Category("NotDotNet")] // Mirosoft is failing at this, from .NET 3.5 on :/
         public void TestAverageOverflowOnInt64()
         {
-            var x = new long[] { long.MaxValue, long.MaxValue };
+            var x = new[] { long.MaxValue, long.MaxValue };
             x.Average();
         }
 

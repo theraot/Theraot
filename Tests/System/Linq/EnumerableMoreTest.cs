@@ -803,7 +803,7 @@ namespace MonoTests.System.Linq
             Assert.AreEqual(0, Enumerable.Empty<string>().Sum<string>((Func<string, decimal?>)(x => int.Parse(x))));
 
             // Sum<> ()
-            Assert.AreEqual(6, ((IEnumerable<int>)new int[] { 1, 2, 3 }).Sum());
+            Assert.AreEqual(6, ((IEnumerable<int>)new[] { 1, 2, 3 }).Sum());
             Assert.AreEqual(0, Enumerable.Empty<int>().Sum());
 
             // Sum<> ()
@@ -968,7 +968,7 @@ namespace MonoTests.System.Linq
             Assert.AreEqual("1", ((IEnumerable<string>)data).Min<string, string>(x => x));
 
             // Min<> ()
-            Assert.AreEqual(2, ((IEnumerable<int>)new int[] { 2, 3, 4 }).Min());
+            Assert.AreEqual(2, ((IEnumerable<int>)new[] { 2, 3, 4 }).Min());
 
             // Min<> ()
             Assert.AreEqual(2, ((IEnumerable<int?>)new int?[] { 2, 3, 4 }).Min());
@@ -1123,7 +1123,7 @@ namespace MonoTests.System.Linq
             Assert.AreEqual("5", ((IEnumerable<string>)data).Max<string, string>(x => x));
 
             // Max<> ()
-            Assert.AreEqual(4, ((IEnumerable<int>)new int[] { 2, 3, 4 }).Max());
+            Assert.AreEqual(4, ((IEnumerable<int>)new[] { 2, 3, 4 }).Max());
 
             // Max<> ()
             Assert.AreEqual(4, ((IEnumerable<int?>)new int?[] { 2, 3, 4 }).Max());
@@ -1271,7 +1271,7 @@ namespace MonoTests.System.Linq
             Assert.AreEqual(3, ((IEnumerable<string>)data).Average<string>((Func<string, decimal?>)(x => int.Parse(x))));
 
             // Average<> ()
-            Assert.AreEqual(3, ((IEnumerable<int>)new int[] { 2, 3, 4 }).Average());
+            Assert.AreEqual(3, ((IEnumerable<int>)new[] { 2, 3, 4 }).Average());
             AssertException<InvalidOperationException>(() => new int[0].Average());
 
             // Average<> ()
@@ -1393,16 +1393,16 @@ namespace MonoTests.System.Linq
             string[] expected = { "0", "00", "1", "11" };
 
             // SelectMany<TSource,TResult> (Func<TSource, IEnumerable<TResult>>)
-            AssertAreSame(expected, ((IEnumerable<string>)data).SelectMany(x => new string[] { x, x + x }));
+            AssertAreSame(expected, ((IEnumerable<string>)data).SelectMany(x => new[] { x, x + x }));
 
             // SelectMany<TSource,TResult> (Func<TSource, int, IEnumerable<TResult>>)
-            AssertAreSame(expected, ((IEnumerable<string>)data).SelectMany((x, y) => new string[] { x, x + y }));
+            AssertAreSame(expected, ((IEnumerable<string>)data).SelectMany((x, y) => new[] { x, x + y }));
 
             // SelectMany<TSource,TCollection,TResult> (Func<string, int, IEnumerable<TCollection>>, Func<TSource, TCollection, TResult>)
-            AssertAreSame(expected, ((IEnumerable<string>)data).SelectMany((x, y) => new string[] { x, x + y }, (x, y) => y));
+            AssertAreSame(expected, ((IEnumerable<string>)data).SelectMany((x, y) => new[] { x, x + y }, (x, y) => y));
 
             // SelectMany<TSource,TCollection,TResult> (Func<TSource, IEnumerable<TCollection>>, Func<TSource, TCollection, TResult>)
-            AssertAreSame(expected, ((IEnumerable<string>)data).SelectMany(x => new string[] { x, x + x }, (x, y) => y));
+            AssertAreSame(expected, ((IEnumerable<string>)data).SelectMany(x => new[] { x, x + x }, (x, y) => y));
         }
 
         [Test]
@@ -1809,7 +1809,7 @@ namespace MonoTests.System.Linq
                 { "3", new List<string> { "33", "33" } },
                 { "4", new List<string> { "44" } }
             };
-            var expected3 = new string[] { "22", "11", "55", "333", "44" };
+            var expected3 = new[] { "22", "11", "55", "333", "44" };
 
             // GroupBy<int,int> (Func<int, int>)
             AssertAreSame(expected, data.GroupBy(x => x));
@@ -2232,7 +2232,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void ToLookupNullKeyTest()
         {
-            var strs = new string[] { "one", null, "two", null, "three" };
+            var strs = new[] { "one", null, "two", null, "three" };
 
             var i = 0;
             var l = strs.ToLookup(s => (s == null) ? null : "numbers", s => s ?? (++i).ToString());

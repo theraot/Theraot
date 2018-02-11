@@ -121,7 +121,7 @@ namespace MonoTests.System.Linq.Expressions
             var p = Expression.GreaterThan(a, b);
 
             var pexpr = Expression.Lambda<Func<int, int, bool>>(
-                p, new ParameterExpression[] { a, b });
+                p, new[] { a, b });
 
             var compiled = pexpr.Compile();
             Assert.AreEqual(true, compiled(10, 1), "tc1");

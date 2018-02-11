@@ -218,7 +218,7 @@ namespace MonoTests.System.Collections.Concurrent
         [Test]
         public void QueryWithSameHashCodeTest()
         {
-            var ids = new long[] {
+            var ids = new[] {
                 34359738370,
                 34359738371,
                 34359738372,

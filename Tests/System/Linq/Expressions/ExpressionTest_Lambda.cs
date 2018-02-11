@@ -128,7 +128,7 @@ namespace MonoTests.System.Linq.Expressions
             // Here we have the same name for the parameter expression, but
             // we pass a different object to the Lambda expression, so they are
             // different, this should throw
-            var l = Expression.Lambda<Func<int, int>>(a, new ParameterExpression[] { second_a });
+            var l = Expression.Lambda<Func<int, int>>(a, new[] { second_a });
             l.Compile();
         }
 
@@ -139,7 +139,7 @@ namespace MonoTests.System.Linq.Expressions
             var b = Expression.Parameter(typeof(int), "b");
 
             var l = Expression.Lambda<Func<int, int, int>>(
-                Expression.Add(a, b), new ParameterExpression[] { a, b });
+                Expression.Add(a, b), new[] { a, b });
 
             Assert.AreEqual(typeof(Func<int, int, int>), l.Type);
             Assert.AreEqual("(a, b) => (a + b)", l.ToString());

@@ -72,7 +72,7 @@ namespace MonoTests.System
         [Test, ExpectedException(typeof(ArgumentException))]
         public void InitializationWithNullInnerValuesTest()
         {
-            var foo = new AggregateException(new Exception[] { new Exception(), null, new ApplicationException() });
+            var foo = new AggregateException(new[] { new Exception(), null, new ApplicationException() });
         }
 
         [Test]
