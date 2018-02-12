@@ -8,7 +8,7 @@ namespace Theraot.Threading
     [System.Diagnostics.DebuggerNonUserCode]
     public static partial class ThreadingHelper
     {
-        internal const int _sleepCountHint = 10;
+        internal const int SleepCountHint = 10;
         private const int _maxTime = 200;
 
         public static void MemoryBarrier()

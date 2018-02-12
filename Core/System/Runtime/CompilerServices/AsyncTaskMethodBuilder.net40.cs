@@ -23,11 +23,14 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// A cached VoidTaskResult task used for builders that complete synchronously.
         /// </summary>
-        private static readonly TaskCompletionSource<VoidTaskResult> _cachedCompleted = AsyncTaskMethodBuilder<VoidTaskResult>._defaultResultTask;
+        private static readonly TaskCompletionSource<VoidTaskResult> _cachedCompleted = AsyncTaskMethodBuilder<VoidTaskResult>.DefaultResultTask;
 
         /// <summary>
         /// The generic builder object to which this non-generic instance delegates.
         /// </summary>
+        // Note: this is a mutable struct, it has starts at the fault value and then it is mutated
+        // There is no need to asign it
+        // It should not be readonly
         private AsyncTaskMethodBuilder<VoidTaskResult> _builder;
 
         /// <summary>
@@ -41,22 +44,6 @@ namespace System.Runtime.CompilerServices
         public Task Task
         {
             get { return _builder.Task; }
-        }
-
-        /// <summary>
-        /// Gets an object that may be used to uniquely identify this builder to the debugger.
-        ///
-        /// </summary>
-        ///
-        /// <remarks>
-        /// This property lazily instantiates the ID in a non-thread-safe manner.
-        ///             It must only be used by the debugger, and only in a single-threaded manner
-        ///             when no other threads are in the middle of accessing this property or this.Task.
-        ///
-        /// </remarks>
-        private object ObjectIdForDebugger
-        {
-            get { return Task; }
         }
 
         /// <summary>
@@ -171,11 +158,14 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// A cached task for default(TResult).
         /// </summary>
-        internal static readonly TaskCompletionSource<TResult> _defaultResultTask = AsyncMethodTaskCache<TResult>.CreateCompleted(default(TResult));
+        internal static readonly TaskCompletionSource<TResult> DefaultResultTask = AsyncMethodTaskCache<TResult>.CreateCompleted(default(TResult));
 
         /// <summary>
         /// State related to the IAsyncStateMachine.
         /// </summary>
+        // Note: this is a mutable struct, it has starts at the fault value and then it is mutated
+        // There is no need to asign it
+        // It should not be readonly
         private AsyncMethodBuilderCore _coreState;
 
         /// <summary>
@@ -210,22 +200,6 @@ namespace System.Runtime.CompilerServices
         public Task<TResult> Task
         {
             get { return CompletionSource.Task; }
-        }
-
-        /// <summary>
-        /// Gets an object that may be used to uniquely identify this builder to the debugger.
-        ///
-        /// </summary>
-        ///
-        /// <remarks>
-        /// This property lazily instantiates the ID in a non-thread-safe manner.
-        ///             It must only be used by the debugger, and only in a single-threaded manner
-        ///             when no other threads are in the middle of accessing this property or this.Task.
-        ///
-        /// </remarks>
-        private object ObjectIdForDebugger
-        {
-            get { return Task; }
         }
 
         /// <summary>

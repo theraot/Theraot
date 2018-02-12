@@ -34,7 +34,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_NewArrayInit
+    public class ExpressionTestNewArrayInit
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -123,11 +123,11 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Bar
         {
-            public int bar;
+            public int Value;
 
             public Bar(int b)
             {
-                bar = b;
+                Value = b;
             }
         }
 

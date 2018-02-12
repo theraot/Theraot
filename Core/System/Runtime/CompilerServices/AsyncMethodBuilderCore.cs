@@ -18,7 +18,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// A reference to the heap-allocated state machine object associated with this builder.
         /// </summary>
-        internal IAsyncStateMachine _stateMachine;
+        internal IAsyncStateMachine StateMachine;
 
         /// <summary>
         /// Initiates the builder's execution with the associated state machine.
@@ -47,12 +47,12 @@ namespace System.Runtime.CompilerServices
                 throw new ArgumentNullException("stateMachine");
             }
 
-            if (_stateMachine != null)
+            if (StateMachine != null)
             {
                 throw new InvalidOperationException("The builder was not properly initialized.");
             }
 
-            _stateMachine = stateMachine;
+            StateMachine = stateMachine;
         }
 
         /// <summary>
@@ -71,13 +71,13 @@ namespace System.Runtime.CompilerServices
         {
             var moveNextRunner = new MoveNextRunner(ExecutionContext.Capture());
             Action action = moveNextRunner.Run;
-            if (_stateMachine == null)
+            if (StateMachine == null)
             {
                 builder.PreBoxInitialization();
-                _stateMachine = stateMachine;
-                _stateMachine.SetStateMachine(_stateMachine);
+                StateMachine = stateMachine;
+                StateMachine.SetStateMachine(StateMachine);
             }
-            moveNextRunner._stateMachine = _stateMachine;
+            moveNextRunner.StateMachine = StateMachine;
             return action;
         }
 
@@ -121,7 +121,7 @@ namespace System.Runtime.CompilerServices
             /// <summary>
             /// The state machine whose MoveNext method should be invoked.
             /// </summary>
-            internal IAsyncStateMachine _stateMachine;
+            internal IAsyncStateMachine StateMachine;
 
             /// <summary>
             /// Cached delegate used with ExecutionContext.Run.
@@ -147,7 +147,7 @@ namespace System.Runtime.CompilerServices
             {
                 if (_context == null)
                 {
-                    _stateMachine.MoveNext();
+                    StateMachine.MoveNext();
                     return;
                 }
 
@@ -159,7 +159,7 @@ namespace System.Runtime.CompilerServices
                         _invokeMoveNext = callback = InvokeMoveNext;
                     }
 
-                    ExecutionContext.Run(_context, callback, _stateMachine);
+                    ExecutionContext.Run(_context, callback, StateMachine);
                 }
                 finally
                 {

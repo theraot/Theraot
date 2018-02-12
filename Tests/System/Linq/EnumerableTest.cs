@@ -521,23 +521,23 @@ namespace MonoTests.System.Linq
 
         private class Data
         {
-            public int ID { get; set; }
+            public int Id { get; set; }
 
             public string Name { get; set; }
 
             public override string ToString()
             {
-                return ID + " " + Name;
+                return Id + " " + Name;
             }
         }
 
         private IEnumerable<Data> CreateData()
         {
             return new[] {
-                new Data { ID = 10, Name = "bcd" },
-                new Data { ID = 20, Name = "Abcd" },
-                new Data { ID = 20, Name = "Ab" },
-                new Data { ID = 10, Name = "Zyx" },
+                new Data { Id = 10, Name = "bcd" },
+                new Data { Id = 20, Name = "Abcd" },
+                new Data { Id = 20, Name = "Ab" },
+                new Data { Id = 10, Name = "Zyx" },
             };
         }
 
@@ -545,7 +545,7 @@ namespace MonoTests.System.Linq
         public void TestOrderByIdDescendingThenByNameAscending()
         {
             var q = from d in CreateData()
-                    orderby d.ID descending, d.Name ascending
+                    orderby d.Id descending, d.Name ascending
                     select d;
 
             var list = new List<Data>(q);

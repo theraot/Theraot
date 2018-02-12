@@ -72,7 +72,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal abstract class NotInstruction : Instruction
     {
-        public static Instruction _bool, _int64, _int32, _int16, _uint64, _uint32, _uint16, _byte, _sbyte;
+        public static Instruction Bool, INT64, INT32, INT16, Uint64, Uint32, Uint16, Byte, Sbyte;
 
         private NotInstruction()
         {
@@ -251,31 +251,31 @@ namespace System.Linq.Expressions.Interpreter
             switch (t.GetNonNullableType().GetTypeCode())
             {
                 case TypeCode.Boolean:
-                    return _bool ?? (_bool = new BoolNot());
+                    return Bool ?? (Bool = new BoolNot());
 
                 case TypeCode.Int64:
-                    return _int64 ?? (_int64 = new Int64Not());
+                    return INT64 ?? (INT64 = new Int64Not());
 
                 case TypeCode.Int32:
-                    return _int32 ?? (_int32 = new Int32Not());
+                    return INT32 ?? (INT32 = new Int32Not());
 
                 case TypeCode.Int16:
-                    return _int16 ?? (_int16 = new Int16Not());
+                    return INT16 ?? (INT16 = new Int16Not());
 
                 case TypeCode.UInt64:
-                    return _uint64 ?? (_uint64 = new UInt64Not());
+                    return Uint64 ?? (Uint64 = new UInt64Not());
 
                 case TypeCode.UInt32:
-                    return _uint32 ?? (_uint32 = new UInt32Not());
+                    return Uint32 ?? (Uint32 = new UInt32Not());
 
                 case TypeCode.UInt16:
-                    return _uint16 ?? (_uint16 = new UInt16Not());
+                    return Uint16 ?? (Uint16 = new UInt16Not());
 
                 case TypeCode.Byte:
-                    return _byte ?? (_byte = new ByteNot());
+                    return Byte ?? (Byte = new ByteNot());
 
                 case TypeCode.SByte:
-                    return _sbyte ?? (_sbyte = new SByteNot());
+                    return Sbyte ?? (Sbyte = new SByteNot());
 
                 default:
                     throw new InvalidOperationException("Not for " + t);

@@ -249,7 +249,7 @@ namespace MonoTests.System.Threading.Tasks
             }
         }
 
-        private Task _parent_wfc;
+        private Task _parentWfc;
 
         [Test]
         public void WaitingForChildrenToComplete()
@@ -257,22 +257,22 @@ namespace MonoTests.System.Threading.Tasks
             Task nested = null;
             using (var mre = new ManualResetEvent(false))
             {
-                _parent_wfc = Task.Factory.StartNew(() =>
+                _parentWfc = Task.Factory.StartNew(() =>
                 {
                     nested = Task.Factory.StartNew(() =>
                     {
                         Assert.IsTrue(mre.WaitOne(4000), "parent_wfc needs to be set first");
-                        Assert.IsFalse(_parent_wfc.Wait(10), "#1a");
-                        Assert.AreEqual(TaskStatus.WaitingForChildrenToComplete, _parent_wfc.Status, "#1b");
+                        Assert.IsFalse(_parentWfc.Wait(10), "#1a");
+                        Assert.AreEqual(TaskStatus.WaitingForChildrenToComplete, _parentWfc.Status, "#1b");
                     }, TaskCreationOptions.AttachedToParent).ContinueWith(l =>
                     {
-                        Assert.IsTrue(_parent_wfc.Wait(2000), "#2a");
-                        Assert.AreEqual(TaskStatus.RanToCompletion, _parent_wfc.Status, "#2b");
+                        Assert.IsTrue(_parentWfc.Wait(2000), "#2a");
+                        Assert.AreEqual(TaskStatus.RanToCompletion, _parentWfc.Status, "#2b");
                     }, TaskContinuationOptions.ExecuteSynchronously);
                 });
 
                 mre.Set();
-                Assert.IsTrue(_parent_wfc.Wait(2000), "#3");
+                Assert.IsTrue(_parentWfc.Wait(2000), "#3");
                 Assert.IsTrue(nested.Wait(2000), "#4");
             }
         }

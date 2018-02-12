@@ -33,7 +33,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_Condition
+    public class ExpressionTestCondition
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]

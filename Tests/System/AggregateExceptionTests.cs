@@ -46,8 +46,8 @@ namespace MonoTests.System
         [Test]
         public void SimpleInnerExceptionTestCase()
         {
-            const string message = "Foo";
-            var inner = new ApplicationException(message);
+            const string Message = "Foo";
+            var inner = new ApplicationException(Message);
             var ex = new AggregateException(inner);
 
             Assert.IsNotNull(ex.InnerException);
@@ -56,7 +56,7 @@ namespace MonoTests.System
             Assert.AreEqual(inner, ex.InnerException);
             Assert.AreEqual(1, ex.InnerExceptions.Count);
             Assert.AreEqual(inner, ex.InnerExceptions[0]);
-            Assert.AreEqual(message, ex.InnerException.Message);
+            Assert.AreEqual(Message, ex.InnerException.Message);
             Assert.AreEqual(inner, ex.GetBaseException());
         }
 

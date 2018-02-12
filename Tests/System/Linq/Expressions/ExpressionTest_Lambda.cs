@@ -28,7 +28,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_Lambda
+    public class ExpressionTestLambda
     {
         [Test]
         [ExpectedException(typeof(ArgumentException))]
@@ -38,20 +38,20 @@ namespace MonoTests.System.Linq.Expressions
             Expression.Lambda(typeof(string), Expression.Constant(1), new ParameterExpression[0]);
         }
 
-        private delegate object delegate_object_emtpy();
+        private delegate object DelegateObjectEmtpy();
 
-        private delegate object delegate_object_int(int a);
+        private delegate object DelegateObjectINT(int a);
 
-        private delegate object delegate_object_string(string s);
+        private delegate object DelegateObjectString(string s);
 
-        private delegate object delegate_object_object(object s);
+        private delegate object DelegateObjectObject(object s);
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
         public void InvalidConversion()
         {
             // float to object, invalid
-            Expression.Lambda(typeof(delegate_object_emtpy), Expression.Constant(1.0), new ParameterExpression[0]);
+            Expression.Lambda(typeof(DelegateObjectEmtpy), Expression.Constant(1.0), new ParameterExpression[0]);
         }
 
         [Test]
@@ -59,7 +59,7 @@ namespace MonoTests.System.Linq.Expressions
         public void InvalidConversion2()
         {
             // float to object, invalid
-            Expression.Lambda(typeof(delegate_object_emtpy), Expression.Constant(1), new ParameterExpression[0]);
+            Expression.Lambda(typeof(DelegateObjectEmtpy), Expression.Constant(1), new ParameterExpression[0]);
         }
 
         [Test]
@@ -67,7 +67,7 @@ namespace MonoTests.System.Linq.Expressions
         public void InvalidArgCount()
         {
             // missing a parameter
-            Expression.Lambda(typeof(delegate_object_int), Expression.Constant("foo"), new ParameterExpression[0]);
+            Expression.Lambda(typeof(DelegateObjectINT), Expression.Constant("foo"), new ParameterExpression[0]);
         }
 
         [Test]
@@ -76,7 +76,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             // extra parameter
             var p = Expression.Parameter(typeof(int), "AAA");
-            Expression.Lambda(typeof(delegate_object_emtpy), Expression.Constant("foo"), new ParameterExpression[1] { p });
+            Expression.Lambda(typeof(DelegateObjectEmtpy), Expression.Constant("foo"), new ParameterExpression[1] { p });
         }
 
         [Test]
@@ -85,7 +85,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             // invalid argument type
             var p = Expression.Parameter(typeof(string), "AAA");
-            Expression.Lambda(typeof(delegate_object_int), Expression.Constant("foo"), new ParameterExpression[1] { p });
+            Expression.Lambda(typeof(DelegateObjectINT), Expression.Constant("foo"), new ParameterExpression[1] { p });
         }
 
         [Test]
@@ -95,7 +95,7 @@ namespace MonoTests.System.Linq.Expressions
             // invalid argument type
 
             var p = Expression.Parameter(typeof(string), "AAA");
-            Expression.Lambda(typeof(delegate_object_object), Expression.Constant("foo"), new ParameterExpression[1] { p });
+            Expression.Lambda(typeof(DelegateObjectObject), Expression.Constant("foo"), new ParameterExpression[1] { p });
         }
 
         [Test]
@@ -109,11 +109,11 @@ namespace MonoTests.System.Linq.Expressions
         public void Assignability()
         {
             // allowed: string to object
-            Expression.Lambda(typeof(delegate_object_emtpy), Expression.Constant("string"), new ParameterExpression[0]);
+            Expression.Lambda(typeof(DelegateObjectEmtpy), Expression.Constant("string"), new ParameterExpression[0]);
 
             // allowed delegate has string, delegate has base class (object)
             var p = Expression.Parameter(typeof(object), "ParObject");
-            var l = Expression.Lambda(typeof(delegate_object_string), Expression.Constant(""), new ParameterExpression[1] { p });
+            var l = Expression.Lambda(typeof(DelegateObjectString), Expression.Constant(""), new ParameterExpression[1] { p });
 
             Assert.AreEqual("ParObject => \"\"", l.ToString());
         }
@@ -123,12 +123,12 @@ namespace MonoTests.System.Linq.Expressions
         public void ParameterOutOfScope()
         {
             var a = Expression.Parameter(typeof(int), "a");
-            var second_a = Expression.Parameter(typeof(int), "a");
+            var secondA = Expression.Parameter(typeof(int), "a");
 
             // Here we have the same name for the parameter expression, but
             // we pass a different object to the Lambda expression, so they are
             // different, this should throw
-            var l = Expression.Lambda<Func<int, int>>(a, new[] { second_a });
+            var l = Expression.Lambda<Func<int, int>>(a, new[] { secondA });
             l.Compile();
         }
 

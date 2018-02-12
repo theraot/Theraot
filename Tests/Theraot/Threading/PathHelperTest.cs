@@ -221,11 +221,11 @@ namespace Tests.Theraot.Threading
         public void Combine_Extra()
         {
             var source = new[] { "test", "/test", "\\test" };
-            const string start = @"C:\test";
+            const string Start = @"C:\test";
             // tested this on Linux and Windows using Path.Combine...
             foreach (var combination in source)
             {
-                var result = PathHelper.Combine(start, combination);
+                var result = PathHelper.Combine(Start, combination);
                 if
                 (
                     combination.StartsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal)
@@ -236,7 +236,7 @@ namespace Tests.Theraot.Threading
                 }
                 else
                 {
-                    Assert.AreEqual(string.Join(Path.DirectorySeparatorChar.ToString(), new[] { start, combination }), result);
+                    Assert.AreEqual(string.Join(Path.DirectorySeparatorChar.ToString(), new[] { Start, combination }), result);
                 }
             }
         }

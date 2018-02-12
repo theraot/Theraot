@@ -414,11 +414,11 @@ namespace Tests.Theraot.Threading.Needles
             {
                 using (var transact = new Transact())
                 {
-                    const int movement = 2;
-                    needleA.Value += movement;
+                    const int Movement = 2;
+                    needleA.Value += Movement;
                     ThrowException();
                     // Really, it is evident this code will not run
-                    needleB.Value -= movement;
+                    needleB.Value -= Movement;
                     transact.Commit();
                 }
             }

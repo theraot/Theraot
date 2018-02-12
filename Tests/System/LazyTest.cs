@@ -396,7 +396,7 @@ namespace MonoTests.System
         {
             using (var init = new AutoResetEvent(false))
             {
-                using (var e1_set = new AutoResetEvent(false))
+                using (var e1Set = new AutoResetEvent(false))
                 {
                     var lazy = new Lazy<string>(() =>
                     {
@@ -415,7 +415,7 @@ namespace MonoTests.System
                         catch (Exception ex)
                         {
                             e1 = ex;
-                            e1_set.Set();
+                            e1Set.Set();
                         }
                     });
                     thread.Start();
@@ -442,7 +442,7 @@ namespace MonoTests.System
                         e3 = ex;
                     }
 
-                    Assert.IsTrue(e1_set.WaitOne(3000), "#2");
+                    Assert.IsTrue(e1Set.WaitOne(3000), "#2");
                     Assert.AreSame(e1, e2, "#3");
                     Assert.AreSame(e1, e3, "#4");
                 }

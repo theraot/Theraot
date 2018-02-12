@@ -34,7 +34,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_NewArrayBounds
+    public class ExpressionTestNewArrayBounds
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]

@@ -121,7 +121,7 @@ namespace MonoTests.System.Collections.Concurrent
                 var queue = new ConcurrentQueue<object>();
                 queue.Enqueue(new object());
 
-                const int threads = 10;
+                const int Threads = 10;
                 var threadCounter = 0;
                 var success = true;
 
@@ -129,7 +129,7 @@ namespace MonoTests.System.Collections.Concurrent
                 {
                     var threadId = Interlocked.Increment(ref threadCounter);
                     object temp;
-                    if (threadId < threads)
+                    if (threadId < Threads)
                     {
                         while (queue.TryPeek(out temp))
                         {
@@ -140,7 +140,7 @@ namespace MonoTests.System.Collections.Concurrent
                     {
                         queue.TryDequeue(out temp);
                     }
-                }, threads);
+                }, Threads);
 
                 Assert.IsTrue(success, "TryPeek returned unexpected null value.");
             }, 10);

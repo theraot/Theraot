@@ -151,7 +151,7 @@ namespace MonoTests.System.Threading
             Exception exception = null;
 
             var foo = _threadLocal.Value;
-            var thread_value_created = false;
+            var threadValueCreated = false;
             Assert.AreEqual(43, foo, "#3");
             var t = new Thread((object o) =>
             {
@@ -164,11 +164,11 @@ namespace MonoTests.System.Threading
                     exception = e;
                 }
                 // should be false and not throw
-                thread_value_created = _threadLocal.IsValueCreated;
+                threadValueCreated = _threadLocal.IsValueCreated;
             });
             t.Start();
             t.Join();
-            Assert.AreEqual(false, thread_value_created, "#4");
+            Assert.AreEqual(false, threadValueCreated, "#4");
             Assert.IsNotNull(exception, "#5");
             Assert.That(exception, Is.TypeOf(typeof(ApplicationException)), "#6");
         }

@@ -28,16 +28,16 @@ namespace System.Diagnostics.Contracts.Tests
         internal static IDisposable WithContractFailed(EventHandler<ContractFailedEventArgs> handler)
         {
             Contract.ContractFailed += handler;
-            return new UnregisterContractFailed { _handler = handler };
+            return new UnregisterContractFailed { Handler = handler };
         }
 
         private class UnregisterContractFailed : IDisposable
         {
-            internal EventHandler<ContractFailedEventArgs> _handler;
+            internal EventHandler<ContractFailedEventArgs> Handler;
 
             public void Dispose()
             {
-                Contract.ContractFailed -= _handler;
+                Contract.ContractFailed -= Handler;
             }
         }
     }

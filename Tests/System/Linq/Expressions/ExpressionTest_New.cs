@@ -34,7 +34,7 @@ using System.Reflection;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_New
+    public class ExpressionTestNew
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]

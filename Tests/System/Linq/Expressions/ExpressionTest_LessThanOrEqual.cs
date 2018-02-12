@@ -33,7 +33,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_LessThanOrEqual
+    public class ExpressionTestLessThanOrEqual
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]

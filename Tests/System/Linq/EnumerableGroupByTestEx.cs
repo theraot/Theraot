@@ -14,49 +14,49 @@ namespace MonoTests.System.Linq
         [Test]
         public void GroupByIsDefered()
         {
-            var _src = new IterateAndCount(10);
-            var a = _src.GroupBy(i => i > 5, null);
-            var b = _src.GroupBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
-            var c = _src.GroupBy(i => i > 5, (key, group) => StringHelper.Concat(group.ToArray()), null);
-            var d = _src.GroupBy(i => i > 5, j => j + 1, (key, group) => StringHelper.Concat(group.ToArray()), null);
-            Assert.AreEqual(_src.Total, 0);
+            var src = new IterateAndCount(10);
+            var a = src.GroupBy(i => i > 5, null);
+            var b = src.GroupBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var c = src.GroupBy(i => i > 5, (key, group) => StringHelper.Concat(group.ToArray()), null);
+            var d = src.GroupBy(i => i > 5, j => j + 1, (key, group) => StringHelper.Concat(group.ToArray()), null);
+            Assert.AreEqual(src.Total, 0);
             a.Consume();
             b.Consume();
             c.Consume();
             d.Consume();
-            Assert.AreEqual(_src.Total, 40);
+            Assert.AreEqual(src.Total, 40);
         }
 
         [Test]
         public void GroupByIsDeferedToGetEnumerator()
         {
-            var _src = new IterateAndCount(10);
-            var a = _src.GroupBy(i => i > 5, null);
-            Assert.AreEqual(_src.Total, 0);
+            var src = new IterateAndCount(10);
+            var a = src.GroupBy(i => i > 5, null);
+            Assert.AreEqual(src.Total, 0);
             using (var enumerator = a.GetEnumerator())
             {
                 // This is a shame, GroupBy is not really deffered
-                Assert.AreEqual(_src.Total, 10);
+                Assert.AreEqual(src.Total, 10);
             }
-            Assert.AreEqual(_src.Total, 10);
+            Assert.AreEqual(src.Total, 10);
             using (var enumerator = a.GetEnumerator())
             {
                 // This is a shame, GroupBy is not really deffered
-                Assert.AreEqual(_src.Total, 20);
+                Assert.AreEqual(src.Total, 20);
             }
-            Assert.AreEqual(_src.Total, 20);
+            Assert.AreEqual(src.Total, 20);
         }
 
         [Test]
         public void GroupByOverloadA()
         {
-            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.GroupBy(i => i > 5, null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
+            var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = src.GroupBy(i => i > 5, null);
+            var rArray = r.ToArray();
+            Assert.AreEqual(rArray.Length, 2);
             var index = 0;
             var first = true;
-            foreach (var g in _r)
+            foreach (var g in rArray)
             {
                 Assert.AreEqual(g.Key, !first);
                 var count = 0;
@@ -75,12 +75,12 @@ namespace MonoTests.System.Linq
         [Test]
         public void GroupByOverloadAEx()
         {
-            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.GroupBy(i => i > 5, null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
+            var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = src.GroupBy(i => i > 5, null);
+            var rArray = r.ToArray();
+            Assert.AreEqual(rArray.Length, 2);
             var first = true;
-            foreach (var g in _r)
+            foreach (var g in rArray)
             {
                 Assert.AreEqual(g.Key, !first);
                 Assert.AreEqual(g.Count(), 5);
@@ -91,13 +91,13 @@ namespace MonoTests.System.Linq
         [Test]
         public void GroupByOverloadB()
         {
-            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.GroupBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
+            var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = src.GroupBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var rArray = r.ToArray();
+            Assert.AreEqual(rArray.Length, 2);
             var index = 0;
             var first = true;
-            foreach (var g in _r)
+            foreach (var g in rArray)
             {
                 Assert.AreEqual(g.Key, !first);
                 var count = 0;
@@ -116,12 +116,12 @@ namespace MonoTests.System.Linq
         [Test]
         public void GroupByOverloadBEx()
         {
-            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.GroupBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
+            var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = src.GroupBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var rArray = r.ToArray();
+            Assert.AreEqual(rArray.Length, 2);
             var first = true;
-            foreach (var g in _r)
+            foreach (var g in rArray)
             {
                 Assert.AreEqual(g.Key, !first);
                 Assert.AreEqual(g.Count(), 5);
@@ -132,34 +132,34 @@ namespace MonoTests.System.Linq
         [Test]
         public void GroupByOverloadC()
         {
-            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.GroupBy(i => i > 5, (key, group) => StringHelper.Concat(group.ToArray()), null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
-            Assert.AreEqual(_r[0], "12345");
-            Assert.AreEqual(_r[1], "678910");
+            var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = src.GroupBy(i => i > 5, (key, group) => StringHelper.Concat(group.ToArray()), null);
+            var rArray = r.ToArray();
+            Assert.AreEqual(rArray.Length, 2);
+            Assert.AreEqual(rArray[0], "12345");
+            Assert.AreEqual(rArray[1], "678910");
         }
 
         [Test]
         public void GroupByOverloadD()
         {
-            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.GroupBy(i => i > 5, j => j + 1, (key, group) => StringHelper.Concat(group.ToArray()), null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
-            Assert.AreEqual(_r[0], "23456");
-            Assert.AreEqual(_r[1], "7891011");
+            var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = src.GroupBy(i => i > 5, j => j + 1, (key, group) => StringHelper.Concat(group.ToArray()), null);
+            var rArray = r.ToArray();
+            Assert.AreEqual(rArray.Length, 2);
+            Assert.AreEqual(rArray[0], "23456");
+            Assert.AreEqual(rArray[1], "7891011");
         }
 
         [Test]
         public void GroupByOverloadDEx()
         {
-            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.GroupBy(i => i > 5, FuncHelper.GetIdentityFunc<int>(), (key, group) => StringHelper.Concat(group.ToArray()), null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
-            Assert.AreEqual(_r[0], "12345");
-            Assert.AreEqual(_r[1], "678910");
+            var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = src.GroupBy(i => i > 5, FuncHelper.GetIdentityFunc<int>(), (key, group) => StringHelper.Concat(group.ToArray()), null);
+            var rArray = r.ToArray();
+            Assert.AreEqual(rArray.Length, 2);
+            Assert.AreEqual(rArray[0], "12345");
+            Assert.AreEqual(rArray[1], "678910");
         }
 
         public class IterateAndCount : IEnumerable<int>

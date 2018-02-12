@@ -41,9 +41,9 @@ namespace MonoTests.System.Linq
         {
             public readonly ulong Count;
 
-            public BigEnumerable(ulong Count)
+            public BigEnumerable(ulong count)
             {
-                this.Count = Count;
+                Count = count;
             }
 
             #region IEnumerable<int> Members
@@ -128,7 +128,7 @@ namespace MonoTests.System.Linq
             }
         }
 
-        private static void AssertAreSame<K, V>(K expectedKey, IEnumerable<V> expectedValues, IGrouping<K, V> actual)
+        private static void AssertAreSame<TK, TV>(TK expectedKey, IEnumerable<TV> expectedValues, IGrouping<TK, TV> actual)
         {
             if (expectedValues == null)
             {
@@ -155,7 +155,7 @@ namespace MonoTests.System.Linq
             }
         }
 
-        private static void AssertAreSame<K, V>(IDictionary<K, IEnumerable<V>> expected, IEnumerable<IGrouping<K, V>> actual)
+        private static void AssertAreSame<TK, TV>(IDictionary<TK, IEnumerable<TV>> expected, IEnumerable<IGrouping<TK, TV>> actual)
         {
             if (expected == null)
             {
@@ -180,7 +180,7 @@ namespace MonoTests.System.Linq
             }
         }
 
-        private static void AssertAreSame<K, V>(IDictionary<K, IEnumerable<V>> expected, ILookup<K, V> actual)
+        private static void AssertAreSame<TK, TV>(IDictionary<TK, IEnumerable<TV>> expected, ILookup<TK, TV> actual)
         {
             if (expected == null)
             {
@@ -205,7 +205,7 @@ namespace MonoTests.System.Linq
             }
         }
 
-        private static void AssertAreSame<K, V>(IDictionary<K, V> expected, IDictionary<K, V> actual)
+        private static void AssertAreSame<TK, TV>(IDictionary<TK, TV> expected, IDictionary<TK, TV> actual)
         {
             if (expected == null)
             {
@@ -616,8 +616,8 @@ namespace MonoTests.System.Linq
             if (b)
             {
                 Console.WriteLine(data.Contains(0));
-                const object o = null;
-                o.ToString();
+                const object O = null;
+                O.ToString();
                 Assert.IsFalse(true);
             }
             //Console.WriteLine ("HIT!");

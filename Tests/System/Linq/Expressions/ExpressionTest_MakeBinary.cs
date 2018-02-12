@@ -27,7 +27,7 @@ using System.Reflection;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_MakeBinary
+    public class ExpressionTestMakeBinary
     {
         public static int GoodMethod(string a, double d)
         {
@@ -55,9 +55,9 @@ namespace MonoTests.System.Linq.Expressions
             return 1;
         }
 
-        private static MethodInfo GM(string n)
+        private static MethodInfo Gm(string n)
         {
-            var methods = typeof(ExpressionTest_MakeBinary).GetMethods(
+            var methods = typeof(ExpressionTestMakeBinary).GetMethods(
                 BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
 
             foreach (var m in methods)
@@ -77,7 +77,7 @@ namespace MonoTests.System.Linq.Expressions
             Expression left = Expression.Constant("");
             Expression right = Expression.Constant(1.0);
 
-            var r = Expression.Add(left, right, GM("GoodMethod"));
+            var r = Expression.Add(left, right, Gm("GoodMethod"));
             Assert.AreEqual(r.Type, typeof(int));
         }
 
@@ -88,7 +88,7 @@ namespace MonoTests.System.Linq.Expressions
             Expression left = Expression.Constant("");
             Expression right = Expression.Constant(1.0);
 
-            Expression.Add(left, right, GM("BadMethodSig_1"));
+            Expression.Add(left, right, Gm("BadMethodSig_1"));
         }
 
         [Test]
@@ -98,7 +98,7 @@ namespace MonoTests.System.Linq.Expressions
             Expression left = Expression.Constant("");
             Expression right = Expression.Constant(1.0);
 
-            Expression.Add(left, right, GM("BadMethodSig_2"));
+            Expression.Add(left, right, Gm("BadMethodSig_2"));
         }
 
         [Test]
@@ -108,7 +108,7 @@ namespace MonoTests.System.Linq.Expressions
             Expression left = Expression.Constant("");
             Expression right = Expression.Constant(1.0);
 
-            Expression.Add(left, right, GM("BadMethodSig_3"));
+            Expression.Add(left, right, Gm("BadMethodSig_3"));
         }
 
         private static void PassInt(ExpressionType nt)
@@ -305,12 +305,12 @@ namespace MonoTests.System.Linq.Expressions
             var array = Expression.Constant(new[] { 1, 2 }, typeof(int[]));
             var index = Expression.Constant(1);
 
-            var array_index = Expression.MakeBinary(
+            var arrayIndex = Expression.MakeBinary(
                 ExpressionType.ArrayIndex,
                 array,
                 index);
 
-            Assert.AreEqual(ExpressionType.ArrayIndex, array_index.NodeType);
+            Assert.AreEqual(ExpressionType.ArrayIndex, arrayIndex.NodeType);
         }
     }
 }

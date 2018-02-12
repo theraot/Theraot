@@ -13,25 +13,25 @@ namespace MonoTests.System.Linq
         [Test]
         public void ToLookupIsImmediate()
         {
-            var _src = new IterateAndCount(10);
-            var a = _src.ToLookup(i => i > 5, null);
-            var b = _src.ToLookup(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
-            Assert.AreEqual(_src.Total, 20);
+            var src = new IterateAndCount(10);
+            var a = src.ToLookup(i => i > 5, null);
+            var b = src.ToLookup(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            Assert.AreEqual(src.Total, 20);
             a.Consume();
             b.Consume();
-            Assert.AreEqual(_src.Total, 20);
+            Assert.AreEqual(src.Total, 20);
         }
 
         [Test]
         public void ToLookupOverloadA()
         {
-            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.ToLookup(i => i > 5, null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
+            var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = src.ToLookup(i => i > 5, null);
+            var rArray = r.ToArray();
+            Assert.AreEqual(rArray.Length, 2);
             var index = 0;
             var first = true;
-            foreach (var g in _r)
+            foreach (var g in rArray)
             {
                 Assert.AreEqual(g.Key, !first);
                 var count = 0;
@@ -50,12 +50,12 @@ namespace MonoTests.System.Linq
         [Test]
         public void ToLookupOverloadAEx()
         {
-            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.ToLookup(i => i > 5, null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
+            var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = src.ToLookup(i => i > 5, null);
+            var rArray = r.ToArray();
+            Assert.AreEqual(rArray.Length, 2);
             var first = true;
-            foreach (var g in _r)
+            foreach (var g in rArray)
             {
                 Assert.AreEqual(g.Key, !first);
                 Assert.AreEqual(g.Count(), 5);
@@ -66,13 +66,13 @@ namespace MonoTests.System.Linq
         [Test]
         public void ToLookupOverloadB()
         {
-            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.ToLookup(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
+            var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = src.ToLookup(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var rArray = r.ToArray();
+            Assert.AreEqual(rArray.Length, 2);
             var index = 0;
             var first = true;
-            foreach (var g in _r)
+            foreach (var g in rArray)
             {
                 Assert.AreEqual(g.Key, !first);
                 var count = 0;
@@ -91,12 +91,12 @@ namespace MonoTests.System.Linq
         [Test]
         public void ToLookupOverloadBEx()
         {
-            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.ToLookup(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
+            var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = src.ToLookup(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var rArray = r.ToArray();
+            Assert.AreEqual(rArray.Length, 2);
             var first = true;
-            foreach (var g in _r)
+            foreach (var g in rArray)
             {
                 Assert.AreEqual(g.Key, !first);
                 Assert.AreEqual(g.Count(), 5);

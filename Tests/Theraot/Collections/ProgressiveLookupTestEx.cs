@@ -15,25 +15,25 @@ namespace Tests.Theraot.Collections
         [Test]
         public void ProgressiveLookupIsCached()
         {
-            var _src = new IterateAndCount(10);
-            var a = ProgressiveLookup<bool, int>.Create(_src, i => i > 5, null);
-            var b = ProgressiveLookup<bool, string>.Create(_src, i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
-            Assert.AreEqual(_src.Total, 0);
+            var src = new IterateAndCount(10);
+            var a = ProgressiveLookup<bool, int>.Create(src, i => i > 5, null);
+            var b = ProgressiveLookup<bool, string>.Create(src, i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            Assert.AreEqual(src.Total, 0);
             a.Consume();
             b.Consume();
-            Assert.AreEqual(_src.Total, 20);
+            Assert.AreEqual(src.Total, 20);
         }
 
         [Test]
         public void ToLookupOverloadA()
         {
-            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = ProgressiveLookup<bool, int>.Create(_src, i => i > 5, null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
+            var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = ProgressiveLookup<bool, int>.Create(src, i => i > 5, null);
+            var rArray = r.ToArray();
+            Assert.AreEqual(rArray.Length, 2);
             var index = 0;
             var first = true;
-            foreach (var g in _r)
+            foreach (var g in rArray)
             {
                 Assert.AreEqual(g.Key, !first);
                 var count = 0;
@@ -52,12 +52,12 @@ namespace Tests.Theraot.Collections
         [Test]
         public void ToLookupOverloadAEx()
         {
-            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = ProgressiveLookup<bool, int>.Create(_src, i => i > 5, null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
+            var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = ProgressiveLookup<bool, int>.Create(src, i => i > 5, null);
+            var rArray = r.ToArray();
+            Assert.AreEqual(rArray.Length, 2);
             var first = true;
-            foreach (var g in _r)
+            foreach (var g in rArray)
             {
                 Assert.AreEqual(g.Key, !first);
                 Assert.AreEqual(g.Count(), 5);
@@ -68,13 +68,13 @@ namespace Tests.Theraot.Collections
         [Test]
         public void ToLookupOverloadB()
         {
-            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = ProgressiveLookup<bool, string>.Create(_src, i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
+            var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = ProgressiveLookup<bool, string>.Create(src, i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var rArray = r.ToArray();
+            Assert.AreEqual(rArray.Length, 2);
             var index = 0;
             var first = true;
-            foreach (var g in _r)
+            foreach (var g in rArray)
             {
                 Assert.AreEqual(g.Key, !first);
                 var count = 0;
@@ -93,12 +93,12 @@ namespace Tests.Theraot.Collections
         [Test]
         public void ToLookupOverloadBEx()
         {
-            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = ProgressiveLookup<bool, string>.Create(_src, i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
+            var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = ProgressiveLookup<bool, string>.Create(src, i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var rArray = r.ToArray();
+            Assert.AreEqual(rArray.Length, 2);
             var first = true;
-            foreach (var g in _r)
+            foreach (var g in rArray)
             {
                 Assert.AreEqual(g.Key, !first);
                 Assert.AreEqual(g.Count(), 5);

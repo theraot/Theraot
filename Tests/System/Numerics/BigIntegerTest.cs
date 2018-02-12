@@ -214,20 +214,20 @@ namespace MonoTests.System.Numerics
         [Test]
         public void Log()
         {
-            const double delta = 0.000000000000001d;
+            const double Delta = 0.000000000000001d;
 
             Assert.AreEqual(double.NegativeInfinity, BigInteger.Log(0), "#1");
             Assert.AreEqual(0d, BigInteger.Log(1), "#2");
             Assert.AreEqual(double.NaN, BigInteger.Log(-1), "#3");
-            Assert.AreEqual(2.3025850929940459d, BigInteger.Log(10), delta, "#4");
-            Assert.AreEqual(6.9077552789821368d, BigInteger.Log(1000), delta, "#5");
+            Assert.AreEqual(2.3025850929940459d, BigInteger.Log(10), Delta, "#4");
+            Assert.AreEqual(6.9077552789821368d, BigInteger.Log(1000), Delta, "#5");
             Assert.AreEqual(double.NaN, BigInteger.Log(-234), "#6");
         }
 
         [Test]
         public void LogN()
         {
-            const double delta = 0.000000000000001d;
+            const double Delta = 0.000000000000001d;
 
             Assert.AreEqual(double.NaN, BigInteger.Log(10, 1), "#1");
             Assert.AreEqual(double.NaN, BigInteger.Log(10, 0), "#2");
@@ -242,7 +242,7 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual(0, BigInteger.Log(1, double.PositiveInfinity), "#9");
             Assert.AreEqual(double.NaN, BigInteger.Log(1, double.NaN), "#10");
 
-            Assert.AreEqual(-2.5129415947320606d, BigInteger.Log(10, 0.4), delta, "#11");
+            Assert.AreEqual(-2.5129415947320606d, BigInteger.Log(10, 0.4), Delta, "#11");
         }
 
         [Test]
@@ -898,7 +898,7 @@ namespace MonoTests.System.Numerics
         }
 
         [Test]
-        public void IComparable()
+        public void Comparable()
         {
             var a = new BigInteger(99);
             Assert.AreEqual(-1, a.CompareTo(100), "#1");
@@ -1219,20 +1219,20 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestUserCurrency()
         {
-            const int val1 = -1234567;
-            const int val2 = 1234567;
+            const int Val1 = -1234567;
+            const int Val2 = 1234567;
 
             var s = "";
             BigInteger v;
-            s = val1.ToString("c", _nfiUser);
+            s = Val1.ToString("c", _nfiUser);
             Assert.AreEqual("1234/5/67:000 XYZ-", s, "Currency value type 1 is not what we want to try to parse");
             v = BigInteger.Parse("1234/5/67:000   XYZ-", NumberStyles.Currency, _nfiUser);
-            Assert.AreEqual(val1, (int)v);
+            Assert.AreEqual(Val1, (int)v);
 
-            s = val2.ToString("c", _nfiUser);
+            s = Val2.ToString("c", _nfiUser);
             Assert.AreEqual("1234/5/67:000 XYZ", s, "Currency value type 2 is not what we want to try to parse");
             v = BigInteger.Parse(s, NumberStyles.Currency, _nfiUser);
-            Assert.AreEqual(val2, (int)v);
+            Assert.AreEqual(Val2, (int)v);
         }
 
         [Test]

@@ -606,8 +606,8 @@ namespace System.Linq.Expressions
         protected override ElementInit VisitElementInit(ElementInit node)
         {
             Out(node.AddMethod.ToString());
-            const string sep = ", ";
-            VisitExpressions('(', node.Arguments, ')', sep);
+            const string Sep = ", ";
+            VisitExpressions('(', node.Arguments, ')', Sep);
             return node;
         }
 
@@ -615,11 +615,11 @@ namespace System.Linq.Expressions
         {
             Out("Invoke(");
             Visit(node.Expression);
-            const string sep = ", ";
+            const string Sep = ", ";
             var n = node.Arguments.Count;
             for (var i = 0; i < n; i++)
             {
-                Out(sep);
+                Out(Sep);
                 Visit(node.Arguments[i]);
             }
             Out(")");

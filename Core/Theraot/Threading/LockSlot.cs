@@ -8,7 +8,7 @@ namespace Theraot.Threading
 {
     public sealed class LockSlot<T> : IComparable<LockSlot<T>>, INeedle<T>, IEquatable<LockSlot<T>>
     {
-        internal readonly int _id;
+        internal readonly int Id;
         private readonly LockContext<T> _context;
         private int _free;
         private VersionProvider.VersionToken _versionToken;
@@ -21,7 +21,7 @@ namespace Theraot.Threading
             }
             _context = context;
             _versionToken = versionToken;
-            _id = id;
+            Id = id;
         }
 
         bool IReadOnlyNeedle<T>.IsAlive

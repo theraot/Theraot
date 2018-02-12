@@ -44,7 +44,7 @@ namespace MonoTests.System.Threading.Tasks
 
         private int _completionPortThreads;
 
-        private Task _parent_wfc;
+        private Task _parentWfc;
 
         private Task[] _tasks;
 
@@ -611,32 +611,32 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void LongRunning()
         {
-            bool? is_tp = null;
-            bool? is_bg = null;
+            bool? isTp = null;
+            bool? isBg = null;
             using (var t = new Task(() =>
              {
-                 is_tp = Thread.CurrentThread.IsThreadPoolThread;
-                 is_bg = Thread.CurrentThread.IsBackground;
+                 isTp = Thread.CurrentThread.IsThreadPoolThread;
+                 isBg = Thread.CurrentThread.IsBackground;
              }))
             {
                 t.Start();
                 Assert.IsTrue(t.Wait(5000), "#0");
-                Assert.IsTrue((bool)is_tp, "#1");
-                Assert.IsTrue((bool)is_bg, "#2");
+                Assert.IsTrue((bool)isTp, "#1");
+                Assert.IsTrue((bool)isBg, "#2");
 
-                is_tp = null;
-                is_bg = null;
+                isTp = null;
+                isBg = null;
             }
             using (var t = new Task(() =>
                 {
-                    is_tp = Thread.CurrentThread.IsThreadPoolThread;
-                    is_bg = Thread.CurrentThread.IsBackground;
+                    isTp = Thread.CurrentThread.IsThreadPoolThread;
+                    isBg = Thread.CurrentThread.IsBackground;
                 }, TaskCreationOptions.LongRunning))
             {
                 t.Start();
                 Assert.IsTrue(t.Wait(5000), "#10");
-                Assert.IsFalse((bool)is_tp, "#11");
-                Assert.IsTrue((bool)is_bg, "#12");
+                Assert.IsFalse((bool)isTp, "#11");
+                Assert.IsTrue((bool)isBg, "#12");
             }
         }
 
@@ -1418,22 +1418,22 @@ namespace MonoTests.System.Threading.Tasks
             Task nested = null;
             using (var mre = new ManualResetEvent(false))
             {
-                _parent_wfc = Task.Factory.StartNew(() =>
+                _parentWfc = Task.Factory.StartNew(() =>
                 {
                     nested = Task.Factory.StartNew(() =>
                     {
                         Assert.IsTrue(mre.WaitOne(4000), "parent_wfc needs to be set first");
-                        Assert.IsFalse(_parent_wfc.Wait(10), "#1a");
-                        Assert.AreEqual(TaskStatus.WaitingForChildrenToComplete, _parent_wfc.Status, "#1b");
+                        Assert.IsFalse(_parentWfc.Wait(10), "#1a");
+                        Assert.AreEqual(TaskStatus.WaitingForChildrenToComplete, _parentWfc.Status, "#1b");
                     }, TaskCreationOptions.AttachedToParent).ContinueWith(l =>
                     {
-                        Assert.IsTrue(_parent_wfc.Wait(2000), "#2a");
-                        Assert.AreEqual(TaskStatus.RanToCompletion, _parent_wfc.Status, "#2b");
+                        Assert.IsTrue(_parentWfc.Wait(2000), "#2a");
+                        Assert.AreEqual(TaskStatus.RanToCompletion, _parentWfc.Status, "#2b");
                     }, TaskContinuationOptions.ExecuteSynchronously);
                 });
 
                 mre.Set();
-                Assert.IsTrue(_parent_wfc.Wait(2000), "#3");
+                Assert.IsTrue(_parentWfc.Wait(2000), "#3");
                 Assert.IsTrue(nested.Wait(2000), "#4");
             }
         }

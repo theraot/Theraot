@@ -161,16 +161,16 @@ namespace MonoTests.System
 
         private class DefectiveCtorClass
         {
-            private static int count;
+            private static int _count;
 
             public DefectiveCtorClass()
             {
-                count++;
-                if (count % 4 != 3)
+                _count++;
+                if (_count % 4 != 3)
                 {
                     throw new InvalidOperationException();
                 }
-                Prop = count;
+                Prop = _count;
             }
 
             public int Prop { get; private set; }

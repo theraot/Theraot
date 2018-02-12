@@ -28,7 +28,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_Equal
+    public class ExpressionTestEqual
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -126,10 +126,10 @@ namespace MonoTests.System.Linq.Expressions
         public void Nullable_Mixed()
         {
             int? a = 1;
-            const int b = 2;
+            const int B = 2;
 
             Expression.Equal(Expression.Constant(a, typeof(int?)),
-                      Expression.Constant(b, typeof(int)));
+                      Expression.Constant(B, typeof(int)));
         }
 
         [Test]

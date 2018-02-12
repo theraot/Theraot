@@ -145,7 +145,7 @@ namespace MonoTests.System.Collections.Concurrent
         }
 
         [Test]
-        public void IDictionaryNullOnNonExistingKey()
+        public void DictionaryNullOnNonExistingKey()
         {
             IDictionary dict = new ConcurrentDictionary<long, string>();
             var val = dict[1234L];

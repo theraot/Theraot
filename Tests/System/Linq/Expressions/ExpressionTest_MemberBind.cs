@@ -34,7 +34,7 @@ using System.Reflection;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_MemberBind
+    public class ExpressionTestMemberBind
     {
         public class Foo
         {

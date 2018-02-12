@@ -27,7 +27,7 @@ using System.Reflection;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_Property
+    public class ExpressionTestProperty
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -156,18 +156,18 @@ namespace MonoTests.System.Linq.Expressions
 
         public struct Bar
         {
-            private string slot;
+            private string _slot;
 
             public string Prop
             {
-                get { return slot; }
+                get { return _slot; }
 
-                set { slot = value; }
+                set { _slot = value; }
             }
 
             public Bar(string slot)
             {
-                this.slot = slot;
+                _slot = slot;
             }
         }
 

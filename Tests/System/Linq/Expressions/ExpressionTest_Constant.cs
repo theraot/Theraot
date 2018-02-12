@@ -26,7 +26,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_Constant
+    public class ExpressionTestConstant
     {
         [Test]
         [ExpectedException(typeof(ArgumentException))]
@@ -219,7 +219,7 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void EmitDBNullConstant()
+        public void EmitDbNullConstant()
         {
             var lambda = Expression.Lambda<Func<DBNull>>(Expression.Constant(DBNull.Value)).Compile();
 

@@ -370,7 +370,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             Assert.IsTrue(res is Link, "ka1");
 
             var link = res as Link;
-            Assert.IsTrue(cwt.TryGetValue(link._obj, out res), "ka2");
+            Assert.IsTrue(cwt.TryGetValue(link.Obj, out res), "ka2");
             Assert.AreEqual("str0", res, "ka3");
         }
 
@@ -599,11 +599,11 @@ namespace MonoTests.System.Runtime.CompilerServices
 
         public class Link
         {
-            public object _obj;
+            public object Obj;
 
             public Link(object obj)
             {
-                _obj = obj;
+                Obj = obj;
             }
         }
 

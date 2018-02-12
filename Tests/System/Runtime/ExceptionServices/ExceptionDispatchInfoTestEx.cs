@@ -15,7 +15,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
         {
             Exception original = null;
             ExceptionDispatchInfo info = null;
-            string[] original_stack = null;
+            string[] originalStack = null;
             Task.Factory.StartNew(() =>
             {
                 try
@@ -25,7 +25,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
                 catch (Exception ex)
                 {
                     original = ex;
-                    original_stack = original.StackTrace.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                    originalStack = original.StackTrace.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
                     info = ExceptionDispatchInfo.Capture(ex);
                 }
             }).Wait();
@@ -39,14 +39,14 @@ namespace MonoTests.System.Runtime.ExceptionServices
                 Assert.AreEqual(original, ex);
                 var stack = ex.StackTrace.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
-                for (var index = 0; index < original_stack.Length; index++)
+                for (var index = 0; index < originalStack.Length; index++)
                 {
-                    Assert.AreEqual(stack[index], original_stack[index]);
+                    Assert.AreEqual(stack[index], originalStack[index]);
                 }
 
-                Assert.IsTrue(stack.Length > original_stack.Length);
-                Assert.IsTrue(stack[original_stack.Length].Contains("---"));
-                Assert.IsTrue(stack[original_stack.Length + 1].Contains("System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()"));
+                Assert.IsTrue(stack.Length > originalStack.Length);
+                Assert.IsTrue(stack[originalStack.Length].Contains("---"));
+                Assert.IsTrue(stack[originalStack.Length + 1].Contains("System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()"));
             }
         }
     }

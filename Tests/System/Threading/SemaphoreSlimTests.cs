@@ -611,13 +611,13 @@ namespace System.Threading.Tests
             {
                 var tasks = new Task[totalWaiters];
 
-                const int ITERS = 10;
+                const int Iters = 10;
                 var randSeed = unchecked((int)DateTime.Now.Ticks);
                 for (var i = 0; i < syncWaiters; i++)
                 {
                     tasks[i] = TaskEx.Run(delegate
                     {
-                        for (var iter = 0; iter < ITERS; iter++)
+                        for (var iter = 0; iter < Iters; iter++)
                         {
                             semaphore.Wait();
                             semaphore.Release();
@@ -628,7 +628,7 @@ namespace System.Threading.Tests
                 {
                     tasks[i] = Task.Run(async delegate
                     {
-                        for (var iter = 0; iter < ITERS; iter++)
+                        for (var iter = 0; iter < Iters; iter++)
                         {
                             await semaphore.WaitAsync();
                             semaphore.Release();
