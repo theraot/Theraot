@@ -78,16 +78,25 @@ namespace System.Threading
             var spinWait = new SpinWait();
             while (true)
             {
+                // The value we expect to see for _count in CompareExchange
+                // (The previous count of the SemaphoreSlim)
                 var expected = Thread.VolatileRead(ref _count);
+                // The value we want to set _count to in CompareExchange
                 var result = expected + releaseCount;
-                if (result < 0)
+                // If there is a maxCount set at constructor
+                // And we are exceding it, then fail
+                if (_maxCount.HasValue && result > _maxCount)
                 {
                     throw new SemaphoreFullException();
                 }
+                // Attempt to set the new value
                 var found = Interlocked.CompareExchange(ref _count, result, expected);
+                // If we found what we expected, it means we succeeded
                 if (found == expected)
                 {
+                    // Awake the corresponding threads
                     Awake(releaseCount);
+                    // Return the previous count of the SemaphoreSlim.
                     return expected;
                 }
                 spinWait.SpinOnce();
