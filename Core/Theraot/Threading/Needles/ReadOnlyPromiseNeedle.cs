@@ -59,7 +59,7 @@ namespace Theraot.Threading.Needles
             {
                 return EqualsExtracted(this, needle);
             }
-            return _promised.IsCompleted && _promised.Value.Equals(obj);
+            return _promised.IsCompleted && _promised.Value.Equals(null);
         }
 
         public bool Equals(ReadOnlyPromiseNeedle<T> other)

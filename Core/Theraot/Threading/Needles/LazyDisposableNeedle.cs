@@ -194,14 +194,12 @@ namespace Theraot.Threading.Needles
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
-        private bool UnDispose()
+        private void UnDispose()
         {
             if (System.Threading.Volatile.Read(ref _status) == -1)
             {
                 System.Threading.Volatile.Write(ref _status, 0);
-                return true;
             }
-            return false;
         }
     }
 }

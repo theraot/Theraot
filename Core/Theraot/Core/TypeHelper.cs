@@ -589,6 +589,7 @@ namespace Theraot.Core
                 _result = GetBinaryPortableResult(typeof(T));
             }
 
+            // Used via reflection
             public static bool Result
             {
                 get { return _result; }
@@ -604,6 +605,7 @@ namespace Theraot.Core
                 _result = GetBlittableResult(typeof(T));
             }
 
+            // Used via reflection
             public static bool Result
             {
                 get { return _result; }
@@ -619,6 +621,7 @@ namespace Theraot.Core
                 _result = GetValueTypeRecursiveResult(typeof(T));
             }
 
+            // Used via reflection
             public static bool Result
             {
                 get { return _result; }

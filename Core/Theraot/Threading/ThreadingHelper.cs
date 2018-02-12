@@ -9,7 +9,6 @@ namespace Theraot.Threading
     public static partial class ThreadingHelper
     {
         internal const int SleepCountHint = 10;
-        private const int _maxTime = 200;
 
         public static void MemoryBarrier()
         {

@@ -44,9 +44,6 @@ namespace System.Threading.Tasks
         {
         }
 
-        // An AppDomain-wide default manager.
-        private static readonly TaskScheduler _defaultTaskScheduler = new ThreadPoolTaskScheduler();
-
         /// <summary>
         /// Gets the <see cref="System.Threading.Tasks.TaskScheduler">TaskScheduler</see>
         /// associated with the currently executing task.
@@ -65,7 +62,6 @@ namespace System.Threading.Tasks
             }
         }
 
-        private static readonly object _unobservedTaskExceptionLockObject = new object();
         private static readonly SafeCollection<EventHandler<UnobservedTaskExceptionEventArgs>> _unobservedTaskException = new SafeCollection<EventHandler<UnobservedTaskExceptionEventArgs>>();
 
         /// <summary>

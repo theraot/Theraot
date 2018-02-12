@@ -307,14 +307,14 @@ namespace Theraot.Core
         {
             var nonNullableSource = GetNonNullableType(source);
             var nonNullableTarget = GetNonNullableType(target);
-            MethodInfo[] sourceStaticMethods = null;
-            MethodInfo[] targetStaticMethods = null;
+            MethodInfo[] sourceStaticMethods;
+            MethodInfo[] targetStaticMethods;
             if (nonNullableSource == source)
             {
                 if (nonNullableTarget == target)
                 {
-                    return FindConversionOperator(sourceStaticMethods = nonNullableSource.GetStaticMethods(), source, target, implicitOnly)
-                        ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethods(), source, target, implicitOnly);
+                    return FindConversionOperator(nonNullableSource.GetStaticMethods(), source, target, implicitOnly)
+                        ?? FindConversionOperator(nonNullableTarget.GetStaticMethods(), source, target, implicitOnly);
                 }
                 return FindConversionOperator(sourceStaticMethods = nonNullableSource.GetStaticMethods(), source, target, implicitOnly)
                     ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethods(), source, target, implicitOnly)

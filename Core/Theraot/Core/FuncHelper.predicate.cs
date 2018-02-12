@@ -13,7 +13,6 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("comparer");
             }
-            var temp = comparer;
             return y => comparer.Equals(comparand, y);
         }
 
@@ -23,7 +22,6 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("comparer");
             }
-            var temp = comparer;
             return y => !comparer.Equals(comparand, y);
         }
 
