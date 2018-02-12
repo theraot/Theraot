@@ -528,7 +528,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                frame.Push(ScriptingRuntimeHelpers.BooleanToObject(frame.Pop() != frame.Pop()));
+                frame.Push(ScriptingRuntimeHelpers.BooleanToObject(frame.Pop() != frame.Pop())); // Note: Pop returns different value on each call
                 return +1;
             }
         }
