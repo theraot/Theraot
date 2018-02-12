@@ -152,7 +152,6 @@ namespace System.Linq.Expressions
 
             List<ElementInit> initList = null;
             ElementInit[] initArray = null;
-            MethodInfo addMethod = null;
 
             initializers = initializers.NullOrEmptyChecked
             (
@@ -168,7 +167,7 @@ namespace System.Linq.Expressions
             {
                 enumerator.MoveNext();
                 var initializer = enumerator.Current;
-                addMethod = FindMethod(newExpression.Type, "Add", null, new[] { initializer }, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                var addMethod = FindMethod(newExpression.Type, "Add", null, new[] { initializer }, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 if (addMethod == null)
                 {
                     return ListInit(newExpression, initializers);
