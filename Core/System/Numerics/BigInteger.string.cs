@@ -441,6 +441,7 @@ namespace System.Numerics
                 {
                     number.Negative |= reader.Read(negativeSign);
                     positive |= reader.Read(positiveSign);
+                    GC.KeepAlive(positive);
                 }
                 if (waitingParentheses && !reader.Read(')'))
                 {

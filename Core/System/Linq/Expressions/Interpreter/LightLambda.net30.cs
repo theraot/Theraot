@@ -25,12 +25,8 @@ namespace System.Linq.Expressions.Interpreter
         private static readonly CacheDict<Type, Func<LightLambda, Delegate>> _runCache = new CacheDict<Type, Func<LightLambda, Delegate>>(100);
 #endif
 
-        // Adaptive compilation support
-        private readonly LightDelegateCreator _delegateCreator;
-
         internal LightLambda(LightDelegateCreator delegateCreator, IStrongBox[] closure)
         {
-            _delegateCreator = delegateCreator;
             _closure = closure;
             _interpreter = delegateCreator.Interpreter;
         }

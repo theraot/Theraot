@@ -12,13 +12,11 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("converter");
             }
-            var _converter = converter;
             if (source == null)
             {
                 throw new ArgumentNullException("source");
             }
-            var _source = source;
-            return () => _converter.Invoke(_source.Invoke());
+            return () => converter.Invoke(source.Invoke());
         }
 
         public static Func<TReturn, TReturn> GetIdentityFunc<TReturn>()

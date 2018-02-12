@@ -12,13 +12,11 @@ namespace System.Runtime.ExceptionServices
         private static FieldInfo _remoteStackTraceString;
 
         private readonly Exception _exception;
-        private readonly object _stackTraceOriginal;
         private readonly object _stackTrace;
 
         private ExceptionDispatchInfo(Exception exception)
         {
             _exception = exception;
-            _stackTraceOriginal = _exception.StackTrace;
             _stackTrace = _exception.StackTrace;
             if (_stackTrace != null)
             {

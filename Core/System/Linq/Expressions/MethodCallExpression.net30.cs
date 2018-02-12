@@ -128,7 +128,7 @@ namespace System.Linq.Expressions
 
     #region Specialized Subclasses
 
-    internal class MethodCallExpressionN : MethodCallExpression, IArgumentProvider
+    internal class MethodCallExpressionN : MethodCallExpression
     {
         private IList<Expression> _arguments;
 
@@ -162,7 +162,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal class InstanceMethodCallExpressionN : MethodCallExpression, IArgumentProvider
+    internal class InstanceMethodCallExpressionN : MethodCallExpression
     {
         private IList<Expression> _arguments;
         private readonly Expression _instance;
@@ -203,7 +203,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal class MethodCallExpression1 : MethodCallExpression, IArgumentProvider
+    internal class MethodCallExpression1 : MethodCallExpression
     {
         private object _arg0;       // storage for the 1st argument or a readonly collection.  See IArgumentProvider
 
@@ -249,7 +249,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal class MethodCallExpression2 : MethodCallExpression, IArgumentProvider
+    internal class MethodCallExpression2 : MethodCallExpression
     {
         private object _arg0;               // storage for the 1st argument or a readonly collection.  See IArgumentProvider
         private readonly Expression _arg1;  // storage for the 2nd arg
@@ -299,7 +299,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal class MethodCallExpression3 : MethodCallExpression, IArgumentProvider
+    internal class MethodCallExpression3 : MethodCallExpression
     {
         private object _arg0;           // storage for the 1st argument or a readonly collection.  See IArgumentProvider
         private readonly Expression _arg1, _arg2; // storage for the 2nd - 3rd args.
@@ -353,7 +353,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal class MethodCallExpression4 : MethodCallExpression, IArgumentProvider
+    internal class MethodCallExpression4 : MethodCallExpression
     {
         private object _arg0;               // storage for the 1st argument or a readonly collection.  See IArgumentProvider
         private readonly Expression _arg1, _arg2, _arg3;  // storage for the 2nd - 4th args.
@@ -411,7 +411,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal class MethodCallExpression5 : MethodCallExpression, IArgumentProvider
+    internal class MethodCallExpression5 : MethodCallExpression
     {
         private object _arg0;           // storage for the 1st argument or a readonly collection.  See IArgumentProvider
         private readonly Expression _arg1, _arg2, _arg3, _arg4;   // storage for the 2nd - 5th args.
@@ -474,7 +474,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal class InstanceMethodCallExpression2 : MethodCallExpression, IArgumentProvider
+    internal class InstanceMethodCallExpression2 : MethodCallExpression
     {
         private readonly Expression _instance;
         private object _arg0;                // storage for the 1st argument or a readonly collection.  See IArgumentProvider
@@ -533,7 +533,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal class InstanceMethodCallExpression3 : MethodCallExpression, IArgumentProvider
+    internal class InstanceMethodCallExpression3 : MethodCallExpression
     {
         private readonly Expression _instance;
         private object _arg0;                       // storage for the 1st argument or a readonly collection.  See IArgumentProvider
@@ -859,8 +859,8 @@ namespace System.Linq.Expressions
                 arguments = ArrayReservoir<Expression>.EmptyArray;
             }
 
-            const System.Reflection.BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
-            return InternalCall(instance, FindMethod(instance.Type, methodName, typeArguments, arguments, flags), arguments);
+            const BindingFlags Flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
+            return InternalCall(instance, FindMethod(instance.Type, methodName, typeArguments, arguments, Flags), arguments);
         }
 
         ///<summary>Creates a <see cref="T:System.Linq.Expressions.MethodCallExpression" /> that represents a call to a static (Shared in Visual Basic) method by calling the appropriate factory method.</summary>
@@ -885,8 +885,8 @@ namespace System.Linq.Expressions
                 arguments = ArrayReservoir<Expression>.EmptyArray;
             }
 
-            const System.Reflection.BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
-            return InternalCall(null, FindMethod(type, methodName, typeArguments, arguments, flags), arguments);
+            const BindingFlags Flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
+            return InternalCall(null, FindMethod(type, methodName, typeArguments, arguments, Flags), arguments);
         }
 
         ///<summary>Creates a <see cref="T:System.Linq.Expressions.MethodCallExpression" /> that represents a method call.</summary>
@@ -1018,7 +1018,7 @@ namespace System.Linq.Expressions
 
         private static MethodInfo FindMethod(Type type, string methodName, Type[] typeArgs, Expression[] args, BindingFlags flags)
         {
-            MemberInfo[] members = type.GetMethodsIgnoreCase(flags, methodName);
+            var members = type.GetMethodsIgnoreCase(flags, methodName);
             if (members == null || members.Length == 0)
             {
                 throw Error.MethodDoesNotExistOnType(methodName, type);
@@ -1026,8 +1026,7 @@ namespace System.Linq.Expressions
 
             MethodInfo method;
 
-            var methodInfos = members.Map(t => (MethodInfo)t);
-            var count = FindBestMethod(methodInfos, typeArgs, args, out method);
+            var count = FindBestMethod(members, typeArgs, args, out method);
 
             if (count == 0)
             {

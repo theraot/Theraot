@@ -16,7 +16,6 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Runtime.ConstrainedExecution;
 using System.Security;
-using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 
 namespace System.Runtime.CompilerServices
@@ -40,7 +39,6 @@ namespace System.Runtime.CompilerServices
         }
 
         internal const int Cor_E_Codecontractfailed = unchecked((int)0x80131542);
-        private static readonly object _lockObject = new object();
         private static readonly SafeCollection<EventHandler<ContractFailedEventArgs>> _contractFailedEvent = new SafeCollection<EventHandler<ContractFailedEventArgs>>();
 
         /// <summary>
@@ -118,7 +116,7 @@ namespace System.Runtime.CompilerServices
                     eventArgs = new ContractFailedEventArgs(failureKind, displayMessage, conditionText, innerException);
                     foreach (var @delegate in contractFailedEventLocal)
                     {
-                        var handler = (EventHandler<ContractFailedEventArgs>)@delegate;
+                        var handler = @delegate;
                         try
                         {
                             handler(null, eventArgs);

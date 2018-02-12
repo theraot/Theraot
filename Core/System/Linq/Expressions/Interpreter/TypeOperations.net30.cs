@@ -2550,13 +2550,6 @@ namespace System.Linq.Expressions.Interpreter
 
     internal class LogInstruction : Instruction
     {
-        private readonly string _message; // TODO never used
-
-        public LogInstruction(string message)
-        {
-            _message = message;
-        }
-
         public override string InstructionName
         {
             get { return "Log"; }
@@ -2564,7 +2557,6 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            //Console.WriteLine(_message);
             return +1;
         }
     }

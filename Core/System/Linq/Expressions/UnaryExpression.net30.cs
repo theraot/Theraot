@@ -251,7 +251,7 @@ namespace System.Linq.Expressions
             var count = index.Arguments.Count;
             var block = new Expression[count + (prefix ? 2 : 4)];
             var temps = new ParameterExpression[count + (prefix ? 1 : 2)];
-            var args = new ParameterExpression[count];
+            var args = new Expression[count];
 
             var i = 0;
             temps[i] = Parameter(index.Object.Type, null);

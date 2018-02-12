@@ -983,17 +983,13 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(typeFrom.IsNullableType());
             Debug.Assert(typeTo.IsNullableType());
-            var labIfNull = default(Label);
-            var labEnd = default(Label);
-            LocalBuilder locFrom = null;
-            LocalBuilder locTo = null;
-            locFrom = il.DeclareLocal(typeFrom);
+            var locFrom = il.DeclareLocal(typeFrom);
             il.Emit(OpCodes.Stloc, locFrom);
-            locTo = il.DeclareLocal(typeTo);
+            var locTo = il.DeclareLocal(typeTo);
             // test for null
             il.Emit(OpCodes.Ldloca, locFrom);
             il.EmitHasValue(typeFrom);
-            labIfNull = il.DefineLabel();
+            var labIfNull = il.DefineLabel();
             il.Emit(OpCodes.Brfalse_S, labIfNull);
             il.Emit(OpCodes.Ldloca, locFrom);
             il.EmitGetValueOrDefault(typeFrom);
@@ -1004,7 +1000,7 @@ namespace System.Linq.Expressions.Compiler
             var ci = typeTo.GetConstructor(new[] { nnTypeTo });
             il.Emit(OpCodes.Newobj, ci);
             il.Emit(OpCodes.Stloc, locTo);
-            labEnd = il.DefineLabel();
+            var labEnd = il.DefineLabel();
             il.Emit(OpCodes.Br_S, labEnd);
             // if null then create a default one
             il.MarkLabel(labIfNull);
@@ -1018,8 +1014,7 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(!typeFrom.IsNullableType());
             Debug.Assert(typeTo.IsNullableType());
-            LocalBuilder locTo = null;
-            locTo = il.DeclareLocal(typeTo);
+            var locTo = il.DeclareLocal(typeTo);
             var nnTypeTo = typeTo.GetNonNullableType();
             il.EmitConvertToType(typeFrom, nnTypeTo, isChecked);
             var ci = typeTo.GetConstructor(new[] { nnTypeTo });
@@ -1047,8 +1042,7 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(typeFrom.IsNullableType());
             Debug.Assert(!typeTo.IsNullableType());
             Debug.Assert(typeTo.IsValueType);
-            LocalBuilder locFrom = null;
-            locFrom = il.DeclareLocal(typeFrom);
+            var locFrom = il.DeclareLocal(typeFrom);
             il.Emit(OpCodes.Stloc, locFrom);
             il.Emit(OpCodes.Ldloca, locFrom);
             il.EmitGetValue(typeFrom);
@@ -1128,7 +1122,7 @@ namespace System.Linq.Expressions.Compiler
             ContractUtils.RequiresNotNull(elementType, "elementType");
             if (emit == null)
             {
-                ContractUtils.RequiresNotNull(emit, "emit");
+                ContractUtils.RequiresNotNull(null, "emit");
                 throw new ArgumentNullException("emit");
             }
             if (count < 0)

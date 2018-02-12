@@ -25,29 +25,9 @@ namespace System.Runtime.CompilerServices
         private AsyncMethodBuilderCore _coreState;
 
         /// <summary>
-        /// An object used by the debugger to uniquely identify this builder.  Lazily initialized.
-        /// </summary>
-        private object _objectIdForDebugger;
-
-        /// <summary>
         /// Non-zero if PreventUnobservedTaskExceptions has already been invoked.
         /// </summary>
         private static int _preventUnobservedTaskExceptionsInvoked;
-
-        /// <summary>
-        /// Gets an object that may be used to uniquely identify this builder to the debugger.
-        ///
-        /// </summary>
-        ///
-        /// <remarks>
-        /// This property lazily instantiates the ID in a non-thread-safe manner.
-        ///             It must only be used by the debugger and only in a single-threaded manner.
-        ///
-        /// </remarks>
-        private object ObjectIdForDebugger
-        {
-            get { return _objectIdForDebugger ?? (_objectIdForDebugger = new object()); }
-        }
 
         /// <summary>
         /// Temporary support for disabling crashing if tasks go unobserved.
@@ -77,7 +57,6 @@ namespace System.Runtime.CompilerServices
             }
 
             _coreState = new AsyncMethodBuilderCore();
-            _objectIdForDebugger = null;
         }
 
         /// <summary>

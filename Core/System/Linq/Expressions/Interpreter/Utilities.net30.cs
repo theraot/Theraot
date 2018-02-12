@@ -249,8 +249,6 @@ namespace System.Linq.Expressions.Interpreter
 
     internal static class ExceptionHelpers
     {
-        private const string _prevStackTraces = "PreviousStackTraces"; // TODO not used
-
         public static Exception UpdateForRethrow(Exception rethrow)
         {
 #if FEATURE_STACK_TRACES

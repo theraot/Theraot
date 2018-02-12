@@ -95,7 +95,7 @@ namespace System.Linq.Expressions.Compiler
                 var p1 = Expression.Variable(b.Left.Type.GetNonNullableType(), null);
                 var p2 = Expression.Variable(b.Right.Type.GetNonNullableType(), null);
                 var mc = Expression.Call(null, b.Method, p1, p2);
-                Type resultType = null;
+                Type resultType;
                 if (b.IsLiftedToNull)
                 {
                     resultType = mc.Type.GetNullableType();
@@ -455,8 +455,8 @@ namespace System.Linq.Expressions.Compiler
                     EmitLiftedRelational(op, leftType, rightType, resultType, liftedToNull);
                     break;
 
-                case ExpressionType.AndAlso:
-                case ExpressionType.OrElse:
+                // case ExpressionType.AndAlso:
+                // case ExpressionType.OrElse:
                 default:
                     throw ContractUtils.Unreachable;
             }
