@@ -15,8 +15,8 @@ namespace Theraot.Core
 
         public static bool AreBinaryEquals(float left, float right)
         {
-            var leftBits = unchecked(SingleAsUInt32(left));
-            var rightBits = unchecked(SingleAsUInt32(right));
+            var leftBits = SingleAsUInt32(left);
+            var rightBits = SingleAsUInt32(right);
             return leftBits == rightBits;
         }
 
@@ -28,7 +28,7 @@ namespace Theraot.Core
 
         public static bool IsOne(float value)
         {
-            var test = unchecked(SingleAsUInt32(value));
+            var test = SingleAsUInt32(value);
             return test == 0x3f800000;
         }
 
@@ -40,7 +40,7 @@ namespace Theraot.Core
 
         public static bool IsZero(float value)
         {
-            var test = unchecked(SingleAsUInt32(value));
+            var test = SingleAsUInt32(value);
             return test == 0x00000000 || test == 0x80000000;
         }
     }
