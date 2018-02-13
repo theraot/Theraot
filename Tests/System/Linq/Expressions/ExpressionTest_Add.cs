@@ -208,7 +208,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Slot
         {
-            public int Value;
+            public readonly int Value;
 
             public Slot(int value)
             {
@@ -259,7 +259,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct SlotToNullable
         {
-            public int Value;
+            public readonly int Value;
 
             public SlotToNullable(int value)
             {

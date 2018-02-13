@@ -1871,7 +1871,7 @@ namespace MonoTests.System.Linq
         private class Data
         {
             public int Number;
-            public string String;
+            public readonly string String;
 
             public Data(int number, string str)
             {

@@ -441,7 +441,7 @@ namespace MonoTests.System.Linq
 
         private class Baz
         {
-            private string _name;
+            private readonly string _name;
             private readonly int _age;
 
             public string Name

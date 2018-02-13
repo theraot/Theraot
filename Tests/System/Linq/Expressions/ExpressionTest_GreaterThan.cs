@@ -171,7 +171,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Slot
         {
-            public int Value;
+            public readonly int Value;
 
             public Slot(int val)
             {
