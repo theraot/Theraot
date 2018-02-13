@@ -72,14 +72,14 @@ namespace MonoTests.System
         [Test, ExpectedException(typeof(ArgumentException))]
         public void InitializationWithNullInnerValuesTest()
         {
-            var foo = new AggregateException(new[] { new Exception(), null, new ApplicationException() });
+            GC.KeepAlive(new AggregateException(new[] { new Exception(), null, new ApplicationException() }));
         }
 
         [Test]
         public void InitializationWithNullValuesTest()
         {
-            Throws(typeof(ArgumentNullException), () => new AggregateException((IEnumerable<Exception>)null));
-            Throws(typeof(ArgumentNullException), () => new AggregateException((Exception[])null));
+            Throws(typeof(ArgumentNullException), () => GC.KeepAlive(new AggregateException((IEnumerable<Exception>)null)));
+            Throws(typeof(ArgumentNullException), () => GC.KeepAlive(new AggregateException((Exception[])null)));
         }
 
         [Test]
