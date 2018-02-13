@@ -370,11 +370,6 @@ namespace MonoTests.System.Collections.Concurrent
                 _foo = foo;
             }
 
-            public int Foo
-            {
-                get { return _foo; }
-            }
-
             public override bool Equals(object obj)
             {
                 var temp = obj as DumbClass;
