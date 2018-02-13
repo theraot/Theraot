@@ -1893,7 +1893,30 @@ namespace MonoTests.System.Linq
             };
             var groups = values.GroupBy(d => d.String);
 
-            Assert.AreEqual(3, groups.Count());
+            var count = 0;
+            foreach (var group in groups)
+            {
+                switch (group.Key)
+                {
+                    case "a":
+                        Assert.IsTrue(group.Select(item => item.Number).ToArray().SetEquals(new[] { 0, 1 }));
+                        break;
+
+                    case "b":
+                        Assert.IsTrue(group.Select(item => item.Number).ToArray().SetEquals(new[] { 2, 3 }));
+                        break;
+
+                    case null:
+                        Assert.IsTrue(group.Select(item => item.Number).ToArray().SetEquals(new[] { 4 }));
+                        break;
+
+                    default:
+                        Assert.Fail();
+                        break;
+                }
+                count++;
+            }
+            Assert.AreEqual(3, count);
         }
 
         [Test]
