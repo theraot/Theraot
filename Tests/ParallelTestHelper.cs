@@ -37,7 +37,7 @@ namespace MonoTests
         public static void ParallelAdder(IProducerConsumerCollection<int> collection, int numThread)
         {
             var startIndex = -10;
-            ParallelStressTest(collection, (IProducerConsumerCollection<int> c) =>
+            ParallelStressTest(collection, c =>
             {
                 var start = Interlocked.Add(ref startIndex, 10);
                 for (var i = start; i < start + 10; i++)
@@ -50,7 +50,7 @@ namespace MonoTests
         public static void ParallelRemover(IProducerConsumerCollection<int> collection, int numThread, int times)
         {
             var t = -1;
-            ParallelStressTest(collection, (IProducerConsumerCollection<int> c) =>
+            ParallelStressTest(collection, c =>
             {
                 var num = Interlocked.Increment(ref t);
                 if (num < times)
