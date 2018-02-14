@@ -87,7 +87,7 @@ namespace MonoTests.System.Linq.Expressions
 
         public class Thing
         {
-            public string Foo;
+            public string Value;
 
             public string Bar { get; set; }
         }
@@ -98,12 +98,12 @@ namespace MonoTests.System.Linq.Expressions
             var i = Expression.Lambda<Func<Thing>>(
                 Expression.MemberInit(
                     Expression.New(typeof(Thing)),
-                    Expression.Bind(typeof(Thing).GetField("Foo"), "foo".ToConstant()),
+                    Expression.Bind(typeof(Thing).GetField("Value"), "foo".ToConstant()),
                     Expression.Bind(typeof(Thing).GetProperty("Bar"), "bar".ToConstant()))).Compile();
 
             var thing = i();
             Assert.IsNotNull(thing);
-            Assert.AreEqual("foo", thing.Foo);
+            Assert.AreEqual("foo", thing.Value);
             Assert.AreEqual("bar", thing.Bar);
         }
     }
