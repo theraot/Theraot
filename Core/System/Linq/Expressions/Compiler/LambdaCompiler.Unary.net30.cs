@@ -334,7 +334,7 @@ namespace System.Linq.Expressions.Compiler
                     var paramType = pis[0].ParameterType;
                     if (paramType.IsByRef)
                     {
-                        paramType = paramType.GetElementType();
+                        paramType = paramType.GetElementType(); // TODO: Test coverage?
                     }
 
                     var e = Expression.Convert(
@@ -343,7 +343,7 @@ namespace System.Linq.Expressions.Compiler
                             Expression.Convert(node.Operand, pis[0].ParameterType)
                         ),
                         node.Type
-                    );
+                    ); // TODO: Test paramType
 
                     EmitConvert(e, flags);
                 }

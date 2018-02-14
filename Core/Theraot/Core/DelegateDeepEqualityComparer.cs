@@ -29,7 +29,7 @@ namespace Theraot.Core
         {
             if (ReferenceEquals(obj, null)) // obj can be null
             {
-                return 0;
+                return 0; // TODO: Test coverage?
             }
             var methodBody = obj.GetMethodInfo().GetMethodBody();
             if (ReferenceEquals(methodBody, null))

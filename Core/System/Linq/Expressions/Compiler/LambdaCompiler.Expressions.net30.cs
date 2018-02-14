@@ -535,7 +535,7 @@ namespace System.Linq.Expressions.Compiler
                 throw Error.CannotCompileDynamic();
             }
 
-            var node = (IDynamicExpression)expr;
+            var node = (IDynamicExpression)expr; // TODO: Test coverage?
 
             var site = node.CreateCallSite();
             var siteType = site.GetType();

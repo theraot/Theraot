@@ -235,7 +235,7 @@ namespace System.Threading
             return source.Task;
         }
 
-        public Task WaitAsync(CancellationToken cancellationToken)
+        public Task WaitAsync(CancellationToken cancellationToken) // TODO: Test coverage?
         {
             CheckDisposed();
             if (cancellationToken.IsCancellationRequested)
@@ -284,7 +284,7 @@ namespace System.Threading
             return source.Task;
         }
 
-        public Task<bool> WaitAsync(int millisecondsTimeout, CancellationToken cancellationToken)
+        public Task<bool> WaitAsync(int millisecondsTimeout, CancellationToken cancellationToken) // TODO: Test coverage?
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -304,7 +304,7 @@ namespace System.Threading
             return source.Task;
         }
 
-        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken)
+        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken) // TODO: Test coverage?
         {
             if (cancellationToken.IsCancellationRequested)
             {

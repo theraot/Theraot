@@ -31,7 +31,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     // We cannot have null in a non-lifted numeric context. Throw the exception
                     // about not Nullable object requiring a value.
-                    converted = (int)(int?)obj;
+                    converted = (int)(int?)obj; // TODO: Test coverage?
                     GC.KeepAlive(converted);
                     throw Assert.Unreachable;
                 }

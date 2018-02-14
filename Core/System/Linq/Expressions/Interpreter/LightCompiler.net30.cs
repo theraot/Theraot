@@ -1576,7 +1576,7 @@ namespace System.Linq.Expressions.Interpreter
                 var switchCase = node.Cases[i];
 
                 var caseOffset = _instructions.Count - switchIndex;
-                foreach (ConstantExpression testValue in switchCase.TestValues)
+                foreach (ConstantExpression testValue in switchCase.TestValues) // TODO: Test coverage?
                 {
                     var key = (T)testValue.Value;
                     if (!caseDict.ContainsKey(key))
@@ -1623,7 +1623,7 @@ namespace System.Linq.Expressions.Interpreter
                 var switchCase = node.Cases[i];
 
                 var caseOffset = _instructions.Count - switchIndex;
-                foreach (ConstantExpression testValue in switchCase.TestValues)
+                foreach (ConstantExpression testValue in switchCase.TestValues) // TODO: Test coverage?
                 {
                     var key = (string)testValue.Value;
                     if (key == null)
@@ -2466,7 +2466,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private void CompileExtensionExpression(Expression expr)
         {
-            var instructionProvider = expr as IInstructionProvider;
+            var instructionProvider = expr as IInstructionProvider; // TODO: Test coverage?
             if (instructionProvider != null)
             {
                 instructionProvider.AddInstructions(this);

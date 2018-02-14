@@ -153,7 +153,7 @@ namespace System.Linq.Expressions.Compiler
         {
             GC.KeepAlive(stack);
 
-            var node = (IDynamicExpression)expr;
+            var node = (IDynamicExpression)expr; // TODO: Test coverage?
 
             // CallSite is on the stack
             var cr = new ChildRewriter(this, Stack.NonEmpty, node.ArgumentCount);

@@ -313,7 +313,7 @@ namespace MonoTests.System.Linq.Expressions
             if (action == null)
             {
                 Assert.Fail();
-                return;
+                return; // OK
             }
             try
             {

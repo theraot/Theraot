@@ -78,7 +78,7 @@ namespace Theraot.Threading
 
             public override bool Equals(object obj)
             {
-                return obj is VersionProvider && Equals((VersionToken)obj);
+                return obj is VersionProvider && Equals((VersionToken)obj); // TODO: Test coverage?
             }
 
             public override int GetHashCode()

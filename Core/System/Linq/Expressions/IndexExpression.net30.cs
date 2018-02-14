@@ -324,7 +324,7 @@ namespace System.Linq.Expressions
 
             if (mi == null)
             {
-                return false;
+                return false; // TODO: Test coverage?
             }
             if (args == null)
             {

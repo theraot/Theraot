@@ -369,7 +369,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 DefineSwitchCaseLabel(node.Cases[i], out labels[i], out isGoto[i]);
 
-                foreach (ConstantExpression test in node.Cases[i].TestValues)
+                foreach (ConstantExpression test in node.Cases[i].TestValues) // TODO: test coverage?
                 {
                     // Guarenteed to work thanks to CanOptimizeSwitchType.
                     //
@@ -593,7 +593,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (info.Is64BitSwitch)
             {
-                _ilg.MarkLabel(after.Value);
+                _ilg.MarkLabel(after.Value); // TODO: Test coverage?
             }
         }
 
@@ -642,7 +642,7 @@ namespace System.Linq.Expressions.Compiler
             var n = node.Cases.Count;
             for (int i = 0; i < n; i++)
             {
-                foreach (ConstantExpression t in node.Cases[i].TestValues)
+                foreach (ConstantExpression t in node.Cases[i].TestValues) // TODO: Test coverage?
                 {
                     if (t.Value != null)
                     {
