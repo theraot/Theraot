@@ -212,7 +212,7 @@ namespace System.Linq.Expressions
                 throw Error.ArgumentCannotBeOfTypeVoid();
             }
 
-            var boundsList = bounds.ToReadOnly();
+            var boundsList = bounds.ToReadOnly(); // TODO: Review
 
             var dimensions = boundsList.Count;
             if (dimensions <= 0)
@@ -242,7 +242,7 @@ namespace System.Linq.Expressions
                 arrayType = type.MakeArrayType(dimensions);
             }
 
-            return NewArrayExpression.Make(ExpressionType.NewArrayBounds, arrayType, bounds.ToReadOnly());
+            return NewArrayExpression.Make(ExpressionType.NewArrayBounds, arrayType, bounds.ToReadOnly()); // TODO: Review
         }
 
         #endregion NewArrayBounds

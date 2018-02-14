@@ -607,7 +607,7 @@ namespace MonoTests.System.Linq
 
             Assert.IsNotNull(actual);
 
-            var ee = expected.GetEnumerator();
+            var ee = expected.GetEnumerator(); // TODO: Review
             var ea = actual.GetEnumerator();
 
             while (ee.MoveNext())

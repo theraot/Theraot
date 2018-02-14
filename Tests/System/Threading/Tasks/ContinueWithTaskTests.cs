@@ -192,7 +192,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ContinueWithChildren()
+        public void ContinueWithChildren() // TODO: Review
         {
             ParallelTestHelper.Repeat(delegate
             {
@@ -222,7 +222,7 @@ namespace MonoTests.System.Threading.Tasks
         [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
         [Category("ThreadPool")]
         [Ignore]
-        public void ContinueWithDifferentOptionsAreCanceledTest()
+        public void ContinueWithDifferentOptionsAreCanceledTest() // TODO: Review
         {
             using (var mre = new ManualResetEventSlim())
             {
@@ -252,7 +252,7 @@ namespace MonoTests.System.Threading.Tasks
         private Task _parentWfc;
 
         [Test]
-        public void WaitingForChildrenToComplete()
+        public void WaitingForChildrenToComplete() // TODO: Review
         {
             Task nested = null;
             using (var mre = new ManualResetEvent(false))
@@ -356,7 +356,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0  - this fails if serialized
         [Category("ThreadPool")]
-        public void CanceledContinuationExecuteSynchronouslyTest()
+        public void CanceledContinuationExecuteSynchronouslyTest() // TODO: Review
         {
             using (var source = new CancellationTokenSource())
             {

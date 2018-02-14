@@ -475,7 +475,7 @@ namespace System.Threading.Tests
         }
 
         private static void RunSemaphoreSlimTest8_ConcWaitAndRelease_Private(int initial, int maximum,
-            int waitThreads, int releaseThreads, int succeededWait, int failedWait, int finalCount, int timeout)
+            int waitThreads, int releaseThreads, int succeededWait, int failedWait, int finalCount, int timeout) // TODO: Review
         {
             using (var semaphore = new SemaphoreSlim(initial, maximum))
             {
@@ -599,7 +599,7 @@ namespace System.Threading.Tests
             TestConcurrentWaitAndWaitAsync_Private(10, 1);
         }
 
-        private static void TestConcurrentWaitAndWaitAsync_Private(int syncWaiters, int asyncWaiters)
+        private static void TestConcurrentWaitAndWaitAsync_Private(int syncWaiters, int asyncWaiters) // TODO: Review
         {
             var totalWaiters = syncWaiters + asyncWaiters;
 

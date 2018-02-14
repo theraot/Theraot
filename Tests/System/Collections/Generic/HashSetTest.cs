@@ -459,7 +459,7 @@ namespace MonoTests.System.Collections.Generic
 
         private static void AssertContainsOnly<T>(IEnumerable<T> result, IEnumerable<T> data)
         {
-            Assert.AreEqual(result.Count(), data.Count());
+            Assert.AreEqual(result.Count(), data.Count()); // TODO: Review
 
             var store = new List<T>(result);
             foreach (var element in data)
@@ -500,7 +500,7 @@ namespace MonoTests.System.Collections.Generic
         // based on #491858, #517415
         public void Enumerator_Current()
         {
-            using (var e1 = new HashSet<int>.Enumerator())
+            using (var e1 = new HashSet<int>.Enumerator()) // TODO: Review
             {
                 Assert.IsFalse(Throws(() =>
                 {

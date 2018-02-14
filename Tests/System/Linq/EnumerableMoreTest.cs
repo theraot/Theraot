@@ -141,7 +141,7 @@ namespace MonoTests.System.Linq
 
             Assert.AreEqual(expectedKey, actual.Key);
 
-            var ee = expectedValues.GetEnumerator();
+            var ee = expectedValues.GetEnumerator(); // TODO: Review
             var ea = actual.GetEnumerator();
 
             while (ee.MoveNext())
@@ -166,7 +166,7 @@ namespace MonoTests.System.Linq
 
             Assert.IsNotNull(actual);
 
-            var ee = expected.GetEnumerator();
+            var ee = expected.GetEnumerator(); // TODO: Review
             var ea = actual.GetEnumerator();
 
             while (ee.MoveNext())
@@ -191,7 +191,7 @@ namespace MonoTests.System.Linq
 
             Assert.IsNotNull(actual);
 
-            var ee = expected.GetEnumerator();
+            var ee = expected.GetEnumerator(); // TODO: Review
             var ea = actual.GetEnumerator();
 
             while (ee.MoveNext())
@@ -216,7 +216,7 @@ namespace MonoTests.System.Linq
 
             Assert.IsNotNull(actual);
 
-            var ee = expected.GetEnumerator();
+            var ee = expected.GetEnumerator(); // TODO: Review
             var ea = actual.GetEnumerator();
 
             while (ee.MoveNext())
@@ -242,7 +242,7 @@ namespace MonoTests.System.Linq
 
             Assert.IsNotNull(actual);
 
-            var ee = expected.GetEnumerator();
+            var ee = expected.GetEnumerator(); // TODO: Review
             var ea = actual.GetEnumerator();
 
             while (ee.MoveNext())

@@ -280,7 +280,7 @@ namespace MonoTests.System.Threading
 
         [Test]
         [Category("NotDotNet")] // Running this test against .NET 4.0 or .NET 4.5 fails
-        public void WaitHandleConsistencyTest()
+        public void WaitHandleConsistencyTest() // TODO: Review
         {
             using (var mre = new ManualResetEventSlim())
             {
@@ -347,7 +347,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void WaitWithCancellationTokenAndCancel()
+        public void WaitWithCancellationTokenAndCancel() // TODO: Review
         {
             using (var mres = new ManualResetEventSlim())
             {
@@ -372,7 +372,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void WaitWithCancellationTokenAndNotImmediateSetTest()
+        public void WaitWithCancellationTokenAndNotImmediateSetTest() // TODO: Review
         {
             using (var mres = new ManualResetEventSlim())
             {

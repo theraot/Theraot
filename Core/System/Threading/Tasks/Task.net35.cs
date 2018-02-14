@@ -689,7 +689,7 @@ namespace System.Threading.Tasks
                     case TaskStatus.WaitingForActivation:
                     case TaskStatus.Running:
                     case TaskStatus.WaitingForChildrenToComplete:
-                        var waitHandle = _waitHandle.Value;
+                        var waitHandle = _waitHandle.Value; // TODO: Review
                         if (!ReferenceEquals(waitHandle, null))
                         {
                             waitHandle.Wait(cancellationToken);
