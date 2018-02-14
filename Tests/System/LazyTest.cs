@@ -196,7 +196,6 @@ namespace MonoTests.System
             {
                 x = lz.Value;
                 Assert.Fail("#1");
-                Console.WriteLine(x);
             }
             catch (Exception ex)
             {
@@ -268,7 +267,6 @@ namespace MonoTests.System
             {
                 var x = lz.Value;
                 Assert.Fail("#1");
-                Console.WriteLine(x);
             }
             catch (Exception ex)
             {
@@ -323,7 +321,6 @@ namespace MonoTests.System
             {
                 var x = lz.Value;
                 Assert.Fail("#1");
-                Console.WriteLine(x);
             }
             catch (Exception ex)
             {
