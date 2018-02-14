@@ -218,18 +218,19 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual("Void EineGenericMethod[String,Int32](System.String, Int32)", m.Method.ToString());
         }
 
-        public struct EineStrukt
+        private struct EineStrukt
         {
-            public string Foo;
+            private readonly string _value;
 
-            public EineStrukt(string foo)
+            public EineStrukt(string value)
             {
-                Foo = foo;
+                _value = value;
             }
 
-            public string GimmeFoo()
+            // Used via reflection
+            public string GetValue()
             {
-                return Foo;
+                return _value;
             }
         }
 
@@ -239,7 +240,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var param = Expression.Parameter(typeof(EineStrukt), "s");
             var foo = Expression.Lambda<Func<EineStrukt, string>>(
-                Expression.Call(param, typeof(EineStrukt).GetMethod("GimmeFoo")), param).Compile();
+                Expression.Call(param, typeof(EineStrukt).GetMethod("GetValue")), param).Compile();
 
             var s = new EineStrukt("foo");
             Assert.AreEqual("foo", foo(s));
