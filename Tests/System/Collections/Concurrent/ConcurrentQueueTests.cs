@@ -273,7 +273,7 @@ namespace MonoTests.System.Collections.Concurrent
 
             queue.Enqueue(obj);
             queue.TryDequeue(out obj);
-            obj = null;
+            obj = null; // Removing reference to object to allow garbage collection
 
             GC.Collect();
             GC.WaitForPendingFinalizers();

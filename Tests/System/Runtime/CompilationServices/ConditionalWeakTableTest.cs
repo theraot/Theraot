@@ -564,7 +564,10 @@ namespace MonoTests.System.Runtime.CompilerServices
             // The sole purpose of this object is to keep a reference to another object, so it is fine to not use it.
             private readonly ConditionalWeakTable<object, object> _cwt;
 
+            // For debug purposes
             private readonly int _id;
+
+            // For debug purposes
             private readonly object _obj;
 
             public FinalizableLink(int id, object obj, ConditionalWeakTable<object, object> cwt)

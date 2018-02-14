@@ -222,6 +222,7 @@ namespace Tests.Theraot.Core
                 _value = value;
             }
 
+            // Used via Reflection
             public Constructer(Constructer prototype)
             {
                 _value = prototype._value;
@@ -298,6 +299,7 @@ namespace Tests.Theraot.Core
                 return _value.CompareTo(other._value);
             }
 
+            // Used via Reflection
             public void Deconstruct(out int value)
             {
                 value = _value;
@@ -416,6 +418,7 @@ namespace Tests.Theraot.Core
                 _value = value;
             }
 
+            // Used via Reflection
             public MockerA Clone()
             {
                 return new MockerA(_value);
@@ -479,6 +482,7 @@ namespace Tests.Theraot.Core
                 _value = value;
             }
 
+            // Used via Reflection
             public object Clone()
             {
                 return new MockerB(_value);

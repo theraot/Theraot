@@ -117,6 +117,7 @@ namespace MonoTests.System.Linq
 
             var bingo = new Bingo();
 
+            // Note: we are testing Cast
             AssertAreSame(ints, bingo.Cast<int>());
             AssertAreSame(strs, bingo.Cast<string>());
         }

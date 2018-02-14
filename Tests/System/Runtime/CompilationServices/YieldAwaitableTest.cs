@@ -62,9 +62,16 @@ namespace MonoTests.System.Runtime.CompilerServices
 
         private class MyContext : SynchronizationContext
         {
+            // For debug purposes
             public int Started;
+
+            // For debug purposes
             public int Completed;
+
+            // For debug purposes
             public int PostCounter;
+
+            // For debug purposes
             public int SendCounter;
 
             public override void OperationStarted()

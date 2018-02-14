@@ -109,6 +109,7 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(ExpressionType.Constant, expr.NodeType, "Constant#25");
             Assert.AreEqual(new DateTime(1971, 10, 19), expr.Value, "Constant#26");
             Assert.AreEqual(typeof(DateTime), expr.Type, "Constant#27");
+            // This test must be done under the assumption that both "ToString" happen on the same culture
             Assert.AreEqual(new DateTime(1971, 10, 19).ToString(), expr.ToString(), "Constant#28");
         }
 
