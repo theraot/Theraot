@@ -167,7 +167,8 @@ namespace MonoTests.System.Linq.Expressions
         //
         public override bool Equals(object obj)
         {
-            return this == obj;
+            // Keep cast
+            return (object)this == obj;
         }
 
         public override int GetHashCode()
