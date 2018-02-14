@@ -4,7 +4,7 @@ using System;
 
 namespace Theraot.Core
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class ValueActionClosure    
     {
         private readonly Action _target;
@@ -21,11 +21,11 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return Invoke;
+            return new Action(Invoke);
         }
     }
 
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class ValueActionClosure<T>    
     {
         private readonly Action<T> _target;
@@ -44,11 +44,11 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return Invoke;
+            return new Action(Invoke);
         }
     }
 
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class ValueActionClosure<T1, T2>    
     {
         private readonly Action<T1, T2> _target;
@@ -69,11 +69,11 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return Invoke;
+            return new Action(Invoke);
         }
     }
 
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class ValueActionClosure<T1, T2, T3>    
     {
         private readonly Action<T1, T2, T3> _target;
@@ -96,11 +96,11 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return Invoke;
+            return new Action(Invoke);
         }
     }
 
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class ValueActionClosure<T1, T2, T3, T4>    
     {
         private readonly Action<T1, T2, T3, T4> _target;
@@ -125,11 +125,11 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return Invoke;
+            return new Action(Invoke);
         }
     }
 
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class ValueActionClosure<T1, T2, T3, T4, T5>    
     {
         private readonly Action<T1, T2, T3, T4, T5> _target;
@@ -156,11 +156,11 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return Invoke;
+            return new Action(Invoke);
         }
     }
 
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class ValueActionClosure<T1, T2, T3, T4, T5, T6>    
     {
         private readonly Action<T1, T2, T3, T4, T5, T6> _target;
@@ -189,11 +189,11 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return Invoke;
+            return new Action(Invoke);
         }
     }
 
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class ValueActionClosure<T1, T2, T3, T4, T5, T6, T7>    
     {
         private readonly Action<T1, T2, T3, T4, T5, T6, T7> _target;
@@ -224,11 +224,11 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return Invoke;
+            return new Action(Invoke);
         }
     }
 
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class ValueActionClosure<T1, T2, T3, T4, T5, T6, T7, T8>    
     {
         private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8> _target;
@@ -261,11 +261,11 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return Invoke;
+            return new Action(Invoke);
         }
     }
 
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class ValueActionClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9>    
     {
         private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> _target;
@@ -300,11 +300,11 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return Invoke;
+            return new Action(Invoke);
         }
     }
 
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class ValueActionClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>    
     {
         private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> _target;
@@ -341,11 +341,11 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return Invoke;
+            return new Action(Invoke);
         }
     }
 
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class ValueActionClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>    
     {
         private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> _target;
@@ -384,11 +384,11 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return Invoke;
+            return new Action(Invoke);
         }
     }
 
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class ValueActionClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>    
     {
         private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> _target;
@@ -429,11 +429,11 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return Invoke;
+            return new Action(Invoke);
         }
     }
 
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class ValueActionClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>    
     {
         private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> _target;
@@ -476,11 +476,11 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return Invoke;
+            return new Action(Invoke);
         }
     }
 
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class ValueActionClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>    
     {
         private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> _target;
@@ -525,11 +525,11 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return Invoke;
+            return new Action(Invoke);
         }
     }
 
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class ValueActionClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>    
     {
         private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> _target;
@@ -576,11 +576,11 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return Invoke;
+            return new Action(Invoke);
         }
     }
 
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class ValueActionClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>    
     {
         private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> _target;
@@ -629,7 +629,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return Invoke;
+            return new Action(Invoke);
         }
     }
 }
