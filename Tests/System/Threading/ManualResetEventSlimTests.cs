@@ -126,7 +126,7 @@ namespace MonoTests.System.Threading
 
             try
             {
-                var v = mre.WaitHandle;
+                GC.KeepAlive(mre.WaitHandle);
                 Assert.Fail("#4");
             }
             catch (ObjectDisposedException ex)
@@ -318,7 +318,7 @@ namespace MonoTests.System.Threading
             var count = 0;
             var s = false;
 
-            ParallelTestHelper.ParallelStressTest(_mre, (ManualResetEventSlim m) =>
+            ParallelTestHelper.ParallelStressTest(_mre, m =>
             {
                 if (Interlocked.Increment(ref count) % 2 == 0)
                 {

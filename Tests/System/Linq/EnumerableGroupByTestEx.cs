@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -36,12 +37,14 @@ namespace MonoTests.System.Linq
             using (var enumerator = a.GetEnumerator())
             {
                 // This is a shame, GroupBy is not really deffered
+                GC.KeepAlive(enumerator);
                 Assert.AreEqual(src.Total, 10);
             }
             Assert.AreEqual(src.Total, 10);
             using (var enumerator = a.GetEnumerator())
             {
                 // This is a shame, GroupBy is not really deffered
+                GC.KeepAlive(enumerator);
                 Assert.AreEqual(src.Total, 20);
             }
             Assert.AreEqual(src.Total, 20);

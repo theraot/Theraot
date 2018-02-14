@@ -463,29 +463,26 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void DoubleTimeoutedWaitTest()
         {
-            using (var evt = new ManualResetEventSlim())
+            // Do not dispose Task
+            var t = new Task(ActionHelper.GetNoopAction());
+            using (var cntd = new CountdownEvent(2))
             {
-                // Do not dispose Task
-                var t = new Task(ActionHelper.GetNoopAction());
-                using (var cntd = new CountdownEvent(2))
+                var r1 = false;
+                var r2 = false;
+                ThreadPool.QueueUserWorkItem(state =>
                 {
-                    var r1 = false;
-                    var r2 = false;
-                    ThreadPool.QueueUserWorkItem(state =>
-                    {
-                        r1 = !t.Wait(100);
-                        cntd.Signal();
-                    });
-                    ThreadPool.QueueUserWorkItem(state =>
-                    {
-                        r2 = !t.Wait(100);
-                        cntd.Signal();
-                    });
+                    r1 = !t.Wait(100);
+                    cntd.Signal();
+                });
+                ThreadPool.QueueUserWorkItem(state =>
+                {
+                    r2 = !t.Wait(100);
+                    cntd.Signal();
+                });
 
-                    cntd.Wait(2000);
-                    Assert.IsTrue(r1);
-                    Assert.IsTrue(r2);
-                }
+                cntd.Wait(2000);
+                Assert.IsTrue(r1);
+                Assert.IsTrue(r2);
             }
         }
 
@@ -623,7 +620,6 @@ namespace MonoTests.System.Threading.Tasks
                 Assert.IsTrue(t.Wait(5000), "#0");
                 Assert.IsTrue((bool)isTp, "#1");
                 Assert.IsTrue((bool)isBg, "#2");
-
                 isTp = null;
                 isBg = null;
             }
@@ -786,7 +782,7 @@ namespace MonoTests.System.Threading.Tasks
         public void Teardown()
         {
             ThreadPool.SetMinThreads(_workerThreads, _completionPortThreads);
-            Task[] l = null;
+            Task[] l;
             lock (_cleanupMutex)
             {
                 l = _cleanupList.ToArray();
@@ -1061,10 +1057,10 @@ namespace MonoTests.System.Threading.Tasks
         {
             // Do not dispose Task
             var task = new Task(ActionHelper.GetNoopAction());
-            Assert.IsFalse(Task.WaitAll(new Task[1] { task }, 0), "#0");
+            Assert.IsFalse(Task.WaitAll(new[] { task }, 0), "#0");
             // Do not dispose Task
             task = new Task(ActionHelper.GetNoopAction());
-            Assert.IsFalse(Task.WaitAll(new Task[1] { task }, 10), "#1");
+            Assert.IsFalse(Task.WaitAll(new[] { task }, 10), "#1");
         }
 
         [Test]
@@ -1588,14 +1584,6 @@ namespace MonoTests.System.Threading.Tasks
             }
         }
 
-        private void AddToCleanup(Task task)
-        {
-            lock (_cleanupMutex)
-            {
-                _cleanupList.Add(task);
-            }
-        }
-
         private void InitWithDelegate(Action action)
         {
             for (var i = 0; i < _max; i++)
@@ -1634,7 +1622,7 @@ namespace MonoTests.System.Threading.Tasks
 
             protected override void QueueTask(Task task)
             {
-                return;
+                GC.KeepAlive(task);
             }
 
             protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
@@ -1922,7 +1910,7 @@ namespace MonoTests.System.Threading.Tasks
                 var ranOnDefault = false;
                 var scheduler = new SynchronousScheduler();
 
-                var parent = Task.Factory.StartNew(() =>
+                Task.Factory.StartNew(() =>
                 {
                     Task.Factory.StartNew(() =>
                     {

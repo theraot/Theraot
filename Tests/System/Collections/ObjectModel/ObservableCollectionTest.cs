@@ -45,17 +45,22 @@ namespace MonoTests.System.Collections.ObjectModel
         [Test]
         public void Constructor()
         {
+            // The ObservableCollection does not keep a reference to the list used to create it
+            // And thus, adding to to the ObservableCollection does not affect the list
             var list = new List<int> { 3 };
-            var col = new ObservableCollection<int>(list)
-            {
-                5
-            };
+            GC.KeepAlive(
+                new ObservableCollection<int>(list)
+                {
+                    5
+                }
+            );
             Assert.AreEqual(1, list.Count, "#1");
-
-            col = new ObservableCollection<int>((IEnumerable<int>)list)
-            {
-                5
-            };
+            GC.KeepAlive(
+                new ObservableCollection<int>((IEnumerable<int>)list)
+                {
+                    5
+                }
+            );
             Assert.AreEqual(1, list.Count, "#2");
         }
 
@@ -90,7 +95,7 @@ namespace MonoTests.System.Collections.ObjectModel
         {
             var reached = false;
             var col = new ObservableCollection<int>();
-            col.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+            col.CollectionChanged += (sender, e) =>
             {
                 GC.KeepAlive(sender);
                 reached = true;
@@ -111,7 +116,7 @@ namespace MonoTests.System.Collections.ObjectModel
             var reached = false;
             var col = new ObservableCollection<int>();
             col.Insert(0, 5);
-            col.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+            col.CollectionChanged += (sender, e) =>
             {
                 GC.KeepAlive(sender);
                 reached = true;
@@ -135,7 +140,7 @@ namespace MonoTests.System.Collections.ObjectModel
             col.Insert(1, 1);
             col.Insert(2, 2);
             col.Insert(3, 3);
-            col.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+            col.CollectionChanged += (sender, e) =>
             {
                 GC.KeepAlive(sender);
                 reached = true;
@@ -159,14 +164,14 @@ namespace MonoTests.System.Collections.ObjectModel
             var changedProps = new List<string>();
             NotifyCollectionChangedEventArgs args = null;
 
-            ((INotifyPropertyChanged)collection).PropertyChanged += (object sender, PropertyChangedEventArgs e) =>
+            ((INotifyPropertyChanged)collection).PropertyChanged += (sender, e) =>
             {
                 GC.KeepAlive(sender);
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
 
-            collection.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+            collection.CollectionChanged += (sender, e) =>
             {
                 GC.KeepAlive(sender);
                 args = e;
@@ -193,14 +198,14 @@ namespace MonoTests.System.Collections.ObjectModel
             collection.Add('B');
             collection.Add('C');
 
-            ((INotifyPropertyChanged)collection).PropertyChanged += (object sender, PropertyChangedEventArgs e) =>
+            ((INotifyPropertyChanged)collection).PropertyChanged += (sender, e) =>
             {
                 GC.KeepAlive(sender);
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
 
-            collection.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+            collection.CollectionChanged += (sender, e) =>
             {
                 GC.KeepAlive(sender);
                 args = e;
@@ -227,14 +232,14 @@ namespace MonoTests.System.Collections.ObjectModel
             collection.Add('B');
             collection.Add('C');
 
-            ((INotifyPropertyChanged)collection).PropertyChanged += (object sender, PropertyChangedEventArgs e) =>
+            ((INotifyPropertyChanged)collection).PropertyChanged += (sender, e) =>
             {
                 GC.KeepAlive(sender);
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
 
-            collection.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+            collection.CollectionChanged += (sender, e) =>
             {
                 GC.KeepAlive(sender);
                 args = e;
@@ -260,7 +265,7 @@ namespace MonoTests.System.Collections.ObjectModel
             collection.Add('B');
             collection.Add('C');
 
-            PropertyChangedEventHandler pceh = (object sender, PropertyChangedEventArgs e) =>
+            PropertyChangedEventHandler pceh = (sender, e) =>
             {
                 GC.KeepAlive(sender);
                 propertyChanged = true;
@@ -270,13 +275,13 @@ namespace MonoTests.System.Collections.ObjectModel
             // Adding a PropertyChanged event handler
             ((INotifyPropertyChanged)collection).PropertyChanged += pceh;
 
-            collection.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+            collection.CollectionChanged += (sender, e) =>
             {
                 GC.KeepAlive(sender);
                 args = e;
             };
 
-            collection.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+            collection.CollectionChanged += (sender, e) =>
             {
                 GC.KeepAlive(sender);
                 GC.KeepAlive(e);
@@ -316,14 +321,14 @@ namespace MonoTests.System.Collections.ObjectModel
                 //With double block, try the reentrant:
                 NotifyCollectionChangedEventArgs args = null;
 
-                CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+                CollectionChanged += (sender, e) =>
                 {
                     GC.KeepAlive(sender);
                     args = e;
                 };
 
                 // We need a second callback for reentrancy to matter
-                CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+                CollectionChanged += (sender, e) =>
                 {
                     GC.KeepAlive(sender);
                     GC.KeepAlive(e);
@@ -387,14 +392,14 @@ namespace MonoTests.System.Collections.ObjectModel
             var changedProps = new List<string>();
             NotifyCollectionChangedEventArgs args = null;
 
-            ((INotifyPropertyChanged)collection).PropertyChanged += (object sender, PropertyChangedEventArgs e) =>
+            ((INotifyPropertyChanged)collection).PropertyChanged += (sender, e) =>
             {
                 GC.KeepAlive(sender);
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
 
-            collection.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+            collection.CollectionChanged += (sender, e) =>
             {
                 GC.KeepAlive(sender);
                 args = e;

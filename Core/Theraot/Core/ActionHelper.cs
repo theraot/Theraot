@@ -2,10 +2,11 @@
 // Needed for NET40
 
 using System;
+using System.Diagnostics;
 
 namespace Theraot.Core
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public static class ActionHelper
     {
         public static Action GetNoopAction()
@@ -103,7 +104,7 @@ namespace Theraot.Core
 
         public static Action<T> GetThrowAction<T>(Exception exception)
         {
-            return (T obj) =>
+            return obj =>
             {
                 throw exception;
             };
@@ -111,7 +112,7 @@ namespace Theraot.Core
 
         public static Action<T1, T2> GetThrowAction<T1, T2>(Exception exception)
         {
-            return (T1 arg1, T2 arg2) =>
+            return (arg1, arg2) =>
             {
                 throw exception;
             };
@@ -119,7 +120,7 @@ namespace Theraot.Core
 
         public static Action<T1, T2, T3> GetThrowAction<T1, T2, T3>(Exception exception)
         {
-            return (T1 arg1, T2 arg2, T3 arg3) =>
+            return (arg1, arg2, arg3) =>
             {
                 throw exception;
             };
@@ -127,7 +128,7 @@ namespace Theraot.Core
 
         public static Action<T1, T2, T3, T4> GetThrowAction<T1, T2, T3, T4>(Exception exception)
         {
-            return (T1 arg1, T2 arg2, T3 arg3, T4 arg4) =>
+            return (arg1, arg2, arg3, arg4) =>
             {
                 throw exception;
             };
@@ -135,7 +136,7 @@ namespace Theraot.Core
 
         public static Action<T1, T2, T3, T4, T5> GetThrowAction<T1, T2, T3, T4, T5>(Exception exception)
         {
-            return (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5) =>
+            return (arg1, arg2, arg3, arg4, arg5) =>
             {
                 throw exception;
             };
@@ -143,7 +144,7 @@ namespace Theraot.Core
 
         public static Action<T1, T2, T3, T4, T5, T6> GetThrowAction<T1, T2, T3, T4, T5, T6>(Exception exception)
         {
-            return (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6) =>
+            return (arg1, arg2, arg3, arg4, arg5, arg6) =>
             {
                 throw exception;
             };
@@ -151,7 +152,7 @@ namespace Theraot.Core
 
         public static Action<T1, T2, T3, T4, T5, T6, T7> GetThrowAction<T1, T2, T3, T4, T5, T6, T7>(Exception exception)
         {
-            return (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7) =>
+            return (arg1, arg2, arg3, arg4, arg5, arg6, arg7) =>
             {
                 throw exception;
             };
@@ -159,7 +160,7 @@ namespace Theraot.Core
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8>(Exception exception)
         {
-            return (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8) =>
+            return (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) =>
             {
                 throw exception;
             };
@@ -167,7 +168,7 @@ namespace Theraot.Core
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8, T9>(Exception exception)
         {
-            return (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9) =>
+            return (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) =>
             {
                 throw exception;
             };
@@ -175,7 +176,7 @@ namespace Theraot.Core
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(Exception exception)
         {
-            return (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10) =>
+            return (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10) =>
             {
                 throw exception;
             };
@@ -183,7 +184,7 @@ namespace Theraot.Core
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(Exception exception)
         {
-            return (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11) =>
+            return (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11) =>
             {
                 throw exception;
             };
@@ -191,7 +192,7 @@ namespace Theraot.Core
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(Exception exception)
         {
-            return (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12) =>
+            return (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12) =>
             {
                 throw exception;
             };
@@ -199,7 +200,7 @@ namespace Theraot.Core
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(Exception exception)
         {
-            return (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13) =>
+            return (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13) =>
             {
                 throw exception;
             };
@@ -207,7 +208,7 @@ namespace Theraot.Core
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(Exception exception)
         {
-            return (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14) =>
+            return (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14) =>
             {
                 throw exception;
             };
@@ -215,7 +216,7 @@ namespace Theraot.Core
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(Exception exception)
         {
-            return (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15) =>
+            return (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15) =>
             {
                 throw exception;
             };
@@ -223,7 +224,7 @@ namespace Theraot.Core
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(Exception exception)
         {
-            return (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15, T16 arg16) =>
+            return (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16) =>
             {
                 throw exception;
             };

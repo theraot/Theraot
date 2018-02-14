@@ -48,7 +48,7 @@ namespace MonoTests.System.Linq.Expressions
         [ExpectedException(typeof(ArgumentNullException))]
         public void PropertyAccessorNull()
         {
-            Expression.ListBind(null as MethodInfo, new List<ElementInit>());
+            Expression.ListBind(null, new List<ElementInit>());
         }
 
         [Test]

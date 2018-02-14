@@ -112,7 +112,7 @@ namespace MonoTests.System.Threading.Tasks
             ex = null;
             try
             {
-                var result = f.Result;
+                GC.KeepAlive(f.Result);
             }
             catch (AggregateException e)
             {
@@ -263,7 +263,6 @@ namespace MonoTests.System.Threading.Tasks
         {
             var tcs = new TaskCompletionSource<int>();
             tcs.SetException(inner);
-            tcs = null;
         }
     }
 }

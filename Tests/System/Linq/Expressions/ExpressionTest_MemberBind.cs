@@ -72,7 +72,7 @@ namespace MonoTests.System.Linq.Expressions
         [ExpectedException(typeof(ArgumentNullException))]
         public void NullMethod()
         {
-            Expression.MemberBind(null as MethodInfo, new MemberBinding[0]);
+            Expression.MemberBind(null, new MemberBinding[0]);
         }
 
         [Test]

@@ -256,7 +256,7 @@ namespace MonoTests.System.Linq.Expressions
                 {
                     return new SlotFromNullableToNullable(-s.Value.Value);
                 }
-                return s;
+                return null;
             }
         }
 

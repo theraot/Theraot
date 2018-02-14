@@ -141,7 +141,7 @@ namespace MonoTests.System.Collections.Concurrent
         {
             int val;
             Assert.IsFalse(_map.TryGetValue("barfoo", out val));
-            val = _map["barfoo"];
+            GC.KeepAlive(_map["barfoo"]);
         }
 
         [Test]
@@ -199,7 +199,7 @@ namespace MonoTests.System.Collections.Concurrent
         {
             AssertThrowsArgumentNullException(() =>
             {
-                var x = _map[null];
+                GC.KeepAlive(_map[null]);
             });
             AssertThrowsArgumentNullException(() => _map[null] = 0);
             AssertThrowsArgumentNullException(() => _map.AddOrUpdate(null, k => 0, (k, v) => v));
@@ -207,7 +207,7 @@ namespace MonoTests.System.Collections.Concurrent
             AssertThrowsArgumentNullException(() => _map.AddOrUpdate("", k => 0, null));
             AssertThrowsArgumentNullException(() => _map.AddOrUpdate(null, 0, (k, v) => v));
             AssertThrowsArgumentNullException(() => _map.AddOrUpdate("", 0, null));
-            AssertThrowsArgumentNullException(() => _map.ContainsKey(null));
+            AssertThrowsArgumentNullException(() => GC.KeepAlive(_map.ContainsKey(null)));
             AssertThrowsArgumentNullException(() => _map.GetOrAdd(null, 0));
             int value;
             AssertThrowsArgumentNullException(() => _map.TryGetValue(null, out value));

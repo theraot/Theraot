@@ -31,6 +31,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Theraot.Collections;
 
 namespace MonoTests.System.Linq
 {
@@ -617,7 +618,7 @@ namespace MonoTests.System.Linq
             {
                 Console.WriteLine(data.Contains(0));
                 const object O = null;
-                O.ToString();
+                GC.KeepAlive(O.ToString());
                 Assert.IsFalse(true);
             }
             //Console.WriteLine ("HIT!");
@@ -763,83 +764,83 @@ namespace MonoTests.System.Linq
             //TODO: OverflowException
 
             // Sum<TSource> (Func<TSource, int>)
-            Assert.AreEqual(15, ((IEnumerable<string>)data).Sum<string>(x => int.Parse(x)));
+            Assert.AreEqual(15, data.Sum<string>(x => int.Parse(x)));
             Assert.AreEqual(0, Enumerable.Empty<string>().Sum<string>(x => int.Parse(x)));
 
             // Sum<TSource> (Func<TSource, Nullable<int>>)
-            Assert.AreEqual(15, ((IEnumerable<string>)data).Sum<string>(x => (int?)int.Parse(x)));
+            Assert.AreEqual(15, data.Sum<string>(x => (int?)int.Parse(x)));
             Assert.AreEqual(0, Enumerable.Empty<string>().Sum<string>(x => (int?)int.Parse(x)));
 
             // Sum<TSource> (Func<TSource, Int64>)
-            Assert.AreEqual(15, ((IEnumerable<string>)data).Sum<string>((Func<string, long>)(x => int.Parse(x))));
+            Assert.AreEqual(15, data.Sum<string>((Func<string, long>)(x => int.Parse(x))));
             Assert.AreEqual(0, Enumerable.Empty<string>().Sum<string>((Func<string, long>)(x => int.Parse(x))));
 
             // Sum<TSource> (Func<TSource, Nullable<Int64>>)
-            Assert.AreEqual(15, ((IEnumerable<string>)data).Sum<string>((Func<string, long?>)(x => int.Parse(x))));
+            Assert.AreEqual(15, data.Sum<string>((Func<string, long?>)(x => int.Parse(x))));
             Assert.AreEqual(0, Enumerable.Empty<string>().Sum<string>((Func<string, long?>)(x => int.Parse(x))));
 
             // Sum<TSource> (Func<TSource, Single>)
-            Assert.AreEqual(15, ((IEnumerable<string>)data).Sum<string>((Func<string, float>)(x => int.Parse(x))));
+            Assert.AreEqual(15, data.Sum<string>((Func<string, float>)(x => int.Parse(x))));
             Assert.AreEqual(0, Enumerable.Empty<string>().Sum<string>((Func<string, float>)(x => int.Parse(x))));
 
             // Sum<TSource> (Func<TSource, Nullable<Single>>)
-            Assert.AreEqual(15, ((IEnumerable<string>)data).Sum<string>((Func<string, float?>)(x => int.Parse(x))));
+            Assert.AreEqual(15, data.Sum<string>((Func<string, float?>)(x => int.Parse(x))));
             Assert.AreEqual(0, Enumerable.Empty<string>().Sum<string>((Func<string, float?>)(x => int.Parse(x))));
 
             // Sum<TSource> (Func<TSource, Double>)
-            Assert.AreEqual(15, ((IEnumerable<string>)data).Sum<string>((Func<string, double>)(x => int.Parse(x))));
+            Assert.AreEqual(15, data.Sum<string>((Func<string, double>)(x => int.Parse(x))));
             Assert.AreEqual(0, Enumerable.Empty<string>().Sum<string>((Func<string, double>)(x => int.Parse(x))));
 
             // Sum<TSource> (Func<TSource, Nullable<Double>>)
-            Assert.AreEqual(15, ((IEnumerable<string>)data).Sum<string>((Func<string, double?>)(x => int.Parse(x))));
+            Assert.AreEqual(15, data.Sum<string>((Func<string, double?>)(x => int.Parse(x))));
             Assert.AreEqual(0, Enumerable.Empty<string>().Sum<string>((Func<string, double?>)(x => int.Parse(x))));
 
             // Sum<TSource> (Func<TSource, Decimal>)
-            Assert.AreEqual(15, ((IEnumerable<string>)data).Sum<string>((Func<string, decimal>)(x => int.Parse(x))));
+            Assert.AreEqual(15, data.Sum<string>((Func<string, decimal>)(x => int.Parse(x))));
             Assert.AreEqual(0, Enumerable.Empty<string>().Sum<string>((Func<string, decimal>)(x => int.Parse(x))));
 
             // Sum<TSource> (Func<TSource, Nullable<Decimal>>)
-            Assert.AreEqual(15, ((IEnumerable<string>)data).Sum<string>((Func<string, decimal?>)(x => int.Parse(x))));
+            Assert.AreEqual(15, data.Sum<string>((Func<string, decimal?>)(x => int.Parse(x))));
             Assert.AreEqual(0, Enumerable.Empty<string>().Sum<string>((Func<string, decimal?>)(x => int.Parse(x))));
 
             // Sum<> ()
-            Assert.AreEqual(6, ((IEnumerable<int>)new[] { 1, 2, 3 }).Sum());
+            Assert.AreEqual(6, new[] { 1, 2, 3 }.Sum());
             Assert.AreEqual(0, Enumerable.Empty<int>().Sum());
 
             // Sum<> ()
-            Assert.AreEqual(6, ((IEnumerable<int?>)new int?[] { 1, 2, 3 }).Sum());
+            Assert.AreEqual(6, new int?[] { 1, 2, 3 }.Sum());
             Assert.AreEqual(0, Enumerable.Empty<int?>().Sum());
 
             // Sum<> ()
-            Assert.AreEqual(6, ((IEnumerable<long>)new long[] { 1, 2, 3 }).Sum());
+            Assert.AreEqual(6, new long[] { 1, 2, 3 }.Sum());
             Assert.AreEqual(0, Enumerable.Empty<long>().Sum());
 
             // Sum<> ()
-            Assert.AreEqual(6, ((IEnumerable<long?>)new long?[] { 1, 2, 3 }).Sum());
+            Assert.AreEqual(6, new long?[] { 1, 2, 3 }.Sum());
             Assert.AreEqual(0, Enumerable.Empty<long?>().Sum());
 
             // Sum<> ()
-            Assert.AreEqual(6, ((IEnumerable<float>)new float[] { 1, 2, 3 }).Sum());
+            Assert.AreEqual(6, new float[] { 1, 2, 3 }.Sum());
             Assert.AreEqual(0, Enumerable.Empty<float>().Sum());
 
             // Sum<> ()
-            Assert.AreEqual(6, ((IEnumerable<float?>)new float?[] { 1, 2, 3 }).Sum());
+            Assert.AreEqual(6, new float?[] { 1, 2, 3 }.Sum());
             Assert.AreEqual(0, Enumerable.Empty<float?>().Sum());
 
             // Sum<> ()
-            Assert.AreEqual(6, ((IEnumerable<double>)new double[] { 1, 2, 3 }).Sum());
+            Assert.AreEqual(6, new double[] { 1, 2, 3 }.Sum());
             Assert.AreEqual(0, Enumerable.Empty<double>().Sum());
 
             // Sum<> ()
-            Assert.AreEqual(6, ((IEnumerable<double?>)new double?[] { 1, 2, 3 }).Sum());
+            Assert.AreEqual(6, new double?[] { 1, 2, 3 }.Sum());
             Assert.AreEqual(0, Enumerable.Empty<double?>().Sum());
 
             // Sum<> ()
-            Assert.AreEqual(6, ((IEnumerable<decimal>)new decimal[] { 1, 2, 3 }).Sum());
+            Assert.AreEqual(6, new decimal[] { 1, 2, 3 }.Sum());
             Assert.AreEqual(0, Enumerable.Empty<decimal>().Sum());
 
             // Sum<> ()
-            Assert.AreEqual(6, ((IEnumerable<decimal?>)new decimal?[] { 1, 2, 3 }).Sum());
+            Assert.AreEqual(6, new decimal?[] { 1, 2, 3 }.Sum());
             Assert.AreEqual(0, Enumerable.Empty<decimal?>().Sum());
         }
 
@@ -932,70 +933,70 @@ namespace MonoTests.System.Linq
             string[] data = { "2", "1", "5", "3", "4" };
 
             // Min<TSource> ()
-            Assert.AreEqual("1", ((IEnumerable<string>)data).Min<string>());
+            Assert.AreEqual("1", data.Min<string>());
 
             // Min<TSource> (Func<TSource, int>)
-            Assert.AreEqual(1, ((IEnumerable<string>)data).Min<string>(x => int.Parse(x)));
+            Assert.AreEqual(1, data.Min<string>(x => int.Parse(x)));
 
             // Min<TSource> (Func<TSource, Nullable<int>>)
-            Assert.AreEqual(1, ((IEnumerable<string>)data).Min<string>(x => (int?)int.Parse(x)));
+            Assert.AreEqual(1, data.Min<string>(x => (int?)int.Parse(x)));
 
             // Min<TSource> (Func<TSource, Int64>)
-            Assert.AreEqual(1, ((IEnumerable<string>)data).Min<string>((Func<string, long>)(x => int.Parse(x))));
+            Assert.AreEqual(1, data.Min<string>((Func<string, long>)(x => int.Parse(x))));
 
             // Min<TSource> (Func<TSource, Nullable<Int64>>)
-            Assert.AreEqual(1, ((IEnumerable<string>)data).Min<string>((Func<string, long?>)(x => int.Parse(x))));
+            Assert.AreEqual(1, data.Min<string>((Func<string, long?>)(x => int.Parse(x))));
 
             // Min<TSource> (Func<TSource, Single>)
-            Assert.AreEqual(1, ((IEnumerable<string>)data).Min<string>((Func<string, float>)(x => int.Parse(x))));
+            Assert.AreEqual(1, data.Min<string>((Func<string, float>)(x => int.Parse(x))));
 
             // Min<TSource> (Func<TSource, Nullable<Single>>)
-            Assert.AreEqual(1, ((IEnumerable<string>)data).Min<string>((Func<string, float?>)(x => int.Parse(x))));
+            Assert.AreEqual(1, data.Min<string>((Func<string, float?>)(x => int.Parse(x))));
 
             // Min<TSource> (Func<TSource, Double>)
-            Assert.AreEqual(1, ((IEnumerable<string>)data).Min<string>((Func<string, double>)(x => int.Parse(x))));
+            Assert.AreEqual(1, data.Min<string>((Func<string, double>)(x => int.Parse(x))));
 
             // Min<TSource> (Func<TSource, Nullable<Double>>)
-            Assert.AreEqual(1, ((IEnumerable<string>)data).Min<string>((Func<string, double?>)(x => int.Parse(x))));
+            Assert.AreEqual(1, data.Min<string>((Func<string, double?>)(x => int.Parse(x))));
 
             // Min<TSource> (Func<TSource, Decimal>)
-            Assert.AreEqual(1, ((IEnumerable<string>)data).Min<string>((Func<string, decimal>)(x => int.Parse(x))));
+            Assert.AreEqual(1, data.Min<string>((Func<string, decimal>)(x => int.Parse(x))));
 
             // Min<TSource> (Func<TSource, Nullable<Decimal>>)
-            Assert.AreEqual(1, ((IEnumerable<string>)data).Min<string>((Func<string, decimal?>)(x => int.Parse(x))));
+            Assert.AreEqual(1, data.Min<string>((Func<string, decimal?>)(x => int.Parse(x))));
 
             // Min<TSource,TSource> (Func<TSource, TSource>)
-            Assert.AreEqual("1", ((IEnumerable<string>)data).Min<string, string>(x => x));
+            Assert.AreEqual("1", data.Min<string, string>(x => x));
 
             // Min<> ()
-            Assert.AreEqual(2, ((IEnumerable<int>)new[] { 2, 3, 4 }).Min());
+            Assert.AreEqual(2, new[] { 2, 3, 4 }.Min());
 
             // Min<> ()
-            Assert.AreEqual(2, ((IEnumerable<int?>)new int?[] { 2, 3, 4 }).Min());
+            Assert.AreEqual(2, new int?[] { 2, 3, 4 }.Min());
 
             // Min<> ()
-            Assert.AreEqual(2, ((IEnumerable<long>)new long[] { 2, 3, 4 }).Min());
+            Assert.AreEqual(2, new long[] { 2, 3, 4 }.Min());
 
             // Min<> ()
-            Assert.AreEqual(2, ((IEnumerable<long?>)new long?[] { 2, 3, 4 }).Min());
+            Assert.AreEqual(2, new long?[] { 2, 3, 4 }.Min());
 
             // Min<> ()
-            Assert.AreEqual(2, ((IEnumerable<float>)new float[] { 2, 3, 4 }).Min());
+            Assert.AreEqual(2, new float[] { 2, 3, 4 }.Min());
 
             // Min<> ()
-            Assert.AreEqual(2, ((IEnumerable<float?>)new float?[] { 2, 3, 4 }).Min());
+            Assert.AreEqual(2, new float?[] { 2, 3, 4 }.Min());
 
             // Min<> ()
-            Assert.AreEqual(2, ((IEnumerable<double>)new double[] { 2, 3, 4 }).Min());
+            Assert.AreEqual(2, new double[] { 2, 3, 4 }.Min());
 
             // Min<> ()
-            Assert.AreEqual(2, ((IEnumerable<double?>)new double?[] { 2, 3, 4 }).Min());
+            Assert.AreEqual(2, new double?[] { 2, 3, 4 }.Min());
 
             // Min<> ()
-            Assert.AreEqual(2, ((IEnumerable<decimal>)new decimal[] { 2, 3, 4 }).Min());
+            Assert.AreEqual(2, new decimal[] { 2, 3, 4 }.Min());
 
             // Min<> ()
-            Assert.AreEqual(2, ((IEnumerable<decimal?>)new decimal?[] { 2, 3, 4 }).Min());
+            Assert.AreEqual(2, new decimal?[] { 2, 3, 4 }.Min());
         }
 
         [Test]
@@ -1087,70 +1088,70 @@ namespace MonoTests.System.Linq
             string[] data = { "2", "1", "5", "3", "4" };
 
             // Max<string> ()
-            Assert.AreEqual("5", ((IEnumerable<string>)data).Max<string>());
+            Assert.AreEqual("5", data.Max<string>());
 
             // Max<TSource> (Func<TSource, int>)
-            Assert.AreEqual(5, ((IEnumerable<string>)data).Max<string>(x => int.Parse(x)));
+            Assert.AreEqual(5, data.Max<string>(x => int.Parse(x)));
 
             // Max<TSource> (Func<TSource, Nullable<int>>)
-            Assert.AreEqual(5, ((IEnumerable<string>)data).Max<string>(x => (int?)int.Parse(x)));
+            Assert.AreEqual(5, data.Max<string>(x => (int?)int.Parse(x)));
 
             // Max<TSource> (Func<TSource, Int64>)
-            Assert.AreEqual(5, ((IEnumerable<string>)data).Max<string>((Func<string, long>)(x => int.Parse(x))));
+            Assert.AreEqual(5, data.Max<string>((Func<string, long>)(x => int.Parse(x))));
 
             // Max<TSource> (Func<TSource, Nullable<Int64>>)
-            Assert.AreEqual(5, ((IEnumerable<string>)data).Max<string>((Func<string, long?>)(x => int.Parse(x))));
+            Assert.AreEqual(5, data.Max<string>((Func<string, long?>)(x => int.Parse(x))));
 
             // Max<TSource> (Func<TSource, Single>)
-            Assert.AreEqual(5, ((IEnumerable<string>)data).Max<string>((Func<string, float>)(x => int.Parse(x))));
+            Assert.AreEqual(5, data.Max<string>((Func<string, float>)(x => int.Parse(x))));
 
             // Max<TSource> (Func<TSource, Nullable<Single>>)
-            Assert.AreEqual(5, ((IEnumerable<string>)data).Max<string>((Func<string, float?>)(x => int.Parse(x))));
+            Assert.AreEqual(5, data.Max<string>((Func<string, float?>)(x => int.Parse(x))));
 
             // Max<TSource> (Func<TSource, Double>)
-            Assert.AreEqual(5, ((IEnumerable<string>)data).Max<string>((Func<string, double>)(x => int.Parse(x))));
+            Assert.AreEqual(5, data.Max<string>((Func<string, double>)(x => int.Parse(x))));
 
             // Max<TSource> (Func<TSource, Nullable<Double>>)
-            Assert.AreEqual(5, ((IEnumerable<string>)data).Max<string>((Func<string, double?>)(x => int.Parse(x))));
+            Assert.AreEqual(5, data.Max<string>((Func<string, double?>)(x => int.Parse(x))));
 
             // Max<TSource> (Func<TSource, Decimal>)
-            Assert.AreEqual(5, ((IEnumerable<string>)data).Max<string>((Func<string, decimal>)(x => int.Parse(x))));
+            Assert.AreEqual(5, data.Max<string>((Func<string, decimal>)(x => int.Parse(x))));
 
             // Max<TSource> (Func<TSource, Nullable<Decimal>>)
-            Assert.AreEqual(5, ((IEnumerable<string>)data).Max<string>((Func<string, decimal?>)(x => int.Parse(x))));
+            Assert.AreEqual(5, data.Max<string>((Func<string, decimal?>)(x => int.Parse(x))));
 
             // Max<TSource,TSource> (Func<TSource, TSource>)
-            Assert.AreEqual("5", ((IEnumerable<string>)data).Max<string, string>(x => x));
+            Assert.AreEqual("5", data.Max<string, string>(x => x));
 
             // Max<> ()
-            Assert.AreEqual(4, ((IEnumerable<int>)new[] { 2, 3, 4 }).Max());
+            Assert.AreEqual(4, new[] { 2, 3, 4 }.Max());
 
             // Max<> ()
-            Assert.AreEqual(4, ((IEnumerable<int?>)new int?[] { 2, 3, 4 }).Max());
+            Assert.AreEqual(4, new int?[] { 2, 3, 4 }.Max());
 
             // Max<> ()
-            Assert.AreEqual(4, ((IEnumerable<long>)new long[] { 2, 3, 4 }).Max());
+            Assert.AreEqual(4, new long[] { 2, 3, 4 }.Max());
 
             // Max<> ()
-            Assert.AreEqual(4, ((IEnumerable<long?>)new long?[] { 2, 3, 4 }).Max());
+            Assert.AreEqual(4, new long?[] { 2, 3, 4 }.Max());
 
             // Max<> ()
-            Assert.AreEqual(4, ((IEnumerable<float>)new float[] { 2, 3, 4 }).Max());
+            Assert.AreEqual(4, new float[] { 2, 3, 4 }.Max());
 
             // Max<> ()
-            Assert.AreEqual(4, ((IEnumerable<float?>)new float?[] { 2, 3, 4 }).Max());
+            Assert.AreEqual(4, new float?[] { 2, 3, 4 }.Max());
 
             // Max<> ()
-            Assert.AreEqual(4, ((IEnumerable<double>)new double[] { 2, 3, 4 }).Max());
+            Assert.AreEqual(4, new double[] { 2, 3, 4 }.Max());
 
             // Max<> ()
-            Assert.AreEqual(4, ((IEnumerable<double?>)new double?[] { 2, 3, 4 }).Max());
+            Assert.AreEqual(4, new double?[] { 2, 3, 4 }.Max());
 
             // Max<> ()
-            Assert.AreEqual(4, ((IEnumerable<decimal>)new decimal[] { 2, 3, 4 }).Max());
+            Assert.AreEqual(4, new decimal[] { 2, 3, 4 }.Max());
 
             // Max<> ()
-            Assert.AreEqual(4, ((IEnumerable<decimal?>)new decimal?[] { 2, 3, 4 }).Max());
+            Assert.AreEqual(4, new decimal?[] { 2, 3, 4 }.Max());
         }
 
         [Test]
@@ -1236,74 +1237,74 @@ namespace MonoTests.System.Linq
             string[] empty = { };
 
             // Average<string> (Func<string, int>)
-            Assert.AreEqual(3, ((IEnumerable<string>)data).Average<string>(x => int.Parse(x)));
+            Assert.AreEqual(3, data.Average<string>(x => int.Parse(x)));
             AssertException<InvalidOperationException>(() => empty.Average(x => int.Parse(x)));
 
             // Average<TSource> (Func<TSource, Nullable<int>>)
-            Assert.AreEqual(3, ((IEnumerable<string>)data).Average<string>(x => (int?)int.Parse(x)));
+            Assert.AreEqual(3, data.Average<string>(x => (int?)int.Parse(x)));
 
             // Average<TSource> (Func<TSource, Int64>)
-            Assert.AreEqual(3, ((IEnumerable<string>)data).Average<string>((Func<string, long>)(x => int.Parse(x))));
+            Assert.AreEqual(3, data.Average<string>((Func<string, long>)(x => int.Parse(x))));
             AssertException<InvalidOperationException>(() => empty.Average((Func<string, long>)(x => int.Parse(x))));
 
             // Average<TSource> (Func<TSource, Nullable<Int64>>)
-            Assert.AreEqual(3, ((IEnumerable<string>)data).Average<string>((Func<string, long?>)(x => int.Parse(x))));
+            Assert.AreEqual(3, data.Average<string>((Func<string, long?>)(x => int.Parse(x))));
 
             // Average<TSource> (Func<TSource, Single>)
-            Assert.AreEqual(3, ((IEnumerable<string>)data).Average<string>((Func<string, float>)(x => int.Parse(x))));
+            Assert.AreEqual(3, data.Average<string>((Func<string, float>)(x => int.Parse(x))));
             AssertException<InvalidOperationException>(() => empty.Average((Func<string, float>)(x => int.Parse(x))));
 
             // Average<TSource> (Func<TSource, Nullable<Single>>)
-            Assert.AreEqual(3, ((IEnumerable<string>)data).Average<string>((Func<string, float?>)(x => int.Parse(x))));
+            Assert.AreEqual(3, data.Average<string>((Func<string, float?>)(x => int.Parse(x))));
 
             // Average<TSource> (Func<TSource, Double>)
-            Assert.AreEqual(3, ((IEnumerable<string>)data).Average<string>((Func<string, double>)(x => int.Parse(x))));
+            Assert.AreEqual(3, data.Average<string>((Func<string, double>)(x => int.Parse(x))));
             AssertException<InvalidOperationException>(() => empty.Average((Func<string, double>)(x => int.Parse(x))));
 
             // Average<TSource> (Func<TSource, Nullable<Double>>)
-            Assert.AreEqual(3, ((IEnumerable<string>)data).Average<string>((Func<string, double?>)(x => int.Parse(x))));
+            Assert.AreEqual(3, data.Average<string>((Func<string, double?>)(x => int.Parse(x))));
 
             // Average<TSource> (Func<TSource, Decimal>)
-            Assert.AreEqual(3, ((IEnumerable<string>)data).Average<string>((Func<string, decimal>)(x => int.Parse(x))));
+            Assert.AreEqual(3, data.Average<string>((Func<string, decimal>)(x => int.Parse(x))));
             AssertException<InvalidOperationException>(() => empty.Average((Func<string, decimal>)(x => int.Parse(x))));
 
             // Average<TSource> (Func<TSource, Nullable<Decimal>>)
-            Assert.AreEqual(3, ((IEnumerable<string>)data).Average<string>((Func<string, decimal?>)(x => int.Parse(x))));
+            Assert.AreEqual(3, data.Average<string>((Func<string, decimal?>)(x => int.Parse(x))));
 
             // Average<> ()
-            Assert.AreEqual(3, ((IEnumerable<int>)new[] { 2, 3, 4 }).Average());
+            Assert.AreEqual(3, new[] { 2, 3, 4 }.Average());
             AssertException<InvalidOperationException>(() => new int[0].Average());
 
             // Average<> ()
-            Assert.AreEqual(3, ((IEnumerable<int?>)new int?[] { 2, 3, 4 }).Average());
+            Assert.AreEqual(3, new int?[] { 2, 3, 4 }.Average());
 
             // Average<> ()
-            Assert.AreEqual(3, ((IEnumerable<long>)new long[] { 2, 3, 4 }).Average());
+            Assert.AreEqual(3, new long[] { 2, 3, 4 }.Average());
             AssertException<InvalidOperationException>(() => new long[0].Average());
 
             // Average<> ()
-            Assert.AreEqual(3, ((IEnumerable<long?>)new long?[] { 2, 3, 4 }).Average());
+            Assert.AreEqual(3, new long?[] { 2, 3, 4 }.Average());
 
             // Average<> ()
-            Assert.AreEqual(3, ((IEnumerable<float>)new float[] { 2, 3, 4 }).Average());
+            Assert.AreEqual(3, new float[] { 2, 3, 4 }.Average());
             AssertException<InvalidOperationException>(() => new float[0].Average());
 
             // Average<> ()
-            Assert.AreEqual(3, ((IEnumerable<float?>)new float?[] { 2, 3, 4 }).Average());
+            Assert.AreEqual(3, new float?[] { 2, 3, 4 }.Average());
 
             // Average<> ()
-            Assert.AreEqual(3, ((IEnumerable<double>)new double[] { 2, 3, 4 }).Average());
+            Assert.AreEqual(3, new double[] { 2, 3, 4 }.Average());
             AssertException<InvalidOperationException>(() => new double[0].Average());
 
             // Average<> ()
-            Assert.AreEqual(3, ((IEnumerable<double?>)new double?[] { 2, 3, 4 }).Average());
+            Assert.AreEqual(3, new double?[] { 2, 3, 4 }.Average());
 
             // Average<> ()
-            Assert.AreEqual(3, ((IEnumerable<decimal>)new decimal[] { 2, 3, 4 }).Average());
+            Assert.AreEqual(3, new decimal[] { 2, 3, 4 }.Average());
             AssertException<InvalidOperationException>(() => new decimal[0].Average());
 
             // Average<> ()
-            Assert.AreEqual(3, ((IEnumerable<decimal?>)new decimal?[] { 2, 3, 4 }).Average());
+            Assert.AreEqual(3, new decimal?[] { 2, 3, 4 }.Average());
         }
 
         [Test]
@@ -1316,8 +1317,8 @@ namespace MonoTests.System.Linq
             AssertException<ArgumentNullException>(() => data.Where((Func<string, bool>)null));
 
             // Where<TSource> (Func<TSource, int, bool>)
-            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Where((x, y) => true));
-            AssertException<ArgumentNullException>(() => data.Where((Func<string, int, bool>)null));
+            AssertException<ArgumentNullException>(() => Enumerable.Where(((IEnumerable<string>)null), (x, y) => true));
+            AssertException<ArgumentNullException>(() => Enumerable.Where(data, (Func<string, int, bool>)null));
         }
 
         [Test]
@@ -1331,7 +1332,7 @@ namespace MonoTests.System.Linq
             AssertAreSame(expected1, data.Where(x => x < 3));
 
             // Where<TSource> (Func<TSource, int, bool>)
-            AssertAreSame(expected2, data.Where((x, y) => x < 3 && y != 1));
+            AssertAreSame(expected2, Enumerable.Where(data, (x, y) => x < 3 && y != 1));
         }
 
         [Test]
@@ -1393,16 +1394,16 @@ namespace MonoTests.System.Linq
             string[] expected = { "0", "00", "1", "11" };
 
             // SelectMany<TSource,TResult> (Func<TSource, IEnumerable<TResult>>)
-            AssertAreSame(expected, ((IEnumerable<string>)data).SelectMany(x => new[] { x, x + x }));
+            AssertAreSame(expected, data.SelectMany(x => new[] { x, x + x }));
 
             // SelectMany<TSource,TResult> (Func<TSource, int, IEnumerable<TResult>>)
-            AssertAreSame(expected, ((IEnumerable<string>)data).SelectMany((x, y) => new[] { x, x + y }));
+            AssertAreSame(expected, data.SelectMany((x, y) => new[] { x, x + y }));
 
             // SelectMany<TSource,TCollection,TResult> (Func<string, int, IEnumerable<TCollection>>, Func<TSource, TCollection, TResult>)
-            AssertAreSame(expected, ((IEnumerable<string>)data).SelectMany((x, y) => new[] { x, x + y }, (x, y) => y));
+            AssertAreSame(expected, data.SelectMany((x, y) => new[] { x, x + y }, (x, y) => y));
 
             // SelectMany<TSource,TCollection,TResult> (Func<TSource, IEnumerable<TCollection>>, Func<TSource, TCollection, TResult>)
-            AssertAreSame(expected, ((IEnumerable<string>)data).SelectMany(x => new[] { x, x + x }, (x, y) => y));
+            AssertAreSame(expected, data.SelectMany(x => new[] { x, x + x }, (x, y) => y));
         }
 
         [Test]
@@ -2128,7 +2129,7 @@ namespace MonoTests.System.Linq
             int[] expected = { 2, 3, 4, 5 };
 
             // ToArray<TSource> ()
-            AssertAreSame(expected, data.ToArray());
+            AssertAreSame(expected, Enumerable.ToArray(data));
         }
 
         [Test]
@@ -2186,19 +2187,19 @@ namespace MonoTests.System.Linq
             };
 
             // ToDictionary<TSource,TKey> (Func<TSource, TKey>)
-            AssertAreSame(expected, ((IEnumerable<string>)data).ToDictionary(x => "k" + x));
+            AssertAreSame(expected, data.ToDictionary(x => "k" + x));
             AssertException<ArgumentException>(() => data.ToDictionary(x => "key"));
 
             // ToDictionary<TSource,TKey> (Func<TSource, TKey>, IEqualityComparer<TKey>)
-            AssertAreSame(expected, ((IEnumerable<string>)data).ToDictionary(x => "k" + x, EqualityComparer<string>.Default));
+            AssertAreSame(expected, data.ToDictionary(x => "k" + x, EqualityComparer<string>.Default));
             AssertException<ArgumentException>(() => data.ToDictionary(x => "key", EqualityComparer<string>.Default));
 
             // ToDictionary<TSource,TKey,TElement> (Func<TSource, TKey>, Func<TSource, TElement>)
-            AssertAreSame(expected, ((IEnumerable<string>)data).ToDictionary(x => "k" + x, x => x));
+            AssertAreSame(expected, data.ToDictionary(x => "k" + x, x => x));
             AssertException<ArgumentException>(() => data.ToDictionary(x => "key", x => x));
 
             // ToDictionary<TSource,TKey,TElement> (Func<TSource, TKey>, Func<TSource, TElement>, IEqualityComparer<TKey>)
-            AssertAreSame(expected, ((IEnumerable<string>)data).ToDictionary(x => "k" + x, x => x, EqualityComparer<string>.Default));
+            AssertAreSame(expected, data.ToDictionary(x => "k" + x, x => x, EqualityComparer<string>.Default));
             AssertException<ArgumentException>(() => data.ToDictionary(x => "key", x => x, EqualityComparer<string>.Default));
         }
 
@@ -2237,19 +2238,19 @@ namespace MonoTests.System.Linq
                 { "5", new List<string> { "55" } },
                 { "4", new List<string> { "42", "41" } }
             };
-            Assert.AreEqual(expected.Count, ((IEnumerable<string>)data).ToLookup(x => x[0].ToString()).Count);
+            Assert.AreEqual(expected.Count, data.ToLookup(x => x[0].ToString()).Count);
 
             // ToLookup<string,string> (Func<string, string>)
-            AssertAreSame(expected, ((IEnumerable<string>)data).ToLookup(x => x[0].ToString()));
+            AssertAreSame(expected, data.ToLookup(x => x[0].ToString()));
 
             // ToLookup<string,string> (Func<string, string>, IEqualityComparer<string>)
-            AssertAreSame(expected, ((IEnumerable<string>)data).ToLookup(x => x[0].ToString(), EqualityComparer<string>.Default));
+            AssertAreSame(expected, data.ToLookup(x => x[0].ToString(), EqualityComparer<string>.Default));
 
             // ToLookup<string,string,string> (Func<string, string>, Func<string, string>)
-            AssertAreSame(expected, ((IEnumerable<string>)data).ToLookup(x => x[0].ToString(), x => x));
+            AssertAreSame(expected, data.ToLookup(x => x[0].ToString(), x => x));
 
             // ToLookup<string,string,string> (Func<string, string>, Func<string, string>, IEqualityComparer<string>)
-            AssertAreSame(expected, ((IEnumerable<string>)data).ToLookup(x => x[0].ToString(), x => x, EqualityComparer<string>.Default));
+            AssertAreSame(expected, data.ToLookup(x => x[0].ToString(), x => x, EqualityComparer<string>.Default));
         }
 
         [Test]

@@ -61,7 +61,7 @@ namespace MonoTests.System
 
             Assert.IsFalse(l1.IsValueCreated);
 
-            var i = l1.Value;
+            GC.KeepAlive(l1.Value);
 
             Assert.IsTrue(l1.IsValueCreated);
         }
@@ -92,7 +92,7 @@ namespace MonoTests.System
 
             try
             {
-                var o = l1.Value;
+                GC.KeepAlive(l1.Value);
                 Assert.Fail();
             }
             catch (MissingMemberException ex)
@@ -140,7 +140,7 @@ namespace MonoTests.System
                     {
                         Monitor.Wait(monitor);
                     }
-                    var val = l.Value;
+                    GC.KeepAlive(l.Value);
                 });
             }
             for (var i = 0; i < 10; ++i)
@@ -170,7 +170,7 @@ namespace MonoTests.System
             );
             try
             {
-                var r = c.Value;
+                GC.KeepAlive(c.Value);
                 Assert.Fail();
             }
             catch (InvalidOperationException ex)
@@ -205,7 +205,7 @@ namespace MonoTests.System
 
             try
             {
-                x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#2");
             }
             catch (Exception ex)
@@ -216,7 +216,7 @@ namespace MonoTests.System
             fail = false;
             try
             {
-                x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#3");
             }
             catch (Exception ex)
@@ -229,7 +229,7 @@ namespace MonoTests.System
 
             try
             {
-                x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#4");
             }
             catch (InvalidOperationException ex)
@@ -240,7 +240,7 @@ namespace MonoTests.System
             rec = false;
             try
             {
-                x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#5");
             }
             catch (InvalidOperationException ex)
@@ -277,7 +277,7 @@ namespace MonoTests.System
 
             try
             {
-                var x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#2");
             }
             catch (Exception ex)
@@ -333,7 +333,7 @@ namespace MonoTests.System
 
             try
             {
-                var x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#3");
             }
             catch (Exception ex)
@@ -345,7 +345,7 @@ namespace MonoTests.System
             fail = false;
             try
             {
-                var x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#5");
             }
             catch (Exception ex)
@@ -359,7 +359,7 @@ namespace MonoTests.System
 
             try
             {
-                var x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#7");
             }
             catch (InvalidOperationException ex)
@@ -370,7 +370,7 @@ namespace MonoTests.System
             rec = false;
             try
             {
-                var x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#8");
             }
             catch (InvalidOperationException ex)
@@ -410,7 +410,7 @@ namespace MonoTests.System
                     {
                         try
                         {
-                            var value = lazy.Value;
+                            GC.KeepAlive(lazy.Value);
                         }
                         catch (Exception ex)
                         {
@@ -425,7 +425,7 @@ namespace MonoTests.System
                     Exception e2 = null;
                     try
                     {
-                        var value = lazy.Value;
+                        GC.KeepAlive(lazy.Value);
                     }
                     catch (Exception ex)
                     {
@@ -435,7 +435,7 @@ namespace MonoTests.System
                     Exception e3 = null;
                     try
                     {
-                        var value = lazy.Value;
+                        GC.KeepAlive(lazy.Value);
                     }
                     catch (Exception ex)
                     {

@@ -15,7 +15,7 @@ namespace MonoTests.System.Threading.Tasks
 
         protected override void QueueTask(Task task)
         {
-            return;
+            GC.KeepAlive(task);
         }
 
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)

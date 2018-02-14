@@ -254,7 +254,7 @@ namespace MonoTests.System.Linq.Expressions
             var add = Expression.Lambda<Func<Slot?, Slot?, Slot?>>(node, l, r).Compile();
 
             Assert.AreEqual(null, add(null, null));
-            Assert.AreEqual((Slot?)new Slot(42), add((Slot?)new Slot(21), (Slot?)new Slot(21)));
+            Assert.AreEqual((Slot?)new Slot(42), add(new Slot(21), new Slot(21)));
         }
 
         private struct SlotToNullable

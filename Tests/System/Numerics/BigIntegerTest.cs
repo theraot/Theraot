@@ -251,7 +251,7 @@ namespace MonoTests.System.Numerics
             try
             {
                 BigInteger d;
-                var c = BigInteger.DivRem(100, 0, out d);
+                GC.KeepAlive(BigInteger.DivRem(100, 0, out d));
                 Assert.Fail("#1");
             }
             catch (DivideByZeroException ex)
@@ -691,7 +691,7 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual(arr, new BigInteger(arr).ToByteArray(), "#13");
 
             arr = new byte[] { 1, 0, 0, 0, 0, 0, };
-            Assert.AreEqual(new byte[1] { 1 }, new BigInteger(arr).ToByteArray(), "#14");
+            Assert.AreEqual(new byte[] { 1 }, new BigInteger(arr).ToByteArray(), "#14");
         }
 
         [Test]
@@ -781,7 +781,7 @@ namespace MonoTests.System.Numerics
         {
             try
             {
-                var v = (int)new BigInteger(_hugeA);
+                GC.KeepAlive((int)new BigInteger(_hugeA));
                 Assert.Fail("#1");
             }
             catch (OverflowException ex)
@@ -791,7 +791,7 @@ namespace MonoTests.System.Numerics
 
             try
             {
-                var v = (int)new BigInteger(1L + int.MaxValue);
+                GC.KeepAlive((int)new BigInteger(1L + int.MaxValue));
                 Assert.Fail("#2");
             }
             catch (OverflowException ex)
@@ -801,7 +801,7 @@ namespace MonoTests.System.Numerics
 
             try
             {
-                var v = (int)new BigInteger(-1L + int.MinValue);
+                GC.KeepAlive((int)new BigInteger(-1L + int.MinValue));
                 Assert.Fail("#3");
             }
             catch (OverflowException ex)
@@ -818,7 +818,7 @@ namespace MonoTests.System.Numerics
         {
             try
             {
-                var v = (long)new BigInteger(_hugeA);
+                GC.KeepAlive((long)new BigInteger(_hugeA));
                 Assert.Fail("#1");
             }
             catch (OverflowException ex)
@@ -829,7 +829,7 @@ namespace MonoTests.System.Numerics
             //long.MaxValue + 1
             try
             {
-                var v = (long)new BigInteger(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00 });
+                GC.KeepAlive((long)new BigInteger(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00 }));
                 Assert.Fail("#2");
             }
             catch (OverflowException ex)
@@ -840,7 +840,7 @@ namespace MonoTests.System.Numerics
             //TODO long.MinValue - 1
             try
             {
-                var v = (long)new BigInteger(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7F, 0xFF });
+                GC.KeepAlive((long)new BigInteger(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7F, 0xFF }));
                 Assert.Fail("#3");
             }
             catch (OverflowException ex)
@@ -913,7 +913,7 @@ namespace MonoTests.System.Numerics
 
             try
             {
-                var x = (short)new BigInteger(10000000);
+                GC.KeepAlive((short)new BigInteger(10000000));
                 Assert.Fail("#3");
             }
             catch (OverflowException ex)
@@ -923,7 +923,7 @@ namespace MonoTests.System.Numerics
 
             try
             {
-                var x = (short)new BigInteger(-10000000);
+                GC.KeepAlive((short)new BigInteger(-10000000));
                 Assert.Fail("#4");
             }
             catch (OverflowException ex)
@@ -1024,7 +1024,7 @@ namespace MonoTests.System.Numerics
 
             try
             {
-                var x = (decimal)BigInteger.Pow(2, 1024);
+                GC.KeepAlive((decimal)BigInteger.Pow(2, 1024));
                 Assert.Fail("#2");
             }
             catch (OverflowException ex)
@@ -1034,7 +1034,7 @@ namespace MonoTests.System.Numerics
 
             try
             {
-                var x = (decimal)BigInteger.Pow(-2, 1025);
+                GC.KeepAlive((decimal)BigInteger.Pow(-2, 1025));
                 Assert.Fail("#3");
             }
             catch (OverflowException ex)
@@ -1168,7 +1168,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TryParse()
         {
-            var x = BigInteger.One;
+            BigInteger x;
             Assert.IsFalse(BigInteger.TryParse(null, out x), "#1");
             Assert.AreEqual(0, (int)x, "#1a");
             Assert.IsFalse(BigInteger.TryParse("", out x), "#2");
@@ -1222,7 +1222,7 @@ namespace MonoTests.System.Numerics
             const int Val1 = -1234567;
             const int Val2 = 1234567;
 
-            var s = "";
+            string s;
             BigInteger v;
             s = Val1.ToString("c", _nfiUser);
             Assert.AreEqual("1234/5/67:000 XYZ-", s, "Currency value type 1 is not what we want to try to parse");
@@ -1250,7 +1250,7 @@ namespace MonoTests.System.Numerics
 
             Thread.CurrentThread.CurrentCulture = cur;
 
-            var x = BigInteger.Zero;
+            BigInteger x;
 
             try
             {
@@ -1514,7 +1514,7 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual("-9223372036854775809", x.ToString(), "#1");
             try
             {
-                x = (long)x;
+                GC.KeepAlive((long)x);
                 Assert.Fail("#2 Must OVF");
             }
             catch (OverflowException ex)

@@ -167,7 +167,7 @@ namespace MonoTests.System.Linq.Expressions
         //
         public override bool Equals(object obj)
         {
-            return ((object)this) == obj;
+            return this == obj;
         }
 
         public override int GetHashCode()
@@ -215,10 +215,7 @@ namespace MonoTests.System.Linq.Expressions
         public void DoNothing()
         {
             // Just to avoid a compiler warning
-            if (OnTest != null)
-            {
-                return;
-            }
+            GC.KeepAlive(OnTest);
         }
 
         public static int StaticField;

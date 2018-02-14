@@ -207,7 +207,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void OfType()
         {
-            Assert.AreEqual(_src.OfType<int>().Count(), _array.OfType<int>().Count());
+            Assert.AreEqual(_src.OfType<int>().Count(), _array.Count());
         }
 
         [Test]
@@ -406,7 +406,7 @@ namespace MonoTests.System.Linq
         public void NonGenericEnumerable2()
         {
             IEnumerable<int> nonGen = new[] { 1, 2, 3 };
-            Assert.IsTrue(nonGen.AsQueryable() is IQueryable<int>);
+            Assert.IsTrue(nonGen.AsQueryable() != null);
         }
 
         private class Bar<T1, T2> : IEnumerable<T2>

@@ -127,7 +127,7 @@ namespace MonoTests.System.Linq.Expressions
             var l = Expression.Lambda<Func<T>>(
                 Expression.SubtractChecked(Expression.Constant(v1), Expression.Constant(v2)));
             var del = l.Compile();
-            var res = default(T);
+            T res;
             try
             {
                 res = del();

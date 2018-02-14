@@ -503,7 +503,7 @@ namespace MonoTests.System.Threading.Tasks
                             x =>
                             {
                                 Thread.Sleep(50);
-                                result = (x as Task<string>).Result;
+                                result = x.Result;
                             },
                             TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.NotOnFaulted
                         );

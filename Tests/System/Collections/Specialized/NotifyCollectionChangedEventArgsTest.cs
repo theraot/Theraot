@@ -49,7 +49,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Add
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Add.");
             }
             catch (ArgumentException ex)
@@ -60,7 +60,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Remove
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Remove.");
             }
             catch (ArgumentException ex)
@@ -71,7 +71,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Move
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Move.");
             }
             catch (ArgumentException ex)
@@ -82,7 +82,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Replace
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Replace.");
             }
             catch (ArgumentException ex)
@@ -114,7 +114,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying to add a null array
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, null);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, null));
                 Assert.Fail("Cannot call .ctor if changedItems is null.");
             }
             catch (ArgumentNullException ex)
@@ -145,7 +145,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Move
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changedItems);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changedItems));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Move.");
             }
             catch (ArgumentException ex)
@@ -156,7 +156,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Replace
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, changedItems);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, changedItems));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Replace.");
             }
             catch (ArgumentException ex)
@@ -170,12 +170,12 @@ namespace MonoTests.System.Collections.Specialized
             changedItems.Add(new object());
 
             // Trying with Add
-            args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItems);
+            GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItems));
 
             CollectionChangedEventValidators.ValidateAddOperation(args, changedItems, "#B04");
 
             // Trying with Remove
-            args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changedItems);
+            GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changedItems));
 
             CollectionChangedEventValidators.ValidateRemoveOperation(args, changedItems, "#B05");
         }
@@ -213,7 +213,7 @@ namespace MonoTests.System.Collections.Specialized
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, changedItem);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, changedItem));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset.");
             }
             catch (ArgumentException ex)
@@ -224,7 +224,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Move
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changedItem);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changedItem));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Move.");
             }
             catch (ArgumentException ex)
@@ -235,7 +235,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Replace
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, changedItem);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, changedItem));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Replace.");
             }
             catch (ArgumentException ex)
@@ -287,7 +287,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with null arguments.
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, null, oldItems);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, null, oldItems));
                 Assert.Fail("The newItems argument cannot be null.");
             }
             catch (ArgumentNullException ex)
@@ -297,7 +297,7 @@ namespace MonoTests.System.Collections.Specialized
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, null);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, null));
                 Assert.Fail("The oldItems argument cannot be null.");
             }
             catch (ArgumentNullException ex)
@@ -308,7 +308,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Reset
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, newItems, oldItems);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, newItems, oldItems));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset.");
             }
             catch (ArgumentException ex)
@@ -319,7 +319,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Move
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, newItems, oldItems);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, newItems, oldItems));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Move.");
             }
             catch (ArgumentException ex)
@@ -330,7 +330,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Add
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItems, oldItems);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItems, oldItems));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Add.");
             }
             catch (ArgumentException ex)
@@ -341,7 +341,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Remove
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, newItems, oldItems);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, newItems, oldItems));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Remove.");
             }
             catch (ArgumentException ex)
@@ -391,7 +391,7 @@ namespace MonoTests.System.Collections.Specialized
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItems, -5);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItems, -5));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Add if startingIndex < -1.");
             }
             catch (ArgumentException ex)
@@ -401,7 +401,7 @@ namespace MonoTests.System.Collections.Specialized
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, null, StartingIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, null, StartingIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Add if changedItems is null.");
             }
             catch (ArgumentNullException ex)
@@ -416,7 +416,7 @@ namespace MonoTests.System.Collections.Specialized
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changedItems, -5);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changedItems, -5));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Remove if startingIndex < -1.");
             }
             catch (ArgumentException ex)
@@ -426,7 +426,7 @@ namespace MonoTests.System.Collections.Specialized
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, null, StartingIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, null, StartingIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Remove if changedItems is null.");
             }
             catch (ArgumentNullException ex)
@@ -435,11 +435,11 @@ namespace MonoTests.System.Collections.Specialized
             }
 
             // Trying with Reset
-            args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, null, -1);
+            GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, null, -1));
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, changedItems, -1);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, changedItems, -1));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset unless changeItems is null");
             }
             catch (ArgumentException ex)
@@ -449,7 +449,7 @@ namespace MonoTests.System.Collections.Specialized
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, null, 1);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, null, 1));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset unless startingIndex is -1");
             }
             catch (ArgumentException ex)
@@ -459,7 +459,7 @@ namespace MonoTests.System.Collections.Specialized
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, changedItems, StartingIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, changedItems, StartingIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset.");
             }
             catch (ArgumentException ex)
@@ -470,7 +470,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Move
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changedItems, StartingIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changedItems, StartingIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Move.");
             }
             catch (ArgumentException ex)
@@ -481,7 +481,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Replace
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, changedItems, StartingIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, changedItems, StartingIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Replace.");
             }
             catch (ArgumentException ex)
@@ -513,7 +513,7 @@ namespace MonoTests.System.Collections.Specialized
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, changedItem, -1);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, changedItem, -1));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset unless changeItems is null");
             }
             catch (ArgumentException ex)
@@ -523,7 +523,7 @@ namespace MonoTests.System.Collections.Specialized
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, (object)null, 1);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, (object)null, 1));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset unless startingIndex is -1");
             }
             catch (ArgumentException ex)
@@ -533,7 +533,7 @@ namespace MonoTests.System.Collections.Specialized
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, changedItem, StartingIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, changedItem, StartingIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset.");
             }
             catch (ArgumentException ex)
@@ -544,7 +544,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Move
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changedItem, StartingIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changedItem, StartingIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Move.");
             }
             catch (ArgumentException ex)
@@ -555,7 +555,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Replace
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, changedItem, StartingIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, changedItem, StartingIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Replace.");
             }
             catch (ArgumentException ex)
@@ -584,7 +584,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Reset
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, newItem, oldItem);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, newItem, oldItem));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset.");
             }
             catch (ArgumentException ex)
@@ -595,7 +595,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Move
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, newItem, oldItem);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, newItem, oldItem));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Move.");
             }
             catch (ArgumentException ex)
@@ -606,7 +606,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Add
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem, oldItem);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem, oldItem));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Add.");
             }
             catch (ArgumentException ex)
@@ -617,7 +617,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Remove
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, newItem, oldItem);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, newItem, oldItem));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Remove.");
             }
             catch (ArgumentException ex)
@@ -661,7 +661,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with null arguments.
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, null, oldItems, StartIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, null, oldItems, StartIndex));
                 Assert.Fail("The newItems argument cannot be null.");
             }
             catch (ArgumentNullException ex)
@@ -671,7 +671,7 @@ namespace MonoTests.System.Collections.Specialized
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, null, StartIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, null, StartIndex));
                 Assert.Fail("The oldItems argument cannot be null.");
             }
             catch (ArgumentNullException ex)
@@ -682,7 +682,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Reset
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, newItems, oldItems, StartIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, newItems, oldItems, StartIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset.");
             }
             catch (ArgumentException ex)
@@ -693,7 +693,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Move
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, newItems, oldItems, StartIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, newItems, oldItems, StartIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Move.");
             }
             catch (ArgumentException ex)
@@ -704,7 +704,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Add
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItems, oldItems, StartIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItems, oldItems, StartIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Add.");
             }
             catch (ArgumentException ex)
@@ -715,7 +715,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Remove
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, newItems, oldItems);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, newItems, oldItems));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Remove.");
             }
             catch (ArgumentException ex)
@@ -749,7 +749,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with newIndex < 0.
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changed, -5, OldIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changed, -5, OldIndex));
                 Assert.Fail("The index argument cannot be less than 0.");
             }
             catch (ArgumentException ex)
@@ -760,7 +760,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Reset
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, changed, NewIndex, OldIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, changed, NewIndex, OldIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset.");
             }
             catch (ArgumentException ex)
@@ -771,7 +771,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Replace
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, changed, NewIndex, OldIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, changed, NewIndex, OldIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Replace.");
             }
             catch (ArgumentException ex)
@@ -782,7 +782,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Add
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changed, NewIndex, OldIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changed, NewIndex, OldIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Add.");
             }
             catch (ArgumentException ex)
@@ -793,7 +793,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Remove
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changed, NewIndex, OldIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changed, NewIndex, OldIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Remove.");
             }
             catch (ArgumentException ex)
@@ -817,7 +817,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with newIndex < 0.
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changed, -5, OldIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changed, -5, OldIndex));
                 Assert.Fail("The newIndex argument cannot be less than 0.");
             }
             catch (ArgumentException ex)
@@ -828,7 +828,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Reset
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, changed, NewIndex, OldIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, changed, NewIndex, OldIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset.");
             }
             catch (ArgumentException ex)
@@ -839,7 +839,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Replace
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, changed, NewIndex, OldIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, changed, NewIndex, OldIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Replace.");
             }
             catch (ArgumentException ex)
@@ -850,7 +850,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Add
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changed, NewIndex, OldIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changed, NewIndex, OldIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Add.");
             }
             catch (ArgumentException ex)
@@ -861,7 +861,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Remove
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changed, NewIndex, OldIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changed, NewIndex, OldIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Remove.");
             }
             catch (ArgumentException ex)
@@ -885,7 +885,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Reset
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, newItem, oldItem, StartIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, newItem, oldItem, StartIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset.");
             }
             catch (ArgumentException ex)
@@ -896,7 +896,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Move
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, newItem, oldItem, StartIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, newItem, oldItem, StartIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Move.");
             }
             catch (ArgumentException ex)
@@ -907,7 +907,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Add
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem, oldItem, StartIndex);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem, oldItem, StartIndex));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Add.");
             }
             catch (ArgumentException ex)
@@ -918,7 +918,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Remove
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, newItem, oldItem);
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, newItem, oldItem));
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Remove.");
             }
             catch (ArgumentException ex)

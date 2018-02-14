@@ -253,9 +253,9 @@ namespace MonoTests.System.Linq.Expressions
             var eq = Expression.Lambda<Func<Slot?, Slot?, bool>>(node, l, r).Compile();
 
             Assert.AreEqual(true, eq(null, null));
-            Assert.AreEqual(false, eq((Slot?)new Slot(2), null));
-            Assert.AreEqual(false, eq(null, (Slot?)new Slot(2)));
-            Assert.AreEqual(true, eq((Slot?)new Slot(21), (Slot?)new Slot(21)));
+            Assert.AreEqual(false, eq(new Slot(2), null));
+            Assert.AreEqual(false, eq(null, new Slot(2)));
+            Assert.AreEqual(true, eq(new Slot(21), new Slot(21)));
         }
 
         [Test]
@@ -274,10 +274,10 @@ namespace MonoTests.System.Linq.Expressions
             var eq = Expression.Lambda<Func<Slot?, Slot?, bool?>>(node, l, r).Compile();
 
             Assert.AreEqual(null, eq(null, null));
-            Assert.AreEqual(null, eq((Slot?)new Slot(2), null));
-            Assert.AreEqual(null, eq(null, (Slot?)new Slot(2)));
-            Assert.AreEqual((bool?)true, eq((Slot?)new Slot(21), (Slot?)new Slot(21)));
-            Assert.AreEqual((bool?)false, eq((Slot?)new Slot(21), (Slot?)new Slot(-21)));
+            Assert.AreEqual(null, eq(new Slot(2), null));
+            Assert.AreEqual(null, eq(null, new Slot(2)));
+            Assert.AreEqual((bool?)true, eq(new Slot(21), new Slot(21)));
+            Assert.AreEqual((bool?)false, eq(new Slot(21), new Slot(-21)));
         }
 
         private struct SlotToNullable

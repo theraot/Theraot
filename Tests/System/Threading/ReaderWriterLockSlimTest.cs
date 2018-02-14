@@ -451,7 +451,6 @@ namespace MonoTests.System.Threading
                         {
                             // Just to cause some contention
                             Thread.Sleep(100);
-
                             v.EnterReadLock();
 
                             Assert.AreEqual(10, Local);

@@ -18,7 +18,6 @@ namespace System.Threading.Tests
         /// </summary>
         private enum SemaphoreSlimActions
         {
-            Constructor,
             Wait,
             WaitAsync,
             Release,
@@ -177,8 +176,6 @@ namespace System.Threading.Tests
         /// <returns>True if the test succeeded, false otherwise</returns>
         private static void RunSemaphoreSlimTest0_Ctor(int initial, int maximum, Type exceptionType)
         {
-            var methodFailed = "RunSemaphoreSlimTest0_Ctor(" + initial + "," + maximum + "):  FAILED.  ";
-            Exception exception = null;
             try
             {
                 using (var semaphore = new SemaphoreSlim(initial, maximum))
@@ -190,7 +187,6 @@ namespace System.Threading.Tests
             {
                 Assert.NotNull(exceptionType);
                 Assert.IsTrue(exceptionType.IsInstanceOfType(ex));
-                exception = ex;
             }
         }
 
@@ -211,7 +207,7 @@ namespace System.Threading.Tests
             {
                 try
                 {
-                    var result = false;
+                    bool result;
                     result = timeout is TimeSpan ? semaphore.Wait((TimeSpan)timeout) : semaphore.Wait((int)timeout);
                     Assert.AreEqual(returnValue, result);
                     if (result)
@@ -246,7 +242,7 @@ namespace System.Threading.Tests
             {
                 try
                 {
-                    var result = false;
+                    bool result;
                     result = timeout is TimeSpan ? semaphore.WaitAsync((TimeSpan)timeout).Result : semaphore.WaitAsync((int)timeout).Result;
                     Assert.AreEqual(returnValue, result);
                     if (result)
@@ -280,7 +276,7 @@ namespace System.Threading.Tests
 
                         const int AsyncActions = 20;
                         var remAsyncActions = AsyncActions;
-                        Func<int, Task> doWorkAsync = async (int i) =>
+                        Func<int, Task> doWorkAsync = async i =>
                         {
                             await semaphore.WaitAsync();
                             nonZeroObserved |= counter.Value > 0;
@@ -419,7 +415,7 @@ namespace System.Threading.Tests
             try
             {
                 semaphore.Dispose();
-                CallSemaphoreAction(semaphore, action, null);
+                GC.KeepAlive(CallSemaphoreAction(semaphore, action, null));
             }
             catch (Exception ex)
             {
@@ -439,7 +435,7 @@ namespace System.Threading.Tests
         {
             var semaphore = new SemaphoreSlim(initial, maximum);
 
-            CallSemaphoreAction(semaphore, action, null);
+            GC.KeepAlive(CallSemaphoreAction(semaphore, action, null));
             if (action == null)
             {
                 Assert.AreEqual(initial, semaphore.CurrentCount);
@@ -462,7 +458,7 @@ namespace System.Threading.Tests
         {
             var semaphore = new SemaphoreSlim(initial, maximum);
 
-            CallSemaphoreAction(semaphore, action, null);
+            GC.KeepAlive(CallSemaphoreAction(semaphore, action, null));
             Assert.NotNull(semaphore.AvailableWaitHandle);
             Assert.AreEqual(state, semaphore.AvailableWaitHandle.WaitOne(0));
         }
@@ -498,7 +494,7 @@ namespace System.Threading.Tests
                             // with its current implementation).  Without this, the release tasks will likely get
                             // queued behind the wait tasks in the pool, making it very likely that the wait tasks
                             // will starve the very tasks that when run would unblock them.
-                            threads[i] = new Task(delegate ()
+                            threads[i] = new Task(delegate
                             {
                                 mre.WaitOne();
                                 if (semaphore.Wait(timeout))
@@ -513,7 +509,7 @@ namespace System.Threading.Tests
                         }
                         else
                         {
-                            threads[i] = new Task(delegate ()
+                            threads[i] = new Task(delegate
                             {
                                 mre.WaitOne();
                                 semaphore.Release();
@@ -612,7 +608,6 @@ namespace System.Threading.Tests
                 var tasks = new Task[totalWaiters];
 
                 const int Iters = 10;
-                var randSeed = unchecked((int)DateTime.Now.Ticks);
                 for (var i = 0; i < syncWaiters; i++)
                 {
                     tasks[i] = TaskEx.Run(delegate

@@ -333,11 +333,13 @@ namespace MonoTests.System.Linq.Expressions
         {
             public static bool operator true(A x)
             {
+                GC.KeepAlive(x);
                 return true;
             }
 
             public static bool operator false(A x)
             {
+                GC.KeepAlive(x);
                 return false;
             }
         }
@@ -346,6 +348,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             public static B operator &(B x, B y)
             {
+                GC.KeepAlive(x);
+                GC.KeepAlive(y);
                 return new B();
             }
 

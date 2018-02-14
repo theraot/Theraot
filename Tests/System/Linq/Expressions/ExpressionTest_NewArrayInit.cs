@@ -86,7 +86,7 @@ namespace MonoTests.System.Linq.Expressions
             return Expression.Lambda<Func<T[]>>(
                 Expression.NewArrayInit(
                     typeof(T),
-                    (from t in ts select t.ToConstant()).ToArray())).Compile();
+                    (from t in ts select t.ToConstant() as Expression).ToArray())).Compile();
         }
 
         private static void AssertCreatedArrayIsEqual<T>(params T[] ts)

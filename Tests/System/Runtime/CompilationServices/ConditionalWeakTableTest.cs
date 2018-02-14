@@ -82,7 +82,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             Assert.IsTrue(cwt.TryGetValue(handles[1].Target, out r2), "#2");
 
             GC.Collect();
-            cwt.GetHashCode();
+            GC.KeepAlive(cwt.GetHashCode());
         }
 
         [Test]
