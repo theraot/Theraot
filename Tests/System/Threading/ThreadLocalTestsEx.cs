@@ -150,7 +150,6 @@ namespace MonoTests.System.Threading
                 {
                     // Pokemon
                     GC.KeepAlive(exc);
-                    return;
                 }
             });
             thread.Start();

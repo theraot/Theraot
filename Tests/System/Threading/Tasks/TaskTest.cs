@@ -1982,7 +1982,7 @@ namespace MonoTests.System.Threading.Tasks
             var t = Task.Run(() => 1, new CancellationToken(true));
             try
             {
-                var r = t.Result;
+                GC.KeepAlive(t.Result);
                 Assert.Fail("#1");
             }
             catch (AggregateException ex)
@@ -2157,7 +2157,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WaitAny_WithNull()
         {
-            var tasks = new[] {
+            var tasks = new Task[] {
                 Task.FromResult (2),
                 null
             };
@@ -2310,7 +2310,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WhenAll_WithNull()
         {
-            var tasks = new[] {
+            var tasks = new Task[] {
                 Task.FromResult (2),
                 null
             };
@@ -2325,10 +2325,9 @@ namespace MonoTests.System.Threading.Tasks
                 GC.KeepAlive(ex);
             }
 
-            tasks = null;
             try
             {
-                Task.WhenAll(tasks);
+                Task.WhenAll(null);
                 Assert.Fail("#2");
             }
             catch (ArgumentException ex)
@@ -2416,7 +2415,7 @@ namespace MonoTests.System.Threading.Tasks
 
                         try
                         {
-                            var r = t.Result;
+                            GC.KeepAlive(t.Result);
                             Assert.Fail("#4");
                         }
                         catch (AggregateException ex)
@@ -2473,10 +2472,9 @@ namespace MonoTests.System.Threading.Tasks
                 GC.KeepAlive(ex);
             }
 
-            tasks = null;
             try
             {
-                Task.WhenAll<int>(tasks);
+                Task.WhenAll<int>(null);
                 Assert.Fail("#2");
             }
             catch (ArgumentException ex)
@@ -2612,10 +2610,9 @@ namespace MonoTests.System.Threading.Tasks
                 GC.KeepAlive(ex);
             }
 
-            tasks = null;
             try
             {
-                Task.WhenAny(tasks);
+                Task.WhenAny(null);
                 Assert.Fail("#2");
             }
             catch (ArgumentException ex)
@@ -2807,10 +2804,9 @@ namespace MonoTests.System.Threading.Tasks
                 GC.KeepAlive(ex);
             }
 
-            tasks = null;
             try
             {
-                Task.WhenAny<int>(tasks);
+                Task.WhenAny<int>(null);
                 Assert.Fail("#2");
             }
             catch (ArgumentException ex)

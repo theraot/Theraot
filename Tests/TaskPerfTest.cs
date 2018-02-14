@@ -30,7 +30,7 @@ namespace Tests
                   Console.WriteLine(result);
                   return result;
               })).ToArray();
-            var allTask = await Task.WhenAll(tasks);
+            GC.KeepAlive(await Task.WhenAll(tasks));
         }
 
 #endif

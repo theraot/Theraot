@@ -53,13 +53,9 @@ namespace Theraot.Core
         {
             if (ReferenceEquals(null, obj))
             {
-                return EqualityComparer<object>.Default.GetHashCode(null);
+                return EqualityComparer<object>.Default.GetHashCode(null); // TODO: Test coverage?
             }
-            unchecked
-            {
-                return
-                    _comparer.GetHashCode(obj.Item1);
-            }
+            return _comparer.GetHashCode(obj.Item1);
         }
     }
 

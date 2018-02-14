@@ -67,7 +67,7 @@ namespace MonoTests.System.Threading
         {
             var tl = new ThreadLocal<int>();
             tl.Dispose();
-            var value = tl.IsValueCreated;
+            GC.KeepAlive(tl.IsValueCreated);
         }
 
         [Test, ExpectedException(typeof(ObjectDisposedException))]
@@ -75,7 +75,7 @@ namespace MonoTests.System.Threading
         {
             var tl = new ThreadLocal<int>();
             tl.Dispose();
-            var value = tl.Value;
+            GC.KeepAlive(tl.Value);
         }
 
         [Test]
@@ -93,7 +93,7 @@ namespace MonoTests.System.Threading
 
             try
             {
-                var foo = _threadLocal.Value;
+                GC.KeepAlive(_threadLocal.Value);
             }
             catch (Exception e)
             {
@@ -108,7 +108,7 @@ namespace MonoTests.System.Threading
 
             try
             {
-                var foo = _threadLocal.Value;
+                GC.KeepAlive(_threadLocal.Value);
             }
             catch (Exception e)
             {
@@ -129,8 +129,7 @@ namespace MonoTests.System.Threading
                 throw new NotSupportedException("Results in stack overflow - blame Microsoft");
             }
             _threadLocal = new ThreadLocal<int>(() => _threadLocal.Value + 1);
-
-            var value = _threadLocal.Value;
+            GC.KeepAlive(_threadLocal.Value);
         }
 
         [Test]
@@ -153,11 +152,11 @@ namespace MonoTests.System.Threading
             var foo = _threadLocal.Value;
             var threadValueCreated = false;
             Assert.AreEqual(43, foo, "#3");
-            var t = new Thread((object o) =>
+            var t = new Thread(o =>
             {
                 try
                 {
-                    var foo2 = _threadLocal.Value;
+                    GC.KeepAlive(_threadLocal.Value);
                 }
                 catch (Exception e)
                 {
@@ -195,7 +194,7 @@ namespace MonoTests.System.Threading
         {
             AssertThreadLocal();
 
-            var t = new Thread((object o) =>
+            var t = new Thread(o =>
             {
                 Interlocked.Decrement(ref _nTimes);
                 AssertThreadLocal();
