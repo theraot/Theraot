@@ -138,7 +138,7 @@ namespace MonoTests.System
                 {
                     lock (monitor)
                     {
-                        Monitor.Wait(monitor);
+                        Monitor.Wait(monitor); // TODO: Review
                     }
                     GC.KeepAlive(l.Value);
                 });
@@ -157,7 +157,7 @@ namespace MonoTests.System
         }
 
         [Test]
-        public void InitRecursion()
+        public void InitRecursion() // TODO: Review
         {
             Lazy<DefaultCtorClass> c = null; // Do not inline
             c = new Lazy<DefaultCtorClass>
