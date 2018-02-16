@@ -646,19 +646,20 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void Start_NullArgument() // TODO: review
+        public void Start_NullArgument()
         {
-            using (Task t = new Task(ActionHelper.GetNoopAction()))
+            try
             {
-                try
-                {
-                    t.Start(null);
-                    Assert.Fail();
-                }
-                catch (ArgumentNullException ex)
-                {
-                    GC.KeepAlive(ex);
-                }
+                var t = new Task(ActionHelper.GetNoopAction());
+                t.Start(null);
+                // If we do not start the task, we should not dispose it... so, do not use using
+                // We should have a NullArgumentException anyway, we are only calling Dispose to avoid a warning
+                t.Dispose();
+                Assert.Fail();
+            }
+            catch (ArgumentNullException ex)
+            {
+                GC.KeepAlive(ex);
             }
         }
 
