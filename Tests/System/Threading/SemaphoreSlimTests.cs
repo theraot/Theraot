@@ -264,7 +264,7 @@ namespace System.Threading.Tests
         /// </summary>
         [Test]
         [Category("NotWorking")] // The current implementation allows WaitAsync to awake concurrently
-        public static void RunSemaphoreSlimTest1_WaitAsync2() // TODO: review
+        public static void RunSemaphoreSlimTest1_WaitAsync2()
         {
             using (var semaphore = new SemaphoreSlim(1))
             {
@@ -272,22 +272,25 @@ namespace System.Threading.Tests
                 {
                     using (var mre = new ManualResetEvent(false))
                     {
+                        var semaphorea = new[] { semaphore };
+                        var countera = new[] { counter };
+                        var mrea = new[] { mre };
                         var nonZeroObserved = false;
 
                         const int AsyncActions = 20;
                         var remAsyncActions = AsyncActions;
                         Func<int, Task> doWorkAsync = async i =>
                         {
-                            await semaphore.WaitAsync();
-                            nonZeroObserved |= counter.Value > 0;
+                            await semaphorea[0].WaitAsync();
+                            nonZeroObserved |= countera[0].Value > 0;
 
-                            counter.Value = counter.Value + 1;
-                            semaphore.Release();
-                            counter.Value = counter.Value - 1;
+                            countera[0].Value = countera[0].Value + 1;
+                            semaphorea[0].Release();
+                            countera[0].Value = countera[0].Value - 1;
 
                             if (Interlocked.Decrement(ref remAsyncActions) == 0)
                             {
-                                mre.Set();
+                                mrea[0].Set();
                             }
                         };
 
