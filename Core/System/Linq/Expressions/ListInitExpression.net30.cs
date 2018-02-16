@@ -162,16 +162,12 @@ namespace System.Linq.Expressions
                 () => initList = new List<ElementInit>(),
                 count => initArray = new ElementInit[count]
             );
-            var enumerator = initializers.GetEnumerator(); // TODO: Review
+            var enumerator = initializers.GetEnumerator();
             try
             {
                 enumerator.MoveNext();
                 var initializer = enumerator.Current;
                 var addMethod = FindMethod(newExpression.Type, "Add", null, new[] { initializer }, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                if (addMethod == null)
-                {
-                    return ListInit(newExpression, initializers); // TODO: Review
-                }
                 if (initList != null)
                 {
                     initList.Add(ElementInit(addMethod, initializer));
@@ -261,15 +257,11 @@ namespace System.Linq.Expressions
                     () => initList = new List<ElementInit>(),
                     count => initArray = new ElementInit[count]
                 );
-            var enumerator = initializers.GetEnumerator(); // TODO: Review
+            var enumerator = initializers.GetEnumerator();
             try
             {
                 enumerator.MoveNext();
                 var initializer = enumerator.Current;
-                if (addMethod == null)
-                {
-                    return ListInit(newExpression, initializers); // TODO: Test coverage, review
-                }
                 if (initList != null)
                 {
                     initList.Add(ElementInit(addMethod, initializer));
