@@ -80,6 +80,7 @@ namespace MonoTests.System.Threading
 
         [Test]
         [Category("NotDotNet")] // Running this test against .NET 4.0 or .NET 4.5 fails
+        [Ignore]
         public void InitializeThrowingTest()
         {
             var callTime = 0;
@@ -122,6 +123,7 @@ namespace MonoTests.System.Threading
 
         [Test, ExpectedException(typeof(InvalidOperationException))]
         [Category("NotDotNet")] // nunit results in stack overflow
+        [Ignore]
         public void MultipleReferenceToValueTest()
         {
             if (Environment.Version.Major >= 4)
