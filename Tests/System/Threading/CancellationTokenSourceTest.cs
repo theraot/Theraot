@@ -29,7 +29,9 @@
 
 using NUnit.Framework;
 using System;
+using System.Linq;
 using System.Threading;
+using Theraot.Collections.ThreadSafe;
 
 namespace MonoTests.System.Threading
 {
@@ -554,15 +556,31 @@ namespace MonoTests.System.Threading
         [Category("RaceCondition")] // This test creates a race condition
         public void CancelAfter()
         {
-            var called = 0;
-            using (var cts = new CancellationTokenSource())
+            var called = DateTime.Now.Ticks;
+            using (var mre = new ManualResetEvent(false))
             {
-                cts.Token.Register(() => called++);
-                Assert.AreEqual(0, called, "#1");
-                cts.CancelAfter(50);
-                Assert.AreEqual(0, called, "#2");
-                Thread.Sleep(500);
-                Assert.AreEqual(1, called, "#3");
+                var mrea = new[] { mre };
+                long set;
+                using (var cts = new CancellationTokenSource())
+                {
+                    cts.Token.Register(() =>
+                    {
+                        called = DateTime.Now.Ticks;
+                        mrea[0].Set();
+                    });
+                    set = DateTime.Now.Ticks;
+                    cts.CancelAfter(50);
+                    if (!mre.WaitOne(1000))
+                    {
+                        Assert.Fail();
+                    }
+                }
+                var time = called - set;
+                var milliseconds = time / TimeSpan.TicksPerMillisecond;
+                if (milliseconds > 0 && milliseconds < 50)
+                {
+                    Assert.Fail();
+                }
             }
         }
 
