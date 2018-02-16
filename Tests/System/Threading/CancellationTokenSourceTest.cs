@@ -553,13 +553,16 @@ namespace MonoTests.System.Threading
         [Test]
         public void CancelAfter() // TODO: Review
         {
-            var called = 0;
-            using (var cts = new CancellationTokenSource())
+            for (var index = 0; index < 10000; index++)
             {
-                cts.Token.Register(() => called++);
-                cts.CancelAfter(20);
-                Thread.Sleep(50);
-                Assert.AreEqual(1, called, "#1");
+                var called = 0;
+                using (var cts = new CancellationTokenSource())
+                {
+                    cts.Token.Register(() => called++);
+                    cts.CancelAfter(20);
+                    Thread.Sleep(50);
+                    Assert.AreEqual(1, called, "#1");
+                }
             }
         }
 
