@@ -26,16 +26,6 @@ namespace System.Runtime.CompilerServices
         private static readonly object[] _emptyParams = new object[0];
 
         /// <summary>
-        ///   The default value to use for continueOnCapturedContext.
-        /// </summary>
-        internal const bool continueOnCapturedContextDefaultValue = true;
-
-        /// <summary>
-        ///   Error message for GetAwaiter.
-        /// </summary>
-        private const string _invalidOperationExceptionTaskNotCompleted = "The task has not yet completed."; // TODO not used
-
-        /// <summary>
         ///   The task being awaited.
         /// </summary>
         private readonly Task _task;

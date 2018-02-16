@@ -62,9 +62,16 @@ namespace MonoTests.System.Runtime.CompilerServices
 
         private class MyContext : SynchronizationContext
         {
+            // For debug purposes
             public int Started;
+
+            // For debug purposes
             public int Completed;
+
+            // For debug purposes
             public int PostCounter;
+
+            // For debug purposes
             public int SendCounter;
 
             public override void OperationStarted()
@@ -133,7 +140,7 @@ namespace MonoTests.System.Runtime.CompilerServices
 
         [Test]
         [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-        public void OnCompleted_2()
+        public void OnCompleted_2() // TODO: Review
         {
             TaskScheduler scheduler = null;
             SynchronizationContext.SetSynchronizationContext(null);
@@ -153,10 +160,10 @@ namespace MonoTests.System.Runtime.CompilerServices
 
         [Test]
         [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-        public void OnCompleted_3()
+        public void OnCompleted_3() // TODO: Review
         {
             var scheduler = new MyScheduler();
-            TaskScheduler ran_scheduler = null;
+            TaskScheduler ranScheduler = null;
             SynchronizationContext.SetSynchronizationContext(null);
 
             var t = Task.Factory.StartNew(() =>
@@ -165,7 +172,7 @@ namespace MonoTests.System.Runtime.CompilerServices
                 {
                     _a.OnCompleted(() =>
                     {
-                        ran_scheduler = TaskScheduler.Current;
+                        ranScheduler = TaskScheduler.Current;
                         mre.Set();
                     });
 
@@ -174,26 +181,26 @@ namespace MonoTests.System.Runtime.CompilerServices
             }, CancellationToken.None, TaskCreationOptions.None, scheduler);
 
             Assert.IsTrue(t.Wait(1000), "#1");
-            Assert.AreEqual(scheduler, ran_scheduler, "#2");
+            Assert.AreEqual(scheduler, ranScheduler, "#2");
         }
 
         [Test]
         [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-        public void OnCompleted_4()
+        public void OnCompleted_4() // TODO: Review
         {
-            SynchronizationContext context_ran = null;
+            SynchronizationContext contextRan = null;
             using (var mre = new ManualResetEvent(false))
             {
                 var context = new MyContext();
                 SynchronizationContext.SetSynchronizationContext(context);
                 _a.OnCompleted(() =>
                 {
-                    context_ran = SynchronizationContext.Current;
+                    contextRan = SynchronizationContext.Current;
                     mre.Set();
                 });
 
                 Assert.IsTrue(mre.WaitOne(1000), "#1");
-                Assert.IsNull(context_ran, "#2");
+                Assert.IsNull(contextRan, "#2");
             }
         }
     }

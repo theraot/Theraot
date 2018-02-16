@@ -78,7 +78,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
             });
 
             var ed = t.Result;
-            var orig_stack = orig.StackTrace;
+            var origStack = orig.StackTrace;
             try
             {
                 ed.Throw();
@@ -89,7 +89,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
                 var s = e.StackTrace.Split('\n');
                 Assert.AreEqual(4, s.Length, "#1");
                 Assert.AreEqual(orig, e, "#2");
-                Assert.AreNotEqual(orig_stack, e.StackTrace, "#3");
+                Assert.AreNotEqual(origStack, e.StackTrace, "#3");
             }
         }
 

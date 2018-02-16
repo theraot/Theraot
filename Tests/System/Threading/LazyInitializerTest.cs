@@ -78,21 +78,21 @@ namespace MonoTests.System.Threading
         {
             C c = null;
             var init = false;
-            object sync_lock = null;
-            c = LazyInitializer.EnsureInitialized(ref c, ref init, ref sync_lock);
+            object syncLock = null;
+            c = LazyInitializer.EnsureInitialized(ref c, ref init, ref syncLock);
 
             Assert.IsNotNull(c, "#1");
             Assert.AreEqual(1, c.Counter, "#2");
             Assert.IsTrue(init, "#3");
-            Assert.IsNotNull(sync_lock, "#4");
+            Assert.IsNotNull(syncLock, "#4");
 
-            var old_lock = sync_lock;
-            var d = LazyInitializer.EnsureInitialized(ref c, ref init, ref sync_lock);
+            var oldLock = syncLock;
+            var d = LazyInitializer.EnsureInitialized(ref c, ref init, ref syncLock);
 
             Assert.AreEqual(c, d, "#11");
             Assert.AreEqual(1, c.Counter, "#12");
             Assert.IsTrue(init, "#13");
-            Assert.AreEqual(old_lock, sync_lock, "#14");
+            Assert.AreEqual(oldLock, syncLock, "#14");
         }
     }
 }

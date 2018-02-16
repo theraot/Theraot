@@ -88,10 +88,7 @@ namespace System.Linq.Expressions
                 {
                     return NotEqual(Expression, Constant(null, Expression.Type));
                 }
-                else
-                {
-                    return ReferenceNotEqual(Expression, Constant(null, Expression.Type));
-                }
+                return ReferenceNotEqual(Expression, Constant(null, Expression.Type));
             }
 
             // expression is a ByVal parameter. Can safely reevaluate.
@@ -154,10 +151,7 @@ namespace System.Linq.Expressions
             {
                 return Constant(false);
             }
-            else
-            {
-                return Constant(_typeOperand.GetNonNullableType() == ce.Value.GetType());
-            }
+            return Constant(_typeOperand.GetNonNullableType() == ce.Value.GetType());
         }
 
         #endregion Reduce TypeEqual

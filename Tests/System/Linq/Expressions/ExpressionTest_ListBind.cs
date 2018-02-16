@@ -35,7 +35,7 @@ using System.Reflection;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_ListBind
+    public class ExpressionTestListBind
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -48,7 +48,7 @@ namespace MonoTests.System.Linq.Expressions
         [ExpectedException(typeof(ArgumentNullException))]
         public void PropertyAccessorNull()
         {
-            Expression.ListBind(null as MethodInfo, new List<ElementInit>());
+            Expression.ListBind(null, new List<ElementInit>());
         }
 
         [Test]

@@ -146,7 +146,7 @@ namespace Theraot.Collections.Specialized
                 // key can be null
                 if (ReferenceEquals(key, null))
                 {
-                    if (_hasNull)
+                    if (_hasNull) // TODO: Test coverage?
                     {
                         return _valueForNull[0];
                     }
@@ -159,7 +159,7 @@ namespace Theraot.Collections.Specialized
                 // key can be null
                 if (ReferenceEquals(key, null))
                 {
-                    SetForNull(value);
+                    SetForNull(value); // OK
                 }
                 else
                 {
@@ -175,7 +175,7 @@ namespace Theraot.Collections.Specialized
             {
                 if (_hasNull)
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException(); // TODO: Test coverage?
                 }
                 SetForNull(value);
             }
@@ -230,7 +230,7 @@ namespace Theraot.Collections.Specialized
             // key can be null
             if (ReferenceEquals(key, null))
             {
-                return _hasNull;
+                return _hasNull; // OK
             }
             return _dictionary.ContainsKey(key);
         }
@@ -316,7 +316,7 @@ namespace Theraot.Collections.Specialized
             // key can be null
             if (ReferenceEquals(key, null))
             {
-                if (_hasNull)
+                if (_hasNull) // OK
                 {
                     ClearForNull();
                     return true;
@@ -382,7 +382,7 @@ namespace Theraot.Collections.Specialized
             // key can be null
             if (ReferenceEquals(key, null))
             {
-                if (_hasNull)
+                if (_hasNull) // TODO: Test coverage?
                 {
                     value = _valueForNull[0];
                     return true;

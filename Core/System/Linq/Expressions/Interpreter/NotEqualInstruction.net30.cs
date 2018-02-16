@@ -528,7 +528,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                frame.Push(ScriptingRuntimeHelpers.BooleanToObject(frame.Pop() != frame.Pop()));
+                frame.Push(ScriptingRuntimeHelpers.BooleanToObject(frame.Pop() != frame.Pop())); // Note: Pop returns different value on each call
                 return +1;
             }
         }
@@ -588,58 +588,55 @@ namespace System.Linq.Expressions.Interpreter
                         throw Error.ExpressionNotSupportedForType("NotEqual", type);
                 }
             }
-            else
+            // Boxed enums can be unboxed as their underlying types:
+            switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : type.GetNonNullableType()).GetTypeCode())
             {
-                // Boxed enums can be unboxed as their underlying types:
-                switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : type.GetNonNullableType()).GetTypeCode())
-                {
-                    case TypeCode.Boolean:
-                        return _boolean ?? (_boolean = new NotEqualBoolean());
+                case TypeCode.Boolean:
+                    return _boolean ?? (_boolean = new NotEqualBoolean());
 
-                    case TypeCode.SByte:
-                        return _sbyte ?? (_sbyte = new NotEqualSByte());
+                case TypeCode.SByte:
+                    return _sbyte ?? (_sbyte = new NotEqualSByte());
 
-                    case TypeCode.Byte:
-                        return _byte ?? (_byte = new NotEqualByte());
+                case TypeCode.Byte:
+                    return _byte ?? (_byte = new NotEqualByte());
 
-                    case TypeCode.Char:
-                        return _char ?? (_char = new NotEqualChar());
+                case TypeCode.Char:
+                    return _char ?? (_char = new NotEqualChar());
 
-                    case TypeCode.Int16:
-                        return _int16 ?? (_int16 = new NotEqualInt16());
+                case TypeCode.Int16:
+                    return _int16 ?? (_int16 = new NotEqualInt16());
 
-                    case TypeCode.Int32:
-                        return _int32 ?? (_int32 = new NotEqualInt32());
+                case TypeCode.Int32:
+                    return _int32 ?? (_int32 = new NotEqualInt32());
 
-                    case TypeCode.Int64:
-                        return _int64 ?? (_int64 = new NotEqualInt64());
+                case TypeCode.Int64:
+                    return _int64 ?? (_int64 = new NotEqualInt64());
 
-                    case TypeCode.UInt16:
-                        return _uInt16 ?? (_uInt16 = new NotEqualUInt16());
+                case TypeCode.UInt16:
+                    return _uInt16 ?? (_uInt16 = new NotEqualUInt16());
 
-                    case TypeCode.UInt32:
-                        return _uInt32 ?? (_uInt32 = new NotEqualUInt32());
+                case TypeCode.UInt32:
+                    return _uInt32 ?? (_uInt32 = new NotEqualUInt32());
 
-                    case TypeCode.UInt64:
-                        return _uInt64 ?? (_uInt64 = new NotEqualUInt64());
+                case TypeCode.UInt64:
+                    return _uInt64 ?? (_uInt64 = new NotEqualUInt64());
 
-                    case TypeCode.Single:
-                        return _single ?? (_single = new NotEqualSingle());
+                case TypeCode.Single:
+                    return _single ?? (_single = new NotEqualSingle());
 
-                    case TypeCode.Double:
-                        return _double ?? (_double = new NotEqualDouble());
+                case TypeCode.Double:
+                    return _double ?? (_double = new NotEqualDouble());
 
-                    case TypeCode.String:
-                    case TypeCode.Object:
-                        if (!type.IsValueType)
-                        {
-                            return _reference ?? (_reference = new NotEqualReference());
-                        }
-                        // TODO: Nullable<T>
-                        throw Error.ExpressionNotSupportedForNullableType("NotEqual", type);
-                    default:
-                        throw Error.ExpressionNotSupportedForType("NotEqual", type);
-                }
+                case TypeCode.String:
+                case TypeCode.Object:
+                    if (!type.IsValueType)
+                    {
+                        return _reference ?? (_reference = new NotEqualReference());
+                    }
+                    // TODO: Nullable<T>
+                    throw Error.ExpressionNotSupportedForNullableType("NotEqual", type);
+                default:
+                    throw Error.ExpressionNotSupportedForType("NotEqual", type);
             }
         }
 

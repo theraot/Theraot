@@ -34,10 +34,7 @@ namespace System.Linq.Expressions
             {
                 return new NewArrayInitExpression(type, expressions);
             }
-            else
-            {
-                return new NewArrayBoundsExpression(type, expressions);
-            }
+            return new NewArrayBoundsExpression(type, expressions);
         }
 
         /// <summary>
@@ -245,7 +242,7 @@ namespace System.Linq.Expressions
                 arrayType = type.MakeArrayType(dimensions);
             }
 
-            return NewArrayExpression.Make(ExpressionType.NewArrayBounds, arrayType, bounds.ToReadOnly());
+            return NewArrayExpression.Make(ExpressionType.NewArrayBounds, arrayType, boundsList);
         }
 
         #endregion NewArrayBounds

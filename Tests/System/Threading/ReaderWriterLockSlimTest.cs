@@ -39,22 +39,24 @@ namespace MonoTests.System.Threading
         [Test]
         public void DefaultValues()
         {
-            var v = new ReaderWriterLockSlim();
-            Assert.AreEqual(0, v.CurrentReadCount, "1");
-            Assert.AreEqual(false, v.IsReadLockHeld, "2");
-            Assert.AreEqual(false, v.IsUpgradeableReadLockHeld, "3");
-            Assert.AreEqual(false, v.IsWriteLockHeld, "4");
-            Assert.AreEqual(LockRecursionPolicy.NoRecursion, v.RecursionPolicy, "5");
-            Assert.AreEqual(0, v.RecursiveReadCount, "6");
-            Assert.AreEqual(0, v.RecursiveUpgradeCount, "7");
-            Assert.AreEqual(0, v.RecursiveWriteCount, "8");
-            Assert.AreEqual(0, v.WaitingReadCount, "9");
-            Assert.AreEqual(0, v.WaitingUpgradeCount, "10");
-            Assert.AreEqual(0, v.WaitingWriteCount, "11");
+            using (var v = new ReaderWriterLockSlim())
+            {
+                Assert.AreEqual(0, v.CurrentReadCount, "1");
+                Assert.AreEqual(false, v.IsReadLockHeld, "2");
+                Assert.AreEqual(false, v.IsUpgradeableReadLockHeld, "3");
+                Assert.AreEqual(false, v.IsWriteLockHeld, "4");
+                Assert.AreEqual(LockRecursionPolicy.NoRecursion, v.RecursionPolicy, "5");
+                Assert.AreEqual(0, v.RecursiveReadCount, "6");
+                Assert.AreEqual(0, v.RecursiveUpgradeCount, "7");
+                Assert.AreEqual(0, v.RecursiveWriteCount, "8");
+                Assert.AreEqual(0, v.WaitingReadCount, "9");
+                Assert.AreEqual(0, v.WaitingUpgradeCount, "10");
+                Assert.AreEqual(0, v.WaitingWriteCount, "11");
+            }
         }
 
         [Test]
-        public void Dispose_Errors()
+        public void Dispose_Errors() // TODO: review
         {
             var v = new ReaderWriterLockSlim();
             v.Dispose();
@@ -66,6 +68,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException)
             {
+                GC.KeepAlive(v);
             }
 
             try
@@ -75,6 +78,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException)
             {
+                GC.KeepAlive(v);
             }
 
             try
@@ -84,6 +88,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException)
             {
+                GC.KeepAlive(v);
             }
         }
 
@@ -99,6 +104,7 @@ namespace MonoTests.System.Threading
             }
             catch (SynchronizationLockException)
             {
+                GC.KeepAlive(rwl);
             }
         }
 
@@ -114,6 +120,7 @@ namespace MonoTests.System.Threading
             }
             catch (SynchronizationLockException)
             {
+                GC.KeepAlive(rwl);
             }
         }
 
@@ -129,6 +136,7 @@ namespace MonoTests.System.Threading
             }
             catch (SynchronizationLockException)
             {
+                GC.KeepAlive(rwl);
             }
         }
 
@@ -143,6 +151,7 @@ namespace MonoTests.System.Threading
             }
             catch (ArgumentOutOfRangeException)
             {
+                GC.KeepAlive(v);
             }
 
             try
@@ -152,6 +161,7 @@ namespace MonoTests.System.Threading
             }
             catch (ArgumentOutOfRangeException)
             {
+                GC.KeepAlive(v);
             }
 
             try
@@ -161,6 +171,7 @@ namespace MonoTests.System.Threading
             }
             catch (ArgumentOutOfRangeException)
             {
+                GC.KeepAlive(v);
             }
         }
 
@@ -175,6 +186,7 @@ namespace MonoTests.System.Threading
             }
             catch (ArgumentOutOfRangeException)
             {
+                GC.KeepAlive(v);
             }
 
             try
@@ -184,6 +196,7 @@ namespace MonoTests.System.Threading
             }
             catch (ArgumentOutOfRangeException)
             {
+                GC.KeepAlive(v);
             }
 
             try
@@ -193,6 +206,7 @@ namespace MonoTests.System.Threading
             }
             catch (ArgumentOutOfRangeException)
             {
+                GC.KeepAlive(v);
             }
         }
 
@@ -207,6 +221,7 @@ namespace MonoTests.System.Threading
             }
             catch (ArgumentOutOfRangeException)
             {
+                GC.KeepAlive(v);
             }
 
             try
@@ -216,6 +231,7 @@ namespace MonoTests.System.Threading
             }
             catch (ArgumentOutOfRangeException)
             {
+                GC.KeepAlive(v);
             }
 
             try
@@ -225,301 +241,335 @@ namespace MonoTests.System.Threading
             }
             catch (ArgumentOutOfRangeException)
             {
+                GC.KeepAlive(v);
             }
         }
 
         [Test, ExpectedException(typeof(SynchronizationLockException))]
         public void ExitReadLock()
         {
-            var v = new ReaderWriterLockSlim();
-            v.ExitReadLock();
+            using (var v = new ReaderWriterLockSlim())
+            {
+                v.ExitReadLock();
+            }
         }
 
         [Test, ExpectedException(typeof(SynchronizationLockException))]
         public void ExitWriteLock()
         {
-            var v = new ReaderWriterLockSlim();
-            v.ExitWriteLock();
+            using (var v = new ReaderWriterLockSlim())
+            {
+                v.ExitWriteLock();
+            }
         }
 
         [Test]
         public void EnterReadLock_NoRecursionError()
         {
-            var v = new ReaderWriterLockSlim();
-            v.EnterReadLock();
-            Assert.AreEqual(1, v.RecursiveReadCount);
-
-            try
+            using (var v = new ReaderWriterLockSlim())
             {
                 v.EnterReadLock();
-                Assert.Fail("1");
-            }
-            catch (LockRecursionException)
-            {
-            }
+                Assert.AreEqual(1, v.RecursiveReadCount);
 
-            try
-            {
-                v.EnterWriteLock();
-                Assert.Fail("2");
-            }
-            catch (LockRecursionException)
-            {
+                try
+                {
+                    v.EnterReadLock();
+                    Assert.Fail("1");
+                }
+                catch (LockRecursionException)
+                {
+                    GC.KeepAlive(v);
+                }
+
+                try
+                {
+                    v.EnterWriteLock();
+                    Assert.Fail("2");
+                }
+                catch (LockRecursionException)
+                {
+                    GC.KeepAlive(v);
+                }
+                v.ExitReadLock();
             }
         }
 
         [Test]
         public void EnterReadLock()
         {
-            var v = new ReaderWriterLockSlim();
+            using (var v = new ReaderWriterLockSlim())
+            {
+                v.EnterReadLock();
+                Assert.IsTrue(v.IsReadLockHeld, "A");
+                Assert.AreEqual(0, v.RecursiveWriteCount, "A1");
+                Assert.AreEqual(1, v.RecursiveReadCount, "A2");
+                Assert.AreEqual(0, v.RecursiveUpgradeCount, "A3");
+                Assert.AreEqual(0, v.WaitingReadCount, "A4");
+                Assert.AreEqual(0, v.WaitingUpgradeCount, "A5");
+                Assert.AreEqual(0, v.WaitingWriteCount, "A6");
+                v.ExitReadLock();
 
-            v.EnterReadLock();
-            Assert.IsTrue(v.IsReadLockHeld, "A");
-            Assert.AreEqual(0, v.RecursiveWriteCount, "A1");
-            Assert.AreEqual(1, v.RecursiveReadCount, "A2");
-            Assert.AreEqual(0, v.RecursiveUpgradeCount, "A3");
-            Assert.AreEqual(0, v.WaitingReadCount, "A4");
-            Assert.AreEqual(0, v.WaitingUpgradeCount, "A5");
-            Assert.AreEqual(0, v.WaitingWriteCount, "A6");
-            v.ExitReadLock();
-
-            v.EnterReadLock();
-            Assert.IsTrue(v.IsReadLockHeld, "B");
-            Assert.AreEqual(0, v.RecursiveWriteCount, "B1");
-            Assert.AreEqual(1, v.RecursiveReadCount, "B2");
-            Assert.AreEqual(0, v.RecursiveUpgradeCount, "B3");
-            Assert.AreEqual(0, v.WaitingReadCount, "B4");
-            Assert.AreEqual(0, v.WaitingUpgradeCount, "B5");
-            Assert.AreEqual(0, v.WaitingWriteCount, "B6");
-            v.ExitReadLock();
+                v.EnterReadLock();
+                Assert.IsTrue(v.IsReadLockHeld, "B");
+                Assert.AreEqual(0, v.RecursiveWriteCount, "B1");
+                Assert.AreEqual(1, v.RecursiveReadCount, "B2");
+                Assert.AreEqual(0, v.RecursiveUpgradeCount, "B3");
+                Assert.AreEqual(0, v.WaitingReadCount, "B4");
+                Assert.AreEqual(0, v.WaitingUpgradeCount, "B5");
+                Assert.AreEqual(0, v.WaitingWriteCount, "B6");
+                v.ExitReadLock();
+            }
         }
 
         [Test]
         public void EnterWriteLock_NoRecursionError()
         {
-            var v = new ReaderWriterLockSlim();
-            v.EnterWriteLock();
-            Assert.AreEqual(1, v.RecursiveWriteCount);
-
-            try
+            using (var v = new ReaderWriterLockSlim())
             {
                 v.EnterWriteLock();
-                Assert.Fail("1");
-            }
-            catch (LockRecursionException)
-            {
-            }
+                Assert.AreEqual(1, v.RecursiveWriteCount);
 
-            try
-            {
-                v.EnterReadLock();
-                Assert.Fail("2");
-            }
-            catch (LockRecursionException)
-            {
+                try
+                {
+                    v.EnterWriteLock();
+                    Assert.Fail("1");
+                }
+                catch (LockRecursionException)
+                {
+                    GC.KeepAlive(v);
+                }
+
+                try
+                {
+                    v.EnterReadLock();
+                    Assert.Fail("2");
+                }
+                catch (LockRecursionException)
+                {
+                    GC.KeepAlive(v);
+                }
+                v.ExitWriteLock();
             }
         }
 
         [Test]
         public void EnterWriteLock()
         {
-            var v = new ReaderWriterLockSlim();
+            using (var v = new ReaderWriterLockSlim())
+            {
+                v.EnterWriteLock();
+                Assert.IsTrue(v.IsWriteLockHeld, "A");
+                Assert.AreEqual(1, v.RecursiveWriteCount, "A1");
+                Assert.AreEqual(0, v.RecursiveReadCount, "A2");
+                Assert.AreEqual(0, v.RecursiveUpgradeCount, "A3");
+                Assert.AreEqual(0, v.WaitingReadCount, "A4");
+                Assert.AreEqual(0, v.WaitingUpgradeCount, "A5");
+                Assert.AreEqual(0, v.WaitingWriteCount, "A6");
+                v.ExitWriteLock();
 
-            v.EnterWriteLock();
-            Assert.IsTrue(v.IsWriteLockHeld, "A");
-            Assert.AreEqual(1, v.RecursiveWriteCount, "A1");
-            Assert.AreEqual(0, v.RecursiveReadCount, "A2");
-            Assert.AreEqual(0, v.RecursiveUpgradeCount, "A3");
-            Assert.AreEqual(0, v.WaitingReadCount, "A4");
-            Assert.AreEqual(0, v.WaitingUpgradeCount, "A5");
-            Assert.AreEqual(0, v.WaitingWriteCount, "A6");
-            v.ExitWriteLock();
-
-            v.EnterWriteLock();
-            Assert.IsTrue(v.IsWriteLockHeld, "B");
-            Assert.AreEqual(1, v.RecursiveWriteCount, "B1");
-            Assert.AreEqual(0, v.RecursiveReadCount, "B2");
-            Assert.AreEqual(0, v.RecursiveUpgradeCount, "B3");
-            Assert.AreEqual(0, v.WaitingReadCount, "B4");
-            Assert.AreEqual(0, v.WaitingUpgradeCount, "B5");
-            Assert.AreEqual(0, v.WaitingWriteCount, "B6");
-            v.ExitWriteLock();
+                v.EnterWriteLock();
+                Assert.IsTrue(v.IsWriteLockHeld, "B");
+                Assert.AreEqual(1, v.RecursiveWriteCount, "B1");
+                Assert.AreEqual(0, v.RecursiveReadCount, "B2");
+                Assert.AreEqual(0, v.RecursiveUpgradeCount, "B3");
+                Assert.AreEqual(0, v.WaitingReadCount, "B4");
+                Assert.AreEqual(0, v.WaitingUpgradeCount, "B5");
+                Assert.AreEqual(0, v.WaitingWriteCount, "B6");
+                v.ExitWriteLock();
+            }
         }
 
         [Test]
         public void EnterUpgradeableReadLock_NoRecursionError()
         {
-            var v = new ReaderWriterLockSlim();
-            v.EnterUpgradeableReadLock();
-            Assert.AreEqual(1, v.RecursiveUpgradeCount);
-
-            try
+            using (var v = new ReaderWriterLockSlim())
             {
                 v.EnterUpgradeableReadLock();
-                Assert.Fail("2");
-            }
-            catch (LockRecursionException)
-            {
+                Assert.AreEqual(1, v.RecursiveUpgradeCount);
+
+                try
+                {
+                    v.EnterUpgradeableReadLock();
+                    Assert.Fail("2");
+                }
+                catch (LockRecursionException)
+                {
+                    GC.KeepAlive(v);
+                }
+                v.ExitUpgradeableReadLock();
             }
         }
 
         [Test]
         public void EnterUpgradeableReadLock()
         {
-            var v = new ReaderWriterLockSlim();
+            using (var v = new ReaderWriterLockSlim())
+            {
+                v.EnterUpgradeableReadLock();
+                Assert.IsTrue(v.IsUpgradeableReadLockHeld, "A");
+                Assert.AreEqual(0, v.RecursiveWriteCount, "A1");
+                Assert.AreEqual(0, v.RecursiveReadCount, "A2");
+                Assert.AreEqual(1, v.RecursiveUpgradeCount, "A3");
+                Assert.AreEqual(0, v.WaitingReadCount, "A4");
+                Assert.AreEqual(0, v.WaitingUpgradeCount, "A5");
+                Assert.AreEqual(0, v.WaitingWriteCount, "A6");
+                v.ExitUpgradeableReadLock();
 
-            v.EnterUpgradeableReadLock();
-            Assert.IsTrue(v.IsUpgradeableReadLockHeld, "A");
-            Assert.AreEqual(0, v.RecursiveWriteCount, "A1");
-            Assert.AreEqual(0, v.RecursiveReadCount, "A2");
-            Assert.AreEqual(1, v.RecursiveUpgradeCount, "A3");
-            Assert.AreEqual(0, v.WaitingReadCount, "A4");
-            Assert.AreEqual(0, v.WaitingUpgradeCount, "A5");
-            Assert.AreEqual(0, v.WaitingWriteCount, "A6");
-            v.ExitUpgradeableReadLock();
+                v.EnterUpgradeableReadLock();
+                Assert.IsTrue(v.IsUpgradeableReadLockHeld, "B");
+                Assert.AreEqual(0, v.RecursiveWriteCount, "B1");
+                Assert.AreEqual(0, v.RecursiveReadCount, "B2");
+                Assert.AreEqual(1, v.RecursiveUpgradeCount, "B3");
+                Assert.AreEqual(0, v.WaitingReadCount, "B4");
+                Assert.AreEqual(0, v.WaitingUpgradeCount, "B5");
+                Assert.AreEqual(0, v.WaitingWriteCount, "B6");
 
-            v.EnterUpgradeableReadLock();
-            Assert.IsTrue(v.IsUpgradeableReadLockHeld, "B");
-            Assert.AreEqual(0, v.RecursiveWriteCount, "B1");
-            Assert.AreEqual(0, v.RecursiveReadCount, "B2");
-            Assert.AreEqual(1, v.RecursiveUpgradeCount, "B3");
-            Assert.AreEqual(0, v.WaitingReadCount, "B4");
-            Assert.AreEqual(0, v.WaitingUpgradeCount, "B5");
-            Assert.AreEqual(0, v.WaitingWriteCount, "B6");
+                v.EnterReadLock();
+                v.ExitUpgradeableReadLock();
 
-            v.EnterReadLock();
-            v.ExitUpgradeableReadLock();
+                Assert.IsTrue(v.IsReadLockHeld, "C");
+                Assert.AreEqual(0, v.RecursiveWriteCount, "C1");
+                Assert.AreEqual(1, v.RecursiveReadCount, "C2");
+                Assert.AreEqual(0, v.RecursiveUpgradeCount, "C3");
+                Assert.AreEqual(0, v.WaitingReadCount, "C4");
+                Assert.AreEqual(0, v.WaitingUpgradeCount, "C5");
+                Assert.AreEqual(0, v.WaitingWriteCount, "C6");
 
-            Assert.IsTrue(v.IsReadLockHeld, "C");
-            Assert.AreEqual(0, v.RecursiveWriteCount, "C1");
-            Assert.AreEqual(1, v.RecursiveReadCount, "C2");
-            Assert.AreEqual(0, v.RecursiveUpgradeCount, "C3");
-            Assert.AreEqual(0, v.WaitingReadCount, "C4");
-            Assert.AreEqual(0, v.WaitingUpgradeCount, "C5");
-            Assert.AreEqual(0, v.WaitingWriteCount, "C6");
-
-            v.ExitReadLock();
+                v.ExitReadLock();
+            }
         }
 
         [Test]
-        public void EnterReadLock_MultiRead()
+        public void EnterReadLock_MultiRead() // TODO: Review
         {
-            var v = new ReaderWriterLockSlim();
-            const int local = 10;
-
-            var r = from i in Enumerable.Range(1, 30)
-                    select new Thread(() =>
+            using (var v = new ReaderWriterLockSlim())
             {
-                // Just to cause some contention
-                Thread.Sleep(100);
+                const int Local = 10;
 
-                v.EnterReadLock();
+                var r = from i in Enumerable.Range(1, 30)
+                        select new Thread(() =>
+                        {
+                            // Just to cause some contention
+                            Thread.Sleep(100);
+                            v.EnterReadLock();
 
-                Assert.AreEqual(10, local);
-            });
+                            Assert.AreEqual(10, Local);
+                        });
 
-            var threads = r.ToList();
+                var threads = r.ToList();
 
-            foreach (var t in threads)
-            {
-                t.Start();
-            }
+                foreach (var t in threads)
+                {
+                    t.Start();
+                }
 
-            foreach (var t in threads)
-            {
-                // Console.WriteLine (t.ThreadState);
-                t.Join();
+                foreach (var t in threads)
+                {
+                    // Console.WriteLine (t.ThreadState);
+                    t.Join();
+                }
             }
         }
 
         [Test]
         public void TryEnterWriteLock_WhileReading()
         {
-            var v = new ReaderWriterLockSlim();
-            var ev = new AutoResetEvent(false);
-            var ev2 = new AutoResetEvent(false);
-
-            var t1 = new Thread(() =>
+            using (var v = new ReaderWriterLockSlim())
             {
-                v.EnterReadLock();
-                ev2.Set();
-                ev.WaitOne();
-                v.ExitReadLock();
-            });
+                var va = new[] { v };
+                using (var ev = new AutoResetEvent(false))
+                {
+                    using (var ev2 = new AutoResetEvent(false))
+                    {
+                        var eva = new[] { ev, ev2 };
+                        var t1 = new Thread(() =>
+                        {
+                            va[0].EnterReadLock();
+                            eva[1].Set();
+                            eva[0].WaitOne();
+                            va[0].ExitReadLock();
+                        });
+                        t1.Start();
+                        ev2.WaitOne();
 
-            t1.Start();
-            ev2.WaitOne();
+                        Assert.IsFalse(v.TryEnterWriteLock(100));
 
-            Assert.IsFalse(v.TryEnterWriteLock(100));
-            ev.Set();
-            t1.Join();
+                        ev.Set();
+                        t1.Join();
 
-            Assert.IsTrue(v.TryEnterWriteLock(100));
+                        Assert.IsTrue(v.TryEnterWriteLock(100));
+                    }
+                }
+                v.ExitWriteLock();
+            }
         }
 
         [Test]
-        public void EnterWriteLock_MultiRead()
+        public void EnterWriteLock_MultiRead() // TODO: Review
         {
-            var v = new ReaderWriterLockSlim();
-            var local = 10;
-            var ready_count = 0;
-            var entered_count = 0;
-            const int thread_count = 10;
-
-            var r = from i in Enumerable.Range(1, thread_count)
-                    select new Thread(() =>
+            using (var v = new ReaderWriterLockSlim())
             {
-                Interlocked.Increment(ref ready_count);
-                v.EnterReadLock();
-                Interlocked.Increment(ref entered_count);
+                var local = new[] { 10 };
+                var readyCount = 0;
+                var enteredCount = 0;
+                const int Thread_Count = 10;
 
-                Assert.AreEqual(11, local);
-            });
+                var r = from i in Enumerable.Range(1, Thread_Count)
+                        select new Thread(() =>
+                        {
+                            Interlocked.Increment(ref readyCount);
+                            v.EnterReadLock();
+                            Interlocked.Increment(ref enteredCount);
 
-            v.EnterWriteLock();
+                            Assert.AreEqual(11, local[0]);
+                        });
 
-            var threads = r.ToList();
-            foreach (var t in threads)
-            {
-                t.Start();
-            }
+                v.EnterWriteLock();
 
-            while (ready_count != thread_count)
-            {
-                Thread.Sleep(10);
-            }
+                var threads = r.ToList();
+                foreach (var t in threads)
+                {
+                    t.Start();
+                }
 
-            /* Extra up to 2s of sleep to ensure all threads got the chance to enter the lock */
-            for (var i = 0; i < 200 && v.WaitingReadCount != thread_count; ++i)
-            {
-                Thread.Sleep(10);
-            }
+                while (readyCount != Thread_Count)
+                {
+                    Thread.Sleep(10);
+                }
 
-            local = 11;
+                /* Extra up to 2s of sleep to ensure all threads got the chance to enter the lock */
+                for (var i = 0; i < 200 && v.WaitingReadCount != Thread_Count; ++i)
+                {
+                    Thread.Sleep(10);
+                }
 
-            Assert.AreEqual(0, v.WaitingWriteCount, "in waiting write");
-            Assert.AreEqual(thread_count, v.WaitingReadCount, "in waiting read");
-            Assert.AreEqual(0, v.WaitingUpgradeCount, "in waiting upgrade");
-            v.ExitWriteLock();
+                local[0] = 11;
 
-            foreach (var t in threads)
-            {
-                // Console.WriteLine (t.ThreadState);
-                t.Join();
+                Assert.AreEqual(0, v.WaitingWriteCount, "in waiting write");
+                Assert.AreEqual(Thread_Count, v.WaitingReadCount, "in waiting read");
+                Assert.AreEqual(0, v.WaitingUpgradeCount, "in waiting upgrade");
+                v.ExitWriteLock();
+
+                foreach (var t in threads)
+                {
+                    // Console.WriteLine (t.ThreadState);
+                    t.Join();
+                }
             }
         }
 
         [Test]
         public void EnterWriteLock_After_ExitUpgradeableReadLock()
         {
-            var v = new ReaderWriterLockSlim();
-
-            v.EnterUpgradeableReadLock();
-            Assert.IsTrue(v.TryEnterWriteLock(100));
-            v.ExitWriteLock();
-            v.ExitUpgradeableReadLock();
-            Assert.IsTrue(v.TryEnterWriteLock(100));
-            v.ExitWriteLock();
+            using (var v = new ReaderWriterLockSlim())
+            {
+                v.EnterUpgradeableReadLock();
+                Assert.IsTrue(v.TryEnterWriteLock(100));
+                v.ExitWriteLock();
+                v.ExitUpgradeableReadLock();
+                Assert.IsTrue(v.TryEnterWriteLock(100));
+                v.ExitWriteLock();
+            }
         }
 
         //[Test]
@@ -542,300 +592,353 @@ namespace MonoTests.System.Threading
         [Test]
         public void RecursiveReadLockTest()
         {
-            var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+            using (var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion))
+            {
+                Assert.IsTrue(v.TryEnterReadLock(100), "#1");
+                Assert.IsTrue(v.TryEnterReadLock(100), "#2");
+                Assert.IsTrue(v.TryEnterReadLock(100), "#3");
 
-            Assert.IsTrue(v.TryEnterReadLock(100), "#1");
-            Assert.IsTrue(v.TryEnterReadLock(100), "#2");
-            Assert.IsTrue(v.TryEnterReadLock(100), "#3");
+                Assert.AreEqual(3, v.RecursiveReadCount);
 
-            Assert.AreEqual(3, v.RecursiveReadCount);
+                v.ExitReadLock();
+                v.ExitReadLock();
+                v.ExitReadLock();
+            }
         }
 
         [Test]
         public void RecursiveReadPlusWriteLockTest()
         {
-            var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-
-            try
+            using (var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion))
             {
-                v.EnterReadLock();
-                v.EnterWriteLock();
-                Assert.Fail("1");
-            }
-            catch (LockRecursionException ex)
-            {
-                Assert.IsNotNull(ex, "#1");
+                try
+                {
+                    v.EnterReadLock();
+                    v.EnterWriteLock();
+                    Assert.Fail("1");
+                }
+                catch (LockRecursionException ex)
+                {
+                    Assert.IsNotNull(ex, "#1");
+                }
+                v.ExitReadLock();
             }
         }
 
         [Test]
         public void RecursiveReadPlusUpgradeableLockTest()
         {
-            var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-
-            try
+            using (var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion))
             {
-                v.EnterReadLock();
-                v.EnterUpgradeableReadLock();
-                Assert.Fail("1");
-            }
-            catch (LockRecursionException ex)
-            {
-                Assert.IsNotNull(ex, "#1");
+                try
+                {
+                    v.EnterReadLock();
+                    v.EnterUpgradeableReadLock();
+                    Assert.Fail("1");
+                }
+                catch (LockRecursionException ex)
+                {
+                    Assert.IsNotNull(ex, "#1");
+                }
+                v.ExitReadLock();
             }
         }
 
         [Test]
         public void RecursiveWriteLockTest()
         {
-            var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+            using (var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion))
+            {
+                Assert.IsTrue(v.TryEnterWriteLock(100), "#1");
+                Assert.IsTrue(v.TryEnterWriteLock(100), "#2");
+                Assert.IsTrue(v.TryEnterWriteLock(100), "#3");
 
-            Assert.IsTrue(v.TryEnterWriteLock(100), "#1");
-            Assert.IsTrue(v.TryEnterWriteLock(100), "#2");
-            Assert.IsTrue(v.TryEnterWriteLock(100), "#3");
+                Assert.AreEqual(3, v.RecursiveWriteCount);
 
-            Assert.AreEqual(3, v.RecursiveWriteCount);
+                v.ExitWriteLock();
+                v.ExitWriteLock();
+                v.ExitWriteLock();
+            }
         }
 
         [Test]
         public void RecursiveWritePlusReadLockTest()
         {
-            var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+            using (var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion))
+            {
+                Assert.IsTrue(v.TryEnterWriteLock(100), "#1");
+                Assert.AreEqual(1, v.RecursiveWriteCount, "1b");
+                Assert.AreEqual(0, v.RecursiveReadCount, "1c");
 
-            Assert.IsTrue(v.TryEnterWriteLock(100), "#1");
-            Assert.AreEqual(1, v.RecursiveWriteCount, "1b");
-            Assert.AreEqual(0, v.RecursiveReadCount, "1c");
+                Assert.IsTrue(v.TryEnterReadLock(100), "#2");
+                Assert.AreEqual(1, v.RecursiveWriteCount, "2b");
+                Assert.AreEqual(1, v.RecursiveReadCount, "2c");
 
-            Assert.IsTrue(v.TryEnterReadLock(100), "#2");
-            Assert.AreEqual(1, v.RecursiveWriteCount, "2b");
-            Assert.AreEqual(1, v.RecursiveReadCount, "2c");
+                Assert.IsTrue(v.TryEnterReadLock(100), "#3");
+                Assert.AreEqual(1, v.RecursiveWriteCount, "3b");
+                Assert.AreEqual(2, v.RecursiveReadCount, "3c");
 
-            Assert.IsTrue(v.TryEnterReadLock(100), "#3");
-            Assert.AreEqual(1, v.RecursiveWriteCount, "3b");
-            Assert.AreEqual(2, v.RecursiveReadCount, "3c");
+                v.ExitReadLock();
+                Assert.AreEqual(1, v.RecursiveWriteCount, "4b");
+                Assert.AreEqual(1, v.RecursiveReadCount, "4c");
 
-            v.ExitReadLock();
-            Assert.AreEqual(1, v.RecursiveWriteCount, "4b");
-            Assert.AreEqual(1, v.RecursiveReadCount, "4c");
+                v.ExitReadLock();
+                v.ExitWriteLock();
+            }
         }
 
         [Test]
         public void RecursiveUpgradeableReadLockTest()
         {
-            var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+            using (var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion))
+            {
+                Assert.IsTrue(v.TryEnterUpgradeableReadLock(100), "#1");
+                Assert.IsTrue(v.TryEnterUpgradeableReadLock(100), "#2");
+                Assert.IsTrue(v.TryEnterUpgradeableReadLock(100), "#3");
 
-            Assert.IsTrue(v.TryEnterUpgradeableReadLock(100), "#1");
-            Assert.IsTrue(v.TryEnterUpgradeableReadLock(100), "#2");
-            Assert.IsTrue(v.TryEnterUpgradeableReadLock(100), "#3");
+                Assert.AreEqual(3, v.RecursiveUpgradeCount);
 
-            Assert.AreEqual(3, v.RecursiveUpgradeCount);
+                v.ExitUpgradeableReadLock();
+                v.ExitUpgradeableReadLock();
+                v.ExitUpgradeableReadLock();
+            }
         }
 
         [Test]
-        public void RecursiveReadPropertiesTest()
+        public void RecursiveReadPropertiesTest() // TODO: Review
         {
-            var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-
-            v.EnterReadLock();
-            v.EnterReadLock();
-
-            Assert.AreEqual(true, v.IsReadLockHeld, "#1a");
-            Assert.AreEqual(1, v.CurrentReadCount, "#2a");
-            Assert.AreEqual(2, v.RecursiveReadCount, "#3a");
-
-            var rLock = true;
-            var cReadCount = -1;
-            var rReadCount = -1;
-
-            var t = new Thread((_) =>
+            using (var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion))
             {
-                rLock = v.IsReadLockHeld;
-                cReadCount = v.CurrentReadCount;
-                rReadCount = v.RecursiveReadCount;
-            });
+                v.EnterReadLock();
+                v.EnterReadLock();
 
-            t.Start();
-            t.Join();
+                Assert.AreEqual(true, v.IsReadLockHeld, "#1a");
+                Assert.AreEqual(1, v.CurrentReadCount, "#2a");
+                Assert.AreEqual(2, v.RecursiveReadCount, "#3a");
 
-            Assert.AreEqual(false, rLock, "#1b");
-            Assert.AreEqual(1, cReadCount, "#2b");
-            Assert.AreEqual(0, rReadCount, "#3b");
+                var rLock = true;
+                var cReadCount = -1;
+                var rReadCount = -1;
+
+                var t = new Thread((_) =>
+                {
+                    rLock = v.IsReadLockHeld;
+                    cReadCount = v.CurrentReadCount;
+                    rReadCount = v.RecursiveReadCount;
+                });
+
+                t.Start();
+                t.Join();
+
+                Assert.AreEqual(false, rLock, "#1b");
+                Assert.AreEqual(1, cReadCount, "#2b");
+                Assert.AreEqual(0, rReadCount, "#3b");
+
+                v.ExitReadLock();
+                v.ExitReadLock();
+            }
         }
 
         [Test]
-        public void RecursiveUpgradePropertiesTest()
+        public void RecursiveUpgradePropertiesTest() // TODO: Review
         {
-            var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-
-            v.EnterUpgradeableReadLock();
-            v.EnterUpgradeableReadLock();
-
-            Assert.AreEqual(true, v.IsUpgradeableReadLockHeld, "#1a");
-            Assert.AreEqual(false, v.IsReadLockHeld, "#11a");
-            Assert.AreEqual(0, v.CurrentReadCount, "#2a");
-            Assert.AreEqual(2, v.RecursiveUpgradeCount, "#3a");
-
-            var upLock = false;
-            var rLock = false;
-            var rCount = -1;
-            var rUCount = -1;
-
-            var t = new Thread((_) =>
+            using (var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion))
             {
-                upLock = v.IsUpgradeableReadLockHeld;
-                rLock = v.IsReadLockHeld;
-                rCount = v.CurrentReadCount;
-                rUCount = v.RecursiveUpgradeCount;
-            });
+                v.EnterUpgradeableReadLock();
+                v.EnterUpgradeableReadLock();
 
-            t.Start();
-            t.Join();
+                Assert.AreEqual(true, v.IsUpgradeableReadLockHeld, "#1a");
+                Assert.AreEqual(false, v.IsReadLockHeld, "#11a");
+                Assert.AreEqual(0, v.CurrentReadCount, "#2a");
+                Assert.AreEqual(2, v.RecursiveUpgradeCount, "#3a");
 
-            Assert.AreEqual(false, upLock, "#1b");
-            Assert.AreEqual(false, rLock, "#11b");
-            Assert.AreEqual(0, rCount, "#2b");
-            Assert.AreEqual(0, rUCount, "#3b");
+                var upLock = false;
+                var rLock = false;
+                var rCount = -1;
+                var rUCount = -1;
+
+                var t = new Thread((_) =>
+                {
+                    upLock = v.IsUpgradeableReadLockHeld;
+                    rLock = v.IsReadLockHeld;
+                    rCount = v.CurrentReadCount;
+                    rUCount = v.RecursiveUpgradeCount;
+                });
+
+                t.Start();
+                t.Join();
+
+                Assert.AreEqual(false, upLock, "#1b");
+                Assert.AreEqual(false, rLock, "#11b");
+                Assert.AreEqual(0, rCount, "#2b");
+                Assert.AreEqual(0, rUCount, "#3b");
+
+                v.ExitUpgradeableReadLock();
+                v.ExitUpgradeableReadLock();
+            }
         }
 
         [Test]
-        public void RecursiveWritePropertiesTest()
+        public void RecursiveWritePropertiesTest() // TODO: Review
         {
-            var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-
-            v.EnterWriteLock();
-            v.EnterWriteLock();
-
-            Assert.AreEqual(true, v.IsWriteLockHeld, "#1a");
-            Assert.AreEqual(2, v.RecursiveWriteCount, "#3a");
-
-            var wLock = false;
-            var rWrite = -1;
-
-            var t = new Thread((_) =>
+            using (var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion))
             {
-                wLock = v.IsWriteLockHeld;
-                rWrite = v.RecursiveWriteCount;
-            });
+                v.EnterWriteLock();
+                v.EnterWriteLock();
 
-            t.Start();
-            t.Join();
+                Assert.AreEqual(true, v.IsWriteLockHeld, "#1a");
+                Assert.AreEqual(2, v.RecursiveWriteCount, "#3a");
 
-            Assert.AreEqual(false, wLock, "#1b");
-            Assert.AreEqual(0, rWrite, "#3b");
+                var wLock = false;
+                var rWrite = -1;
+
+                var t = new Thread((_) =>
+                {
+                    wLock = v.IsWriteLockHeld;
+                    rWrite = v.RecursiveWriteCount;
+                });
+
+                t.Start();
+                t.Join();
+
+                Assert.AreEqual(false, wLock, "#1b");
+                Assert.AreEqual(0, rWrite, "#3b");
+
+                v.ExitWriteLock();
+                v.ExitWriteLock();
+            }
         }
 
         [Test]
         public void RecursiveEnterExitReadTest()
         {
-            var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+            using (var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion))
+            {
+                v.EnterReadLock();
+                v.EnterReadLock();
+                v.EnterReadLock();
 
-            v.EnterReadLock();
-            v.EnterReadLock();
-            v.EnterReadLock();
+                Assert.IsTrue(v.IsReadLockHeld);
+                Assert.AreEqual(3, v.RecursiveReadCount);
 
-            Assert.IsTrue(v.IsReadLockHeld);
-            Assert.AreEqual(3, v.RecursiveReadCount);
+                v.ExitReadLock();
 
-            v.ExitReadLock();
+                Assert.IsTrue(v.IsReadLockHeld);
+                Assert.AreEqual(2, v.RecursiveReadCount);
 
-            Assert.IsTrue(v.IsReadLockHeld);
-            Assert.AreEqual(2, v.RecursiveReadCount);
+                v.ExitReadLock();
+                v.ExitReadLock();
+            }
         }
 
         [Test]
         public void RecursiveEnterExitWriteTest()
         {
-            var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+            using (var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion))
+            {
+                v.EnterWriteLock();
+                v.EnterWriteLock();
+                v.EnterWriteLock();
 
-            v.EnterWriteLock();
-            v.EnterWriteLock();
-            v.EnterWriteLock();
+                Assert.IsTrue(v.IsWriteLockHeld);
+                Assert.AreEqual(3, v.RecursiveWriteCount);
 
-            Assert.IsTrue(v.IsWriteLockHeld);
-            Assert.AreEqual(3, v.RecursiveWriteCount);
+                v.ExitWriteLock();
+                v.ExitWriteLock();
 
-            v.ExitWriteLock();
-            v.ExitWriteLock();
+                Assert.IsTrue(v.IsWriteLockHeld);
+                Assert.AreEqual(1, v.RecursiveWriteCount);
 
-            Assert.IsTrue(v.IsWriteLockHeld);
-            Assert.AreEqual(1, v.RecursiveWriteCount);
+                v.ExitWriteLock();
+            }
         }
 
         [Test]
         public void RecursiveEnterExitUpgradableTest()
         {
-            var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+            using (var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion))
+            {
+                v.EnterUpgradeableReadLock();
+                v.EnterUpgradeableReadLock();
+                v.EnterUpgradeableReadLock();
 
-            v.EnterUpgradeableReadLock();
-            v.EnterUpgradeableReadLock();
-            v.EnterUpgradeableReadLock();
+                Assert.IsTrue(v.IsUpgradeableReadLockHeld);
+                Assert.AreEqual(3, v.RecursiveUpgradeCount);
 
-            Assert.IsTrue(v.IsUpgradeableReadLockHeld);
-            Assert.AreEqual(3, v.RecursiveUpgradeCount);
+                v.ExitUpgradeableReadLock();
 
-            v.ExitUpgradeableReadLock();
+                Assert.IsTrue(v.IsUpgradeableReadLockHeld);
+                Assert.AreEqual(2, v.RecursiveUpgradeCount);
 
-            Assert.IsTrue(v.IsUpgradeableReadLockHeld);
-            Assert.AreEqual(2, v.RecursiveUpgradeCount);
+                v.ExitUpgradeableReadLock();
+                v.ExitUpgradeableReadLock();
+            }
         }
 
         [Test]
         public void RecursiveWriteUpgradeReadTest()
         {
-            var rwlock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+            using (var rwlock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion))
+            {
+                rwlock.EnterWriteLock();
+                Assert.IsTrue(rwlock.IsWriteLockHeld);
+                rwlock.EnterUpgradeableReadLock();
+                Assert.IsTrue(rwlock.IsUpgradeableReadLockHeld);
+                rwlock.EnterReadLock();
+                Assert.IsTrue(rwlock.IsReadLockHeld);
+                rwlock.ExitUpgradeableReadLock();
+                Assert.IsFalse(rwlock.IsUpgradeableReadLockHeld);
+                Assert.IsTrue(rwlock.IsReadLockHeld);
+                Assert.IsTrue(rwlock.IsWriteLockHeld);
 
-            rwlock.EnterWriteLock();
-            Assert.IsTrue(rwlock.IsWriteLockHeld);
-            rwlock.EnterUpgradeableReadLock();
-            Assert.IsTrue(rwlock.IsUpgradeableReadLockHeld);
-            rwlock.EnterReadLock();
-            Assert.IsTrue(rwlock.IsReadLockHeld);
-            rwlock.ExitUpgradeableReadLock();
-            Assert.IsFalse(rwlock.IsUpgradeableReadLockHeld);
-            Assert.IsTrue(rwlock.IsReadLockHeld);
-            Assert.IsTrue(rwlock.IsWriteLockHeld);
+                rwlock.ExitReadLock();
+                Assert.IsTrue(rwlock.IsWriteLockHeld);
 
-            rwlock.ExitReadLock();
-            Assert.IsTrue(rwlock.IsWriteLockHeld);
+                rwlock.ExitWriteLock();
+            }
         }
 
         [Test]
         public void RecursiveWriteUpgradeTest()
         {
-            var rwlock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+            using (var rwlock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion))
+            {
+                rwlock.EnterWriteLock();
+                Assert.IsTrue(rwlock.IsWriteLockHeld);
+                rwlock.EnterUpgradeableReadLock();
+                Assert.IsTrue(rwlock.IsUpgradeableReadLockHeld);
+                rwlock.ExitUpgradeableReadLock();
+                Assert.IsFalse(rwlock.IsUpgradeableReadLockHeld);
+                Assert.IsTrue(rwlock.IsWriteLockHeld);
+                rwlock.ExitWriteLock();
+                Assert.IsFalse(rwlock.IsWriteLockHeld);
+                rwlock.EnterWriteLock();
+                Assert.IsTrue(rwlock.IsWriteLockHeld);
 
-            rwlock.EnterWriteLock();
-            Assert.IsTrue(rwlock.IsWriteLockHeld);
-            rwlock.EnterUpgradeableReadLock();
-            Assert.IsTrue(rwlock.IsUpgradeableReadLockHeld);
-            rwlock.ExitUpgradeableReadLock();
-            Assert.IsFalse(rwlock.IsUpgradeableReadLockHeld);
-            Assert.IsTrue(rwlock.IsWriteLockHeld);
-            rwlock.ExitWriteLock();
-            Assert.IsFalse(rwlock.IsWriteLockHeld);
-            rwlock.EnterWriteLock();
-            Assert.IsTrue(rwlock.IsWriteLockHeld);
+                rwlock.ExitWriteLock();
+            }
         }
 
         [Test]
-        public void RecursiveWriteReadAcquisitionInterleaving()
+        public void RecursiveWriteReadAcquisitionInterleaving() // TODO: Review
         {
-            var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+            using (var v = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion))
+            {
+                v.EnterWriteLock();
+                Assert.IsTrue(v.IsWriteLockHeld, "#1");
 
-            v.EnterWriteLock();
-            Assert.IsTrue(v.IsWriteLockHeld, "#1");
+                var result = true;
+                var t = new Thread(() => result = v.TryEnterReadLock(100));
+                t.Start();
+                t.Join();
+                Assert.IsFalse(result, "#2");
 
-            var result = true;
-            var t = new Thread(() => result = v.TryEnterReadLock(100));
-            t.Start();
-            t.Join();
-            Assert.IsFalse(result, "#2");
-
-            v.ExitWriteLock();
-            t = new Thread(() => result = v.TryEnterReadLock(100));
-            t.Start();
-            t.Join();
-            Assert.IsTrue(result, "#3");
+                v.ExitWriteLock();
+                t = new Thread(() => result = v.TryEnterReadLock(100));
+                t.Start();
+                t.Join();
+                Assert.IsTrue(result, "#3");
+            }
         }
     }
 }

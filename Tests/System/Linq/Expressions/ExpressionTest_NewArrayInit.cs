@@ -34,7 +34,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_NewArrayInit
+    public class ExpressionTestNewArrayInit
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -86,7 +86,7 @@ namespace MonoTests.System.Linq.Expressions
             return Expression.Lambda<Func<T[]>>(
                 Expression.NewArrayInit(
                     typeof(T),
-                    (from t in ts select t.ToConstant()).ToArray())).Compile();
+                    (from t in ts select t.ToConstant() as Expression).ToArray())).Compile();
         }
 
         private static void AssertCreatedArrayIsEqual<T>(params T[] ts)
@@ -100,7 +100,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileInitArrayOfInt()
         {
-            AssertCreatedArrayIsEqual(new int[] { 1, 2, 3, 4 });
+            AssertCreatedArrayIsEqual(new[] { 1, 2, 3, 4 });
         }
 
         private enum Months { Jan, Feb, Mar, Apr };
@@ -108,7 +108,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileInitArrayOfEnums()
         {
-            AssertCreatedArrayIsEqual(new Months[] { Months.Jan, Months.Feb, Months.Mar, Months.Apr });
+            AssertCreatedArrayIsEqual(new[] { Months.Jan, Months.Feb, Months.Mar, Months.Apr });
         }
 
         private class Foo
@@ -118,23 +118,23 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileInitArrayOfClasses()
         {
-            AssertCreatedArrayIsEqual(new Foo[] { new Foo(), new Foo(), new Foo(), new Foo() });
+            AssertCreatedArrayIsEqual(new[] { new Foo(), new Foo(), new Foo(), new Foo() });
         }
 
         private struct Bar
         {
-            public int bar;
+            public int Value;
 
             public Bar(int b)
             {
-                bar = b;
+                Value = b;
             }
         }
 
         [Test]
         public void CompileInitArrayOfStructs()
         {
-            AssertCreatedArrayIsEqual(new Bar[] { new Bar(1), new Bar(2), new Bar(3), new Bar(4) });
+            AssertCreatedArrayIsEqual(new[] { new Bar(1), new Bar(2), new Bar(3), new Bar(4) });
         }
     }
 }

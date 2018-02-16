@@ -27,7 +27,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_Add
+    public class ExpressionTestAdd
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -119,7 +119,7 @@ namespace MonoTests.System.Linq.Expressions
 #endif
         }
 
-        public class S
+        public static class S
         {
             public static int MyAdder(int a, int b)
             {
@@ -208,7 +208,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Slot
         {
-            public int Value;
+            public readonly int Value;
 
             public Slot(int value)
             {
@@ -254,12 +254,12 @@ namespace MonoTests.System.Linq.Expressions
             var add = Expression.Lambda<Func<Slot?, Slot?, Slot?>>(node, l, r).Compile();
 
             Assert.AreEqual(null, add(null, null));
-            Assert.AreEqual((Slot?)new Slot(42), add((Slot?)new Slot(21), (Slot?)new Slot(21)));
+            Assert.AreEqual((Slot?)new Slot(42), add(new Slot(21), new Slot(21)));
         }
 
         private struct SlotToNullable
         {
-            public int Value;
+            public readonly int Value;
 
             public SlotToNullable(int value)
             {

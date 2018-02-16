@@ -431,7 +431,7 @@ namespace Tests.Theraot.Core
                     Assert.AreEqual(characters[63 - subindex].ToString(), rbitsBinary[subindex].ToString());
                     if (bitIndex < bits.Length)
                     {
-                        var log2 = NumericHelper.Log2(unchecked(bits[bitIndex]));
+                        var log2 = NumericHelper.Log2(bits[bitIndex]);
                         Assert.AreEqual(log2, bitsLog2[bitIndex]);
                         if (log2 == 63 - subindex)
                         {
@@ -479,7 +479,7 @@ namespace Tests.Theraot.Core
                     Assert.AreEqual(characters[15 - subindex].ToString(), rbitsBinary[subindex].ToString());
                     if (bitIndex < bits.Length)
                     {
-                        var log2 = NumericHelper.Log2(unchecked(bits[bitIndex]));
+                        var log2 = NumericHelper.Log2(bits[bitIndex]);
                         Assert.AreEqual(log2, bitsLog2[bitIndex]);
                         if (log2 == 15 - subindex)
                         {

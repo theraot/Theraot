@@ -4,7 +4,7 @@ using System;
 
 namespace Theraot.Threading.Needles
 {
-    public partial class WeakNeedle<T>
+    public partial class WeakNeedle<T> // T is used in another file, this is a partial class
     {
         private int _status;
 

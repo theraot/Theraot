@@ -62,14 +62,14 @@ namespace MonoTests.System.Numerics
                 CurrencyDecimalDigits = 3,
                 CurrencyDecimalSeparator = ":",
                 CurrencyGroupSeparator = "/",
-                CurrencyGroupSizes = new int[] { 2, 1, 0 },
+                CurrencyGroupSizes = new[] { 2, 1, 0 },
                 CurrencyNegativePattern = 10,  // n $-
                 CurrencyPositivePattern = 3,  // n $
                 CurrencySymbol = "XYZ",
                 PercentDecimalDigits = 1,
                 PercentDecimalSeparator = ";",
                 PercentGroupSeparator = "~",
-                PercentGroupSizes = new int[] { 1 },
+                PercentGroupSizes = new[] { 1 },
                 PercentNegativePattern = 2,
                 PercentPositivePattern = 2,
                 PercentSymbol = "%%%",
@@ -80,7 +80,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void Mul()
         {
-            var values = new long[] { -1000000000L, -1000, -1, 0, 1, 1000, 100000000L };
+            var values = new[] { -1000000000L, -1000, -1, 0, 1, 1000, 100000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 for (var j = 0; j < values.Length; ++j)
@@ -104,7 +104,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void DivRem()
         {
-            var values = new long[] { -10000000330L, -5000, -1, 0, 1, 1000, 333, 10234544400L };
+            var values = new[] { -10000000330L, -5000, -1, 0, 1, 1000, 333, 10234544400L };
             for (var i = 0; i < values.Length; ++i)
             {
                 for (var j = 0; j < values.Length; ++j)
@@ -214,20 +214,20 @@ namespace MonoTests.System.Numerics
         [Test]
         public void Log()
         {
-            const double delta = 0.000000000000001d;
+            const double Delta = 0.000000000000001d;
 
             Assert.AreEqual(double.NegativeInfinity, BigInteger.Log(0), "#1");
             Assert.AreEqual(0d, BigInteger.Log(1), "#2");
             Assert.AreEqual(double.NaN, BigInteger.Log(-1), "#3");
-            Assert.AreEqual(2.3025850929940459d, BigInteger.Log(10), delta, "#4");
-            Assert.AreEqual(6.9077552789821368d, BigInteger.Log(1000), delta, "#5");
+            Assert.AreEqual(2.3025850929940459d, BigInteger.Log(10), Delta, "#4");
+            Assert.AreEqual(6.9077552789821368d, BigInteger.Log(1000), Delta, "#5");
             Assert.AreEqual(double.NaN, BigInteger.Log(-234), "#6");
         }
 
         [Test]
         public void LogN()
         {
-            const double delta = 0.000000000000001d;
+            const double Delta = 0.000000000000001d;
 
             Assert.AreEqual(double.NaN, BigInteger.Log(10, 1), "#1");
             Assert.AreEqual(double.NaN, BigInteger.Log(10, 0), "#2");
@@ -242,7 +242,7 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual(0, BigInteger.Log(1, double.PositiveInfinity), "#9");
             Assert.AreEqual(double.NaN, BigInteger.Log(1, double.NaN), "#10");
 
-            Assert.AreEqual(-2.5129415947320606d, BigInteger.Log(10, 0.4), delta, "#11");
+            Assert.AreEqual(-2.5129415947320606d, BigInteger.Log(10, 0.4), Delta, "#11");
         }
 
         [Test]
@@ -251,7 +251,7 @@ namespace MonoTests.System.Numerics
             try
             {
                 BigInteger d;
-                var c = BigInteger.DivRem(100, 0, out d);
+                GC.KeepAlive(BigInteger.DivRem(100, 0, out d));
                 Assert.Fail("#1");
             }
             catch (DivideByZeroException ex)
@@ -279,7 +279,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestAdd2()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 for (var j = 0; j < values.Length; ++j)
@@ -304,7 +304,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestSub()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 for (var j = 0; j < values.Length; ++j)
@@ -323,7 +323,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestMin()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 for (var j = 0; j < values.Length; ++j)
@@ -340,7 +340,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestMax()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 for (var j = 0; j < values.Length; ++j)
@@ -357,7 +357,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestAbs()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 var a = new BigInteger(values[i]);
@@ -370,7 +370,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestNegate()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 var a = new BigInteger(values[i]);
@@ -385,7 +385,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestInc()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 var a = new BigInteger(values[i]);
@@ -398,7 +398,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestDec()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 var a = new BigInteger(values[i]);
@@ -411,7 +411,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestBitwiseOps()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L, 0xFFFF00000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L, 0xFFFF00000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 for (var j = 0; j < values.Length; ++j)
@@ -483,7 +483,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void CompareOps()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
             for (var i = 0; i < values.Length; ++i)
             {
                 for (var j = 0; j < values.Length; ++j)
@@ -520,7 +520,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void CompareULong()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L, 0xAA00000000L };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L, 0xAA00000000L };
             var uvalues = new ulong[] { 0, 1, 1000, 100000000000L, 999999, 28282828282, 0xAA00000000, ulong.MaxValue };
             for (var i = 0; i < values.Length; ++i)
             {
@@ -552,7 +552,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void CompareLong()
         {
-            var values = new long[] { -100000000000L, -1000, -1, 0, 1, 1000, 9999999, 100000000000L, 0xAA00000000, long.MaxValue, long.MinValue };
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 9999999, 100000000000L, 0xAA00000000, long.MaxValue, long.MinValue };
 
             for (var i = 0; i < values.Length; ++i)
             {
@@ -617,7 +617,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void IntCtorRoundTrip()
         {
-            var values = new int[] {
+            var values = new[] {
                 int.MinValue, -0x2F33BB, -0x1F33, -0x33, 0, 0x33,
                 0x80, 0x8190, 0xFF0011, 0x1234, 0x11BB99, 0x44BB22CC,
                 int.MaxValue };
@@ -634,7 +634,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void LongCtorRoundTrip()
         {
-            var values = new long[] {
+            var values = new[] {
                 0, long.MinValue, long.MaxValue, -1, 1L + int.MaxValue, -1L + int.MinValue, 0x1234, 0xFFFFFFFFL, 0x1FFFFFFFFL, -0xFFFFFFFFL, -0x1FFFFFFFFL,
                 0x100000000L, -0x100000000L, 0x100000001L, -0x100000001L, 4294967295L, -4294967295L, 4294967296L, -4294967296L };
             foreach (var val in values)
@@ -691,7 +691,7 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual(arr, new BigInteger(arr).ToByteArray(), "#13");
 
             arr = new byte[] { 1, 0, 0, 0, 0, 0, };
-            Assert.AreEqual(new byte[1] { 1 }, new BigInteger(arr).ToByteArray(), "#14");
+            Assert.AreEqual(new byte[] { 1 }, new BigInteger(arr).ToByteArray(), "#14");
         }
 
         [Test]
@@ -781,7 +781,7 @@ namespace MonoTests.System.Numerics
         {
             try
             {
-                var v = (int)new BigInteger(_hugeA);
+                GC.KeepAlive((int)new BigInteger(_hugeA));
                 Assert.Fail("#1");
             }
             catch (OverflowException ex)
@@ -791,7 +791,7 @@ namespace MonoTests.System.Numerics
 
             try
             {
-                var v = (int)new BigInteger(1L + int.MaxValue);
+                GC.KeepAlive((int)new BigInteger(1L + int.MaxValue));
                 Assert.Fail("#2");
             }
             catch (OverflowException ex)
@@ -801,7 +801,7 @@ namespace MonoTests.System.Numerics
 
             try
             {
-                var v = (int)new BigInteger(-1L + int.MinValue);
+                GC.KeepAlive((int)new BigInteger(-1L + int.MinValue));
                 Assert.Fail("#3");
             }
             catch (OverflowException ex)
@@ -818,7 +818,7 @@ namespace MonoTests.System.Numerics
         {
             try
             {
-                var v = (long)new BigInteger(_hugeA);
+                GC.KeepAlive((long)new BigInteger(_hugeA));
                 Assert.Fail("#1");
             }
             catch (OverflowException ex)
@@ -829,7 +829,7 @@ namespace MonoTests.System.Numerics
             //long.MaxValue + 1
             try
             {
-                var v = (long)new BigInteger(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00 });
+                GC.KeepAlive((long)new BigInteger(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00 }));
                 Assert.Fail("#2");
             }
             catch (OverflowException ex)
@@ -840,7 +840,7 @@ namespace MonoTests.System.Numerics
             //TODO long.MinValue - 1
             try
             {
-                var v = (long)new BigInteger(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7F, 0xFF });
+                GC.KeepAlive((long)new BigInteger(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7F, 0xFF }));
                 Assert.Fail("#3");
             }
             catch (OverflowException ex)
@@ -898,7 +898,7 @@ namespace MonoTests.System.Numerics
         }
 
         [Test]
-        public void IComparable()
+        public void Comparable()
         {
             var a = new BigInteger(99);
             Assert.AreEqual(-1, a.CompareTo(100), "#1");
@@ -913,7 +913,7 @@ namespace MonoTests.System.Numerics
 
             try
             {
-                var x = (short)new BigInteger(10000000);
+                GC.KeepAlive((short)new BigInteger(10000000));
                 Assert.Fail("#3");
             }
             catch (OverflowException ex)
@@ -923,7 +923,7 @@ namespace MonoTests.System.Numerics
 
             try
             {
-                var x = (short)new BigInteger(-10000000);
+                GC.KeepAlive((short)new BigInteger(-10000000));
                 Assert.Fail("#4");
             }
             catch (OverflowException ex)
@@ -1024,7 +1024,7 @@ namespace MonoTests.System.Numerics
 
             try
             {
-                var x = (decimal)BigInteger.Pow(2, 1024);
+                GC.KeepAlive((decimal)BigInteger.Pow(2, 1024));
                 Assert.Fail("#2");
             }
             catch (OverflowException ex)
@@ -1034,7 +1034,7 @@ namespace MonoTests.System.Numerics
 
             try
             {
-                var x = (decimal)BigInteger.Pow(-2, 1025);
+                GC.KeepAlive((decimal)BigInteger.Pow(-2, 1025));
                 Assert.Fail("#3");
             }
             catch (OverflowException ex)
@@ -1168,7 +1168,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TryParse()
         {
-            var x = BigInteger.One;
+            BigInteger x;
             Assert.IsFalse(BigInteger.TryParse(null, out x), "#1");
             Assert.AreEqual(0, (int)x, "#1a");
             Assert.IsFalse(BigInteger.TryParse("", out x), "#2");
@@ -1219,20 +1219,20 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TestUserCurrency()
         {
-            const int val1 = -1234567;
-            const int val2 = 1234567;
+            const int Val1 = -1234567;
+            const int Val2 = 1234567;
 
-            var s = "";
+            string s;
             BigInteger v;
-            s = val1.ToString("c", _nfiUser);
+            s = Val1.ToString("c", _nfiUser);
             Assert.AreEqual("1234/5/67:000 XYZ-", s, "Currency value type 1 is not what we want to try to parse");
             v = BigInteger.Parse("1234/5/67:000   XYZ-", NumberStyles.Currency, _nfiUser);
-            Assert.AreEqual(val1, (int)v);
+            Assert.AreEqual(Val1, (int)v);
 
-            s = val2.ToString("c", _nfiUser);
+            s = Val2.ToString("c", _nfiUser);
             Assert.AreEqual("1234/5/67:000 XYZ", s, "Currency value type 2 is not what we want to try to parse");
             v = BigInteger.Parse(s, NumberStyles.Currency, _nfiUser);
-            Assert.AreEqual(val2, (int)v);
+            Assert.AreEqual(Val2, (int)v);
         }
 
         [Test]
@@ -1250,7 +1250,7 @@ namespace MonoTests.System.Numerics
 
             Thread.CurrentThread.CurrentCulture = cur;
 
-            var x = BigInteger.Zero;
+            BigInteger x;
 
             try
             {
@@ -1514,7 +1514,7 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual("-9223372036854775809", x.ToString(), "#1");
             try
             {
-                x = (long)x;
+                GC.KeepAlive((long)x);
                 Assert.Fail("#2 Must OVF");
             }
             catch (OverflowException ex)

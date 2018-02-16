@@ -115,7 +115,7 @@ namespace MonoTests.System
             {
                 try
                 {
-                    var b = _wr.IsAlive;
+                    GC.KeepAlive(_wr.IsAlive);
                 }
                 catch (Exception)
                 {
@@ -127,8 +127,7 @@ namespace MonoTests.System
         [Test]
         public void WeakReference_IsAlive_Finalized()
         {
-            var f = new Foo();
-            f = null;
+            GC.KeepAlive(new Foo());
             GC.Collect();
             GC.WaitForPendingFinalizers();
             Assert.IsFalse(Foo.Failed);

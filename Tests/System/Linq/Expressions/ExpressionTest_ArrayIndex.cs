@@ -27,7 +27,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_ArrayIndex
+    public class ExpressionTestArrayIndex
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -149,7 +149,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileIntArrayAccess()
         {
-            var array = new int[] { 1, 2, 3, 4 };
+            var array = new[] { 1, 2, 3, 4 };
             var at = CreateArrayAccess<int>();
 
             Assert.AreEqual(1, at(array, 0));
@@ -171,7 +171,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileEnumArrayAccess()
         {
-            var array = new Months[] { Months.Jan, Months.Feb, Months.Mar, Months.Apr };
+            var array = new[] { Months.Jan, Months.Feb, Months.Mar, Months.Apr };
             var at = CreateArrayAccess<Months>();
 
             Assert.AreEqual(array[0], at(array, 0));
@@ -185,7 +185,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileClassArrayAccess()
         {
-            var array = new Foo[] { new Foo(), new Foo(), new Foo(), new Foo() };
+            var array = new[] { new Foo(), new Foo(), new Foo(), new Foo() };
             var at = CreateArrayAccess<Foo>();
 
             Assert.AreEqual(array[0], at(array, 0));
@@ -194,22 +194,28 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Bar
         {
-            private int _bar;
+            public readonly int Value;
 
-            public Bar(int b)
+            public Bar(int value)
             {
-                _bar = b;
+                Value = value;
             }
         }
 
         [Test]
         public void CompileStructArrayAccess()
         {
-            var array = new Bar[] { new Bar(0), new Bar(1), new Bar(2), new Bar(3) };
+            var array = new[] { new Bar(0), new Bar(1), new Bar(2), new Bar(3) };
             var at = CreateArrayAccess<Bar>();
 
             Assert.AreEqual(array[0], at(array, 0));
             Assert.AreEqual(array[3], at(array, 3));
+            Assert.AreEqual(array[1], at(array, 1));
+            Assert.AreEqual(array[2], at(array, 2));
+            Assert.AreEqual(0, at(array, 0).Value);
+            Assert.AreEqual(3, at(array, 3).Value);
+            Assert.AreEqual(1, at(array, 1).Value);
+            Assert.AreEqual(2, at(array, 2).Value);
         }
     }
 }

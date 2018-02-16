@@ -34,7 +34,7 @@ using System.Reflection;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_New
+    public class ExpressionTestNew
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -183,13 +183,13 @@ namespace MonoTests.System.Linq.Expressions
 
         public class FakeAnonymousType
         {
-            public string Foo { get; set; }
+            public string FooValue { get; set; }
 
-            public string Bar { get; set; }
+            public string BarValue { get; set; }
 
-            public string Baz { get; set; }
+            public string BazValue { get; set; }
 
-            public int Gazonk { get; set; }
+            public int GazonkValue { get; set; }
 
             public string Tzap
             {
@@ -198,14 +198,14 @@ namespace MonoTests.System.Linq.Expressions
 
             public FakeAnonymousType(string foo)
             {
-                Foo = foo;
+                FooValue = foo;
             }
 
             public FakeAnonymousType(string foo, string bar, string baz)
             {
-                Foo = foo;
-                Bar = bar;
-                Baz = baz;
+                FooValue = foo;
+                BarValue = bar;
+                BazValue = baz;
             }
         }
 
@@ -214,13 +214,13 @@ namespace MonoTests.System.Linq.Expressions
         {
             var n = Expression.New(
                 typeof(FakeAnonymousType).GetConstructor(new[] { typeof(string), typeof(string), typeof(string) }),
-                new[] { "Foo".ToConstant(), "Bar".ToConstant(), "Baz".ToConstant() },
-                new[] { typeof(FakeAnonymousType).GetProperty("Foo"), typeof(FakeAnonymousType).GetProperty("Bar"), typeof(FakeAnonymousType).GetProperty("Baz") });
+                new[] { "FooValue".ToConstant(), "BarValue".ToConstant(), "BazValue".ToConstant() },
+                new MemberInfo[] { typeof(FakeAnonymousType).GetProperty("FooValue"), typeof(FakeAnonymousType).GetProperty("BarValue"), typeof(FakeAnonymousType).GetProperty("BazValue") });
 
             Assert.IsNotNull(n.Constructor);
             Assert.IsNotNull(n.Arguments);
             Assert.IsNotNull(n.Members);
-            Assert.AreEqual("new FakeAnonymousType(Foo = \"Foo\", Bar = \"Bar\", Baz = \"Baz\")", n.ToString());
+            Assert.AreEqual("new FakeAnonymousType(FooValue = \"FooValue\", BarValue = \"BarValue\", BazValue = \"BazValue\")", n.ToString());
         }
 
         [Test]
@@ -229,7 +229,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             Expression.New(
                 typeof(FakeAnonymousType).GetConstructor(new[] { typeof(string) }),
-                new[] { "Foo".ToConstant() },
+                new[] { "FooValue".ToConstant() },
                 new MemberInfo[] { null });
         }
 
@@ -239,8 +239,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             Expression.New(
                 typeof(FakeAnonymousType).GetConstructor(new[] { typeof(string) }),
-                new[] { "Foo".ToConstant() },
-                new[] { typeof(FakeAnonymousType).GetProperty("Foo"), typeof(FakeAnonymousType).GetProperty("Bar") });
+                new[] { "FooValue".ToConstant() },
+                new MemberInfo[] { typeof(FakeAnonymousType).GetProperty("FooValue"), typeof(FakeAnonymousType).GetProperty("BarValue") });
         }
 
         [Test]
@@ -249,8 +249,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             Expression.New(
                 typeof(FakeAnonymousType).GetConstructor(new[] { typeof(string) }),
-                new[] { "Foo".ToConstant() },
-                new[] { typeof(FakeAnonymousType).GetProperty("Gazonk") });
+                new[] { "FooValue".ToConstant() },
+                new MemberInfo[] { typeof(FakeAnonymousType).GetProperty("GazonkValue") });
         }
 
         [Test]
@@ -259,8 +259,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             Expression.New(
                 typeof(FakeAnonymousType).GetConstructor(new[] { typeof(string) }),
-                new[] { "Foo".ToConstant() },
-                new[] { typeof(FakeAnonymousType).GetProperty("Tzap") });
+                new[] { "FooValue".ToConstant() },
+                new MemberInfo[] { typeof(FakeAnonymousType).GetProperty("Tzap") });
         }
 
         public struct EineStrukt
@@ -270,8 +270,8 @@ namespace MonoTests.System.Linq.Expressions
 
             public EineStrukt(int left, int right)
             {
-                this.Left = left;
-                this.Right = right;
+                Left = left;
+                Right = right;
             }
         }
 

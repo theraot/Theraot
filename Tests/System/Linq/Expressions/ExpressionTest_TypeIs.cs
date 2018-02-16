@@ -26,7 +26,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_TypeIs
+    public class ExpressionTestTypeIs
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -92,17 +92,17 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompiledTypeIs()
         {
-            var foo_is_bar = CreateTypeIs<Foo, Bar>();
-            var foo_is_foo = CreateTypeIs<Foo, Foo>();
-            var bar_is_bar = CreateTypeIs<Bar, Bar>();
-            var bar_is_foo = CreateTypeIs<Bar, Foo>();
-            var baz_is_bar = CreateTypeIs<Baz, Bar>();
+            var fooIsBar = CreateTypeIs<Foo, Bar>();
+            var fooIsFoo = CreateTypeIs<Foo, Foo>();
+            var barIsBar = CreateTypeIs<Bar, Bar>();
+            var barIsFoo = CreateTypeIs<Bar, Foo>();
+            var bazIsBar = CreateTypeIs<Baz, Bar>();
 
-            Assert.IsTrue(foo_is_foo(new Foo()));
-            Assert.IsFalse(foo_is_bar(new Foo()));
-            Assert.IsTrue(bar_is_bar(new Bar()));
-            Assert.IsFalse(bar_is_foo(new Bar()));
-            Assert.IsTrue(baz_is_bar(new Baz()));
+            Assert.IsTrue(fooIsFoo(new Foo()));
+            Assert.IsFalse(fooIsBar(new Foo()));
+            Assert.IsTrue(barIsBar(new Bar()));
+            Assert.IsFalse(barIsFoo(new Bar()));
+            Assert.IsTrue(bazIsBar(new Baz()));
         }
 
         public static void TacTac()

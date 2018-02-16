@@ -7,7 +7,7 @@ namespace System.Runtime.CompilerServices
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     [Serializable]
-    public class StateMachineAttribute : Attribute
+    public class StateMachineAttribute : Attribute // Note: this class should not be sealed as per Microsoft's design
     {
         /// <summary>
         /// Gets the type that implements the state machine.

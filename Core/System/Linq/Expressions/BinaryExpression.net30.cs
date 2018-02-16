@@ -115,10 +115,8 @@ namespace System.Linq.Expressions
                 {
                     return ReferenceEqual(left, right);
                 }
-                else
-                {
-                    return ReferenceNotEqual(left, right);
-                }
+
+                return ReferenceNotEqual(left, right);
             }
             return MakeBinary(NodeType, left, right, IsLiftedToNull, Method, conversion);
         }
@@ -228,41 +226,39 @@ namespace System.Linq.Expressions
                 // static member, reduce the same as variable
                 return ReduceVariable();
             }
-            else
+
+            // left.b (op)= r
+            // ... is reduced into ...
+            // temp1 = left
+            // temp2 = temp1.b (op) r
+            // temp1.b = temp2
+            // temp2
+            var temp1 = Variable(member.Expression.Type, "temp1");
+
+            // 1. temp1 = left
+            Expression e1 = Assign(temp1, member.Expression);
+
+            // 2. temp2 = temp1.b (op) r
+            var op = GetBinaryOpFromAssignmentOp(NodeType);
+            Expression e2 = MakeBinary(op, MakeMemberAccess(temp1, member.Member), _right, false, Method);
+            var conversion = GetConversion();
+            if (conversion != null)
             {
-                // left.b (op)= r
-                // ... is reduced into ...
-                // temp1 = left
-                // temp2 = temp1.b (op) r
-                // temp1.b = temp2
-                // temp2
-                var temp1 = Variable(member.Expression.Type, "temp1");
-
-                // 1. temp1 = left
-                Expression e1 = Assign(temp1, member.Expression);
-
-                // 2. temp2 = temp1.b (op) r
-                var op = GetBinaryOpFromAssignmentOp(NodeType);
-                Expression e2 = MakeBinary(op, MakeMemberAccess(temp1, member.Member), _right, false, Method);
-                var conversion = GetConversion();
-                if (conversion != null)
-                {
-                    e2 = Invoke(conversion, e2);
-                }
-                var temp2 = Variable(e2.Type, "temp2");
-                e2 = Assign(temp2, e2);
-
-                // 3. temp1.b = temp2
-                Expression e3 = Assign(MakeMemberAccess(temp1, member.Member), temp2);
-
-                // 3. temp2
-                Expression e4 = temp2;
-
-                return Block(
-                    new[] { temp1, temp2 },
-                    e1, e2, e3, e4
-                );
+                e2 = Invoke(conversion, e2);
             }
+            var temp2 = Variable(e2.Type, "temp2");
+            e2 = Assign(temp2, e2);
+
+            // 3. temp1.b = temp2
+            Expression e3 = Assign(MakeMemberAccess(temp1, member.Member), temp2);
+
+            // 3. temp2
+            Expression e4 = temp2;
+
+            return Block(
+                new[] { temp1, temp2 },
+                e1, e2, e3, e4
+            );
         }
 
         private Expression ReduceIndex()
@@ -667,10 +663,7 @@ namespace System.Linq.Expressions
                     {
                         return new MethodBinaryExpression(binaryType, left, right, method.ReturnType.GetNullableType(), method);
                     }
-                    else
-                    {
-                        return new MethodBinaryExpression(binaryType, left, right, typeof(bool), method);
-                    }
+                    return new MethodBinaryExpression(binaryType, left, right, typeof(bool), method);
                 }
             }
             return null;
@@ -702,10 +695,7 @@ namespace System.Linq.Expressions
                 {
                     return new MethodBinaryExpression(binaryType, left, right, method.ReturnType.GetNullableType(), method);
                 }
-                else
-                {
-                    return new MethodBinaryExpression(binaryType, left, right, typeof(bool), method);
-                }
+                return new MethodBinaryExpression(binaryType, left, right, typeof(bool), method);
             }
             throw Error.OperandTypesDoNotMatchParameters(binaryType, method.Name);
         }
@@ -1217,10 +1207,8 @@ namespace System.Linq.Expressions
                 {
                     return new SimpleBinaryExpression(binaryType, left, right, typeof(bool?));
                 }
-                else
-                {
-                    return new LogicalBinaryExpression(binaryType, left, right);
-                }
+
+                return new LogicalBinaryExpression(binaryType, left, right);
             }
             // look for user defined operator
             var b = GetUserDefinedBinaryOperator(binaryType, opName, left, right, liftToNull);
@@ -1234,10 +1222,8 @@ namespace System.Linq.Expressions
                 {
                     return new SimpleBinaryExpression(binaryType, left, right, typeof(bool?));
                 }
-                else
-                {
-                    return new LogicalBinaryExpression(binaryType, left, right);
-                }
+
+                return new LogicalBinaryExpression(binaryType, left, right);
             }
             throw Error.BinaryOperatorNotDefined(binaryType, left.Type, right.Type);
         }
@@ -1387,10 +1373,8 @@ namespace System.Linq.Expressions
                 {
                     return new SimpleBinaryExpression(binaryType, left, right, typeof(bool?));
                 }
-                else
-                {
-                    return new LogicalBinaryExpression(binaryType, left, right);
-                }
+
+                return new LogicalBinaryExpression(binaryType, left, right);
             }
             return GetUserDefinedBinaryOperatorOrThrow(binaryType, opName, left, right, liftToNull);
         }
@@ -1433,7 +1417,8 @@ namespace System.Linq.Expressions
                     {
                         return new LogicalBinaryExpression(ExpressionType.AndAlso, left, right);
                     }
-                    else if (left.Type == typeof(bool?))
+
+                    if (left.Type == typeof(bool?))
                     {
                         return new SimpleBinaryExpression(ExpressionType.AndAlso, left, right, left.Type);
                     }
@@ -1486,7 +1471,7 @@ namespace System.Linq.Expressions
                     {
                         return new LogicalBinaryExpression(ExpressionType.OrElse, left, right);
                     }
-                    else if (left.Type == typeof(bool?))
+                    if (left.Type == typeof(bool?))
                     {
                         return new SimpleBinaryExpression(ExpressionType.OrElse, left, right, left.Type);
                     }
@@ -1547,6 +1532,7 @@ namespace System.Linq.Expressions
             var delegateType = conversion.Type;
             Debug.Assert(typeof(MulticastDelegate).IsAssignableFrom(delegateType) && delegateType != typeof(MulticastDelegate));
             var method = delegateType.GetMethod("Invoke");
+            // If there comes the day where a delegate doesn't have an Invoke method, let this fail
             if (method.ReturnType == typeof(void))
             {
                 throw Error.UserDefinedOperatorMustNotBeVoid(conversion);
@@ -1582,22 +1568,19 @@ namespace System.Linq.Expressions
             {
                 throw Error.CoalesceUsedOnNonNullType();
             }
-            else if (left.IsNullableType() && TypeHelper.IsImplicitlyConvertible(right, leftStripped))
+            if (left.IsNullableType() && TypeHelper.IsImplicitlyConvertible(right, leftStripped))
             {
                 return leftStripped;
             }
-            else if (TypeHelper.IsImplicitlyConvertible(right, left))
+            if (TypeHelper.IsImplicitlyConvertible(right, left))
             {
                 return left;
             }
-            else if (TypeHelper.IsImplicitlyConvertible(leftStripped, right))
+            if (TypeHelper.IsImplicitlyConvertible(leftStripped, right))
             {
                 return right;
             }
-            else
-            {
-                throw Error.ArgumentTypesMustMatch();
-            }
+            throw Error.ArgumentTypesMustMatch();
         }
 
         #endregion Coalescing Expressions
@@ -1704,6 +1687,7 @@ namespace System.Linq.Expressions
             var delegateType = conversion.Type;
             Debug.Assert(typeof(MulticastDelegate).IsAssignableFrom(delegateType) && delegateType != typeof(MulticastDelegate));
             var mi = delegateType.GetMethod("Invoke");
+            // If there comes the day where a delegate doesn't have an Invoke method, let this fail
             var pms = mi.GetParameters();
             Debug.Assert(pms.Length == conversion.Parameters.Count);
             if (pms.Length != 1)

@@ -41,12 +41,15 @@ namespace Theraot.Core
             {
                 return true;
             }
-            if (ReferenceEquals(null, x) || ReferenceEquals(null, y))
+            else if (ReferenceEquals(null, x) || ReferenceEquals(null, y))
             {
                 return false;
             }
-            return
-                _comparer.Equals(x.Item1, y.Item1);
+            else
+            {
+                return
+                    _comparer.Equals(x.Item1, y.Item1);
+            }
         }
 
         public int GetHashCode(Tuple<T> obj)
@@ -55,7 +58,7 @@ namespace Theraot.Core
             {
                 return EqualityComparer<object>.Default.GetHashCode(null);
             }
-            unchecked
+            else unchecked
             {
                 return
                     _comparer.GetHashCode(obj.Item1);
@@ -101,13 +104,16 @@ namespace Theraot.Core
             {
                 return true;
             }
-            if (ReferenceEquals(null, x) || ReferenceEquals(null, y))
+            else if (ReferenceEquals(null, x) || ReferenceEquals(null, y))
             {
                 return false;
             }
-            return
-                _comparer1.Equals(x.Item1, y.Item1) &&
-                _comparer2.Equals(x.Item2, y.Item2);
+            else
+            {
+                return
+                    _comparer1.Equals(x.Item1, y.Item1) &&
+                    _comparer2.Equals(x.Item2, y.Item2);
+            }
         }
 
         public int GetHashCode(Tuple<T1, T2> obj)
@@ -116,7 +122,7 @@ namespace Theraot.Core
             {
                 return EqualityComparer<object>.Default.GetHashCode(null);
             }
-            unchecked
+            else unchecked
             {
                 return
                     (_comparer1.GetHashCode(obj.Item1) * 17) +
@@ -166,14 +172,17 @@ namespace Theraot.Core
             {
                 return true;
             }
-            if (ReferenceEquals(null, x) || ReferenceEquals(null, y))
+            else if (ReferenceEquals(null, x) || ReferenceEquals(null, y))
             {
                 return false;
             }
-            return
-                _comparer1.Equals(x.Item1, y.Item1) &&
-                _comparer2.Equals(x.Item2, y.Item2) &&
-                _comparer3.Equals(x.Item3, y.Item3);
+            else
+            {
+                return
+                    _comparer1.Equals(x.Item1, y.Item1) &&
+                    _comparer2.Equals(x.Item2, y.Item2) &&
+                    _comparer3.Equals(x.Item3, y.Item3);
+            }
         }
 
         public int GetHashCode(Tuple<T1, T2, T3> obj)
@@ -182,7 +191,7 @@ namespace Theraot.Core
             {
                 return EqualityComparer<object>.Default.GetHashCode(null);
             }
-            unchecked
+            else unchecked
             {
                 return
                     (_comparer1.GetHashCode(obj.Item1) * 17) +
@@ -236,15 +245,18 @@ namespace Theraot.Core
             {
                 return true;
             }
-            if (ReferenceEquals(null, x) || ReferenceEquals(null, y))
+            else if (ReferenceEquals(null, x) || ReferenceEquals(null, y))
             {
                 return false;
             }
-            return
-                _comparer1.Equals(x.Item1, y.Item1) &&
-                _comparer2.Equals(x.Item2, y.Item2) &&
-                _comparer3.Equals(x.Item3, y.Item3) &&
-                _comparer4.Equals(x.Item4, y.Item4);
+            else
+            {
+                return
+                    _comparer1.Equals(x.Item1, y.Item1) &&
+                    _comparer2.Equals(x.Item2, y.Item2) &&
+                    _comparer3.Equals(x.Item3, y.Item3) &&
+                    _comparer4.Equals(x.Item4, y.Item4);
+            }
         }
 
         public int GetHashCode(Tuple<T1, T2, T3, T4> obj)
@@ -253,7 +265,7 @@ namespace Theraot.Core
             {
                 return EqualityComparer<object>.Default.GetHashCode(null);
             }
-            unchecked
+            else unchecked
             {
                 return
                     (_comparer1.GetHashCode(obj.Item1) * 17) +
@@ -311,16 +323,19 @@ namespace Theraot.Core
             {
                 return true;
             }
-            if (ReferenceEquals(null, x) || ReferenceEquals(null, y))
+            else if (ReferenceEquals(null, x) || ReferenceEquals(null, y))
             {
                 return false;
             }
-            return
-                _comparer1.Equals(x.Item1, y.Item1) &&
-                _comparer2.Equals(x.Item2, y.Item2) &&
-                _comparer3.Equals(x.Item3, y.Item3) &&
-                _comparer4.Equals(x.Item4, y.Item4) &&
-                _comparer5.Equals(x.Item5, y.Item5);
+            else
+            {
+                return
+                    _comparer1.Equals(x.Item1, y.Item1) &&
+                    _comparer2.Equals(x.Item2, y.Item2) &&
+                    _comparer3.Equals(x.Item3, y.Item3) &&
+                    _comparer4.Equals(x.Item4, y.Item4) &&
+                    _comparer5.Equals(x.Item5, y.Item5);
+            }
         }
 
         public int GetHashCode(Tuple<T1, T2, T3, T4, T5> obj)
@@ -329,7 +344,7 @@ namespace Theraot.Core
             {
                 return EqualityComparer<object>.Default.GetHashCode(null);
             }
-            unchecked
+            else unchecked
             {
                 return
                     (_comparer1.GetHashCode(obj.Item1) * 17) +
@@ -391,17 +406,20 @@ namespace Theraot.Core
             {
                 return true;
             }
-            if (ReferenceEquals(null, x) || ReferenceEquals(null, y))
+            else if (ReferenceEquals(null, x) || ReferenceEquals(null, y))
             {
                 return false;
             }
-            return
-                _comparer1.Equals(x.Item1, y.Item1) &&
-                _comparer2.Equals(x.Item2, y.Item2) &&
-                _comparer3.Equals(x.Item3, y.Item3) &&
-                _comparer4.Equals(x.Item4, y.Item4) &&
-                _comparer5.Equals(x.Item5, y.Item5) &&
-                _comparer6.Equals(x.Item6, y.Item6);
+            else
+            {
+                return
+                    _comparer1.Equals(x.Item1, y.Item1) &&
+                    _comparer2.Equals(x.Item2, y.Item2) &&
+                    _comparer3.Equals(x.Item3, y.Item3) &&
+                    _comparer4.Equals(x.Item4, y.Item4) &&
+                    _comparer5.Equals(x.Item5, y.Item5) &&
+                    _comparer6.Equals(x.Item6, y.Item6);
+            }
         }
 
         public int GetHashCode(Tuple<T1, T2, T3, T4, T5, T6> obj)
@@ -410,7 +428,7 @@ namespace Theraot.Core
             {
                 return EqualityComparer<object>.Default.GetHashCode(null);
             }
-            unchecked
+            else unchecked
             {
                 return
                     (_comparer1.GetHashCode(obj.Item1) * 17) +
@@ -476,18 +494,21 @@ namespace Theraot.Core
             {
                 return true;
             }
-            if (ReferenceEquals(null, x) || ReferenceEquals(null, y))
+            else if (ReferenceEquals(null, x) || ReferenceEquals(null, y))
             {
                 return false;
             }
-            return
-                _comparer1.Equals(x.Item1, y.Item1) &&
-                _comparer2.Equals(x.Item2, y.Item2) &&
-                _comparer3.Equals(x.Item3, y.Item3) &&
-                _comparer4.Equals(x.Item4, y.Item4) &&
-                _comparer5.Equals(x.Item5, y.Item5) &&
-                _comparer6.Equals(x.Item6, y.Item6) &&
-                _comparer7.Equals(x.Item7, y.Item7);
+            else
+            {
+                return
+                    _comparer1.Equals(x.Item1, y.Item1) &&
+                    _comparer2.Equals(x.Item2, y.Item2) &&
+                    _comparer3.Equals(x.Item3, y.Item3) &&
+                    _comparer4.Equals(x.Item4, y.Item4) &&
+                    _comparer5.Equals(x.Item5, y.Item5) &&
+                    _comparer6.Equals(x.Item6, y.Item6) &&
+                    _comparer7.Equals(x.Item7, y.Item7);
+            }
         }
 
         public int GetHashCode(Tuple<T1, T2, T3, T4, T5, T6, T7> obj)
@@ -496,7 +517,7 @@ namespace Theraot.Core
             {
                 return EqualityComparer<object>.Default.GetHashCode(null);
             }
-            unchecked
+            else unchecked
             {
                 return
                     (_comparer1.GetHashCode(obj.Item1) * 17) +
@@ -566,19 +587,22 @@ namespace Theraot.Core
             {
                 return true;
             }
-            if (ReferenceEquals(null, x) || ReferenceEquals(null, y))
+            else if (ReferenceEquals(null, x) || ReferenceEquals(null, y))
             {
                 return false;
             }
-            return
-                _comparer1.Equals(x.Item1, y.Item1) &&
-                _comparer2.Equals(x.Item2, y.Item2) &&
-                _comparer3.Equals(x.Item3, y.Item3) &&
-                _comparer4.Equals(x.Item4, y.Item4) &&
-                _comparer5.Equals(x.Item5, y.Item5) &&
-                _comparer6.Equals(x.Item6, y.Item6) &&
-                _comparer7.Equals(x.Item7, y.Item7) &&
-                _comparer8.Equals(x.Rest, y.Rest);
+            else
+            {
+                return
+                    _comparer1.Equals(x.Item1, y.Item1) &&
+                    _comparer2.Equals(x.Item2, y.Item2) &&
+                    _comparer3.Equals(x.Item3, y.Item3) &&
+                    _comparer4.Equals(x.Item4, y.Item4) &&
+                    _comparer5.Equals(x.Item5, y.Item5) &&
+                    _comparer6.Equals(x.Item6, y.Item6) &&
+                    _comparer7.Equals(x.Item7, y.Item7) &&
+                    _comparer8.Equals(x.Rest, y.Rest);
+            }
         }
 
         public int GetHashCode(Tuple<T1, T2, T3, T4, T5, T6, T7, T8> obj)
@@ -587,7 +611,7 @@ namespace Theraot.Core
             {
                 return EqualityComparer<object>.Default.GetHashCode(null);
             }
-            unchecked
+            else unchecked
             {
                 return
                     (_comparer1.GetHashCode(obj.Item1) * 17) +

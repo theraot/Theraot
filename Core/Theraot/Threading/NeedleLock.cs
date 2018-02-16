@@ -117,7 +117,7 @@ namespace Theraot.Threading
 
         internal void Capture(LockSlot<T> slot)
         {
-            _capture[slot._id] = true;
+            _capture[slot.Id] = true;
         }
 
         internal void Release()
@@ -130,8 +130,8 @@ namespace Theraot.Threading
 
         internal void Uncapture(LockSlot<T> slot)
         {
-            Interlocked.CompareExchange(ref _owner, -1, slot._id);
-            _capture[slot._id] = false;
+            Interlocked.CompareExchange(ref _owner, -1, slot.Id);
+            _capture[slot.Id] = false;
         }
 
         private static bool EqualsExtracted(NeedleLock<T> left, NeedleLock<T> right)

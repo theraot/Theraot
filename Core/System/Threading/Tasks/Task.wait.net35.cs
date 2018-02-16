@@ -690,7 +690,7 @@ namespace System.Threading.Tasks
             return signaledTaskIndex;
         }
 
-        private static Task<Task> PrivateWaitAny(Task[] tasks, int millisecondsTimeout, CancellationToken cancellationToken, ref int signaledTaskIndex)
+        private static void PrivateWaitAny(Task[] tasks, int millisecondsTimeout, CancellationToken cancellationToken, ref int signaledTaskIndex)
         {
             var firstCompleted = PrivateWhenAny(tasks, ref signaledTaskIndex);
             if (signaledTaskIndex == -1)
@@ -701,7 +701,6 @@ namespace System.Threading.Tasks
                     signaledTaskIndex = Array.IndexOf(tasks, firstCompleted.Result);
                 }
             }
-            return firstCompleted;
         }
 
         private static Task<Task> PrivateWhenAny(IList<Task> tasks, ref int signaledTaskIndex)

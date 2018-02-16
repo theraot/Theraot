@@ -15,18 +15,16 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("condition");
             }
-            var _condition = condition;
             if (iterate == null)
             {
                 throw new ArgumentNullException("iterate");
             }
-            var _iterate = iterate;
             var currentState = initialState;
             do
             {
-                currentState = _iterate.Invoke(currentState);
+                currentState = iterate.Invoke(currentState);
                 yield return currentState;
-            } while (_condition.Invoke(currentState));
+            } while (condition.Invoke(currentState));
         }
 
         public static IEnumerable<TResult> Create<TState, TResult>(TState initialState, Func<TState, bool> condition, Func<TState, TState> iterate, Func<TState, TResult> resultSelector)
@@ -35,23 +33,20 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("condition");
             }
-            var _condition = condition;
             if (iterate == null)
             {
                 throw new ArgumentNullException("iterate");
             }
-            var _iterate = iterate;
             if (resultSelector == null)
             {
                 throw new ArgumentNullException("resultSelector");
             }
-            var _resultSelector = resultSelector;
             var currentState = initialState;
             do
             {
-                currentState = _iterate.Invoke(currentState);
-                yield return _resultSelector.Invoke(currentState);
-            } while (_condition.Invoke(currentState));
+                currentState = iterate.Invoke(currentState);
+                yield return resultSelector.Invoke(currentState);
+            } while (condition.Invoke(currentState));
         }
 
         public static IEnumerable<T> Create<T>(Func<bool> condition, Func<T> iterate)
@@ -60,15 +55,13 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("condition");
             }
-            var _condition = condition;
             if (iterate == null)
             {
                 throw new ArgumentNullException("iterate");
             }
-            var _iterate = iterate;
-            while (_condition.Invoke())
+            while (condition.Invoke())
             {
-                yield return _iterate.Invoke();
+                yield return iterate.Invoke();
             }
         }
 
@@ -78,20 +71,17 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("condition");
             }
-            var _condition = condition;
             if (iterate == null)
             {
                 throw new ArgumentNullException("iterate");
             }
-            var _iterate = iterate;
             if (resultSelector == null)
             {
                 throw new ArgumentNullException("resultSelector");
             }
-            var _resultSelector = resultSelector;
-            while (_condition.Invoke())
+            while (condition.Invoke())
             {
-                yield return _resultSelector(_iterate.Invoke());
+                yield return resultSelector(iterate.Invoke());
             }
         }
 
@@ -101,9 +91,8 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("tryTake");
             }
-            var _tryTake = tryTake;
             T item;
-            while (_tryTake.Invoke(out item))
+            while (tryTake.Invoke(out item))
             {
                 yield return item;
             }
@@ -115,16 +104,14 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("tryTake");
             }
-            var _tryTake = tryTake;
             if (converter == null)
             {
                 throw new ArgumentNullException("converter");
             }
-            var _converter = converter;
             TState item;
-            while (_tryTake.Invoke(out item))
+            while (tryTake.Invoke(out item))
             {
-                yield return _converter.Invoke(item);
+                yield return converter.Invoke(item);
             }
         }
 
@@ -134,11 +121,10 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("iterate");
             }
-            var _iterate = iterate;
             var currentState = initialState;
             while (true)
             {
-                currentState = _iterate.Invoke(currentState);
+                currentState = iterate.Invoke(currentState);
                 yield return currentState;
             }
             // Infinite Loop - This method creates an endless IEnumerable<T>
@@ -169,10 +155,9 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("iterate");
             }
-            var _iterate = iterate;
             while (true)
             {
-                yield return _iterate.Invoke();
+                yield return iterate.Invoke();
             }
             // Infinite Loop - This method creates an endless IEnumerable<T>
         }

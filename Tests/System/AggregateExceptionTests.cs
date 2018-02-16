@@ -46,8 +46,8 @@ namespace MonoTests.System
         [Test]
         public void SimpleInnerExceptionTestCase()
         {
-            const string message = "Foo";
-            var inner = new ApplicationException(message);
+            const string Message = "Foo";
+            var inner = new ApplicationException(Message);
             var ex = new AggregateException(inner);
 
             Assert.IsNotNull(ex.InnerException);
@@ -56,7 +56,7 @@ namespace MonoTests.System
             Assert.AreEqual(inner, ex.InnerException);
             Assert.AreEqual(1, ex.InnerExceptions.Count);
             Assert.AreEqual(inner, ex.InnerExceptions[0]);
-            Assert.AreEqual(message, ex.InnerException.Message);
+            Assert.AreEqual(Message, ex.InnerException.Message);
             Assert.AreEqual(inner, ex.GetBaseException());
         }
 
@@ -72,14 +72,14 @@ namespace MonoTests.System
         [Test, ExpectedException(typeof(ArgumentException))]
         public void InitializationWithNullInnerValuesTest()
         {
-            var foo = new AggregateException(new Exception[] { new Exception(), null, new ApplicationException() });
+            GC.KeepAlive(new AggregateException(new[] { new Exception(), null, new ApplicationException() }));
         }
 
         [Test]
         public void InitializationWithNullValuesTest()
         {
-            Throws(typeof(ArgumentNullException), () => new AggregateException((IEnumerable<Exception>)null));
-            Throws(typeof(ArgumentNullException), () => new AggregateException((Exception[])null));
+            Throws(typeof(ArgumentNullException), () => GC.KeepAlive(new AggregateException((IEnumerable<Exception>)null)));
+            Throws(typeof(ArgumentNullException), () => GC.KeepAlive(new AggregateException((Exception[])null)));
         }
 
         [Test]
@@ -112,7 +112,7 @@ namespace MonoTests.System
         [Test]
         public void GetBaseWithInner()
         {
-            var ae = new AggregateException("x", new[] { new ArgumentException(), new ArgumentNullException() });
+            var ae = new AggregateException("x", new Exception[] { new ArgumentException(), new ArgumentNullException() });
             Assert.AreEqual(ae, ae.GetBaseException(), "#1");
 
             var expected = new ArgumentException();

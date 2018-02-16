@@ -1,6 +1,5 @@
 #if NET20 || NET30 || NET35
 
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
@@ -78,16 +77,25 @@ namespace System.Threading
             var spinWait = new SpinWait();
             while (true)
             {
+                // The value we expect to see for _count in CompareExchange
+                // (The previous count of the SemaphoreSlim)
                 var expected = Thread.VolatileRead(ref _count);
+                // The value we want to set _count to in CompareExchange
                 var result = expected + releaseCount;
-                if (result < 0)
+                // If there is a maxCount set at constructor
+                // And we are exceding it, then fail
+                if (_maxCount.HasValue && result > _maxCount)
                 {
                     throw new SemaphoreFullException();
                 }
+                // Attempt to set the new value
                 var found = Interlocked.CompareExchange(ref _count, result, expected);
+                // If we found what we expected, it means we succeeded
                 if (found == expected)
                 {
+                    // Awake the corresponding threads
                     Awake(releaseCount);
+                    // Return the previous count of the SemaphoreSlim.
                     return expected;
                 }
                 spinWait.SpinOnce();
@@ -222,11 +230,12 @@ namespace System.Threading
                 source.SetResult(true);
                 return source.Task;
             }
+            Thread.MemoryBarrier();
             _asyncWaiters.Add(source);
             return source.Task;
         }
 
-        public Task WaitAsync(CancellationToken cancellationToken)
+        public Task WaitAsync(CancellationToken cancellationToken) // TODO: Test coverage?
         {
             CheckDisposed();
             if (cancellationToken.IsCancellationRequested)
@@ -239,6 +248,7 @@ namespace System.Threading
                 source.SetResult(true);
                 return source.Task;
             }
+            Thread.MemoryBarrier();
             cancellationToken.Register(() => source.SetCanceled());
             _asyncWaiters.Add(source);
             return source.Task;
@@ -253,7 +263,8 @@ namespace System.Threading
                 source.SetResult(true);
                 return source.Task;
             }
-            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout);
+            Thread.MemoryBarrier();
+            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout); // TODO: Review
             _asyncWaiters.Add(source);
             return source.Task;
         }
@@ -267,12 +278,13 @@ namespace System.Threading
                 source.SetResult(true);
                 return source.Task;
             }
-            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), timeout);
+            Thread.MemoryBarrier();
+            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), timeout); // TODO: Review
             _asyncWaiters.Add(source);
             return source.Task;
         }
 
-        public Task<bool> WaitAsync(int millisecondsTimeout, CancellationToken cancellationToken)
+        public Task<bool> WaitAsync(int millisecondsTimeout, CancellationToken cancellationToken) // TODO: Test coverage?
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -285,13 +297,14 @@ namespace System.Threading
                 source.SetResult(true);
                 return source.Task;
             }
-            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout, cancellationToken);
+            Thread.MemoryBarrier();
+            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout, cancellationToken); // TODO: Review
             cancellationToken.Register(() => source.SetCanceled());
             _asyncWaiters.Add(source);
             return source.Task;
         }
 
-        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken)
+        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken) // TODO: Test coverage?
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -304,13 +317,14 @@ namespace System.Threading
                 source.SetResult(true);
                 return source.Task;
             }
+            Thread.MemoryBarrier();
             Theraot.Threading.Timeout.Launch
             (
                 () =>
                 {
                     try
                     {
-                        source.SetResult(false);
+                        source.SetResult(false); // TODO: Review
                     }
                     catch (InvalidOperationException exception)
                     {

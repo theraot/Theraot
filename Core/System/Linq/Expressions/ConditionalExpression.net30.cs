@@ -34,10 +34,7 @@ namespace System.Linq.Expressions
             {
                 return new ConditionalExpression(test, ifTrue);
             }
-            else
-            {
-                return new FullConditionalExpression(test, ifTrue, ifFalse);
-            }
+            return new FullConditionalExpression(test, ifTrue, ifFalse);
         }
 
         /// <summary>

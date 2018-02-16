@@ -34,7 +34,6 @@ namespace Theraot.Threading
             {
                 throw new ArgumentNullException("condition");
             }
-            Func<bool> temp = condition;
             return DisposedConditional
                    (
                        FuncHelper.GetFallacyFunc(),

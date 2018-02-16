@@ -33,7 +33,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_ElementInit
+    public class ExpressionTestElementInit
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -87,9 +87,9 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void ElementInitToString()
         {
-            var ElementInit = Expression.ElementInit(typeof(Foo).GetMethod("Add"), new Expression[] { Expression.Constant("") });
+            var elementInit = Expression.ElementInit(typeof(Foo).GetMethod("Add"), new Expression[] { Expression.Constant("") });
 
-            Assert.AreEqual("Void Add(System.String)(\"\")", ElementInit.ToString());
+            Assert.AreEqual("Void Add(System.String)(\"\")", elementInit.ToString());
         }
 
         public class Foo

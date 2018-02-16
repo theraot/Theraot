@@ -9,11 +9,11 @@ namespace Theraot.Core
     [System.Diagnostics.DebuggerNonUserCode]
     public static class TraceRoute
     {
-        private const int _bufferSize = 32;
-        private const int _timeoutMilliseconds = 1000;
-
         public static void Trace(IPAddress destination, Func<IPAddress, TracertNode, bool> callback)
         {
+            const int BufferSize = 32;
+            const int TimeoutMilliseconds = 1000;
+
             if (destination == null)
             {
                 throw new ArgumentNullException("destination");
@@ -23,7 +23,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException("callback");
             }
             var syncroot = new object();
-            var buffer = new byte[_bufferSize];
+            var buffer = new byte[BufferSize];
             var options = new PingOptions(1, true);
             var ping = new Ping();
             ping.PingCompleted += (sender, e) =>
@@ -57,11 +57,11 @@ namespace Theraot.Core
                             goto back;
                         }
                         options.Ttl++;
-                        ping.SendAsync(destination, _timeoutMilliseconds, buffer, options, null);
+                        ping.SendAsync(destination, TimeoutMilliseconds, buffer, options, null);
                     }
                 }
             };
-            ping.SendAsync(destination, _timeoutMilliseconds, buffer, options, null);
+            ping.SendAsync(destination, TimeoutMilliseconds, buffer, options, null);
         }
     }
 }

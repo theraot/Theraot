@@ -28,7 +28,7 @@ using NUnit.Framework;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-	public class ExpressionTest_Quote
+	public class ExpressionTestQuote
 	{
 		[Test]
 		[ExpectedException (typeof (ArgumentNullException))]

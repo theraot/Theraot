@@ -167,7 +167,8 @@ namespace MonoTests.System.Linq.Expressions
         //
         public override bool Equals(object obj)
         {
-            return ((object)this) == obj;
+            // Keep cast
+            return (object)this == obj;
         }
 
         public override int GetHashCode()
@@ -215,10 +216,7 @@ namespace MonoTests.System.Linq.Expressions
         public void DoNothing()
         {
             // Just to avoid a compiler warning
-            if (OnTest != null)
-            {
-                return;
-            }
+            GC.KeepAlive(OnTest);
         }
 
         public static int StaticField;
@@ -315,7 +313,7 @@ namespace MonoTests.System.Linq.Expressions
             if (action == null)
             {
                 Assert.Fail();
-                return;
+                return; // OK
             }
             try
             {
@@ -370,8 +368,8 @@ namespace MonoTests.System.Linq.Expressions
 
         public Item(T left, T right)
         {
-            this._left = left;
-            this._right = right;
+            _left = left;
+            _right = right;
         }
     }
 }

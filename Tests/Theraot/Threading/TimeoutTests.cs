@@ -9,7 +9,7 @@ namespace Theraot.Threading
         [Test]
         public static void TimeoutCancel()
         {
-            var value = new int[] { 0 };
+            var value = new[] { 0 };
             var timeout = new Timeout(() => value[0] = 1, 1000);
             Assert.IsFalse(timeout.IsCanceled);
             Assert.IsFalse(timeout.IsCompleted); // race condition
@@ -39,7 +39,7 @@ namespace Theraot.Threading
         public static void TimeoutChange()
         {
             var now = DateTime.Now;
-            var value = new DateTime[] { now };
+            var value = new[] { now };
             var timeout = new Timeout(() => value[0] = DateTime.Now, 100);
             timeout.Change(1000); // race condition
             Assert.IsFalse(timeout.IsCanceled);
@@ -51,7 +51,7 @@ namespace Theraot.Threading
         [Test]
         public static void TimeoutConstructorCanceledToken()
         {
-            var value = new int[] { 0 };
+            var value = new[] { 0 };
             var token = new CancellationToken(true);
             var timeout = new Timeout(() => value[0] = 1, 0, token);
             Assert.IsTrue(timeout.IsCanceled);
@@ -62,7 +62,7 @@ namespace Theraot.Threading
         [Test]
         public static void TimeoutConstructorCancellationToken()
         {
-            var value = new int[] { 0 };
+            var value = new[] { 0 };
             var timeout = new Timeout(() => value[0] = 1, 0, CancellationToken.None);
             Assert.IsFalse(timeout.IsCanceled);
         }
@@ -70,7 +70,7 @@ namespace Theraot.Threading
         [Test]
         public static void TimeoutConstructorZeroDueTime()
         {
-            var value = new int[] { 0 };
+            var value = new[] { 0 };
             var timeout = new Timeout(() => value[0] = 1, 0);
             ThreadingHelper.SpinWaitUntil(() => timeout.IsCompleted);
             Assert.AreEqual(1, value[0]);
@@ -96,7 +96,7 @@ namespace Theraot.Threading
         public static void TimeoutRemaining()
         {
             var now = DateTime.Now;
-            var value = new DateTime[] { now };
+            var value = new[] { now };
             var timeout = new Timeout(() => value[0] = DateTime.Now, 500);
             var remaining = timeout.CheckRemaining();
             Assert.IsFalse(timeout.IsCompleted);

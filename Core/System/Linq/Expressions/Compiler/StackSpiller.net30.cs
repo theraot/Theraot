@@ -153,7 +153,7 @@ namespace System.Linq.Expressions.Compiler
         {
             GC.KeepAlive(stack);
 
-            var node = (IDynamicExpression)expr;
+            var node = (IDynamicExpression)expr; // TODO: Test coverage?
 
             // CallSite is on the stack
             var cr = new ChildRewriter(this, Stack.NonEmpty, node.ArgumentCount);
@@ -455,11 +455,6 @@ namespace System.Linq.Expressions.Compiler
                 // the element expressions are never emitted on an empty stack because
                 // the array reference and the index are on the stack.
                 stack = Stack.NonEmpty;
-            }
-            else
-            {
-                // In a case of NewArrayBounds we make no modifications to the stack
-                // before emitting bounds expressions.
             }
 
             var cr = new ChildRewriter(this, stack, node.Expressions.Count);

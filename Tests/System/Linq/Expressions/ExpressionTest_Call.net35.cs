@@ -37,7 +37,7 @@ using System.Reflection;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_Call
+    public class ExpressionTestCall
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -201,13 +201,13 @@ namespace MonoTests.System.Linq.Expressions
             Expression.Call(GetType(), "EineMethod", new[] { typeof(string), typeof(int) }, "foo".ToConstant(), 2.ToConstant());
         }
 
-        public static void EineGenericMethod<X, Y>(string foo, int bar)
+        public static void EineGenericMethod<TX, TY>(string foo, int bar)
         {
             // Used via Reflection
             GC.KeepAlive(foo);
             GC.KeepAlive(bar);
-            GC.KeepAlive(typeof(X));
-            GC.KeepAlive(typeof(Y));
+            GC.KeepAlive(typeof(TX));
+            GC.KeepAlive(typeof(TY));
         }
 
         [Test]
@@ -218,18 +218,19 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual("Void EineGenericMethod[String,Int32](System.String, Int32)", m.Method.ToString());
         }
 
-        public struct EineStrukt
+        private struct EineStrukt
         {
-            public string Foo;
+            private readonly string _value;
 
-            public EineStrukt(string foo)
+            public EineStrukt(string value)
             {
-                Foo = foo;
+                _value = value;
             }
 
-            public string GimmeFoo()
+            // Used via reflection
+            public string GetValue()
             {
-                return Foo;
+                return _value;
             }
         }
 
@@ -239,7 +240,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var param = Expression.Parameter(typeof(EineStrukt), "s");
             var foo = Expression.Lambda<Func<EineStrukt, string>>(
-                Expression.Call(param, typeof(EineStrukt).GetMethod("GimmeFoo")), param).Compile();
+                Expression.Call(param, typeof(EineStrukt).GetMethod("GetValue")), param).Compile();
 
             var s = new EineStrukt("foo");
             Assert.AreEqual("foo", foo(s));
@@ -456,8 +457,8 @@ namespace MonoTests.System.Linq.Expressions
         public void CallQueryableSelect() // #536637
         {
             var parameter = Expression.Parameter(typeof(string), "s");
-            var string_length = Expression.Property(parameter, typeof(string).GetProperty("Length"));
-            var lambda = Expression.Lambda(string_length, parameter);
+            var stringLength = Expression.Property(parameter, typeof(string).GetProperty("Length"));
+            var lambda = Expression.Lambda(stringLength, parameter);
 
             var strings = new[] { "1", "22", "333" };
 
@@ -483,16 +484,16 @@ namespace MonoTests.System.Linq.Expressions
         public void CallNullableGetValueOrDefault() // #568989
         {
             var value = Expression.Parameter(typeof(int?), "value");
-            var default_parameter = Expression.Parameter(typeof(int), "default");
+            var defaultParameter = Expression.Parameter(typeof(int), "default");
 
             var getter = Expression.Lambda<Func<int?, int, int>>(
                 Expression.Call(
                     value,
                     "GetValueOrDefault",
                     Type.EmptyTypes,
-                    default_parameter),
+                    defaultParameter),
                 value,
-                default_parameter).Compile();
+                defaultParameter).Compile();
 
             Assert.AreEqual(2, getter(null, 2));
             Assert.AreEqual(4, getter(4, 2));

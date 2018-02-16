@@ -245,15 +245,15 @@ namespace Theraot.Core
         {
             // Newton's  method  aproximation  for  positive  integers
             // if  (number  ==  0)  return  0;
-            var _x = number >> 1;
+            var x = number >> 1;
             while (true)
             {
-                var x = (_x + (number / _x)) >> 1;
-                if (x >= _x)
+                var xNext = (x + (number / x)) >> 1;
+                if (xNext >= x)
                 {
-                    return _x;
+                    return x;
                 }
-                _x = x;
+                x = xNext;
             }
         }
 

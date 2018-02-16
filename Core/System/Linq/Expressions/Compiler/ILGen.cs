@@ -634,11 +634,11 @@ namespace System.Linq.Expressions.Compiler
                 if (dt != null && dt.IsGenericType)
                 {
                     il.Emit(OpCodes.Ldtoken, dt);
-                    il.Emit(OpCodes.Call, typeof(MethodBase).GetMethod("GetMethodFromHandle", new Type[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) }));
+                    il.Emit(OpCodes.Call, typeof(MethodBase).GetMethod("GetMethodFromHandle", new[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) }));
                 }
                 else
                 {
-                    il.Emit(OpCodes.Call, typeof(MethodBase).GetMethod("GetMethodFromHandle", new Type[] { typeof(RuntimeMethodHandle) }));
+                    il.Emit(OpCodes.Call, typeof(MethodBase).GetMethod("GetMethodFromHandle", new[] { typeof(RuntimeMethodHandle) }));
                 }
                 if (type != typeof(MethodBase))
                 {
@@ -983,17 +983,13 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(typeFrom.IsNullableType());
             Debug.Assert(typeTo.IsNullableType());
-            var labIfNull = default(Label);
-            var labEnd = default(Label);
-            LocalBuilder locFrom = null;
-            LocalBuilder locTo = null;
-            locFrom = il.DeclareLocal(typeFrom);
+            var locFrom = il.DeclareLocal(typeFrom);
             il.Emit(OpCodes.Stloc, locFrom);
-            locTo = il.DeclareLocal(typeTo);
+            var locTo = il.DeclareLocal(typeTo);
             // test for null
             il.Emit(OpCodes.Ldloca, locFrom);
             il.EmitHasValue(typeFrom);
-            labIfNull = il.DefineLabel();
+            var labIfNull = il.DefineLabel();
             il.Emit(OpCodes.Brfalse_S, labIfNull);
             il.Emit(OpCodes.Ldloca, locFrom);
             il.EmitGetValueOrDefault(typeFrom);
@@ -1001,10 +997,10 @@ namespace System.Linq.Expressions.Compiler
             var nnTypeTo = typeTo.GetNonNullableType();
             il.EmitConvertToType(nnTypeFrom, nnTypeTo, isChecked);
             // construct result type
-            var ci = typeTo.GetConstructor(new Type[] { nnTypeTo });
+            var ci = typeTo.GetConstructor(new[] { nnTypeTo });
             il.Emit(OpCodes.Newobj, ci);
             il.Emit(OpCodes.Stloc, locTo);
-            labEnd = il.DefineLabel();
+            var labEnd = il.DefineLabel();
             il.Emit(OpCodes.Br_S, labEnd);
             // if null then create a default one
             il.MarkLabel(labIfNull);
@@ -1018,11 +1014,10 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(!typeFrom.IsNullableType());
             Debug.Assert(typeTo.IsNullableType());
-            LocalBuilder locTo = null;
-            locTo = il.DeclareLocal(typeTo);
+            var locTo = il.DeclareLocal(typeTo);
             var nnTypeTo = typeTo.GetNonNullableType();
             il.EmitConvertToType(typeFrom, nnTypeTo, isChecked);
-            var ci = typeTo.GetConstructor(new Type[] { nnTypeTo });
+            var ci = typeTo.GetConstructor(new[] { nnTypeTo });
             il.Emit(OpCodes.Newobj, ci);
             il.Emit(OpCodes.Stloc, locTo);
             il.Emit(OpCodes.Ldloc, locTo);
@@ -1047,8 +1042,7 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(typeFrom.IsNullableType());
             Debug.Assert(!typeTo.IsNullableType());
             Debug.Assert(typeTo.IsValueType);
-            LocalBuilder locFrom = null;
-            locFrom = il.DeclareLocal(typeFrom);
+            var locFrom = il.DeclareLocal(typeFrom);
             il.Emit(OpCodes.Stloc, locFrom);
             il.Emit(OpCodes.Ldloca, locFrom);
             il.EmitGetValue(typeFrom);
@@ -1128,7 +1122,7 @@ namespace System.Linq.Expressions.Compiler
             ContractUtils.RequiresNotNull(elementType, "elementType");
             if (emit == null)
             {
-                ContractUtils.RequiresNotNull(emit, "emit");
+                ContractUtils.RequiresNotNull(null, "emit");
                 throw new ArgumentNullException("emit");
             }
             if (count < 0)
@@ -1185,13 +1179,13 @@ namespace System.Linq.Expressions.Compiler
                 {
                     var intValue = decimal.ToInt32(value);
                     il.EmitInt(intValue);
-                    il.EmitNew(typeof(decimal).GetConstructor(new Type[] { typeof(int) }));
+                    il.EmitNew(typeof(decimal).GetConstructor(new[] { typeof(int) }));
                 }
                 else if (long.MinValue <= value && value <= long.MaxValue)
                 {
                     var longValue = decimal.ToInt64(value);
                     il.EmitLong(longValue);
-                    il.EmitNew(typeof(decimal).GetConstructor(new Type[] { typeof(long) }));
+                    il.EmitNew(typeof(decimal).GetConstructor(new[] { typeof(long) }));
                 }
                 else
                 {
@@ -1212,7 +1206,7 @@ namespace System.Linq.Expressions.Compiler
             il.EmitInt(bits[2]);
             il.EmitBoolean((bits[3] & 0x80000000) != 0);
             il.EmitByte((byte)(bits[3] >> 16));
-            il.EmitNew(typeof(decimal).GetConstructor(new Type[] { typeof(int), typeof(int), typeof(int), typeof(bool), typeof(byte) }));
+            il.EmitNew(typeof(decimal).GetConstructor(new[] { typeof(int), typeof(int), typeof(int), typeof(bool), typeof(byte) }));
         }
 
         internal static void EmitDefault(this ILGenerator il, Type type)
@@ -1273,7 +1267,7 @@ namespace System.Linq.Expressions.Compiler
 
                 case TypeCode.Decimal:
                     il.Emit(OpCodes.Ldc_I4_0);
-                    il.Emit(OpCodes.Newobj, typeof(decimal).GetConstructor(new Type[] { typeof(int) }));
+                    il.Emit(OpCodes.Newobj, typeof(decimal).GetConstructor(new[] { typeof(int) }));
                     break;
 
                 default:

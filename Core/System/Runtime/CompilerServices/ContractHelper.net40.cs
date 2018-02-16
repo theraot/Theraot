@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Runtime.ConstrainedExecution;
 using System.Security;
+using Theraot.Collections.ThreadSafe;
 
 namespace System.Runtime.CompilerServices
 {
@@ -38,8 +39,7 @@ namespace System.Runtime.CompilerServices
         }
 
         internal const int Cor_E_Codecontractfailed = unchecked((int)0x80131542);
-        private static readonly object _lockObject = new object();
-        private static volatile EventHandler<ContractFailedEventArgs> _contractFailedEvent;
+        private static readonly SafeCollection<EventHandler<ContractFailedEventArgs>> _contractFailedEvent = new SafeCollection<EventHandler<ContractFailedEventArgs>>();
 
         /// <summary>
         /// Allows a managed application environment such as an interactive interpreter (IronPython) or a
@@ -62,18 +62,12 @@ namespace System.Runtime.CompilerServices
                 // UE: Please mention reliable event handlers should also be marked with the
                 // PrePrepareMethodAttribute to avoid CER eager preparation work when ngen'ed.
                 // System.Runtime.CompilerServices.RuntimeHelpers.PrepareContractedDelegate(value); // TODO? I'm afraid I can't do that.
-                lock (_lockObject)
-                {
-                    _contractFailedEvent += value;
-                }
+                _contractFailedEvent.Add(value);
             }
             [SecurityCritical]
             remove
             {
-                lock (_lockObject)
-                {
-                    _contractFailedEvent -= value;
-                }
+                _contractFailedEvent.Remove(value);
             }
         }
 
@@ -120,9 +114,9 @@ namespace System.Runtime.CompilerServices
                 if (contractFailedEventLocal != null)
                 {
                     eventArgs = new ContractFailedEventArgs(failureKind, displayMessage, conditionText, innerException);
-                    foreach (var @delegate in contractFailedEventLocal.GetInvocationList())
+                    foreach (var @delegate in contractFailedEventLocal)
                     {
-                        var handler = (EventHandler<ContractFailedEventArgs>)@delegate;
+                        var handler = @delegate;
                         try
                         {
                             handler(null, eventArgs);

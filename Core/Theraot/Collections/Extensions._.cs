@@ -1718,8 +1718,8 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("other");
             }
             comparer = comparer ?? EqualityComparer<T>.Default;
-            var otherASCollection = AsCollection(other);
-            return source.RemoveWhere(input => !otherASCollection.Contains(input, comparer));
+            var otherAsCollection = AsCollection(other);
+            return source.RemoveWhere(input => !otherAsCollection.Contains(input, comparer));
         }
 
         public static IEnumerable<T> IntersectWithEnumerable<T>(this ICollection<T> source, IEnumerable<T> other)

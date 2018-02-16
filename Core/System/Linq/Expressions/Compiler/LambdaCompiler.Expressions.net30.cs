@@ -535,7 +535,7 @@ namespace System.Linq.Expressions.Compiler
                 throw Error.CannotCompileDynamic();
             }
 
-            var node = (IDynamicExpression)expr;
+            var node = (IDynamicExpression)expr; // TODO: Test coverage?
 
             var site = node.CreateCallSite();
             var siteType = site.GetType();
@@ -1145,7 +1145,7 @@ namespace System.Linq.Expressions.Compiler
                         EmitMethodCallExpression(mc);
                         if (resultType.IsNullableType() && resultType != mc.Type)
                         {
-                            var ci = resultType.GetConstructor(new Type[] { mc.Type });
+                            var ci = resultType.GetConstructor(new[] { mc.Type });
                             _ilg.Emit(OpCodes.Newobj, ci);
                         }
                         _ilg.Emit(OpCodes.Br_S, exit);
@@ -1255,7 +1255,7 @@ namespace System.Linq.Expressions.Compiler
                         EmitMethodCallExpression(mc);
                         if (resultType.IsNullableType() && resultType != mc.Type)
                         {
-                            var ci = resultType.GetConstructor(new Type[] { mc.Type });
+                            var ci = resultType.GetConstructor(new[] { mc.Type });
                             _ilg.Emit(OpCodes.Newobj, ci);
                         }
                         _ilg.Emit(OpCodes.Br_S, exit);

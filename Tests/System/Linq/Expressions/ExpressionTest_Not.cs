@@ -33,7 +33,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_Not
+    public class ExpressionTestNot
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -148,7 +148,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Slot
         {
-            public int Value;
+            public readonly int Value;
 
             public Slot(int value)
             {
