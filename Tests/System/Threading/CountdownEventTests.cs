@@ -136,7 +136,7 @@ namespace MonoTests.System.Threading
             var evt = new CountdownEvent(5);
 
             var count = 0;
-            ParallelTestHelper.ParallelStressTest(evt, (CountdownEvent e) =>
+            ParallelTestHelper.ParallelStressTest(evt, e =>
             {
                 var num = Interlocked.Increment(ref count);
                 if (num % 2 == 0)
@@ -247,7 +247,7 @@ namespace MonoTests.System.Threading
 
             try
             {
-                var v = ce.WaitHandle;
+                GC.KeepAlive(ce.WaitHandle);
                 Assert.Fail("#5");
             }
             catch (ObjectDisposedException ex)
@@ -381,7 +381,8 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void Signal_Concurrent()
+        [Category("RaceCondition")] // This test creates a race condition
+        public void Signal_Concurrent() // TODO: Review
         {
             for (var r = 0; r < 100; ++r)
             {
@@ -465,7 +466,7 @@ namespace MonoTests.System.Threading
             var count = 0;
             var s = false;
 
-            ParallelTestHelper.ParallelStressTest(evt, (CountdownEvent e) =>
+            ParallelTestHelper.ParallelStressTest(evt, e =>
             {
                 if (Interlocked.Increment(ref count) % 2 == 0)
                 {

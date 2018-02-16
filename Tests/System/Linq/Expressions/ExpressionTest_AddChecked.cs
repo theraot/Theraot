@@ -26,7 +26,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_AddChecked
+    public class ExpressionTestAddChecked
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -127,7 +127,7 @@ namespace MonoTests.System.Linq.Expressions
             var l = Expression.Lambda<Func<T>>(
                 Expression.AddChecked(Expression.Constant(v1), Expression.Constant(v2)));
             var del = l.Compile();
-            var res = default(T);
+            T res;
             try
             {
                 res = del();

@@ -68,6 +68,7 @@ namespace System.Collections
                         var comparer = this as IEqualityComparer;
                         try
                         {
+                            // If there comes the day when an array has no enumerator, let this code fail
                             firstEnumerator = (IEnumerator)xEnumeratorInfo.Invoke(x, TypeHelper.EmptyObjects);
                             secondEnumerator = (IEnumerator)yEnumeratorInfo.Invoke(y, TypeHelper.EmptyObjects);
                             while (firstEnumerator.MoveNext())

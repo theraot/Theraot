@@ -27,7 +27,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_LeftShift
+    public class ExpressionTestLeftShift
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]

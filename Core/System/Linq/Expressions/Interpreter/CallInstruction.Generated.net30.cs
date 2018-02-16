@@ -134,52 +134,6 @@ namespace System.Linq.Expressions.Interpreter
         {
             throw new InvalidOperationException();
         }
-
-        private static Type GetHelperType(MethodInfo info, Type[] arrTypes)
-        {
-            Type t;
-            if (info.ReturnType == typeof(void))
-            {
-                switch (arrTypes.Length)
-                {
-                    case 0:
-                        t = typeof(ActionCallInstruction);
-                        break;
-
-                    case 1:
-                        t = typeof(ActionCallInstruction<>).MakeGenericType(arrTypes);
-                        break;
-
-                    case 2:
-                        t = typeof(ActionCallInstruction<,>).MakeGenericType(arrTypes);
-                        break;
-
-                    default:
-                        throw new InvalidOperationException();
-                }
-            }
-            else
-            {
-                switch (arrTypes.Length)
-                {
-                    case 1:
-                        t = typeof(FuncCallInstruction<>).MakeGenericType(arrTypes);
-                        break;
-
-                    case 2:
-                        t = typeof(FuncCallInstruction<,>).MakeGenericType(arrTypes);
-                        break;
-
-                    case 3:
-                        t = typeof(FuncCallInstruction<,,>).MakeGenericType(arrTypes);
-                        break;
-
-                    default:
-                        throw new InvalidOperationException();
-                }
-            }
-            return t;
-        }
     }
 
     internal sealed class ActionCallInstruction : CallInstruction

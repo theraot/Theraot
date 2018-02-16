@@ -34,7 +34,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_NewArrayBounds
+    public class ExpressionTestNewArrayBounds
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -79,7 +79,7 @@ namespace MonoTests.System.Linq.Expressions
             return Expression.Lambda<Func<object>>(
                 Expression.NewArrayBounds(
                     typeof(T),
-                    (from bound in bounds select bound.ToConstant()).ToArray())).Compile();
+                    (from bound in bounds select bound.ToConstant() as Expression).ToArray())).Compile();
         }
 
         [Test]

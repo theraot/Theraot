@@ -11,10 +11,12 @@ using Theraot.Threading.Needles;
 namespace Tests.Theraot.Threading.Needles
 {
     [TestFixture]
-    public class WorkTest
+    public class
+        WorkTest
     {
         [Test]
-        public void CountdownEvent_Signal_Concurrent()
+        [Category("RaceCondition")] // This test creates a race condition
+        public void CountdownEvent_Signal_Concurrent() // TODO: Review
         {
             for (var r = 0; r < 100; ++r)
             {
@@ -34,7 +36,7 @@ namespace Tests.Theraot.Threading.Needles
 
         [Test]
         [Category("RaceToDeadLock")] // This test creates a race condition, that when resolved sequentially will be stuck
-        public void ManualResetEventSlim_SetAfterDisposeTest()
+        public void ManualResetEventSlim_SetAfterDisposeTest() // TODO: Review
         {
             var mre = new ManualResetEventSlim();
 
@@ -90,7 +92,8 @@ namespace Tests.Theraot.Threading.Needles
         }
 
         [Test]
-        public void ManualResetEventSlim_Wait_SetConcurrent()
+        [Category("RaceCondition")] // This test creates a race condition
+        public void ManualResetEventSlim_Wait_SetConcurrent() // TODO: Review
         {
             for (var i = 0; i < 10000; ++i)
             {
@@ -98,10 +101,7 @@ namespace Tests.Theraot.Threading.Needles
                 {
                     var b = true;
 
-                    Task.Factory.StartNew(delegate
-                    {
-                        mre.Set();
-                    });
+                    Task.Factory.StartNew(mre.Set);
 
                     Task.Factory.StartNew(delegate
                     {
@@ -116,7 +116,7 @@ namespace Tests.Theraot.Threading.Needles
 
         [Test]
         [Category("RaceToDeadLock")] // This test creates a race condition, that when resolved sequentially will be stuck
-        public void Progressor_ThreadedUse()
+        public void Progressor_ThreadedUse() // TODO: Review
         {
             var source = new Progressor<int>(new List<int>
             {
@@ -165,7 +165,7 @@ namespace Tests.Theraot.Threading.Needles
 
         [Test]
         [Category("RaceToDeadLock")] // This test creates a race condition, that when resolved sequentially will be stuck
-        public void Transact_RaceCondition()
+        public void Transact_RaceCondition() // TODO: Review
         {
             using (var handle = new ManualResetEvent(false))
             {

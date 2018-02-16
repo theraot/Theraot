@@ -26,6 +26,7 @@ namespace MonoTests.System.Threading
 
         [Test]
         [Category("NotDotNet")] // nunit results in stack overflow
+        [Ignore]
         public void MultipleReferenceToValueTest()
         {
             if (Environment.Version.Major >= 4)
@@ -150,7 +151,6 @@ namespace MonoTests.System.Threading
                 {
                     // Pokemon
                     GC.KeepAlive(exc);
-                    return;
                 }
             });
             thread.Start();

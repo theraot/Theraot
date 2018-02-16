@@ -550,14 +550,11 @@ namespace System.Linq.Expressions
             {
                 return node;
             }
-            else
+            for (var i = 0; i < count; i++)
             {
-                for (var i = 0; i < count; i++)
+                if (nodes[i] == null)
                 {
-                    if (nodes[i] == null)
-                    {
-                        nodes[i] = node.GetExpression(i);
-                    }
+                    nodes[i] = node.GetExpression(i);
                 }
             }
 

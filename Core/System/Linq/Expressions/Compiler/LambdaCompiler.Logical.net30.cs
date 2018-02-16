@@ -268,7 +268,7 @@ namespace System.Linq.Expressions.Compiler
             _ilg.Emit(OpCodes.Ldc_I4_0);
             _ilg.Emit(OpCodes.Br_S, labReturnValue);
             _ilg.MarkLabel(labReturnValue);
-            var ci = type.GetConstructor(new Type[] { typeof(bool) });
+            var ci = type.GetConstructor(new[] { typeof(bool) });
             _ilg.Emit(OpCodes.Newobj, ci);
             _ilg.Emit(OpCodes.Stloc, locLeft);
             _ilg.Emit(OpCodes.Br, labExit);
@@ -396,7 +396,7 @@ namespace System.Linq.Expressions.Compiler
             _ilg.Emit(OpCodes.Ldc_I4_1);
             _ilg.Emit(OpCodes.Br_S, labReturnValue);
             _ilg.MarkLabel(labReturnValue);
-            var ci = type.GetConstructor(new Type[] { typeof(bool) });
+            var ci = type.GetConstructor(new[] { typeof(bool) });
             _ilg.Emit(OpCodes.Newobj, ci);
             _ilg.Emit(OpCodes.Stloc, locLeft);
             _ilg.Emit(OpCodes.Br, labExit);

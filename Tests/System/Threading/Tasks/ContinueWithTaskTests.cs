@@ -62,6 +62,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void ContinueWithOnAnyTestCase()
         {
             ParallelTestHelper.Repeat(delegate
@@ -84,6 +85,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void ContinueWithOnCompletedSuccessfullyTestCase()
         {
             ParallelTestHelper.Repeat(delegate
@@ -151,6 +153,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
         [Category("ThreadPool")]
+        [Ignore]
         public void ContinueWithOnFailedTestCase()
         {
             ParallelTestHelper.Repeat
@@ -189,7 +192,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ContinueWithChildren()
+        public void ContinueWithChildren() // TODO: Review
         {
             ParallelTestHelper.Repeat(delegate
             {
@@ -218,7 +221,8 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
         [Category("ThreadPool")]
-        public void ContinueWithDifferentOptionsAreCanceledTest()
+        [Ignore]
+        public void ContinueWithDifferentOptionsAreCanceledTest() // TODO: Review
         {
             using (var mre = new ManualResetEventSlim())
             {
@@ -245,30 +249,30 @@ namespace MonoTests.System.Threading.Tasks
             }
         }
 
-        private Task _parent_wfc;
+        private Task _parentWfc;
 
         [Test]
-        public void WaitingForChildrenToComplete()
+        public void WaitingForChildrenToComplete() // TODO: Review
         {
             Task nested = null;
             using (var mre = new ManualResetEvent(false))
             {
-                _parent_wfc = Task.Factory.StartNew(() =>
+                _parentWfc = Task.Factory.StartNew(() =>
                 {
                     nested = Task.Factory.StartNew(() =>
                     {
                         Assert.IsTrue(mre.WaitOne(4000), "parent_wfc needs to be set first");
-                        Assert.IsFalse(_parent_wfc.Wait(10), "#1a");
-                        Assert.AreEqual(TaskStatus.WaitingForChildrenToComplete, _parent_wfc.Status, "#1b");
+                        Assert.IsFalse(_parentWfc.Wait(10), "#1a");
+                        Assert.AreEqual(TaskStatus.WaitingForChildrenToComplete, _parentWfc.Status, "#1b");
                     }, TaskCreationOptions.AttachedToParent).ContinueWith(l =>
                     {
-                        Assert.IsTrue(_parent_wfc.Wait(2000), "#2a");
-                        Assert.AreEqual(TaskStatus.RanToCompletion, _parent_wfc.Status, "#2b");
+                        Assert.IsTrue(_parentWfc.Wait(2000), "#2a");
+                        Assert.AreEqual(TaskStatus.RanToCompletion, _parentWfc.Status, "#2b");
                     }, TaskContinuationOptions.ExecuteSynchronously);
                 });
 
                 mre.Set();
-                Assert.IsTrue(_parent_wfc.Wait(2000), "#3");
+                Assert.IsTrue(_parentWfc.Wait(2000), "#3");
                 Assert.IsTrue(nested.Wait(2000), "#4");
             }
         }
@@ -306,6 +310,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void WaitChildWithContinuationNotAttachedTest()
         {
             using
@@ -314,9 +319,14 @@ namespace MonoTests.System.Threading.Tasks
                 (
                     () =>
                     {
-                        Task.Factory.StartNew(() => Thread.Sleep(200),
-                        TaskCreationOptions.AttachedToParent).ContinueWith(t => Thread.Sleep(3000)
-                    );
+                        Task.Factory.StartNew
+                        (
+                            () => Thread.Sleep(200),
+                            TaskCreationOptions.AttachedToParent
+                        ).ContinueWith
+                        (
+                            t => Thread.Sleep(3000)
+                        );
                     }
                 )
             )
@@ -340,43 +350,6 @@ namespace MonoTests.System.Threading.Tasks
             catch (InvalidOperationException ex)
             {
                 GC.KeepAlive(ex);
-            }
-        }
-
-        [Test]
-        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0  - this fails if serialized
-        [Category("ThreadPool")]
-        public void CanceledContinuationExecuteSynchronouslyTest()
-        {
-            using (var source = new CancellationTokenSource())
-            {
-                var token = source.Token;
-                using (var evt = new ManualResetEventSlim())
-                {
-                    var result = false;
-                    var thrown = false;
-
-                    var task = Task.Factory.StartNew(() => evt.Wait(100));
-                    var cont = task.ContinueWith(t => result = true, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-
-                    source.Cancel();
-                    evt.Set();
-                    task.Wait(100);
-                    try
-                    {
-                        cont.Wait(100);
-                    }
-                    catch (Exception ex)
-                    {
-                        GC.KeepAlive(ex);
-                        thrown = true;
-                    }
-
-                    Assert.IsTrue(task.IsCompleted);
-                    Assert.IsTrue(cont.IsCanceled);
-                    Assert.IsFalse(result);
-                    Assert.IsTrue(thrown);
-                }
             }
         }
 
@@ -493,7 +466,7 @@ namespace MonoTests.System.Threading.Tasks
                             x =>
                             {
                                 Thread.Sleep(50);
-                                result = (x as Task<string>).Result;
+                                result = x.Result;
                             },
                             TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.NotOnFaulted
                         );
@@ -512,6 +485,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
         [Category("ThreadPool")]
+        [Ignore]
         public void ContinuationOnBrokenScheduler()
         {
             var s = new ExceptionScheduler();

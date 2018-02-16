@@ -426,10 +426,7 @@ namespace System.Linq.Expressions
                 ValidateVariables(variables, "variables");
                 return variables;
             }
-            else
-            {
-                return VariablesList;
-            }
+            return VariablesList;
         }
     }
 
@@ -880,17 +877,12 @@ namespace System.Linq.Expressions
             {
                 return new ScopeWithType(variableList, expressionList, type);
             }
-            else
+            if (expressionList.Count == 1)
             {
-                if (expressionList.Count == 1)
-                {
-                    return new Scope1(variableList, expressionList[0]);
-                }
-                else
-                {
-                    return new ScopeN(variableList, expressionList);
-                }
+                return new Scope1(variableList, expressionList[0]);
             }
+
+            return new ScopeN(variableList, expressionList);
         }
 
         // Checks that all variables are non-null, not byref, and unique.

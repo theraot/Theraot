@@ -358,12 +358,10 @@ namespace System.Linq.Expressions.Interpreter
 
         internal sealed class ImmutableRefValue : InitializeLocalInstruction, IBoxableInstruction
         {
-            private readonly Type _type; // TODO not used
-
-            internal ImmutableRefValue(int index, Type type)
+            internal ImmutableRefValue(int index)
                 : base(index)
             {
-                _type = type;
+                // Empty
             }
 
             public override int Run(InterpretedFrame frame)

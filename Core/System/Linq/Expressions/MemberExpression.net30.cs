@@ -47,11 +47,8 @@ namespace System.Linq.Expressions
             {
                 return new FieldExpression(expression, fi);
             }
-            else
-            {
-                var pi = (PropertyInfo)member;
-                return new PropertyExpression(expression, pi);
-            }
+            var pi = (PropertyInfo)member;
+            return new PropertyExpression(expression, pi);
         }
 
         /// <summary>

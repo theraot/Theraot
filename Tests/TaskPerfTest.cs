@@ -7,11 +7,12 @@ using NUnit.Framework;
 namespace Tests
 {
     [TestFixture]
-    internal class TaskPerfTest
+    internal static class TaskPerfTest
     {
 #if !NET40
 
         [Test]
+        [Category("Performance")]
         public static async Task RunAsync()
         {
             ThreadPool.SetMaxThreads(10, 10);
@@ -25,11 +26,11 @@ namespace Tests
                   var id2 = Thread.CurrentThread.ManagedThreadId;
                   await Task.Delay(5 * 1000);
                   var id3 = Thread.CurrentThread.ManagedThreadId;
-                  var result = new { guid = guid, id1 = id1, id2 = id2, id3 = id3 };
+                  var result = new { guid, id1, id2, id3 };
                   Console.WriteLine(result);
                   return result;
               })).ToArray();
-            var allTask = await Task.WhenAll(tasks);
+            GC.KeepAlive(await Task.WhenAll(tasks));
         }
 
 #endif

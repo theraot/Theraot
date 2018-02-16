@@ -33,7 +33,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_GreaterThan
+    public class ExpressionTestGreaterThan
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -121,7 +121,7 @@ namespace MonoTests.System.Linq.Expressions
             var p = Expression.GreaterThan(a, b);
 
             var pexpr = Expression.Lambda<Func<int, int, bool>>(
-                p, new ParameterExpression[] { a, b });
+                p, new[] { a, b });
 
             var compiled = pexpr.Compile();
             Assert.AreEqual(true, compiled(10, 1), "tc1");
@@ -171,7 +171,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Slot
         {
-            public int Value;
+            public readonly int Value;
 
             public Slot(int val)
             {

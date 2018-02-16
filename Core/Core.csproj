@@ -546,6 +546,7 @@
     <Compile Include="Theraot\Collections\ThreadSafe\ReentryGuardHelper.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\SafeDictionary.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\SafeQueue.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\SafeCollection.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\SafeSet.cs" />
     <Compile Include="Theraot\Collections\Specialized\ValueCollection.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\BucketCore.cs" />

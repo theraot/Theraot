@@ -198,40 +198,38 @@ namespace System.Linq.Expressions
                 //static member, reduce the same as variable
                 return ReduceVariable();
             }
-            else
+
+            var temp1 = Parameter(member.Expression.Type, null);
+            var initTemp1 = Assign(temp1, member.Expression);
+            member = MakeMemberAccess(temp1, member.Member);
+
+            if (IsPrefix)
             {
-                var temp1 = Parameter(member.Expression.Type, null);
-                var initTemp1 = Assign(temp1, member.Expression);
-                member = MakeMemberAccess(temp1, member.Member);
-
-                if (IsPrefix)
-                {
-                    // (op) value.member
-                    // ... is reduced into ...
-                    // temp1 = value
-                    // temp1.member = op(temp1.member)
-                    return Block(
-                        new[] { temp1 },
-                        initTemp1,
-                        Assign(member, FunctionalOp(member))
-                    );
-                }
-
-                // value.member (op)
+                // (op) value.member
                 // ... is reduced into ...
                 // temp1 = value
-                // temp2 = temp1.member
-                // temp1.member = op(temp2)
-                // temp2
-                var temp2 = Parameter(member.Type, null);
+                // temp1.member = op(temp1.member)
                 return Block(
-                    new[] { temp1, temp2 },
+                    new[] { temp1 },
                     initTemp1,
-                    Assign(temp2, member),
-                    Assign(member, FunctionalOp(temp2)),
-                    temp2
+                    Assign(member, FunctionalOp(member))
                 );
             }
+
+            // value.member (op)
+            // ... is reduced into ...
+            // temp1 = value
+            // temp2 = temp1.member
+            // temp1.member = op(temp2)
+            // temp2
+            var temp2 = Parameter(member.Type, null);
+            return Block(
+                new[] { temp1, temp2 },
+                initTemp1,
+                Assign(temp2, member),
+                Assign(member, FunctionalOp(temp2)),
+                temp2
+            );
         }
 
         private Expression ReduceIndex()
@@ -253,7 +251,7 @@ namespace System.Linq.Expressions
             var count = index.Arguments.Count;
             var block = new Expression[count + (prefix ? 2 : 4)];
             var temps = new ParameterExpression[count + (prefix ? 1 : 2)];
-            var args = new ParameterExpression[count];
+            var args = new Expression[count];
 
             var i = 0;
             temps[i] = Parameter(index.Object.Type, null);
@@ -474,10 +472,7 @@ namespace System.Linq.Expressions
             {
                 return new UnaryExpression(coercionType, expression, convertToType, method);
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         private static UnaryExpression GetMethodBasedCoercionOperator(ExpressionType unaryType, Expression operand, Type convertToType, MethodInfo method)

@@ -267,10 +267,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 return Expression.Field(Expression.Constant(new StrongBox<T>(default(T))), "Value");
             }
-            else
-            {
-                return Expression.Field(null, CreateStaticField(name, typeof(T)));
-            }
+            return Expression.Field(null, CreateStaticField(name, typeof(T)));
         }
     }
 }

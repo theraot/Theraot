@@ -144,10 +144,7 @@ namespace System.Linq.Expressions.Interpreter
                     {
                         throw new InvalidOperationException("Control cannot enter an expression");
                     }
-                    else
-                    {
-                        throw new InvalidOperationException("Control cannot enter try");
-                    }
+                    throw new InvalidOperationException("Control cannot enter try");
                 }
             }
         }

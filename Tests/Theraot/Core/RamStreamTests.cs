@@ -22,27 +22,30 @@ namespace Test
                 stream.Seek(0, SeekOrigin.Begin);
                 Assert.Fail();
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException exception)
             {
                 // NoOp
+                GC.KeepAlive(exception);
             }
             try
             {
                 stream.Read(buffer, 0, 0);
                 Assert.Fail();
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException exception)
             {
                 // NoOp
+                GC.KeepAlive(exception);
             }
             try
             {
                 stream.Write(buffer, 0, 0);
                 Assert.Fail();
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException exception)
             {
                 // NoOp
+                GC.KeepAlive(exception);
             }
         }
 
@@ -218,9 +221,10 @@ namespace Test
                 stream.Read(got, 0, 20);
                 Assert.Fail();
             }
-            catch (ArgumentException)
+            catch (ArgumentException exception)
             {
                 // NoOp
+                GC.KeepAlive(exception);
             }
 
             stream.Seek(0, SeekOrigin.Begin);
@@ -295,9 +299,10 @@ namespace Test
                 stream.Read(got, 0, 90);
                 Assert.Fail();
             }
-            catch (ArgumentException)
+            catch (ArgumentException exception)
             {
                 // NoOp
+                GC.KeepAlive(exception);
             }
 
             stream.Seek(0, SeekOrigin.Begin);
@@ -340,9 +345,10 @@ namespace Test
                 stream.Read(got, 0, 10);
                 Assert.Fail();
             }
-            catch (ArgumentException)
+            catch (ArgumentException exception)
             {
                 // NoOp
+                GC.KeepAlive(exception);
             }
         }
 
@@ -415,9 +421,10 @@ namespace Test
                 stream.Seek(-1, SeekOrigin.Begin);
                 Assert.Fail();
             }
-            catch (IOException)
+            catch (IOException exception)
             {
                 // NoOp
+                GC.KeepAlive(exception);
             }
             Assert.AreEqual(int.MaxValue + 1L, stream.Seek(int.MaxValue + 1L, SeekOrigin.Begin));
             Assert.AreEqual(int.MaxValue + 1L, stream.Position);

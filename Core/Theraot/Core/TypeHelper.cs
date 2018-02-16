@@ -45,13 +45,12 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("alternative");
             }
-            var _source = source as TTarget;
-            var _alternative = alternative;
-            if (_source == null)
+            var sourceAsTarget = source as TTarget;
+            if (sourceAsTarget == null)
             {
-                return _alternative();
+                return alternative();
             }
-            return _source;
+            return sourceAsTarget;
         }
 
         public static bool CanBe<T>(this Type type, T value)
@@ -99,15 +98,14 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("alternative");
             }
-            var _alternative = alternative;
             try
             {
-                var _source = (TTarget)source;
-                return _source;
+                var sourceAsTarget = (TTarget)source;
+                return sourceAsTarget;
             }
             catch
             {
-                return _alternative();
+                return alternative();
             }
         }
 
@@ -591,6 +589,7 @@ namespace Theraot.Core
                 _result = GetBinaryPortableResult(typeof(T));
             }
 
+            // Used via reflection
             public static bool Result
             {
                 get { return _result; }
@@ -606,6 +605,7 @@ namespace Theraot.Core
                 _result = GetBlittableResult(typeof(T));
             }
 
+            // Used via reflection
             public static bool Result
             {
                 get { return _result; }
@@ -621,6 +621,7 @@ namespace Theraot.Core
                 _result = GetValueTypeRecursiveResult(typeof(T));
             }
 
+            // Used via reflection
             public static bool Result
             {
                 get { return _result; }

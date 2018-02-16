@@ -12,11 +12,11 @@ namespace Theraot.Core
         private readonly IPStatus _status;
         private readonly int _ttl;
 
-        internal TracertNode(IPAddress address, IPStatus status, int Ttl)
+        internal TracertNode(IPAddress address, IPStatus status, int ttl)
         {
             _address = address;
             _status = status;
-            _ttl = Ttl;
+            _ttl = ttl;
         }
 
         public int Ttl

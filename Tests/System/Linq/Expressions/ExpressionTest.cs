@@ -220,7 +220,7 @@ namespace MonoTests.System.Linq.Expressions
                         Expression.Lambda<Func<string>>(
                             Expression.Call(
                                 typeof(string).GetMethod("Concat", new[] { typeof(string), typeof(string) }),
-                                new[] { p1, p2 }),
+                                new Expression[] { p1, p2 }),
                             new ParameterExpression[0]),
                         new[] { p2 }),
                     new[] { p1 });

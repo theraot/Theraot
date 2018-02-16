@@ -28,41 +28,42 @@ namespace MonoTests.System.Collections.Concurrent
             var found = new CircularBucket<string>(16);
             // MSDN says: "it does not represent a moment-in-time snapshot of the dictionary."
             // And also "The contents exposed through the enumerator may contain modifications made to the dictionary after GetEnumerator was called."
+            // Note: There is no guarantee the items are in insert order
             foreach (var item in d)
             {
                 found.Add(item.Key);
                 foundCount++;
                 Assert.AreEqual(expectedCount, d.Count);
-                didRemove = d.TryRemove("a", out a);
-                if (foundCount == 1)
+                var removed = d.TryRemove("a", out a);
+                if (didRemove)
                 {
-                    Assert.IsTrue(didRemove);
+                    Assert.IsFalse(removed);
+                }
+                else
+                {
+                    Assert.IsTrue(removed);
                     expectedCount--;
                 }
-                else
-                {
-                    Assert.IsFalse(didRemove);
-                }
+                didRemove = didRemove | removed;
+                Assert.IsTrue(didRemove);
                 Assert.AreEqual(expectedCount, d.Count);
                 var added = d.TryAdd("c", "d");
-                if (foundCount == 1)
-                {
-                    Assert.IsTrue(added);
-                }
-                else
+                if (didAdd)
                 {
                     Assert.IsFalse(added);
                 }
-                if (!didAdd && added)
+                else
                 {
+                    Assert.IsTrue(added);
                     expectedCount++;
                 }
-                didAdd = didAdd || added;
+                didAdd = didAdd | added;
+                Assert.IsTrue(didAdd);
                 Assert.AreEqual(expectedCount, d.Count);
             }
             Assert.IsNull(a);
             var array = found.ToArray();
-            if (!array.SetEquals(new[] { "0", "c" }))
+            if (!array.IsSupersetOf(new[] { "0", "c" }))
             {
                 foreach (var item in array)
                 {
@@ -72,8 +73,8 @@ namespace MonoTests.System.Collections.Concurrent
             }
             Assert.AreEqual(2, expectedCount);
             Assert.AreEqual(true, didAdd);
-            Assert.AreEqual(false, didRemove);
-            Assert.AreEqual(expectedCount, foundCount);
+            Assert.AreEqual(true, didRemove);
+            Assert.IsTrue(foundCount - expectedCount < 2, "foundCount: {0}, expectedCount:{1}", foundCount, expectedCount);
             Assert.AreEqual(expectedCount, d.Count);
         }
 
@@ -157,7 +158,7 @@ namespace MonoTests.System.Collections.Concurrent
             }
             Assert.IsNull(a);
             var array = found.ToArray();
-            if (!array.SetEquals(new[] { "0", "c" }))
+            if (!array.IsSupersetOf(new[] { "0", "c" }))
             {
                 foreach (var item in array)
                 {
@@ -168,7 +169,7 @@ namespace MonoTests.System.Collections.Concurrent
             Assert.AreEqual(2, expectedCount[0]);
             Assert.AreEqual(1, didAdd);
             Assert.AreEqual(1, didRemove);
-            Assert.AreEqual(expectedCount[0], foundCount);
+            Assert.IsTrue(foundCount - expectedCount[0] < 2, "foundCount: {0}, expectedCount:{1}", foundCount, expectedCount[0]);
             Assert.AreEqual(expectedCount[0], d.Count);
         }
 

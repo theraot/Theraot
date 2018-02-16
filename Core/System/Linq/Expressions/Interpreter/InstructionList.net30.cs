@@ -115,32 +115,33 @@ namespace System.Linq.Expressions.Interpreter
                 Func<int, int> labelIndexer, IList<KeyValuePair<int, object>> debugCookies)
             {
                 var result = new List<InstructionView>();
-                var index = 0;
                 var stackDepth = 0;
                 var continuationsDepth = 0;
 
-                var cookieEnumerator = (debugCookies ?? new KeyValuePair<int, object>[0]).GetEnumerator();
-                var hasCookie = cookieEnumerator.MoveNext();
-
-                for (var i = 0; i < instructions.Count; i++)
+                using (var cookieEnumerator = (debugCookies ?? new KeyValuePair<int, object>[0]).GetEnumerator())
                 {
-                    object cookie = null;
-                    while (hasCookie && cookieEnumerator.Current.Key == i)
+                    var hasCookie = cookieEnumerator.MoveNext();
+
+                    for (var i = 0; i < instructions.Count; i++)
                     {
-                        cookie = cookieEnumerator.Current.Value;
-                        hasCookie = cookieEnumerator.MoveNext();
+                        object cookie = null;
+                        while (hasCookie && cookieEnumerator.Current.Key == i)
+                        {
+                            cookie = cookieEnumerator.Current.Value;
+                            hasCookie = cookieEnumerator.MoveNext();
+                        }
+
+                        var stackDiff = instructions[i].StackBalance;
+                        var contDiff = instructions[i].ContinuationsBalance;
+                        var name = instructions[i].ToDebugString(i, cookie, labelIndexer, objects);
+                        result.Add(new InstructionView(instructions[i], name, i, stackDepth, continuationsDepth));
+
+                        stackDepth += stackDiff;
+                        continuationsDepth += contDiff;
                     }
 
-                    var stackDiff = instructions[i].StackBalance;
-                    var contDiff = instructions[i].ContinuationsBalance;
-                    var name = instructions[i].ToDebugString(i, cookie, labelIndexer, objects);
-                    result.Add(new InstructionView(instructions[i], name, i, stackDepth, continuationsDepth));
-
-                    index++;
-                    stackDepth += stackDiff;
-                    continuationsDepth += contDiff;
+                    return result.ToArray();
                 }
-                return result.ToArray();
             }
 
             [DebuggerDisplay("{GetValue(),nq}", Name = "{GetName(),nq}", Type = "{GetDisplayType(), nq}")]
@@ -419,7 +420,7 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        private const int _LocalInstrCacheSize = 64;
+        private const int _localInstrCacheSize = 64;
 
         private static Instruction[] _loadLocal;
         private static Instruction[] _loadLocalBoxed;
@@ -435,7 +436,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_loadLocal == null)
             {
-                _loadLocal = new Instruction[_LocalInstrCacheSize];
+                _loadLocal = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _loadLocal.Length)
@@ -457,24 +458,21 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_loadLocalBoxed == null)
             {
-                _loadLocalBoxed = new Instruction[_LocalInstrCacheSize];
+                _loadLocalBoxed = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _loadLocalBoxed.Length)
             {
                 return _loadLocalBoxed[index] ?? (_loadLocalBoxed[index] = new LoadLocalBoxedInstruction(index));
             }
-            else
-            {
-                return new LoadLocalBoxedInstruction(index);
-            }
+            return new LoadLocalBoxedInstruction(index);
         }
 
         public void EmitLoadLocalFromClosure(int index)
         {
             if (_loadLocalFromClosure == null)
             {
-                _loadLocalFromClosure = new Instruction[_LocalInstrCacheSize];
+                _loadLocalFromClosure = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _loadLocalFromClosure.Length)
@@ -491,7 +489,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_loadLocalFromClosureBoxed == null)
             {
-                _loadLocalFromClosureBoxed = new Instruction[_LocalInstrCacheSize];
+                _loadLocalFromClosureBoxed = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _loadLocalFromClosureBoxed.Length)
@@ -508,7 +506,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_assignLocal == null)
             {
-                _assignLocal = new Instruction[_LocalInstrCacheSize];
+                _assignLocal = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _assignLocal.Length)
@@ -525,7 +523,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_storeLocal == null)
             {
-                _storeLocal = new Instruction[_LocalInstrCacheSize];
+                _storeLocal = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _storeLocal.Length)
@@ -547,17 +545,14 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_assignLocalBoxed == null)
             {
-                _assignLocalBoxed = new Instruction[_LocalInstrCacheSize];
+                _assignLocalBoxed = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _assignLocalBoxed.Length)
             {
                 return _assignLocalBoxed[index] ?? (_assignLocalBoxed[index] = new AssignLocalBoxedInstruction(index));
             }
-            else
-            {
-                return new AssignLocalBoxedInstruction(index);
-            }
+            return new AssignLocalBoxedInstruction(index);
         }
 
         public void EmitStoreLocalBoxed(int index)
@@ -569,24 +564,21 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_storeLocalBoxed == null)
             {
-                _storeLocalBoxed = new Instruction[_LocalInstrCacheSize];
+                _storeLocalBoxed = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _storeLocalBoxed.Length)
             {
                 return _storeLocalBoxed[index] ?? (_storeLocalBoxed[index] = new StoreLocalBoxedInstruction(index));
             }
-            else
-            {
-                return new StoreLocalBoxedInstruction(index);
-            }
+            return new StoreLocalBoxedInstruction(index);
         }
 
         public void EmitAssignLocalToClosure(int index)
         {
             if (_assignLocalToClosure == null)
             {
-                _assignLocalToClosure = new Instruction[_LocalInstrCacheSize];
+                _assignLocalToClosure = new Instruction[_localInstrCacheSize];
             }
 
             if (index < _assignLocalToClosure.Length)

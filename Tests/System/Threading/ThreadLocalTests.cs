@@ -67,7 +67,7 @@ namespace MonoTests.System.Threading
         {
             var tl = new ThreadLocal<int>();
             tl.Dispose();
-            var value = tl.IsValueCreated;
+            GC.KeepAlive(tl.IsValueCreated);
         }
 
         [Test, ExpectedException(typeof(ObjectDisposedException))]
@@ -75,11 +75,12 @@ namespace MonoTests.System.Threading
         {
             var tl = new ThreadLocal<int>();
             tl.Dispose();
-            var value = tl.Value;
+            GC.KeepAlive(tl.Value);
         }
 
         [Test]
         [Category("NotDotNet")] // Running this test against .NET 4.0 or .NET 4.5 fails
+        [Ignore]
         public void InitializeThrowingTest()
         {
             var callTime = 0;
@@ -93,7 +94,7 @@ namespace MonoTests.System.Threading
 
             try
             {
-                var foo = _threadLocal.Value;
+                GC.KeepAlive(_threadLocal.Value);
             }
             catch (Exception e)
             {
@@ -108,7 +109,7 @@ namespace MonoTests.System.Threading
 
             try
             {
-                var foo = _threadLocal.Value;
+                GC.KeepAlive(_threadLocal.Value);
             }
             catch (Exception e)
             {
@@ -122,6 +123,7 @@ namespace MonoTests.System.Threading
 
         [Test, ExpectedException(typeof(InvalidOperationException))]
         [Category("NotDotNet")] // nunit results in stack overflow
+        [Ignore]
         public void MultipleReferenceToValueTest()
         {
             if (Environment.Version.Major >= 4)
@@ -129,8 +131,7 @@ namespace MonoTests.System.Threading
                 throw new NotSupportedException("Results in stack overflow - blame Microsoft");
             }
             _threadLocal = new ThreadLocal<int>(() => _threadLocal.Value + 1);
-
-            var value = _threadLocal.Value;
+            GC.KeepAlive(_threadLocal.Value);
         }
 
         [Test]
@@ -151,24 +152,24 @@ namespace MonoTests.System.Threading
             Exception exception = null;
 
             var foo = _threadLocal.Value;
-            var thread_value_created = false;
+            var threadValueCreated = false;
             Assert.AreEqual(43, foo, "#3");
-            var t = new Thread((object o) =>
+            var t = new Thread(o =>
             {
                 try
                 {
-                    var foo2 = _threadLocal.Value;
+                    GC.KeepAlive(_threadLocal.Value);
                 }
                 catch (Exception e)
                 {
                     exception = e;
                 }
                 // should be false and not throw
-                thread_value_created = _threadLocal.IsValueCreated;
+                threadValueCreated = _threadLocal.IsValueCreated;
             });
             t.Start();
             t.Join();
-            Assert.AreEqual(false, thread_value_created, "#4");
+            Assert.AreEqual(false, threadValueCreated, "#4");
             Assert.IsNotNull(exception, "#5");
             Assert.That(exception, Is.TypeOf(typeof(ApplicationException)), "#6");
         }
@@ -195,7 +196,7 @@ namespace MonoTests.System.Threading
         {
             AssertThreadLocal();
 
-            var t = new Thread((object o) =>
+            var t = new Thread(o =>
             {
                 Interlocked.Decrement(ref _nTimes);
                 AssertThreadLocal();

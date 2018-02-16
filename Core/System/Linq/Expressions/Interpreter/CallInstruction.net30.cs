@@ -3,7 +3,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace System.Linq.Expressions.Interpreter
@@ -145,10 +144,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return targetLambda.Run(args);
             }
-            else
-            {
-                return targetLambda.RunVoid(args);
-            }
+            return targetLambda.RunVoid(args);
         }
     }
 

@@ -25,12 +25,8 @@ namespace System.Linq.Expressions.Interpreter
         private static readonly CacheDict<Type, Func<LightLambda, Delegate>> _runCache = new CacheDict<Type, Func<LightLambda, Delegate>>(100);
 #endif
 
-        // Adaptive compilation support
-        private readonly LightDelegateCreator _delegateCreator;
-
         internal LightLambda(LightDelegateCreator delegateCreator, IStrongBox[] closure)
         {
-            _delegateCreator = delegateCreator;
             _closure = closure;
             _interpreter = delegateCreator.Interpreter;
         }
@@ -198,16 +194,14 @@ namespace System.Linq.Expressions.Interpreter
 
         internal Delegate MakeDelegate(Type delegateType)
         {
+            // delegateType must be a delegate type, no check is done
 #if !NO_FEATURE_STATIC_DELEGATE
             var method = delegateType.GetMethod("Invoke");
             if (method.ReturnType == typeof(void))
             {
                 return Dynamic.Utils.DelegateHelpers.CreateObjectArrayDelegate(delegateType, RunVoid);
             }
-            else
-            {
-                return Dynamic.Utils.DelegateHelpers.CreateObjectArrayDelegate(delegateType, Run);
-            }
+            return Dynamic.Utils.DelegateHelpers.CreateObjectArrayDelegate(delegateType, Run);
 #else
             Func<LightLambda, Delegate> fastCtor = GetRunDelegateCtor(delegateType);
             if (fastCtor != null)

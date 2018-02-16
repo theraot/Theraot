@@ -16,7 +16,6 @@ namespace Theraot.Threading.Needles
             {
                 throw new ArgumentNullException("handler");
             }
-            var temp = handler;
         }
 
         public WeakDelegateNeedle(MethodInfo methodInfo, object target)

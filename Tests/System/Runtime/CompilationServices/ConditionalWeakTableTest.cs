@@ -82,7 +82,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             Assert.IsTrue(cwt.TryGetValue(handles[1].Target, out r2), "#2");
 
             GC.Collect();
-            cwt.GetHashCode();
+            GC.KeepAlive(cwt.GetHashCode());
         }
 
         [Test]
@@ -119,7 +119,7 @@ namespace MonoTests.System.Runtime.CompilerServices
         [Test]
         [Category("NotDotNet")] // This fails in .net 4.0 too, so yeah
         [Category("GC")]
-        public void FinalizableObjectsThatRetainDeadKeys()
+        public void FinalizableObjectsThatRetainDeadKeys() // TODO: Review
         {
             if (GC.MaxGeneration == 0) /*Boehm doesn't handle ephemerons */
             {
@@ -219,6 +219,7 @@ namespace MonoTests.System.Runtime.CompilerServices
         [Test]
         [Category("NotWorking")] // No ephemerons
         [Category("GC")]
+        [Ignore]
         public void InsertStress()
         {
             if (GC.MaxGeneration == 0) /*Boehm doesn't handle ephemerons */
@@ -297,6 +298,7 @@ namespace MonoTests.System.Runtime.CompilerServices
         [Test]
         [Category("NotWorking")] // No ephemerons
         [Category("GC")]
+        [Ignore]
         public void OldGenStress()
         {
             if (GC.MaxGeneration == 0) /*Boehm doesn't handle ephemerons */
@@ -368,7 +370,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             Assert.IsTrue(res is Link, "ka1");
 
             var link = res as Link;
-            Assert.IsTrue(cwt.TryGetValue(link._obj, out res), "ka2");
+            Assert.IsTrue(cwt.TryGetValue(link.Obj, out res), "ka2");
             Assert.AreEqual("str0", res, "ka3");
         }
 
@@ -562,7 +564,10 @@ namespace MonoTests.System.Runtime.CompilerServices
             // The sole purpose of this object is to keep a reference to another object, so it is fine to not use it.
             private readonly ConditionalWeakTable<object, object> _cwt;
 
+            // For debug purposes
             private readonly int _id;
+
+            // For debug purposes
             private readonly object _obj;
 
             public FinalizableLink(int id, object obj, ConditionalWeakTable<object, object> cwt)
@@ -597,11 +602,11 @@ namespace MonoTests.System.Runtime.CompilerServices
 
         public class Link
         {
-            public object _obj;
+            public object Obj;
 
             public Link(object obj)
             {
-                _obj = obj;
+                Obj = obj;
             }
         }
 

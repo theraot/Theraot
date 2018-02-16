@@ -508,7 +508,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Removes a key by hash code, key predicate and value predicate.
+        /// Removes the specified key if the value predicate passes.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="valueCheck">The value predicate.</param>
@@ -921,6 +921,35 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
+        public bool TryUpdate(TKey key, Func<TValue, TValue> newValue)
+        {
+            if (newValue == null)
+            {
+                throw new ArgumentNullException("newValue");
+            }
+            var hashCode = GetHashCode(key);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                var keyMatch = false;
+                ExtendProbingIfNeeded(attempts);
+                Predicate<KeyValuePair<TKey, TValue>> check = found =>
+                {
+                    keyMatch = _keyComparer.Equals(found.Key, key);
+                    return keyMatch;
+                };
+                bool isEmpty;
+                if (_bucket.Update(hashCode + attempts, existing => new KeyValuePair<TKey, TValue>(key, newValue(existing.Value)), check, out isEmpty))
+                {
+                    return true;
+                }
+                if (keyMatch)
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+
         /// <summary>
         /// Returns the values where the key satisfies the predicate.
         /// </summary>
@@ -938,6 +967,26 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException("keyCheck");
             }
             var matches = _bucket.Where(pair => keyCheck(pair.Key));
+            return matches.Select(pair => pair.Value);
+        }
+
+        /// <summary>
+        /// Returns the values where the value satisfies the predicate.
+        /// </summary>
+        /// <param name="valueCheck">The predicate.</param>
+        /// <returns>
+        /// An <see cref="IEnumerable{TValue}" /> that allows to iterate over the values of the matched pairs.
+        /// </returns>
+        /// <remarks>
+        /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be returned.
+        /// </remarks>
+        public IEnumerable<TValue> WhereValue(Predicate<TValue> valueCheck)
+        {
+            if (valueCheck == null)
+            {
+                throw new ArgumentNullException("valueCheck");
+            }
+            var matches = _bucket.Where(pair => valueCheck(pair.Value));
             return matches.Select(pair => pair.Value);
         }
 

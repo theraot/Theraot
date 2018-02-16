@@ -27,7 +27,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_And
+    public class ExpressionTestAnd
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]

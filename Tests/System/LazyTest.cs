@@ -61,7 +61,7 @@ namespace MonoTests.System
 
             Assert.IsFalse(l1.IsValueCreated);
 
-            var i = l1.Value;
+            GC.KeepAlive(l1.Value);
 
             Assert.IsTrue(l1.IsValueCreated);
         }
@@ -92,7 +92,7 @@ namespace MonoTests.System
 
             try
             {
-                var o = l1.Value;
+                GC.KeepAlive(l1.Value);
                 Assert.Fail();
             }
             catch (MissingMemberException ex)
@@ -138,9 +138,9 @@ namespace MonoTests.System
                 {
                     lock (monitor)
                     {
-                        Monitor.Wait(monitor);
+                        Monitor.Wait(monitor); // TODO: Review
                     }
-                    var val = l.Value;
+                    GC.KeepAlive(l.Value);
                 });
             }
             for (var i = 0; i < 10; ++i)
@@ -157,7 +157,7 @@ namespace MonoTests.System
         }
 
         [Test]
-        public void InitRecursion()
+        public void InitRecursion() // TODO: Review
         {
             Lazy<DefaultCtorClass> c = null; // Do not inline
             c = new Lazy<DefaultCtorClass>
@@ -170,7 +170,7 @@ namespace MonoTests.System
             );
             try
             {
-                var r = c.Value;
+                GC.KeepAlive(c.Value);
                 Assert.Fail();
             }
             catch (InvalidOperationException ex)
@@ -180,7 +180,7 @@ namespace MonoTests.System
         }
 
         [Test]
-        public void ModeNone()
+        public void ModeNone() // TODO: Review
         {
             int x;
             var fail = true;
@@ -196,7 +196,6 @@ namespace MonoTests.System
             {
                 x = lz.Value;
                 Assert.Fail("#1");
-                Console.WriteLine(x);
             }
             catch (Exception ex)
             {
@@ -205,7 +204,7 @@ namespace MonoTests.System
 
             try
             {
-                x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#2");
             }
             catch (Exception ex)
@@ -216,7 +215,7 @@ namespace MonoTests.System
             fail = false;
             try
             {
-                x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#3");
             }
             catch (Exception ex)
@@ -229,7 +228,7 @@ namespace MonoTests.System
 
             try
             {
-                x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#4");
             }
             catch (InvalidOperationException ex)
@@ -240,7 +239,7 @@ namespace MonoTests.System
             rec = false;
             try
             {
-                x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#5");
             }
             catch (InvalidOperationException ex)
@@ -250,7 +249,7 @@ namespace MonoTests.System
         }
 
         [Test]
-        public void ModePublicationOnly()
+        public void ModePublicationOnly() // TODO: Review
         {
             var fail = true;
             var invoke = 0;
@@ -268,7 +267,6 @@ namespace MonoTests.System
             {
                 var x = lz.Value;
                 Assert.Fail("#1");
-                Console.WriteLine(x);
             }
             catch (Exception ex)
             {
@@ -277,7 +275,7 @@ namespace MonoTests.System
 
             try
             {
-                var x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#2");
             }
             catch (Exception ex)
@@ -305,7 +303,7 @@ namespace MonoTests.System
         }
 
         [Test]
-        public void ModeExecutionAndPublication()
+        public void ModeExecutionAndPublication() // TODO: Review
         {
             var invoke = 0;
             var fail = true;
@@ -323,7 +321,6 @@ namespace MonoTests.System
             {
                 var x = lz.Value;
                 Assert.Fail("#1");
-                Console.WriteLine(x);
             }
             catch (Exception ex)
             {
@@ -333,7 +330,7 @@ namespace MonoTests.System
 
             try
             {
-                var x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#3");
             }
             catch (Exception ex)
@@ -345,7 +342,7 @@ namespace MonoTests.System
             fail = false;
             try
             {
-                var x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#5");
             }
             catch (Exception ex)
@@ -359,7 +356,7 @@ namespace MonoTests.System
 
             try
             {
-                var x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#7");
             }
             catch (InvalidOperationException ex)
@@ -370,7 +367,7 @@ namespace MonoTests.System
             rec = false;
             try
             {
-                var x = lz.Value;
+                GC.KeepAlive(lz.Value);
                 Assert.Fail("#8");
             }
             catch (InvalidOperationException ex)
@@ -392,11 +389,11 @@ namespace MonoTests.System
         }
 
         [Test]
-        public void ConcurrentInitialization()
+        public void ConcurrentInitialization() // TODO: Review
         {
             using (var init = new AutoResetEvent(false))
             {
-                using (var e1_set = new AutoResetEvent(false))
+                using (var e1Set = new AutoResetEvent(false))
                 {
                     var lazy = new Lazy<string>(() =>
                     {
@@ -410,12 +407,12 @@ namespace MonoTests.System
                     {
                         try
                         {
-                            var value = lazy.Value;
+                            GC.KeepAlive(lazy.Value);
                         }
                         catch (Exception ex)
                         {
                             e1 = ex;
-                            e1_set.Set();
+                            e1Set.Set();
                         }
                     });
                     thread.Start();
@@ -425,7 +422,7 @@ namespace MonoTests.System
                     Exception e2 = null;
                     try
                     {
-                        var value = lazy.Value;
+                        GC.KeepAlive(lazy.Value);
                     }
                     catch (Exception ex)
                     {
@@ -435,14 +432,14 @@ namespace MonoTests.System
                     Exception e3 = null;
                     try
                     {
-                        var value = lazy.Value;
+                        GC.KeepAlive(lazy.Value);
                     }
                     catch (Exception ex)
                     {
                         e3 = ex;
                     }
 
-                    Assert.IsTrue(e1_set.WaitOne(3000), "#2");
+                    Assert.IsTrue(e1Set.WaitOne(3000), "#2");
                     Assert.AreSame(e1, e2, "#3");
                     Assert.AreSame(e1, e3, "#4");
                 }

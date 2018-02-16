@@ -1907,7 +1907,7 @@ namespace System.Linq.Expressions.Interpreter
                     }
                     return +1;
                 }
-                else if (right == null)
+                if (right == null)
                 {
                     frame.Push((bool)left ? ScriptingRuntimeHelpers.True : null);
                     return +1;
@@ -2130,7 +2130,7 @@ namespace System.Linq.Expressions.Interpreter
                     }
                     return +1;
                 }
-                else if (right == null)
+                if (right == null)
                 {
                     frame.Push((bool)left ? null : ScriptingRuntimeHelpers.False);
                     return +1;
@@ -2225,10 +2225,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     throw new InvalidOperationException();
                 }
-                else
-                {
-                    frame.Push(obj);
-                }
+                frame.Push(obj);
                 return +1;
             }
         }
@@ -2553,13 +2550,6 @@ namespace System.Linq.Expressions.Interpreter
 
     internal class LogInstruction : Instruction
     {
-        private readonly string _message; // TODO never used
-
-        public LogInstruction(string message)
-        {
-            _message = message;
-        }
-
         public override string InstructionName
         {
             get { return "Log"; }
@@ -2567,7 +2557,6 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            //Console.WriteLine(_message);
             return +1;
         }
     }

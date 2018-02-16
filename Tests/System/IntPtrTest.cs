@@ -18,11 +18,11 @@ namespace Tests.System
                 {
                     var ptr = new IntPtr(parr);
                     // Get the size of an array element.
-                    const int size = sizeof(int);
+                    const int Size = sizeof(int);
                     var index = 0;
                     for (var ctr = 0; ctr < arr.Length; ctr++)
                     {
-                        var newPtr = IntPtrHelper.Add(ptr, ctr * size);
+                        var newPtr = IntPtrHelper.Add(ptr, ctr * Size);
                         Assert.AreEqual(arr[index], Marshal.ReadInt32(newPtr));
                         index++;
                     }
@@ -39,12 +39,12 @@ namespace Tests.System
                 fixed (int* parr = arr)
                 {
                     // Get the size of an array element.
-                    const int size = sizeof(int);
-                    var ptr = IntPtrHelper.Add(new IntPtr(parr), size * (arr.Length - 1));
+                    const int Size = sizeof(int);
+                    var ptr = IntPtrHelper.Add(new IntPtr(parr), Size * (arr.Length - 1));
                     var index = arr.Length - 1;
                     for (var ctr = 0; ctr < arr.Length; ctr++)
                     {
-                        var newPtr = IntPtrHelper.Subtract(ptr, ctr * size);
+                        var newPtr = IntPtrHelper.Subtract(ptr, ctr * Size);
                         Assert.AreEqual(arr[index], Marshal.ReadInt32(newPtr));
                         index--;
                     }

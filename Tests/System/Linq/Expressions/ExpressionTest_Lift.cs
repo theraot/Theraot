@@ -31,7 +31,7 @@ using System.Reflection;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_Lifting
+    public class ExpressionTestLifting
     {
         [Test]
         public void TestLiftOnEqual()
@@ -60,9 +60,9 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(bool?), cmp.Type);
         }
 
-        private static MethodInfo GM(string n)
+        private static MethodInfo Gm(string n)
         {
-            var m = typeof(ExpressionTest_Lifting).GetMethods(BindingFlags.Static | BindingFlags.Public);
+            var m = typeof(ExpressionTestLifting).GetMethods(BindingFlags.Static | BindingFlags.Public);
 
             foreach (var mm in m)
             {
@@ -89,12 +89,12 @@ namespace MonoTests.System.Linq.Expressions
             var b = Expression.Constant(null, typeof(OpStruct?));
 
             // Force the lift on equal
-            var cmp = Expression.Equal(a, b, true, GM("MyCompare"));
+            var cmp = Expression.Equal(a, b, true, Gm("MyCompare"));
 
             Assert.AreEqual(true, cmp.IsLifted, "IsLifted");
             Assert.AreEqual(true, cmp.IsLiftedToNull, "IsLiftedToNull");
 
-            var cmp2 = Expression.Equal(a, b, false, GM("MyCompare"));
+            var cmp2 = Expression.Equal(a, b, false, Gm("MyCompare"));
 
             //
             // When we use a MethodInfo, that has a non-bool return type,

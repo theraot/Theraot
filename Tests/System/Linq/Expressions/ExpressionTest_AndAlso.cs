@@ -27,7 +27,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_AndAlso
+    public class ExpressionTestAndAlso
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -200,7 +200,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Slot
         {
-            public int Value;
+            public readonly int Value;
 
             public Slot(int val)
             {
@@ -304,7 +304,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Incomplete
         {
-            public int Value;
+            public readonly int Value;
 
             public Incomplete(int val)
             {
@@ -329,15 +329,17 @@ namespace MonoTests.System.Linq.Expressions
             Expression.AndAlso(l, r, method);
         }
 
-        private class A
+        private class A // Should not be static, inheritance is needed for testing
         {
             public static bool operator true(A x)
             {
+                GC.KeepAlive(x);
                 return true;
             }
 
             public static bool operator false(A x)
             {
+                GC.KeepAlive(x);
                 return false;
             }
         }
@@ -346,6 +348,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             public static B operator &(B x, B y)
             {
+                GC.KeepAlive(x);
+                GC.KeepAlive(y);
                 return new B();
             }
 

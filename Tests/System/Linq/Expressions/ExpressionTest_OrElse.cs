@@ -27,7 +27,7 @@ using System.Linq.Expressions;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTest_OrElse
+    public class ExpressionTestOrElse
     {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -94,7 +94,7 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual("op_BitwiseOr", expr.Method.Name, "OrElse#08");
         }
 
-        public class BrokenMethod
+        public class BrokenMethod // Should not be static, instantiation is needed for testing
         {
             public static int operator |(BrokenMethod a, BrokenMethod b)
             {
@@ -102,7 +102,7 @@ namespace MonoTests.System.Linq.Expressions
             }
         }
 
-        public class BrokenMethod2
+        public class BrokenMethod2 // Should not be static, instantiation is needed for testing
         {
             public static BrokenMethod2 operator |(BrokenMethod2 a, int b)
             {
@@ -232,7 +232,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Slot
         {
-            public int Value;
+            public readonly int Value;
 
             public Slot(int val)
             {
@@ -307,7 +307,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Incomplete
         {
-            public int Value;
+            public readonly int Value;
 
             public Incomplete(int val)
             {

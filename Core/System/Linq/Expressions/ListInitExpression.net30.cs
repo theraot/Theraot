@@ -126,7 +126,7 @@ namespace System.Linq.Expressions
             {
                 throw Error.ListInitializerWithZeroMembers();
             }
-            var addMethod = FindMethod(newExpression.Type, "Add", null, new Expression[] { initializers[0] },
+            var addMethod = FindMethod(newExpression.Type, "Add", null, new[] { initializers[0] },
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             var initArray = new ElementInit[initializers.Length];
             var index = 0;
@@ -152,7 +152,6 @@ namespace System.Linq.Expressions
 
             List<ElementInit> initList = null;
             ElementInit[] initArray = null;
-            MethodInfo addMethod = null;
 
             initializers = initializers.NullOrEmptyChecked
             (
@@ -168,11 +167,7 @@ namespace System.Linq.Expressions
             {
                 enumerator.MoveNext();
                 var initializer = enumerator.Current;
-                addMethod = FindMethod(newExpression.Type, "Add", null, new Expression[] { initializer }, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                if (addMethod == null)
-                {
-                    return ListInit(newExpression, initializers);
-                }
+                var addMethod = FindMethod(newExpression.Type, "Add", null, new[] { initializer }, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 if (initList != null)
                 {
                     initList.Add(ElementInit(addMethod, initializer));
@@ -267,10 +262,6 @@ namespace System.Linq.Expressions
             {
                 enumerator.MoveNext();
                 var initializer = enumerator.Current;
-                if (addMethod == null)
-                {
-                    return ListInit(newExpression, initializers);
-                }
                 if (initList != null)
                 {
                     initList.Add(ElementInit(addMethod, initializer));

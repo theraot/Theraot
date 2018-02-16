@@ -49,29 +49,29 @@ namespace MonoTests.System.Collections.Concurrent
             ParallelTestHelper.Repeat(delegate
             {
                 var amount = -1;
-                const int count = 10;
-                const int threads = 5;
+                const int Count = 10;
+                const int Threads = 5;
 
                 ParallelTestHelper.ParallelStressTest(coll, (q) =>
                 {
                     var t = Interlocked.Increment(ref amount);
-                    for (var i = 0; i < count; i++)
+                    for (var i = 0; i < Count; i++)
                     {
                         coll.TryAdd(t);
                     }
-                }, threads);
+                }, Threads);
 
-                Assert.AreEqual(threads * count, coll.Count, "#-1");
-                var values = new int[threads];
+                Assert.AreEqual(Threads * Count, coll.Count, "#-1");
+                var values = new int[Threads];
                 int temp;
                 while (coll.TryTake(out temp))
                 {
                     values[temp]++;
                 }
 
-                for (var i = 0; i < threads; i++)
+                for (var i = 0; i < Threads; i++)
                 {
-                    Assert.AreEqual(count, values[i], "#" + i);
+                    Assert.AreEqual(Count, values[i], "#" + i);
                 }
             });
         }
@@ -80,11 +80,11 @@ namespace MonoTests.System.Collections.Concurrent
         {
             ParallelTestHelper.Repeat(delegate
             {
-                const int count = 10;
-                const int threads = 5;
-                const int delta = 5;
+                const int Count = 10;
+                const int Threads = 5;
+                const int Delta = 5;
 
-                for (var i = 0; i < (count + delta) * threads; i++)
+                for (var i = 0; i < (Count + Delta) * Threads; i++)
                 {
                     while (!coll.TryAdd(i))
                     {
@@ -93,14 +93,14 @@ namespace MonoTests.System.Collections.Concurrent
 
                 var state = true;
 
-                Assert.AreEqual((count + delta) * threads, coll.Count, "#0");
+                Assert.AreEqual((Count + Delta) * Threads, coll.Count, "#0");
 
                 ParallelTestHelper.ParallelStressTest(coll, (q) =>
                 {
                     var s = true;
                     int t;
 
-                    for (var i = 0; i < count; i++)
+                    for (var i = 0; i < Count; i++)
                     {
                         s &= coll.TryTake(out t);
                         // try again in case it was a transient failure
@@ -111,10 +111,10 @@ namespace MonoTests.System.Collections.Concurrent
                     }
 
                     state &= s;
-                }, threads);
+                }, Threads);
 
                 Assert.IsTrue(state, "#1");
-                Assert.AreEqual(delta * threads, coll.Count, "#2");
+                Assert.AreEqual(Delta * Threads, coll.Count, "#2");
 
                 var actual = string.Empty;
                 int temp;
@@ -126,7 +126,7 @@ namespace MonoTests.System.Collections.Concurrent
                 }
                 actual = builder.ToString();
 
-                var range = Enumerable.Range(order == CheckOrderingType.Reversed ? 0 : count * threads, delta * threads);
+                var range = Enumerable.Range(order == CheckOrderingType.Reversed ? 0 : Count * Threads, Delta * Threads);
                 if (order == CheckOrderingType.Reversed)
                 {
                     range = range.Reverse();

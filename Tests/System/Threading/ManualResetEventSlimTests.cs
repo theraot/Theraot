@@ -126,7 +126,7 @@ namespace MonoTests.System.Threading
 
             try
             {
-                var v = mre.WaitHandle;
+                GC.KeepAlive(mre.WaitHandle);
                 Assert.Fail("#4");
             }
             catch (ObjectDisposedException ex)
@@ -146,7 +146,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void SetAfterDisposeTest()
+        public void SetAfterDisposeTest() // TODO:Review
         {
             ParallelTestHelper.Repeat(delegate
             {
@@ -184,13 +184,7 @@ namespace MonoTests.System.Threading
                     evtFinish.Signal();
                 });
 
-                var bb = evtFinish.Wait(1000);
-                if (!bb)
-                {
-                    Assert.AreEqual(true, evtFinish.IsSet);
-                }
-
-                Assert.IsTrue(bb, "#0");
+                evtFinish.Wait();
                 Assert.IsNull(disp, "#1");
                 Assert.IsNull(setting, "#2");
 
@@ -206,7 +200,8 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void Wait_DisposeWithCancel()
+        [Category("RaceCondition")] // This test creates a race condition
+        public void Wait_DisposeWithCancel() // TODO: Review
         {
             using (var token = new CancellationTokenSource())
             {
@@ -236,7 +231,8 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void Wait_SetConcurrent()
+        [Category("RaceCondition")] // This test creates a race condition
+        public void Wait_SetConcurrent() // TODO: review
         {
             for (var i = 0; i < 10000; ++i)
             {
@@ -253,7 +249,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test, ExpectedException(typeof(ObjectDisposedException))]
-        public void WaitAfterDisposeTest()
+        public void WaitAfterDisposeTest() // TODO: Review
         {
             _mre.Dispose();
             _mre.Wait();
@@ -283,46 +279,12 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        [Category("NotDotNet")] // Running this test against .NET 4.0 or .NET 4.5 fails
-        public void WaitHandleConsistencyTest()
-        {
-            using (var mre = new ManualResetEventSlim())
-            {
-                mre.WaitHandle.WaitOne(0);
-
-                for (var i = 0; i < 10000; i++)
-                {
-                    var count = 2;
-                    var wait = new SpinWait();
-
-                    ThreadPool.QueueUserWorkItem(_ =>
-                    {
-                        mre.Set();
-                        Interlocked.Decrement(ref count);
-                    });
-                    ThreadPool.QueueUserWorkItem(_ =>
-                    {
-                        mre.Reset();
-                        Interlocked.Decrement(ref count);
-                    });
-
-                    while (count > 0)
-                    {
-                        wait.SpinOnce();
-                    }
-
-                    Assert.AreEqual(mre.IsSet, mre.WaitHandle.WaitOne(0));
-                }
-            }
-        }
-
-        [Test]
         public void WaitTest()
         {
             var count = 0;
             var s = false;
 
-            ParallelTestHelper.ParallelStressTest(_mre, (ManualResetEventSlim m) =>
+            ParallelTestHelper.ParallelStressTest(_mre, m =>
             {
                 if (Interlocked.Increment(ref count) % 2 == 0)
                 {
@@ -351,7 +313,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void WaitWithCancellationTokenAndCancel()
+        public void WaitWithCancellationTokenAndCancel() // TODO: Review
         {
             using (var mres = new ManualResetEventSlim())
             {
@@ -376,7 +338,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void WaitWithCancellationTokenAndNotImmediateSetTest()
+        public void WaitWithCancellationTokenAndNotImmediateSetTest() // TODO: Review
         {
             using (var mres = new ManualResetEventSlim())
             {

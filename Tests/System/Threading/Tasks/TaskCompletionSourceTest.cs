@@ -112,7 +112,7 @@ namespace MonoTests.System.Threading.Tasks
             ex = null;
             try
             {
-                var result = f.Result;
+                GC.KeepAlive(f.Result);
             }
             catch (AggregateException e)
             {
@@ -149,7 +149,7 @@ namespace MonoTests.System.Threading.Tasks
 
         [Test]
         [Ignore("#4550, Mono GC is lame")]
-        public void SetExceptionAndUnobservedEvent()
+        public void SetExceptionAndUnobservedEvent() // TODO: Review
         {
             var notFromMainThread = false;
             using (var mre = new ManualResetEvent(false))
@@ -263,7 +263,6 @@ namespace MonoTests.System.Threading.Tasks
         {
             var tcs = new TaskCompletionSource<int>();
             tcs.SetException(inner);
-            tcs = null;
         }
     }
 }

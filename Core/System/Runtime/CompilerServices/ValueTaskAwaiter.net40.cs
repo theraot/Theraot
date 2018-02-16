@@ -32,13 +32,13 @@ namespace System.Runtime.CompilerServices
         /// <summary>Schedules the continuation action for this ValueTask.</summary>
         public void OnCompleted(Action continuation)
         {
-            _value.AsTask().ConfigureAwait(continueOnCapturedContext: true).GetAwaiter().OnCompleted(continuation);
+            (_value._task ?? TaskEx.FromResult(_value._result)).ConfigureAwait(continueOnCapturedContext: true).GetAwaiter().OnCompleted(continuation);
         }
 
         /// <summary>Schedules the continuation action for this ValueTask.</summary>
         public void UnsafeOnCompleted(Action continuation)
         {
-            _value.AsTask().ConfigureAwait(continueOnCapturedContext: true).GetAwaiter().UnsafeOnCompleted(continuation);
+            (_value._task ?? TaskEx.FromResult(_value._result)).ConfigureAwait(continueOnCapturedContext: true).GetAwaiter().UnsafeOnCompleted(continuation);
         }
     }
 }

@@ -31,26 +31,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public WeakDelegateCollection(bool autoRemoveDeadItems, bool reentryGuard, int maxProbing)
-            : base(autoRemoveDeadItems, maxProbing)
-        {
-            if (reentryGuard)
-            {
-                _invoke = InvokeExtracted;
-            }
-            else
-            {
-                var guard = new ReentryGuard();
-                _invoke = input => guard.Execute(() => InvokeExtracted(input));
-            }
-        }
-
-        public WeakDelegateCollection(int maxProbing)
-            : base(maxProbing)
-        {
-            _invoke = InvokeExtracted;
-        }
-
         public void Add(MethodInfo method, object target)
         {
             if (method == null)
