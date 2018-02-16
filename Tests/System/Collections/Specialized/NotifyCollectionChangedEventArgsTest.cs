@@ -170,12 +170,12 @@ namespace MonoTests.System.Collections.Specialized
             changedItems.Add(new object());
 
             // Trying with Add
-            GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItems));
+            args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItems);
 
             CollectionChangedEventValidators.ValidateAddOperation(args, changedItems, "#B04");
 
             // Trying with Remove
-            GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changedItems));
+            args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changedItems);
 
             CollectionChangedEventValidators.ValidateRemoveOperation(args, changedItems, "#B05");
         }
