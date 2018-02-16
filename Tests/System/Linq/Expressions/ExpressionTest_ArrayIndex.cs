@@ -213,9 +213,9 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(array[1], at(array, 1));
             Assert.AreEqual(array[2], at(array, 2));
             Assert.AreEqual(0, at(array, 0).Value);
-            Assert.AreEqual(1, at(array, 3).Value);
-            Assert.AreEqual(2, at(array, 1).Value);
-            Assert.AreEqual(3, at(array, 2).Value);
+            Assert.AreEqual(3, at(array, 3).Value);
+            Assert.AreEqual(1, at(array, 1).Value);
+            Assert.AreEqual(2, at(array, 2).Value);
         }
     }
 }
