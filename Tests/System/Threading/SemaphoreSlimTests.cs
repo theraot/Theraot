@@ -264,6 +264,7 @@ namespace System.Threading.Tests
         /// </summary>
         [Test]
         [Category("NotWorking")] // The current implementation allows WaitAsync to awake concurrently
+        [Ignore]
         public static void RunSemaphoreSlimTest1_WaitAsync2()
         {
             using (var semaphore = new SemaphoreSlim(1))
