@@ -279,40 +279,6 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        [Category("NotDotNet")] // Running this test against .NET 4.0 or .NET 4.5 fails
-        public void WaitHandleConsistencyTest() // TODO: Review
-        {
-            using (var mre = new ManualResetEventSlim())
-            {
-                mre.WaitHandle.WaitOne(0);
-
-                for (var i = 0; i < 10000; i++)
-                {
-                    var count = 2;
-                    var wait = new SpinWait();
-
-                    ThreadPool.QueueUserWorkItem(_ =>
-                    {
-                        mre.Set();
-                        Interlocked.Decrement(ref count);
-                    });
-                    ThreadPool.QueueUserWorkItem(_ =>
-                    {
-                        mre.Reset();
-                        Interlocked.Decrement(ref count);
-                    });
-
-                    while (count > 0)
-                    {
-                        wait.SpinOnce();
-                    }
-
-                    Assert.AreEqual(mre.IsSet, mre.WaitHandle.WaitOne(0));
-                }
-            }
-        }
-
-        [Test]
         public void WaitTest()
         {
             var count = 0;
