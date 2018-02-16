@@ -354,43 +354,6 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0  - this fails if serialized
-        [Category("ThreadPool")]
-        public void CanceledContinuationExecuteSynchronouslyTest() // TODO: Review
-        {
-            using (var source = new CancellationTokenSource())
-            {
-                var token = source.Token;
-                using (var evt = new ManualResetEventSlim())
-                {
-                    var result = false;
-                    var thrown = false;
-
-                    var task = Task.Factory.StartNew(() => evt.Wait(100));
-                    var cont = task.ContinueWith(t => result = true, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-
-                    source.Cancel();
-                    evt.Set();
-                    task.Wait(100);
-                    try
-                    {
-                        cont.Wait(100);
-                    }
-                    catch (Exception ex)
-                    {
-                        GC.KeepAlive(ex);
-                        thrown = true;
-                    }
-
-                    Assert.IsTrue(task.IsCompleted);
-                    Assert.IsTrue(cont.IsCanceled);
-                    Assert.IsFalse(result);
-                    Assert.IsTrue(thrown);
-                }
-            }
-        }
-
-        [Test]
         public void WhenChildTaskErrorIsThrownOnlyOnFaultedContinuationShouldExecute()
         {
             var continuationRan = false;
