@@ -143,28 +143,19 @@ namespace System.Runtime.CompilerServices
             /// Invokes MoveNext under the provided context.
             /// </summary>
             [SecuritySafeCritical]
-            internal void Run() // TODO: Review
+            internal void Run()
             {
                 if (_context == null)
                 {
                     StateMachine.MoveNext();
                     return;
                 }
-
-                try
+                var callback = _invokeMoveNext;
+                if (callback == null)
                 {
-                    var callback = _invokeMoveNext;
-                    if (callback == null)
-                    {
-                        _invokeMoveNext = callback = InvokeMoveNext;
-                    }
-
-                    ExecutionContext.Run(_context, callback, StateMachine);
+                    _invokeMoveNext = callback = InvokeMoveNext;
                 }
-                finally
-                {
-                    // _context.Dispose();
-                }
+                ExecutionContext.Run(_context, callback, StateMachine);
             }
 
             /// <summary>
