@@ -551,18 +551,18 @@ namespace MonoTests.System.Threading
 #if NET20 || NET30 || NET35 || NET_45
 
         [Test]
-        public void CancelAfter() // TODO: Review
+        [Category("RaceCondition")] // This test creates a race condition
+        public void CancelAfter()
         {
-            for (var index = 0; index < 10000; index++)
+            var called = 0;
+            using (var cts = new CancellationTokenSource())
             {
-                var called = 0;
-                using (var cts = new CancellationTokenSource())
-                {
-                    cts.Token.Register(() => called++);
-                    cts.CancelAfter(20);
-                    Thread.Sleep(50);
-                    Assert.AreEqual(1, called, "#1");
-                }
+                cts.Token.Register(() => called++);
+                Assert.AreEqual(0, called, "#1");
+                cts.CancelAfter(50);
+                Assert.AreEqual(0, called, "#2");
+                Thread.Sleep(500);
+                Assert.AreEqual(1, called, "#3");
             }
         }
 
