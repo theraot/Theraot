@@ -314,7 +314,7 @@ namespace Theraot.Threading.Needles
 
         private void WriteTarget(object target)
         {
-            if (_status == -1 || !ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
+            if (_disposeStatus == -1 || !ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
             {
                 ReleaseExtracted();
                 _handle = GCHandle.Alloc(target, _trackResurrection ? GCHandleType.Weak : GCHandleType.WeakTrackResurrection);
@@ -360,7 +360,7 @@ namespace Theraot.Threading.Needles
                 }
                 finally
                 {
-                    Interlocked.Decrement(ref _status);
+                    Interlocked.Decrement(ref _disposeStatus);
                 }
             }
         }
