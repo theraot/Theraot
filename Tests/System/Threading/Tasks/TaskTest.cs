@@ -2408,10 +2408,11 @@ namespace MonoTests.System.Threading.Tasks
                     var tasks = new[] { t1, t2 };
 
                     var t = Task.WhenAny(tasks);
-                    Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
+                    Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1a");
                     t2.Start();
-
-                    Assert.IsTrue(t.Wait(1000), "#2");
+                    Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1b");
+                    Assert.IsTrue(t.Wait(1000), "#2a");
+                    Assert.IsTrue(t2.Wait(1000), "#2b");
                     Assert.IsNotNull(t.Result, "#3");
                 }
             }
