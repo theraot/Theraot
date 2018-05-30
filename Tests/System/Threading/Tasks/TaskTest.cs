@@ -1040,7 +1040,7 @@ namespace MonoTests.System.Threading.Tasks
                 Task.WaitAll(_tasks);
                 Assert.AreEqual(_max, achieved, "#1");
             };
-            ParallelTestHelper.Repeat(action, 1000);
+            ParallelTestHelper.Repeat(action, 10000000);
         }
 
         [Test]
