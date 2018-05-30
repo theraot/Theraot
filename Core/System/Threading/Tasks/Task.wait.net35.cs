@@ -144,13 +144,13 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptions.NoOptimization)]  // this is needed for the parallel debugger
         public static bool WaitAll(Task[] tasks, TimeSpan timeout)
         {
-            var totalMilliseconds = (long)timeout.TotalMilliseconds;
-            if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
+            var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1 || milliseconds > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException("timeout");
             }
 
-            return WaitAll(tasks, (int)totalMilliseconds);
+            return WaitAll(tasks, (int)milliseconds);
         }
 
         /// <summary>
@@ -552,13 +552,13 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptions.NoOptimization)]  // this is needed for the parallel debugger
         public static int WaitAny(Task[] tasks, TimeSpan timeout)
         {
-            var totalMilliseconds = (long)timeout.TotalMilliseconds;
-            if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
+            var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1 || milliseconds > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException("timeout");
             }
 
-            return WaitAny(tasks, (int)totalMilliseconds);
+            return WaitAny(tasks, (int)milliseconds);
         }
 
         /// <summary>

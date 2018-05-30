@@ -67,13 +67,11 @@ namespace System.Runtime.CompilerServices
                     _value._task.GetAwaiter().GetResult();
             }
 
-            /// <summary>Schedules the continuation action for the <see cref="ConfiguredValueTaskAwaitable{TResult}"/>.</summary>
             public void OnCompleted(Action continuation)
             {
                 (_value._task ?? TaskEx.FromResult(_value._result)).ConfigureAwait(_continueOnCapturedContext).GetAwaiter().OnCompleted(continuation);
             }
 
-            /// <summary>Schedules the continuation action for the <see cref="ConfiguredValueTaskAwaitable{TResult}"/>.</summary>
             public void UnsafeOnCompleted(Action continuation)
             {
                 (_value._task ?? TaskEx.FromResult(_value._result)).ConfigureAwait(_continueOnCapturedContext).GetAwaiter().UnsafeOnCompleted(continuation);

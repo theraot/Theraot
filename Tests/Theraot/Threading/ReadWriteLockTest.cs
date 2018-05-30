@@ -159,7 +159,7 @@ namespace Tests.Theraot.Threading
         }
 
         [Test]
-        public void CannotReadWhileWriting() // TODO: Review
+        public void CannotReadWhileWriting()
         {
             using (var x = new ReadWriteLock())
             {
@@ -196,7 +196,7 @@ namespace Tests.Theraot.Threading
         }
 
         [Test]
-        public void CannotReadWhileWritingEx() // TODO: Review
+        public void CannotReadWhileWritingEx()
         {
             using (var x = new ReadWriteLock())
             {
@@ -245,7 +245,7 @@ namespace Tests.Theraot.Threading
         }
 
         [Test]
-        public void CannotReentryReadToWriteWhenThereAreMoreReaders() // TODO: Review
+        public void CannotReentryReadToWriteWhenThereAreMoreReaders()
         {
             using (var w1 = new ManualResetEvent(false))
             {
@@ -299,7 +299,7 @@ namespace Tests.Theraot.Threading
         }
 
         [Test]
-        public void CannotWriteWhileReading() // TODO: Review
+        public void CannotWriteWhileReading()
         {
             using (var x = new ReadWriteLock())
             {
@@ -336,7 +336,7 @@ namespace Tests.Theraot.Threading
         }
 
         [Test]
-        public void CannotWriteWhileReadingEx() // TODO: Review
+        public void CannotWriteWhileReadingEx()
         {
             using (var x = new ReadWriteLock())
             {
@@ -385,7 +385,7 @@ namespace Tests.Theraot.Threading
         }
 
         [Test]
-        public void CannotWriteWhileWriting() // TODO: Review
+        public void CannotWriteWhileWriting()
         {
             using (var x = new ReadWriteLock())
             {
@@ -422,7 +422,7 @@ namespace Tests.Theraot.Threading
         }
 
         [Test]
-        public void CannotWriteWhileWritingEx() // TODO: Review
+        public void CannotWriteWhileWritingEx()
         {
             using (var x = new ReadWriteLock())
             {
@@ -471,7 +471,7 @@ namespace Tests.Theraot.Threading
         }
 
         [Test]
-        public void CanReadWhileReading() // TODO: Review
+        public void CanReadWhileReading()
         {
             using (var x = new ReadWriteLock())
             {
@@ -514,7 +514,7 @@ namespace Tests.Theraot.Threading
         }
 
         [Test]
-        public void CanReadWhileReadingEx() // TODO: Review
+        public void CanReadWhileReadingEx()
         {
             using (var x = new ReadWriteLock())
             {
@@ -845,7 +845,7 @@ namespace Tests.Theraot.Threading
         }
 
         [Test]
-        public void MultipleReadersAtTheTime() // TODO: Review
+        public void MultipleReadersAtTheTime()
         {
             using (var w = new ManualResetEvent(false))
             {
@@ -883,7 +883,7 @@ namespace Tests.Theraot.Threading
         }
 
         [Test]
-        public void OnlyOneWriterAtTheTime() // TODO: Review
+        public void OnlyOneWriterAtTheTime()
         {
             using (var w = new ManualResetEvent(false))
             {
@@ -924,7 +924,7 @@ namespace Tests.Theraot.Threading
         }
 
         [Test]
-        public void OnlyOneWriterAtTheTimeEx() // TODO: Review
+        public void OnlyOneWriterAtTheTimeEx() // TODO: Review - race condition
         {
             using (var w = new ManualResetEvent(false))
             {
@@ -989,7 +989,7 @@ namespace Tests.Theraot.Threading
         }
 
         [Test]
-        public void ReentryReadToWriteCheck() // TODO: Review
+        public void ReentryReadToWriteCheck()
         {
             using (var w = new ManualResetEvent(false))
             {
@@ -1054,7 +1054,7 @@ namespace Tests.Theraot.Threading
         }
 
         [Test]
-        public void ReentryReadToWriteRaceCondition() // TODO: Review
+        public void ReentryReadToWriteRaceCondition()
         {
             using (var w = new ManualResetEvent(false))
             {
@@ -1113,7 +1113,7 @@ namespace Tests.Theraot.Threading
         }
 
         [Test]
-        public void WriteWaitsMultipleReadsToFinish() // TODO: Review
+        public void WriteWaitsMultipleReadsToFinish()
         {
             using (var w0 = new ManualResetEvent(false))
             {
@@ -1121,8 +1121,9 @@ namespace Tests.Theraot.Threading
                 {
                     using (var x = new ReadWriteLock())
                     {
+                        int[] z = { 0, 0 };
+                        var foundReaders = -1;
                         var ok = false;
-                        int[] z = { 0 };
                         var threads = new Thread[5];
                         for (var index = 0; index < 5; index++)
                         {
@@ -1133,9 +1134,11 @@ namespace Tests.Theraot.Threading
                                     w0.WaitOne();
                                     using (x.EnterRead())
                                     {
+                                        Interlocked.Increment(ref z[1]);
                                         w1.Set();
                                         Interlocked.Increment(ref z[0]);
                                         Thread.Sleep(10);
+                                        Interlocked.Decrement(ref z[1]);
                                     }
                                 }
                             );
@@ -1147,8 +1150,9 @@ namespace Tests.Theraot.Threading
                                 w1.WaitOne();
                                 using (x.EnterWrite())
                                 {
-                                    Assert.IsTrue(x.IsCurrentThreadWriter);
-                                    ok = Interlocked.Increment(ref z[0]) == 6;
+                                    foundReaders = Volatile.Read(ref z[1]);
+                                    ok = x.IsCurrentThreadWriter;
+                                    Interlocked.Increment(ref z[0]);
                                 }
                             }
                         );
@@ -1164,6 +1168,7 @@ namespace Tests.Theraot.Threading
                         }
                         a.Join();
                         Assert.IsTrue(ok);
+                        Assert.AreEqual(0, foundReaders);
                         Assert.AreEqual(7, Interlocked.Increment(ref z[0]));
                     }
                 }
@@ -1171,7 +1176,7 @@ namespace Tests.Theraot.Threading
         }
 
         [Test]
-        public void WriteWaitsReadToFinish() // TODO: Review
+        public void WriteWaitsReadToFinish()
         {
             using (var w = new ManualResetEvent(false))
             {

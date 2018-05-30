@@ -384,8 +384,17 @@ namespace System.Threading.Tasks
 
         public bool Wait(TimeSpan timeout)
         {
-            var milliseconds = (int)timeout.TotalMilliseconds;
-            return Wait(milliseconds, CancellationToken);
+            var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                Wait(CancellationToken);
+                return true;
+            }
+            return Wait((int)milliseconds, CancellationToken);
         }
 
         public bool Wait(int milliseconds, CancellationToken cancellationToken)
@@ -438,6 +447,10 @@ namespace System.Threading.Tasks
                     case TaskStatus.Faulted:
                         ThrowIfExceptional(true);
                         return true;
+
+                    default:
+                        // Should not happen
+                        continue;
                 }
             } while (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < milliseconds);
             switch (Status)

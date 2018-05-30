@@ -88,6 +88,15 @@ namespace Theraot.Threading
         public static bool SpinWaitSet(ref int check, int value, int comparand, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitSet(ref check, value, comparand);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -106,6 +115,15 @@ namespace Theraot.Threading
         public static bool SpinWaitSet(ref int check, int value, int comparand, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitSet(ref check, value, comparand, cancellationToken);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -239,6 +257,15 @@ namespace Theraot.Threading
         public static bool SpinWaitUntil(ref int check, int comparand, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitUntil(ref check, comparand);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -257,6 +284,15 @@ namespace Theraot.Threading
         public static bool SpinWaitUntil(ref int check, int comparand, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitUntil(ref check, comparand, cancellationToken);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -390,6 +426,15 @@ namespace Theraot.Threading
         public static bool SpinWaitUntil(Func<bool> verification, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitUntil(verification);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -408,6 +453,15 @@ namespace Theraot.Threading
         public static bool SpinWaitUntil(Func<bool> verification, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitUntil(verification, cancellationToken);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -541,6 +595,15 @@ namespace Theraot.Threading
         public static bool SpinWaitWhile(ref int check, int comparand, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitWhile(ref check, comparand);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -559,6 +622,15 @@ namespace Theraot.Threading
         public static bool SpinWaitWhile(ref int check, int comparand, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitWhile(ref check, comparand, cancellationToken);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -697,6 +769,15 @@ namespace Theraot.Threading
         where T : class
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitWhileNull(ref check);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -716,6 +797,15 @@ namespace Theraot.Threading
         where T : class
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitWhileNull(ref check, cancellationToken);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -836,7 +926,7 @@ namespace Theraot.Threading
             }
             if (milliseconds == -1)
             {
-                return SpinWaitRelativeSet(ref check, value);
+                return SpinWaitRelativeSet(ref check, value, cancellationToken);
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
@@ -860,6 +950,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSet(ref int check, int value, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeSet(ref check, value);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -880,6 +979,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSet(ref int check, int value, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeSet(ref check, value, cancellationToken);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -1007,7 +1115,7 @@ namespace Theraot.Threading
             }
             if (milliseconds == -1)
             {
-                return SpinWaitRelativeExchange(ref check, value, out result);
+                return SpinWaitRelativeExchange(ref check, value, out result, cancellationToken);
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
@@ -1032,6 +1140,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchange(ref int check, int value, out int result, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeExchange(ref check, value, out result);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -1053,6 +1170,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchange(ref int check, int value, out int result, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeExchange(ref check, value, out result, cancellationToken);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -1220,6 +1346,15 @@ namespace Theraot.Threading
         public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitSetUnless(ref check, value, comparand, unless);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -1244,6 +1379,15 @@ namespace Theraot.Threading
         public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitSetUnless(ref check, value, comparand, unless, cancellationToken);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -1424,6 +1568,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeSetUnless(ref check, value, unless);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -1449,6 +1602,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeSetUnless(ref check, value, unless, cancellationToken);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -1632,6 +1794,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeExchangeUnless(ref check, value, unless, out result);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -1657,6 +1828,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeExchangeUnless(ref check, value, unless, out result, cancellationToken);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -1840,6 +2020,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeSetUnlessNegative(ref check, value);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -1865,6 +2054,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeSetUnlessNegative(ref check, value, cancellationToken);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -2048,6 +2246,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeExchangeUnlessNegative(ref check, value, out lastValue);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -2073,6 +2280,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeExchangeUnlessNegative(ref check, value, out lastValue, cancellationToken);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -2256,6 +2472,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetUnlessExcess(ref int check, int value, int maxValue, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeSetUnlessExcess(ref check, value, maxValue);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -2281,6 +2506,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetUnlessExcess(ref int check, int value, int maxValue, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeSetUnlessExcess(ref check, value, maxValue, cancellationToken);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -2464,6 +2698,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchangeUnlessExcess(ref int check, int value, int maxValue, out int lastValue, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeExchangeUnlessExcess(ref check, value, maxValue, out lastValue);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -2489,6 +2732,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchangeUnlessExcess(ref int check, int value, int maxValue, out int lastValue, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeExchangeUnlessExcess(ref check, value, maxValue, out lastValue, cancellationToken);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -2672,6 +2924,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeSetBounded(ref check, value, minValue, maxValue);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -2697,6 +2958,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeSetBounded(ref check, value, minValue, maxValue, cancellationToken);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -2880,6 +3150,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeExchangeBounded(ref check, value, minValue, maxValue, out lastValue);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
@@ -2905,6 +3184,15 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                SpinWaitRelativeExchangeBounded(ref check, value, minValue, maxValue, out lastValue, cancellationToken);
+                return true;
+            }
             var spinWait = new SpinWait();
             var start = TicksNow();
             retry:
