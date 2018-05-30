@@ -166,22 +166,27 @@ namespace System.Threading
 
         public void Wait()
         {
-            Wait(-1, CancellationToken.None);
+            Wait(Timeout.Infinite, CancellationToken.None);
         }
 
         public void Wait(CancellationToken cancellationToken)
         {
-            Wait(-1, cancellationToken);
+            Wait(Timeout.Infinite, cancellationToken);
         }
 
         public bool Wait(TimeSpan timeout)
         {
-            var totalMilliseconds = (long)timeout.TotalMilliseconds;
-            if (totalMilliseconds < -1L || totalMilliseconds > int.MaxValue)
+            var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException("timeout");
             }
-            return Wait((int)totalMilliseconds, CancellationToken.None);
+            if (milliseconds == -1)
+            {
+                Wait();
+                return true;
+            }
+            return Wait((int)milliseconds, CancellationToken.None);
         }
 
         public bool Wait(TimeSpan timeout, CancellationToken cancellationToken)

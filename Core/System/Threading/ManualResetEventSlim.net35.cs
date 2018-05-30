@@ -206,7 +206,16 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
-            var milliseconds = timeout.TotalMilliseconds;
+            var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                Wait();
+                return true;
+            }
             return WaitExtracted((int)milliseconds);
         }
 
@@ -218,7 +227,16 @@ namespace System.Threading
             }
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var milliseconds = timeout.TotalMilliseconds;
+            var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                Wait(cancellationToken);
+                return true;
+            }
             return WaitExtracted((int)milliseconds, cancellationToken);
         }
 
@@ -383,6 +401,24 @@ namespace System.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             return false;
+        }
+
+        private void WaitExtracted()
+        {
+            var spinWait = new SpinWait();
+            var spinCount = _spinCount;
+            retry:
+            if (!IsSet)
+            {
+                if (spinCount > 0)
+                {
+                    spinCount--;
+                    spinWait.SpinOnce();
+                    goto retry;
+                }
+                var handle = RetriveWaitHandle();
+                handle.WaitOne();
+            }
         }
 
         private void WaitExtracted(CancellationToken cancellationToken)

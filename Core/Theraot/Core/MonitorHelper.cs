@@ -47,12 +47,22 @@ namespace Theraot.Core
 
         public static bool TryEnter(object obj, int millisecondsTimeout)
         {
+            if (millisecondsTimeout == -1)
+            {
+                Monitor.Enter(obj);
+                return true;
+            }
             return Monitor.TryEnter(obj, millisecondsTimeout);
         }
 
         public static void TryEnter(object obj, int millisecondsTimeout, ref bool taken)
         {
             GC.KeepAlive(taken);
+            if (millisecondsTimeout == -1)
+            {
+                Monitor.Enter(obj);
+                taken = true;
+            }
             taken = Monitor.TryEnter(obj, millisecondsTimeout);
         }
 
@@ -104,21 +114,16 @@ namespace Theraot.Core
         public static bool TryEnter(object obj, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var spinWait = new SpinWait();
-            var start = ThreadingHelper.TicksNow();
-            retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (TryEnter(obj))
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == -1)
+            {
+                Enter(obj, cancellationToken);
                 return true;
             }
-            if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < milliseconds)
-            {
-                spinWait.SpinOnce();
-                goto retry;
-            }
-            return false;
+            return TryEnter(obj, (int)milliseconds, cancellationToken);
         }
 
         public static void TryEnter(object obj, TimeSpan timeout, ref bool taken, CancellationToken cancellationToken)
