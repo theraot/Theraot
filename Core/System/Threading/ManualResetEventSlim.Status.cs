@@ -1,6 +1,5 @@
 ﻿#if NET20 || NET30 || NET35
 
-
 namespace System.Threading
 {
     public partial class ManualResetEventSlim
@@ -11,7 +10,8 @@ namespace System.Threading
             NotSet = 0,
             Set = 1,
             HandleRequested = 2,
-            HandleReady = 3
+            HandleReadyNotSet = 4,
+            HandleReadySet = 5
         }
     }
 }

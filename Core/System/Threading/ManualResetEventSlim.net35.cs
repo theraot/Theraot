@@ -116,12 +116,14 @@ namespace System.Threading
                         // SpinWait
                         break;
 
-                    case Status.HandleReady:
+                    case Status.HandleReadySet:
+                    case Status.HandleReadyNotSet:
                         // The wait handle that is already created
                         var handle = Volatile.Read(ref _handle);
                         if (handle != null)
                         {
-                            // Reset on it
+                            // Reset it
+                            Interlocked.CompareExchange(ref _status, (int)Status.HandleReadyNotSet, (int)status);
                             handle.Reset();
                             // Done
                             return;
@@ -171,14 +173,16 @@ namespace System.Threading
                         // SpinWait
                         break;
 
-                    case Status.HandleReady:
+                    case Status.HandleReadySet:
+                    case Status.HandleReadyNotSet:
                         // The wait handle that is already created
                         var handle = Volatile.Read(ref _handle);
                         if (handle != null)
                         {
                             try
                             {
-                                // Set on it
+                                // Set it
+                                Interlocked.CompareExchange(ref _status, (int)Status.HandleReadySet, (int)status);
                                 handle.Set();
                                 // Done
                                 return;
@@ -366,7 +370,7 @@ namespace System.Threading
                             // Set the handle
                             Volatile.Write(ref _handle, created);
                             // Notify that the handle is ready
-                            Thread.VolatileWrite(ref _status, (int)Status.HandleReady);
+                            Thread.VolatileWrite(ref _status, isSet ? (int)Status.HandleReadySet : (int)Status.HandleReadyNotSet);
                             // Return the handle we created
                             return created;
                         }
@@ -378,7 +382,8 @@ namespace System.Threading
                         // SpinWait
                         break;
 
-                    case Status.HandleReady:
+                    case Status.HandleReadySet:
+                    case Status.HandleReadyNotSet:
                         // The handle already exists
                         // Get the handle that is already created
                         var handle = Volatile.Read(ref _handle);
