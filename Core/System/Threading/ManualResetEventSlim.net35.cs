@@ -199,7 +199,7 @@ namespace System.Threading
                             return;
                         }
                         // Must has been disposed, or the wait handle requested
-                        return;
+                        break;
 
                     case Status.Set:
                         // Nothing to do
@@ -211,10 +211,6 @@ namespace System.Threading
                         break;
 
                     case Status.HandleReadyNotSet:
-                        // Nothing to do
-                        return;
-
-                    case Status.HandleReadySet:
                         // Set if Reset
                         status = (Status)Interlocked.CompareExchange(ref _status, (int)Status.HandleReadySet, (int)Status.HandleReadyNotSet);
                         if (status == Status.HandleReadyNotSet)
@@ -238,6 +234,10 @@ namespace System.Threading
                         }
                         // Probably Disposed
                         break;
+
+                    case Status.HandleReadySet:
+                        // Nothing to do
+                        return;
 
                     default:
                         // Should not happen
