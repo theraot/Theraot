@@ -146,6 +146,7 @@ namespace Theraot.Threading
         {
             if (Thread.CurrentThread != Volatile.Read(ref _ownerThread))
             {
+                var spinWait = new SpinWait();
                 while (true)
                 {
                     var status = (Status)Volatile.Read(ref _status);
@@ -182,8 +183,9 @@ namespace Theraot.Threading
 
                         default:
                             // Should not happen
-                            continue;
+                            break;
                     }
+                    spinWait.SpinOnce();
                 }
             }
         }
@@ -192,6 +194,7 @@ namespace Theraot.Threading
         {
             if (Thread.CurrentThread != Volatile.Read(ref _ownerThread))
             {
+                var spinWait = new SpinWait();
                 while (true)
                 {
                     var status = (Status)Volatile.Read(ref _status);
@@ -241,8 +244,9 @@ namespace Theraot.Threading
 
                         default:
                             // Should not happen
-                            continue;
+                            break;
                     }
+                    spinWait.SpinOnce();
                 }
             }
         }
