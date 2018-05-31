@@ -210,6 +210,10 @@ namespace System.Threading
                         // SpinWait
                         break;
 
+                    case Status.HandleReadyNotSet:
+                        // Nothing to do
+                        return;
+
                     case Status.HandleReadySet:
                         // Set if Reset
                         status = (Status)Interlocked.CompareExchange(ref _status, (int)Status.HandleReadySet, (int)Status.HandleReadyNotSet);
@@ -234,10 +238,6 @@ namespace System.Threading
                         }
                         // Probably Disposed
                         break;
-
-                    case Status.HandleReadyNotSet:
-                        // Nothing to do
-                        return;
 
                     default:
                         // Should not happen
@@ -424,8 +424,8 @@ namespace System.Threading
                         // SpinWait
                         break;
 
-                    case Status.HandleReadySet:
                     case Status.HandleReadyNotSet:
+                    case Status.HandleReadySet:
                         // The handle already exists
                         // Get the handle that is already created
                         var handle = Volatile.Read(ref _handle);
