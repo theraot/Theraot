@@ -49,7 +49,8 @@ namespace System.Threading
                     {
                         case Status.Disposed:
                             // Disposed
-                            throw new ObjectDisposedException(GetType().FullName);
+                            // A disposed ManualResetEventSlim should report not set
+                            return false;
 
                         case Status.NotSet:
                             // Not Set
