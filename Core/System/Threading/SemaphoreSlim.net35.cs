@@ -225,7 +225,7 @@ namespace System.Threading
         {
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
-            if (TryEnter())
+            if (Wait(0, CancellationToken.None))
             {
                 source.SetResult(true);
                 return source.Task;
@@ -243,7 +243,7 @@ namespace System.Threading
                 return Task.FromCancellation(cancellationToken);
             }
             var source = new TaskCompletionSource<bool>();
-            if (TryEnter())
+            if (Wait(0, cancellationToken))
             {
                 source.SetResult(true);
                 return source.Task;
@@ -266,13 +266,13 @@ namespace System.Threading
             }
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
-            if (TryEnter())
+            if (Wait(0, CancellationToken.None))
             {
                 source.SetResult(true);
                 return source.Task;
             }
             Thread.MemoryBarrier();
-            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout); // TODO: Review
+            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout);
             _asyncWaiters.Add(source);
             return source.Task;
         }
@@ -281,13 +281,13 @@ namespace System.Threading
         {
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
-            if (TryEnter())
+            if (Wait(0, CancellationToken.None))
             {
                 source.SetResult(true);
                 return source.Task;
             }
             Thread.MemoryBarrier();
-            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), timeout); // TODO: Review
+            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), timeout);
             _asyncWaiters.Add(source);
             return source.Task;
         }
@@ -308,13 +308,13 @@ namespace System.Threading
             }
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
-            if (TryEnter())
+            if (Wait(0, cancellationToken))
             {
                 source.SetResult(true);
                 return source.Task;
             }
             Thread.MemoryBarrier();
-            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout, cancellationToken); // TODO: Review
+            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout, cancellationToken);
             cancellationToken.Register(() => source.SetCanceled());
             _asyncWaiters.Add(source);
             return source.Task;
@@ -328,7 +328,7 @@ namespace System.Threading
             }
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
-            if (TryEnter())
+            if (Wait(0, cancellationToken))
             {
                 source.SetResult(true);
                 return source.Task;
@@ -340,7 +340,7 @@ namespace System.Threading
                 {
                     try
                     {
-                        source.SetResult(false); // TODO: Review
+                        source.SetResult(false);
                     }
                     catch (InvalidOperationException exception)
                     {
