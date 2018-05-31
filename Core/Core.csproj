@@ -402,6 +402,7 @@
     <Compile Include="System\Threading\CancellationTokenSource.net35.cs" />
     <Compile Include="System\Threading\CountdownEvent.net35.cs" />
     <Compile Include="System\Threading\LockRecursionPolicy.net30.cs" />
+    <Compile Include="System\Threading\ManualResetEventSlim.Status.cs" />
     <Compile Include="System\Threading\ReaderWriterLockSlim.helpers.cs" />
     <Compile Include="System\Threading\ReaderWriterLockSlim.net35.cs" />
     <Compile Include="System\Threading\Tasks\AsyncCompatLibExtensions.net40.asyncbridge.cs" />
@@ -698,8 +699,10 @@
     <Compile Include="Theraot\Threading\Needles\WeakNeedle.extended.cs" />
     <Compile Include="Theraot\Threading\NoReentrantReadWriteLock.disposable.cs" />
     <Compile Include="Theraot\Threading\NoReentrantReadWriteLock.cs" />
+    <Compile Include="Theraot\Threading\NoReentrantReadWriteLock.Status.cs" />
     <Compile Include="Theraot\Threading\NoTrackingThreadLocal.cs" />
     <Compile Include="Theraot\Threading\ReadWriteLock.cs" />
+    <Compile Include="Theraot\Threading\ReentrantReadWriteLock.Status.cs" />
     <Compile Include="Theraot\Threading\ReentrantReadWriteLock.disposable.cs" />
     <Compile Include="Theraot\Threading\ReentrantReadWriteLock.cs" />
     <Compile Include="Theraot\Threading\ReentryGuard.cs" />

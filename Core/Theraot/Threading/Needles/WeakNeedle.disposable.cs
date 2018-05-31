@@ -6,7 +6,7 @@ namespace Theraot.Threading.Needles
 {
     public partial class WeakNeedle<T> // T is used in another file, this is a partial class
     {
-        private int _status;
+        private int _disposeStatus;
 
         [System.Diagnostics.DebuggerNonUserCode]
         ~WeakNeedle()
@@ -24,7 +24,7 @@ namespace Theraot.Threading.Needles
         public bool IsDisposed
         {
             [System.Diagnostics.DebuggerNonUserCode]
-            get { return _status == -1; }
+            get { return _disposeStatus == -1; }
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
@@ -43,7 +43,7 @@ namespace Theraot.Threading.Needles
         [System.Diagnostics.DebuggerNonUserCode]
         public void DisposedConditional(Action whenDisposed, Action whenNotDisposed)
         {
-            if (_status == -1)
+            if (_disposeStatus == -1)
             {
                 if (whenDisposed != null)
                 {
@@ -54,7 +54,7 @@ namespace Theraot.Threading.Needles
             {
                 if (whenNotDisposed != null)
                 {
-                    if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
+                    if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
                     {
                         try
                         {
@@ -62,7 +62,7 @@ namespace Theraot.Threading.Needles
                         }
                         finally
                         {
-                            System.Threading.Interlocked.Decrement(ref _status);
+                            System.Threading.Interlocked.Decrement(ref _disposeStatus);
                         }
                     }
                     else
@@ -79,7 +79,7 @@ namespace Theraot.Threading.Needles
         [System.Diagnostics.DebuggerNonUserCode]
         public TReturn DisposedConditional<TReturn>(Func<TReturn> whenDisposed, Func<TReturn> whenNotDisposed)
         {
-            if (_status == -1)
+            if (_disposeStatus == -1)
             {
                 if (whenDisposed == null)
                 {
@@ -91,7 +91,7 @@ namespace Theraot.Threading.Needles
             {
                 return default(TReturn);
             }
-            if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
+            if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
             {
                 try
                 {
@@ -99,7 +99,7 @@ namespace Theraot.Threading.Needles
                 }
                 finally
                 {
-                    System.Threading.Interlocked.Decrement(ref _status);
+                    System.Threading.Interlocked.Decrement(ref _disposeStatus);
                 }
             }
             if (whenDisposed == null)
@@ -147,11 +147,11 @@ namespace Theraot.Threading.Needles
 
         protected bool TakeDisposalExecution()
         {
-            if (_status == -1)
+            if (_disposeStatus == -1)
             {
                 return false;
             }
-            return ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
+            return ThreadingHelper.SpinWaitSetUnless(ref _disposeStatus, -1, 0, -1);
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
@@ -169,9 +169,9 @@ namespace Theraot.Threading.Needles
         [System.Diagnostics.DebuggerNonUserCode]
         protected bool UnDispose()
         {
-            if (System.Threading.Volatile.Read(ref _status) == -1)
+            if (System.Threading.Volatile.Read(ref _disposeStatus) == -1)
             {
-                System.Threading.Volatile.Write(ref _status, 0);
+                System.Threading.Volatile.Write(ref _disposeStatus, 0);
                 return true;
             }
             return false;

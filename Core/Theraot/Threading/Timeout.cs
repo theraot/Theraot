@@ -32,6 +32,10 @@ namespace Theraot.Threading
             {
                 throw new ArgumentNullException("callback");
             }
+            if (dueTime < -1)
+            {
+                throw new ArgumentOutOfRangeException("dueTime");
+            }
             Callback = callback;
             Start(dueTime);
             _hashcode = unchecked((int)DateTime.Now.Ticks);
@@ -43,6 +47,10 @@ namespace Theraot.Threading
             {
                 throw new ArgumentNullException("callback");
             }
+            if (dueTime < -1)
+            {
+                throw new ArgumentOutOfRangeException("dueTime");
+            }
             if (token.IsCancellationRequested)
             {
                 Callback = null;
@@ -52,8 +60,8 @@ namespace Theraot.Threading
             else
             {
                 Callback = callback;
-                Start(dueTime);
                 token.Register(Cancel);
+                Start(dueTime);
             }
             _hashcode = unchecked((int)DateTime.Now.Ticks);
         }
@@ -106,6 +114,10 @@ namespace Theraot.Threading
             {
                 throw new ArgumentNullException("callback");
             }
+            if (dueTime < -1)
+            {
+                throw new ArgumentOutOfRangeException("dueTime");
+            }
             var timeout = new Timeout();
             timeout.Callback = () =>
             {
@@ -118,8 +130,8 @@ namespace Theraot.Threading
                     UnRoot(timeout);
                 }
             };
-            timeout.Start(dueTime);
             Root(timeout);
+            timeout.Start(dueTime);
         }
 
         public static void Launch(Action callback, long dueTime, CancellationToken token)
@@ -127,6 +139,10 @@ namespace Theraot.Threading
             if (callback == null)
             {
                 throw new ArgumentNullException("callback");
+            }
+            if (dueTime < -1)
+            {
+                throw new ArgumentOutOfRangeException("dueTime");
             }
             if (token.IsCancellationRequested)
             {
@@ -144,9 +160,9 @@ namespace Theraot.Threading
                     UnRoot(timeout);
                 }
             };
-            timeout.Start(dueTime);
             token.Register(timeout.Cancel);
             Root(timeout);
+            timeout.Start(dueTime);
         }
 
         public static void Launch(Action callback, TimeSpan dueTime)
@@ -170,16 +186,27 @@ namespace Theraot.Threading
 
         public bool Change(long dueTime)
         {
+            if (dueTime < -1)
+            {
+                throw new ArgumentOutOfRangeException("dueTime");
+            }
             if (Interlocked.CompareExchange(ref _status, _changing, _created) == _created)
             {
                 _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
-                _targetTime = _startTime + dueTime;
                 var wrapped = Interlocked.CompareExchange(ref _wrapped, null, null);
                 if (wrapped == null)
                 {
                     return false;
                 }
-                wrapped.Change(TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
+                if (dueTime == -1)
+                {
+                    _targetTime = -1;
+                }
+                else
+                {
+                    _targetTime = _startTime + dueTime;
+                    wrapped.Change(TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
+                }
                 Volatile.Write(ref _status, _created);
                 return true;
             }
@@ -193,6 +220,10 @@ namespace Theraot.Threading
 
         public long CheckRemaining()
         {
+            if (_targetTime == -1)
+            {
+                return -1;
+            }
             var remaining = _targetTime - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
             if (remaining <= 0)
             {
@@ -233,8 +264,19 @@ namespace Theraot.Threading
 
         protected void Start(long dueTime)
         {
+            if (dueTime < -1)
+            {
+                throw new ArgumentOutOfRangeException("dueTime");
+            }
             _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
-            _targetTime = _startTime + dueTime;
+            if (dueTime == -1)
+            {
+                _targetTime = -1;
+            }
+            else
+            {
+                _targetTime = _startTime + dueTime;
+            }
             _wrapped = new Timer(Finish, null, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
         }
 
@@ -274,6 +316,10 @@ namespace Theraot.Threading
             {
                 throw new ArgumentNullException("callback");
             }
+            if (dueTime < -1)
+            {
+                throw new ArgumentOutOfRangeException("dueTime");
+            }
             Callback = new ValueActionClosure<T>(callback, target).Invoke;
             Start(dueTime);
         }
@@ -283,6 +329,10 @@ namespace Theraot.Threading
             if (callback == null)
             {
                 throw new ArgumentNullException("callback");
+            }
+            if (dueTime < -1)
+            {
+                throw new ArgumentOutOfRangeException("dueTime");
             }
             if (token.IsCancellationRequested)
             {
@@ -320,6 +370,10 @@ namespace Theraot.Threading
             {
                 throw new ArgumentNullException("callback");
             }
+            if (dueTime < -1)
+            {
+                throw new ArgumentOutOfRangeException("dueTime");
+            }
             var timeout = new Timeout<T>();
             timeout.Callback = () =>
             {
@@ -341,6 +395,10 @@ namespace Theraot.Threading
             if (callback == null)
             {
                 throw new ArgumentNullException("callback");
+            }
+            if (dueTime < -1)
+            {
+                throw new ArgumentOutOfRangeException("dueTime");
             }
             if (token.IsCancellationRequested)
             {

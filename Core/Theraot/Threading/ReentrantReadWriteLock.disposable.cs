@@ -7,7 +7,7 @@ namespace Theraot.Threading
 {
     internal sealed partial class ReentrantReadWriteLock : IExtendedDisposable
     {
-        private int _status;
+        private int _disposeStatus;
 
         [System.Diagnostics.DebuggerNonUserCode]
         ~ReentrantReadWriteLock()
@@ -24,7 +24,7 @@ namespace Theraot.Threading
 
         public bool IsDisposed
         {
-            get { return _status == -1; }
+            get { return _disposeStatus == -1; }
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
@@ -43,7 +43,7 @@ namespace Theraot.Threading
         [System.Diagnostics.DebuggerNonUserCode]
         public void DisposedConditional(Action whenDisposed, Action whenNotDisposed)
         {
-            if (_status == -1)
+            if (_disposeStatus == -1)
             {
                 if (whenDisposed != null)
                 {
@@ -54,7 +54,7 @@ namespace Theraot.Threading
             {
                 if (whenNotDisposed != null)
                 {
-                    if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
+                    if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
                     {
                         try
                         {
@@ -62,7 +62,7 @@ namespace Theraot.Threading
                         }
                         finally
                         {
-                            Interlocked.Decrement(ref _status);
+                            Interlocked.Decrement(ref _disposeStatus);
                         }
                     }
                     else
@@ -79,7 +79,7 @@ namespace Theraot.Threading
         [System.Diagnostics.DebuggerNonUserCode]
         public TReturn DisposedConditional<TReturn>(Func<TReturn> whenDisposed, Func<TReturn> whenNotDisposed)
         {
-            if (_status == -1)
+            if (_disposeStatus == -1)
             {
                 if (whenDisposed == null)
                 {
@@ -91,7 +91,7 @@ namespace Theraot.Threading
             {
                 return default(TReturn);
             }
-            if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
+            if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
             {
                 try
                 {
@@ -99,7 +99,7 @@ namespace Theraot.Threading
                 }
                 finally
                 {
-                    Interlocked.Decrement(ref _status);
+                    Interlocked.Decrement(ref _disposeStatus);
                 }
             }
             if (whenDisposed == null)
@@ -134,11 +134,11 @@ namespace Theraot.Threading
 
         private bool TakeDisposalExecution()
         {
-            if (_status == -1)
+            if (_disposeStatus == -1)
             {
                 return false;
             }
-            return ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
+            return ThreadingHelper.SpinWaitSetUnless(ref _disposeStatus, -1, 0, -1);
         }
     }
 }

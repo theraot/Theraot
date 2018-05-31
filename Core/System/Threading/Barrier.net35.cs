@@ -555,13 +555,13 @@ namespace System.Threading
         /// disposed.</exception>
         public bool SignalAndWait(TimeSpan timeout, CancellationToken cancellationToken)
         {
-            var totalMilliseconds = (long)timeout.TotalMilliseconds;
-            if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
+            var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException("timeout", timeout,
                     "The specified timeout must represent a value between -1 and Int32.MaxValue, inclusive.");
             }
-            return SignalAndWait((int)timeout.TotalMilliseconds, cancellationToken);
+            return SignalAndWait((int)milliseconds, cancellationToken);
         }
 
         /// <summary>

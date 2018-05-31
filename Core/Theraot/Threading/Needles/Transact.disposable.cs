@@ -6,7 +6,7 @@ namespace Theraot.Threading.Needles
 {
     public sealed partial class Transact : IDisposable
     {
-        private int _status;
+        private int _disposeStatus;
 
         [System.Diagnostics.DebuggerNonUserCode]
         ~Transact()
@@ -50,7 +50,7 @@ namespace Theraot.Threading.Needles
 
         private bool TakeDisposalExecution()
         {
-            return _status != -1 && ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
+            return _disposeStatus != -1 && ThreadingHelper.SpinWaitSetUnless(ref _disposeStatus, -1, 0, -1);
         }
     }
 }

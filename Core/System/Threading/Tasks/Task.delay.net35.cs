@@ -59,13 +59,13 @@ namespace System.Threading.Tasks
         /// </remarks>
         public static Task Delay(TimeSpan delay, CancellationToken cancellationToken)
         {
-            var totalMilliseconds = (long)delay.TotalMilliseconds;
-            if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
+            var milliseconds = (long)delay.TotalMilliseconds;
+            if (milliseconds < -1 || milliseconds > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException("delay", "The value needs to translate in milliseconds to - 1(signifying an infinite timeout), 0 or a positive integer less than or equal to Int32.MaxValue");
             }
 
-            return Delay((int)totalMilliseconds, cancellationToken);
+            return Delay((int)milliseconds, cancellationToken);
         }
 
         /// <summary>

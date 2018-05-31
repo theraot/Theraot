@@ -144,7 +144,7 @@ namespace System.Threading
 
         public void Wait(CancellationToken cancellationToken)
         {
-            Wait(-1, cancellationToken);
+            Wait(Timeout.Infinite, cancellationToken);
         }
 
         public bool Wait(TimeSpan timeout, CancellationToken cancellationToken)
@@ -225,7 +225,7 @@ namespace System.Threading
         {
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
-            if (TryEnter())
+            if (Wait(0, CancellationToken.None))
             {
                 source.SetResult(true);
                 return source.Task;
@@ -243,7 +243,7 @@ namespace System.Threading
                 return Task.FromCancellation(cancellationToken);
             }
             var source = new TaskCompletionSource<bool>();
-            if (TryEnter())
+            if (Wait(0, cancellationToken))
             {
                 source.SetResult(true);
                 return source.Task;
@@ -256,15 +256,23 @@ namespace System.Threading
 
         public Task<bool> WaitAsync(int millisecondsTimeout)
         {
+            if (millisecondsTimeout < -1)
+            {
+                throw new ArgumentOutOfRangeException("millisecondsTimeout");
+            }
+            if (millisecondsTimeout == -1)
+            {
+                return WaitAsync().ContinueWith(_ => true);
+            }
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
-            if (TryEnter())
+            if (Wait(0, CancellationToken.None))
             {
                 source.SetResult(true);
                 return source.Task;
             }
             Thread.MemoryBarrier();
-            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout); // TODO: Review
+            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout);
             _asyncWaiters.Add(source);
             return source.Task;
         }
@@ -273,32 +281,40 @@ namespace System.Threading
         {
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
-            if (TryEnter())
+            if (Wait(0, CancellationToken.None))
             {
                 source.SetResult(true);
                 return source.Task;
             }
             Thread.MemoryBarrier();
-            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), timeout); // TODO: Review
+            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), timeout);
             _asyncWaiters.Add(source);
             return source.Task;
         }
 
         public Task<bool> WaitAsync(int millisecondsTimeout, CancellationToken cancellationToken) // TODO: Test coverage?
         {
+            if (millisecondsTimeout < -1)
+            {
+                throw new ArgumentOutOfRangeException("millisecondsTimeout");
+            }
+            if (millisecondsTimeout == -1)
+            {
+                return WaitAsync(cancellationToken).ContinueWith(_ => true);
+            }
             if (cancellationToken.IsCancellationRequested)
             {
                 return Task<bool>.FromCancellation(cancellationToken);
             }
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
-            if (TryEnter())
+            if (Wait(0, cancellationToken))
             {
                 source.SetResult(true);
                 return source.Task;
             }
             Thread.MemoryBarrier();
-            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout, cancellationToken); // TODO: Review
+            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout, cancellationToken);
             cancellationToken.Register(() => source.SetCanceled());
             _asyncWaiters.Add(source);
             return source.Task;
@@ -312,7 +328,7 @@ namespace System.Threading
             }
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
-            if (TryEnter())
+            if (Wait(0, cancellationToken))
             {
                 source.SetResult(true);
                 return source.Task;
@@ -324,7 +340,7 @@ namespace System.Threading
                 {
                     try
                     {
-                        source.SetResult(false); // TODO: Review
+                        source.SetResult(false);
                     }
                     catch (InvalidOperationException exception)
                     {

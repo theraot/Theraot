@@ -93,7 +93,7 @@ namespace Tests.Theraot.Threading.Needles
 
         [Test]
         [Category("RaceCondition")] // This test creates a race condition
-        public void ManualResetEventSlim_Wait_SetConcurrent() // TODO: Review
+        public void ManualResetEventSlim_Wait_SetConcurrent() // TODO: VERY BAD TEST
         {
             for (var i = 0; i < 10000; ++i)
             {

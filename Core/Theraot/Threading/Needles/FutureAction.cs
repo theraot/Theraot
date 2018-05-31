@@ -97,6 +97,11 @@ namespace Theraot.Threading.Needles
 
         public override void Wait(int milliseconds)
         {
+            if (milliseconds == -1)
+            {
+                Wait();
+                return;
+            }
             if (Interlocked.CompareExchange(ref _status, 1, 0) != 0)
             {
                 base.Wait(milliseconds);
@@ -120,6 +125,11 @@ namespace Theraot.Threading.Needles
 
         public override void Wait(int milliseconds, CancellationToken cancellationToken)
         {
+            if (milliseconds == -1)
+            {
+                Wait(cancellationToken);
+                return;
+            }
             if (Interlocked.CompareExchange(ref _status, 1, 0) != 0)
             {
                 base.Wait(milliseconds, cancellationToken);

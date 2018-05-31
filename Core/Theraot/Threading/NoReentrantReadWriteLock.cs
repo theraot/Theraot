@@ -10,7 +10,7 @@ namespace Theraot.Threading
         private int _edge;
         private ManualResetEventSlim _freeToRead = new ManualResetEventSlim(false); // Disposed
         private ManualResetEventSlim _freeToWrite = new ManualResetEventSlim(false); // Disposed
-        private int _master;
+        private int _status;
         private Thread _ownerThread;
         private int _readCount;
         private int _writeCount;
@@ -76,7 +76,8 @@ namespace Theraot.Threading
                 Interlocked.Increment(ref _readCount);
                 return true;
             }
-            if (Interlocked.CompareExchange(ref _master, 1, 0) >= 0)
+            var status = (Status)Interlocked.CompareExchange(ref _status, (int)Status.ReadMode, (int)Status.Free);
+            if (status == Status.ReadMode || status == Status.Free)
             {
                 _freeToWrite.Reset();
                 Interlocked.Increment(ref _readCount);
@@ -92,7 +93,8 @@ namespace Theraot.Threading
                 Interlocked.Increment(ref _writeCount);
                 return true;
             }
-            if (Interlocked.CompareExchange(ref _master, -1, 0) == 0)
+            var status = (Status)Interlocked.CompareExchange(ref _status, (int)Status.WriteMode, (int)Status.Free);
+            if (status == Status.Free)
             {
                 _freeToRead.Reset();
                 if (Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null) == null)
@@ -113,11 +115,12 @@ namespace Theraot.Threading
             }
             else
             {
-                if (Volatile.Read(ref _master) < 0)
+                var status = (Status)Volatile.Read(ref _status);
+                if (status == Status.WriteMode || status == Status.WriteRequested)
                 {
                     if (Interlocked.Decrement(ref _readCount) <= Volatile.Read(ref _edge))
                     {
-                        Volatile.Write(ref _master, 0);
+                        Volatile.Write(ref _status, (int)Status.Free);
                         _freeToWrite.Set();
                     }
                 }
@@ -132,7 +135,7 @@ namespace Theraot.Threading
         {
             if (Interlocked.Decrement(ref _writeCount) == 0)
             {
-                Volatile.Write(ref _master, 0);
+                Volatile.Write(ref _status, (int)Status.Free);
                 Volatile.Write(ref _ownerThread, null);
                 _freeToRead.Set();
                 _freeToWrite.Set();
@@ -143,32 +146,46 @@ namespace Theraot.Threading
         {
             if (Thread.CurrentThread != Volatile.Read(ref _ownerThread))
             {
-                var check = Interlocked.CompareExchange(ref _master, 1, 0);
+                var spinWait = new SpinWait();
                 while (true)
                 {
-                    switch (check)
+                    var status = (Status)Volatile.Read(ref _status);
+                    switch (status)
                     {
-                        case -2:
-                        // Write mode already requested
-                        case -1:
+                        case Status.WriteRequested:
+                            // Write mode already requested
+                            goto case Status.WriteMode;
+
+                        case Status.WriteMode:
                             // There is a writer
                             // Go to wait
                             _freeToRead.Wait();
-                            check = Interlocked.CompareExchange(ref _master, 1, 0);
+                            // Status must have changed
                             break;
 
-                        case 0:
-                            // Free to proceed
+                        case Status.Free:
+                            // Free to proceed READ
                             // GO!
-                            _freeToWrite.Reset();
-                            goto case 1;
+                            // Change to read mode
+                            status = (Status)Interlocked.CompareExchange(ref _status, (int)Status.ReadMode, (int)Status.Free);
+                            if (status == Status.Free)
+                            {
+                                // Did change to read mode, no writer should enter
+                                _freeToWrite.Reset();
+                            }
+                            break;
 
-                        case 1:
+                        case Status.ReadMode:
                             // There are readers currently
                             // GO!
                             Interlocked.Increment(ref _readCount);
                             return;
+
+                        default:
+                            // Should not happen
+                            break;
                     }
+                    spinWait.SpinOnce();
                 }
             }
         }
@@ -177,47 +194,59 @@ namespace Theraot.Threading
         {
             if (Thread.CurrentThread != Volatile.Read(ref _ownerThread))
             {
-                var check = Interlocked.CompareExchange(ref _master, -1, 0);
+                var spinWait = new SpinWait();
                 while (true)
                 {
-                    switch (check)
+                    var status = (Status)Volatile.Read(ref _status);
+                    switch (status)
                     {
-                        case -2:
-                        // Write mode already requested
-                        case -1:
+                        case Status.WriteRequested:
+                            // Write mode already requested
+                            goto case Status.WriteMode;
+
+                        case Status.WriteMode:
                             // There is another writer
                             // Go to wait
                             _freeToWrite.Wait();
-                            check = Interlocked.CompareExchange(ref _master, -1, 0);
+                            // Status must have changed
                             break;
 
-                        case 0:
-                            // Free to proceed
+                        case Status.Free:
+                            // Free to proceed WRITE
                             // GO!
-                            _freeToRead.Reset();
-                            if (Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null) == null)
+                            // Change to write mode
+                            status = (Status)Interlocked.CompareExchange(ref _status, (int)Status.WriteMode, (int)Status.Free);
+                            if (status == Status.Free)
                             {
-                                // Success
-                                Interlocked.Increment(ref _writeCount);
-                                return;
+                                // Did change to write mode, no more readers should enter
+                                _freeToRead.Reset();
+                                // Take the lock
+                                if (Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null) == null)
+                                {
+                                    // Success
+                                    Interlocked.Increment(ref _writeCount);
+                                    return;
+                                }
                             }
-                            else
-                            {
-                                // It was reserved by another thread
-                                break;
-                            }
+                            // Write mode was taken by another thread
+                            break;
 
-                        case 1:
+                        case Status.ReadMode:
                             // There are readers currently
                             // Requesting write mode
-                            check = Interlocked.CompareExchange(ref _master, -2, 1);
-                            if (check == 1)
+                            status = (Status)Interlocked.CompareExchange(ref _status, (int)Status.WriteRequested, (int)Status.ReadMode);
+                            if (status == Status.ReadMode)
                             {
+                                // We requested write mode, no more readers should enter
                                 _freeToRead.Reset();
-                                check = -2;
                             }
                             break;
+
+                        default:
+                            // Should not happen
+                            break;
                     }
+                    spinWait.SpinOnce();
                 }
             }
         }

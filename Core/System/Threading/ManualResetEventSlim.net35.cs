@@ -4,18 +4,14 @@ using Theraot.Threading;
 
 namespace System.Threading
 {
-    public class ManualResetEventSlim : IDisposable
+    public partial class ManualResetEventSlim : IDisposable
     {
         private const int _defaultSpinCount = 10;
 
         private readonly int _spinCount;
         private ManualResetEvent _handle;
 
-        // _requested: -1 = Disposed, 0 = Not requested, 1 = Requested, 2 = _handle ready
-        private int _requested;
-
-        // _state: -1 = Disposed, 0 = Not Set, 1 = Set -- Do not set to 0 or 1 when _requested == 1
-        private int _state;
+        private int _status;
 
         public ManualResetEventSlim()
             : this(false)
@@ -25,7 +21,7 @@ namespace System.Threading
 
         public ManualResetEventSlim(bool initialState)
         {
-            _state = initialState ? 1 : 0;
+            _status = initialState ? (int)Status.Set : (int)Status.NotSet;
             _spinCount = _defaultSpinCount;
         }
 
@@ -36,7 +32,7 @@ namespace System.Threading
                 throw new ArgumentOutOfRangeException("spinCount");
             }
             _spinCount = spinCount;
-            _state = initialState ? 1 : 0;
+            _status = initialState ? (int)Status.Set : (int)Status.NotSet;
         }
 
         public bool IsSet
@@ -44,16 +40,45 @@ namespace System.Threading
             get
             {
                 // The value returned by this property should be considered out of sync
-                if (Thread.VolatileRead(ref _state) == -1)
+                // But won't be out of sync
+                var spinWait = new SpinWait();
+                while (true)
                 {
-                    return false;
+                    var status = (Status)Thread.VolatileRead(ref _status);
+                    switch (status)
+                    {
+                        case Status.Disposed:
+                            // Disposed
+                            // A disposed ManualResetEventSlim should report not set
+                            return false;
+
+                        case Status.NotSet:
+                            // Not Set
+                            return false;
+
+                        case Status.Set:
+                            // Set
+                            return true;
+
+                        case Status.HandleRequested:
+                            // Another thread is creating the wait handle
+                            // SpinWait
+                            break;
+
+                        case Status.HandleReadyNotSet:
+                            // NotSet
+                            return false;
+
+                        case Status.HandleReadySet:
+                            // Set
+                            return true;
+
+                        default:
+                            // Should not happen
+                            break;
+                    }
+                    spinWait.SpinOnce();
                 }
-                var handle = GetWaitHandle();
-                if (handle != null)
-                {
-                    return handle.WaitOne(0);
-                }
-                return Thread.VolatileRead(ref _state) != 0;
             }
         }
 
@@ -66,11 +91,13 @@ namespace System.Threading
         {
             get
             {
-                if (Thread.VolatileRead(ref _state) == -1)
+                // If Disposed, throw
+                if (Thread.VolatileRead(ref _status) == (int)Status.Disposed)
                 {
                     throw new ObjectDisposedException(GetType().FullName);
                 }
-                return RetriveWaitHandle();
+                // Get the wait handle
+                return GetOrCreateWaitHandle();
             }
         }
 
@@ -82,78 +109,176 @@ namespace System.Threading
 
         public void Reset()
         {
-            if (Thread.VolatileRead(ref _state) == -1)
+            var spinWait = new SpinWait();
+            while (true)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                var status = (Status)Thread.VolatileRead(ref _status);
+                switch (status)
+                {
+                    case Status.Disposed:
+                        // Disposed
+                        throw new ObjectDisposedException(GetType().FullName);
+
+                    case Status.NotSet:
+                        // Nothing to do
+                        return;
+
+                    case Status.Set:
+                        // Reset if Set
+                        status = (Status)Interlocked.CompareExchange(ref _status, (int)Status.NotSet, (int)Status.Set);
+                        if (status == Status.NotSet || status == Status.Set)
+                        {
+                            // We Reset it or it was already Reset
+                            // Either way, we are done
+                            return;
+                        }
+                        // Must has been disposed, or the wait handle requested
+                        break;
+
+                    case Status.HandleRequested:
+                        // Another thread is creating the wait handle
+                        // SpinWait
+                        break;
+
+                    case Status.HandleReadyNotSet:
+                        // Nothing to do
+                        return;
+
+                    case Status.HandleReadySet:
+                        // Reset if Set
+                        status = (Status)Interlocked.CompareExchange(ref _status, (int)Status.HandleReadyNotSet, (int)Status.HandleReadySet);
+                        if (status == Status.HandleReadySet)
+                        {
+                            // We reset it
+                            // Update the wait handle
+                            var handle = Volatile.Read(ref _handle);
+                            if (handle != null)
+                            {
+                                // Reset it
+                                handle.Reset();
+                                // Done
+                                return;
+                            }
+                        }
+                        if (status == Status.HandleReadyNotSet)
+                        {
+                            // Another thread reset it
+                            // we are done
+                            return;
+                        }
+                        // Probably Disposed
+                        break;
+
+                    default:
+                        // Should not happen
+                        break;
+                }
+                spinWait.SpinOnce();
             }
-            var handle = GetWaitHandle();
-            if (handle != null)
-            {
-                handle.Reset();
-            }
-            Thread.VolatileWrite(ref _state, 0);
         }
 
         public void Set()
         {
-            if (Thread.VolatileRead(ref _state) == -1)
+            var spinWait = new SpinWait();
+            while (true)
             {
-                // Silent fail
-            }
-            else
-            {
-                try
+                var status = (Status)Thread.VolatileRead(ref _status);
+                switch (status)
                 {
-                    var handle = GetWaitHandle();
-                    if (handle != null)
-                    {
-                        handle.Set();
-                    }
-                    if (Interlocked.CompareExchange(ref _state, 1, 0) == 0)
-                    {
-                        handle = GetWaitHandle();
-                        if (handle != null)
+                    case Status.Disposed:
+                        // Disposed
+                        // Fail sailently
+                        return;
+
+                    case Status.NotSet:
+                        // Set if Reset
+                        status = (Status)Interlocked.CompareExchange(ref _status, (int)Status.Set, (int)Status.NotSet);
+                        if (status == Status.NotSet || status == Status.Set)
                         {
-                            handle.Set();
+                            // We Set it or it was already Set
+                            // Either way, we are done
+                            return;
                         }
-                    }
+                        // Must has been disposed, or the wait handle requested
+                        break;
+
+                    case Status.Set:
+                        // Nothing to do
+                        return;
+
+                    case Status.HandleRequested:
+                        // Another thread is creating the wait handle
+                        // SpinWait
+                        break;
+
+                    case Status.HandleReadyNotSet:
+                        // Set if Reset
+                        status = (Status)Interlocked.CompareExchange(ref _status, (int)Status.HandleReadySet, (int)Status.HandleReadyNotSet);
+                        if (status == Status.HandleReadyNotSet)
+                        {
+                            // We set it
+                            // Update the wait handle
+                            var handle = Volatile.Read(ref _handle);
+                            if (handle != null)
+                            {
+                                // Reset it
+                                handle.Set();
+                                // Done
+                                return;
+                            }
+                        }
+                        if (status == Status.HandleReadySet)
+                        {
+                            // Another thread set it
+                            // we are done
+                            return;
+                        }
+                        // Probably Disposed
+                        break;
+
+                    case Status.HandleReadySet:
+                        // Nothing to do
+                        return;
+
+                    default:
+                        // Should not happen
+                        break;
                 }
-                catch (ObjectDisposedException ex)
-                {
-                    GC.KeepAlive(ex);
-                    // Silent fail
-                }
+                spinWait.SpinOnce();
             }
         }
 
         public void Wait()
         {
-            if (Thread.VolatileRead(ref _state) == -1)
+            // If Disposed, throw
+            if (Thread.VolatileRead(ref _status) == (int)Status.Disposed)
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
             var spinWait = new SpinWait();
             var spinCount = _spinCount;
+            if (IsSet)
+            {
+                return;
+            }
+            retry:
             if (!IsSet)
             {
-                retry:
-                if (!IsSet)
+                if (spinCount > 0)
                 {
-                    if (spinCount > 0)
-                    {
-                        spinCount--;
-                        spinWait.SpinOnce();
-                        goto retry;
-                    }
-                    var handle = RetriveWaitHandle();
-                    handle.WaitOne();
+                    spinCount--;
+                    spinWait.SpinOnce();
+                    goto retry;
                 }
+                var handle = GetOrCreateWaitHandle();
+                handle.WaitOne();
             }
         }
 
         public bool Wait(int millisecondsTimeout)
         {
-            if (Thread.VolatileRead(ref _state) == -1)
+            // If Disposed, throw
+            if (Thread.VolatileRead(ref _status) == (int)Status.Disposed)
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
@@ -161,7 +286,7 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException("millisecondsTimeout");
             }
-            if (millisecondsTimeout == -1)
+            if (millisecondsTimeout == Timeout.Infinite)
             {
                 Wait();
                 return true;
@@ -171,7 +296,8 @@ namespace System.Threading
 
         public bool Wait(int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            if (Thread.VolatileRead(ref _state) == -1)
+            // If Disposed, throw
+            if (Thread.VolatileRead(ref _status) == (int)Status.Disposed)
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
@@ -181,7 +307,7 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException("millisecondsTimeout");
             }
-            if (millisecondsTimeout == -1)
+            if (millisecondsTimeout == Timeout.Infinite)
             {
                 WaitExtracted(cancellationToken);
                 return true;
@@ -191,7 +317,8 @@ namespace System.Threading
 
         public void Wait(CancellationToken cancellationToken)
         {
-            if (Thread.VolatileRead(ref _state) == -1)
+            // If Disposed, throw
+            if (Thread.VolatileRead(ref _status) == (int)Status.Disposed)
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
@@ -202,23 +329,43 @@ namespace System.Threading
 
         public bool Wait(TimeSpan timeout)
         {
-            if (Thread.VolatileRead(ref _state) == -1)
+            // If Disposed, throw
+            if (Thread.VolatileRead(ref _status) == (int)Status.Disposed)
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
-            var milliseconds = timeout.TotalMilliseconds;
+            var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == Timeout.Infinite)
+            {
+                Wait();
+                return true;
+            }
             return WaitExtracted((int)milliseconds);
         }
 
         public bool Wait(TimeSpan timeout, CancellationToken cancellationToken)
         {
-            if (Thread.VolatileRead(ref _state) == -1)
+            // If Disposed, throw
+            if (Thread.VolatileRead(ref _status) == (int)Status.Disposed)
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var milliseconds = timeout.TotalMilliseconds;
+            var milliseconds = (long)timeout.TotalMilliseconds;
+            if (milliseconds < -1L || milliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("timeout");
+            }
+            if (milliseconds == Timeout.Infinite)
+            {
+                Wait(cancellationToken);
+                return true;
+            }
             return WaitExtracted((int)milliseconds, cancellationToken);
         }
 
@@ -226,82 +373,77 @@ namespace System.Threading
         {
             if (disposing)
             {
-                if (Interlocked.Exchange(ref _state, -1) != -1)
+                // Set diposed
+                if (Interlocked.Exchange(ref _status, (int)Status.Disposed) != (int)Status.Disposed)
                 {
-                    Thread.VolatileWrite(ref _requested, -1);
+                    // Get and erase handle
                     var handle = Interlocked.Exchange(ref _handle, null);
                     if (handle != null)
                     {
+                        // Close it
                         handle.Close();
                     }
                 }
             }
         }
 
-        private ManualResetEvent GetWaitHandle()
+        private ManualResetEvent GetOrCreateWaitHandle()
         {
-            var found = Thread.VolatileRead(ref _requested);
-            switch (found)
+            // At the end of this method: _status will be (int)Status.HandleCreated or ObjectDisposedException is thrown
+            var spinWait = new SpinWait();
+            while (true)
             {
-                case -1:
-                    throw new ObjectDisposedException(GetType().FullName);
-                case 0:
-                    return null;
-
-                case 1:
-                    // Found 1, another thread is creating the wait handle
-                    ThreadingHelper.SpinWaitUntil(ref _requested, 2);
-                    goto default;
-                default:
-                    // Found 2, the wait handle is already created
-                    // Check if dispose has been called
-                    return TryGetWaitHandleExtracted();
-            }
-        }
-
-        private ManualResetEvent RetriveWaitHandle()
-        {
-            // At the end of this method: _requested will be 2 or ObjectDisposedException is thrown
-            var found = Interlocked.CompareExchange(ref _requested, 1, 0);
-            switch (found)
-            {
-                case -1:
-                    throw new ObjectDisposedException(GetType().FullName);
-                case 0:
-                    // Found 0, was set to 1, create the wait handle
-                    var isSet = Thread.VolatileRead(ref _state) != 0;
-                    // State may have been set here
-                    var created = new ManualResetEvent(isSet);
-                    if (Interlocked.CompareExchange(ref _handle, created, null) != null)
-                    {
-                        created.Close();
-                    }
-                    Thread.VolatileWrite(ref _requested, 2);
-                    goto default;
-                case 1:
-                    // Found 1, another thread is creating the wait handle
-                    ThreadingHelper.SpinWaitUntil(ref _requested, 2);
-                    goto default;
-                default:
-                    // Found 2, the wait handle is already created
-                    // Check if dispose has been called
-                    return TryGetWaitHandleExtracted();
-            }
-        }
-
-        private ManualResetEvent TryGetWaitHandleExtracted()
-        {
-            var handle = Volatile.Read(ref _handle);
-            if (handle != null)
-            {
-                if (Thread.VolatileRead(ref _requested) == 2)
+                var status = (Status)Thread.VolatileRead(ref _status);
+                switch (status)
                 {
-                    return handle;
+                    case Status.Disposed:
+                        // Disposed
+                        throw new ObjectDisposedException(GetType().FullName);
+
+                    case Status.NotSet:
+                    case Status.Set:
+                        // Indicate we will be creating the handle
+                        status = (Status)Interlocked.CompareExchange(ref _status, (int)Status.HandleRequested, (int)status);
+                        if (status == Status.NotSet || status == Status.Set)
+                        {
+                            // Store the status we status
+                            var isSet = status == Status.Set;
+                            // Create the handle
+                            var created = new ManualResetEvent(isSet);
+                            // Set the handle
+                            Volatile.Write(ref _handle, created);
+                            // Notify that the handle is ready
+                            Thread.VolatileWrite(ref _status, isSet ? (int)Status.HandleReadySet : (int)Status.HandleReadyNotSet);
+                            // Return the handle we created
+                            return created;
+                        }
+                        // Must has been disposed, or another thread is creating the handle
+                        break;
+
+                    case Status.HandleRequested:
+                        // Another thread is creating the wait handle
+                        // SpinWait
+                        break;
+
+                    case Status.HandleReadyNotSet:
+                    case Status.HandleReadySet:
+                        // The handle already exists
+                        // Get the handle that is already created
+                        var handle = Volatile.Read(ref _handle);
+                        if (handle != null)
+                        {
+                            // Return it
+                            return handle;
+                        }
+                        // Probably Disposed
+                        break;
+
+                    default:
+                        // Should not happen
+                        break;
                 }
-                handle.Close();
+                spinWait.SpinOnce();
             }
-            Thread.VolatileWrite(ref _requested, -1);
-            throw new ObjectDisposedException(GetType().FullName);
         }
 
         private bool WaitExtracted(int millisecondsTimeout)
@@ -327,7 +469,7 @@ namespace System.Threading
                     spinWait.SpinOnce();
                     goto retry_longTimeout;
                 }
-                var handle = RetriveWaitHandle();
+                var handle = GetOrCreateWaitHandle();
                 var remaining = millisecondsTimeout - (int)elapsed;
                 if (remaining > 0)
                 {
@@ -362,7 +504,7 @@ namespace System.Threading
                     spinWait.SpinOnce();
                     goto retry_longTimeout;
                 }
-                var handle = RetriveWaitHandle();
+                var handle = GetOrCreateWaitHandle();
                 var remaining = millisecondsTimeout - (int)elapsed;
                 if (remaining > 0)
                 {
@@ -385,33 +527,56 @@ namespace System.Threading
             return false;
         }
 
-        private void WaitExtracted(CancellationToken cancellationToken)
+        private void WaitExtracted()
         {
             var spinWait = new SpinWait();
             var spinCount = _spinCount;
             retry:
             if (!IsSet)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                GC.KeepAlive(cancellationToken.WaitHandle);
                 if (spinCount > 0)
                 {
                     spinCount--;
                     spinWait.SpinOnce();
                     goto retry;
                 }
-                var handle = RetriveWaitHandle();
-                WaitHandle.WaitAny
-                    (
-                        new[]
-                        {
-                            handle,
-                            cancellationToken.WaitHandle
-                        }
-                    );
-                cancellationToken.ThrowIfCancellationRequested();
-                GC.KeepAlive(cancellationToken.WaitHandle);
+                var handle = GetOrCreateWaitHandle();
+                handle.WaitOne();
             }
+        }
+
+        private void WaitExtracted(CancellationToken cancellationToken)
+        {
+            var spinWait = new SpinWait();
+            var spinCount = _spinCount;
+            if (IsSet)
+            {
+                return;
+            }
+            retry:
+            if (IsSet)
+            {
+                return;
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+            GC.KeepAlive(cancellationToken.WaitHandle);
+            if (spinCount > 0)
+            {
+                spinCount--;
+                spinWait.SpinOnce();
+                goto retry;
+            }
+            var handle = GetOrCreateWaitHandle();
+            WaitHandle.WaitAny
+                (
+                    new[]
+                    {
+                        handle,
+                        cancellationToken.WaitHandle
+                    }
+                );
+            cancellationToken.ThrowIfCancellationRequested();
+            GC.KeepAlive(cancellationToken.WaitHandle);
         }
     }
 }
