@@ -40,8 +40,6 @@ namespace MonoTests.System.Threading.Tasks
 
         private readonly object _cleanupMutex = new object();
 
-        private List<Task> _cleanupList;
-
         private int _completionPortThreads;
 
         private Task _parentWfc;
@@ -642,7 +640,6 @@ namespace MonoTests.System.Threading.Tasks
             ThreadPool.SetMinThreads(1, 1);
 
             _tasks = new Task[_max];
-            _cleanupList = new List<Task>();
         }
 
         [Test]
@@ -697,19 +694,7 @@ namespace MonoTests.System.Threading.Tasks
         public void Teardown()
         {
             ThreadPool.SetMinThreads(_workerThreads, _completionPortThreads);
-            Task[] l;
-            lock (_cleanupMutex)
-            {
-                l = _cleanupList.ToArray();
-            }
-            try
-            {
-                Task.WaitAll(l);
-            }
-            catch (Exception ex)
-            {
-                GC.KeepAlive(ex);
-            }
+            Cleanup(_tasks);
         }
 
         [Test]
@@ -854,9 +839,9 @@ namespace MonoTests.System.Threading.Tasks
                 {
                     tasks[i] = Task.Factory.StartNew(() => Thread.Sleep(0));
                 }
-                AddToCleanup(tasks);
-
                 Assert.IsTrue(Task.WaitAll(tasks, 5000));
+
+                Cleanup(tasks);
             }
         }
 
@@ -1488,13 +1473,25 @@ namespace MonoTests.System.Threading.Tasks
             }
         }
 
-        private void AddToCleanup(Task[] tasks)
+        private void Cleanup(Task[] tasks)
         {
-            lock (_cleanupMutex)
+            try
             {
-                foreach (var t in tasks)
+                Task.WaitAll(tasks);
+            }
+            catch (Exception ex)
+            {
+                GC.KeepAlive(ex);
+            }
+            foreach (var t in tasks)
+            {
+                try
                 {
-                    _cleanupList.Add(t);
+                    t.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    GC.KeepAlive(ex);
                 }
             }
         }
@@ -1505,7 +1502,6 @@ namespace MonoTests.System.Threading.Tasks
             {
                 _tasks[i] = Task.Factory.StartNew(action);
             }
-            AddToCleanup(_tasks);
         }
 
         private class ExceptionScheduler : TaskScheduler
