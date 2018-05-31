@@ -80,11 +80,6 @@ namespace System.Threading.Tasks
 
             public void Dispose()
             {
-                // If done has been executed or there is no done, exit
-                if (Interlocked.CompareExchange(ref _done, null, null) == null)
-                {
-                    return;
-                }
                 // Get and erase the tasks
                 var tasks = Interlocked.Exchange(ref _tasks, null);
                 // If there are no tasks there is nothing to do
