@@ -40,21 +40,44 @@ namespace System.Threading
             get
             {
                 // The value returned by this property should be considered out of sync
-                // If Disposed, then it is not set
-                if (Thread.VolatileRead(ref _status) == (int)Status.Disposed)
+                // But won't be out of sync
+                var spinWait = new SpinWait();
+                while (true)
                 {
-                    return false;
+                    var status = (Status)Thread.VolatileRead(ref _status);
+                    switch (status)
+                    {
+                        case Status.Disposed:
+                            // Disposed
+                            throw new ObjectDisposedException(GetType().FullName);
+
+                        case Status.NotSet:
+                            // Not Set
+                            return false;
+
+                        case Status.Set:
+                            // Set
+                            return true;
+
+                        case Status.HandleRequested:
+                            // Another thread is creating the wait handle
+                            // SpinWait
+                            break;
+
+                        case Status.HandleReadySet:
+                            // Set
+                            return true;
+
+                        case Status.HandleReadyNotSet:
+                            // NotSet
+                            return false;
+
+                        default:
+                            // Should not happen
+                            break;
+                    }
+                    spinWait.SpinOnce();
                 }
-                // Get the handle if it exists
-                var handle = Volatile.Read(ref _handle);
-                // Disposed or the handle does not exist
-                if (handle == null)
-                {
-                    // There is no handle, return from _status
-                    return Thread.VolatileRead(ref _status) == (int)Status.Set;
-                }
-                // Try to wait on it to test if it is set
-                return handle.WaitOne(0);
             }
         }
 
