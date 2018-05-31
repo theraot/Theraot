@@ -246,7 +246,7 @@ namespace System.Threading
             {
                 if (Interlocked.Exchange(ref _state, -1) != -1)
                 {
-                    Thread.VolatileWrite(ref _requested, -1);
+                    Thread.VolatileWrite(ref _requested, -1); // Mark disposed
                     var handle = Interlocked.Exchange(ref _handle, null);
                     if (handle != null)
                     {
@@ -258,67 +258,98 @@ namespace System.Threading
 
         private ManualResetEvent GetWaitHandle()
         {
-            var found = Thread.VolatileRead(ref _requested);
-            switch (found)
+            var spinWait = new SpinWait();
+            while (true)
             {
-                case -1:
-                    throw new ObjectDisposedException(GetType().FullName);
-                case 0:
-                    return null;
+                var found = Thread.VolatileRead(ref _requested);
+                switch (found)
+                {
+                    case -1:
+                        // Disposed
+                        throw new ObjectDisposedException(GetType().FullName);
+                    case 0:
+                        // Not set
+                        return null;
 
-                case 1:
-                    // Found 1, another thread is creating the wait handle
-                    ThreadingHelper.SpinWaitUntil(ref _requested, 2);
-                    goto default;
-                default:
-                    // Found 2, the wait handle is already created
-                    // Check if dispose has been called
-                    return TryGetWaitHandleExtracted();
+                    case 1:
+                        // Found 1, another thread is creating the wait handle
+                        // SpinWait
+                        break;
+
+                    default:
+                        // Found 2, the wait handle is already created
+                        // Check if dispose has been called
+                        return TryGetWaitHandleExtracted();
+                }
+                spinWait.SpinOnce();
             }
         }
 
         private ManualResetEvent RetriveWaitHandle()
         {
             // At the end of this method: _requested will be 2 or ObjectDisposedException is thrown
-            var found = Interlocked.CompareExchange(ref _requested, 1, 0);
-            switch (found)
+            var spinWait = new SpinWait();
+            while (true)
             {
-                case -1:
-                    throw new ObjectDisposedException(GetType().FullName);
-                case 0:
-                    // Found 0, was set to 1, create the wait handle
-                    var isSet = Thread.VolatileRead(ref _state) != 0;
-                    // State may have been set here
-                    var created = new ManualResetEvent(isSet);
-                    if (Interlocked.CompareExchange(ref _handle, created, null) != null)
-                    {
-                        created.Close();
-                    }
-                    Thread.VolatileWrite(ref _requested, 2);
-                    goto default;
-                case 1:
-                    // Found 1, another thread is creating the wait handle
-                    ThreadingHelper.SpinWaitUntil(ref _requested, 2);
-                    goto default;
-                default:
-                    // Found 2, the wait handle is already created
-                    // Check if dispose has been called
-                    return TryGetWaitHandleExtracted();
+                var found = Thread.VolatileRead(ref _requested);
+                switch (found)
+                {
+                    case -1:
+                        // Disposed
+                        throw new ObjectDisposedException(GetType().FullName);
+                    case 0:
+                        // Not Set
+                        // We will try to set it
+                        found = Interlocked.CompareExchange(ref _requested, 1, 0);
+                        if (found == 0)
+                        {
+                            // Create the wait handle
+                            var isSet = Thread.VolatileRead(ref _state) != 0;
+                            // State may have been set here
+                            var created = new ManualResetEvent(isSet);
+                            if (Interlocked.CompareExchange(ref _handle, created, null) != null)
+                            {
+                                created.Close();
+                            }
+                            // Notify it has been created
+                            Thread.VolatileWrite(ref _requested, 2);
+                        }
+                        break;
+
+                    case 1:
+                        // Found 1, another thread is creating the wait handle
+                        // SpinWait
+                        break;
+
+                    default:
+                        // Found 2, the wait handle is already created
+                        // Check if dispose has been called
+                        return TryGetWaitHandleExtracted();
+                }
+                spinWait.SpinOnce();
             }
         }
 
         private ManualResetEvent TryGetWaitHandleExtracted()
         {
+            // Check the handle exists
             var handle = Volatile.Read(ref _handle);
             if (handle != null)
             {
+                // If the handle has been created, and dispose has not been called
                 if (Thread.VolatileRead(ref _requested) == 2)
                 {
+                    // Return it
                     return handle;
                 }
+                // Turns out dispose was called and we have a created handle
+                // Close it
                 handle.Close();
             }
+            // Dispose has been called
+            // Mark as disposed
             Thread.VolatileWrite(ref _requested, -1);
+            // Throw ObjectDisposedException
             throw new ObjectDisposedException(GetType().FullName);
         }
 
