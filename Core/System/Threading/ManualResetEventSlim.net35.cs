@@ -64,13 +64,13 @@ namespace System.Threading
                             // SpinWait
                             break;
 
-                        case Status.HandleReadySet:
-                            // Set
-                            return true;
-
                         case Status.HandleReadyNotSet:
                             // NotSet
                             return false;
+
+                        case Status.HandleReadySet:
+                            // Set
+                            return true;
 
                         default:
                             // Should not happen
@@ -139,16 +139,30 @@ namespace System.Threading
                         // SpinWait
                         break;
 
-                    case Status.HandleReadySet:
                     case Status.HandleReadyNotSet:
-                        // The wait handle that is already created
-                        var handle = Volatile.Read(ref _handle);
-                        if (handle != null)
+                        // Nothing to do
+                        return;
+
+                    case Status.HandleReadySet:
+                        // Reset if Set
+                        status = (Status)Interlocked.CompareExchange(ref _status, (int)Status.HandleReadyNotSet, (int)Status.HandleReadySet);
+                        if (status == Status.HandleReadySet)
                         {
-                            // Reset it
-                            Interlocked.CompareExchange(ref _status, (int)Status.HandleReadyNotSet, (int)status);
-                            handle.Reset();
-                            // Done
+                            // We reset it
+                            // Update the wait handle
+                            var handle = Volatile.Read(ref _handle);
+                            if (handle != null)
+                            {
+                                // Reset it
+                                handle.Reset();
+                                // Done
+                                return;
+                            }
+                        }
+                        if (status == Status.HandleReadyNotSet)
+                        {
+                            // Another thread reset it
+                            // we are done
                             return;
                         }
                         // Probably Disposed
@@ -197,28 +211,33 @@ namespace System.Threading
                         break;
 
                     case Status.HandleReadySet:
-                    case Status.HandleReadyNotSet:
-                        // The wait handle that is already created
-                        var handle = Volatile.Read(ref _handle);
-                        if (handle != null)
+                        // Set if Reset
+                        status = (Status)Interlocked.CompareExchange(ref _status, (int)Status.HandleReadySet, (int)Status.HandleReadyNotSet);
+                        if (status == Status.HandleReadyNotSet)
                         {
-                            try
+                            // We set it
+                            // Update the wait handle
+                            var handle = Volatile.Read(ref _handle);
+                            if (handle != null)
                             {
-                                // Set it
-                                Interlocked.CompareExchange(ref _status, (int)Status.HandleReadySet, (int)status);
+                                // Reset it
                                 handle.Set();
                                 // Done
                                 return;
                             }
-                            catch (ObjectDisposedException exception)
-                            {
-                                GC.KeepAlive(exception);
-                                // Fail silently
-                                return;
-                            }
+                        }
+                        if (status == Status.HandleReadySet)
+                        {
+                            // Another thread set it
+                            // we are done
+                            return;
                         }
                         // Probably Disposed
                         break;
+
+                    case Status.HandleReadyNotSet:
+                        // Nothing to do
+                        return;
 
                     default:
                         // Should not happen
