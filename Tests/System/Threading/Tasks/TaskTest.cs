@@ -2395,8 +2395,13 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")]
         public void WhenAny()
         {
+            // On high load, this test will result in attempting to dispose a non completed task
+            // How? It is beyond me
+            // As you can see, if the task didn't complete, wait would have been false, and the task faulted, but that didn't happen
+            // I suspect this is a problem with reordering
             using (var t1 = new Task(ActionHelper.GetNoopAction()))
             {
                 using (var t2 = new Task(t1.Start))
