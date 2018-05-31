@@ -63,8 +63,10 @@ namespace System.Threading.Tasks
                 Contract.Requires(tasks != null, "Expected non-null collection of tasks");
                 Contract.Requires(tasks.Count > 0, "Expected a non-zero length task array");
                 _done = done;
-                // Add all tasks (this should increment _count, and add continuations)
                 _tasks = new Task[tasks.Count];
+                // Making sure _done and _tasks are set before we start adding tasks
+                Thread.MemoryBarrier();
+                // Add all tasks (this should increment _count, and add continuations)
                 foreach (var task in tasks)
                 {
                     AddTask(task);
