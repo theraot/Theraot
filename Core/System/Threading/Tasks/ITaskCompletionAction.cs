@@ -71,8 +71,9 @@ namespace System.Threading.Tasks
                 {
                     AddTask(task);
                 }
-                // Report we finished adding all tasks (if _count is 0, done should be called)
-                Ready();
+                // Report we finished adding all tasks
+                Thread.VolatileWrite(ref _ready, 1);
+                CheckCount();
             }
 
             public bool IsDone
@@ -134,7 +135,13 @@ namespace System.Threading.Tasks
                     }
                 }
                 // Decrement count
-                var count = Interlocked.Decrement(ref _count);
+                Interlocked.Decrement(ref _count);
+                CheckCount();
+            }
+
+            private void CheckCount()
+            {
+                var count = Thread.VolatileRead(ref _count);
                 // If count reached zero and we have finished adding all tasks, call done
                 if (count == 0 && Thread.VolatileRead(ref _ready) == 1)
                 {
@@ -187,6 +194,7 @@ namespace System.Threading.Tasks
                     // We failed to add the continuation
                     // Decrement the _count
                     Interlocked.Decrement(ref _count);
+                    CheckCount();
                 }
             }
 
@@ -198,17 +206,6 @@ namespace System.Threading.Tasks
                 if (done != null)
                 {
                     done();
-                }
-            }
-
-            private void Ready()
-            {
-                // Set ready, so other parts of the code can see
-                Thread.VolatileWrite(ref _ready, 1);
-                // If _count is , call done
-                if (Thread.VolatileRead(ref _count) == 0)
-                {
-                    Done();
                 }
             }
         }
