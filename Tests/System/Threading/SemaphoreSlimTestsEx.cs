@@ -16,6 +16,7 @@ namespace Tests.System.Threading
         [Test]
         public static void WaitAsyncWaitCorrectly()
         {
+            // Note: if WaitAsync takes to long, "x" can happen before the chunk of "a" has completed.
             var maxCount = 3;
             var maxTasks = 4;
             var log = new CircularBucket<string>(maxTasks * 3 + 2);
