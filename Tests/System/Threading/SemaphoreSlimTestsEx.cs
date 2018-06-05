@@ -15,9 +15,10 @@ namespace Tests.System.Threading
         public static void WaitAsyncWaitCorrectly()
         {
             var log = new CircularBucket<string>(128);
+            var max = 3;
             using (var source = new CancellationTokenSource(TimeSpan.FromSeconds(100)))
             {
-                using (var semaphore = new SemaphoreSlim(0, 3))
+                using (var semaphore = new SemaphoreSlim(0, max))
                 {
                     log.Add(string.Format("{0} task can enter the semaphore.", semaphore.CurrentCount));
                     var padding = 0;
@@ -43,9 +44,9 @@ namespace Tests.System.Threading
 
                     Thread.Sleep(TimeSpan.FromMilliseconds(500));
 
-                    log.Add("Main thread call Release(3) -->");
+                    log.Add(string.Format("Main thread call Release({0}) -->", max));
 
-                    semaphore.Release(3);
+                    semaphore.Release(max);
 
                     log.Add(string.Format("{0} tasks can enter the semaphore.", semaphore.CurrentCount));
 
