@@ -40,6 +40,7 @@ namespace Tests.System.Threading
                                         Interlocked.Add(ref padding, 100);
                                         log.Add(string.Format("Task {0} enters the semaphore.", CurrentId));
                                         Thread.Sleep(1000 + padding);
+                                        // Calling release should give weakingly increasing results
                                         var count = semaphore.Release();
                                         log.Add(string.Format("Task {0} release the semaphore; previous count: {1} ", CurrentId, count));
                                     }
