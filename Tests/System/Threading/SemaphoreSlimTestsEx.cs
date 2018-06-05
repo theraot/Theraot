@@ -26,33 +26,29 @@ namespace Tests.System.Threading
                     Assert.AreEqual(0, semaphore.CurrentCount);
                     var padding = 0;
                     var tasks = Enumerable.Range(0, 4)
-                        .Select(_ =>
-                        {
-                            return Task.Factory.StartNew(async () =>
+                        .Select
+                        (
+                            _ =>
                             {
-                                var CurrentId = Task.CurrentId;
-                                log.Add(string.Format("Task {0} begins and waits for the semaphore.", CurrentId));
-
-                                await semaphore.WaitAsync(source.Token);
-
-                                Interlocked.Add(ref padding, 100);
-
-                                log.Add(string.Format("Task {0} enters the semaphore.", CurrentId));
-
-                                Thread.Sleep(1000 + padding);
-
-                                log.Add(string.Format("Task {0} release the semaphore; previous count: {1} ", CurrentId, semaphore.Release()));
-                            }).Unwrap();
-                        }).ToArray();
-
+                                return Task.Factory.StartNew
+                                (
+                                    async () =>
+                                    {
+                                        var CurrentId = Task.CurrentId;
+                                        log.Add(string.Format("Task {0} begins and waits for the semaphore.", CurrentId));
+                                        await semaphore.WaitAsync(source.Token);
+                                        Interlocked.Add(ref padding, 100);
+                                        log.Add(string.Format("Task {0} enters the semaphore.", CurrentId));
+                                        Thread.Sleep(1000 + padding);
+                                        log.Add(string.Format("Task {0} release the semaphore; previous count: {1} ", CurrentId, semaphore.Release()));
+                                    }
+                                ).Unwrap();
+                            }
+                        ).ToArray();
                     Thread.Sleep(TimeSpan.FromMilliseconds(500));
-
                     log.Add(string.Format("Main thread call Release({0}) -->", max));
-
                     semaphore.Release(max);
-
                     Task.WaitAll(tasks, source.Token);
-
                     log.Add("Main thread exits");
                 }
             }
