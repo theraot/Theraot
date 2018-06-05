@@ -17,6 +17,7 @@ namespace Tests.System.Threading
             var maxCount = 3;
             var maxTasks = 4;
             var log = new CircularBucket<string>(128);
+            var logCount = new CircularBucket<int>(maxTasks);
             using (var source = new CancellationTokenSource(TimeSpan.FromSeconds(100)))
             {
                 using (var semaphore = new SemaphoreSlim(0, maxCount))
@@ -43,6 +44,7 @@ namespace Tests.System.Threading
                                         Thread.Sleep(1000 + padding);
                                         // Calling release should give weakingly increasing results
                                         var count = semaphore.Release();
+                                        logCount.Add(count);
                                         log.Add(string.Format("Task {0} release the semaphore; previous count: {1} ", CurrentId, count));
                                     }
                                 ).Unwrap();
@@ -58,6 +60,10 @@ namespace Tests.System.Threading
             foreach (var entry in log)
             {
                 Console.WriteLine(entry);
+            }
+            foreach (var entry in logCount)
+            {
+                Console.WriteLine(entry.ToString());
             }
         }
     }
