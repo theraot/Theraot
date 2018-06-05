@@ -206,7 +206,7 @@ namespace System.Threading
             }
             var source = new TaskCompletionSource<bool>();
             Thread.MemoryBarrier();
-            if (Wait(0, cancellationToken))
+            if (_event.Wait(0, cancellationToken) && TryEnter())
             {
                 source.SetResult(true);
                 return source.Task;
