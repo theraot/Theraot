@@ -36,28 +36,31 @@ namespace Tests.System.Threading
                                 (
                                     async () =>
                                     {
-                                        var CurrentId = Task.CurrentId;
-                                        log.Add(string.Format("Task {0} begins and waits for the semaphore.", CurrentId));
+                                        log.Add("a");
                                         await semaphore.WaitAsync(source.Token);
                                         Interlocked.Add(ref padding, 100);
-                                        log.Add(string.Format("Task {0} enters the semaphore.", CurrentId));
                                         logCount.Add(-1);
+                                        log.Add("b");
                                         Thread.Sleep(1000 + padding);
                                         // Calling release should give increasing results per chunk
                                         var count = semaphore.Release();
                                         logCount.Add(count);
-                                        log.Add(string.Format("Task {0} release the semaphore; previous count: {1} ", CurrentId, count));
+                                        log.Add("c");
                                     }
                                 ).Unwrap();
                             }
                         ).ToArray();
                     Thread.Sleep(TimeSpan.FromMilliseconds(500));
-                    log.Add(string.Format("Main thread call Release({0}) -->", maxCount));
+                    log.Add("x");
                     semaphore.Release(maxCount);
                     Task.WaitAll(tasks, source.Token);
-                    log.Add("Main thread exits");
+                    log.Add("z");
                 }
             }
+            // We should see:
+            // maxTask a
+            // 1 x
+            // chunks of at most maxCount b, separated by chunks of c
             foreach (var entry in log)
             {
                 Console.WriteLine(entry);
