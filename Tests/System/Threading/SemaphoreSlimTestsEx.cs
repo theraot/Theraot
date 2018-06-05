@@ -1,6 +1,7 @@
-﻿using NUnit.Framework;
+﻿#if !NET40
+
+using NUnit.Framework;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -96,3 +97,5 @@ namespace Tests.System.Threading
         }
     }
 }
+
+#endif
