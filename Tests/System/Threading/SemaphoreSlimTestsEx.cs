@@ -61,6 +61,7 @@ namespace Tests.System.Threading
             {
                 Console.WriteLine(entry);
             }
+            // Checking if the results of release weakingly increase
             var last = -1;
             var first = true;
             foreach (var entry in logCount)
