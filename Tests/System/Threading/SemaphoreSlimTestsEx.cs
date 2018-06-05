@@ -1,10 +1,13 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Threading;
 
 namespace Tests.System.Threading
 {
-    internal class SemaphoreSlimTestsEx
+    [TestFixtureAttribute]
+    public class SemaphoreSlimTestsEx
     {
+        [Test]
         public static void WaitAsyncWaitCorrectly()
         {
             var source = new CancellationTokenSource(TimeSpan.FromSeconds(100));
