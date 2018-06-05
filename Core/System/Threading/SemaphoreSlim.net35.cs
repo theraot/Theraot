@@ -11,9 +11,9 @@ namespace System.Threading
     {
         private readonly int? _maxCount;
         private SafeQueue<TaskCompletionSource<bool>> _asyncWaiters;
+        private ManualResetEventSlim _canEnter;
         private int _count;
         private bool _disposed;
-        private ManualResetEventSlim _event;
 
         public SemaphoreSlim(int initialCount)
             : this(initialCount, null)
@@ -40,7 +40,7 @@ namespace System.Threading
             _maxCount = maxCount;
             _asyncWaiters = new SafeQueue<TaskCompletionSource<bool>>();
             _count = initialCount;
-            _event = new ManualResetEventSlim(_count > 0);
+            _canEnter = new ManualResetEventSlim(_count > 0);
         }
 
         public WaitHandle AvailableWaitHandle
@@ -48,7 +48,7 @@ namespace System.Threading
             get
             {
                 CheckDisposed();
-                return _event.WaitHandle;
+                return _canEnter.WaitHandle;
             }
         }
 
@@ -77,25 +77,9 @@ namespace System.Threading
             var spinWait = new SpinWait();
             while (true)
             {
-                // The value we expect to see for _count in CompareExchange
-                // (The previous count of the SemaphoreSlim)
-                var expected = Thread.VolatileRead(ref _count);
-                // The value we want to set _count to in CompareExchange
-                var result = expected + releaseCount;
-                // If there is a maxCount set at constructor
-                // And we are exceding it, then fail
-                if (_maxCount.HasValue && result > _maxCount)
+                int expected;
+                if (TryOffset(releaseCount, out expected))
                 {
-                    throw new SemaphoreFullException();
-                }
-                // Attempt to set the new value
-                var found = Interlocked.CompareExchange(ref _count, result, expected);
-                // If we found what we expected, it means we succeeded
-                if (found == expected)
-                {
-                    // Awake the corresponding threads
-                    Awake(releaseCount);
-                    // Return the previous count of the SemaphoreSlim.
                     return expected;
                 }
                 spinWait.SpinOnce();
@@ -138,10 +122,11 @@ namespace System.Threading
             }
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
+            var spinWait = new SpinWait();
+            int dummy;
             if (millisecondsTimeout == -1)
             {
-                var spinWait = new SpinWait();
-                while (!TryEnter())
+                while (!TryOffset(-1, out dummy))
                 {
                     spinWait.SpinOnce();
                 }
@@ -149,10 +134,10 @@ namespace System.Threading
             }
             var start = ThreadingHelper.TicksNow();
             var remaining = millisecondsTimeout;
-            while (_event.Wait(remaining, cancellationToken))
+            while (_canEnter.Wait(remaining, cancellationToken))
             {
                 // The thread is not allowed here unless there is room in the semaphore
-                if (TryEnter())
+                if (TryOffset(-1, out dummy))
                 {
                     return true;
                 }
@@ -161,6 +146,7 @@ namespace System.Threading
                 {
                     break;
                 }
+                spinWait.SpinOnce();
             }
             // Time out
             return false;
@@ -206,7 +192,8 @@ namespace System.Threading
             }
             var source = new TaskCompletionSource<bool>();
             Thread.MemoryBarrier();
-            if (_event.Wait(0, cancellationToken) && TryEnter())
+            int dummy;
+            if (_canEnter.Wait(0, cancellationToken) && TryOffset(-1, out dummy))
             {
                 source.SetResult(true);
                 return source.Task;
@@ -251,9 +238,9 @@ namespace System.Threading
         {
             // This is a protected method, the parameter should be kept
             _disposed = true;
-            _event.Dispose();
+            _canEnter.Dispose();
             _asyncWaiters = null;
-            _event = null;
+            _canEnter = null;
         }
 
         private void AddWaiter(TaskCompletionSource<bool> source)
@@ -261,21 +248,19 @@ namespace System.Threading
             _asyncWaiters.Add(source);
         }
 
-        private void Awake(int releaseCount)
+        private void Awake()
         {
-            // Call this to notify that there is room in the semaphore
-            // Allow sync waiters to proceed
-            _event.Set();
             TaskCompletionSource<bool> waiter;
-            while (releaseCount > 0 && _asyncWaiters.TryTake(out waiter))
+            var spinWait = new SpinWait();
+            int dummy;
+            while (_asyncWaiters.TryTake(out waiter))
             {
-                releaseCount--;
                 if (waiter.Task.IsCompleted)
                 {
                     // Skip - either canceled or timed out
                     continue;
                 }
-                if (TryEnter())
+                if (TryOffset(-1, out dummy))
                 {
                     waiter.SetResult(true);
                 }
@@ -283,7 +268,9 @@ namespace System.Threading
                 {
                     // Add it back
                     _asyncWaiters.Add(waiter);
+                    break;
                 }
+                spinWait.SpinOnce();
             }
         }
 
@@ -295,12 +282,16 @@ namespace System.Threading
             }
         }
 
-        private bool TryEnter()
+        private bool TryOffset(int releaseCount, out int previous)
         {
-            // Should only be called when there is room in the semaphore
-            // No check is done to verify that
             var expected = Thread.VolatileRead(ref _count);
-            var result = expected - 1;
+            previous = expected;
+            // Note: checking this way to avoid overflow
+            if (_maxCount.HasValue && _maxCount - releaseCount < expected)
+            {
+                throw new SemaphoreFullException();
+            }
+            var result = expected + releaseCount;
             if (result < 0)
             {
                 return false;
@@ -308,18 +299,14 @@ namespace System.Threading
             var found = Interlocked.CompareExchange(ref _count, result, expected);
             if (found == expected)
             {
-                // It may be the case that there is no longer room in the semaphore because we just took one slot
-                if (Thread.VolatileRead(ref _count) == 0)
+                if (result == 0)
                 {
-                    // Cause sync waitets to halt
-                    _event.Reset();
-                    // It is possible that another thread has just released more slots and called _event.Set() and we have just undone it...
-                    // Check if that is the case
-                    if (Thread.VolatileRead(ref _count) > 0)
-                    {
-                        // Allow sync waiters to proceed
-                        _event.Set();
-                    }
+                    _canEnter.Reset();
+                }
+                else
+                {
+                    _canEnter.Set();
+                    Awake();
                 }
                 return true;
             }
