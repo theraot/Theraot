@@ -61,9 +61,19 @@ namespace Tests.System.Threading
             {
                 Console.WriteLine(entry);
             }
+            var last = -1;
+            var first = true;
             foreach (var entry in logCount)
             {
-                Console.WriteLine(entry.ToString());
+                if (first)
+                {
+                    first = false;
+                }
+                else if (entry < last)
+                {
+                    Assert.Fail();
+                }
+                last = entry;
             }
         }
     }
