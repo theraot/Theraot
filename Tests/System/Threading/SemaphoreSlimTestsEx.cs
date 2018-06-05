@@ -63,13 +63,13 @@ namespace Tests.System.Threading
             // maxTask a
             // 1 x
             // chunks of at most maxCount b, separated by chunks of c
-            var sb = new StringBuilder();
+            var sb = new StringBuilder(log.Capacity);
             foreach (var entry in log)
             {
                 sb.Append(entry);
             }
             var str = sb.ToString();
-            var regex = string.Format("a{{{0}}}x(b{{0,{1}}}c+)+", maxTasks, maxCount);
+            var regex = string.Format("a{{{0}}}x(b{{0,{1}}}c+)+z", maxTasks, maxCount);
             Assert.IsTrue((new Regex(regex)).IsMatch(str));
             // The results of release increase *per chunk of c*.
             var last = -1;
