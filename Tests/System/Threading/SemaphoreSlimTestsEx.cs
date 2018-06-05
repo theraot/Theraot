@@ -15,6 +15,7 @@ namespace Tests.System.Threading
         public static void WaitAsyncWaitCorrectly()
         {
             var maxCount = 3;
+            var maxTasks = 4;
             var log = new CircularBucket<string>(128);
             using (var source = new CancellationTokenSource(TimeSpan.FromSeconds(100)))
             {
@@ -25,7 +26,7 @@ namespace Tests.System.Threading
                     // We can directly check
                     Assert.AreEqual(0, semaphore.CurrentCount);
                     var padding = 0;
-                    var tasks = Enumerable.Range(0, 4)
+                    var tasks = Enumerable.Range(0, maxTasks)
                         .Select
                         (
                             _ =>
