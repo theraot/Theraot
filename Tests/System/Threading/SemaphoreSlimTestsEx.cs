@@ -14,11 +14,11 @@ namespace Tests.System.Threading
         [Test]
         public static void WaitAsyncWaitCorrectly()
         {
+            var maxCount = 3;
             var log = new CircularBucket<string>(128);
-            var max = 3;
             using (var source = new CancellationTokenSource(TimeSpan.FromSeconds(100)))
             {
-                using (var semaphore = new SemaphoreSlim(0, max))
+                using (var semaphore = new SemaphoreSlim(0, maxCount))
                 {
                     // No task should be able to enter semaphore at this point.
                     // Thus semaphore.CurrentCount should be 0
@@ -48,8 +48,8 @@ namespace Tests.System.Threading
                             }
                         ).ToArray();
                     Thread.Sleep(TimeSpan.FromMilliseconds(500));
-                    log.Add(string.Format("Main thread call Release({0}) -->", max));
-                    semaphore.Release(max);
+                    log.Add(string.Format("Main thread call Release({0}) -->", maxCount));
+                    semaphore.Release(maxCount);
                     Task.WaitAll(tasks, source.Token);
                     log.Add("Main thread exits");
                 }
