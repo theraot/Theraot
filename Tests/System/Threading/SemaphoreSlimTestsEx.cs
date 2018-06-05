@@ -16,7 +16,7 @@ namespace Tests.System.Threading
         {
             var maxCount = 3;
             var maxTasks = 4;
-            var log = new CircularBucket<string>(128);
+            var log = new CircularBucket<string>(maxTasks * 3 + 2);
             var logCount = new CircularBucket<int>(maxTasks);
             using (var source = new CancellationTokenSource(TimeSpan.FromSeconds(100)))
             {
