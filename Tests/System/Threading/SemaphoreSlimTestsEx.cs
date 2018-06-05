@@ -2,6 +2,8 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Theraot.Collections.ThreadSafe;
@@ -61,10 +63,14 @@ namespace Tests.System.Threading
             // maxTask a
             // 1 x
             // chunks of at most maxCount b, separated by chunks of c
+            var sb = new StringBuilder();
             foreach (var entry in log)
             {
-                Console.WriteLine(entry);
+                sb.Append(entry);
             }
+            var str = sb.ToString();
+            var regex = string.Format("a{{{0}}}x(b{{0,{1}}}c+)+", maxTasks, maxCount);
+            Assert.IsTrue((new Regex(regex)).IsMatch(str));
             // The results of release increase *per chunk of c*.
             var last = -1;
             var first = true;
