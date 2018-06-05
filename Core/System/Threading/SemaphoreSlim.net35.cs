@@ -9,11 +9,11 @@ namespace System.Threading
     [Diagnostics.DebuggerDisplayAttribute("Current Count = {CurrentCount}")]
     public class SemaphoreSlim : IDisposable
     {
-        private SafeQueue<TaskCompletionSource<bool>> _asyncWaiters;
-        private ManualResetEventSlim _event;
         private readonly int? _maxCount;
+        private SafeQueue<TaskCompletionSource<bool>> _asyncWaiters;
         private int _count;
         private bool _disposed;
+        private ManualResetEventSlim _event;
 
         public SemaphoreSlim(int initialCount)
             : this(initialCount, null)
@@ -102,38 +102,14 @@ namespace System.Threading
             }
         }
 
-        private void Awake(int releaseCount)
-        {
-            // Call this to notify that there is room in the semaphore
-            // Allow sync waiters to proceed
-            _event.Set();
-            TaskCompletionSource<bool> waiter;
-            while (releaseCount > 0 && _asyncWaiters.TryTake(out waiter))
-            {
-                releaseCount--;
-                if (waiter.Task.IsCompleted)
-                {
-                    // Skip - either canceled or timed out
-                    continue;
-                }
-                if (TryEnter())
-                {
-                    waiter.SetResult(true);
-                }
-                else
-                {
-                    _asyncWaiters.Add(waiter);
-                }
-            }
-        }
-
         public void Wait()
         {
-            Wait(CancellationToken.None);
+            Wait(Timeout.Infinite, CancellationToken.None);
         }
 
         public bool Wait(TimeSpan timeout)
         {
+            CheckDisposed();
             return Wait((int)timeout.TotalMilliseconds, CancellationToken.None);
         }
 
@@ -190,6 +166,135 @@ namespace System.Threading
             return false;
         }
 
+        public Task WaitAsync()
+        {
+            return WaitAsync(Timeout.Infinite, CancellationToken.None);
+        }
+
+        public Task WaitAsync(CancellationToken cancellationToken)
+        {
+            return WaitAsync(Timeout.Infinite, cancellationToken);
+        }
+
+        public Task<bool> WaitAsync(int millisecondsTimeout)
+        {
+            return WaitAsync(millisecondsTimeout, CancellationToken.None);
+        }
+
+        public Task<bool> WaitAsync(TimeSpan timeout)
+        {
+            CheckDisposed();
+            return WaitAsync((int)timeout.TotalMilliseconds, CancellationToken.None);
+        }
+
+        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            CheckDisposed();
+            return WaitAsync((int)timeout.TotalMilliseconds, cancellationToken);
+        }
+
+        public Task<bool> WaitAsync(int millisecondsTimeout, CancellationToken cancellationToken)
+        {
+            CheckDisposed();
+            if (millisecondsTimeout < -1)
+            {
+                throw new ArgumentOutOfRangeException("millisecondsTimeout");
+            }
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return Task<bool>.FromCancellation(cancellationToken);
+            }
+            var source = new TaskCompletionSource<bool>();
+            Thread.MemoryBarrier();
+            if (Wait(0, cancellationToken))
+            {
+                source.SetResult(true);
+                return source.Task;
+            }
+            Theraot.Threading.Timeout.Launch
+            (
+                () =>
+                {
+                    try
+                    {
+                        source.SetResult(false);
+                    }
+                    catch (InvalidCastException exception)
+                    {
+                        // Already cancelled
+                        GC.KeepAlive(exception);
+                    }
+                },
+                millisecondsTimeout,
+                cancellationToken
+            );
+            cancellationToken.Register
+            (
+                () =>
+                {
+                    try
+                    {
+                        source.SetCanceled();
+                    }
+                    catch (InvalidOperationException exception)
+                    {
+                        // Already timeout
+                        GC.KeepAlive(exception);
+                    }
+                }
+            );
+            AddWaiter(source);
+            return source.Task;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            // This is a protected method, the parameter should be kept
+            _disposed = true;
+            _event.Dispose();
+            _asyncWaiters = null;
+            _event = null;
+        }
+
+        private void AddWaiter(TaskCompletionSource<bool> source)
+        {
+            _asyncWaiters.Add(source);
+        }
+
+        private void Awake(int releaseCount)
+        {
+            // Call this to notify that there is room in the semaphore
+            // Allow sync waiters to proceed
+            _event.Set();
+            TaskCompletionSource<bool> waiter;
+            while (releaseCount > 0 && _asyncWaiters.TryTake(out waiter))
+            {
+                releaseCount--;
+                if (waiter.Task.IsCompleted)
+                {
+                    // Skip - either canceled or timed out
+                    continue;
+                }
+                if (TryEnter())
+                {
+                    waiter.SetResult(true);
+                }
+                else
+                {
+                    // Add it back
+                    _asyncWaiters.Add(waiter);
+                }
+            }
+        }
+
+        private void CheckDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(GetType().Name);
+            }
+        }
+
         private bool TryEnter()
         {
             // Should only be called when there is room in the semaphore
@@ -219,172 +324,6 @@ namespace System.Threading
                 return true;
             }
             return false;
-        }
-
-        public Task WaitAsync()
-        {
-            CheckDisposed();
-            var source = new TaskCompletionSource<bool>();
-            if (Wait(0, CancellationToken.None))
-            {
-                source.SetResult(true);
-                return source.Task;
-            }
-            Thread.MemoryBarrier();
-            _asyncWaiters.Add(source);
-            return source.Task;
-        }
-
-        public Task WaitAsync(CancellationToken cancellationToken)
-        {
-            CheckDisposed();
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return Task.FromCancellation(cancellationToken);
-            }
-            var source = new TaskCompletionSource<bool>();
-            if (Wait(0, cancellationToken))
-            {
-                source.SetResult(true);
-                return source.Task;
-            }
-            Thread.MemoryBarrier();
-            cancellationToken.Register(() => source.SetCanceled());
-            _asyncWaiters.Add(source);
-            return source.Task;
-        }
-
-        public Task<bool> WaitAsync(int millisecondsTimeout)
-        {
-            CheckDisposed();
-            if (millisecondsTimeout < -1)
-            {
-                throw new ArgumentOutOfRangeException("millisecondsTimeout");
-            }
-            if (millisecondsTimeout == -1)
-            {
-                return WaitAsync().ContinueWith(_ => true);
-            }
-            var source = new TaskCompletionSource<bool>();
-            if (Wait(0, CancellationToken.None))
-            {
-                source.SetResult(true);
-                return source.Task;
-            }
-            Thread.MemoryBarrier();
-            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout);
-            _asyncWaiters.Add(source);
-            return source.Task;
-        }
-
-        public Task<bool> WaitAsync(TimeSpan timeout)
-        {
-            CheckDisposed();
-            var source = new TaskCompletionSource<bool>();
-            if (Wait(0, CancellationToken.None))
-            {
-                source.SetResult(true);
-                return source.Task;
-            }
-            Thread.MemoryBarrier();
-            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), timeout);
-            _asyncWaiters.Add(source);
-            return source.Task;
-        }
-
-        public Task<bool> WaitAsync(int millisecondsTimeout, CancellationToken cancellationToken) // TODO: Test coverage?
-        {
-            CheckDisposed();
-            if (millisecondsTimeout < -1)
-            {
-                throw new ArgumentOutOfRangeException("millisecondsTimeout");
-            }
-            if (millisecondsTimeout == -1)
-            {
-                return WaitAsync(cancellationToken).ContinueWith(_ => true);
-            }
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return Task<bool>.FromCancellation(cancellationToken);
-            }
-            var source = new TaskCompletionSource<bool>();
-            if (Wait(0, cancellationToken))
-            {
-                source.SetResult(true);
-                return source.Task;
-            }
-            Thread.MemoryBarrier();
-            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout, cancellationToken);
-            cancellationToken.Register(() => source.SetCanceled());
-            _asyncWaiters.Add(source);
-            return source.Task;
-        }
-
-        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken) // TODO: Test coverage?
-        {
-            CheckDisposed();
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return Task<bool>.FromCancellation(cancellationToken);
-            }
-            var source = new TaskCompletionSource<bool>();
-            if (Wait(0, cancellationToken))
-            {
-                source.SetResult(true);
-                return source.Task;
-            }
-            Thread.MemoryBarrier();
-            Theraot.Threading.Timeout.Launch
-            (
-                () =>
-                {
-                    try
-                    {
-                        source.SetResult(false);
-                    }
-                    catch (InvalidOperationException exception)
-                    {
-                        // Already cancelled
-                        GC.KeepAlive(exception);
-                    }
-                },
-                timeout,
-                cancellationToken
-            );
-            cancellationToken.Register
-                (
-                    () =>
-                    {
-                        try
-                        {
-                            source.SetCanceled();
-                        }
-                        catch (InvalidOperationException exception)
-                        {
-                            // Already timeout
-                            GC.KeepAlive(exception);
-                        }
-                    }
-                );
-            _asyncWaiters.Add(source);
-            return source.Task;
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            // This is a protected method, the parameter should be kept
-            _disposed = true;
-            _event.Dispose();
-            _asyncWaiters = null;
-            _event = null;
-        }
-
-        private void CheckDisposed()
-        {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(GetType().Name);
-            }
         }
     }
 }
