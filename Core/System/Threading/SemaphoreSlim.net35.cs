@@ -136,6 +136,7 @@ namespace System.Threading
             var remaining = millisecondsTimeout;
             while (_canEnter.Wait(remaining, cancellationToken))
             {
+                Thread.MemoryBarrier();
                 // The thread is not allowed here unless there is room in the semaphore
                 if (TryOffset(-1, out dummy))
                 {
@@ -193,10 +194,14 @@ namespace System.Threading
             var source = new TaskCompletionSource<bool>();
             Thread.MemoryBarrier();
             int dummy;
-            if (_canEnter.Wait(0, cancellationToken) && TryOffset(-1, out dummy))
+            if (_canEnter.Wait(0, cancellationToken))
             {
-                source.SetResult(true);
-                return source.Task;
+                Thread.MemoryBarrier();
+                if (TryOffset(-1, out dummy))
+                {
+                    source.SetResult(true);
+                    return source.Task;
+                }
             }
             Theraot.Threading.Timeout.Launch
             (
@@ -312,6 +317,7 @@ namespace System.Threading
                         Awake();
                     }
                     spinWait.SpinOnce();
+                    Thread.MemoryBarrier();
                 }
                 return true;
             }
