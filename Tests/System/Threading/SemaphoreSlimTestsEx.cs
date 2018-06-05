@@ -17,9 +17,15 @@ namespace Tests.System.Threading
         [Test]
         public static void WaitAsyncWaitCorrectly()
         {
+            for (var count = 0; count < 10; count++)
+            {
+                WaitAsyncWaitCorrectlyExtracted(3, 3 + count);
+            }
+        }
+
+        private static void WaitAsyncWaitCorrectlyExtracted(int maxCount, int maxTasks)
+        {
             // Note: if WaitAsync takes to long, "x" can happen before the chunk of "a" has completed.
-            var maxCount = 3;
-            var maxTasks = 4;
             var log = new CircularBucket<string>(maxTasks * 3 + 2);
             var logCount = new CircularBucket<int>(maxTasks);
             using (var source = new CancellationTokenSource(TimeSpan.FromSeconds(100)))
