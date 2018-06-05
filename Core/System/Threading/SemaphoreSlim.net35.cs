@@ -299,14 +299,19 @@ namespace System.Threading
             var found = Interlocked.CompareExchange(ref _count, result, expected);
             if (found == expected)
             {
-                if (result == 0)
+                var spinWait = new SpinWait();
+                while (_canEnter.IsSet != ((found = Thread.VolatileRead(ref _count)) != 0))
                 {
-                    _canEnter.Reset();
-                }
-                else
-                {
-                    _canEnter.Set();
-                    Awake();
+                    if (found == 0)
+                    {
+                        _canEnter.Reset();
+                    }
+                    else
+                    {
+                        _canEnter.Set();
+                        Awake();
+                    }
+                    spinWait.SpinOnce();
                 }
                 return true;
             }
