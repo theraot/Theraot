@@ -41,8 +41,9 @@ namespace Tests.System.Threading
                                         await semaphore.WaitAsync(source.Token);
                                         Interlocked.Add(ref padding, 100);
                                         log.Add(string.Format("Task {0} enters the semaphore.", CurrentId));
+                                        logCount.Add(-1);
                                         Thread.Sleep(1000 + padding);
-                                        // Calling release should give weakingly increasing results
+                                        // Calling release should give increasing results per chunk
                                         var count = semaphore.Release();
                                         logCount.Add(count);
                                         log.Add(string.Format("Task {0} release the semaphore; previous count: {1} ", CurrentId, count));
@@ -61,11 +62,16 @@ namespace Tests.System.Threading
             {
                 Console.WriteLine(entry);
             }
-            // Checking if the results of release weakingly increase
+            // The results of release increase *per chunk of c*.
             var last = -1;
             var first = true;
             foreach (var entry in logCount)
             {
+                if (entry == -1)
+                {
+                    first = true;
+                    continue;
+                }
                 if (first)
                 {
                     first = false;
