@@ -69,6 +69,7 @@ namespace Tests.System.Threading
                 sb.Append(entry);
             }
             var str = sb.ToString();
+            Console.WriteLine(str);
             var regex = string.Format("a{{{0}}}x(b{{0,{1}}}c+)+z", maxTasks, maxCount);
             Assert.IsTrue((new Regex(regex)).IsMatch(str));
             // The results of release increase *per chunk of c*.
