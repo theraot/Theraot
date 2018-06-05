@@ -24,7 +24,6 @@ namespace Tests.System.Threading
                     // Thus semaphore.CurrentCount should be 0
                     // We can directly check
                     Assert.AreEqual(0, semaphore.CurrentCount);
-                    log.Add(string.Format("{0} task can enter the semaphore.", semaphore.CurrentCount));
                     var padding = 0;
                     var tasks = Enumerable.Range(0, 4)
                         .Select(_ =>
@@ -51,11 +50,6 @@ namespace Tests.System.Threading
                     log.Add(string.Format("Main thread call Release({0}) -->", max));
 
                     semaphore.Release(max);
-
-                    // We have a race condition here.
-                    // The ammount we see here depends on how many tasks has managed to enter before we read.
-                    // Ideally we should see 0 too.
-                    log.Add(string.Format("{0} tasks can enter the semaphore.", semaphore.CurrentCount));
 
                     Task.WaitAll(tasks, source.Token);
 
