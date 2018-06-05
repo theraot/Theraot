@@ -256,6 +256,7 @@ namespace System.Threading
 
         public Task<bool> WaitAsync(int millisecondsTimeout)
         {
+            CheckDisposed();
             if (millisecondsTimeout < -1)
             {
                 throw new ArgumentOutOfRangeException("millisecondsTimeout");
@@ -264,7 +265,6 @@ namespace System.Threading
             {
                 return WaitAsync().ContinueWith(_ => true);
             }
-            CheckDisposed();
             var source = new TaskCompletionSource<bool>();
             if (Wait(0, CancellationToken.None))
             {
@@ -294,6 +294,7 @@ namespace System.Threading
 
         public Task<bool> WaitAsync(int millisecondsTimeout, CancellationToken cancellationToken) // TODO: Test coverage?
         {
+            CheckDisposed();
             if (millisecondsTimeout < -1)
             {
                 throw new ArgumentOutOfRangeException("millisecondsTimeout");
@@ -306,7 +307,6 @@ namespace System.Threading
             {
                 return Task<bool>.FromCancellation(cancellationToken);
             }
-            CheckDisposed();
             var source = new TaskCompletionSource<bool>();
             if (Wait(0, cancellationToken))
             {
@@ -322,11 +322,11 @@ namespace System.Threading
 
         public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken) // TODO: Test coverage?
         {
+            CheckDisposed();
             if (cancellationToken.IsCancellationRequested)
             {
                 return Task<bool>.FromCancellation(cancellationToken);
             }
-            CheckDisposed();
             var source = new TaskCompletionSource<bool>();
             if (Wait(0, cancellationToken))
             {
