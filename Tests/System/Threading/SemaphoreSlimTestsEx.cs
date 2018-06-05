@@ -40,7 +40,8 @@ namespace Tests.System.Threading
                                         Interlocked.Add(ref padding, 100);
                                         log.Add(string.Format("Task {0} enters the semaphore.", CurrentId));
                                         Thread.Sleep(1000 + padding);
-                                        log.Add(string.Format("Task {0} release the semaphore; previous count: {1} ", CurrentId, semaphore.Release()));
+                                        var count = semaphore.Release();
+                                        log.Add(string.Format("Task {0} release the semaphore; previous count: {1} ", CurrentId, count));
                                     }
                                 ).Unwrap();
                             }
