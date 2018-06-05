@@ -235,7 +235,7 @@ namespace System.Threading
             return source.Task;
         }
 
-        public Task WaitAsync(CancellationToken cancellationToken) // TODO: Test coverage?
+        public Task WaitAsync(CancellationToken cancellationToken)
         {
             CheckDisposed();
             if (cancellationToken.IsCancellationRequested)
