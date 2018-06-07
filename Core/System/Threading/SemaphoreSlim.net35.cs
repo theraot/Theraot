@@ -358,7 +358,7 @@ namespace System.Threading
                 found = result;
                 if ((found == 0) == _canEnter.IsSet)
                 {
-                    SyncWaitHandle(true);
+                    SyncWaitHandle(false);
                 }
                 return true;
             }
