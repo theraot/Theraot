@@ -136,8 +136,13 @@ namespace System.Threading
             }
             var start = ThreadingHelper.TicksNow();
             var remaining = millisecondsTimeout;
-            while (_canEnter.Wait(remaining, cancellationToken))
+            while (true)
             {
+                SyncWaitHandle();
+                if (!_canEnter.Wait(remaining, cancellationToken))
+                {
+                    break;
+                }
                 // The thread is not allowed here unless there is room in the semaphore
                 if (TryOffset(-1, out dummy))
                 {
@@ -194,6 +199,7 @@ namespace System.Threading
             }
             var source = new TaskCompletionSource<bool>();
             int dummy;
+            SyncWaitHandle();
             if (_canEnter.Wait(0, cancellationToken))
             {
                 if (TryOffset(-1, out dummy))
