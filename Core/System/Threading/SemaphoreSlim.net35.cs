@@ -316,7 +316,7 @@ namespace System.Threading
 
         private void SyncWaitHandle()
         {
-            if (Interlocked.CompareExchange(ref _syncroot, 1, 0) == 0)
+            if ((Volatile.Read(ref _count) == 0) == _canEnter.IsSet && Interlocked.CompareExchange(ref _syncroot, 1, 0) == 0)
             {
                 try
                 {
@@ -346,11 +346,7 @@ namespace System.Threading
             var found = Interlocked.CompareExchange(ref _count, result, expected);
             if (found == expected)
             {
-                found = result;
-                if ((found == 0) == _canEnter.IsSet)
-                {
-                    SyncWaitHandle();
-                }
+                SyncWaitHandle();
                 return true;
             }
             return false;
