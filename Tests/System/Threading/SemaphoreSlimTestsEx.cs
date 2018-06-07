@@ -83,7 +83,7 @@ namespace Tests.System.Threading
             // Make sure that threads have not sneaked in the ordering
             // If this has happen, it would have been a false failure
             // So, we will retry until it does not happen
-            if ((new Regex("cb+d")).IsMatch(str))
+            if ((new Regex("c[bc]+d")).IsMatch(str))
             {
                 goto retry;
             }
