@@ -12,6 +12,7 @@ namespace System.Threading
         private readonly int? _maxCount;
         private SafeQueue<TaskCompletionSource<bool>> _asyncWaiters;
         private ManualResetEventSlim _canEnter;
+        private int _syncroot;
         private int _count;
         private bool _disposed;
 
@@ -289,11 +290,11 @@ namespace System.Threading
         {
             if (async)
             {
-                ThreadPool.QueueUserWorkItem(SyncWaitHandleWaitCall, _canEnter);
+                ThreadPool.QueueUserWorkItem(SyncWaitHandleWaitCall);
             }
             else
             {
-                SyncWaitHandleWaitCall(_canEnter);
+                SyncWaitHandleWaitCall(null);
             }
         }
 
@@ -321,11 +322,8 @@ namespace System.Threading
 
         private void SyncWaitHandleWaitCall(object state)
         {
-            if (state == null)
-            {
-                return;
-            }
-            if (Monitor.TryEnter(state))
+            GC.KeepAlive(state);
+            if (Interlocked.CompareExchange(ref _syncroot, 1, 0) == 0)
             {
                 try
                 {
@@ -333,7 +331,7 @@ namespace System.Threading
                 }
                 finally
                 {
-                    Monitor.Exit(state);
+                    Volatile.Write(ref _syncroot, 0);
                 }
             }
         }
