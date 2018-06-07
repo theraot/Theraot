@@ -289,39 +289,31 @@ namespace System.Threading
         {
             if (async)
             {
-                if (Monitor.TryEnter(_canEnter))
-                {
-                    ThreadPool.QueueUserWorkItem(SyncWaitHandleWaitCall);
-                }
+                ThreadPool.QueueUserWorkItem(SyncWaitHandleWaitCall, _canEnter);
             }
             else
             {
-                try
-                {
-                    if (Monitor.TryEnter(_canEnter))
-                    {
-                        SyncWaitHandleExtracted();
-                    }
-                }
-                finally
-                {
-                    Monitor.TryEnter(_canEnter);
-                }
+                SyncWaitHandleWaitCall(_canEnter);
             }
         }
 
         private void SyncWaitHandleExtracted()
         {
             int found;
-            while (((found = Thread.VolatileRead(ref _count)) == 0) == _canEnter.IsSet)
+            var canEnter = _canEnter;
+            if (canEnter == null)
+            {
+                return;
+            }
+            while (((found = Thread.VolatileRead(ref _count)) == 0) == canEnter.IsSet)
             {
                 if (found == 0)
                 {
-                    _canEnter.Reset();
+                    canEnter.Reset();
                 }
                 else
                 {
-                    _canEnter.Set();
+                    canEnter.Set();
                     Awake();
                 }
             }
@@ -329,14 +321,20 @@ namespace System.Threading
 
         private void SyncWaitHandleWaitCall(object state)
         {
-            try
+            if (state == null)
             {
-                GC.KeepAlive(state);
-                SyncWaitHandleExtracted();
+                return;
             }
-            finally
+            if (Monitor.TryEnter(state))
             {
-                Monitor.Exit(_canEnter);
+                try
+                {
+                    SyncWaitHandleExtracted();
+                }
+                finally
+                {
+                    Monitor.Exit(state);
+                }
             }
         }
 
