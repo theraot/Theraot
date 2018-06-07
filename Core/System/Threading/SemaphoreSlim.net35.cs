@@ -48,6 +48,7 @@ namespace System.Threading
             get
             {
                 CheckDisposed();
+                SyncWaitHandle(false);
                 return _canEnter.WaitHandle;
             }
         }
@@ -136,7 +137,6 @@ namespace System.Threading
             var remaining = millisecondsTimeout;
             while (_canEnter.Wait(remaining, cancellationToken))
             {
-                Thread.MemoryBarrier();
                 // The thread is not allowed here unless there is room in the semaphore
                 if (TryOffset(-1, out dummy))
                 {
@@ -192,11 +192,9 @@ namespace System.Threading
                 return Task<bool>.FromCancellation(cancellationToken);
             }
             var source = new TaskCompletionSource<bool>();
-            Thread.MemoryBarrier();
             int dummy;
             if (_canEnter.Wait(0, cancellationToken))
             {
-                Thread.MemoryBarrier();
                 if (TryOffset(-1, out dummy))
                 {
                     source.SetResult(true);
@@ -287,6 +285,61 @@ namespace System.Threading
             }
         }
 
+        private void SyncWaitHandle(bool async)
+        {
+            if (async)
+            {
+                if (Monitor.TryEnter(_canEnter))
+                {
+                    ThreadPool.QueueUserWorkItem(SyncWaitHandleWaitCall);
+                }
+            }
+            else
+            {
+                try
+                {
+                    if (Monitor.TryEnter(_canEnter))
+                    {
+                        SyncWaitHandleExtracted();
+                    }
+                }
+                finally
+                {
+                    Monitor.TryEnter(_canEnter);
+                }
+            }
+        }
+
+        private void SyncWaitHandleExtracted()
+        {
+            int found;
+            while (((found = Thread.VolatileRead(ref _count)) == 0) == _canEnter.IsSet)
+            {
+                if (found == 0)
+                {
+                    _canEnter.Reset();
+                }
+                else
+                {
+                    _canEnter.Set();
+                    Awake();
+                }
+            }
+        }
+
+        private void SyncWaitHandleWaitCall(object state)
+        {
+            try
+            {
+                GC.KeepAlive(state);
+                SyncWaitHandleExtracted();
+            }
+            finally
+            {
+                Monitor.Exit(_canEnter);
+            }
+        }
+
         private bool TryOffset(int releaseCount, out int previous)
         {
             var expected = Thread.VolatileRead(ref _count);
@@ -304,20 +357,10 @@ namespace System.Threading
             var found = Interlocked.CompareExchange(ref _count, result, expected);
             if (found == expected)
             {
-                var spinWait = new SpinWait();
-                while (_canEnter.IsSet != ((found = Thread.VolatileRead(ref _count)) != 0))
+                found = result;
+                if ((found == 0) == _canEnter.IsSet)
                 {
-                    if (found == 0)
-                    {
-                        _canEnter.Reset();
-                    }
-                    else
-                    {
-                        _canEnter.Set();
-                        Awake();
-                    }
-                    spinWait.SpinOnce();
-                    Thread.MemoryBarrier();
+                    SyncWaitHandle(true);
                 }
                 return true;
             }
