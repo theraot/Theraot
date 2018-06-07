@@ -49,7 +49,7 @@ namespace System.Threading
             get
             {
                 CheckDisposed();
-                SyncWaitHandle(false);
+                SyncWaitHandle();
                 return _canEnter.WaitHandle;
             }
         }
@@ -286,18 +286,6 @@ namespace System.Threading
             }
         }
 
-        private void SyncWaitHandle(bool async)
-        {
-            if (async)
-            {
-                ThreadPool.QueueUserWorkItem(SyncWaitHandleWaitCall);
-            }
-            else
-            {
-                SyncWaitHandleWaitCall(null);
-            }
-        }
-
         private void SyncWaitHandleExtracted()
         {
             int found;
@@ -320,9 +308,8 @@ namespace System.Threading
             }
         }
 
-        private void SyncWaitHandleWaitCall(object state)
+        private void SyncWaitHandle()
         {
-            GC.KeepAlive(state);
             if (Interlocked.CompareExchange(ref _syncroot, 1, 0) == 0)
             {
                 try
@@ -356,7 +343,7 @@ namespace System.Threading
                 found = result;
                 if ((found == 0) == _canEnter.IsSet)
                 {
-                    SyncWaitHandle(true);
+                    SyncWaitHandle();
                 }
                 return true;
             }
