@@ -26,7 +26,8 @@ namespace Tests.System.Threading
         private static void WaitAsyncWaitCorrectlyExtracted(int maxCount, int maxTasks)
         {
             // Note: if WaitAsync takes to long, "x" can happen before the chunk of "a" has completed.
-            var log = new CircularBucket<string>(maxTasks * 3 + 2);
+            retry:
+            var log = new CircularBucket<string>(maxTasks * 4 + 2);
             var logCount = new CircularBucket<int>(maxTasks);
             using (var source = new CancellationTokenSource(TimeSpan.FromSeconds(100)))
             {
@@ -53,9 +54,10 @@ namespace Tests.System.Threading
                                         log.Add("b");
                                         Thread.Sleep(1000 + padding);
                                         // Calling release should give increasing results per chunk
+                                        log.Add("c");
                                         var count = semaphore.Release();
                                         logCount.Add(count);
-                                        log.Add("c");
+                                        log.Add("d");
                                     }
                                 ).Unwrap();
                             }
@@ -78,8 +80,15 @@ namespace Tests.System.Threading
             }
             var str = sb.ToString();
             Console.WriteLine(str);
-            var regex = string.Format("a{{{0}}}x(b{{0,{1}}}c+)+z", maxTasks, maxCount);
-            Assert.IsTrue((new Regex(regex)).IsMatch(str));
+            // Make sure that threads have not sneaked in the ordering
+            // If this has happen, it would have been a false failure
+            // So, we will retry until it does not happen
+            if ((new Regex("cb+d")).IsMatch(str))
+            {
+                goto retry;
+            }
+            var regexSuccess = string.Format("a{{{0}}}x(b{{0,{1}}}(cd)+)+z", maxTasks, maxCount);
+            Assert.IsTrue((new Regex(regexSuccess)).IsMatch(str));
             // The results of release increase *per chunk of c*.
             var last = -1;
             var first = true;
