@@ -64,7 +64,9 @@ namespace Tests.System.Threading
                         ).ToArray();
                     Thread.Sleep(TimeSpan.FromMilliseconds(500));
                     log.Add("x");
-                    semaphore.Release(maxCount);
+                    var tmp = semaphore.Release(maxCount);
+                    logCount.Add(-1);
+                    logCount.Add(tmp);
                     Task.WaitAll(tasks, source.Token);
                     log.Add("z");
                 }
