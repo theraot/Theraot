@@ -289,15 +289,15 @@ namespace System.Threading
             }
         }
 
-        private void SyncWaitHandleExtracted()
+        private bool SyncWaitHandleExtracted()
         {
             int found;
             var canEnter = _canEnter;
             if (canEnter == null)
             {
-                return;
+                return false;
             }
-            while (((found = Thread.VolatileRead(ref _count)) == 0) == canEnter.IsSet)
+            if (((found = Thread.VolatileRead(ref _count)) == 0) == canEnter.IsSet)
             {
                 if (found == 0)
                 {
@@ -306,23 +306,29 @@ namespace System.Threading
                 else
                 {
                     canEnter.Set();
-                    Awake();
+                    return true;
                 }
             }
+            return false;
         }
 
         private void SyncWaitHandle()
         {
+            var awake = false;
             if ((Volatile.Read(ref _count) == 0) == _canEnter.IsSet && Interlocked.CompareExchange(ref _syncroot, 1, 0) == 0)
             {
                 try
                 {
-                    SyncWaitHandleExtracted();
+                    awake = SyncWaitHandleExtracted();
                 }
                 finally
                 {
                     Volatile.Write(ref _syncroot, 0);
                 }
+            }
+            if (awake)
+            {
+                Awake();
             }
         }
 
