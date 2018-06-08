@@ -96,7 +96,7 @@ namespace Tests.System.Threading
             var first = true;
             foreach (var entry in logCount)
             {
-                Console.WriteLine(entry);
+                Console.WriteLine(entry.ToString());
                 if (entry == -1)
                 {
                     first = true;
