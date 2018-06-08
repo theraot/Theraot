@@ -49,7 +49,6 @@ namespace System.Threading
             get
             {
                 CheckDisposed();
-                SyncWaitHandle();
                 return _canEnter.WaitHandle;
             }
         }
@@ -138,7 +137,6 @@ namespace System.Threading
             var remaining = millisecondsTimeout;
             while (true)
             {
-                SyncWaitHandle();
                 if (!_canEnter.Wait(remaining, cancellationToken))
                 {
                     break;
@@ -199,7 +197,6 @@ namespace System.Threading
             }
             var source = new TaskCompletionSource<bool>();
             int dummy;
-            SyncWaitHandle();
             if (_canEnter.Wait(0, cancellationToken))
             {
                 if (TryOffset(-1, out dummy))
