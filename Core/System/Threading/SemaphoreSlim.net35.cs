@@ -9,9 +9,10 @@ namespace System.Threading
     [Diagnostics.DebuggerDisplayAttribute("Current Count = {CurrentCount}")]
     public class SemaphoreSlim : IDisposable
     {
-        private SafeQueue<TaskCompletionSource<bool>> _asyncWaiters;
-        private ManualResetEventSlim _event;
         private readonly int? _maxCount;
+        private SafeQueue<TaskCompletionSource<bool>> _asyncWaiters;
+        private ManualResetEventSlim _canEnter;
+        private int _syncroot;
         private int _count;
         private bool _disposed;
 
@@ -40,7 +41,7 @@ namespace System.Threading
             _maxCount = maxCount;
             _asyncWaiters = new SafeQueue<TaskCompletionSource<bool>>();
             _count = initialCount;
-            _event = new ManualResetEventSlim(_count > 0);
+            _canEnter = new ManualResetEventSlim(_count > 0);
         }
 
         public WaitHandle AvailableWaitHandle
@@ -48,7 +49,8 @@ namespace System.Threading
             get
             {
                 CheckDisposed();
-                return _event.WaitHandle;
+                SyncWaitHandle();
+                return _canEnter.WaitHandle;
             }
         }
 
@@ -77,63 +79,23 @@ namespace System.Threading
             var spinWait = new SpinWait();
             while (true)
             {
-                // The value we expect to see for _count in CompareExchange
-                // (The previous count of the SemaphoreSlim)
-                var expected = Thread.VolatileRead(ref _count);
-                // The value we want to set _count to in CompareExchange
-                var result = expected + releaseCount;
-                // If there is a maxCount set at constructor
-                // And we are exceding it, then fail
-                if (_maxCount.HasValue && result > _maxCount)
+                int expected;
+                if (TryOffset(releaseCount, out expected))
                 {
-                    throw new SemaphoreFullException();
-                }
-                // Attempt to set the new value
-                var found = Interlocked.CompareExchange(ref _count, result, expected);
-                // If we found what we expected, it means we succeeded
-                if (found == expected)
-                {
-                    // Awake the corresponding threads
-                    Awake(releaseCount);
-                    // Return the previous count of the SemaphoreSlim.
                     return expected;
                 }
                 spinWait.SpinOnce();
             }
         }
 
-        private void Awake(int releaseCount)
-        {
-            // Call this to notify that there is room in the semaphore
-            // Allow sync waiters to proceed
-            _event.Set();
-            TaskCompletionSource<bool> waiter;
-            while (releaseCount > 0 && _asyncWaiters.TryTake(out waiter))
-            {
-                releaseCount--;
-                if (waiter.Task.IsCompleted)
-                {
-                    // Skip - either canceled or timed out
-                    continue;
-                }
-                if (TryEnter())
-                {
-                    waiter.SetResult(true);
-                }
-                else
-                {
-                    _asyncWaiters.Add(waiter);
-                }
-            }
-        }
-
         public void Wait()
         {
-            Wait(CancellationToken.None);
+            Wait(Timeout.Infinite, CancellationToken.None);
         }
 
         public bool Wait(TimeSpan timeout)
         {
+            CheckDisposed();
             return Wait((int)timeout.TotalMilliseconds, CancellationToken.None);
         }
 
@@ -162,10 +124,11 @@ namespace System.Threading
             }
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
+            var spinWait = new SpinWait();
+            int dummy;
             if (millisecondsTimeout == -1)
             {
-                var spinWait = new SpinWait();
-                while (!TryEnter())
+                while (!TryOffset(-1, out dummy))
                 {
                     spinWait.SpinOnce();
                 }
@@ -173,10 +136,15 @@ namespace System.Threading
             }
             var start = ThreadingHelper.TicksNow();
             var remaining = millisecondsTimeout;
-            while (_event.Wait(remaining, cancellationToken))
+            while (true)
             {
+                SyncWaitHandle();
+                if (!_canEnter.Wait(remaining, cancellationToken))
+                {
+                    break;
+                }
                 // The thread is not allowed here unless there is room in the semaphore
-                if (TryEnter())
+                if (TryOffset(-1, out dummy))
                 {
                     return true;
                 }
@@ -185,155 +153,61 @@ namespace System.Threading
                 {
                     break;
                 }
+                spinWait.SpinOnce();
             }
             // Time out
             return false;
         }
 
-        private bool TryEnter()
-        {
-            // Should only be called when there is room in the semaphore
-            // No check is done to verify that
-            var expected = Thread.VolatileRead(ref _count);
-            var result = expected - 1;
-            if (result < 0)
-            {
-                return false;
-            }
-            var found = Interlocked.CompareExchange(ref _count, result, expected);
-            if (found == expected)
-            {
-                // It may be the case that there is no longer room in the semaphore because we just took one slot
-                if (Thread.VolatileRead(ref _count) == 0)
-                {
-                    // Cause sync waitets to halt
-                    _event.Reset();
-                    // It is possible that another thread has just released more slots and called _event.Set() and we have just undone it...
-                    // Check if that is the case
-                    if (Thread.VolatileRead(ref _count) > 0)
-                    {
-                        // Allow sync waiters to proceed
-                        _event.Set();
-                    }
-                }
-                return true;
-            }
-            return false;
-        }
-
         public Task WaitAsync()
         {
-            CheckDisposed();
-            var source = new TaskCompletionSource<bool>();
-            if (Wait(0, CancellationToken.None))
-            {
-                source.SetResult(true);
-                return source.Task;
-            }
-            Thread.MemoryBarrier();
-            _asyncWaiters.Add(source);
-            return source.Task;
+            return WaitAsync(Timeout.Infinite, CancellationToken.None);
         }
 
-        public Task WaitAsync(CancellationToken cancellationToken) // TODO: Test coverage?
+        public Task WaitAsync(CancellationToken cancellationToken)
         {
-            CheckDisposed();
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return Task.FromCancellation(cancellationToken);
-            }
-            var source = new TaskCompletionSource<bool>();
-            if (Wait(0, cancellationToken))
-            {
-                source.SetResult(true);
-                return source.Task;
-            }
-            Thread.MemoryBarrier();
-            cancellationToken.Register(() => source.SetCanceled());
-            _asyncWaiters.Add(source);
-            return source.Task;
+            return WaitAsync(Timeout.Infinite, cancellationToken);
         }
 
         public Task<bool> WaitAsync(int millisecondsTimeout)
         {
-            if (millisecondsTimeout < -1)
-            {
-                throw new ArgumentOutOfRangeException("millisecondsTimeout");
-            }
-            if (millisecondsTimeout == -1)
-            {
-                return WaitAsync().ContinueWith(_ => true);
-            }
-            CheckDisposed();
-            var source = new TaskCompletionSource<bool>();
-            if (Wait(0, CancellationToken.None))
-            {
-                source.SetResult(true);
-                return source.Task;
-            }
-            Thread.MemoryBarrier();
-            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout);
-            _asyncWaiters.Add(source);
-            return source.Task;
+            return WaitAsync(millisecondsTimeout, CancellationToken.None);
         }
 
         public Task<bool> WaitAsync(TimeSpan timeout)
         {
             CheckDisposed();
-            var source = new TaskCompletionSource<bool>();
-            if (Wait(0, CancellationToken.None))
-            {
-                source.SetResult(true);
-                return source.Task;
-            }
-            Thread.MemoryBarrier();
-            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), timeout);
-            _asyncWaiters.Add(source);
-            return source.Task;
+            return WaitAsync((int)timeout.TotalMilliseconds, CancellationToken.None);
         }
 
-        public Task<bool> WaitAsync(int millisecondsTimeout, CancellationToken cancellationToken) // TODO: Test coverage?
+        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken)
         {
+            CheckDisposed();
+            return WaitAsync((int)timeout.TotalMilliseconds, cancellationToken);
+        }
+
+        public Task<bool> WaitAsync(int millisecondsTimeout, CancellationToken cancellationToken)
+        {
+            CheckDisposed();
             if (millisecondsTimeout < -1)
             {
                 throw new ArgumentOutOfRangeException("millisecondsTimeout");
             }
-            if (millisecondsTimeout == -1)
-            {
-                return WaitAsync(cancellationToken).ContinueWith(_ => true);
-            }
             if (cancellationToken.IsCancellationRequested)
             {
                 return Task<bool>.FromCancellation(cancellationToken);
             }
-            CheckDisposed();
             var source = new TaskCompletionSource<bool>();
-            if (Wait(0, cancellationToken))
+            int dummy;
+            SyncWaitHandle();
+            if (_canEnter.Wait(0, cancellationToken))
             {
-                source.SetResult(true);
-                return source.Task;
+                if (TryOffset(-1, out dummy))
+                {
+                    source.SetResult(true);
+                    return source.Task;
+                }
             }
-            Thread.MemoryBarrier();
-            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout, cancellationToken);
-            cancellationToken.Register(() => source.SetCanceled());
-            _asyncWaiters.Add(source);
-            return source.Task;
-        }
-
-        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken) // TODO: Test coverage?
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return Task<bool>.FromCancellation(cancellationToken);
-            }
-            CheckDisposed();
-            var source = new TaskCompletionSource<bool>();
-            if (Wait(0, cancellationToken))
-            {
-                source.SetResult(true);
-                return source.Task;
-            }
-            Thread.MemoryBarrier();
             Theraot.Threading.Timeout.Launch
             (
                 () =>
@@ -342,31 +216,31 @@ namespace System.Threading
                     {
                         source.SetResult(false);
                     }
-                    catch (InvalidOperationException exception)
+                    catch (InvalidCastException exception)
                     {
                         // Already cancelled
                         GC.KeepAlive(exception);
                     }
                 },
-                timeout,
+                millisecondsTimeout,
                 cancellationToken
             );
             cancellationToken.Register
-                (
-                    () =>
+            (
+                () =>
+                {
+                    try
                     {
-                        try
-                        {
-                            source.SetCanceled();
-                        }
-                        catch (InvalidOperationException exception)
-                        {
-                            // Already timeout
-                            GC.KeepAlive(exception);
-                        }
+                        source.SetCanceled();
                     }
-                );
-            _asyncWaiters.Add(source);
+                    catch (InvalidOperationException exception)
+                    {
+                        // Already timeout
+                        GC.KeepAlive(exception);
+                    }
+                }
+            );
+            AddWaiter(source);
             return source.Task;
         }
 
@@ -374,9 +248,40 @@ namespace System.Threading
         {
             // This is a protected method, the parameter should be kept
             _disposed = true;
-            _event.Dispose();
+            _canEnter.Dispose();
             _asyncWaiters = null;
-            _event = null;
+            _canEnter = null;
+        }
+
+        private void AddWaiter(TaskCompletionSource<bool> source)
+        {
+            _asyncWaiters.Add(source);
+        }
+
+        private void Awake()
+        {
+            TaskCompletionSource<bool> waiter;
+            var spinWait = new SpinWait();
+            int dummy;
+            while (_asyncWaiters.TryTake(out waiter))
+            {
+                if (waiter.Task.IsCompleted)
+                {
+                    // Skip - either canceled or timed out
+                    continue;
+                }
+                if (TryOffset(-1, out dummy))
+                {
+                    waiter.SetResult(true);
+                }
+                else
+                {
+                    // Add it back
+                    _asyncWaiters.Add(waiter);
+                    break;
+                }
+                spinWait.SpinOnce();
+            }
         }
 
         private void CheckDisposed()
@@ -385,6 +290,66 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
+        }
+
+        private void SyncWaitHandleExtracted()
+        {
+            int found;
+            var canEnter = _canEnter;
+            if (canEnter == null)
+            {
+                return;
+            }
+            while (((found = Thread.VolatileRead(ref _count)) == 0) == canEnter.IsSet)
+            {
+                if (found == 0)
+                {
+                    canEnter.Reset();
+                }
+                else
+                {
+                    canEnter.Set();
+                    Awake();
+                }
+            }
+        }
+
+        private void SyncWaitHandle()
+        {
+            if ((Volatile.Read(ref _count) == 0) == _canEnter.IsSet && Interlocked.CompareExchange(ref _syncroot, 1, 0) == 0)
+            {
+                try
+                {
+                    SyncWaitHandleExtracted();
+                }
+                finally
+                {
+                    Volatile.Write(ref _syncroot, 0);
+                }
+            }
+        }
+
+        private bool TryOffset(int releaseCount, out int previous)
+        {
+            var expected = Thread.VolatileRead(ref _count);
+            previous = expected;
+            // Note: checking this way to avoid overflow
+            if (_maxCount.HasValue && _maxCount - releaseCount < expected)
+            {
+                throw new SemaphoreFullException();
+            }
+            var result = expected + releaseCount;
+            if (result < 0)
+            {
+                return false;
+            }
+            var found = Interlocked.CompareExchange(ref _count, result, expected);
+            if (found == expected)
+            {
+                SyncWaitHandle();
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -686,6 +686,7 @@ namespace System.Threading.Tasks
 
         private void PrivateWait(CancellationToken cancellationToken, bool throwIfExceptional)
         {
+            // TODO: Review performance
             var done = false;
             var spinWait = new SpinWait();
             while (!done)
@@ -702,7 +703,7 @@ namespace System.Threading.Tasks
                     case TaskStatus.WaitingForActivation:
                     case TaskStatus.Running:
                     case TaskStatus.WaitingForChildrenToComplete:
-                        var waitHandle = _waitHandle.Value; // TODO: Review
+                        var waitHandle = _waitHandle.Value;
                         if (!ReferenceEquals(waitHandle, null))
                         {
                             waitHandle.Wait(cancellationToken);
@@ -720,6 +721,10 @@ namespace System.Threading.Tasks
                             ThrowIfExceptional(true);
                         }
                         done = true;
+                        break;
+
+                    default:
+                        // Should not happen
                         break;
                 }
                 spinWait.SpinOnce();

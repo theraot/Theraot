@@ -101,6 +101,7 @@ namespace System.Threading.Tasks
 
         public static Task<TResult> Run<TResult>(Func<Task<TResult>> function)
         {
+            // TODO: Review performance
             if (function == null)
             {
                 throw new ArgumentNullException();
@@ -109,7 +110,13 @@ namespace System.Threading.Tasks
             var result = source.Task;
             ThreadPool.QueueUserWorkItem(_ =>
             {
-                function().ContinueWith(task => source.SetResult(task.InternalResult));
+                function().ContinueWith
+                (
+                    task =>
+                    {
+                        source.SetResult(task.InternalResult);
+                    }
+                );
             });
             result.Wait();
             return result;
