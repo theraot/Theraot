@@ -12,7 +12,7 @@ namespace Theraot.Threading
 
         public static void MemoryBarrier()
         {
-#if NETCOREAPP1_1
+#if NETCOREAPP1_1 || NETCOREAPP1_0
             Interlocked.MemoryBarrier();
 #else
             Thread.MemoryBarrier();

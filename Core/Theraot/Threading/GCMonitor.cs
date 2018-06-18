@@ -14,7 +14,7 @@ namespace Theraot.Threading
         private const int _statusReady = 0;
         private static int _status = _statusNotReady;
 
-#if !NETCOREAPP1_1
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1
 
         static GCMonitor()
         {
@@ -68,7 +68,7 @@ namespace Theraot.Threading
             get
             {
                 // If you need to get rid of this, just set this property to return false
-#if !NETCOREAPP1_1
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1
                 return AppDomain.CurrentDomain.IsFinalizingForUnload();
 #else
                 return false;
@@ -103,7 +103,7 @@ namespace Theraot.Threading
 
         [System.Diagnostics.DebuggerNonUserCode]
         private sealed class GCProbe
-#if !NETCOREAPP1_1
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1
             : System.Runtime.ConstrainedExecution.CriticalFinalizerObject
 #endif
         {

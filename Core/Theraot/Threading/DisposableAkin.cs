@@ -9,7 +9,7 @@ namespace Theraot.Threading
 {
     [System.Diagnostics.DebuggerNonUserCode]
     public sealed class DisposableAkin :
-#if !NETCOREAPP1_1
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1
         System.Runtime.ConstrainedExecution.CriticalFinalizerObject,
 #endif
         IDisposable

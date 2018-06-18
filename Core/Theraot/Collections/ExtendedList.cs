@@ -146,7 +146,8 @@ namespace Theraot.Collections
             return _comparer.GetHashCode(obj);
         }
 
-#if !NETCOREAPP1_1
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1
+
         object ICloneable.Clone()
         {
             return Clone();

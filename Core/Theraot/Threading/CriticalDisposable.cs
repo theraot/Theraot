@@ -8,7 +8,7 @@ namespace Theraot.Threading
 {
     [System.Diagnostics.DebuggerNonUserCode]
     public sealed partial class CriticalDisposable
-#if !NETCOREAPP1_1
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1
         : System.Runtime.ConstrainedExecution.CriticalFinalizerObject
 #endif
     {

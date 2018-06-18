@@ -981,7 +981,7 @@ namespace Theraot.Core
 
     public static partial class StringHelper
     {
-#if !NETCOREAPP1_1
+#if !NETCOREAPP1_1 && !NETCOREAPP1_0
 
         public static string EnsureEnd(this string text, string end)
         {
