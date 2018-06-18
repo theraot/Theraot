@@ -36,7 +36,7 @@
     <LangVersion>default</LangVersion>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET20|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET20_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET20\</OutputPath>
     <DefineConstants>TRACE;DEBUG;FAT;NET20</DefineConstants>
@@ -48,7 +48,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET30|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET30\</OutputPath>
     <DefineConstants>TRACE;DEBUG;FAT;NET30</DefineConstants>
@@ -60,7 +60,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET35|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET35\</OutputPath>
     <DefineConstants>TRACE;DEBUG;FAT;NET35</DefineConstants>
@@ -72,7 +72,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET40|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET40\</OutputPath>
     <DefineConstants>TRACE;DEBUG;FAT;NET40</DefineConstants>
@@ -84,7 +84,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET45|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET45\</OutputPath>
     <DefineConstants>TRACE;DEBUG;FAT;NET45</DefineConstants>

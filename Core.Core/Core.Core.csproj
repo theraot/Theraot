@@ -118,6 +118,7 @@
     <Compile Include="..\Core\Theraot\Collections\ThreadSafe\NeedleReservoir.cs" Link="Theraot\Collections\ThreadSafe\NeedleReservoir.cs" />
     <Compile Include="..\Core\Theraot\Collections\ThreadSafe\Pool.cs" Link="Theraot\Collections\ThreadSafe\Pool.cs" />
     <Compile Include="..\Core\Theraot\Collections\ThreadSafe\ReentryGuardHelper.cs" Link="Theraot\Collections\ThreadSafe\ReentryGuardHelper.cs" />
+    <Compile Include="..\Core\Theraot\Collections\ThreadSafe\SafeCollection.cs" Link="Theraot\Collections\ThreadSafe\SafeCollection.cs" />
     <Compile Include="..\Core\Theraot\Collections\ThreadSafe\SafeDictionary.cs" Link="Theraot\Collections\ThreadSafe\SafeDictionary.cs" />
     <Compile Include="..\Core\Theraot\Collections\ThreadSafe\SafeQueue.cs" Link="Theraot\Collections\ThreadSafe\SafeQueue.cs" />
     <Compile Include="..\Core\Theraot\Collections\ThreadSafe\SafeSet.cs" Link="Theraot\Collections\ThreadSafe\SafeSet.cs" />
@@ -231,9 +232,11 @@
     <Compile Include="..\Core\Theraot\Threading\Needles\WeakNeedle.extended.cs" Link="Theraot\Threading\Needles\WeakNeedle.extended.cs" />
     <Compile Include="..\Core\Theraot\Threading\NoReentrantReadWriteLock.cs" Link="Theraot\Threading\NoReentrantReadWriteLock.cs" />
     <Compile Include="..\Core\Theraot\Threading\NoReentrantReadWriteLock.disposable.cs" Link="Theraot\Threading\NoReentrantReadWriteLock.disposable.cs" />
+    <Compile Include="..\Core\Theraot\Threading\NoReentrantReadWriteLock.Status.cs" Link="Theraot\Threading\NoReentrantReadWriteLock.Status.cs" />
     <Compile Include="..\Core\Theraot\Threading\ReadWriteLock.cs" Link="Theraot\Threading\ReadWriteLock.cs" />
     <Compile Include="..\Core\Theraot\Threading\ReentrantReadWriteLock.cs" Link="Theraot\Threading\ReentrantReadWriteLock.cs" />
     <Compile Include="..\Core\Theraot\Threading\ReentrantReadWriteLock.disposable.cs" Link="Theraot\Threading\ReentrantReadWriteLock.disposable.cs" />
+    <Compile Include="..\Core\Theraot\Threading\ReentrantReadWriteLock.Status.cs" Link="Theraot\Threading\ReentrantReadWriteLock.Status.cs" />
     <Compile Include="..\Core\Theraot\Threading\ReentryGuard.cs" Link="Theraot\Threading\ReentryGuard.cs" />
     <Compile Include="..\Core\Theraot\Threading\RuntimeUniqueIdProdiver.cs" Link="Theraot\Threading\RuntimeUniqueIdProdiver.cs" />
     <Compile Include="..\Core\Theraot\Threading\ThreadingHelper.cs" Link="Theraot\Threading\ThreadingHelper.cs" />
