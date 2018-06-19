@@ -13,7 +13,8 @@ cd /D %mypath:~0,3%
 cd %mypath%
 
 	call clear_package.bat
-	call build_net.bat
+	call build_msbuild.bat
+	call build_dotnet.bat
 	call package.bat
 
 popd

@@ -18,7 +18,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;NET20;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -28,7 +28,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\bin\Release\</OutputPath>
     <DefineConstants>NET20</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -38,7 +38,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET20_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug_NET20\</OutputPath>
+    <OutputPath>..\bin\NET20_Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;FAT;NET20</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -50,7 +50,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug_NET30\</OutputPath>
+    <OutputPath>..\bin\NET30_Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;FAT;NET30</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -62,7 +62,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug_NET35\</OutputPath>
+    <OutputPath>..\bin\NET35_Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;FAT;NET35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -74,7 +74,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug_NET40\</OutputPath>
+    <OutputPath>..\bin\NET40_Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;FAT;NET40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -86,7 +86,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug_NET45\</OutputPath>
+    <OutputPath>..\bin\NET45_Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;FAT;NET45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -98,7 +98,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET20|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\NET20\</OutputPath>
+    <OutputPath>..\bin\NET20\</OutputPath>
     <DefineConstants>NET20</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -108,7 +108,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\NET30\</OutputPath>
+    <OutputPath>..\bin\NET30\</OutputPath>
     <DefineConstants>NET30</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -118,7 +118,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\NET35\</OutputPath>
+    <OutputPath>..\bin\NET35\</OutputPath>
     <DefineConstants>NET35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -128,7 +128,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\NET40\</OutputPath>
+    <OutputPath>..\bin\NET40\</OutputPath>
     <DefineConstants>NET40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -138,7 +138,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\NET45\</OutputPath>
+    <OutputPath>..\bin\NET45\</OutputPath>
     <DefineConstants>NET45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -148,7 +148,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET20_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\NET20_FAT\</OutputPath>
+    <OutputPath>..\bin\NET20_FAT\</OutputPath>
     <DefineConstants>NET20;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -159,7 +159,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\NET30_FAT\</OutputPath>
+    <OutputPath>..\bin\NET30_FAT\</OutputPath>
     <DefineConstants>NET30;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -170,7 +170,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\NET35_FAT\</OutputPath>
+    <OutputPath>..\bin\NET35_FAT\</OutputPath>
     <DefineConstants>NET35;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -181,7 +181,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\NET40_FAT\</OutputPath>
+    <OutputPath>..\bin\NET40_FAT\</OutputPath>
     <DefineConstants>NET40;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -192,7 +192,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\NET45_FAT\</OutputPath>
+    <OutputPath>..\bin\NET45_FAT\</OutputPath>
     <DefineConstants>NET45;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

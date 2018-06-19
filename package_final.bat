@@ -5,7 +5,7 @@ REM nuspec file name
 SET spec_file=Theraot.nuspec
 
 echo.
-echo Starting.
+echo Starting Package Final.
 echo.
 
 REM Store path of the bat
@@ -61,7 +61,9 @@ cd %mypath%
 	if EXIST version.txt (
 		SET /P version=<version.txt
 		for /f "skip=1" %%x in ('wmic os get localdatetime') do if not defined MyDate set MyDate=%%x
-		set today=!MyDate:~0,4!!MyDate:~4,2!!MyDate:~6,2!
+		REM
+		REM NO PRE RELEASE AND NO DATE
+		REM
 		SET version=-Version !version!
 	)
 
@@ -77,8 +79,11 @@ if EXIST !nuget:~1,-1! (
 	) ELSE (
 		NuGet.exe pack %mypath:~0,-1%\package\%spec_file% -OutputDirectory %mypath:~0,-1%\package\ !version!
 	)
+	popd
 )
 
 popd
+
+echo done with nuget
 
 exit /b
