@@ -58,9 +58,17 @@ namespace System.Threading
             get { return Thread.VolatileRead(ref _count); }
         }
 
+        [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
-            Dispose(true);
+            try
+            {
+                Dispose(true);
+            }
+            finally
+            {
+                GC.SuppressFinalize(this);
+            }
         }
 
         public int Release()

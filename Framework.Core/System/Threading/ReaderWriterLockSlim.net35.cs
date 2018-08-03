@@ -521,9 +521,17 @@ namespace System.Threading
             }
         }
 
+        [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
-            Dispose(true);
+            try
+            {
+                Dispose(true);
+            }
+            finally
+            {
+                GC.SuppressFinalize(this);
+            }
         }
 
         private void Dispose(bool disposing)

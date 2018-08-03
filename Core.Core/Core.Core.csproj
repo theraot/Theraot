@@ -392,6 +392,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Folder Include="Security.Permissions\" />
         <Folder Include="Theraot\Collections\ThreadSafe\" />
         <Folder Include="Theraot\Collections\Specialized\" />
         <Folder Include="Theraot\Threading\Needles\" />

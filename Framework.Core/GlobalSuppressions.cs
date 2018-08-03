@@ -3,8 +3,9 @@
 // Project-level suppressions either have no target or are given
 // a specific target and scoped to a namespace, type, member, etc.
 
-#if DEBUG
+#if DEBUG || FAT
 
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancies in Symbol Declarations", "RECS0096:Type parameter is never used", Justification = "<Pendiente>", Scope = "type", Target = "~T:Theraot.Threading.Needles.WeakNeedle`1")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Common Practices and Code Improvements", "RECS0063:Warns when a culture-aware 'StartsWith' call is used by default.", Justification = "<Pendiente>", Scope = "member", Target = "~M:Theraot.Core.StringHelper.NeglectStart(System.String,System.String,System.Boolean,System.Globalization.CultureInfo)~System.String")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Common Practices and Code Improvements", "RECS0063:Warns when a culture-aware 'StartsWith' call is used by default.", Justification = "<Pendiente>", Scope = "member", Target = "~M:Theraot.Core.StringHelper.EnsureStart(System.String,System.String,System.Boolean,System.Globalization.CultureInfo)~System.String")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CC0031:Check for null before calling a delegate", Justification = "<Pendiente>", Scope = "member", Target = "~M:System.Dynamic.Utils.Helpers.CommonNode``1(``0,``0,System.Func{``0,``0})~``0")]
@@ -360,7 +361,8 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Potential Code Quality Issues", "RECS0108:Warns about static fields in generic types", Justification = "<Pendiente>", Scope = "member", Target = "~F:Theraot.Core.TypeHelper.BinaryPortableInfo`1._result")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Potential Code Quality Issues", "RECS0108:Warns about static fields in generic types", Justification = "<Pendiente>", Scope = "member", Target = "~F:Theraot.Core.TypeHelper.BlittableInfo`1._result")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Potential Code Quality Issues", "RECS0108:Warns about static fields in generic types", Justification = "<Pendiente>", Scope = "member", Target = "~F:Theraot.Core.TypeHelper.ValueTypeRecursiveInfo`1._result")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Potential Code Quality Issues", "RECS0108:Warns about static fields in generic types", Justification = "<Pendiente>", Scope = "member", Target = "~F:Theraot.Threading.Needles.NeedleHelper.DeferredNeedleCreator`2._create")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Potential Code Quality Issues", "RECS0108:Warns about static fields in generic types", Justification = "<Pendiente>", Scope = "member", Target = "~F:Theraot.Threading.Needles.NeedleHelper.DeferredNeedleCreator`2._canCreate")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Potential Code Quality Issues", "RECS0108:Warns about static fields in generic types", Justification = "<Pendiente>", Scope = "member", Target = "~P:System.Threading.Tasks.Task`1.ContinuationConvertion")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancies in Symbol Declarations", "RECS0096:Type parameter is never used", Justification = "<Pendiente>", Scope = "type", Target = "~T:System.Collections.ObjectModel.ReadOnlyDictionary`2")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancies in Symbol Declarations", "RECS0096:Type parameter is never used", Justification = "<Pendiente>", Scope = "type", Target = "~T:Theraot.Threading.Needles.WeakNeedle`1")]
 #endif

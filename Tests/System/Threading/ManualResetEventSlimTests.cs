@@ -32,6 +32,7 @@
 
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace MonoTests.System.Threading
@@ -84,7 +85,14 @@ namespace MonoTests.System.Threading
         [TearDown]
         public void Dispose()
         {
-            Dispose(true);
+            try
+            {
+                Dispose(true);
+            }
+            finally
+            {
+                GC.SuppressFinalize(this);
+            }
         }
 
         [Test]
@@ -232,11 +240,14 @@ namespace MonoTests.System.Threading
 
         [Test]
         [Category("RaceCondition")] // This test creates a race condition
-        public void Wait_SetConcurrent() // TODO: review
+        public void Wait_SetConcurrent()
         {
+            var mres = new List<ManualResetEventSlim>();
             for (var i = 0; i < 10000; ++i)
             {
-                var mre = new ManualResetEventSlim(); // Leaked
+                var mre = new ManualResetEventSlim();
+                mres.Add(mre);
+
                 var b = true;
 
                 ThreadPool.QueueUserWorkItem(state => mre.Set());
@@ -245,6 +256,10 @@ namespace MonoTests.System.Threading
 
                 Assert.IsTrue(mre.Wait(1000), i.ToString());
                 Assert.IsTrue(b, i.ToString());
+            }
+            foreach (var mre in mres)
+            {
+                mre.Dispose();
             }
         }
 

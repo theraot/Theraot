@@ -32,8 +32,14 @@ namespace Theraot.Threading.Needles
         [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            try
+            {
+                Dispose(true);
+            }
+            finally
+            {
+                GC.SuppressFinalize(this);
+            }
         }
 
         [System.Diagnostics.DebuggerNonUserCode]

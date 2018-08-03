@@ -101,10 +101,17 @@ namespace System.Threading
             }
         }
 
+        [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            try
+            {
+                Dispose(true);
+            }
+            finally
+            {
+                GC.SuppressFinalize(this);
+            }
         }
 
         public void Reset()

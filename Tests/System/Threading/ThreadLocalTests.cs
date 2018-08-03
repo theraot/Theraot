@@ -59,7 +59,14 @@ namespace MonoTests.System.Threading
         [TearDown]
         public void Dispose()
         {
-            Dispose(true);
+            try
+            {
+                Dispose(true);
+            }
+            finally
+            {
+                GC.SuppressFinalize(this);
+            }
         }
 
         [Test, ExpectedException(typeof(ObjectDisposedException))]

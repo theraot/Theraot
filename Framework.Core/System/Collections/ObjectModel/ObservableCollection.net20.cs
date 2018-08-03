@@ -175,9 +175,17 @@ namespace System.Collections.ObjectModel
                 return false;
             }
 
+            [System.Diagnostics.DebuggerNonUserCode]
             public void Dispose()
             {
-                Dispose(true);
+                try
+                {
+                    Dispose(true);
+                }
+                finally
+                {
+                    GC.SuppressFinalize(this);
+                }
             }
 
             private void Dispose(bool disposeManagedResources)

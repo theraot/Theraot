@@ -251,10 +251,16 @@ namespace Theraot.Core
             return IsAssignableTo(GetNotNullableType(type), parameterInfo.GetNonRefType());
         }
 
-        public static bool IsAtomic(Type type)
+        public static bool IsAtomic<T>()
         {
+#if NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0
+            var info = typeof(T).GetTypeInfo();
+            return info.IsClass || (info.IsPrimitive && Marshal.SizeOf<T>() <= IntPtr.Size);
+#else
+            var type = typeof(T);
             var info = type.GetTypeInfo();
             return info.IsClass || (info.IsPrimitive && Marshal.SizeOf(type) <= IntPtr.Size);
+#endif
         }
 
         public static bool IsBinaryPortable(this Type type)

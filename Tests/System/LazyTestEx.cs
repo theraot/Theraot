@@ -96,39 +96,40 @@ namespace MonoTests.System
                 Interlocked.Increment(ref control);
                 return 5;
             });
-            var manual = new ManualResetEvent(false);
-            var threadA = new Thread(() =>
+            using (var manual = new ManualResetEvent(false))
             {
-                manual.WaitOne();
+                var threadA = new Thread(() =>
+                {
+                    manual.WaitOne();
+                    GC.KeepAlive(needle.Value);
+                    Interlocked.Increment(ref threadDone);
+                });
+                var threadB = new Thread(() =>
+                {
+                    manual.WaitOne();
+                    GC.KeepAlive(needle.Value);
+                    Interlocked.Increment(ref threadDone);
+                });
+                var threadC = new Thread(() =>
+                {
+                    manual.WaitOne();
+                    GC.KeepAlive(needle.Value);
+                    Interlocked.Increment(ref threadDone);
+                });
+                threadA.Start();
+                threadB.Start();
+                threadC.Start();
+                manual.Set();
+                threadA.Join();
+                threadB.Join();
+                threadC.Join();
                 GC.KeepAlive(needle.Value);
-                Interlocked.Increment(ref threadDone);
-            });
-            var threadB = new Thread(() =>
-            {
-                manual.WaitOne();
                 GC.KeepAlive(needle.Value);
-                Interlocked.Increment(ref threadDone);
-            });
-            var threadC = new Thread(() =>
-            {
-                manual.WaitOne();
-                GC.KeepAlive(needle.Value);
-                Interlocked.Increment(ref threadDone);
-            });
-            threadA.Start();
-            threadB.Start();
-            threadC.Start();
-            manual.Set();
-            threadA.Join();
-            threadB.Join();
-            threadC.Join();
-            GC.KeepAlive(needle.Value);
-            GC.KeepAlive(needle.Value);
-            Assert.IsTrue(needle.IsValueCreated);
-            Assert.AreEqual(needle.Value, 5);
-            Assert.AreEqual(control, 1);
-            Assert.AreEqual(threadDone, 3);
-            manual.Close();
+                Assert.IsTrue(needle.IsValueCreated);
+                Assert.AreEqual(needle.Value, 5);
+                Assert.AreEqual(control, 1);
+                Assert.AreEqual(threadDone, 3);
+            }
         }
 
         [Test]

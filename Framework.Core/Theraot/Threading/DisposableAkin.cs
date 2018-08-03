@@ -91,6 +91,7 @@ namespace Theraot.Threading
             return false;
         }
 
+        [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
             try

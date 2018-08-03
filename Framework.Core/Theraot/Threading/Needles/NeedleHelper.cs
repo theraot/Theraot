@@ -126,10 +126,8 @@ namespace Theraot.Threading.Needles
         private static class DeferredNeedleCreator<T, TNeedle>
             where TNeedle : INeedle<T>
         {
-#pragma warning disable RECS0108 // Warns about static fields in generic types
             private static readonly bool _canCreate;
             private static readonly Func<Func<T>, TNeedle> _create;
-#pragma warning restore RECS0108 // Warns about static fields in generic types
 
             static DeferredNeedleCreator()
             {

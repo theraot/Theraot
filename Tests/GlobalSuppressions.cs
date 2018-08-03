@@ -1,4 +1,11 @@
-﻿// This file is used by Code Analysis to maintain SuppressMessage
+﻿[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:No usar Dispose varias veces en objetos", Scope = "member", Target = "MonoTests.System.Collections.ObjectModel.ObservableCollectionTest+ObservableCollectionTestHelper.#DoubleEnterReentrant()")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly", Scope = "member", Target = "MonoTests.System.Linq.Expressions.MemberClass.#OnTest")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:No usar Dispose varias veces en objetos", Scope = "member", Target = "MonoTests.System.Threading.CancellationTokenSourceTest.#Dispose()")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:No usar Dispose varias veces en objetos", Scope = "member", Target = "MonoTests.System.Threading.CountdownEventTests.#Dispose_Double()")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:No usar Dispose varias veces en objetos", Scope = "member", Target = "MonoTests.System.Threading.ManualResetEventSlimTests.#Dispose_Double()")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Scope = "type", Target = "MonoTests.System.Threading.Tasks.TaskContinuationChainLeakTester")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:No usar Dispose varias veces en objetos", Scope = "member", Target = "MonoTests.System.Threading.Tasks.TaskTests.#FromResult()")]
+// This file is used by Code Analysis to maintain SuppressMessage
 // attributes that are applied to this project.
 // Project-level suppressions either have no target or are given
 // a specific target and scoped to a namespace, type, member, etc.

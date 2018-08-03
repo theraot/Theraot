@@ -905,8 +905,14 @@ namespace System.Threading
             {
                 throw new InvalidOperationException("This method may not be called from within the postPhaseAction.");
             }
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            try
+            {
+                Dispose(true);
+            }
+            finally
+            {
+                GC.SuppressFinalize(this);
+            }
         }
 
         /// <summary>
