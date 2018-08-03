@@ -12,7 +12,7 @@ namespace Theraot.Threading
     [System.Diagnostics.DebuggerNonUserCode]
     public sealed class ReentryGuard
     {
-        private readonly RuntimeUniqueIdProdiver.UniqueId _id;
+        private readonly UniqueId _id;
         private readonly SafeQueue<Action> _workQueue;
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace Theraot.Threading
             return result;
         }
 
-        private static void ExecutePending(SafeQueue<Action> queue, RuntimeUniqueIdProdiver.UniqueId id)
+        private static void ExecutePending(SafeQueue<Action> queue, UniqueId id)
         {
             var didEnter = false;
             try

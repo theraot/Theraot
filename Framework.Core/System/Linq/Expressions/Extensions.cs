@@ -82,7 +82,17 @@ namespace System.Linq.Expressions
 
         public static void OnFieldOrProperty(this MemberInfo self, Action<FieldInfo> onfield, Action<PropertyInfo> onprop)
         {
-            // NOTICE this method has no null check
+#if FAT
+            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
+            if (onfield == null)
+            {
+                throw new ArgumentNullException("onfield");
+            }
+            if (onprop == null)
+            {
+                throw new ArgumentNullException("onprop");
+            }
+#endif
             switch (self.MemberType)
             {
                 case MemberTypes.Field:
@@ -100,7 +110,17 @@ namespace System.Linq.Expressions
 
         public static T OnFieldOrProperty<T>(this MemberInfo self, Func<FieldInfo, T> onfield, Func<PropertyInfo, T> onprop)
         {
-            // NOTICE this method has no null check
+#if FAT
+            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
+            if (onfield == null)
+            {
+                throw new ArgumentNullException("onfield");
+            }
+            if (onprop == null)
+            {
+                throw new ArgumentNullException("onprop");
+            }
+#endif
             switch (self.MemberType)
             {
                 case MemberTypes.Field:

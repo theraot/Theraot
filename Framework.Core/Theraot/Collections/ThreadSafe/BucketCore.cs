@@ -269,7 +269,13 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool Do(ref int use, ref object first, ref object second, DoAction callback)
         {
-            // NOTICE this method has no null check
+#if FAT
+            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
+            if (callback == null)
+            {
+                throw new ArgumentNullException("callback");
+            }
+#endif
             var foundFirst = Interlocked.CompareExchange(ref first, null, null);
             if (foundFirst == null)
             {
@@ -288,7 +294,13 @@ namespace Theraot.Collections.ThreadSafe
 
         private static void DoEnsureSize(ref int use, ref object first, ref object second, Func<object> factory)
         {
-            // NOTICE this method has no null check
+#if FAT
+            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
+            if (factory == null)
+            {
+                throw new ArgumentNullException("factory");
+            }
+#endif
             try
             {
                 Interlocked.Increment(ref use);
@@ -343,7 +355,13 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool DoMayDecrement(ref int use, ref object first, ref object second, DoAction callback)
         {
-            // NOTICE this method has no null check
+#if FAT
+            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
+            if (callback == null)
+            {
+                throw new ArgumentNullException("callback");
+            }
+#endif
             try
             {
                 Interlocked.Increment(ref use);
@@ -366,7 +384,13 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool DoMayIncrement(ref int use, ref object first, ref object second, Func<object> factory, DoAction callback)
         {
-            // NOTICE this method has no null check
+#if FAT
+            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
+            if (callback == null)
+            {
+                throw new ArgumentNullException("callback");
+            }
+#endif
             try
             {
                 Interlocked.Increment(ref use);

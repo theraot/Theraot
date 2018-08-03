@@ -14,7 +14,7 @@ namespace Theraot.Threading.Needles
         {
             private readonly ICloner<T> _cloner;
             private readonly IEqualityComparer<T> _comparer;
-            private readonly RuntimeUniqueIdProdiver.UniqueId _id;
+            private readonly UniqueId _id;
             private readonly NeedleLock<Thread> _needleLock;
             private int _status;
             private int _inUse;

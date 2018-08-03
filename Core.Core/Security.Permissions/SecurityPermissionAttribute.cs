@@ -6,6 +6,7 @@ using System.Diagnostics;
 namespace System.Security.Permissions
 {
     [Conditional("DEBUG")]
+    [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Constructor | AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
     internal sealed class SecurityPermissionAttribute : Attribute
     {
         private readonly SecurityAction _securityAction;

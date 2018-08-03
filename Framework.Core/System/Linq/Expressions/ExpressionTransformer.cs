@@ -298,7 +298,13 @@ namespace System.Linq.Expressions
 
         private IList<TElement> VisitList<TElement>(ReadOnlyCollection<TElement> original, Func<TElement, TElement> visit)
         {
-            // NOTICE this method has no null check
+#if FAT
+            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
+            if (visit == null)
+            {
+                throw new ArgumentNullException("visit");
+            }
+#endif
             List<TElement> list = null;
             var count = original.Count;
             for (var index = 0; index < count; index++)

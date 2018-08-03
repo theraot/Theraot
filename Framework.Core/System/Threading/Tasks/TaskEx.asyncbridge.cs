@@ -77,7 +77,9 @@ namespace System.Threading.Tasks
         {
             var timeoutMs = (long)dueTime.TotalMilliseconds;
             if (timeoutMs < Timeout.Infinite || timeoutMs > int.MaxValue)
+            {
                 throw new ArgumentOutOfRangeException("dueTime", ArgumentOutOfRange_TimeoutNonNegativeOrMinusOne);
+            }
 
             return Delay((int)timeoutMs, cancellationToken);
         }
@@ -94,11 +96,20 @@ namespace System.Threading.Tasks
         public static Task Delay(int dueTime, CancellationToken cancellationToken)
         {
             if (dueTime < -1)
+            {
                 throw new ArgumentOutOfRangeException("dueTime", ArgumentOutOfRange_TimeoutNonNegativeOrMinusOne);
+            }
+
             if (cancellationToken.IsCancellationRequested)
+            {
                 return _preCanceledTask;
+            }
+
             if (dueTime == 0)
+            {
                 return _preCompletedTask;
+            }
+
             var tcs = new TaskCompletionSource<bool>();
             var ctr = new CancellationTokenRegistration();
 
@@ -359,7 +370,10 @@ namespace System.Threading.Tasks
         public static Task<Task> WhenAny(IEnumerable<Task> tasks)
         {
             if (tasks == null)
+            {
                 throw new ArgumentNullException("tasks");
+            }
+
             var tcs = new TaskCompletionSource<Task>();
             Task.Factory.ContinueWhenAny<bool>(tasks as Task[] ?? tasks.ToArray(), tcs.TrySetResult, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             return tcs.Task;
@@ -399,7 +413,10 @@ namespace System.Threading.Tasks
         public static Task<Task<TResult>> WhenAny<TResult>(IEnumerable<Task<TResult>> tasks)
         {
             if (tasks == null)
+            {
                 throw new ArgumentNullException("tasks");
+            }
+
             var tcs = new TaskCompletionSource<Task<TResult>>();
             Task.Factory.ContinueWhenAny<TResult, bool>(tasks as Task<TResult>[] ?? tasks.ToArray(), tcs.TrySetResult, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             return tcs.Task;
@@ -428,11 +445,18 @@ namespace System.Threading.Tasks
         {
             var aggregateException = exception as AggregateException;
             if (targetList == null)
+            {
                 targetList = new List<Exception>();
+            }
+
             if (aggregateException != null)
+            {
                 targetList.Add(aggregateException.InnerExceptions.Count == 1 ? exception.InnerException : exception);
+            }
             else
+            {
                 targetList.Add(exception);
+            }
         }
 
         /// <summary>
@@ -447,13 +471,25 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
         private static Task<TResult> WhenAllCore<TResult>(IEnumerable<Task> tasks, Action<Task[], TaskCompletionSource<TResult>> setResultAction)
         {
+#if DEBUG
+            if (setResultAction == null)
+            {
+                throw new ArgumentException("setResultAction");
+            }
+#endif
             if (tasks == null)
+            {
                 throw new ArgumentNullException("tasks");
+            }
+
             var tcs = new TaskCompletionSource<TResult>();
             var taskArray = tasks as Task[] ?? tasks.ToArray();
             if (taskArray.Length == 0)
+            {
                 setResultAction(taskArray, tcs);
+            }
             else
+            {
                 Task.Factory.ContinueWhenAll(taskArray, completedTasks =>
                 {
                     List<Exception> exceptions = null;
@@ -461,17 +497,29 @@ namespace System.Threading.Tasks
                     foreach (var task in completedTasks)
                     {
                         if (task.IsFaulted)
+                        {
                             AddPotentiallyUnwrappedExceptions(ref exceptions, task.Exception);
+                        }
                         else if (task.IsCanceled)
+                        {
                             canceled = true;
+                        }
                     }
                     if (exceptions != null && exceptions.Count > 0)
+                    {
                         tcs.TrySetException(exceptions);
+                    }
                     else if (canceled)
+                    {
                         tcs.TrySetCanceled();
+                    }
                     else
+                    {
                         setResultAction(completedTasks, tcs);
+                    }
                 }, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            }
+
             return tcs.Task;
         }
     }

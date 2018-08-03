@@ -28,7 +28,8 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                _wait = () =>
+                _wait =
+                () =>
                 {
                     throw new InvalidOperationException();
                 };

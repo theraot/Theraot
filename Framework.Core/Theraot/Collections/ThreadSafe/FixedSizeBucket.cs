@@ -501,7 +501,17 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool UpdateInternal(int index, Func<T, T> itemUpdateFactory, Predicate<T> check, out bool isEmpty)
         {
-            // NOTICE this method has no null check
+#if FAT
+            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
+            if (check == null)
+            {
+                throw new ArgumentNullException("check");
+            }
+            if (itemUpdateFactory == null)
+            {
+                throw new ArgumentNullException("itemUpdateFactory");
+            }
+#endif
             var found = Interlocked.CompareExchange(ref _entries[index], null, null);
             var compare = BucketHelper.Null;
             var result = false;

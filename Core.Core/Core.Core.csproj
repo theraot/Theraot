@@ -297,6 +297,7 @@
         <Compile Include="..\Framework.Core\Theraot\Threading\ThreadLocalHelper.cs" Link="Theraot\Threading\ThreadLocalHelper.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\Timeout.cs" Link="Theraot\Threading\Timeout.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\TrackingThreadLocal.cs" Link="Theraot\Threading\TrackingThreadLocal.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\UniqueId.cs" Link="Theraot\Threading\UniqueId.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\VersionProvider.cs" Link="Theraot\Threading\VersionProvider.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\VersionProvider.Target.cs" Link="Theraot\Threading\VersionProvider.Target.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\VersionProvider.VersionToken.cs" Link="Theraot\Threading\VersionProvider.VersionToken.cs" />

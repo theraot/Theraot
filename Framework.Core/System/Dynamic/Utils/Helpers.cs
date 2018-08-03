@@ -10,7 +10,13 @@ namespace System.Dynamic.Utils
     {
         internal static T CommonNode<T>(T first, T second, Func<T, T> parent) where T : class
         {
-            // NOTICE this method has no null check
+#if FAT
+            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
+            if (parent == null)
+            {
+                throw new ArgumentNullException("parent");
+            }
+#endif
             var cmp = EqualityComparer<T>.Default;
             if (cmp.Equals(first, second))
             {

@@ -584,8 +584,10 @@ namespace System.Linq.Expressions.Compiler
                 case TypeCode.Decimal:
                 case TypeCode.String:
                     return true;
+
+                default:
+                    return false;
             }
-            return false;
         }
 
         internal static void EmitConstant(this ILGenerator il, object value)

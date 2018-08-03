@@ -156,7 +156,7 @@ namespace MonoTests.System.Linq.Expressions
 
         public struct Bar
         {
-            private string _slot;
+            private string _slot; // Do not use auto-implemented property
 
             public string Prop
             {

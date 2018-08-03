@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace Tests.System.Linq.Expressions
 {
     [TestFixture]
-    internal class ExpressionTestEx
+    internal static class ExpressionTestEx
     {
         [Test]
         public static void TestLamdaCompilation()

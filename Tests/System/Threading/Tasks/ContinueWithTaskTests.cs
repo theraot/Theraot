@@ -161,11 +161,8 @@ namespace MonoTests.System.Threading.Tasks
                 () =>
                 {
                     var result = false;
-                    var t = Task.Factory.StartNew(() =>
-                    {
-                        throw new Exception("foo");
-                    });
-                    var cont = t.ContinueWith(obj => result = true, TaskContinuationOptions.OnlyOnFaulted);
+                    var t = Task.Factory.StartNew(() => { throw new Exception("foo"); });
+                    var cont = t.ContinueWith(_ => result = true, TaskContinuationOptions.OnlyOnFaulted);
                     Assert.IsTrue(cont.Wait(1000), "#0");
                     Assert.IsNotNull(t.Exception, "#1");
                     Assert.IsNotNull(cont, "#2");
@@ -365,10 +362,7 @@ namespace MonoTests.System.Threading.Tasks
                     {
                         var task = new Task
                         (
-                            () =>
-                            {
-                                throw new InvalidOperationException();
-                            },
+                            () => { throw new InvalidOperationException(); },
                             TaskCreationOptions.AttachedToParent
                         );
                         task.RunSynchronously();
@@ -393,10 +387,7 @@ namespace MonoTests.System.Threading.Tasks
                 (
                     () =>
                     {
-                        var task = new Task(() =>
-                        {
-                            throw new InvalidOperationException();
-                        }, TaskCreationOptions.AttachedToParent);
+                        var task = new Task(() => { throw new InvalidOperationException(); }, TaskCreationOptions.AttachedToParent);
                         task.RunSynchronously();
                     }
                 )
@@ -423,10 +414,7 @@ namespace MonoTests.System.Threading.Tasks
                     {
                         var child1 = new Task(() =>
                         {
-                            var child2 = new Task(() =>
-                            {
-                                throw new InvalidOperationException();
-                            }, TaskCreationOptions.AttachedToParent);
+                            var child2 = new Task(() => { throw new InvalidOperationException(); }, TaskCreationOptions.AttachedToParent);
                             child2.RunSynchronously();
                         }, TaskCreationOptions.AttachedToParent);
 
@@ -622,12 +610,7 @@ namespace MonoTests.System.Threading.Tasks
             Task inner = null;
             var child = Task.Factory.StartNew(() =>
             {
-                inner = Task.Run(() =>
-                {
-                    throw new ApplicationException();
-                }).ContinueWith(task =>
-                {
-                }, TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.NotOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
+                inner = Task.Run(() => { throw new ApplicationException(); }).ContinueWith(_ => { }, TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.NotOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
             });
 
             var counter = 0;

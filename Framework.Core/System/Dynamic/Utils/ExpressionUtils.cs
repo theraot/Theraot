@@ -188,6 +188,9 @@ namespace System.Dynamic.Utils
                         }
                     }
                     break;
+
+                default:
+                    break;
             }
         }
 

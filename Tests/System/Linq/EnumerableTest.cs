@@ -423,10 +423,14 @@ namespace MonoTests.System.Linq
 
         private static IEnumerable<byte> AsEnumerable(Stream stream)
         {
-            byte b;
-            while ((b = (byte)stream.ReadByte()) >= 0)
+            while (true)
             {
-                yield return b;
+                var b = stream.ReadByte();
+                if (b < 0)
+                {
+                    break;
+                }
+                yield return (byte)b;
             }
         }
 

@@ -8,7 +8,7 @@ namespace Theraot.Collections.ThreadSafe
     internal class Pool<T>
         where T : class
     {
-        private readonly RuntimeUniqueIdProdiver.UniqueId _id;
+        private readonly UniqueId _id;
         private readonly FixedSizeQueue<T> _entries;
         private readonly Action<T> _recycler;
 

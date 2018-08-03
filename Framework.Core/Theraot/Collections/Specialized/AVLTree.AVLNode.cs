@@ -160,7 +160,13 @@ namespace Theraot.Collections.Specialized
 
             internal static AVLNode Get(AVLNode node, TKey key, Comparison<TKey> comparison)
             {
-                // NOTICE this method has no null check
+#if FAT
+                // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
+                if (comparison == null)
+                {
+                    throw new ArgumentNullException("comparison");
+                }
+#endif
                 while (node != null)
                 {
                     var compare = comparison(key, node._key);
@@ -240,7 +246,13 @@ namespace Theraot.Collections.Specialized
 
             internal static bool Remove(ref AVLNode node, TKey key, Comparison<TKey> comparison)
             {
-                // NOTICE this method has no null check
+#if FAT
+                // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
+                if (comparison == null)
+                {
+                    throw new ArgumentNullException("comparison");
+                }
+#endif
                 if (node == null)
                 {
                     return false;
@@ -279,7 +291,13 @@ namespace Theraot.Collections.Specialized
 
             private static void AddExtracted(ref AVLNode node, TKey key, Comparison<TKey> comparison, AVLNode created)
             {
-                // NOTICE this method has no null check
+#if FAT
+                // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
+                if (comparison == null)
+                {
+                    throw new ArgumentNullException("comparison");
+                }
+#endif
                 // Ok, it has for node only
                 int compare;
                 if (node == null || (compare = comparison(key, node._key)) == 0)
@@ -303,7 +321,13 @@ namespace Theraot.Collections.Specialized
 
             private static bool AddNonDuplicateExtracted(ref AVLNode node, TKey key, TValue value, Comparison<TKey> comparison, AVLNode created)
             {
-                // NOTICE this method has no null check
+#if FAT
+                // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
+                if (comparison == null)
+                {
+                    throw new ArgumentNullException("comparison");
+                }
+#endif
                 // Ok, it has for node only
                 if (node == null)
                 {
@@ -357,7 +381,17 @@ namespace Theraot.Collections.Specialized
 
             private static AVLNode GetOrAddExtracted(ref AVLNode node, TKey key, Func<TKey, TValue> factory, Comparison<TKey> comparison, AVLNode created, out bool isNew)
             {
-                // NOTICE this method has no null check
+#if FAT
+                // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
+                if (factory == null)
+                {
+                    throw new ArgumentNullException("factory");
+                }
+                if (comparison == null)
+                {
+                    throw new ArgumentNullException("comparison");
+                }
+#endif
                 // Ok, it has for node only
                 if (node == null)
                 {

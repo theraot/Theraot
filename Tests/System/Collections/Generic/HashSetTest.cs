@@ -502,59 +502,29 @@ namespace MonoTests.System.Collections.Generic
         {
             using (var e1 = new HashSet<int>.Enumerator()) // TODO: Review
             {
-                Assert.IsFalse(Throws(() =>
-                {
-                    GC.KeepAlive(e1.Current);
-                }));
+                Assert.IsFalse(Throws(() => GC.KeepAlive(e1.Current)));
 
                 var d = new HashSet<int>();
                 var e2 = d.GetEnumerator();
-                Assert.IsFalse(Throws(() =>
-                {
-                    GC.KeepAlive(e2.Current);
-                }));
+                Assert.IsFalse(Throws(() => GC.KeepAlive(e2.Current)));
                 e2.MoveNext();
-                Assert.IsFalse(Throws(() =>
-                {
-                    GC.KeepAlive(e2.Current);
-                }));
+                Assert.IsFalse(Throws(() => GC.KeepAlive(e2.Current)));
                 e2.Dispose();
-                Assert.IsFalse(Throws(() =>
-                {
-                    GC.KeepAlive(e2.Current);
-                }));
+                Assert.IsFalse(Throws(() => GC.KeepAlive(e2.Current)));
 
                 var e3 = ((IEnumerable<int>)d).GetEnumerator();
-                Assert.IsFalse(Throws(() =>
-                {
-                    GC.KeepAlive(e3.Current);
-                }));
+                Assert.IsFalse(Throws(() => GC.KeepAlive(e3.Current)));
                 e3.MoveNext();
-                Assert.IsFalse(Throws(() =>
-                {
-                    GC.KeepAlive(e3.Current);
-                }));
+                Assert.IsFalse(Throws(() => GC.KeepAlive(e3.Current)));
                 e3.Dispose();
-                Assert.IsFalse(Throws(() =>
-                {
-                    GC.KeepAlive(e3.Current);
-                }));
+                Assert.IsFalse(Throws(() => GC.KeepAlive(e3.Current)));
 
                 var e4 = ((IEnumerable)d).GetEnumerator();
-                Assert.IsTrue(Throws(() =>
-                {
-                    GC.KeepAlive(e4.Current);
-                }));
+                Assert.IsTrue(Throws(() => GC.KeepAlive(e4.Current)));
                 e4.MoveNext();
-                Assert.IsTrue(Throws(() =>
-                {
-                    GC.KeepAlive(e4.Current);
-                }));
+                Assert.IsTrue(Throws(() => GC.KeepAlive(e4.Current)));
                 ((IDisposable)e4).Dispose();
-                Assert.IsTrue(Throws(() =>
-                {
-                    GC.KeepAlive(e4.Current);
-                }));
+                Assert.IsTrue(Throws(() => GC.KeepAlive(e4.Current)));
             }
         }
 
@@ -593,11 +563,11 @@ namespace MonoTests.System.Collections.Generic
                 return string.CompareOrdinal(x, y) == 0;
             }
 
-            public int GetHashCode(string str)
+            public int GetHashCode(string obj)
             {
-                if (str != null)
+                if (obj != null)
                 {
-                    return str.GetHashCode();
+                    return obj.GetHashCode();
                 }
 
                 throw new ArgumentNullException();  // Important aspect for test (same as what StringComparer.Ordinal does, and different from GenericEqualityComparer<string>)
