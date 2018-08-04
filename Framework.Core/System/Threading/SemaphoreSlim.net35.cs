@@ -336,7 +336,7 @@ namespace System.Threading
             }
             if (awake)
             {
-                Awake();
+                ThreadPool.QueueUserWorkItem(_ => Awake());
             }
         }
 
