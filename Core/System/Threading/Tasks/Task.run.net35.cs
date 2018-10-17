@@ -23,7 +23,7 @@ namespace System.Threading.Tasks
 
         public static Task Run(Func<Task> action)
         {
-            return TaskFactory.DefaultInstance.StartNew(action, CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default).Unwrap();
+            return Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default).Unwrap();
             /*if (action == null)
             {
                 throw new ArgumentNullException();
@@ -53,7 +53,7 @@ namespace System.Threading.Tasks
 
         public static Task Run(Func<Task> action, CancellationToken cancellationToken)
         {
-            return TaskFactory.DefaultInstance.StartNew(action, cancellationToken, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default).Unwrap();
+            return Task.Factory.StartNew(action, cancellationToken, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default).Unwrap();
             /*if (action == null)
             {
                 throw new ArgumentNullException();
