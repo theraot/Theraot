@@ -168,9 +168,9 @@ namespace Theraot.Collections
             _wrapped.Insert(index, item);
         }
 
-        public void Move(int indexSource, int indexDestination)
+        public void Move(int oldIndex, int newIndex)
         {
-            _wrapped.Move(indexSource, indexDestination);
+            _wrapped.Move(oldIndex, newIndex);
         }
 
         public bool Overlaps(IEnumerable<T> other)

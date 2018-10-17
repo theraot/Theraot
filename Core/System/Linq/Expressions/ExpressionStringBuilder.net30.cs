@@ -673,6 +673,9 @@ namespace System.Linq.Expressions
                     Out("new [] ");
                     VisitExpressions('{', node.Expressions, '}');
                     break;
+
+                default:
+                    break;
             }
             return node;
         }
@@ -712,6 +715,9 @@ namespace System.Linq.Expressions
 
                 case ExpressionType.TypeEqual:
                     Out(" TypeEqual ");
+                    break;
+
+                default:
                     break;
             }
             Out(node.TypeOperand.Name);

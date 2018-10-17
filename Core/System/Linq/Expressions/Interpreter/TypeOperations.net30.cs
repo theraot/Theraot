@@ -2473,6 +2473,9 @@ namespace System.Linq.Expressions.Interpreter
 
                     case TypeCode.UInt64:
                         return _uInt64 ?? (_uInt64 = new CastInstructionT<ulong>());
+
+                    default:
+                        break;
                 }
             }
 

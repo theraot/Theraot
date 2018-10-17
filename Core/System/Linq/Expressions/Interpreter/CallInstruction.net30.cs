@@ -69,6 +69,9 @@ namespace System.Linq.Expressions.Interpreter
                         arrayType.GetMethod("GetValue", new[] { typeof(int), typeof(int), typeof(int) }) :
                         typeof(CallInstruction).GetMethod("ArrayItemSetter3");
                     break;
+
+                default:
+                    break;
             }
 
             if (alternativeMethod == null)

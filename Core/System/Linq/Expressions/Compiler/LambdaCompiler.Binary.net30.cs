@@ -150,6 +150,8 @@ namespace System.Linq.Expressions.Compiler
 
                 case ExpressionType.Coalesce:
                     throw Error.UnexpectedCoalesceOperator();
+                default:
+                    break;
             }
 
             if (leftIsNullable || rightIsNullable)
@@ -386,6 +388,9 @@ namespace System.Linq.Expressions.Compiler
 
                 case TypeCode.Int16:
                     _ilg.Emit(IsChecked(op) ? OpCodes.Conv_Ovf_I2 : OpCodes.Conv_I2);
+                    break;
+
+                default:
                     break;
             }
         }

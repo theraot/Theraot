@@ -32,7 +32,6 @@ namespace System.Runtime.CompilerServices
             {
                 throw new ArgumentNullException("stateMachine");
             }
-
             stateMachine.MoveNext();
         }
 

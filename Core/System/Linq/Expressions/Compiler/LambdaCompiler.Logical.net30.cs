@@ -529,10 +529,13 @@ namespace System.Linq.Expressions.Compiler
                         case ExpressionType.NotEqual:
                             EmitBranchComparison(branchValue, (BinaryExpression)node, label);
                             return;
+
+                        default:
+                            EmitExpression(node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
+                            EmitBranchOp(branchValue, label);
+                            return;
                     }
                 }
-                EmitExpression(node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
-                EmitBranchOp(branchValue, label);
             }
             finally
             {

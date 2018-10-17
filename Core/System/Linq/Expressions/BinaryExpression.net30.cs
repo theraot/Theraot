@@ -56,8 +56,10 @@ namespace System.Linq.Expressions
                 case ExpressionType.LeftShiftAssign:
                 case ExpressionType.ExclusiveOrAssign:
                     return true;
+
+                default:
+                    return false;
             }
-            return false;
         }
 
         /// <summary>

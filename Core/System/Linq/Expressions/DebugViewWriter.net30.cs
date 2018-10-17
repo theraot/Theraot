@@ -191,6 +191,9 @@ namespace System.Linq.Expressions
                     WriteLine();
                     Write(new string(' ', Depth));
                     break;
+
+                default:
+                    break;
             }
             Write(s);
             _flow = after;
@@ -749,6 +752,9 @@ namespace System.Linq.Expressions
                 case ExpressionType.IsFalse:
                 case ExpressionType.Unbox:
                     return true;
+
+                default:
+                    break;
             }
 
             var childOpPrec = GetOperatorPrecedence(child);
@@ -794,8 +800,10 @@ namespace System.Linq.Expressions
                         Debug.Assert(binary != null);
                         // Need to have parenthesis for the right operand.
                         return child == binary.Right;
+
+                    default:
+                        return true;
                 }
-                return true;
             }
 
             // Special case: negate of a constant needs parentheses, to
@@ -1053,6 +1061,9 @@ namespace System.Linq.Expressions
                 case ExpressionType.TypeEqual:
                     Out(Flow.Space, ".TypeEqual", Flow.Space);
                     break;
+
+                default:
+                    break;
             }
             Out(node.TypeOperand.ToString());
             return node;
@@ -1138,6 +1149,9 @@ namespace System.Linq.Expressions
                 case ExpressionType.Unbox:
                     Out(".Unbox");
                     break;
+
+                default:
+                    break;
             }
 
             ParenthesizedVisit(node, node.Operand);
@@ -1159,6 +1173,9 @@ namespace System.Linq.Expressions
 
                 case ExpressionType.PostIncrementAssign:
                     Out("++");
+                    break;
+
+                default:
                     break;
             }
             return node;

@@ -15,9 +15,6 @@ namespace System
     {
         #region Deconstruct
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 1 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1>(
             this Tuple<T1> value,
@@ -26,9 +23,6 @@ namespace System
             item1 = value.Item1;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 2 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2>(
             this Tuple<T1, T2> value,
@@ -38,9 +32,6 @@ namespace System
             item2 = value.Item2;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 3 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3>(
             this Tuple<T1, T2, T3> value,
@@ -51,9 +42,6 @@ namespace System
             item3 = value.Item3;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 4 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4>(
             this Tuple<T1, T2, T3, T4> value,
@@ -65,9 +53,6 @@ namespace System
             item4 = value.Item4;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 5 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4, T5>(
             this Tuple<T1, T2, T3, T4, T5> value,
@@ -80,9 +65,6 @@ namespace System
             item5 = value.Item5;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 6 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4, T5, T6>(
             this Tuple<T1, T2, T3, T4, T5, T6> value,
@@ -96,9 +78,6 @@ namespace System
             item6 = value.Item6;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 7 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4, T5, T6, T7>(
             this Tuple<T1, T2, T3, T4, T5, T6, T7> value,
@@ -113,9 +92,6 @@ namespace System
             item7 = value.Item7;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 8 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4, T5, T6, T7, T8>(
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>> value,
@@ -131,9 +107,6 @@ namespace System
             item8 = value.Rest.Item1;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 9 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>> value,
@@ -150,9 +123,6 @@ namespace System
             item9 = value.Rest.Item2;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 10 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>> value,
@@ -170,9 +140,6 @@ namespace System
             item10 = value.Rest.Item3;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 11 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>> value,
@@ -191,9 +158,6 @@ namespace System
             item11 = value.Rest.Item4;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 12 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>> value,
@@ -213,9 +177,6 @@ namespace System
             item12 = value.Rest.Item5;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 13 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>> value,
@@ -236,9 +197,6 @@ namespace System
             item13 = value.Rest.Item6;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 14 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>> value,
@@ -260,9 +218,6 @@ namespace System
             item14 = value.Rest.Item7;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 15 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>> value,
@@ -285,9 +240,6 @@ namespace System
             item15 = value.Rest.Rest.Item1;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 16 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>> value,
@@ -311,9 +263,6 @@ namespace System
             item16 = value.Rest.Rest.Item2;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 17 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>> value,
@@ -338,9 +287,6 @@ namespace System
             item17 = value.Rest.Rest.Item3;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 18 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>> value,
@@ -366,9 +312,6 @@ namespace System
             item18 = value.Rest.Rest.Item4;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 19 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>> value,
@@ -395,9 +338,6 @@ namespace System
             item19 = value.Rest.Rest.Item5;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 20 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>> value,
@@ -425,9 +365,6 @@ namespace System
             item20 = value.Rest.Rest.Item6;
         }
 
-        /// <summary>
-        /// Deconstruct a properly nested <see cref="Tuple"/> with 21 elements.
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>> value,
@@ -460,9 +397,6 @@ namespace System
 
         #region ToValueTuple
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 1 element.
-        /// </summary>
         public static ValueTuple<T1>
             ToValueTuple<T1>(
                 this Tuple<T1> value)
@@ -470,9 +404,6 @@ namespace System
             return ValueTuple.Create(value.Item1);
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 2 elements.
-        /// </summary>
         public static ValueTuple<T1, T2>
             ToValueTuple<T1, T2>(
                 this Tuple<T1, T2> value)
@@ -480,9 +411,6 @@ namespace System
             return ValueTuple.Create(value.Item1, value.Item2);
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 3 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3>
             ToValueTuple<T1, T2, T3>(
                 this Tuple<T1, T2, T3> value)
@@ -490,9 +418,6 @@ namespace System
             return ValueTuple.Create(value.Item1, value.Item2, value.Item3);
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 4 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4>
             ToValueTuple<T1, T2, T3, T4>(
                 this Tuple<T1, T2, T3, T4> value)
@@ -500,9 +425,6 @@ namespace System
             return ValueTuple.Create(value.Item1, value.Item2, value.Item3, value.Item4);
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 5 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4, T5>
             ToValueTuple<T1, T2, T3, T4, T5>(
                 this Tuple<T1, T2, T3, T4, T5> value)
@@ -510,9 +432,6 @@ namespace System
             return ValueTuple.Create(value.Item1, value.Item2, value.Item3, value.Item4, value.Item5);
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 6 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4, T5, T6>
             ToValueTuple<T1, T2, T3, T4, T5, T6>(
                 this Tuple<T1, T2, T3, T4, T5, T6> value)
@@ -520,9 +439,6 @@ namespace System
             return ValueTuple.Create(value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6);
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 7 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4, T5, T6, T7>
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7> value)
@@ -530,9 +446,6 @@ namespace System
             return ValueTuple.Create(value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6, value.Item7);
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 8 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8>>
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>> value)
@@ -541,9 +454,6 @@ namespace System
                         ValueTuple.Create(value.Rest.Item1));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 9 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9>>
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>> value)
@@ -552,9 +462,6 @@ namespace System
                         ValueTuple.Create(value.Rest.Item1, value.Rest.Item2));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 10 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10>>
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>> value)
@@ -563,9 +470,6 @@ namespace System
                         ValueTuple.Create(value.Rest.Item1, value.Rest.Item2, value.Rest.Item3));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 11 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11>>
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>> value)
@@ -574,9 +478,6 @@ namespace System
                         ValueTuple.Create(value.Rest.Item1, value.Rest.Item2, value.Rest.Item3, value.Rest.Item4));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 12 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12>>
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>> value)
@@ -585,9 +486,6 @@ namespace System
                         ValueTuple.Create(value.Rest.Item1, value.Rest.Item2, value.Rest.Item3, value.Rest.Item4, value.Rest.Item5));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 13 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13>>
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>> value)
@@ -596,9 +494,6 @@ namespace System
                         ValueTuple.Create(value.Rest.Item1, value.Rest.Item2, value.Rest.Item3, value.Rest.Item4, value.Rest.Item5, value.Rest.Item6));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 14 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13, T14>>
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>> value)
@@ -607,9 +502,6 @@ namespace System
                         ValueTuple.Create(value.Rest.Item1, value.Rest.Item2, value.Rest.Item3, value.Rest.Item4, value.Rest.Item5, value.Rest.Item6, value.Rest.Item7));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 15 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13, T14, ValueTuple<T15>>>
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>> value)
@@ -619,9 +511,6 @@ namespace System
                             ValueTuple.Create(value.Rest.Rest.Item1)));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 16 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13, T14, ValueTuple<T15, T16>>>
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>> value)
@@ -631,9 +520,6 @@ namespace System
                             ValueTuple.Create(value.Rest.Rest.Item1, value.Rest.Rest.Item2)));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 17 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13, T14, ValueTuple<T15, T16, T17>>>
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>> value)
@@ -643,9 +529,6 @@ namespace System
                             ValueTuple.Create(value.Rest.Rest.Item1, value.Rest.Rest.Item2, value.Rest.Rest.Item3)));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 18 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13, T14, ValueTuple<T15, T16, T17, T18>>>
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>> value)
@@ -655,9 +538,6 @@ namespace System
                             ValueTuple.Create(value.Rest.Rest.Item1, value.Rest.Rest.Item2, value.Rest.Rest.Item3, value.Rest.Rest.Item4)));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 19 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13, T14, ValueTuple<T15, T16, T17, T18, T19>>>
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>> value)
@@ -667,9 +547,6 @@ namespace System
                             ValueTuple.Create(value.Rest.Rest.Item1, value.Rest.Rest.Item2, value.Rest.Rest.Item3, value.Rest.Rest.Item4, value.Rest.Rest.Item5)));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 20 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13, T14, ValueTuple<T15, T16, T17, T18, T19, T20>>>
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>> value)
@@ -679,9 +556,6 @@ namespace System
                             ValueTuple.Create(value.Rest.Rest.Item1, value.Rest.Rest.Item2, value.Rest.Rest.Item3, value.Rest.Rest.Item4, value.Rest.Rest.Item5, value.Rest.Rest.Item6)));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="ValueTuple"/> from a properly nested <see cref="Tuple"/> with 21 elements.
-        /// </summary>
         public static ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13, T14, ValueTuple<T15, T16, T17, T18, T19, T20, T21>>>
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>> value)
@@ -695,9 +569,6 @@ namespace System
 
         #region ToTuple
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 1 element.
-        /// </summary>
         public static Tuple<T1>
             ToTuple<T1>(
                 this ValueTuple<T1> value)
@@ -705,9 +576,6 @@ namespace System
             return Tuple.Create(value.Item1);
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 2 elements.
-        /// </summary>
         public static Tuple<T1, T2>
             ToTuple<T1, T2>(
                 this ValueTuple<T1, T2> value)
@@ -715,9 +583,6 @@ namespace System
             return Tuple.Create(value.Item1, value.Item2);
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 3 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3>
             ToTuple<T1, T2, T3>(
                 this ValueTuple<T1, T2, T3> value)
@@ -725,9 +590,6 @@ namespace System
             return Tuple.Create(value.Item1, value.Item2, value.Item3);
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 4 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4>
             ToTuple<T1, T2, T3, T4>(
                 this ValueTuple<T1, T2, T3, T4> value)
@@ -735,9 +597,6 @@ namespace System
             return Tuple.Create(value.Item1, value.Item2, value.Item3, value.Item4);
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 5 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4, T5>
             ToTuple<T1, T2, T3, T4, T5>(
                 this ValueTuple<T1, T2, T3, T4, T5> value)
@@ -745,9 +604,6 @@ namespace System
             return Tuple.Create(value.Item1, value.Item2, value.Item3, value.Item4, value.Item5);
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 6 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4, T5, T6>
             ToTuple<T1, T2, T3, T4, T5, T6>(
                 this ValueTuple<T1, T2, T3, T4, T5, T6> value)
@@ -755,9 +611,6 @@ namespace System
             return Tuple.Create(value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6);
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 7 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4, T5, T6, T7>
             ToTuple<T1, T2, T3, T4, T5, T6, T7>(
                 this ValueTuple<T1, T2, T3, T4, T5, T6, T7> value)
@@ -765,9 +618,6 @@ namespace System
             return Tuple.Create(value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6, value.Item7);
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 8 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>
             ToTuple<T1, T2, T3, T4, T5, T6, T7, T8>(
                 this ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8>> value)
@@ -776,9 +626,6 @@ namespace System
                         Tuple.Create(value.Rest.Item1));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 9 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>
             ToTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
                 this ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9>> value)
@@ -787,9 +634,6 @@ namespace System
                         Tuple.Create(value.Rest.Item1, value.Rest.Item2));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 10 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>
             ToTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
                 this ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10>> value)
@@ -798,9 +642,6 @@ namespace System
                         Tuple.Create(value.Rest.Item1, value.Rest.Item2, value.Rest.Item3));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 11 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>
             ToTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
                 this ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11>> value)
@@ -809,9 +650,6 @@ namespace System
                         Tuple.Create(value.Rest.Item1, value.Rest.Item2, value.Rest.Item3, value.Rest.Item4));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 12 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>
             ToTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
                 this ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12>> value)
@@ -820,9 +658,6 @@ namespace System
                         Tuple.Create(value.Rest.Item1, value.Rest.Item2, value.Rest.Item3, value.Rest.Item4, value.Rest.Item5));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 13 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>
             ToTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
                 this ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13>> value)
@@ -831,9 +666,6 @@ namespace System
                         Tuple.Create(value.Rest.Item1, value.Rest.Item2, value.Rest.Item3, value.Rest.Item4, value.Rest.Item5, value.Rest.Item6));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 14 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>
             ToTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
                 this ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13, T14>> value)
@@ -842,9 +674,6 @@ namespace System
                         Tuple.Create(value.Rest.Item1, value.Rest.Item2, value.Rest.Item3, value.Rest.Item4, value.Rest.Item5, value.Rest.Item6, value.Rest.Item7));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 15 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>
             ToTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(
                 this ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13, T14, ValueTuple<T15>>> value)
@@ -854,9 +683,6 @@ namespace System
                             Tuple.Create(value.Rest.Rest.Item1)));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 16 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>
             ToTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(
                 this ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13, T14, ValueTuple<T15, T16>>> value)
@@ -866,9 +692,6 @@ namespace System
                             Tuple.Create(value.Rest.Rest.Item1, value.Rest.Rest.Item2)));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 17 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>
             ToTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(
                 this ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13, T14, ValueTuple<T15, T16, T17>>> value)
@@ -878,9 +701,6 @@ namespace System
                             Tuple.Create(value.Rest.Rest.Item1, value.Rest.Rest.Item2, value.Rest.Rest.Item3)));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 18 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>
             ToTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(
                 this ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13, T14, ValueTuple<T15, T16, T17, T18>>> value)
@@ -890,9 +710,6 @@ namespace System
                             Tuple.Create(value.Rest.Rest.Item1, value.Rest.Rest.Item2, value.Rest.Rest.Item3, value.Rest.Rest.Item4)));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 19 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>
             ToTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(
                 this ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13, T14, ValueTuple<T15, T16, T17, T18, T19>>> value)
@@ -902,9 +719,6 @@ namespace System
                             Tuple.Create(value.Rest.Rest.Item1, value.Rest.Rest.Item2, value.Rest.Rest.Item3, value.Rest.Rest.Item4, value.Rest.Rest.Item5)));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 20 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>
             ToTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(
                 this ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13, T14, ValueTuple<T15, T16, T17, T18, T19, T20>>> value)
@@ -914,9 +728,6 @@ namespace System
                             Tuple.Create(value.Rest.Rest.Item1, value.Rest.Rest.Item2, value.Rest.Rest.Item3, value.Rest.Rest.Item4, value.Rest.Rest.Item5, value.Rest.Rest.Item6)));
         }
 
-        /// <summary>
-        /// Make a properly nested <see cref="Tuple"/> from a properly nested <see cref="ValueTuple"/> with 21 elements.
-        /// </summary>
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>
             ToTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(
                 this ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8, T9, T10, T11, T12, T13, T14, ValueTuple<T15, T16, T17, T18, T19, T20, T21>>> value)

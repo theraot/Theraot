@@ -8,7 +8,11 @@ namespace Theraot.Collections
 {
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
-    public partial class ProgressiveCollection<T> : IReadOnlyCollection<T>, ICollection<T>
+    public
+#if FAT
+        partial
+#endif
+        class ProgressiveCollection<T> : IReadOnlyCollection<T>, ICollection<T>
     {
         private readonly ICollection<T> _cache;
         private readonly IEqualityComparer<T> _comparer;

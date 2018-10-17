@@ -179,6 +179,7 @@ namespace System.Threading
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this); // To appease the tools
         }
 
         internal void CheckDisposed()

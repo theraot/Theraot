@@ -249,6 +249,9 @@ namespace System.Linq.Expressions.Compiler
                     case ExpressionType.Index:
                         result = AddressOfWriteBack((IndexExpression)node);
                         break;
+
+                    default:
+                        break;
                 }
             }
             if (result == null)

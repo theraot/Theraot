@@ -7,7 +7,10 @@ using Theraot.Collections.ThreadSafe;
 namespace Theraot.Collections.Specialized
 {
     [System.Diagnostics.DebuggerNonUserCode]
-    public partial class DelegatedCollection<T> : ICollection<T>
+    public class DelegatedCollection<T> : ICollection<T>
+#if FAT
+        , IExtendedCollection<T>
+#endif
     {
         private readonly IReadOnlyCollection<T> _readOnly;
         private readonly Func<ICollection<T>> _wrapped;

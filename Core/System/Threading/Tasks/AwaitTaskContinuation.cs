@@ -140,8 +140,9 @@ namespace System.Threading.Tasks
         }
 
         [SecurityCritical]
-        void IThreadPoolWorkItem.MarkAborted(ThreadAbortException tae)
-        { /* nop */
+        void IThreadPoolWorkItem.MarkAborted(ThreadAbortException exception)
+        {
+            /* nop */
         }
 
         /// <summary>Cached delegate that invokes an Action passed as an object parameter.</summary>

@@ -300,7 +300,8 @@ namespace System.Collections.Generic
 
         public void TrimExcess()
         {
-            //Empty
+            // Should not be static
+            // Empty
         }
 
         public void UnionWith(IEnumerable<T> other)
@@ -441,19 +442,19 @@ namespace System.Collections.Generic
         {
             public static readonly HashSetEqualityComparer Instance = new HashSetEqualityComparer();
 
-            public bool Equals(HashSet<T> left, HashSet<T> right)
+            public bool Equals(HashSet<T> x, HashSet<T> y)
             {
-                if (left == right)
+                if (x == y)
                 {
                     return true;
                 }
-                if (left == null || right == null || left.Count != right.Count)
+                if (x == null || y == null || x.Count != y.Count)
                 {
                     return false;
                 }
-                foreach (var item in left)
+                foreach (var item in x)
                 {
-                    if (!right.Contains(item))
+                    if (!y.Contains(item))
                     {
                         return false;
                     }
@@ -461,13 +462,13 @@ namespace System.Collections.Generic
                 return true;
             }
 
-            public int GetHashCode(HashSet<T> hashset)
+            public int GetHashCode(HashSet<T> obj)
             {
                 try
                 {
                     IEqualityComparer<T> comparer = EqualityComparer<T>.Default;
                     var hash = 0;
-                    foreach (var item in hashset)
+                    foreach (var item in obj)
                     {
                         hash ^= comparer.GetHashCode(item);
                     }

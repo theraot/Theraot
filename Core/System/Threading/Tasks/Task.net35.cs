@@ -274,9 +274,17 @@ namespace System.Threading.Tasks
             }
         }
 
+        [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
-            Dispose(true);
+            try
+            {
+                Dispose(true);
+            }
+            finally
+            {
+                GC.SuppressFinalize(this);
+            }
         }
 
         void IThreadPoolWorkItem.ExecuteWorkItem()

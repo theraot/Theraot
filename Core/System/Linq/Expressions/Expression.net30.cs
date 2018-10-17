@@ -331,6 +331,9 @@ namespace System.Linq.Expressions
                 case ExpressionType.Parameter:
                     canWrite = true;
                     break;
+
+                default:
+                    break;
             }
 
             if (!canWrite)

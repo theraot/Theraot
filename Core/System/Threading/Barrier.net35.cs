@@ -234,7 +234,7 @@ namespace System.Threading
         /// <param name="current">The current participant count</param>
         /// <param name="total">The total participants count</param>
         /// <param name="sense">The sense flag</param>
-        private void GetCurrentTotal(int currentTotal, out int current, out int total, out bool sense)
+        private static void GetCurrentTotal(int currentTotal, out int current, out int total, out bool sense)
         {
             total = currentTotal & _totalMask;
             current = (currentTotal & _currentMask) >> 16;
@@ -503,7 +503,7 @@ namespace System.Threading
 #if DEBUG
             var result =
 #endif
- SignalAndWait(Timeout.Infinite, cancellationToken);
+            SignalAndWait(Timeout.Infinite, cancellationToken);
 #if DEBUG
             Debug.Assert(result);
 #endif

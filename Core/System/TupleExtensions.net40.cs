@@ -58,16 +58,16 @@ namespace System
             return other is ValueTuple;
         }
 
-        int IComparable.CompareTo(object other)
+        int IComparable.CompareTo(object obj)
         {
-            if (other == null)
+            if (obj == null)
             {
                 return 1;
             }
 
-            if (!(other is ValueTuple))
+            if (!(obj is ValueTuple))
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "other");
+                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "obj");
             }
 
             return 0;
@@ -375,19 +375,19 @@ namespace System
             return comparer.Equals(Item1, objTuple.Item1);
         }
 
-        int IComparable.CompareTo(object other)
+        int IComparable.CompareTo(object obj)
         {
-            if (other == null)
+            if (obj == null)
             {
                 return 1;
             }
 
-            if (!(other is ValueTuple<T1>))
+            if (!(obj is ValueTuple<T1>))
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "other");
+                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "obj");
             }
 
-            var objTuple = (ValueTuple<T1>)other;
+            var objTuple = (ValueTuple<T1>)obj;
 
             return Comparer<T1>.Default.Compare(Item1, objTuple.Item1);
         }
@@ -561,19 +561,19 @@ namespace System
                 && comparer.Equals(Item2, objTuple.Item2);
         }
 
-        int IComparable.CompareTo(object other)
+        int IComparable.CompareTo(object obj)
         {
-            if (other == null)
+            if (obj == null)
             {
                 return 1;
             }
 
-            if (!(other is ValueTuple<T1, T2>))
+            if (!(obj is ValueTuple<T1, T2>))
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "other");
+                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "obj");
             }
 
-            return CompareTo((ValueTuple<T1, T2>)other);
+            return CompareTo((ValueTuple<T1, T2>)obj);
         }
 
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
@@ -757,19 +757,19 @@ namespace System
                 && comparer.Equals(Item3, objTuple.Item3);
         }
 
-        int IComparable.CompareTo(object other)
+        int IComparable.CompareTo(object obj)
         {
-            if (other == null)
+            if (obj == null)
             {
                 return 1;
             }
 
-            if (!(other is ValueTuple<T1, T2, T3>))
+            if (!(obj is ValueTuple<T1, T2, T3>))
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "other");
+                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "obj");
             }
 
-            return CompareTo((ValueTuple<T1, T2, T3>)other);
+            return CompareTo((ValueTuple<T1, T2, T3>)obj);
         }
 
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
@@ -975,19 +975,19 @@ namespace System
                 && comparer.Equals(Item4, objTuple.Item4);
         }
 
-        int IComparable.CompareTo(object other)
+        int IComparable.CompareTo(object obj)
         {
-            if (other == null)
+            if (obj == null)
             {
                 return 1;
             }
 
-            if (!(other is ValueTuple<T1, T2, T3, T4>))
+            if (!(obj is ValueTuple<T1, T2, T3, T4>))
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "other");
+                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "obj");
             }
 
-            return CompareTo((ValueTuple<T1, T2, T3, T4>)other);
+            return CompareTo((ValueTuple<T1, T2, T3, T4>)obj);
         }
 
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
@@ -1217,19 +1217,19 @@ namespace System
                 && comparer.Equals(Item5, objTuple.Item5);
         }
 
-        int IComparable.CompareTo(object other)
+        int IComparable.CompareTo(object obj)
         {
-            if (other == null)
+            if (obj == null)
             {
                 return 1;
             }
 
-            if (!(other is ValueTuple<T1, T2, T3, T4, T5>))
+            if (!(obj is ValueTuple<T1, T2, T3, T4, T5>))
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "other");
+                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "obj");
             }
 
-            return CompareTo((ValueTuple<T1, T2, T3, T4, T5>)other);
+            return CompareTo((ValueTuple<T1, T2, T3, T4, T5>)obj);
         }
 
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
@@ -1483,19 +1483,19 @@ namespace System
                 && comparer.Equals(Item6, objTuple.Item6);
         }
 
-        int IComparable.CompareTo(object other)
+        int IComparable.CompareTo(object obj)
         {
-            if (other == null)
+            if (obj == null)
             {
                 return 1;
             }
 
-            if (!(other is ValueTuple<T1, T2, T3, T4, T5, T6>))
+            if (!(obj is ValueTuple<T1, T2, T3, T4, T5, T6>))
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "other");
+                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "obj");
             }
 
-            return CompareTo((ValueTuple<T1, T2, T3, T4, T5, T6>)other);
+            return CompareTo((ValueTuple<T1, T2, T3, T4, T5, T6>)obj);
         }
 
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
@@ -1773,19 +1773,19 @@ namespace System
                 && comparer.Equals(Item7, objTuple.Item7);
         }
 
-        int IComparable.CompareTo(object other)
+        int IComparable.CompareTo(object obj)
         {
-            if (other == null)
+            if (obj == null)
             {
                 return 1;
             }
 
-            if (!(other is ValueTuple<T1, T2, T3, T4, T5, T6, T7>))
+            if (!(obj is ValueTuple<T1, T2, T3, T4, T5, T6, T7>))
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "other");
+                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "obj");
             }
 
-            return CompareTo((ValueTuple<T1, T2, T3, T4, T5, T6, T7>)other);
+            return CompareTo((ValueTuple<T1, T2, T3, T4, T5, T6, T7>)obj);
         }
 
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
@@ -2093,19 +2093,19 @@ namespace System
                 && comparer.Equals(Rest, objTuple.Rest);
         }
 
-        int IComparable.CompareTo(object other)
+        int IComparable.CompareTo(object obj)
         {
-            if (other == null)
+            if (obj == null)
             {
                 return 1;
             }
 
-            if (!(other is ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>))
+            if (!(obj is ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>))
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "other");
+                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", "obj");
             }
 
-            return CompareTo((ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>)other);
+            return CompareTo((ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>)obj);
         }
 
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
@@ -2300,10 +2300,11 @@ namespace System
                                                        EqualityComparer<T6>.Default.GetHashCode(Item6),
                                                        EqualityComparer<T7>.Default.GetHashCode(Item7),
                                                        rest.GetHashCode());
-            }
 
-            Debug.Assert(false, "Missed all cases for computing ValueTuple hash code");
-            return -1;
+                default:
+                    Debug.Assert(false, "Missed all cases for computing ValueTuple hash code");
+                    return -1;
+            }
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
@@ -2360,10 +2361,11 @@ namespace System
                     return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item1), comparer.GetHashCode(Item2), comparer.GetHashCode(Item3),
                                                        comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6),
                                                        comparer.GetHashCode(Item7), rest.GetHashCode(comparer));
-            }
 
-            Debug.Assert(false, "Missed all cases for computing ValueTuple hash code");
-            return -1;
+                default:
+                    Debug.Assert(false, "Missed all cases for computing ValueTuple hash code");
+                    return -1;
+            }
         }
 
         int ITupleInternal.GetHashCode(IEqualityComparer comparer)

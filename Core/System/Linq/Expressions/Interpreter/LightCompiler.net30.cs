@@ -192,13 +192,13 @@ namespace System.Linq.Expressions.Interpreter
         private class DebugInfoComparer : IComparer<DebugInfo>
         {
             //We allow comparison between int and DebugInfo here
-            int IComparer<DebugInfo>.Compare(DebugInfo d1, DebugInfo d2)
+            int IComparer<DebugInfo>.Compare(DebugInfo x, DebugInfo y)
             {
-                if (d1.Index > d2.Index)
+                if (x.Index > y.Index)
                 {
                     return 1;
                 }
-                if (d1.Index == d2.Index)
+                if (x.Index == y.Index)
                 {
                     return 0;
                 }
@@ -1502,6 +1502,9 @@ namespace System.Linq.Expressions.Interpreter
                         case TypeCode.Int64:
                             CompileIntSwitchExpression<object>(node);
                             return;
+
+                        default:
+                            break;
                     }
                 }
 
@@ -2654,6 +2657,9 @@ namespace System.Linq.Expressions.Interpreter
                         CompileMember(null, memberMember.Member);
                         CompileMemberInit(memberMember.Bindings);
                         _instructions.EmitPop();
+                        break;
+
+                    default:
                         break;
                 }
             }

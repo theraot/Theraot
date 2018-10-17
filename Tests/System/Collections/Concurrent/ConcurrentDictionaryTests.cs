@@ -273,24 +273,32 @@ namespace MonoTests.System.Collections.Concurrent
                 var r3 = false;
                 int val;
 
-                ParallelTestHelper.ParallelStressTest(_map, delegate
-                {
-                    var own = Interlocked.Increment(ref index);
-                    switch (own)
+                ParallelTestHelper.ParallelStressTest
+                (
+                    _map,
+                    delegate
                     {
-                        case 1:
-                            r1 = _map.TryRemove("foo", out val);
-                            break;
+                        var own = Interlocked.Increment(ref index);
+                        switch (own)
+                        {
+                            case 1:
+                                r1 = _map.TryRemove("foo", out val);
+                                break;
 
-                        case 2:
-                            r2 = _map.TryRemove("bar", out val);
-                            break;
+                            case 2:
+                                r2 = _map.TryRemove("bar", out val);
+                                break;
 
-                        case 3:
-                            r3 = _map.TryRemove("foobar", out val);
-                            break;
-                    }
-                }, 3);
+                            case 3:
+                                r3 = _map.TryRemove("foobar", out val);
+                                break;
+
+                            default:
+                                break;
+                        }
+                    },
+                    3
+                );
 
                 Assert.AreEqual(0, _map.Count);
                 int value;

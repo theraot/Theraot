@@ -356,9 +356,9 @@ namespace System.Numerics
             return Sinh(value) / Cosh(value);
         }
 
-        public bool Equals(Complex value)
+        public bool Equals(Complex other)
         {
-            return _real.Equals(value._real) && _imaginary.Equals(value._imaginary);
+            return _real.Equals(other._real) && _imaginary.Equals(other._imaginary);
         }
 
         public override bool Equals(object obj)
@@ -391,9 +391,9 @@ namespace System.Numerics
             return string.Format("({0}, {1})", _real.ToString(format), _imaginary.ToString(format));
         }
 
-        public string ToString(string format, IFormatProvider provider)
+        public string ToString(string format, IFormatProvider formatProvider)
         {
-            return string.Format("({0}, {1})", _real.ToString(format, provider), _imaginary.ToString(format, provider));
+            return string.Format("({0}, {1})", _real.ToString(format, formatProvider), _imaginary.ToString(format, formatProvider));
         }
     }
 }

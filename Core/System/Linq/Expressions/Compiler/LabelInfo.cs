@@ -356,8 +356,10 @@ namespace System.Linq.Expressions.Compiler
                     case LabelScopeKind.Switch:
                     case LabelScopeKind.Lambda:
                         return true;
+
+                    default:
+                        return false;
                 }
-                return false;
             }
         }
 

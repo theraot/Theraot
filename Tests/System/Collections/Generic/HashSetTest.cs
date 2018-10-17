@@ -593,11 +593,11 @@ namespace MonoTests.System.Collections.Generic
                 return string.CompareOrdinal(x, y) == 0;
             }
 
-            public int GetHashCode(string str)
+            public int GetHashCode(string obj)
             {
-                if (str != null)
+                if (obj != null)
                 {
-                    return str.GetHashCode();
+                    return obj.GetHashCode();
                 }
 
                 throw new ArgumentNullException();  // Important aspect for test (same as what StringComparer.Ordinal does, and different from GenericEqualityComparer<string>)

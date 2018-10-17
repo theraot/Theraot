@@ -149,13 +149,13 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Removes the specified value.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="item">The value.</param>
         /// <returns>
         ///   <c>true</c> if the specified value was removed; otherwise, <c>false</c>.
         /// </returns>
-        public bool Remove(T value)
+        public bool Remove(T item)
         {
-            Predicate<T> check = input => _comparer.Equals(input, value);
+            Predicate<T> check = input => _comparer.Equals(input, item);
             return _wrapped.RemoveWhereValueEnumerable(check).Any();
         }
 

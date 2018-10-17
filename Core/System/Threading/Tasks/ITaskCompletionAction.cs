@@ -250,7 +250,7 @@ namespace System.Threading.Tasks
                 get { return base.ShouldNotifyDebuggerOfWaitCompletion && AnyTaskRequiresNotifyDebuggerOfWaitCompletion(_tasks); }
             }
 
-            public void Invoke(Task completedTask)
+            public void Invoke(Task completingTask)
             {
                 var count = Interlocked.Decrement(ref _count);
                 if (count == 0)
@@ -383,7 +383,7 @@ namespace System.Threading.Tasks
                 get { return base.ShouldNotifyDebuggerOfWaitCompletion && AnyTaskRequiresNotifyDebuggerOfWaitCompletion(_tasks); }
             }
 
-            public void Invoke(Task completedTask)
+            public void Invoke(Task completingTask)
             {
                 var count = Interlocked.Decrement(ref _count);
                 if (count == 0)

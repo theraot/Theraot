@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30
+#if NET20 || NET30
 
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -524,6 +524,7 @@ namespace System.Threading
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this); // To appease the tools
         }
 
         private void Dispose(bool disposing)
