@@ -2234,14 +2234,14 @@ namespace System.Numerics
         }
 
         /// <summary>Converts the numeric value of the current <see cref="T:System.Numerics.BigInteger" /> object to its equivalent string representation by using the specified format and culture-specific format information.</summary>
-        /// <returns>The string representation of the current <see cref="T:System.Numerics.BigInteger" /> value as specified by the <paramref name="format" /> and <paramref name="provider" /> parameters.</returns>
+        /// <returns>The string representation of the current <see cref="T:System.Numerics.BigInteger" /> value as specified by the <paramref name="format" /> and <paramref name="formatProvider" /> parameters.</returns>
         /// <param name="format">A standard or custom numeric format string.</param>
-        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
         /// <exception cref="T:System.FormatException">
         ///   <paramref name="format" /> is not a valid format string.</exception>
-        public string ToString(string format, IFormatProvider provider)
+        public string ToString(string format, IFormatProvider formatProvider)
         {
-            return FormatBigInteger(this, format, NumberFormatInfo.GetInstance(provider));
+            return FormatBigInteger(this, format, NumberFormatInfo.GetInstance(formatProvider));
         }
 
         private uint[] ToUInt32Array()

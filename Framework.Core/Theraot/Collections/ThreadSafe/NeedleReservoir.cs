@@ -60,7 +60,7 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
-        private void Recycle(TNeedle obj)
+        private static void Recycle(TNeedle obj)
         {
             try
             {

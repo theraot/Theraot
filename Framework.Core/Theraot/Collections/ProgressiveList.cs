@@ -7,7 +7,11 @@ using System.Linq;
 namespace Theraot.Collections
 {
     [System.Diagnostics.DebuggerNonUserCode]
-    public partial class ProgressiveList<T> : ProgressiveCollection<T>, IReadOnlyList<T>, IList<T>
+    public
+#if FAT
+        partial
+# endif
+        class ProgressiveList<T> : ProgressiveCollection<T>, IReadOnlyList<T>, IList<T>
     {
         private readonly IList<T> _cache;
 

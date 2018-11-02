@@ -141,7 +141,6 @@
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\CustomComparer.cs" Link="Theraot\Collections\Specialized\CustomComparer.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\CustomEqualityComparer.cs" Link="Theraot\Collections\Specialized\CustomEqualityComparer.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\DelegatedCollection.cs" Link="Theraot\Collections\Specialized\DelegatedCollection.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\DelegatedCollection.extended.cs" Link="Theraot\Collections\Specialized\DelegatedCollection.extended.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\EnumCollection.cs" Link="Theraot\Collections\Specialized\EnumCollection.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\EnumerableFromDelegate.cs" Link="Theraot\Collections\Specialized\EnumerableFromDelegate.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\EnumerationCollection.cs" Link="Theraot\Collections\Specialized\EnumerationCollection.cs" />

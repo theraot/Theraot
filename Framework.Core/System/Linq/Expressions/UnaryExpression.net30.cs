@@ -117,8 +117,10 @@ namespace System.Linq.Expressions
                     case ExpressionType.PostIncrementAssign:
                     case ExpressionType.PostDecrementAssign:
                         return true;
+
+                    default:
+                        return false;
                 }
-                return false;
             }
         }
 

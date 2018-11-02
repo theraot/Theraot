@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace System.Collections.ObjectModel
 {
-    public partial class ReadOnlyDictionary<TKey, TValue>
+    public partial class ReadOnlyDictionary<TKey, TValue> // TKey is used in another file, this is a partial class
     {
         [Serializable]
         public sealed class ValueCollection : ICollection<TValue>, ICollection

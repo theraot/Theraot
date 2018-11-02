@@ -1793,15 +1793,14 @@ namespace MonoTests.System.Threading.Tasks
             {
                 var ranOnDefault = false;
                 var scheduler = new SynchronousScheduler();
-
                 Task.Factory.StartNew(() =>
-                {
-                    Task.Factory.StartNew(() =>
-                    {
-                        ranOnDefault = Thread.CurrentThread.IsThreadPoolThread;
-                        mre.Set();
-                    });
-                }, CancellationToken.None, TaskCreationOptions.HideScheduler, scheduler);
+                                {
+                                    Task.Factory.StartNew(() =>
+                                    {
+                                        ranOnDefault = Thread.CurrentThread.IsThreadPoolThread;
+                                        mre.Set();
+                                    });
+                                }, CancellationToken.None, TaskCreationOptions.HideScheduler, scheduler);
 
                 Assert.IsTrue(mre.Wait(10000), "#1");
                 Assert.IsTrue(ranOnDefault, "#2");

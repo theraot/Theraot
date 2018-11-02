@@ -92,7 +92,6 @@ namespace System.Threading.Tasks
                 0;
         }
 
-        /// <summary>Returns a value indicating whether this value is equal to a specified <see cref="object"/>.</summary>
         public override bool Equals(object obj)
         {
             return
@@ -100,7 +99,6 @@ namespace System.Threading.Tasks
                 Equals((ValueTask<TResult>)obj);
         }
 
-        /// <summary>Returns a value indicating whether this value is equal to a specified <see cref="ValueTask{TResult}"/> value.</summary>
         public bool Equals(ValueTask<TResult> other)
         {
             return _task != null || other._task != null ?

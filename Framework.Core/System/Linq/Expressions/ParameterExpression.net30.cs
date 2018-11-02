@@ -94,6 +94,9 @@ namespace System.Linq.Expressions
 
                     case TypeCode.UInt64:
                         return new PrimitiveParameterExpression<ulong>(name);
+
+                    default:
+                        break;
                 }
             }
 

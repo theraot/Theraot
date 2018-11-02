@@ -44,13 +44,13 @@ namespace System.Linq
         public abstract SortContext<TElement> CreateContext(SortContext<TElement> current);
 
         public IOrderedEnumerable<TElement> CreateOrderedEnumerable<TKey>(
-            Func<TElement, TKey> selector, IComparer<TKey> comparer, bool descending)
+            Func<TElement, TKey> keySelector, IComparer<TKey> comparer, bool descending)
         {
             return new OrderedSequence<TElement, TKey>
             (
                 this,
                 _source,
-                selector,
+                keySelector,
                 comparer,
                 descending ? SortDirection.Descending : SortDirection.Ascending
             );

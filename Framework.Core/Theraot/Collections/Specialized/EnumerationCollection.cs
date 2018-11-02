@@ -7,7 +7,11 @@ using System.Linq;
 namespace Theraot.Collections.Specialized
 {
     [System.Diagnostics.DebuggerNonUserCode]
-    public partial class EnumerationCollection<T> : ICollection<T>, IReadOnlyCollection<T>
+    public
+#if FAT
+        partial
+#endif
+        class EnumerationCollection<T> : ICollection<T>, IReadOnlyCollection<T>
     {
         private readonly Func<T, bool> _contains;
         private readonly Func<int> _count;

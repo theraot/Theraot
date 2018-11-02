@@ -48,8 +48,10 @@ namespace System.Linq.Expressions.Compiler
                     case MemberBindingType.MemberBinding:
                         var member = (MemberMemberBinding)binding;
                         return new MemberMemberBindingRewriter(member, spiller, stack);
+
+                    default:
+                        throw Error.UnhandledBinding();
                 }
-                throw Error.UnhandledBinding();
             }
         }
 
@@ -85,8 +87,10 @@ namespace System.Linq.Expressions.Compiler
                             newBindings[i] = _bindingRewriters[i].AsBinding();
                         }
                         return Expression.MemberBind(MemberBinding.Member, new TrueReadOnlyCollection<MemberBinding>(newBindings));
+
+                    default:
+                        throw ContractUtils.Unreachable;
                 }
-                throw ContractUtils.Unreachable;
             }
 
             internal override Expression AsExpression(Expression target)
@@ -170,8 +174,10 @@ namespace System.Linq.Expressions.Compiler
                             }
                         }
                         return Expression.ListBind(MemberBinding.Member, new TrueReadOnlyCollection<ElementInit>(newInits));
+
+                    default:
+                        throw ContractUtils.Unreachable;
                 }
-                throw ContractUtils.Unreachable;
             }
 
             internal override Expression AsExpression(Expression target)
@@ -232,8 +238,10 @@ namespace System.Linq.Expressions.Compiler
 
                     case RewriteAction.Copy:
                         return Expression.Bind(MemberBinding.Member, _rhs);
+
+                    default:
+                        throw ContractUtils.Unreachable;
                 }
-                throw ContractUtils.Unreachable;
             }
 
             internal override Expression AsExpression(Expression target)

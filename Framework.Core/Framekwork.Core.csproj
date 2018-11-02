@@ -519,7 +519,6 @@
     <Compile Include="Theraot\Collections\Specialized\CustomComparer.cs" />
     <Compile Include="Theraot\Collections\Specialized\CustomEqualityComparer.cs" />
     <Compile Include="Theraot\Collections\Specialized\DelegatedCollection.cs" />
-    <Compile Include="Theraot\Collections\Specialized\DelegatedCollection.extended.cs" />
     <Compile Include="Theraot\Collections\Specialized\EnumCollection.cs" />
     <Compile Include="Theraot\Collections\Specialized\EnumerableFromDelegate.cs" />
     <Compile Include="Theraot\Collections\Specialized\EnumerationCollection.cs" />

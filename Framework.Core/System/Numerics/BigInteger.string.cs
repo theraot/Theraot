@@ -841,6 +841,9 @@ namespace System.Numerics
                                 result.Append('(');
                                 close = " " + info.CurrencySymbol + ")";
                                 break;
+
+                            default:
+                                break;
                         }
                     }
                     else
@@ -862,6 +865,9 @@ namespace System.Numerics
 
                             case 3:
                                 close = " " + info.CurrencySymbol;
+                                break;
+
+                            default:
                                 break;
                         }
                     }
@@ -930,6 +936,9 @@ namespace System.Numerics
                             case 11:
                                 close = info.NegativeSign + " " + info.PercentSymbol;
                                 break;
+
+                            default:
+                                break;
                         }
                     }
                     else
@@ -951,6 +960,9 @@ namespace System.Numerics
                             case 3:
                                 result.Append(info.PercentSymbol);
                                 result.Append(" ");
+                                break;
+
+                            default:
                                 break;
                         }
                     }

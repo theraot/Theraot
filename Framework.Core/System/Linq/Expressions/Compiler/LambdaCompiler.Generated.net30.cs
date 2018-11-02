@@ -313,8 +313,10 @@ namespace System.Linq.Expressions.Compiler
                 case ExpressionType.MultiplyAssignChecked:
                 case ExpressionType.SubtractAssignChecked:
                     return true;
+
+                default:
+                    return false;
             }
-            return false;
         }
     }
 }

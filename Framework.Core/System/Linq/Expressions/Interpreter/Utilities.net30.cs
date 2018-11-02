@@ -81,6 +81,9 @@ namespace System.Linq.Expressions.Interpreter
 
                     case 16:
                         return typeof(Action<,,,,,,,,,,,,,,,>).MakeGenericType(types);
+
+                    default:
+                        break;
                 }
             }
             else
@@ -137,6 +140,9 @@ namespace System.Linq.Expressions.Interpreter
 
                     case 17:
                         return typeof(Func<,,,,,,,,,,,,,,,,>).MakeGenericType(types);
+
+                    default:
+                        break;
                 }
             }
             throw Assert.Unreachable;

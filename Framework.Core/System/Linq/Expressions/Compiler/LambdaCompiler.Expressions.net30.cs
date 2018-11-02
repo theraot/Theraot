@@ -860,7 +860,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitDebugInfoExpression(Expression expr)
+        private static void EmitDebugInfoExpression(Expression expr)
         {
             GC.KeepAlive(expr);
         }

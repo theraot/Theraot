@@ -7,7 +7,11 @@ namespace Theraot.Collections
 {
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
-    public sealed partial class ExtendedReadOnlyCollection<T> : IReadOnlyCollection<T>, ICollection<T>
+    public sealed
+#if FAT
+        partial
+#endif
+        class ExtendedReadOnlyCollection<T> : IReadOnlyCollection<T>, ICollection<T>
     {
         private readonly ICollection<T> _wrapped;
 

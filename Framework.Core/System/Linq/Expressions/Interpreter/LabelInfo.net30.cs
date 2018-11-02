@@ -307,8 +307,10 @@ namespace System.Linq.Expressions.Interpreter
                     case LabelScopeKind.Switch:
                     case LabelScopeKind.Lambda:
                         return true;
+
+                    default:
+                        return false;
                 }
-                return false;
             }
         }
 

@@ -167,6 +167,9 @@ namespace System.Threading.Tasks
                                 inner.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(innerCallback);
                             }
                             break;
+
+                        default:
+                            break;
                     }
                     Debug.Assert(result);
                 }
@@ -205,6 +208,9 @@ namespace System.Threading.Tasks
                     result = resultTask != null ?
                         completionSource.TrySetResult(resultTask.Result) :
                         completionSource.TrySetResult(default(TResult));
+                    break;
+
+                default:
                     break;
             }
             return result;

@@ -13,7 +13,11 @@ namespace Theraot.Collections.Specialized
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public sealed partial class NullAwareDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ISerializable
+    public sealed
+#if FAT
+        partial
+# endif
+        class NullAwareDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ISerializable
     {
         private static readonly TKey _typedNull = TypeHelper.Cast<TKey>(null);
 
