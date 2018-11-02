@@ -3,7 +3,7 @@
     <PropertyGroup>
         <RootNamespace>Theraot.Core</RootNamespace>
         <AssemblyName>Theraot.Core</AssemblyName>
-        <Configurations>Debug;Release;netcoreapp1.0;netcoreapp1.0_Debug;netcoreapp1.1;netcoreapp1.1_Debug;netcoreapp2.0;netcoreapp2.0_Debug</Configurations>
+        <Configurations>Debug;Release;netcoreapp1.0;netcoreapp1.0_Debug;netcoreapp1.1;netcoreapp1.1_Debug;netcoreapp2.0;netcoreapp2.0_Debug;netcoreapp2.1;netcoreapp2.1_Debug</Configurations>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -34,6 +34,13 @@
         <OutputPath>..\bin</OutputPath>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp2.1_Debug|AnyCPU'">
+        <TargetFramework>netcoreapp2.1</TargetFramework>
+        <DefineConstants>TRACE;FAT</DefineConstants>
+        <LangVersion>4</LangVersion>
+        <OutputPath>..\bin</OutputPath>
+    </PropertyGroup>
+
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
         <TargetFramework>netcoreapp1.0</TargetFramework>
         <DefineConstants>TRACE;FAT</DefineConstants>
@@ -59,6 +66,14 @@
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp2.0|AnyCPU'">
         <TargetFramework>netcoreapp2.0</TargetFramework>
+        <DefineConstants>TRACE;FAT</DefineConstants>
+        <LangVersion>4</LangVersion>
+        <OutputPath>..\bin</OutputPath>
+        <Optimize>true</Optimize>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp2.1|AnyCPU'">
+        <TargetFramework>netcoreapp2.1</TargetFramework>
         <DefineConstants>TRACE;FAT</DefineConstants>
         <LangVersion>4</LangVersion>
         <OutputPath>..\bin</OutputPath>

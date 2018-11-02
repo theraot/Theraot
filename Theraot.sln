@@ -6,8 +6,8 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BC4119EA-3064-4B66-9D17-0607867B870C}"
 	ProjectSection(SolutionItems) = preProject
 		build.bat = build.bat
+		build_dotnet.bat = build_dotnet.bat
 		build_final.bat = build_final.bat
-		build_net.bat = build_net.bat
 		clear_package.bat = clear_package.bat
 		LICENSE.txt = LICENSE.txt
 		package.bat = package.bat
@@ -46,6 +46,8 @@ Global
 		netcoreapp1.1|Any CPU = netcoreapp1.1|Any CPU
 		netcoreapp2.0_Debug|Any CPU = netcoreapp2.0_Debug|Any CPU
 		netcoreapp2.0|Any CPU = netcoreapp2.0|Any CPU
+		netcoreapp2.1_Debug|Any CPU = netcoreapp2.1_Debug|Any CPU
+		netcoreapp2.1|Any CPU = netcoreapp2.1|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
@@ -87,6 +89,8 @@ Global
 		{F4C29B9E-2C6A-4556-9B90-A15841FF6F78}.netcoreapp1.1|Any CPU.ActiveCfg = Release|Any CPU
 		{F4C29B9E-2C6A-4556-9B90-A15841FF6F78}.netcoreapp2.0_Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F4C29B9E-2C6A-4556-9B90-A15841FF6F78}.netcoreapp2.0|Any CPU.ActiveCfg = Release|Any CPU
+		{F4C29B9E-2C6A-4556-9B90-A15841FF6F78}.netcoreapp2.1_Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4C29B9E-2C6A-4556-9B90-A15841FF6F78}.netcoreapp2.1|Any CPU.ActiveCfg = Release|Any CPU
 		{F4C29B9E-2C6A-4556-9B90-A15841FF6F78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4C29B9E-2C6A-4556-9B90-A15841FF6F78}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F759165E-57BE-4FB2-9A95-036095302837}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -118,6 +122,10 @@ Global
 		{F759165E-57BE-4FB2-9A95-036095302837}.netcoreapp2.0_Debug|Any CPU.Build.0 = netcoreapp2.0_Debug|Any CPU
 		{F759165E-57BE-4FB2-9A95-036095302837}.netcoreapp2.0|Any CPU.ActiveCfg = netcoreapp2.0|Any CPU
 		{F759165E-57BE-4FB2-9A95-036095302837}.netcoreapp2.0|Any CPU.Build.0 = netcoreapp2.0|Any CPU
+		{F759165E-57BE-4FB2-9A95-036095302837}.netcoreapp2.1_Debug|Any CPU.ActiveCfg = netcoreapp2.0_Debug|Any CPU
+		{F759165E-57BE-4FB2-9A95-036095302837}.netcoreapp2.1_Debug|Any CPU.Build.0 = netcoreapp2.0_Debug|Any CPU
+		{F759165E-57BE-4FB2-9A95-036095302837}.netcoreapp2.1|Any CPU.ActiveCfg = netcoreapp2.0|Any CPU
+		{F759165E-57BE-4FB2-9A95-036095302837}.netcoreapp2.1|Any CPU.Build.0 = netcoreapp2.0|Any CPU
 		{F759165E-57BE-4FB2-9A95-036095302837}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F759165E-57BE-4FB2-9A95-036095302837}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B5078871-4299-49ED-B921-3B5EBE57336A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -158,6 +166,8 @@ Global
 		{B5078871-4299-49ED-B921-3B5EBE57336A}.netcoreapp1.1|Any CPU.ActiveCfg = Release|Any CPU
 		{B5078871-4299-49ED-B921-3B5EBE57336A}.netcoreapp2.0_Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B5078871-4299-49ED-B921-3B5EBE57336A}.netcoreapp2.0|Any CPU.ActiveCfg = Release|Any CPU
+		{B5078871-4299-49ED-B921-3B5EBE57336A}.netcoreapp2.1_Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5078871-4299-49ED-B921-3B5EBE57336A}.netcoreapp2.1|Any CPU.ActiveCfg = Release|Any CPU
 		{B5078871-4299-49ED-B921-3B5EBE57336A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5078871-4299-49ED-B921-3B5EBE57336A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection

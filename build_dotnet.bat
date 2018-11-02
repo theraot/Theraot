@@ -5,7 +5,7 @@ REM Solution file name
 SET solution_name=Theraot.sln
 
 REM build configurations, space separated
-SET build_configuration=netcoreapp1.0 netcoreapp1.1 netcoreapp2.0
+SET build_configuration=netcoreapp1.0 netcoreapp1.1 netcoreapp2.0 netcoreapp2.1
 REM assembly to recover
 SET assemblies=Theraot.Core.dll
 REM path to recover from
