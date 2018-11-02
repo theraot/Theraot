@@ -56,11 +56,63 @@ namespace Theraot.Core
             }
         }
 
+        public static bool TryParse<TEnum>(string value, out TEnum result)
+            where TEnum : struct
+        {
+            var enumType = typeof(TEnum);
+            // Throw if the type is not an Enum
+            GC.KeepAlive(Enum.GetUnderlyingType(enumType));
+            try
+            {
+                result = (TEnum)Enum.Parse(enumType, value);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                GC.KeepAlive(ex);
+                result = default(TEnum);
+                return false;
+            }
+        }
+
+        public static bool TryParse<TEnum>(string value, bool ignoreCase, out TEnum result)
+            where TEnum : struct
+        {
+            var enumType = typeof(TEnum);
+            // Throw if the type is not an Enum
+            GC.KeepAlive(Enum.GetUnderlyingType(enumType));
+            try
+            {
+                result = (TEnum)Enum.Parse(enumType, value, ignoreCase);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                GC.KeepAlive(ex);
+                result = default(TEnum);
+                return false;
+            }
+        }
+
 #else
         public static bool HasFlag(Enum value, Enum flag)
         {
             // Added in .NET 4.0
             return value.HasFlag(flag);
+        }
+
+        public static bool TryParse<TEnum>(string value, out TEnum result)
+            where TEnum : struct
+        {
+            // Added in .NET 4.0
+            return Enum.TryParse<TEnum>(value, out result);
+        }
+
+        public static bool TryParse<TEnum>(string value, bool ignoreCase, out TEnum result)
+            where TEnum : struct
+        {
+            // Added in .NET 4.0
+            return Enum.TryParse<TEnum>(value, ignoreCase, out result);
         }
 #endif
     }
