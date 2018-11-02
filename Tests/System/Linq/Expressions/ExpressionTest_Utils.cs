@@ -154,12 +154,12 @@ namespace MonoTests.System.Linq.Expressions
 
         public static bool operator ==(OpClass a, OpClass b)
         {
-            return a == (object)b;
+            return ReferenceEquals(a, b);
         }
 
         public static bool operator !=(OpClass a, OpClass b)
         {
-            return a != (object)b;
+            return !ReferenceEquals(a, b);
         }
 
         //
@@ -184,8 +184,8 @@ namespace MonoTests.System.Linq.Expressions
 
     public class MemberClass
     {
-        public int TestField1;
-        public readonly int TestField2 = 1;
+        public int TestField1; // Used by Reflection
+        public readonly int TestField2 = 1; // Used by Reflection
 
         public int TestProperty1
         {

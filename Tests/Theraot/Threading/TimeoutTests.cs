@@ -9,11 +9,16 @@ namespace Theraot.Threading
         [Test]
         public static void TimeoutCancel()
         {
+            again:
             var value = new[] { 0 };
             var timeout = new Timeout(() => value[0] = 1, 1000);
             Assert.IsFalse(timeout.IsCanceled);
-            Assert.IsFalse(timeout.IsCompleted); // race condition
             timeout.Cancel();
+            if (timeout.IsCompleted)
+            {
+                Assert.AreEqual(1, value[0]);
+                goto again;
+            }
             Assert.IsTrue(timeout.IsCanceled);
             Assert.IsFalse(timeout.IsCompleted);
             Assert.AreEqual(0, value[0]);
@@ -22,11 +27,16 @@ namespace Theraot.Threading
         [Test]
         public static void TimeoutCancelAndChange()
         {
+            again:
             var value = new[] { 0 };
             var timeout = new Timeout(() => value[0] = 1, 100);
             Assert.IsFalse(timeout.IsCanceled);
-            Assert.IsFalse(timeout.IsCompleted); // race condition
             timeout.Cancel();
+            if (timeout.IsCompleted)
+            {
+                Assert.AreEqual(1, value[0]);
+                goto again;
+            }
             Assert.IsTrue(timeout.IsCanceled);
             Assert.IsFalse(timeout.IsCompleted);
             Assert.AreEqual(0, value[0]);
@@ -38,12 +48,16 @@ namespace Theraot.Threading
         [Test]
         public static void TimeoutChange()
         {
+            again:
             var now = DateTime.Now;
             var value = new[] { now };
             var timeout = new Timeout(() => value[0] = DateTime.Now, 100);
-            timeout.Change(1000); // race condition
+            if (!timeout.Change(1000))
+            {
+                goto again;
+            }
             Assert.IsFalse(timeout.IsCanceled);
-            Assert.IsFalse(timeout.IsCompleted); // race condition
+            Assert.IsFalse(timeout.IsCompleted);
             ThreadingHelper.SpinWaitUntil(() => timeout.IsCompleted);
             Assert.Greater((value[0] - now).TotalMilliseconds, 100);
         }
@@ -82,7 +96,6 @@ namespace Theraot.Threading
             var value = new[] { 0 };
             var timeout = new Timeout(() => value[0] = 1, 100);
             Assert.IsFalse(timeout.IsCanceled);
-            Assert.IsFalse(timeout.IsCompleted); // race condition
             ThreadingHelper.SpinWaitUntil(() => timeout.IsCompleted);
             Assert.IsFalse(timeout.IsCanceled);
             Assert.IsTrue(timeout.IsCompleted);
@@ -95,11 +108,15 @@ namespace Theraot.Threading
         [Test]
         public static void TimeoutRemaining()
         {
+            again:
             var now = DateTime.Now;
             var value = new[] { now };
             var timeout = new Timeout(() => value[0] = DateTime.Now, 500);
             var remaining = timeout.CheckRemaining();
-            Assert.IsFalse(timeout.IsCompleted);
+            if (timeout.IsCompleted)
+            {
+                goto again;
+            }
             Assert.LessOrEqual(remaining, 500);
             Thread.Sleep(1);
             var newremaining = timeout.CheckRemaining();

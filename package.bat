@@ -4,6 +4,10 @@ setlocal enabledelayedexpansion
 REM nuspec file name
 SET spec_file=Theraot.nuspec
 
+echo.
+echo Starting Package.
+echo.
+
 REM Store path of the bat
 SET mypath=%~dp0
 

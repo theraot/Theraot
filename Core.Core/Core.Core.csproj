@@ -1,0 +1,417 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <RootNamespace>Theraot.Core</RootNamespace>
+        <AssemblyName>Theraot.Core</AssemblyName>
+        <Configurations>Debug;Release;netcoreapp1.0;netcoreapp1.0_Debug;netcoreapp1.1;netcoreapp1.1_Debug;netcoreapp2.0;netcoreapp2.0_Debug;netcoreapp2.1;netcoreapp2.1_Debug</Configurations>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <TargetFramework>netcoreapp1.0</TargetFramework>
+        <DefineConstants>TRACE;DEBUG;FAT</DefineConstants>
+        <LangVersion>4</LangVersion>
+        <OutputPath>..\bin</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp1.0_Debug|AnyCPU'">
+        <TargetFramework>netcoreapp1.0</TargetFramework>
+        <DefineConstants>TRACE;FAT</DefineConstants>
+        <LangVersion>4</LangVersion>
+        <OutputPath>..\bin</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp1.1_Debug|AnyCPU'">
+        <TargetFramework>netcoreapp1.1</TargetFramework>
+        <DefineConstants>TRACE;FAT</DefineConstants>
+        <LangVersion>4</LangVersion>
+        <OutputPath>..\bin</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp2.0_Debug|AnyCPU'">
+        <TargetFramework>netcoreapp2.0</TargetFramework>
+        <DefineConstants>TRACE;FAT</DefineConstants>
+        <LangVersion>4</LangVersion>
+        <OutputPath>..\bin</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp2.1_Debug|AnyCPU'">
+        <TargetFramework>netcoreapp2.1</TargetFramework>
+        <DefineConstants>TRACE;FAT</DefineConstants>
+        <LangVersion>4</LangVersion>
+        <OutputPath>..\bin</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <TargetFramework>netcoreapp1.0</TargetFramework>
+        <DefineConstants>TRACE;FAT</DefineConstants>
+        <LangVersion>4</LangVersion>
+        <OutputPath>..\bin\</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp1.0|AnyCPU'">
+        <TargetFramework>netcoreapp1.0</TargetFramework>
+        <DefineConstants>TRACE;FAT</DefineConstants>
+        <LangVersion>4</LangVersion>
+        <OutputPath>..\bin</OutputPath>
+        <Optimize>true</Optimize>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp1.1|AnyCPU'">
+        <TargetFramework>netcoreapp1.1</TargetFramework>
+        <DefineConstants>TRACE;FAT</DefineConstants>
+        <LangVersion>4</LangVersion>
+        <OutputPath>..\bin</OutputPath>
+        <Optimize>true</Optimize>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp2.0|AnyCPU'">
+        <TargetFramework>netcoreapp2.0</TargetFramework>
+        <DefineConstants>TRACE;FAT</DefineConstants>
+        <LangVersion>4</LangVersion>
+        <OutputPath>..\bin</OutputPath>
+        <Optimize>true</Optimize>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp2.1|AnyCPU'">
+        <TargetFramework>netcoreapp2.1</TargetFramework>
+        <DefineConstants>TRACE;FAT</DefineConstants>
+        <LangVersion>4</LangVersion>
+        <OutputPath>..\bin</OutputPath>
+        <Optimize>true</Optimize>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Remove="System\**" />
+        <Compile Remove="Theraot\Framework.Core\**" />
+        <EmbeddedResource Remove="System\**" />
+        <EmbeddedResource Remove="Theraot\Framework.Core\**" />
+        <None Remove="System\**" />
+        <None Remove="Theraot\Framework.Core\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\Framework.Core\CLSCompliant.cs" Link="CLSCompliant.cs" />
+        <Compile Include="..\Framework.Core\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ConversionSet.cs" Link="Theraot\Collections\ConversionSet.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ConvertedObserver.cs" Link="Theraot\Collections\ConvertedObserver.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\CustomObserver.cs" Link="Theraot\Collections\CustomObserver.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\EmptyCollection.cs" Link="Theraot\Collections\EmptyCollection.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\EmptyList.cs" Link="Theraot\Collections\EmptyList.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\EmptySet.cs" Link="Theraot\Collections\EmptySet.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ExtendedDictionary.cs" Link="Theraot\Collections\ExtendedDictionary.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ExtendedList.cs" Link="Theraot\Collections\ExtendedList.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ExtendedQueue.cs" Link="Theraot\Collections\ExtendedQueue.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ExtendedReadOnlyCollection.cs" Link="Theraot\Collections\ExtendedReadOnlyCollection.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ExtendedReadOnlyCollection.extended.cs" Link="Theraot\Collections\ExtendedReadOnlyCollection.extended.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ExtendedReadOnlyDictionary.cs" Link="Theraot\Collections\ExtendedReadOnlyDictionary.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ExtendedReadOnlyList.cs" Link="Theraot\Collections\ExtendedReadOnlyList.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ExtendedReadOnlySet.cs" Link="Theraot\Collections\ExtendedReadOnlySet.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ExtendedSet.cs" Link="Theraot\Collections\ExtendedSet.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ExtendedStack.cs" Link="Theraot\Collections\ExtendedStack.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Extensions.add.cs" Link="Theraot\Collections\Extensions.add.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Extensions.beforeafter.cs" Link="Theraot\Collections\Extensions.beforeafter.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Extensions.drop.cs" Link="Theraot\Collections\Extensions.drop.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Extensions.extra.cs" Link="Theraot\Collections\Extensions.extra.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Extensions.groupby.cs" Link="Theraot\Collections\Extensions.groupby.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Extensions.insert.cs" Link="Theraot\Collections\Extensions.insert.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Extensions.interleave.cs" Link="Theraot\Collections\Extensions.interleave.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Extensions.numeric.cs" Link="Theraot\Collections\Extensions.numeric.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Extensions.operations.cs" Link="Theraot\Collections\Extensions.operations.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Extensions.partition.cs" Link="Theraot\Collections\Extensions.partition.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Extensions.zip.cs" Link="Theraot\Collections\Extensions.zip.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Extensions._.cs" Link="Theraot\Collections\Extensions._.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\FilteredConvertedObserver.cs" Link="Theraot\Collections\FilteredConvertedObserver.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\FilteredObserver.cs" Link="Theraot\Collections\FilteredObserver.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\IDropPoint.cs" Link="Theraot\Collections\IDropPoint.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\IExtendedCollection.cs" Link="Theraot\Collections\IExtendedCollection.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\IExtendedDictionary.cs" Link="Theraot\Collections\IExtendedDictionary.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\IExtendedList.cs" Link="Theraot\Collections\IExtendedList.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\IExtendedReadOnlyCollection.cs" Link="Theraot\Collections\IExtendedReadOnlyCollection.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\IExtendedReadOnlyDictionary.cs" Link="Theraot\Collections\IExtendedReadOnlyDictionary.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\IExtendedReadOnlyList.cs" Link="Theraot\Collections\IExtendedReadOnlyList.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\IExtendedReadOnlySet.cs" Link="Theraot\Collections\IExtendedReadOnlySet.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\IExtendedSet.cs" Link="Theraot\Collections\IExtendedSet.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\IProxyObservable.cs" Link="Theraot\Collections\IProxyObservable.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\IReadOnlyDropPoint.cs" Link="Theraot\Collections\IReadOnlyDropPoint.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\IReadOnlySet.cs" Link="Theraot\Collections\IReadOnlySet.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\KeyValuePairComparer.cs" Link="Theraot\Collections\KeyValuePairComparer.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\KeyValuePairEqualityComparer.cs" Link="Theraot\Collections\KeyValuePairEqualityComparer.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ObservableExtensions.cs" Link="Theraot\Collections\ObservableExtensions.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ProgressiveCollection.cs" Link="Theraot\Collections\ProgressiveCollection.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ProgressiveCollection.extended.cs" Link="Theraot\Collections\ProgressiveCollection.extended.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ProgressiveDictionary.cs" Link="Theraot\Collections\ProgressiveDictionary.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ProgressiveList.cs" Link="Theraot\Collections\ProgressiveList.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ProgressiveList.extended.cs" Link="Theraot\Collections\ProgressiveList.extended.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ProgressiveLookup.cs" Link="Theraot\Collections\ProgressiveLookup.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ProgressiveSet.cs" Link="Theraot\Collections\ProgressiveSet.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ProgressiveSet.extended.cs" Link="Theraot\Collections\ProgressiveSet.extended.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Progressor.cs" Link="Theraot\Collections\Progressor.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ProxyObservable.cs" Link="Theraot\Collections\ProxyObservable.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\AVLTree.AVLNode.cs" Link="Theraot\Collections\Specialized\AVLTree.AVLNode.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\AVLTree.cs" Link="Theraot\Collections\Specialized\AVLTree.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\ConditionalExtendedEnumerable.cs" Link="Theraot\Collections\Specialized\ConditionalExtendedEnumerable.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\ConversionComparer.cs" Link="Theraot\Collections\Specialized\ConversionComparer.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\ConversionEqualityComparer.cs" Link="Theraot\Collections\Specialized\ConversionEqualityComparer.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\ConvertedValueCollection.cs" Link="Theraot\Collections\Specialized\ConvertedValueCollection.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\CustomComparer.cs" Link="Theraot\Collections\Specialized\CustomComparer.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\CustomEqualityComparer.cs" Link="Theraot\Collections\Specialized\CustomEqualityComparer.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\DelegatedCollection.cs" Link="Theraot\Collections\Specialized\DelegatedCollection.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\EnumCollection.cs" Link="Theraot\Collections\Specialized\EnumCollection.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\EnumerableFromDelegate.cs" Link="Theraot\Collections\Specialized\EnumerableFromDelegate.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\EnumerationCollection.cs" Link="Theraot\Collections\Specialized\EnumerationCollection.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\EnumerationCollection.extended.cs" Link="Theraot\Collections\Specialized\EnumerationCollection.extended.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\EnumerationSet.cs" Link="Theraot\Collections\Specialized\EnumerationSet.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\ExtendedEnumerable.cs" Link="Theraot\Collections\Specialized\ExtendedEnumerable.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\ExtendedEnumerableBase.cs" Link="Theraot\Collections\Specialized\ExtendedEnumerableBase.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\FlagArray.cs" Link="Theraot\Collections\Specialized\FlagArray.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\Grouping.cs" Link="Theraot\Collections\Specialized\Grouping.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\KeyCollection.cs" Link="Theraot\Collections\Specialized\KeyCollection.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\NeedleConversionEqualityComparer.cs" Link="Theraot\Collections\Specialized\NeedleConversionEqualityComparer.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\NullAwareDictionary.cs" Link="Theraot\Collections\Specialized\NullAwareDictionary.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\NullAwareDictionary.extended.cs" Link="Theraot\Collections\Specialized\NullAwareDictionary.extended.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\OrderedCollection.cs" Link="Theraot\Collections\Specialized\OrderedCollection.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\ValueCollection.cs" Link="Theraot\Collections\Specialized\ValueCollection.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\ArrayReservoir.cs" Link="Theraot\Collections\ThreadSafe\ArrayReservoir.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\Bucket.cs" Link="Theraot\Collections\ThreadSafe\Bucket.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\BucketCore.cs" Link="Theraot\Collections\ThreadSafe\BucketCore.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\BucketHelper.cs" Link="Theraot\Collections\ThreadSafe\BucketHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\CircularBucket.cs" Link="Theraot\Collections\ThreadSafe\CircularBucket.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\DoAction.cs" Link="Theraot\Collections\ThreadSafe\DoAction.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\FixedSizeBucket.cs" Link="Theraot\Collections\ThreadSafe\FixedSizeBucket.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\FixedSizeQueue.cs" Link="Theraot\Collections\ThreadSafe\FixedSizeQueue.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\IBucket.cs" Link="Theraot\Collections\ThreadSafe\IBucket.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\NeedleBucket.cs" Link="Theraot\Collections\ThreadSafe\NeedleBucket.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\NeedleReservoir.cs" Link="Theraot\Collections\ThreadSafe\NeedleReservoir.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\Pool.cs" Link="Theraot\Collections\ThreadSafe\Pool.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\ReentryGuardHelper.cs" Link="Theraot\Collections\ThreadSafe\ReentryGuardHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\SafeCollection.cs" Link="Theraot\Collections\ThreadSafe\SafeCollection.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\SafeDictionary.cs" Link="Theraot\Collections\ThreadSafe\SafeDictionary.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\SafeQueue.cs" Link="Theraot\Collections\ThreadSafe\SafeQueue.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\SafeSet.cs" Link="Theraot\Collections\ThreadSafe\SafeSet.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" Link="Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\WeakCollection.cs" Link="Theraot\Collections\ThreadSafe\WeakCollection.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\WeakDelegateCollection.cs" Link="Theraot\Collections\ThreadSafe\WeakDelegateCollection.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\WeakDictionary.cs" Link="Theraot\Collections\ThreadSafe\WeakDictionary.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\WeakEvent.cs" Link="Theraot\Collections\ThreadSafe\WeakEvent.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\TryTake.cs" Link="Theraot\Collections\TryTake.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\ActionHelper.cs" Link="Theraot\Core\ActionHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\AggregateExceptionHelper.cs" Link="Theraot\Core\AggregateExceptionHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\CancellationTokenHelper.cs" Link="Theraot\Core\CancellationTokenHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\CharHelper.cs" Link="Theraot\Core\CharHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\Check.cs" Link="Theraot\Core\Check.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\CloneHelper.cs" Link="Theraot\Core\CloneHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\ComparerExtensions.cs" Link="Theraot\Core\ComparerExtensions.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\DebugHelper.cs" Link="Theraot\Core\DebugHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\DelegateEqualityComparer.cs" Link="Theraot\Core\DelegateEqualityComparer.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\DelegateExtensions.cs" Link="Theraot\Core\DelegateExtensions.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\EnumerableHelper.cs" Link="Theraot\Core\EnumerableHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\EnumHelper.cs" Link="Theraot\Core\EnumHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\EnvironmentHelper.cs" Link="Theraot\Core\EnvironmentHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\EqualityComparerHelper.cs" Link="Theraot\Core\EqualityComparerHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\FolderEnumeration.cs" Link="Theraot\Core\FolderEnumeration.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\FuncHelper.cs" Link="Theraot\Core\FuncHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\FuncHelper.predicate.cs" Link="Theraot\Core\FuncHelper.predicate.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\FuncHelper._.cs" Link="Theraot\Core\FuncHelper._.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\GraphHelper.cs" Link="Theraot\Core\GraphHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\ICloneable.cs" Link="Theraot\Core\ICloneable.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\ICloner.cs" Link="Theraot\Core\ICloner.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\IntPtrHelper.cs" Link="Theraot\Core\IntPtrHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\MonitorHelper.cs" Link="Theraot\Core\MonitorHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\NumericHelper.Binary.cs" Link="Theraot\Core\NumericHelper.Binary.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\NumericHelper.build.cs" Link="Theraot\Core\NumericHelper.build.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\NumericHelper.checked.cs" Link="Theraot\Core\NumericHelper.checked.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\NumericHelper.checks.cs" Link="Theraot\Core\NumericHelper.checks.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\NumericHelper.cs" Link="Theraot\Core\NumericHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\NumericHelper.unchecked.cs" Link="Theraot\Core\NumericHelper.unchecked.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\OrderedEnumerable.cs" Link="Theraot\Core\OrderedEnumerable.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\PathHelper.cs" Link="Theraot\Core\PathHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\PrimeHelper.array.cs" Link="Theraot\Core\PrimeHelper.array.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\PrimeHelper.cs" Link="Theraot\Core\PrimeHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\RamStream.cs" Link="Theraot\Core\RamStream.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\Range.cs" Link="Theraot\Core\Range.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\RangeExtensions.cs" Link="Theraot\Core\RangeExtensions.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\RangeSet.cs" Link="Theraot\Core\RangeSet.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\RangeSituation.cs" Link="Theraot\Core\RangeSituation.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\Reference.cs" Link="Theraot\Core\Reference.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\ReferenceEqualityComparer.cs" Link="Theraot\Core\ReferenceEqualityComparer.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\StopwatchExtensions.cs" Link="Theraot\Core\StopwatchExtensions.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\StreamExtensions.cs" Link="Theraot\Core\StreamExtensions.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\StringBuilderExtensions.cs" Link="Theraot\Core\StringBuilderExtensions.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\StringHelper.cs" Link="Theraot\Core\StringHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\StringProcessor.cs" Link="Theraot\Core\StringProcessor.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\TupleEqualityComparer.cs" Link="Theraot\Core\TupleEqualityComparer.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\TypeHelper.ConstructorHelper.cs" Link="Theraot\Core\TypeHelper.ConstructorHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\TypeHelper.cs" Link="Theraot\Core\TypeHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\TypeHelper.extra.cs" Link="Theraot\Core\TypeHelper.extra.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\TypeHelper.util.cs" Link="Theraot\Core\TypeHelper.util.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\ValueActionClosure.cs" Link="Theraot\Core\ValueActionClosure.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\ValueFuncClosure.cs" Link="Theraot\Core\ValueFuncClosure.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\AtomicBoolean.cs" Link="Theraot\Threading\AtomicBoolean.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\CriticalDisposable.cs" Link="Theraot\Threading\CriticalDisposable.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\CriticalDisposable.disposable.cs" Link="Theraot\Threading\CriticalDisposable.disposable.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Disposable.cs" Link="Theraot\Threading\Disposable.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Disposable.disposable.cs" Link="Theraot\Threading\Disposable.disposable.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Disposable.extended.cs" Link="Theraot\Threading\Disposable.extended.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\DisposableAkin.cs" Link="Theraot\Threading\DisposableAkin.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\DisposableExtensions.cs" Link="Theraot\Threading\DisposableExtensions.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\GCMonitor.cs" Link="Theraot\Threading\GCMonitor.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\GCMonitor.internal.cs" Link="Theraot\Threading\GCMonitor.internal.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\IExtendedDisposable.cs" Link="Theraot\Threading\IExtendedDisposable.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\IReadWriteLock.cs" Link="Theraot\Threading\IReadWriteLock.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\IThreadLocal.cs" Link="Theraot\Threading\IThreadLocal.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\LockContext.cs" Link="Theraot\Threading\LockContext.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\LockSlot.cs" Link="Theraot\Threading\LockSlot.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\NeedleLock.cs" Link="Theraot\Threading\NeedleLock.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\CacheNeedle.cs" Link="Theraot\Threading\Needles\CacheNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\DefaultNeedle.cs" Link="Theraot\Threading\Needles\DefaultNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\ExceptionStructNeedle.cs" Link="Theraot\Threading\Needles\ExceptionStructNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\FutureAction.cs" Link="Theraot\Threading\Needles\FutureAction.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\FutureDisposableNeedle.cs" Link="Theraot\Threading\Needles\FutureDisposableNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\FutureNeedle.cs" Link="Theraot\Threading\Needles\FutureNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\ICacheNeedle.cs" Link="Theraot\Threading\Needles\ICacheNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\INeedle.cs" Link="Theraot\Threading\Needles\INeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\IPromise.cs" Link="Theraot\Threading\Needles\IPromise.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\IReadOnlyNeedle.cs" Link="Theraot\Threading\Needles\IReadOnlyNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\IRecyclableNeedle.cs" Link="Theraot\Threading\Needles\IRecyclableNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\LazyAction.cs" Link="Theraot\Threading\Needles\LazyAction.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\LazyDisposableNeedle.cs" Link="Theraot\Threading\Needles\LazyDisposableNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\LazyNeedle.cs" Link="Theraot\Threading\Needles\LazyNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\LockableContext.cs" Link="Theraot\Threading\Needles\LockableContext.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\LockableNeedle.cs" Link="Theraot\Threading\Needles\LockableNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\LockableSlot.cs" Link="Theraot\Threading\Needles\LockableSlot.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\Needle.cs" Link="Theraot\Threading\Needles\Needle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\NeedleHelper.cs" Link="Theraot\Threading\Needles\NeedleHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\NotNull.cs" Link="Theraot\Threading\Needles\NotNull.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\Promise.cs" Link="Theraot\Threading\Needles\Promise.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\PromiseNeedle1.cs" Link="Theraot\Threading\Needles\PromiseNeedle1.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\ReadOnlyDisposableNeedle.cs" Link="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\ReadOnlyNeedle.cs" Link="Theraot\Threading\Needles\ReadOnlyNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\ReadOnlyPromise.cs" Link="Theraot\Threading\Needles\ReadOnlyPromise.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\ReadOnlyPromiseNeedle.cs" Link="Theraot\Threading\Needles\ReadOnlyPromiseNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\ReadOnlyStructNeedle.cs" Link="Theraot\Threading\Needles\ReadOnlyStructNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\StructNeedle.cs" Link="Theraot\Threading\Needles\StructNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\Transact.cs" Link="Theraot\Threading\Needles\Transact.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\Transact.disposable.cs" Link="Theraot\Threading\Needles\Transact.disposable.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\Transact.IResource.cs" Link="Theraot\Threading\Needles\Transact.IResource.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\Transact.Needle.cs" Link="Theraot\Threading\Needles\Transact.Needle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\WeakDelegateNeedle.cs" Link="Theraot\Threading\Needles\WeakDelegateNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\WeakNeedle.cs" Link="Theraot\Threading\Needles\WeakNeedle.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\WeakNeedle.disposable.cs" Link="Theraot\Threading\Needles\WeakNeedle.disposable.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\WeakNeedle.extended.cs" Link="Theraot\Threading\Needles\WeakNeedle.extended.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\NoReentrantReadWriteLock.cs" Link="Theraot\Threading\NoReentrantReadWriteLock.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\NoReentrantReadWriteLock.disposable.cs" Link="Theraot\Threading\NoReentrantReadWriteLock.disposable.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\NoReentrantReadWriteLock.Status.cs" Link="Theraot\Threading\NoReentrantReadWriteLock.Status.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\ReadWriteLock.cs" Link="Theraot\Threading\ReadWriteLock.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\ReentrantReadWriteLock.cs" Link="Theraot\Threading\ReentrantReadWriteLock.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\ReentrantReadWriteLock.disposable.cs" Link="Theraot\Threading\ReentrantReadWriteLock.disposable.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\ReentrantReadWriteLock.Status.cs" Link="Theraot\Threading\ReentrantReadWriteLock.Status.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\ReentryGuard.cs" Link="Theraot\Threading\ReentryGuard.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\RuntimeUniqueIdProdiver.cs" Link="Theraot\Threading\RuntimeUniqueIdProdiver.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\ThreadingHelper.cs" Link="Theraot\Threading\ThreadingHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\ThreadingHelper.extra.cs" Link="Theraot\Threading\ThreadingHelper.extra.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\ThreadingHelper.SpinWait.cs" Link="Theraot\Threading\ThreadingHelper.SpinWait.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\ThreadLocalHelper.cs" Link="Theraot\Threading\ThreadLocalHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Timeout.cs" Link="Theraot\Threading\Timeout.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\TrackingThreadLocal.cs" Link="Theraot\Threading\TrackingThreadLocal.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\UniqueId.cs" Link="Theraot\Threading\UniqueId.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\VersionProvider.cs" Link="Theraot\Threading\VersionProvider.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\VersionProvider.Target.cs" Link="Theraot\Threading\VersionProvider.Target.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\VersionProvider.VersionToken.cs" Link="Theraot\Threading\VersionProvider.VersionToken.cs" />
+        <Compile Include="..\Framework.Core\Theraot\VoidStruct.cs" Link="Theraot\VoidStruct.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
+        <PackageReference Include="System.Reflection.Metadata" Version="1.6.0" />
+        <PackageReference Include="System.Runtime.Serialization.Formatters" Version="4.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Collections\Extensions.interleave.tt">
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <LastGenOutput>Extensions.interleave.cs</LastGenOutput>
+        </None>
+        <None Update="Collections\Extensions.zip.tt">
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <LastGenOutput>Extensions.zip.cs</LastGenOutput>
+        </None>
+        <None Update="Core\ActionHelper.tt">
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <LastGenOutput>ActionHelper.cs</LastGenOutput>
+        </None>
+        <None Update="Core\ErsatzAction.tt">
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <LastGenOutput>ErsatzAction.cs</LastGenOutput>
+        </None>
+        <None Update="Core\ErsatzFunc.tt">
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <LastGenOutput>ErsatzFunc.cs</LastGenOutput>
+        </None>
+        <None Update="Core\FuncHelper.tt">
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <LastGenOutput>FuncHelper.cs</LastGenOutput>
+        </None>
+        <None Update="Core\TupleEqualityComparer.tt">
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <LastGenOutput>TupleEqualityComparer.cs</LastGenOutput>
+        </None>
+        <None Update="Core\TypeHelper.ConstructorHelper.tt">
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <LastGenOutput>TypeHelper.ConstructorHelper.cs</LastGenOutput>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Collections\Extensions.interleave.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Extensions.interleave.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Collections\Extensions.zip.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Extensions.zip.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Core\ActionHelper.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ActionHelper.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Core\ErsatzAction.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ErsatzAction.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Core\ErsatzFunc.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ErsatzFunc.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Core\FuncHelper.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>FuncHelper.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Core\TupleEqualityComparer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>TupleEqualityComparer.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Core\TypeHelper.ConstructorHelper.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>TypeHelper.ConstructorHelper.tt</DependentUpon>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Security.Permissions\" />
+        <Folder Include="Theraot\Collections\ThreadSafe\" />
+        <Folder Include="Theraot\Collections\Specialized\" />
+        <Folder Include="Theraot\Threading\Needles\" />
+    </ItemGroup>
+</Project>

@@ -27,6 +27,8 @@
     <LangVersion>5</LangVersion>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -38,8 +40,10 @@
     <LangVersion>5</LangVersion>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET20|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET20_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET20\</OutputPath>
     <DefineConstants>TRACE;DEBUG;FAT;NET20</DefineConstants>
@@ -51,8 +55,10 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET30|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET30\</OutputPath>
     <DefineConstants>TRACE;DEBUG;FAT;NET30</DefineConstants>
@@ -64,8 +70,10 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET35|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET35\</OutputPath>
     <DefineConstants>TRACE;DEBUG;FAT;NET35</DefineConstants>
@@ -77,8 +85,10 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET40|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET40\</OutputPath>
     <DefineConstants>TRACE;DEBUG;FAT;NET40</DefineConstants>
@@ -90,8 +100,10 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET45|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET45\</OutputPath>
     <DefineConstants>TRACE;DEBUG;FAT;NET45</DefineConstants>
@@ -103,6 +115,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET20|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -114,6 +128,8 @@
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -125,6 +141,8 @@
     <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -136,6 +154,8 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -147,6 +167,8 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -158,6 +180,8 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET20_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -170,6 +194,8 @@
     <LangVersion>5</LangVersion>
     <Fat>true</Fat>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -182,6 +208,8 @@
     <LangVersion>5</LangVersion>
     <Fat>true</Fat>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -194,6 +222,8 @@
     <LangVersion>5</LangVersion>
     <Fat>true</Fat>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -206,6 +236,8 @@
     <LangVersion>5</LangVersion>
     <Fat>true</Fat>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -218,6 +250,8 @@
     <LangVersion>5</LangVersion>
     <Fat>true</Fat>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <DefineConstants Condition=" !$(DefineConstants.Contains(';NET')) ">$(DefineConstants);$(TargetFrameworkVersion.Replace("v", "NET").Replace(".", ""))</DefineConstants>
@@ -399,10 +433,9 @@
     <VisualStudio />
   </ProjectExtensions>
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj">
-      <Project>{B5078871-4299-49ED-B921-3B5EBE57336A}</Project>
-      <Name>Core</Name>
+    <ProjectReference Include="..\Framework.Core\Framekwork.Core.csproj">
+      <Project>{b5078871-4299-49ed-b921-3b5ebe57336a}</Project>
+      <Name>Framekwork.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
 </Project>

@@ -58,7 +58,7 @@ namespace MonoTests.System.Collections.Concurrent
                 {
                     var own = Interlocked.Increment(ref index);
 
-                    while (!_map.TryAdd("monkey" + own.ToString(), own))
+                    while (!_map.TryAdd("monkey" + own, own))
                     {
                     }
                 }, 4);
@@ -197,10 +197,7 @@ namespace MonoTests.System.Collections.Concurrent
         [Test]
         public void NullArgumentsTest()
         {
-            AssertThrowsArgumentNullException(() =>
-            {
-                GC.KeepAlive(_map[null]);
-            });
+            AssertThrowsArgumentNullException(() => GC.KeepAlive(_map[null]));
             AssertThrowsArgumentNullException(() => _map[null] = 0);
             AssertThrowsArgumentNullException(() => _map.AddOrUpdate(null, k => 0, (k, v) => v));
             AssertThrowsArgumentNullException(() => _map.AddOrUpdate("", null, (k, v) => v));
@@ -257,7 +254,7 @@ namespace MonoTests.System.Collections.Concurrent
 
             foreach (var id in ids)
             {
-                Assert.IsFalse(dict.TryGetValue(id, out result), id.ToString() + " (second)");
+                Assert.IsFalse(dict.TryGetValue(id, out result), id + " (second)");
             }
         }
 
@@ -273,24 +270,32 @@ namespace MonoTests.System.Collections.Concurrent
                 var r3 = false;
                 int val;
 
-                ParallelTestHelper.ParallelStressTest(_map, delegate
-                {
-                    var own = Interlocked.Increment(ref index);
-                    switch (own)
+                ParallelTestHelper.ParallelStressTest
+                (
+                    _map,
+                    delegate
                     {
-                        case 1:
-                            r1 = _map.TryRemove("foo", out val);
-                            break;
+                        var own = Interlocked.Increment(ref index);
+                        switch (own)
+                        {
+                            case 1:
+                                r1 = _map.TryRemove("foo", out val);
+                                break;
 
-                        case 2:
-                            r2 = _map.TryRemove("bar", out val);
-                            break;
+                            case 2:
+                                r2 = _map.TryRemove("bar", out val);
+                                break;
 
-                        case 3:
-                            r3 = _map.TryRemove("foobar", out val);
-                            break;
-                    }
-                }, 3);
+                            case 3:
+                                r3 = _map.TryRemove("foobar", out val);
+                                break;
+
+                            default:
+                                break;
+                        }
+                    },
+                    3
+                );
 
                 Assert.AreEqual(0, _map.Count);
                 int value;
@@ -299,7 +304,7 @@ namespace MonoTests.System.Collections.Concurrent
                 Assert.IsTrue(r2, "2");
                 Assert.IsTrue(r3, "3");
 
-                Assert.IsFalse(_map.TryGetValue("foo", out value), "#1b " + value.ToString());
+                Assert.IsFalse(_map.TryGetValue("foo", out value), "#1b " + value);
                 Assert.IsFalse(_map.TryGetValue("bar", out value), "#2b");
                 Assert.IsFalse(_map.TryGetValue("foobar", out value), "#3b");
             });
