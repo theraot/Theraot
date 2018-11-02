@@ -5,7 +5,6 @@ using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
-    [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     public class Promise : IWaitablePromise
     {

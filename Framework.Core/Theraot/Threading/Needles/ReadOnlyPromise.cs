@@ -4,7 +4,6 @@ using System;
 
 namespace Theraot.Threading.Needles
 {
-    [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     public class ReadOnlyPromise : IWaitablePromise
     {
