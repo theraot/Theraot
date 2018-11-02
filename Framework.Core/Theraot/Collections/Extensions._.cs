@@ -1440,22 +1440,6 @@ namespace Theraot.Collections
             }
         }
 
-        public static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
-        {
-            if (dictionary == null)
-            {
-                throw new ArgumentNullException("dictionary");
-            }
-            TValue value;
-            if (dictionary.TryGetValue(key, out value))
-            {
-                return value;
-            }
-            var newValue = TypeHelper.CreateOrDefault<TValue>();
-            dictionary.Add(key, newValue);
-            return newValue;
-        }
-
         public static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue newValue)
         {
             if (dictionary == null)
