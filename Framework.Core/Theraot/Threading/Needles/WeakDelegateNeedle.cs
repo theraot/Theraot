@@ -9,13 +9,15 @@ namespace Theraot.Threading.Needles
     [System.Diagnostics.DebuggerNonUserCode]
     public sealed class WeakDelegateNeedle : WeakNeedle<Delegate>, IEquatable<Delegate>, IEquatable<WeakDelegateNeedle>
     {
-        public WeakDelegateNeedle(Delegate handler)
-            : base(Check.NotNullArgument(handler, "handler"))
+        public WeakDelegateNeedle()
         {
-            if (handler == null)
-            {
-                throw new ArgumentNullException("handler");
-            }
+            // Empty
+        }
+
+        public WeakDelegateNeedle(Delegate handler)
+            : base(handler)
+        {
+            // Empty
         }
 
         public WeakDelegateNeedle(MethodInfo methodInfo, object target)
