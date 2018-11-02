@@ -568,6 +568,8 @@
     <Compile Include="Theraot\Core\RamStream.cs" />
     <Compile Include="Theraot\Core\NumericHelper.checks.cs" />
     <Compile Include="Theraot\Core\PathHelper.cs" />
+    <Compile Include="Theraot\Core\RangeSet.cs" />
+    <Compile Include="Theraot\Core\RangeSituation.cs" />
     <Compile Include="Theraot\Core\StringProcessor.cs" />
     <Compile Include="Theraot\Core\ValueActionClosure.cs">
       <AutoGen>True</AutoGen>

@@ -230,6 +230,8 @@
         <Compile Include="..\Framework.Core\Theraot\Core\RamStream.cs" Link="Theraot\Core\RamStream.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\Range.cs" Link="Theraot\Core\Range.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\RangeExtensions.cs" Link="Theraot\Core\RangeExtensions.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\RangeSet.cs" Link="Theraot\Core\RangeSet.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\RangeSituation.cs" Link="Theraot\Core\RangeSituation.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\Reference.cs" Link="Theraot\Core\Reference.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\ReferenceEqualityComparer.cs" Link="Theraot\Core\ReferenceEqualityComparer.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\StopwatchExtensions.cs" Link="Theraot\Core\StopwatchExtensions.cs" />

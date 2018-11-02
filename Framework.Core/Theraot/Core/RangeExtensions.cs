@@ -2,72 +2,125 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Theraot.Core
 {
-    [DebuggerNonUserCode]
     public static class RangeExtensions
     {
-        public static bool Contains<T>(this IEnumerable<Range<T>> ranges, T item)
+        public static RangeSituation CompareTo<T>(this Range<T> x, Range<T> y, IComparer<T> comparer)
             where T : IComparable<T>
         {
-            if (ReferenceEquals(item, null))
+            var ii = comparer.Compare(x.Minimun, y.Minimun);
+            if (ii == 0)
             {
-                throw new ArgumentNullException("item");
-            }
-            if (ranges == null)
-            {
-                throw new ArgumentNullException("ranges");
-            }
-            foreach (Range<T> range in ranges)
-            {
-                if (range.Contains(item))
+                if (x.ClosedMinimun && !y.ClosedMinimun)
                 {
-                    return true;
+                    ii = -1;
+                }
+                else if (!x.ClosedMinimun && y.ClosedMinimun)
+                {
+                    ii = 1;
                 }
             }
-            return false;
-        }
-
-        public static IEnumerable<Range<T>> Overlapped<T>(this IEnumerable<Range<T>> ranges, Range<T> range)
-            where T : IComparable<T>
-        {
-            if (ranges == null)
+            var aa = comparer.Compare(x.Maximun, y.Maximun);
+            if (aa == 0)
             {
-                throw new ArgumentNullException("ranges");
-            }
-            foreach (Range<T> item in ranges)
-            {
-                if (item.Overlaps(range))
+                if (x.ClosedMaximun && !y.ClosedMaximun)
                 {
-                    yield return item;
+                    aa = 1;
+                }
+                else if (!x.ClosedMaximun && y.ClosedMaximun)
+                {
+                    aa = -1;
                 }
             }
+            if (ii == 0 && aa == 0)
+            {
+                return RangeSituation.Equals;
+            }
+            if (ii <= 0 && aa >= 0)
+            {
+                return RangeSituation.Contains;
+            }
+            if (ii >= 0 && aa <= 0)
+            {
+                return RangeSituation.Contained;
+            }
+            if (ii < 0)
+            {
+                var ai = comparer.Compare(x.Maximun, y.Minimun);
+                if (ai == 0)
+                {
+                    if (x.ClosedMaximun && y.ClosedMinimun)
+                    {
+                        ai = 1;
+                    }
+                    else if (!x.ClosedMaximun && !y.ClosedMinimun)
+                    {
+                        ai = -1;
+                    }
+                }
+                if (ai < 0)
+                {
+                    return RangeSituation.BeforeSeparated;
+                }
+                if (ai > 0)
+                {
+                    return RangeSituation.BeforeOverlapped;
+                }
+                return RangeSituation.BeforeTouching;
+            }
+            var ia = comparer.Compare(x.Minimun, y.Maximun);
+            if (ia == 0)
+            {
+                if (x.ClosedMinimun && y.ClosedMaximun)
+                {
+                    ia = -1;
+                }
+                else if (!x.ClosedMinimun && !y.ClosedMaximun)
+                {
+                    ia = 1;
+                }
+            }
+            if (ia < 0)
+            {
+                return RangeSituation.AfterOverlapped;
+            }
+            if (ia > 0)
+            {
+                return RangeSituation.AfterSeparated;
+            }
+            return RangeSituation.AfterTouching;
         }
 
-        public static IEnumerable<Range<T>> Sort<T>(this IEnumerable<Range<T>> ranges)
+        public static int CompareTo<T>(this Range<T> x, T y, IComparer<T> comparer)
             where T : IComparable<T>
         {
-            var list = new List<Range<T>>(Check.NotNullArgument(ranges, "ranges"));
-            list.Sort();
-            return list;
+            var i = comparer.Compare(x.Minimun, y);
+            if (i == 0)
+            {
+                i = x.ClosedMinimun ? -1 : 1;
+            }
+            if (i > 0)
+            {
+                return -1;
+            }
+            var a = comparer.Compare(x.Maximun, y);
+            if (a == 0)
+            {
+                a = x.ClosedMaximun ? 1 : -1;
+            }
+            if (a < 0)
+            {
+                return 1;
+            }
+            return 0;
         }
 
-        public static IEnumerable<Range<T>> Sort<T>(this IEnumerable<Range<T>> ranges, Comparison<Range<T>> comparison)
+        public static bool IsEmpty<T>(this Range<T> x, IComparer<T> comparer)
             where T : IComparable<T>
         {
-            if (ranges == null)
-            {
-                throw new ArgumentNullException("ranges");
-            }
-            if (comparison == null)
-            {
-                throw new ArgumentNullException("comparison");
-            }
-            var list = new List<Range<T>>(ranges);
-            list.Sort(comparison);
-            return list;
+            return comparer.Compare(x.Minimun, x.Maximun) == 0 && (!x.ClosedMinimun || !x.ClosedMaximun);
         }
     }
 }
