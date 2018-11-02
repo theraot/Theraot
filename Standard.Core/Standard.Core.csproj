@@ -1,97 +1,54 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <RootNamespace>Theraot.Core</RootNamespace>
-        <AssemblyName>Theraot.Core</AssemblyName>
-        <Configurations>Debug;Release;netcoreapp1.0;netcoreapp1.0_Debug;netcoreapp1.1;netcoreapp1.1_Debug;netcoreapp2.0;netcoreapp2.0_Debug;netcoreapp2.1;netcoreapp2.1_Debug</Configurations>
+        <Configurations>netstandard1.0;netstandard1.1;netstandard1.2;netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6;netstandard2.0</Configurations>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <TargetFramework>netcoreapp1.0</TargetFramework>
-        <DefineConstants>TRACE;DEBUG;FAT</DefineConstants>
-        <LangVersion>4</LangVersion>
-        <OutputPath>..\bin</OutputPath>
+    <PropertyGroup Condition="'$(Configuration)'=='netstandard1.0'">
+        <TargetFramework>netstandard1.0</TargetFramework>
+        <DefineConstants>NETSTANDARD1_0</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp1.0_Debug|AnyCPU'">
-        <TargetFramework>netcoreapp1.0</TargetFramework>
-        <DefineConstants>TRACE;FAT</DefineConstants>
-        <LangVersion>4</LangVersion>
-        <OutputPath>..\bin</OutputPath>
+    <PropertyGroup Condition="'$(Configuration)'=='netstandard1.1'">
+        <TargetFramework>netstandard1.1</TargetFramework>
+        <DefineConstants>NETSTANDARD1_1</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp1.1_Debug|AnyCPU'">
-        <TargetFramework>netcoreapp1.1</TargetFramework>
-        <DefineConstants>TRACE;FAT</DefineConstants>
-        <LangVersion>4</LangVersion>
-        <OutputPath>..\bin</OutputPath>
+    <PropertyGroup Condition="'$(Configuration)'=='netstandard1.2'">
+        <TargetFramework>netstandard1.2</TargetFramework>
+        <DefineConstants>NETSTANDARD1_2</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp2.0_Debug|AnyCPU'">
-        <TargetFramework>netcoreapp2.0</TargetFramework>
-        <DefineConstants>TRACE;FAT</DefineConstants>
-        <LangVersion>4</LangVersion>
-        <OutputPath>..\bin</OutputPath>
+    <PropertyGroup Condition="'$(Configuration)'=='netstandard1.3'">
+        <TargetFramework>netstandard1.3</TargetFramework>
+        <DefineConstants>NETSTANDARD1_3</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp2.1_Debug|AnyCPU'">
-        <TargetFramework>netcoreapp2.1</TargetFramework>
-        <DefineConstants>TRACE;FAT</DefineConstants>
-        <LangVersion>4</LangVersion>
-        <OutputPath>..\bin</OutputPath>
+    <PropertyGroup Condition="'$(Configuration)'=='netstandard1.4'">
+        <TargetFramework>netstandard1.4</TargetFramework>
+        <DefineConstants>NETSTANDARD1_4</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <TargetFramework>netcoreapp1.0</TargetFramework>
-        <DefineConstants>TRACE;FAT</DefineConstants>
-        <LangVersion>4</LangVersion>
-        <OutputPath>..\bin\</OutputPath>
+    <PropertyGroup Condition="'$(Configuration)'=='netstandard1.5'">
+        <TargetFramework>netstandard1.5</TargetFramework>
+        <DefineConstants>NETSTANDARD1_5</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp1.0|AnyCPU'">
-        <TargetFramework>netcoreapp1.0</TargetFramework>
-        <DefineConstants>TRACE;FAT</DefineConstants>
-        <LangVersion>4</LangVersion>
-        <OutputPath>..\bin</OutputPath>
-        <Optimize>true</Optimize>
+    <PropertyGroup Condition="'$(Configuration)'=='netstandard1.6'">
+        <TargetFramework>netstandard1.6</TargetFramework>
+        <DefineConstants>NETSTANDARD1_6</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp1.1|AnyCPU'">
-        <TargetFramework>netcoreapp1.1</TargetFramework>
-        <DefineConstants>TRACE;FAT</DefineConstants>
-        <LangVersion>4</LangVersion>
-        <OutputPath>..\bin</OutputPath>
-        <Optimize>true</Optimize>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp2.0|AnyCPU'">
-        <TargetFramework>netcoreapp2.0</TargetFramework>
-        <DefineConstants>TRACE;FAT</DefineConstants>
-        <LangVersion>4</LangVersion>
-        <OutputPath>..\bin</OutputPath>
-        <Optimize>true</Optimize>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp2.1|AnyCPU'">
-        <TargetFramework>netcoreapp2.1</TargetFramework>
-        <DefineConstants>TRACE;FAT</DefineConstants>
-        <LangVersion>4</LangVersion>
-        <OutputPath>..\bin</OutputPath>
-        <Optimize>true</Optimize>
+    <PropertyGroup Condition="'$(Configuration)'=='netstandard2.0'">
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <DefineConstants>NETSTANDARD2_0</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Remove="System\**" />
-        <Compile Remove="Theraot\Framework.Core\**" />
-        <EmbeddedResource Remove="System\**" />
-        <EmbeddedResource Remove="Theraot\Framework.Core\**" />
-        <None Remove="System\**" />
-        <None Remove="Theraot\Framework.Core\**" />
-    </ItemGroup>
-
-    <ItemGroup>
+        <Compile Include="..\Core.Core\Security.Permissions\SecurityAction.cs" Link="Security.Permissions\SecurityAction.cs" />
+        <Compile Include="..\Core.Core\Security.Permissions\SecurityPermissionAttribute.cs" Link="Security.Permissions\SecurityPermissionAttribute.cs" />
+        <Compile Include="..\Core.Core\Security.Permissions\SecurityPermissionFlag.cs" Link="Security.Permissions\SecurityPermissionFlag.cs" />
         <Compile Include="..\Framework.Core\CLSCompliant.cs" Link="CLSCompliant.cs" />
-        <Compile Include="..\Framework.Core\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ConversionSet.cs" Link="Theraot\Collections\ConversionSet.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ConvertedObserver.cs" Link="Theraot\Collections\ConvertedObserver.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\CustomObserver.cs" Link="Theraot\Collections\CustomObserver.cs" />
@@ -202,6 +159,7 @@
         <Compile Include="..\Framework.Core\Theraot\Core\CloneHelper.cs" Link="Theraot\Core\CloneHelper.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\ComparerExtensions.cs" Link="Theraot\Core\ComparerExtensions.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\DebugHelper.cs" Link="Theraot\Core\DebugHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\DelegateDeepEqualityComparer.cs" Link="Theraot\Core\DelegateDeepEqualityComparer.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\DelegateEqualityComparer.cs" Link="Theraot\Core\DelegateEqualityComparer.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\DelegateExtensions.cs" Link="Theraot\Core\DelegateExtensions.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\EnumerableHelper.cs" Link="Theraot\Core\EnumerableHelper.cs" />
@@ -217,6 +175,8 @@
         <Compile Include="..\Framework.Core\Theraot\Core\ICloner.cs" Link="Theraot\Core\ICloner.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\IntPtrHelper.cs" Link="Theraot\Core\IntPtrHelper.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\MonitorHelper.cs" Link="Theraot\Core\MonitorHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\NewEventHandler.cs" Link="Theraot\Core\NewEventHandler.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\NewOperationCanceledException.cs" Link="Theraot\Core\NewOperationCanceledException.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\NumericHelper.Binary.cs" Link="Theraot\Core\NumericHelper.Binary.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\NumericHelper.build.cs" Link="Theraot\Core\NumericHelper.build.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\NumericHelper.checked.cs" Link="Theraot\Core\NumericHelper.checked.cs" />
@@ -227,7 +187,7 @@
         <Compile Include="..\Framework.Core\Theraot\Core\PathHelper.cs" Link="Theraot\Core\PathHelper.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\PrimeHelper.array.cs" Link="Theraot\Core\PrimeHelper.array.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\PrimeHelper.cs" Link="Theraot\Core\PrimeHelper.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Core\RamStream.cs" Link="Theraot\Core\RamStream.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\RAMStream.cs" Link="Theraot\Core\RAMStream.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\Range.cs" Link="Theraot\Core\Range.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\RangeExtensions.cs" Link="Theraot\Core\RangeExtensions.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\RangeSet.cs" Link="Theraot\Core\RangeSet.cs" />
@@ -239,12 +199,10 @@
         <Compile Include="..\Framework.Core\Theraot\Core\StringBuilderExtensions.cs" Link="Theraot\Core\StringBuilderExtensions.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\StringHelper.cs" Link="Theraot\Core\StringHelper.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\StringProcessor.cs" Link="Theraot\Core\StringProcessor.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\TraceRoute.cs" Link="Theraot\Core\TraceRoute.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\TracertNode.cs" Link="Theraot\Core\TracertNode.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\TupleEqualityComparer.cs" Link="Theraot\Core\TupleEqualityComparer.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Core\TypeHelper.ConstructorHelper.cs" Link="Theraot\Core\TypeHelper.ConstructorHelper.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Core\TypeHelper.cs" Link="Theraot\Core\TypeHelper.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Core\TypeHelper.extra.cs" Link="Theraot\Core\TypeHelper.extra.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\TypeHelper.minimun.cs" Link="Theraot\Core\TypeHelper.minimun.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Core\TypeHelper.util.cs" Link="Theraot\Core\TypeHelper.util.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\ValueActionClosure.cs" Link="Theraot\Core\ValueActionClosure.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\ValueFuncClosure.cs" Link="Theraot\Core\ValueFuncClosure.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\AtomicBoolean.cs" Link="Theraot\Threading\AtomicBoolean.cs" />
@@ -259,7 +217,6 @@
         <Compile Include="..\Framework.Core\Theraot\Threading\GCMonitor.internal.cs" Link="Theraot\Threading\GCMonitor.internal.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\IExtendedDisposable.cs" Link="Theraot\Threading\IExtendedDisposable.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\IReadWriteLock.cs" Link="Theraot\Threading\IReadWriteLock.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Threading\IThreadLocal.cs" Link="Theraot\Threading\IThreadLocal.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\LockContext.cs" Link="Theraot\Threading\LockContext.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\LockSlot.cs" Link="Theraot\Threading\LockSlot.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\NeedleLock.cs" Link="Theraot\Threading\NeedleLock.cs" />
@@ -281,7 +238,8 @@
         <Compile Include="..\Framework.Core\Theraot\Threading\Needles\LockableNeedle.cs" Link="Theraot\Threading\Needles\LockableNeedle.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\Needles\LockableSlot.cs" Link="Theraot\Threading\Needles\LockableSlot.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\Needles\Needle.cs" Link="Theraot\Threading\Needles\Needle.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\NeedleHelper.cs" Link="Theraot\Threading\Needles\NeedleHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\NeedleHelper.retrieve.cs" Link="Theraot\Threading\Needles\NeedleHelper.retrieve.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\NeedleHelper.trygetvalue.cs" Link="Theraot\Threading\Needles\NeedleHelper.trygetvalue.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\Needles\NotNull.cs" Link="Theraot\Threading\Needles\NotNull.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\Needles\Promise.cs" Link="Theraot\Threading\Needles\Promise.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\Needles\PromiseNeedle1.cs" Link="Theraot\Threading\Needles\PromiseNeedle1.cs" />
@@ -311,108 +269,11 @@
         <Compile Include="..\Framework.Core\Theraot\Threading\ThreadingHelper.cs" Link="Theraot\Threading\ThreadingHelper.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\ThreadingHelper.extra.cs" Link="Theraot\Threading\ThreadingHelper.extra.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\ThreadingHelper.SpinWait.cs" Link="Theraot\Threading\ThreadingHelper.SpinWait.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Threading\ThreadLocalHelper.cs" Link="Theraot\Threading\ThreadLocalHelper.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\Timeout.cs" Link="Theraot\Threading\Timeout.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Threading\TrackingThreadLocal.cs" Link="Theraot\Threading\TrackingThreadLocal.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\UniqueId.cs" Link="Theraot\Threading\UniqueId.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\VersionProvider.cs" Link="Theraot\Threading\VersionProvider.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\VersionProvider.Target.cs" Link="Theraot\Threading\VersionProvider.Target.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\VersionProvider.VersionToken.cs" Link="Theraot\Threading\VersionProvider.VersionToken.cs" />
         <Compile Include="..\Framework.Core\Theraot\VoidStruct.cs" Link="Theraot\VoidStruct.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
-        <PackageReference Include="System.Reflection.Metadata" Version="1.6.0" />
-        <PackageReference Include="System.Runtime.Serialization.Formatters" Version="4.3.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Update="Collections\Extensions.interleave.tt">
-            <Generator>TextTemplatingFileGenerator</Generator>
-            <LastGenOutput>Extensions.interleave.cs</LastGenOutput>
-        </None>
-        <None Update="Collections\Extensions.zip.tt">
-            <Generator>TextTemplatingFileGenerator</Generator>
-            <LastGenOutput>Extensions.zip.cs</LastGenOutput>
-        </None>
-        <None Update="Core\ActionHelper.tt">
-            <Generator>TextTemplatingFileGenerator</Generator>
-            <LastGenOutput>ActionHelper.cs</LastGenOutput>
-        </None>
-        <None Update="Core\ErsatzAction.tt">
-            <Generator>TextTemplatingFileGenerator</Generator>
-            <LastGenOutput>ErsatzAction.cs</LastGenOutput>
-        </None>
-        <None Update="Core\ErsatzFunc.tt">
-            <Generator>TextTemplatingFileGenerator</Generator>
-            <LastGenOutput>ErsatzFunc.cs</LastGenOutput>
-        </None>
-        <None Update="Core\FuncHelper.tt">
-            <Generator>TextTemplatingFileGenerator</Generator>
-            <LastGenOutput>FuncHelper.cs</LastGenOutput>
-        </None>
-        <None Update="Core\TupleEqualityComparer.tt">
-            <Generator>TextTemplatingFileGenerator</Generator>
-            <LastGenOutput>TupleEqualityComparer.cs</LastGenOutput>
-        </None>
-        <None Update="Core\TypeHelper.ConstructorHelper.tt">
-            <Generator>TextTemplatingFileGenerator</Generator>
-            <LastGenOutput>TypeHelper.ConstructorHelper.cs</LastGenOutput>
-        </None>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Compile Update="Collections\Extensions.interleave.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>Extensions.interleave.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Collections\Extensions.zip.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>Extensions.zip.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Core\ActionHelper.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ActionHelper.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Core\ErsatzAction.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ErsatzAction.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Core\ErsatzFunc.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ErsatzFunc.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Core\FuncHelper.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FuncHelper.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Core\TupleEqualityComparer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>TupleEqualityComparer.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Core\TypeHelper.ConstructorHelper.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>TypeHelper.ConstructorHelper.tt</DependentUpon>
-        </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Security.Permissions\" />
-        <Folder Include="Theraot\Collections\ThreadSafe\" />
-        <Folder Include="Theraot\Collections\Specialized\" />
-        <Folder Include="Theraot\Threading\Needles\" />
     </ItemGroup>
 </Project>
