@@ -7,7 +7,6 @@ using System.Linq;
 
 namespace Theraot.Collections.Specialized
 {
-    [Serializable]
     public sealed class ValueCollection<TKey, TValue> : ICollection<TValue>, ICollection, IReadOnlyCollection<TValue>
     {
         private readonly IDictionary<TKey, TValue> _wrapped;

@@ -4,7 +4,6 @@ using System;
 
 namespace Theraot.Collections
 {
-    [Serializable]
     public sealed class FilteredObserver<T> : IObserver<T>
     {
         private readonly IObserver<T> _observer;

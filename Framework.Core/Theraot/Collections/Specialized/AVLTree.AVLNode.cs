@@ -8,7 +8,6 @@ namespace Theraot.Collections.Specialized
 {
     public sealed partial class AVLTree<TKey, TValue> : IEnumerable<AVLTree<TKey, TValue>.AVLNode>
     {
-        [Serializable]
         public sealed class AVLNode
         {
             private readonly TKey _key;

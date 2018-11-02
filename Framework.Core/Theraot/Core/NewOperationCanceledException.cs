@@ -8,11 +8,8 @@ using System.Threading;
 
 #endif
 
-using System.Runtime.Serialization;
-
 namespace Theraot.Core
 {
-    [Serializable]
     public partial class NewOperationCanceledException : OperationCanceledException
     {
         public NewOperationCanceledException()
@@ -70,12 +67,6 @@ namespace Theraot.Core
 
         public NewOperationCanceledException(string message, Exception innerException)
             : base(message, innerException)
-        {
-            //Empty
-        }
-
-        protected NewOperationCanceledException(SerializationInfo info, StreamingContext scheduler)
-            : base(info, scheduler)
         {
             //Empty
         }

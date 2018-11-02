@@ -1,4 +1,4 @@
-﻿// Needed for NET40
+// Needed for NET40
 
 using System;
 using System.Collections;
@@ -8,7 +8,6 @@ using Theraot.Core;
 
 namespace Theraot.Collections
 {
-    [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
 #if FAT

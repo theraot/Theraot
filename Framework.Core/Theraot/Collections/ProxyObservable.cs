@@ -7,7 +7,6 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Collections
 {
-    [Serializable]
     public sealed class ProxyObservable<T> : IObservable<T>, IObserver<T>, IProxyObservable<T>
     {
         private readonly SafeSet<Needle<IObserver<T>>> _observers;

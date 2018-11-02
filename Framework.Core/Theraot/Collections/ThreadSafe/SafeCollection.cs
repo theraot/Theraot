@@ -10,7 +10,6 @@ namespace Theraot.Collections.ThreadSafe
     /// Represent a thread-safe lock-free hash based collection.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
-    [Serializable]
     public sealed class SafeCollection<T> : ICollection<T>
     {
         private readonly IEqualityComparer<T> _comparer;

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 namespace Theraot.Collections
 {
-    [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     public sealed
 #if FAT
