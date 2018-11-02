@@ -1,0 +1,33 @@
+﻿// Needed for NET40
+
+namespace Theraot.Threading.Needles
+{
+    public static partial class NeedleHelper
+    {
+        public static bool Retrieve<T, TNeedle>(this TNeedle needle, out T target)
+            where TNeedle : IRecyclableNeedle<T>
+        {
+            if (ReferenceEquals(needle, null))
+            {
+                target = default(T);
+                return false;
+            }
+            bool done;
+            var cacheNeedle = needle as ICacheNeedle<T>;
+            if (cacheNeedle == null)
+            {
+                target = ((INeedle<T>)needle).Value;
+                done = needle.IsAlive;
+            }
+            else
+            {
+                done = cacheNeedle.TryGetValue(out target);
+            }
+            if (done)
+            {
+                needle.Free();
+            }
+            return done;
+        }
+    }
+}

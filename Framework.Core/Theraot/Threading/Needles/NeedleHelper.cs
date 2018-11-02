@@ -1,13 +1,11 @@
 ﻿// Needed for NET40
 
 using System;
-using System.Globalization;
-using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
     [System.Diagnostics.DebuggerNonUserCode]
-    public static class NeedleHelper
+    public static partial class NeedleHelper
     {
         public static bool CanCreateDeferredNeedle<T, TNeedle>()
             where TNeedle : INeedle<T>
@@ -79,48 +77,6 @@ namespace Theraot.Threading.Needles
             where TNeedle : IReadOnlyNeedle<T>
         {
             return NestedReadOnlyNeedleCreator<T, TNeedle>.Create(target);
-        }
-
-        public static bool Retrieve<T, TNeedle>(this TNeedle needle, out T target)
-            where TNeedle : IRecyclableNeedle<T>
-        {
-            if (ReferenceEquals(needle, null))
-            {
-                target = default(T);
-                return false;
-            }
-            bool done;
-            var cacheNeedle = needle as ICacheNeedle<T>;
-            if (cacheNeedle == null)
-            {
-                target = ((INeedle<T>)needle).Value;
-                done = needle.IsAlive;
-            }
-            else
-            {
-                done = cacheNeedle.TryGetValue(out target);
-            }
-            if (done)
-            {
-                needle.Free();
-            }
-            return done;
-        }
-
-        public static bool TryGetValue<T>(this IReadOnlyNeedle<T> needle, out T target)
-        {
-            if (needle == null)
-            {
-                target = default(T);
-                return false;
-            }
-            var cacheNeedle = needle as ICacheNeedle<T>;
-            if (cacheNeedle != null)
-            {
-                return cacheNeedle.TryGetValue(out target);
-            }
-            target = ((INeedle<T>)needle).Value;
-            return needle.IsAlive;
         }
 
         private static class DeferredNeedleCreator<T, TNeedle>
