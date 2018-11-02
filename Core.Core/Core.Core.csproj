@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <RootNamespace>Theraot.Core</RootNamespace>
@@ -322,7 +322,7 @@
 
     <ItemGroup>
         <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
-        <PackageReference Include="System.Reflection.Metadata" Version="1.4.2" />
+        <PackageReference Include="System.Reflection.Metadata" Version="1.6.0" />
         <PackageReference Include="System.Runtime.Serialization.Formatters" Version="4.3.0" />
     </ItemGroup>
 
