@@ -78,8 +78,8 @@ namespace System.Linq.Expressions
                 {
                     return false;
                 }
-                var operandIsNullable = _operand.Type.IsNullableType();
-                var resultIsNullable = Type.IsNullableType();
+                var operandIsNullable = _operand.Type.IsNullable();
+                var resultIsNullable = Type.IsNullable();
                 if (_method != null)
                 {
                     return (operandIsNullable && _method.GetParameters()[0].ParameterType != _operand.Type) ||
@@ -95,7 +95,7 @@ namespace System.Linq.Expressions
         /// <returns>true if the operator's return type is lifted to a nullable type; otherwise, false.</returns>
         public bool IsLiftedToNull
         {
-            get { return IsLifted && Type.IsNullableType(); }
+            get { return IsLifted && Type.IsNullable(); }
         }
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
@@ -419,11 +419,11 @@ namespace System.Linq.Expressions
                 return new UnaryExpression(unaryType, operand, method.ReturnType, method);
             }
             // try lifted call
-            if (operandType.IsNullableType())
+            if (operandType.IsNullable())
             {
                 types[0] = nnOperandType;
                 method = nnOperandType.GetStaticMethod(name, types);
-                if (method != null && method.ReturnType.IsValueType && !method.ReturnType.IsNullableType())
+                if (method != null && method.ReturnType.IsValueType && !method.ReturnType.IsNullable())
                 {
                     return new UnaryExpression(unaryType, operand, method.ReturnType.GetNullableType(), method);
                 }
@@ -447,9 +447,9 @@ namespace System.Linq.Expressions
                 return new UnaryExpression(unaryType, operand, method.ReturnType, method);
             }
             // check for lifted call
-            if (operand.Type.IsNullableType() &&
+            if (operand.Type.IsNullable() &&
                 ParameterIsAssignable(pms[0], operand.Type.GetNonNullableType()) &&
-                method.ReturnType.IsValueType && !method.ReturnType.IsNullableType())
+                method.ReturnType.IsValueType && !method.ReturnType.IsNullable())
             {
                 return new UnaryExpression(unaryType, operand, method.ReturnType.GetNullableType(), method);
             }
@@ -491,7 +491,7 @@ namespace System.Linq.Expressions
                 return new UnaryExpression(unaryType, operand, method.ReturnType, method);
             }
             // check for lifted call
-            if ((operand.Type.IsNullableType() || convertToType.IsNullableType()) &&
+            if ((operand.Type.IsNullable() || convertToType.IsNullable()) &&
                 ParameterIsAssignable(pms[0], operand.Type.GetNonNullableType()) &&
                 method.ReturnType == convertToType.GetNonNullableType())
             {
@@ -747,7 +747,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(type, "type");
             TypeHelper.ValidateType(type);
 
-            if (type.IsValueType && !type.IsNullableType())
+            if (type.IsValueType && !type.IsNullable())
             {
                 throw Error.IncorrectTypeForTypeAs(type);
             }

@@ -56,7 +56,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("info");
             }
-            _wrapped.GetObjectData(info, context);
+            _wrapped = new NullAwareDictionary<T, object>(info.GetValue("dictionary", typeof(KeyValuePair<T, object>[])) as KeyValuePair<T, object>[]);
         }
 
         public IEqualityComparer<T> Comparer
@@ -187,7 +187,9 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("info");
             }
-            _wrapped.GetObjectData(info, context);
+            KeyValuePair<T, object>[] dictionary;
+            _wrapped.Deconstruct(out dictionary);
+            info.AddValue("dictionary", dictionary);
         }
 
         void ICollection<T>.Add(T item)

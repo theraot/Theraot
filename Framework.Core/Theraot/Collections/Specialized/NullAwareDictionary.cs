@@ -4,38 +4,31 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Security.Permissions;
 using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
 {
-    [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
     public sealed
 #if FAT
         partial
-# endif
-        class NullAwareDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ISerializable
+#endif
+        class NullAwareDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private static readonly TKey _typedNull = TypeHelper.Cast<TKey>(null);
 
         private readonly Dictionary<TKey, TValue> _dictionary;
         private bool _hasNull;
 
-        [NonSerialized]
         private ExtendedReadOnlyCollection<TKey> _keys;
 
-        [NonSerialized]
         private IReadOnlyDictionary<TKey, TValue> _readOnly;
 
-        [NonSerialized]
         private IEqualityComparer<TValue> _valueComparer;
 
         private TValue[] _valueForNull;
 
-        [NonSerialized]
         private ExtendedReadOnlyCollection<TValue> _values;
 
         public NullAwareDictionary()
@@ -82,6 +75,26 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        public NullAwareDictionary(KeyValuePair<TKey, TValue>[] dictionary)
+        {
+            if (dictionary == null)
+            {
+                throw new ArgumentNullException("dictionary", "dictionary is null.");
+            }
+            if (typeof(TKey).CanBeNull())
+            {
+                InitializeNullable();
+            }
+            else
+            {
+                InitializeNotNullable();
+            }
+            foreach (var pair in dictionary)
+            {
+                Add(pair);
+            }
+        }
+
         public NullAwareDictionary(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> comparer)
         {
             if (dictionary == null)
@@ -98,19 +111,6 @@ namespace Theraot.Collections.Specialized
             {
                 InitializeNotNullable();
             }
-        }
-
-        [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-        private NullAwareDictionary(SerializationInfo info, StreamingContext context)
-            : this()
-        {
-            if (info == null)
-            {
-                throw new ArgumentNullException("info");
-            }
-            _dictionary = (Dictionary<TKey, TValue>)info.GetValue("dictionary", typeof(Dictionary<TKey, TValue>));
-            _hasNull = info.GetBoolean("_hasNull");
-            _valueForNull[0] = (TValue)info.GetValue("valueForNull", typeof(TValue));
         }
 
         public IReadOnlyDictionary<TKey, TValue> AsReadOnly
@@ -277,12 +277,14 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        public void Deconstruct(out KeyValuePair<TKey, TValue>[] dictionary)
         {
-            info.AddValue("dictionary", _dictionary, typeof(Dictionary<TKey, TValue>));
-            info.AddValue("hasNull", _hasNull);
-            info.AddValue("valueForNull", _valueForNull[0], typeof(TValue));
+            var result = _dictionary as IEnumerable<KeyValuePair<TKey, TValue>>;
+            if (_hasNull)
+            {
+                result = result.Prepend(new KeyValuePair<TKey, TValue>(_typedNull, _valueForNull[0]));
+            }
+            dictionary = result.ToArray();
         }
 
         public void IntersectWith(IEnumerable<KeyValuePair<TKey, TValue>> other)

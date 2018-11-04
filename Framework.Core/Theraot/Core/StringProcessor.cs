@@ -13,7 +13,6 @@ namespace Theraot.Core
     /// An alternative for StringReader for all your parsing needs.
     /// StringProcessor is NOT thread safe. Do not share intances without locking.
     /// </remarks>
-    [Serializable]
     public class StringProcessor
     {
         // Note: it is assumed that _length = _string.Length - if this weren't true extra check would be needed in every case of IndexOf or IndexOfAny

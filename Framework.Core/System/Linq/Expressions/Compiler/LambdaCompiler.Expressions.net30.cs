@@ -609,7 +609,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 // We know the type can be assigned, but still need to check
                 // for null at runtime
-                if (type.IsNullableType())
+                if (type.IsNullable())
                 {
                     EmitAddress(node.Expression, type);
                     _ilg.EmitHasValue(type);
@@ -1114,7 +1114,7 @@ namespace System.Linq.Expressions.Compiler
                         {
                             var v = paramList[i];
                             var arg = argList[i];
-                            if (arg.Type.IsNullableType())
+                            if (arg.Type.IsNullable())
                             {
                                 _scope.AddLocal(this, v);
                                 EmitAddress(arg, arg.Type);
@@ -1143,7 +1143,7 @@ namespace System.Linq.Expressions.Compiler
                             _ilg.Emit(OpCodes.Brtrue, exitNull);
                         }
                         EmitMethodCallExpression(mc);
-                        if (resultType.IsNullableType() && resultType != mc.Type)
+                        if (resultType.IsNullable() && resultType != mc.Type)
                         {
                             var ci = resultType.GetConstructor(new[] { mc.Type });
                             _ilg.Emit(OpCodes.Newobj, ci);
@@ -1207,7 +1207,7 @@ namespace System.Linq.Expressions.Compiler
                             var v = paramList[i];
                             var arg = argList[i];
                             _scope.AddLocal(this, v);
-                            if (arg.Type.IsNullableType())
+                            if (arg.Type.IsNullable())
                             {
                                 EmitAddress(arg, arg.Type);
                                 _ilg.Emit(OpCodes.Dup);
@@ -1253,7 +1253,7 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.Emit(OpCodes.Brtrue, exitAnyNull);
 
                         EmitMethodCallExpression(mc);
-                        if (resultType.IsNullableType() && resultType != mc.Type)
+                        if (resultType.IsNullable() && resultType != mc.Type)
                         {
                             var ci = resultType.GetConstructor(new[] { mc.Type });
                             _ilg.Emit(OpCodes.Newobj, ci);

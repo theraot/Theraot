@@ -81,7 +81,7 @@ namespace System.Linq.Expressions.Compiler
             var b = (BinaryExpression)expr;
             Debug.Assert(b.Method == null);
 
-            if (b.Left.Type.IsNullableType())
+            if (b.Left.Type.IsNullable())
             {
                 EmitNullableCoalesce(b);
             }
@@ -576,7 +576,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else if (ConstantCheck.IsNull(node.Left))
             {
-                if (node.Right.Type.IsNullableType())
+                if (node.Right.Type.IsNullable())
                 {
                     EmitAddress(node.Right, node.Right.Type);
                     _ilg.EmitHasValue(node.Right.Type);
@@ -590,7 +590,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else if (ConstantCheck.IsNull(node.Right))
             {
-                if (node.Left.Type.IsNullableType())
+                if (node.Left.Type.IsNullable())
                 {
                     EmitAddress(node.Left, node.Left.Type);
                     _ilg.EmitHasValue(node.Left.Type);
@@ -602,7 +602,7 @@ namespace System.Linq.Expressions.Compiler
                 }
                 EmitBranchOp(!branchWhenEqual, label);
             }
-            else if (node.Left.Type.IsNullableType() || node.Right.Type.IsNullableType())
+            else if (node.Left.Type.IsNullable() || node.Right.Type.IsNullable())
             {
                 EmitBinaryExpression(node);
                 // EmitBinaryExpression takes into account the Equal/NotEqual

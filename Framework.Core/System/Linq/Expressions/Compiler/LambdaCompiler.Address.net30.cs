@@ -74,7 +74,7 @@ namespace System.Linq.Expressions.Compiler
                 EmitExpression(node.Left);
                 EmitExpression(node.Right);
                 var rightType = node.Right.Type;
-                if (rightType.IsNullableType())
+                if (rightType.IsNullable())
                 {
                     var loc = GetLocal(rightType);
                     _ilg.Emit(OpCodes.Stloc, loc);
@@ -212,7 +212,7 @@ namespace System.Linq.Expressions.Compiler
         private void AddressOf(UnaryExpression node, Type type)
         {
             Debug.Assert(node.NodeType == ExpressionType.Unbox);
-            Debug.Assert(type.IsValueType && !type.IsNullableType());
+            Debug.Assert(type.IsValueType && !type.IsNullable());
 
             // Unbox leaves a pointer to the boxed value on the stack
             EmitExpression(node.Operand);

@@ -6,7 +6,6 @@ using System.Linq;
 
 namespace Theraot.Collections
 {
-    [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     public
 #if FAT

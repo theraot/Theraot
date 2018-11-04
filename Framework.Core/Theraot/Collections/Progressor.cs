@@ -10,7 +10,6 @@ using Theraot.Threading;
 
 namespace Theraot.Collections
 {
-    [Serializable]
     public sealed class Progressor<T> : IObservable<T>
     {
         private bool _done;

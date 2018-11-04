@@ -11,7 +11,6 @@ namespace Theraot.Collections.ThreadSafe
     /// Represent a thread-safe wait-free fixed size bucket.
     /// </summary>
     /// <typeparam name="T">The type of the item.</typeparam>
-    [Serializable]
     public sealed class FixedSizeBucket<T> : IEnumerable<T>, IBucket<T>
     {
         private readonly int _capacity;

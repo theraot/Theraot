@@ -4,7 +4,6 @@ using System;
 
 namespace Theraot.Collections
 {
-    [Serializable]
     public sealed class ConvertedObserver<TInput, TOutput> : IObserver<TInput>
     {
         private readonly Func<TInput, TOutput> _converter;

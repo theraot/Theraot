@@ -92,7 +92,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitUnaryOperator(ExpressionType op, Type operandType, Type resultType)
         {
-            var operandIsNullable = operandType.IsNullableType();
+            var operandIsNullable = operandType.IsNullable();
 
             if (op == ExpressionType.ArrayLength)
             {
@@ -182,7 +182,7 @@ namespace System.Linq.Expressions.Compiler
                     case ExpressionType.TypeAs:
                         _ilg.Emit(OpCodes.Box, operandType);
                         _ilg.Emit(OpCodes.Isinst, resultType);
-                        if (resultType.IsNullableType())
+                        if (resultType.IsNullable())
                         {
                             _ilg.Emit(OpCodes.Unbox_Any, resultType);
                         }
@@ -238,7 +238,7 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.Emit(OpCodes.Box, operandType);
                     }
                     _ilg.Emit(OpCodes.Isinst, resultType);
-                    if (resultType.IsNullableType())
+                    if (resultType.IsNullable())
                     {
                         _ilg.Emit(OpCodes.Unbox_Any, resultType);
                     }
@@ -295,7 +295,7 @@ namespace System.Linq.Expressions.Compiler
         private void EmitUnboxUnaryExpression(Expression expr)
         {
             var node = (UnaryExpression)expr;
-            Debug.Assert(node.Type.IsValueType && !node.Type.IsNullableType());
+            Debug.Assert(node.Type.IsValueType && !node.Type.IsNullable());
 
             // Unbox_Any leaves the value on the stack
             EmitExpression(node.Operand);

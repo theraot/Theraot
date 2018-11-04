@@ -13,41 +13,25 @@ namespace Theraot.Core
 {
     public static partial class TypeHelper
     {
-        public static bool AreReferenceAssignable(Type target, Type source)
-        {
-            // This actually implements "Is this identity assignable and/or reference assignable?"
-            if (target == source)
-            {
-                return true;
-            }
-            var targetInfo = target.GetTypeInfo();
-            var sourceInfo = source.GetTypeInfo();
-            if (!targetInfo.IsValueType && !sourceInfo.IsValueType && target.IsAssignableFrom(source))
-            {
-                return true;
-            }
-            return false;
-        }
-
         private static readonly Type[] _known = {
             typeof(object),
             typeof(BitConverter),
             typeof(System.Collections.StructuralComparisons),
+            typeof(Debug),
+            typeof(System.Runtime.CompilerServices.IStrongBox),
+            typeof(System.Threading.BarrierPostPhaseException),
+            typeof(System.Threading.Tasks.TaskExtensions),
+            typeof(Uri),
+            typeof(TypeHelper),
             typeof(System.ComponentModel.CancelEventArgs),
             typeof(Console),
-            typeof(Debug),
             typeof(System.IO.BufferedStream),
             typeof(System.IO.File),
             typeof(System.IO.FileAccess),
             typeof(System.Resources.ResourceReader),
-            typeof(System.Runtime.CompilerServices.IStrongBox),
             typeof(System.Security.Cryptography.AsnEncodedData),
             typeof(System.Security.Cryptography.AsymmetricAlgorithm),
-            typeof(System.Security.Principal.IIdentity),
-            typeof(System.Threading.BarrierPostPhaseException),
-            typeof(System.Threading.Tasks.TaskExtensions),
-            typeof(Uri),
-            typeof(TypeHelper)
+            typeof(System.Security.Principal.IIdentity)
         };
 
         private static readonly Assembly[] _knownAssembies;
@@ -67,26 +51,20 @@ namespace Theraot.Core
             _knownAssembies = knownAssembies.ToArray();
         }
 
-        public static MethodInfo FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly)
+        public static bool AreReferenceAssignable(Type target, Type source)
         {
-            foreach (var method in methods)
+            // This actually implements "Is this identity assignable and/or reference assignable?"
+            if (target == source)
             {
-                if (method.Name != "op_Implicit" && (implicitOnly || method.Name != "op_Explicit"))
-                {
-                    continue;
-                }
-                if (method.ReturnType != typeTo)
-                {
-                    continue;
-                }
-                var parameters = method.GetParameters();
-                if (parameters[0].ParameterType != typeFrom)
-                {
-                    continue;
-                }
-                return method;
+                return true;
             }
-            return null;
+            var targetInfo = target.GetTypeInfo();
+            var sourceInfo = source.GetTypeInfo();
+            if (!targetInfo.IsValueType && !sourceInfo.IsValueType && target.IsAssignableFrom(source))
+            {
+                return true;
+            }
+            return false;
         }
 
         public static Type FindGenericType(Type definition, Type type)
@@ -111,32 +89,6 @@ namespace Theraot.Core
                     }
                 }
                 type = info.BaseType;
-            }
-            return null;
-        }
-
-        public static MethodInfo GetStaticMethod(this Type type, string name)
-        {
-            // Don't use BindingFlags.Static
-            foreach (var method in type.GetMethods())
-            {
-                if (method.Name == name && method.IsStatic)
-                {
-                    return method;
-                }
-            }
-            return null;
-        }
-
-        public static MethodInfo GetStaticMethod(this Type type, string name, Type[] types)
-        {
-            // Don't use BindingFlags.Static
-            foreach (var method in type.GetMethods())
-            {
-                if (method.Name == name && method.IsStatic && method.MatchesArgumentTypes(types))
-                {
-                    return method;
-                }
             }
             return null;
         }
@@ -183,30 +135,37 @@ namespace Theraot.Core
 
         public static Type GetNonNullableType(this Type type)
         {
-            if (IsNullableType(type))
+            if (IsNullable(type))
             {
                 return type.GetGenericArguments()[0];
             }
             return type;
         }
 
-        public static Type GetNonRefType(this Type type)
+        public static MethodInfo GetStaticMethod(this Type type, string name)
         {
-            return type.IsByRef ? type.GetElementType() : type;
+            // Don't use BindingFlags.Static
+            foreach (var method in type.GetMethods())
+            {
+                if (method.Name == name && method.IsStatic)
+                {
+                    return method;
+                }
+            }
+            return null;
         }
 
-        public static Type GetNullableType(this Type type)
+        public static MethodInfo GetStaticMethod(this Type type, string name, Type[] types)
         {
-            if (type == null)
+            // Don't use BindingFlags.Static
+            foreach (var method in type.GetMethods())
             {
-                throw new ArgumentNullException("type");
+                if (method.Name == name && method.IsStatic && method.MatchesArgumentTypes(types))
+                {
+                    return method;
+                }
             }
-            var info = type.GetTypeInfo();
-            if (info.IsValueType && !IsNullableType(type))
-            {
-                return typeof(Nullable<>).MakeGenericType(type);
-            }
-            return type;
+            return null;
         }
 
         public static MethodInfo[] GetStaticMethods(this Type type)
@@ -388,11 +347,11 @@ namespace Theraot.Core
             }
 
             // Nullable conversions
-            if (IsNullableType(source) && target == GetNonNullableType(source))
+            if (IsNullable(source) && target == GetNonNullableType(source))
             {
                 return true;
             }
-            if (IsNullableType(target) && source == GetNonNullableType(target))
+            if (IsNullable(target) && source == GetNonNullableType(target))
             {
                 return true;
             }
@@ -499,21 +458,6 @@ namespace Theraot.Core
             return GetNonNullableType(type) == typeof(bool);
         }
 
-        public static bool IsConstructedGenericType(this Type type)
-        {
-            var info = type.GetTypeInfo();
-            return info.IsGenericType && !info.IsGenericTypeDefinition;
-        }
-
-        public static bool IsContravariant(Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
-            return PrivateIsContravariant(type);
-        }
-
         public static bool IsConvertible(Type type)
         {
             type = GetNonNullableType(type);
@@ -543,38 +487,6 @@ namespace Theraot.Core
             return false;
         }
 
-        public static bool IsCovariant(Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
-            return PrivateIsCovariant(type);
-        }
-
-        public static bool IsDelegate(Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
-            return PrivateIsDelegate(type);
-        }
-
-        public static bool IsImplicitBoxingConversion(Type source, Type target)
-        {
-            var info = source.GetTypeInfo();
-            if (info.IsValueType && (target == typeof(object) || target == typeof(ValueType)))
-            {
-                return true;
-            }
-            if (info.IsEnum && target == typeof(Enum))
-            {
-                return true;
-            }
-            return false;
-        }
-
         public static bool IsImplicitlyConvertible(Type source, Type target)
         {
             return source == target
@@ -586,128 +498,9 @@ namespace Theraot.Core
 
         public static bool IsImplicitNullableConversion(Type source, Type target)
         {
-            if (IsNullableType(target))
+            if (IsNullable(target))
             {
                 return IsImplicitlyConvertible(GetNonNullableType(source), GetNonNullableType(target));
-            }
-            return false;
-        }
-
-        public static bool IsImplicitNumericConversion(Type source, Type target)
-        {
-            if (source == typeof(sbyte))
-            {
-                if (
-                    target == typeof(short)
-                    || target == typeof(int)
-                    || target == typeof(long)
-                    || target == typeof(float)
-                    || target == typeof(double)
-                    || target == typeof(decimal)
-                    )
-                {
-                    return true;
-                }
-            }
-            else if (source == typeof(byte))
-            {
-                if (
-                    target == typeof(short)
-                    || target == typeof(ushort)
-                    || target == typeof(int)
-                    || target == typeof(uint)
-                    || target == typeof(long)
-                    || target == typeof(ulong)
-                    || target == typeof(float)
-                    || target == typeof(double)
-                    || target == typeof(decimal)
-                    )
-                {
-                    return true;
-                }
-            }
-            else if (source == typeof(short))
-            {
-                if (
-                    target == typeof(int)
-                    || target == typeof(long)
-                    || target == typeof(float)
-                    || target == typeof(double)
-                    || target == typeof(decimal)
-                    )
-                {
-                    return true;
-                }
-            }
-            else if (source == typeof(ushort))
-            {
-                if (
-                    target == typeof(int)
-                    || target == typeof(uint)
-                    || target == typeof(long)
-                    || target == typeof(ulong)
-                    || target == typeof(float)
-                    || target == typeof(double)
-                    || target == typeof(decimal)
-                    )
-                {
-                    return true;
-                }
-            }
-            else if (source == typeof(int))
-            {
-                if (
-                    target == typeof(long)
-                    || target == typeof(float)
-                    || target == typeof(double)
-                    || target == typeof(decimal)
-                    )
-                {
-                    return true;
-                }
-            }
-            else if (source == typeof(uint))
-            {
-                if (
-                    target == typeof(ulong)
-                    || target == typeof(float)
-                    || target == typeof(double)
-                    || target == typeof(decimal)
-                    )
-                {
-                    return true;
-                }
-            }
-            else if (source == typeof(long) || target == typeof(ulong))
-            {
-                if (
-                    target == typeof(float)
-                    || target == typeof(double)
-                    || target == typeof(decimal)
-                    )
-                {
-                    return true;
-                }
-            }
-            else if (source == typeof(char))
-            {
-                if (
-                    target == typeof(ushort)
-                    || target == typeof(int)
-                    || target == typeof(uint)
-                    || target == typeof(long)
-                    || target == typeof(ulong)
-                    || target == typeof(float)
-                    || target == typeof(double)
-                    || target == typeof(decimal)
-                    )
-                {
-                    return true;
-                }
-            }
-            else if (source == typeof(float))
-            {
-                return target == typeof(double);
             }
             return false;
         }
@@ -742,15 +535,6 @@ namespace Theraot.Core
                 return true;
             }
             return false;
-        }
-
-        public static bool IsInvariant(Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
-            return PrivateIsInvariant(type);
         }
 
         public static bool IsLegalExplicitVariantDelegateConversion(Type source, Type target)
@@ -823,11 +607,6 @@ namespace Theraot.Core
             return true;
         }
 
-        public static bool IsNullableType(this Type type)
-        {
-            return IsConstructedGenericType(type) && type.GetGenericTypeDefinition() == typeof(Nullable<>);
-        }
-
         public static bool IsNumeric(this Type type)
         {
             type = GetNonNullableType(type);
@@ -851,15 +630,18 @@ namespace Theraot.Core
             return false;
         }
 
-        internal static bool IsUnsignedInteger(this Type type)
+        public static bool IsReferenceAssignableFrom(this Type type, Type source)
         {
-            // Not including byte or char, by design - use IsUnsigned instead
-            type = GetNonNullableType(type);
-            if
-                (
-                    type == typeof(ushort)
-                    || type == typeof(uint)
-                    || type == typeof(ulong)
+            if (type == source)
+            {
+                return true;
+            }
+            var info = type.GetTypeInfo();
+            var sourceInfo = source.GetTypeInfo();
+            if (
+                !info.IsValueType
+                && !sourceInfo.IsValueType
+                && type.IsAssignableFrom(source)
                 )
             {
                 return true;
@@ -867,7 +649,6 @@ namespace Theraot.Core
             return false;
         }
 
-        // Checks if the type is a valid target for an instance call
         public static bool IsValidInstanceType(MemberInfo member, Type instanceType)
         {
             var targetType = member.DeclaringType;
@@ -908,25 +689,6 @@ namespace Theraot.Core
                         }
                     }
                 }
-            }
-            return false;
-        }
-
-        public static bool IsReferenceAssignableFrom(this Type type, Type source)
-        {
-            if (type == source)
-            {
-                return true;
-            }
-            var info = type.GetTypeInfo();
-            var sourceInfo = source.GetTypeInfo();
-            if (
-                !info.IsValueType
-                && !sourceInfo.IsValueType
-                && type.IsAssignableFrom(source)
-                )
-            {
-                return true;
             }
             return false;
         }
@@ -997,6 +759,22 @@ namespace Theraot.Core
             return false;
         }
 
+        internal static bool IsUnsignedInteger(this Type type)
+        {
+            // Not including byte or char, by design - use IsUnsigned instead
+            type = GetNonNullableType(type);
+            if
+                (
+                    type == typeof(ushort)
+                    || type == typeof(uint)
+                    || type == typeof(ulong)
+                )
+            {
+                return true;
+            }
+            return false;
+        }
+
         internal static void ValidateType(Type type)
         {
             if (type != typeof(void))
@@ -1012,30 +790,6 @@ namespace Theraot.Core
                     throw new ArgumentException("type contains generic parameters.");
                 }
             }
-        }
-
-        private static bool PrivateIsContravariant(Type type)
-        {
-            var info = type.GetTypeInfo();
-            return 0 != (info.GenericParameterAttributes & GenericParameterAttributes.Contravariant);
-        }
-
-        private static bool PrivateIsCovariant(Type type)
-        {
-            var info = type.GetTypeInfo();
-            return 0 != (info.GenericParameterAttributes & GenericParameterAttributes.Covariant);
-        }
-
-        private static bool PrivateIsDelegate(Type type)
-        {
-            var info = type.GetTypeInfo();
-            return info.IsSubclassOf(typeof(MulticastDelegate));
-        }
-
-        private static bool PrivateIsInvariant(Type type)
-        {
-            var info = type.GetTypeInfo();
-            return 0 == (info.GenericParameterAttributes & GenericParameterAttributes.VarianceMask);
         }
     }
 

@@ -94,7 +94,7 @@ namespace System.Linq.Expressions
         {
             get
             {
-                if (_switchValue.Type.IsNullableType())
+                if (_switchValue.Type.IsNullable())
                 {
                     return (_comparison == null) ||
                         _switchValue.Type != _comparison.GetParameters()[0].ParameterType.GetNonRefType();
@@ -244,7 +244,7 @@ namespace System.Linq.Expressions
                         var rightOperandType = c.TestValues[i].Type;
                         if (liftedCall)
                         {
-                            if (!rightOperandType.IsNullableType())
+                            if (!rightOperandType.IsNullable())
                             {
                                 throw Error.TestValueTypeDoesNotMatchComparisonMethodParameter(rightOperandType, rightParam.ParameterType);
                             }

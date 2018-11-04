@@ -12,7 +12,7 @@ namespace Theraot.Collections.ThreadSafe
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
     public class WeakCollection<T, TNeedle> : ICollection<T>
         where T : class
-        where TNeedle : WeakNeedle<T>
+        where TNeedle : WeakNeedle<T>, new()
     {
         private readonly IEqualityComparer<T> _comparer;
         private readonly SafeCollection<TNeedle> _wrapped;
@@ -84,7 +84,8 @@ namespace Theraot.Collections.ThreadSafe
 
         public void Add(T item)
         {
-            var needle = NeedleHelper.CreateNeedle<T, TNeedle>(item);
+            var needle = new TNeedle();
+            needle.Value = item;
             _wrapped.Add(needle);
         }
 

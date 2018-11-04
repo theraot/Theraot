@@ -11,7 +11,6 @@ namespace Theraot.Collections.ThreadSafe
     /// Represent a thread-safe lock-free hash based dictionary.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
-    [Serializable]
     public class SafeSet<T> : IEnumerable<T>, ISet<T>
     {
         private const int _defaultProbing = 1;

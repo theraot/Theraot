@@ -6,7 +6,6 @@ using Theraot.Core;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    [Serializable]
     internal class BucketCore : IEnumerable<object>
     {
         private const int _capacity = 32;

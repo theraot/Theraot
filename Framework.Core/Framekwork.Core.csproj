@@ -571,6 +571,7 @@
     <Compile Include="Theraot\Core\RangeSet.cs" />
     <Compile Include="Theraot\Core\RangeSituation.cs" />
     <Compile Include="Theraot\Core\StringProcessor.cs" />
+    <Compile Include="Theraot\Core\TypeHelper.minimun.cs" />
     <Compile Include="Theraot\Core\ValueActionClosure.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -681,6 +682,8 @@
     <Compile Include="Theraot\Threading\Needles\LockableSlot.cs" />
     <Compile Include="Theraot\Threading\Needles\Needle.cs" />
     <Compile Include="Theraot\Threading\Needles\NeedleHelper.cs" />
+    <Compile Include="Theraot\Threading\Needles\NeedleHelper.retrieve.cs" />
+    <Compile Include="Theraot\Threading\Needles\NeedleHelper.trygetvalue.cs" />
     <Compile Include="Theraot\Threading\Needles\NotNull.cs" />
     <Compile Include="Theraot\Threading\Needles\Promise.cs" />
     <Compile Include="Theraot\Threading\Needles\PromiseNeedle1.cs" />

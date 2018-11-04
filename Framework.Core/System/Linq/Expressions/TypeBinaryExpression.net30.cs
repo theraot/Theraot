@@ -69,7 +69,7 @@ namespace System.Linq.Expressions
 
             // For value types (including Void, but not nullables), we can
             // determine the result now
-            if (cType.IsValueType && !cType.IsNullableType())
+            if (cType.IsValueType && !cType.IsNullable())
             {
                 return Block(Expression, Constant(cType == _typeOperand.GetNonNullableType()));
             }
@@ -84,7 +84,7 @@ namespace System.Linq.Expressions
             // type, it will match if value is not null
             if (cType.IsSealed && (cType == _typeOperand))
             {
-                if (cType.IsNullableType())
+                if (cType.IsNullable())
                 {
                     return NotEqual(Expression, Constant(null, Expression.Type));
                 }

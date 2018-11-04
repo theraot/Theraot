@@ -59,7 +59,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 // If the operand is a value type (other than nullable), we
                 // know the result is always true.
-                if (operandType.IsValueType && !operandType.IsNullableType())
+                if (operandType.IsValueType && !operandType.IsNullable())
                 {
                     return AnalyzeTypeIsResult.KnownTrue;
                 }

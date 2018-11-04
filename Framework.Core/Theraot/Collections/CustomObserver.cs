@@ -5,7 +5,6 @@ using Theraot.Core;
 
 namespace Theraot.Collections
 {
-    [Serializable]
     public sealed class CustomObserver<T> : IObserver<T>
     {
         private readonly Action _onCompleted;

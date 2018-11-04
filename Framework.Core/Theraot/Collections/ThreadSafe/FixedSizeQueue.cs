@@ -11,7 +11,6 @@ namespace Theraot.Collections.ThreadSafe
     /// Represent a fixed size thread-safe wait-free queue.
     /// </summary>
     /// <typeparam name="T">The type of items stored in the queue.</typeparam>
-    [Serializable]
     public sealed class FixedSizeQueue<T> : IEnumerable<T>
     {
         private readonly int _capacity;

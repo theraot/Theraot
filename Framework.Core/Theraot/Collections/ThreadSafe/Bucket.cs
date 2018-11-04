@@ -9,7 +9,6 @@ namespace Theraot.Collections.ThreadSafe
     /// Represent a thread-safe wait-free bucket.
     /// </summary>
     /// <typeparam name="T">The type of the item.</typeparam>
-    [Serializable]
     public sealed class Bucket<T> : IBucket<T>
     {
         private readonly BucketCore _bucketCore;

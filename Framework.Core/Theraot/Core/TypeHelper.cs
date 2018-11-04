@@ -3,56 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Core
 {
     [System.Diagnostics.DebuggerNonUserCode]
     public static partial class TypeHelper
     {
-        public static object[] EmptyObjects
-        {
-            get { return ArrayReservoir<object>.EmptyArray; }
-        }
-
-        public static TTarget As<TTarget>(object source)
-            where TTarget : class
-        {
-            return As
-            (
-                source,
-                new Func<TTarget>
-                (
-                    () =>
-                    {
-                        throw new InvalidOperationException("Cannot convert to " + typeof(TTarget).Name);
-                    }
-                )
-            );
-        }
-
-        public static TTarget As<TTarget>(object source, TTarget def)
-            where TTarget : class
-        {
-            return As(source, () => def);
-        }
-
-        public static TTarget As<TTarget>(object source, Func<TTarget> alternative)
-            where TTarget : class
-        {
-            if (alternative == null)
-            {
-                throw new ArgumentNullException("alternative");
-            }
-            var sourceAsTarget = source as TTarget;
-            if (sourceAsTarget == null)
-            {
-                return alternative();
-            }
-            return sourceAsTarget;
-        }
-
         public static bool CanBe<T>(this Type type, T value)
         {
             if (ReferenceEquals(value, null))
@@ -60,63 +16,6 @@ namespace Theraot.Core
                 return type.CanBeNull();
             }
             return value.GetType().IsAssignableTo(type);
-        }
-
-        public static bool CanBeNull(this Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
-            var info = type.GetTypeInfo();
-            return !info.IsValueType || !ReferenceEquals(Nullable.GetUnderlyingType(type), null);
-        }
-
-        public static TTarget Cast<TTarget>(object source)
-        {
-            return Cast
-            (
-                source,
-                new Func<TTarget>
-                (
-                    () =>
-                    {
-                        throw new InvalidOperationException("Cannot convert to " + typeof(TTarget).Name);
-                    }
-                )
-            );
-        }
-
-        public static TTarget Cast<TTarget>(object source, TTarget def)
-        {
-            return Cast(source, () => def);
-        }
-
-        public static TTarget Cast<TTarget>(object source, Func<TTarget> alternative)
-        {
-            if (alternative == null)
-            {
-                throw new ArgumentNullException("alternative");
-            }
-            try
-            {
-                var sourceAsTarget = (TTarget)source;
-                return sourceAsTarget;
-            }
-            catch
-            {
-                return alternative();
-            }
-        }
-
-        public static object Create(this Type type, params object[] arguments)
-        {
-            return Activator.CreateInstance(type, arguments);
-        }
-
-        public static TReturn Default<TReturn>()
-        {
-            return FuncHelper.GetDefaultFunc<TReturn>().Invoke();
         }
 
         public static TAttribute[] GetAttributes<TAttribute>(this ICustomAttributeProvider item, bool inherit)
@@ -127,22 +26,6 @@ namespace Theraot.Core
                 throw new ArgumentNullException("item");
             }
             return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute), inherit);
-        }
-
-        public static TAttribute[] GetAttributes<TAttribute>(this Type type, bool inherit)
-            where TAttribute : Attribute
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
-            var info = type.GetTypeInfo();
-            return (TAttribute[])info.GetCustomAttributes(typeof(TAttribute), inherit);
-        }
-
-        public static Func<TReturn> GetDefault<TReturn>()
-        {
-            return FuncHelper.GetDefaultFunc<TReturn>();
         }
 
         public static MethodInfo GetDelegateMethodInfo(Type delegateType)
@@ -182,16 +65,6 @@ namespace Theraot.Core
                 parameterType = parameterType.GetElementType();
             }
             return parameterType;
-        }
-
-        public static Type GetNotNullableType(this Type type)
-        {
-            var underlying = Nullable.GetUnderlyingType(type);
-            if (underlying == null)
-            {
-                return type;
-            }
-            return underlying;
         }
 
         public static bool HasAttribute<TAttribute>(this ICustomAttributeProvider item)
@@ -249,18 +122,6 @@ namespace Theraot.Core
         public static bool IsAssignableTo(this Type type, ParameterInfo parameterInfo)
         {
             return IsAssignableTo(GetNotNullableType(type), parameterInfo.GetNonRefType());
-        }
-
-        public static bool IsAtomic<T>()
-        {
-#if NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0
-            var info = typeof(T).GetTypeInfo();
-            return info.IsClass || (info.IsPrimitive && Marshal.SizeOf<T>() <= IntPtr.Size);
-#else
-            var type = typeof(T);
-            var info = type.GetTypeInfo();
-            return info.IsClass || (info.IsPrimitive && Marshal.SizeOf(type) <= IntPtr.Size);
-#endif
         }
 
         public static bool IsBinaryPortable(this Type type)
@@ -340,16 +201,6 @@ namespace Theraot.Core
             return false;
         }
 
-        public static bool IsGenericInstanceOf(this Type type, Type genericTypeDefinition)
-        {
-            var info = type.GetTypeInfo();
-            if (!info.IsGenericType)
-            {
-                return false;
-            }
-            return type.GetGenericTypeDefinition() == genericTypeDefinition;
-        }
-
         public static bool IsImplementationOf(this Type type, Type interfaceType)
         {
             foreach (var currentInterface in type.GetInterfaces())
@@ -390,48 +241,6 @@ namespace Theraot.Core
             return false;
         }
 
-        public static bool IsNullable(this Type type)
-        {
-            return Nullable.GetUnderlyingType(type) != null;
-        }
-
-        public static bool IsPrimitiveInteger(this Type type)
-        {
-            if
-                (
-                    type == typeof(sbyte)
-                    || type == typeof(byte)
-                    || type == typeof(short)
-                    || type == typeof(int)
-                    || type == typeof(long)
-                    || type == typeof(ushort)
-                    || type == typeof(uint)
-                    || type == typeof(ulong)
-                )
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public static bool IsSameOrSubclassOf(this Type type, Type baseType)
-        {
-            if (type == baseType)
-            {
-                return true;
-            }
-            while (type != null)
-            {
-                var info = type.GetTypeInfo();
-                type = info.BaseType;
-                if (type == baseType)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         public static bool IsValueTypeRecursive(this Type type)
         {
             if (type == null)
@@ -439,11 +248,6 @@ namespace Theraot.Core
                 throw new ArgumentNullException("type");
             }
             return IsValueTypeRecursiveExtracted(type);
-        }
-
-        public static Type MakeNullableType(this Type self)
-        {
-            return typeof(Nullable<>).MakeGenericType(self);
         }
 
         internal static bool CanCache(this Type type)

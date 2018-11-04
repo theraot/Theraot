@@ -8,7 +8,6 @@ using Theraot.Core;
 
 namespace Theraot.Collections
 {
-    [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
 #if FAT
@@ -49,7 +48,10 @@ namespace Theraot.Collections
         }
 
 #else
-    public sealed class ExtendedSet<T> : ICloneable, ICollection<T>, ISet<T>
+    public sealed class ExtendedSet<T> : ICollection<T>, ISet<T>
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+        , ICloneable
+#endif
     {
         private readonly HashSet<T> _wrapped;
 
@@ -137,7 +139,7 @@ namespace Theraot.Collections
             return _wrapped.GetEnumerator();
         }
 
-#if !NETCOREAPP1_0 && !NETCOREAPP1_1
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
 
         object ICloneable.Clone()
         {
