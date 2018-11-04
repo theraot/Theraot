@@ -282,6 +282,8 @@
         <Compile Include="..\Framework.Core\Theraot\Threading\Needles\LockableSlot.cs" Link="Theraot\Threading\Needles\LockableSlot.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\Needles\Needle.cs" Link="Theraot\Threading\Needles\Needle.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\Needles\NeedleHelper.cs" Link="Theraot\Threading\Needles\NeedleHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\NeedleHelper.retrieve.cs" Link="Theraot\Threading\Needles\NeedleHelper.retrieve.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\NeedleHelper.trygetvalue.cs" Link="Theraot\Threading\Needles\NeedleHelper.trygetvalue.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\Needles\NotNull.cs" Link="Theraot\Threading\Needles\NotNull.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\Needles\Promise.cs" Link="Theraot\Threading\Needles\Promise.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\Needles\PromiseNeedle1.cs" Link="Theraot\Threading\Needles\PromiseNeedle1.cs" />
