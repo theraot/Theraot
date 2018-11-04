@@ -1,6 +1,8 @@
 ﻿// Needed for NET40
 
 using System;
+using System.Globalization;
+using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
