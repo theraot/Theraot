@@ -187,7 +187,8 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("info");
             }
-            _wrapped.Deconstruct(out var dictionary);
+            KeyValuePair<T, object>[] dictionary;
+            _wrapped.Deconstruct(out dictionary);
             info.AddValue("dictionary", dictionary);
         }
 
