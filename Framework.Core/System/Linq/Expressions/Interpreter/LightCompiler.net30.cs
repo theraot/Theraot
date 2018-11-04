@@ -808,7 +808,7 @@ namespace System.Linq.Expressions.Interpreter
                         default:
                             var loadDefault = _instructions.MakeLabel();
 
-                            if (!node.Left.Type.IsValueType || node.Left.Type.IsNullableType())
+                            if (!node.Left.Type.IsValueType || node.Left.Type.IsNullable())
                             {
                                 _instructions.EmitLoadLocal(leftTemp.Index);
                                 _instructions.EmitLoad(null, typeof(object));
@@ -816,7 +816,7 @@ namespace System.Linq.Expressions.Interpreter
                                 _instructions.EmitBranchTrue(loadDefault);
                             }
 
-                            if (!node.Right.Type.IsValueType || node.Right.Type.IsNullableType())
+                            if (!node.Right.Type.IsValueType || node.Right.Type.IsNullable())
                             {
                                 _instructions.EmitLoadLocal(rightTemp.Index);
                                 _instructions.EmitLoad(null, typeof(object));
@@ -1040,7 +1040,7 @@ namespace System.Linq.Expressions.Interpreter
                 _instructions.EmitStoreLocal(opTemp.Index);
 
                 if (!node.Operand.Type.IsValueType ||
-                    (node.Operand.Type.IsNullableType() && node.IsLiftedToNull))
+                    (node.Operand.Type.IsNullable() && node.IsLiftedToNull))
                 {
                     _instructions.EmitLoadLocal(opTemp.Index);
                     _instructions.EmitLoad(null, typeof(object));
@@ -1049,7 +1049,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
 
                 _instructions.EmitLoadLocal(opTemp.Index);
-                if (node.Operand.Type.IsNullableType()
+                if (node.Operand.Type.IsNullable()
                     && node.Method.GetParameters()[0].ParameterType == node.Operand.Type.GetNonNullableType())
                 {
                     _instructions.Emit(NullableMethodCallInstruction.Create("get_Value", 1));
@@ -1087,7 +1087,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             if (typeFrom.IsValueType
-                && typeTo.IsNullableType()
+                && typeTo.IsNullable()
                 && typeTo.GetNonNullableType() == typeFrom)
             {
                 // VT -> vt?, no conversion necessary
@@ -1095,7 +1095,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             if (typeTo.IsValueType
-                && typeFrom.IsNullableType()
+                && typeFrom.IsNullable()
                 && typeFrom.GetNonNullableType() == typeTo)
             {
                 // VT? -> vt, call get_Value
@@ -1140,7 +1140,7 @@ namespace System.Linq.Expressions.Interpreter
                     _instructions.EmitCastToEnum(enumTypeTo);
                 }
 
-                if (typeTo.IsNullableType())
+                if (typeTo.IsNullable())
                 {
                     var whenNull = _instructions.MakeLabel();
                     _instructions.EmitDup();

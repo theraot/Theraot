@@ -135,7 +135,7 @@ namespace Theraot.Core
 
         public static Type GetNonNullableType(this Type type)
         {
-            if (IsNullableType(type))
+            if (IsNullable(type))
             {
                 return type.GetGenericArguments()[0];
             }
@@ -347,11 +347,11 @@ namespace Theraot.Core
             }
 
             // Nullable conversions
-            if (IsNullableType(source) && target == GetNonNullableType(source))
+            if (IsNullable(source) && target == GetNonNullableType(source))
             {
                 return true;
             }
-            if (IsNullableType(target) && source == GetNonNullableType(target))
+            if (IsNullable(target) && source == GetNonNullableType(target))
             {
                 return true;
             }
@@ -498,7 +498,7 @@ namespace Theraot.Core
 
         public static bool IsImplicitNullableConversion(Type source, Type target)
         {
-            if (IsNullableType(target))
+            if (IsNullable(target))
             {
                 return IsImplicitlyConvertible(GetNonNullableType(source), GetNonNullableType(target));
             }

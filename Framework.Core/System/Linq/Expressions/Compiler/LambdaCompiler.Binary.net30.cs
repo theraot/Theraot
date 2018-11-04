@@ -39,12 +39,12 @@ namespace System.Linq.Expressions.Compiler
                 // If we have x==null, x!=null, null==x or null!=x where x is
                 // nullable but not null, then generate a call to x.HasValue.
                 Debug.Assert(!b.IsLiftedToNull || b.Type == typeof(bool?));
-                if (ConstantCheck.IsNull(b.Left) && !ConstantCheck.IsNull(b.Right) && b.Right.Type.IsNullableType())
+                if (ConstantCheck.IsNull(b.Left) && !ConstantCheck.IsNull(b.Right) && b.Right.Type.IsNullable())
                 {
                     EmitNullEquality(b.NodeType, b.Right, b.IsLiftedToNull);
                     return;
                 }
-                if (ConstantCheck.IsNull(b.Right) && !ConstantCheck.IsNull(b.Left) && b.Left.Type.IsNullableType())
+                if (ConstantCheck.IsNull(b.Right) && !ConstantCheck.IsNull(b.Left) && b.Left.Type.IsNullable())
                 {
                     EmitNullEquality(b.NodeType, b.Left, b.IsLiftedToNull);
                     return;
@@ -67,7 +67,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitNullEquality(ExpressionType op, Expression e, bool isLiftedToNull)
         {
-            Debug.Assert(e.Type.IsNullableType());
+            Debug.Assert(e.Type.IsNullable());
             Debug.Assert(op == ExpressionType.Equal || op == ExpressionType.NotEqual);
             // If we are lifted to null then just evaluate the expression for its side effects, discard,
             // and generate null.  If we are not lifted to null then generate a call to HasValue.
@@ -135,8 +135,8 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitBinaryOperator(ExpressionType op, Type leftType, Type rightType, Type resultType, bool liftedToNull)
         {
-            var leftIsNullable = leftType.IsNullableType();
-            var rightIsNullable = rightType.IsNullableType();
+            var leftIsNullable = leftType.IsNullable();
+            var rightIsNullable = rightType.IsNullable();
 
             switch (op)
             {
@@ -167,8 +167,8 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitUnliftedBinaryOp(ExpressionType op, Type leftType, Type rightType)
         {
-            Debug.Assert(!leftType.IsNullableType());
-            Debug.Assert(!rightType.IsNullableType());
+            Debug.Assert(!leftType.IsNullable());
+            Debug.Assert(!rightType.IsNullable());
 
             if (op == ExpressionType.Equal || op == ExpressionType.NotEqual)
             {
@@ -370,7 +370,7 @@ namespace System.Linq.Expressions.Compiler
         // checked conversion if the original operator was convert
         private void EmitConvertArithmeticResult(ExpressionType op, Type resultType)
         {
-            Debug.Assert(!resultType.IsNullableType());
+            Debug.Assert(!resultType.IsNullable());
 
             switch (resultType.GetTypeCode())
             {
@@ -412,7 +412,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitLiftedBinaryOp(ExpressionType op, Type leftType, Type rightType, Type resultType, bool liftedToNull)
         {
-            Debug.Assert(leftType.IsNullableType() || rightType.IsNullableType());
+            Debug.Assert(leftType.IsNullable() || rightType.IsNullable());
             switch (op)
             {
                 case ExpressionType.And:
@@ -469,7 +469,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitLiftedRelational(ExpressionType op, Type leftType, Type rightType, Type resultType, bool liftedToNull)
         {
-            Debug.Assert(leftType.IsNullableType());
+            Debug.Assert(leftType.IsNullable());
 
             var shortCircuit = _ilg.DefineLabel();
             var locLeft = GetLocal(leftType);
@@ -587,8 +587,8 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitLiftedBinaryArithmetic(ExpressionType op, Type leftType, Type rightType, Type resultType)
         {
-            var leftIsNullable = leftType.IsNullableType();
-            var rightIsNullable = rightType.IsNullableType();
+            var leftIsNullable = leftType.IsNullable();
+            var rightIsNullable = rightType.IsNullable();
 
             Debug.Assert(leftIsNullable || rightIsNullable);
 
