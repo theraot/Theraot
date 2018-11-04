@@ -4,14 +4,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Runtime.Serialization;
-
 namespace System.Threading.Tasks
 {
     /// <summary>
     /// Represents an exception used to communicate task cancellation.
     /// </summary>
-    [Serializable]
     public class TaskCanceledException : Theraot.Core.NewOperationCanceledException
     {
         [NonSerialized]
@@ -55,17 +52,6 @@ namespace System.Threading.Tasks
             base("A task was canceled", task != null ? task.CancellationToken : new CancellationToken())
         {
             _canceledTask = task;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:System.Threading.Tasks.TaskCanceledException"/>
-        /// class with serialized data.
-        /// </summary>
-        /// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
-        /// <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination. </param>
-        protected TaskCanceledException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-            // Empty
         }
 
         /// <summary>
