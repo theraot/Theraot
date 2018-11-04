@@ -1,4 +1,4 @@
-﻿// Needed for NET40
+﻿#if FAT
 
 using System;
 using System.Globalization;
@@ -346,3 +346,5 @@ namespace Theraot.Threading.Needles
         }
     }
 }
+
+#endif
