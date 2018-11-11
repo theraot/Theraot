@@ -1,4 +1,4 @@
-﻿// Needed for NET40
+// Needed for NET40
 
 using System;
 using System.Collections;
@@ -1654,17 +1654,11 @@ namespace Theraot.Collections
             var enumerators = source.Select(x => x.GetEnumerator()).ToArray();
             try
             {
-                var ok = true;
-                while (ok)
+                while (enumerators.All(enumerator => enumerator.MoveNext()))
                 {
-                    ok = false;
                     foreach (var enumerator in enumerators)
                     {
-                        if (enumerator.MoveNext())
-                        {
-                            yield return enumerator.Current;
-                            ok = true;
-                        }
+                        yield return enumerator.Current;
                     }
                 }
             }
@@ -2763,6 +2757,14 @@ namespace Theraot.Collections
 
         public static IEnumerable<TResult> ZipMany<T, TResult>(this IEnumerable<IEnumerable<T>> source, Func<IEnumerable<T>, TResult> func)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (func == null)
+            {
+                throw new ArgumentNullException("func");
+            }
             var enumerators = source.Select(x => x.GetEnumerator()).ToArray();
             try
             {
