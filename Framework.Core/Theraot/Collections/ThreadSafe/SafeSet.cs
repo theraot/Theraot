@@ -94,6 +94,11 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        void ICollection<T>.Add(T item)
+        {
+            AddNew(item);
+        }
+
         /// <summary>
         /// Adds the specified value.
         /// </summary>
@@ -215,6 +220,11 @@ namespace Theraot.Collections.ThreadSafe
         public IEnumerator<T> GetEnumerator()
         {
             return _bucket.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <summary>
@@ -421,14 +431,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("check");
             }
-            var matches = _bucket.Where(check);
-            foreach (var value in matches)
-            {
-                if (Remove(value))
-                {
-                    yield return value;
-                }
-            }
+            return RemoveWhereEnumerableExtracted(check);
         }
 
         public bool SetEquals(IEnumerable<T> other)
@@ -496,16 +499,6 @@ namespace Theraot.Collections.ThreadSafe
             return _bucket.Where(check);
         }
 
-        void ICollection<T>.Add(T item)
-        {
-            AddNew(item);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         /// <summary>
         /// Attempts to add the specified value.
         /// </summary>
@@ -561,6 +554,18 @@ namespace Theraot.Collections.ThreadSafe
             if (diff > 0)
             {
                 Interlocked.Add(ref _probing, diff);
+            }
+        }
+
+        private IEnumerable<T> RemoveWhereEnumerableExtracted(Predicate<T> check)
+        {
+            var matches = _bucket.Where(check);
+            foreach (var value in matches)
+            {
+                if (Remove(value))
+                {
+                    yield return value;
+                }
             }
         }
     }

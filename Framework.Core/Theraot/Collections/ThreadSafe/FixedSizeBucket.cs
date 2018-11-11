@@ -195,6 +195,11 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         /// <summary>
         /// Inserts the item at the specified index.
         /// </summary>
@@ -333,11 +338,6 @@ namespace Theraot.Collections.ThreadSafe
             SetInternal(index, item, out isNew);
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         /// <summary>
         /// Tries to retrieve the item at the specified index.
         /// </summary>
@@ -394,21 +394,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("check");
             }
-            foreach (var entry in _entries)
-            {
-                if (entry != null)
-                {
-                    var yield = default(T);
-                    if (entry != BucketHelper.Null)
-                    {
-                        yield = (T)entry;
-                    }
-                    if (check(yield))
-                    {
-                        yield return yield;
-                    }
-                }
-            }
+            return WhereExtracted(check);
         }
 
         internal bool ExchangeInternal(int index, T item, out T previous)
@@ -532,6 +518,25 @@ namespace Theraot.Collections.ThreadSafe
             }
             isEmpty = found == null || compare == null;
             return result;
+        }
+
+        private IEnumerable<T> WhereExtracted(Predicate<T> check)
+        {
+            foreach (var entry in _entries)
+            {
+                if (entry != null)
+                {
+                    var yield = default(T);
+                    if (entry != BucketHelper.Null)
+                    {
+                        yield = (T)entry;
+                    }
+                    if (check(yield))
+                    {
+                        yield return yield;
+                    }
+                }
+            }
         }
     }
 }

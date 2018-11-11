@@ -292,6 +292,11 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("check");
             }
+            return WhereExtracted(check);
+        }
+
+        private IEnumerable<T> WhereExtracted(Predicate<T> check)
+        {
             foreach (var value in _bucketCore)
             {
                 var castedValue = value == BucketHelper.Null ? default(T) : (T)value;

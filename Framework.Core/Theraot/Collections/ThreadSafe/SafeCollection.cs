@@ -13,8 +13,8 @@ namespace Theraot.Collections.ThreadSafe
     public sealed class SafeCollection<T> : ICollection<T>
     {
         private readonly IEqualityComparer<T> _comparer;
-        private SafeDictionary<int, T> _wrapped;
         private int _maxIndex;
+        private SafeDictionary<int, T> _wrapped;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SafeCollection{T}" /> class.
@@ -137,12 +137,9 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        private static IEnumerable<T> Enumerable(SafeDictionary<int, T> wrapped)
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            foreach (var pair in wrapped)
-            {
-                yield return pair.Value;
-            }
+            return GetEnumerator();
         }
 
         /// <summary>
@@ -202,14 +199,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("check");
             }
-            var matches = _wrapped.WhereValue(check);
-            foreach (var value in matches)
-            {
-                if (Remove(value))
-                {
-                    yield return value;
-                }
-            }
+            return RemoveWhereEnumerableExtracted(check);
         }
 
         /// <summary>
@@ -231,9 +221,24 @@ namespace Theraot.Collections.ThreadSafe
             return _wrapped.WhereValue(check);
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        private static IEnumerable<T> Enumerable(SafeDictionary<int, T> wrapped)
         {
-            return GetEnumerator();
+            foreach (var pair in wrapped)
+            {
+                yield return pair.Value;
+            }
+        }
+
+        private IEnumerable<T> RemoveWhereEnumerableExtracted(Predicate<T> check)
+        {
+            var matches = _wrapped.WhereValue(check);
+            foreach (var value in matches)
+            {
+                if (Remove(value))
+                {
+                    yield return value;
+                }
+            }
         }
     }
 }

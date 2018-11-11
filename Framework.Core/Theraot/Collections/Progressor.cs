@@ -722,19 +722,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("condition");
             }
-            while (true)
-            {
-                T item;
-                var tryTake = _tryTake;
-                if (tryTake(out item) && condition(item))
-                {
-                    yield return item;
-                }
-                else
-                {
-                    break;
-                }
-            }
+            return WhileExtracted(condition);
         }
 
         public IEnumerable<T> While(Func<bool> condition)
@@ -743,19 +731,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("condition");
             }
-            while (true)
-            {
-                T item;
-                var tryTake = _tryTake;
-                if (tryTake(out item) && condition())
-                {
-                    yield return item;
-                }
-                else
-                {
-                    break;
-                }
-            }
+            return WhileExtracted(condition);
         }
 
         private static TryTake<T> GetTryTake(TryTake<T> tryTake, bool doneOnFalse, Progressor<T> that)
@@ -786,6 +762,40 @@ namespace Theraot.Collections
                 that._done = new ValueFuncClosure<bool>(isDone).InvokeReturn();
                 return false;
             };
+        }
+
+        private IEnumerable<T> WhileExtracted(Predicate<T> condition)
+        {
+            while (true)
+            {
+                T item;
+                var tryTake = _tryTake;
+                if (tryTake(out item) && condition(item))
+                {
+                    yield return item;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
+        private IEnumerable<T> WhileExtracted(Func<bool> condition)
+        {
+            while (true)
+            {
+                T item;
+                var tryTake = _tryTake;
+                if (tryTake(out item) && condition())
+                {
+                    yield return item;
+                }
+                else
+                {
+                    break;
+                }
+            }
         }
     }
 }
