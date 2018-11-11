@@ -465,16 +465,16 @@ namespace Theraot.Collections.Specialized
 
         private void TakeValueForNull(IDictionary<TKey, TValue> dictionary)
         {
-            if (dictionary.ContainsKey(_typedNull))
+            TValue valueForNull = default(TValue);
+            try
             {
-                _valueForNull = new[] { dictionary[_typedNull] };
-                _hasNull = true;
+                _hasNull = dictionary.TryGetValue(_typedNull, out valueForNull);
             }
-            else
+            catch (ArgumentNullException exception)
             {
-                _valueForNull = new[] { default(TValue) };
-                _hasNull = false;
+                GC.KeepAlive(exception);
             }
+            _valueForNull = new[] { valueForNull };
         }
     }
 }
