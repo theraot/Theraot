@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Theraot.Core;
+using Theraot.Threading;
 
 namespace Theraot.Collections.ThreadSafe
 {
@@ -16,9 +17,9 @@ namespace Theraot.Collections.ThreadSafe
         private const long _lvl5 = _lvl4 * _capacity;
         private const long _lvl6 = _lvl5 * _capacity;
         private const long _lvl7 = _lvl6 * _capacity;
-        private readonly object[] _arrayFirst;
-        private readonly object[] _arraySecond;
-        private readonly int[] _arrayUse;
+        private object[] _arrayFirst;
+        private object[] _arraySecond;
+        private int[] _arrayUse;
         private readonly int _level;
 
         public BucketCore(int level)
@@ -28,9 +29,35 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentOutOfRangeException("level", "level < 0 || level > 7");
             }
             _level = level;
-            _arrayFirst = new object[_capacity];
-            _arraySecond = new object[_capacity];
-            _arrayUse = new int[_capacity];
+            _arrayFirst = ArrayReservoir<object>.GetArray(_capacity);
+            _arraySecond = ArrayReservoir<object>.GetArray(_capacity);
+            _arrayUse = ArrayReservoir<int>.GetArray(_capacity);
+        }
+
+        ~BucketCore()
+        {
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            if (!GCMonitor.FinalizingForUnload)
+            {
+                var arrayFirst = _arrayFirst;
+                if (arrayFirst != null)
+                {
+                    ArrayReservoir<object>.DonateArray(arrayFirst);
+                    _arrayFirst = null;
+                }
+                var arraySecond = _arraySecond;
+                if (arraySecond != null)
+                {
+                    ArrayReservoir<object>.DonateArray(arraySecond);
+                    _arraySecond = null;
+                }
+                var arrayUse = _arrayUse;
+                if (arrayUse != null)
+                {
+                    ArrayReservoir<int>.DonateArray(arrayUse);
+                    _arrayUse = null;
+                }
+            }
         }
 
         public long Length
