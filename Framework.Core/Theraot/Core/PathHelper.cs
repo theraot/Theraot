@@ -204,7 +204,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("path");
             }
-            if (path == string.Empty)
+            if (path.Length == 0)
             {
                 return false;
             }
