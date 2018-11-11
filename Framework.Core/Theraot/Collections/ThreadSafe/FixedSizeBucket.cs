@@ -445,7 +445,13 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool InsertInternal(int index, T item)
         {
-            var found = Interlocked.CompareExchange(ref _entries[index], (object)item ?? BucketHelper.Null, null);
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            var entries = _entries;
+            if (entries == null)
+            {
+                return false;
+            }
+            var found = Interlocked.CompareExchange(ref entries[index], (object)item ?? BucketHelper.Null, null);
             if (found == null)
             {
                 Interlocked.Increment(ref _count);
