@@ -447,7 +447,15 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("converter");
             }
-            return ConvertProgressiveExtracted<T, TOutput>(source, converter);
+            return ConvertProgressiveExtracted();
+
+            IEnumerable<TOutput> ConvertProgressiveExtracted()
+            {
+                foreach (var item in source)
+                {
+                    yield return converter(item);
+                }
+            }
         }
 
         public static IEnumerable<TOutput> ConvertProgressiveFiltered<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)
@@ -464,7 +472,18 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("filter");
             }
-            return ConvertProgressiveFilteredExtracted<T, TOutput>(source, converter, filter);
+            return ConvertProgressiveFilteredExtracted();
+
+            IEnumerable<TOutput> ConvertProgressiveFilteredExtracted()
+            {
+                foreach (var item in source)
+                {
+                    if (filter(item))
+                    {
+                        yield return converter(item);
+                    }
+                }
+            }
         }
 
         public static IEnumerable<TOutput> ConvertProgressiveFiltered<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Func<T, int, bool> filter)
@@ -498,7 +517,20 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("filter");
             }
-            return ConvertProgressiveIndexedExtracted(source, converter, filter);
+            return ConvertProgressiveIndexedExtracted();
+
+            IEnumerable<KeyValuePair<int, TOutput>> ConvertProgressiveIndexedExtracted()
+            {
+                var index = 0;
+                foreach (var item in source)
+                {
+                    if (filter(item))
+                    {
+                        yield return new KeyValuePair<int, TOutput>(index, converter(item));
+                    }
+                    index++;
+                }
+            }
         }
 
         public static IEnumerable<KeyValuePair<int, TOutput>> ConvertProgressiveIndexed<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Func<T, int, bool> filter)
@@ -515,7 +547,20 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("filter");
             }
-            return ConvertProgressiveIndexedExtracted(source, converter, filter);
+            return ConvertProgressiveIndexedExtracted();
+
+            IEnumerable<KeyValuePair<int, TOutput>> ConvertProgressiveIndexedExtracted()
+            {
+                var index = 0;
+                foreach (var item in source)
+                {
+                    if (filter(item, index))
+                    {
+                        yield return new KeyValuePair<int, TOutput>(index, converter(item));
+                    }
+                    index++;
+                }
+            }
         }
 
         public static T[] Copy<T>(this T[] array)
@@ -811,7 +856,18 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("other");
             }
-            return ExceptWithEnumerableExtracted(source, other);
+            return ExceptWithEnumerableExtracted();
+
+            IEnumerable<T> ExceptWithEnumerableExtracted()
+            {
+                foreach (var item in other)
+                {
+                    while (source.Remove(item))
+                    {
+                        yield return item;
+                    }
+                }
+            }
         }
 
         public static bool Exists<T>(this IEnumerable<T> source, T value)
@@ -1303,7 +1359,18 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return FlattenExtracted(source);
+            return FlattenExtracted();
+
+            IEnumerable<T> FlattenExtracted()
+            {
+                foreach (var key in source)
+                {
+                    foreach (var item in key)
+                    {
+                        yield return item;
+                    }
+                }
+            }
         }
 
         public static void For<T>(this IEnumerable<T> source, Action<int, T> action)
@@ -2100,7 +2167,29 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return PackExtracted<T>(source, size);
+            return PackExtracted();
+
+            IEnumerable<T[]> PackExtracted()
+            {
+                var index = 0;
+                var currentPackage = new T[size];
+                foreach (var item in source)
+                {
+                    currentPackage[index] = item;
+                    index++;
+                    if (index == size)
+                    {
+                        yield return currentPackage;
+                        currentPackage = new T[size];
+                        index = 0;
+                    }
+                }
+                if (index > 0)
+                {
+                    Array.Resize(ref currentPackage, index);
+                    yield return currentPackage;
+                }
+            }
         }
 
         public static IEnumerable<TPackage> PackExtracted<T, TPackage>(IEnumerable<T> source, int size)
@@ -2624,7 +2713,18 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return WhereExtracted(source, predicate);
+            return WhereExtracted();
+
+            IEnumerable<T> WhereExtracted()
+            {
+                foreach (var item in source)
+                {
+                    if (predicate(item))
+                    {
+                        yield return item;
+                    }
+                }
+            }
         }
 
         public static IEnumerable<T> Where<T>(this IEnumerable<T> source, Func<T, int, bool> predicate)
@@ -2723,85 +2823,24 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("func");
             }
-            return ZipManyExtracted(source, func);
-        }
+            return ZipManyExtracted();
 
-        private static IEnumerable<TOutput> ConvertProgressiveExtracted<T, TOutput>(IEnumerable<T> source, Func<T, TOutput> converter)
-        {
-            foreach (var item in source)
+            IEnumerable<TResult> ZipManyExtracted()
             {
-                yield return converter(item);
-            }
-        }
-
-        private static IEnumerable<TOutput> ConvertProgressiveFilteredExtracted<T, TOutput>(IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)
-        {
-            foreach (var item in source)
-            {
-                if (filter(item))
+                var enumerators = source.Select(x => x.GetEnumerator()).ToArray();
+                try
                 {
-                    yield return converter(item);
+                    while (enumerators.All(enumerator => enumerator.MoveNext()))
+                    {
+                        yield return func(enumerators.Select(enumerator => enumerator.Current));
+                    }
                 }
-            }
-        }
-
-        private static IEnumerable<TOutput> ConvertProgressiveFilteredExtracted<T, TOutput>(IEnumerable<T> source, Func<T, TOutput> converter, Func<T, int, bool> filter)
-        {
-            var index = 0;
-            foreach (var item in source)
-            {
-                if (filter(item, index))
+                finally
                 {
-                    yield return converter(item);
-                }
-                index++;
-            }
-        }
-
-        private static IEnumerable<KeyValuePair<int, TOutput>> ConvertProgressiveIndexedExtracted<T, TOutput>(IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)
-        {
-            var index = 0;
-            foreach (var item in source)
-            {
-                if (filter(item))
-                {
-                    yield return new KeyValuePair<int, TOutput>(index, converter(item));
-                }
-                index++;
-            }
-        }
-
-        private static IEnumerable<KeyValuePair<int, TOutput>> ConvertProgressiveIndexedExtracted<T, TOutput>(IEnumerable<T> source, Func<T, TOutput> converter, Func<T, int, bool> filter)
-        {
-            var index = 0;
-            foreach (var item in source)
-            {
-                if (filter(item, index))
-                {
-                    yield return new KeyValuePair<int, TOutput>(index, converter(item));
-                }
-                index++;
-            }
-        }
-
-        private static IEnumerable<T> ExceptWithEnumerableExtracted<T>(ICollection<T> source, IEnumerable<T> other)
-        {
-            foreach (var item in other)
-            {
-                while (source.Remove(item))
-                {
-                    yield return item;
-                }
-            }
-        }
-
-        private static IEnumerable<T> FlattenExtracted<T>(IEnumerable<IEnumerable<T>> source)
-        {
-            foreach (var key in source)
-            {
-                foreach (var item in key)
-                {
-                    yield return item;
+                    foreach (var enumerator in enumerators)
+                    {
+                        enumerator.Dispose();
+                    }
                 }
             }
         }
@@ -2919,28 +2958,6 @@ namespace Theraot.Collections
             }
         }
 
-        private static IEnumerable<T[]> PackExtracted<T>(IEnumerable<T> source, int size)
-        {
-            var index = 0;
-            var currentPackage = new T[size];
-            foreach (var item in source)
-            {
-                currentPackage[index] = item;
-                index++;
-                if (index == size)
-                {
-                    yield return currentPackage;
-                    currentPackage = new T[size];
-                    index = 0;
-                }
-            }
-            if (index > 0)
-            {
-                Array.Resize(ref currentPackage, index);
-                yield return currentPackage;
-            }
-        }
-
         private static void SortExtracted<T>(IList<T> list, int indexStart, int indexEnd, IComparer<T> comparer)
         {
             var low = indexStart;
@@ -2984,17 +3001,6 @@ namespace Theraot.Collections
             var itemB = list[indexB];
             list[indexA] = itemB;
             list[indexB] = itemA;
-        }
-
-        private static IEnumerable<T> WhereExtracted<T>(IEnumerable<T> source, Predicate<T> predicate)
-        {
-            foreach (var item in source)
-            {
-                if (predicate(item))
-                {
-                    yield return item;
-                }
-            }
         }
 
         private static IEnumerable<T> WhereExtracted<T>(IEnumerable<T> source, Func<T, int, bool> predicate)
@@ -3082,25 +3088,6 @@ namespace Theraot.Collections
                     whereNot(item);
                 }
                 index++;
-            }
-        }
-
-        private static IEnumerable<TResult> ZipManyExtracted<T, TResult>(IEnumerable<IEnumerable<T>> source, Func<IEnumerable<T>, TResult> func)
-        {
-            var enumerators = source.Select(x => x.GetEnumerator()).ToArray();
-            try
-            {
-                while (enumerators.All(enumerator => enumerator.MoveNext()))
-                {
-                    yield return func(enumerators.Select(enumerator => enumerator.Current));
-                }
-            }
-            finally
-            {
-                foreach (var enumerator in enumerators)
-                {
-                    enumerator.Dispose();
-                }
             }
         }
     }

@@ -394,7 +394,26 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("check");
             }
-            return WhereExtracted(check);
+            return WhereExtracted();
+
+            IEnumerable<T> WhereExtracted()
+            {
+                foreach (var entry in _entries)
+                {
+                    if (entry != null)
+                    {
+                        var yield = default(T);
+                        if (entry != BucketHelper.Null)
+                        {
+                            yield = (T)entry;
+                        }
+                        if (check(yield))
+                        {
+                            yield return yield;
+                        }
+                    }
+                }
+            }
         }
 
         internal bool ExchangeInternal(int index, T item, out T previous)
@@ -518,25 +537,6 @@ namespace Theraot.Collections.ThreadSafe
             }
             isEmpty = found == null || compare == null;
             return result;
-        }
-
-        private IEnumerable<T> WhereExtracted(Predicate<T> check)
-        {
-            foreach (var entry in _entries)
-            {
-                if (entry != null)
-                {
-                    var yield = default(T);
-                    if (entry != BucketHelper.Null)
-                    {
-                        yield = (T)entry;
-                    }
-                    if (check(yield))
-                    {
-                        yield return yield;
-                    }
-                }
-            }
         }
     }
 }

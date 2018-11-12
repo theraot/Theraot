@@ -36,15 +36,15 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("items");
             }
-            return AddRangeEnumerableExtracted<T>(collection, items);
-        }
+            return AddRangeEnumerableExtracted();
 
-        private static IEnumerable<T> AddRangeEnumerableExtracted<T>(ICollection<T> collection, IEnumerable<T> items)
-        {
-            foreach (var item in items)
+            IEnumerable<T> AddRangeEnumerableExtracted()
             {
-                collection.Add(item);
-                yield return item;
+                foreach (var item in items)
+                {
+                    collection.Add(item);
+                    yield return item;
+                }
             }
         }
     }

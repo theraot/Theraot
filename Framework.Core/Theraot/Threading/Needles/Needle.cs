@@ -90,12 +90,48 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(Needle<T> left, Needle<T> right)
         {
-            return NotEqualsExtracted(left, right);
+            if (ReferenceEquals(left, null))
+            {
+                return !ReferenceEquals(right, null);
+            }
+            if (ReferenceEquals(right, null))
+            {
+                return true;
+            }
+            var leftTarget = left._target;
+            var rightTarget = right._target;
+            if (leftTarget == null)
+            {
+                return rightTarget != null;
+            }
+            if (rightTarget == null)
+            {
+                return true;
+            }
+            return !leftTarget.Equals(rightTarget);
         }
 
         public static bool operator ==(Needle<T> left, Needle<T> right)
         {
-            return EqualsExtracted(left, right);
+            if (ReferenceEquals(left, null))
+            {
+                return ReferenceEquals(right, null);
+            }
+            if (ReferenceEquals(right, null))
+            {
+                return false;
+            }
+            var leftTarget = left._target;
+            var rightTarget = right._target;
+            if (leftTarget == null)
+            {
+                return rightTarget == null;
+            }
+            if (rightTarget == null)
+            {
+                return false;
+            }
+            return leftTarget.Equals(rightTarget);
         }
 
         public override bool Equals(object obj)
@@ -103,7 +139,7 @@ namespace Theraot.Threading.Needles
             var needle = obj as Needle<T>;
             if (needle != null)
             {
-                return EqualsExtracted(this, needle);
+                return this == needle;
             }
             var target = _target;
             if (_target == null)
@@ -124,7 +160,7 @@ namespace Theraot.Threading.Needles
             {
                 return other._target == null;
             }
-            return EqualsExtracted(this, other);
+            return this == other;
         }
 
         public virtual void Free()
@@ -168,52 +204,6 @@ namespace Theraot.Threading.Needles
                 }
             }
             _target = new StructNeedle<T>(value);
-        }
-
-        private static bool EqualsExtracted(Needle<T> left, Needle<T> right)
-        {
-            if (ReferenceEquals(left, null))
-            {
-                return ReferenceEquals(right, null);
-            }
-            if (ReferenceEquals(right, null))
-            {
-                return false;
-            }
-            var leftTarget = left._target;
-            var rightTarget = right._target;
-            if (leftTarget == null)
-            {
-                return rightTarget == null;
-            }
-            if (rightTarget == null)
-            {
-                return false;
-            }
-            return leftTarget.Equals(rightTarget);
-        }
-
-        private static bool NotEqualsExtracted(Needle<T> left, Needle<T> right)
-        {
-            if (ReferenceEquals(left, null))
-            {
-                return !ReferenceEquals(right, null);
-            }
-            if (ReferenceEquals(right, null))
-            {
-                return true;
-            }
-            var leftTarget = left._target;
-            var rightTarget = right._target;
-            if (leftTarget == null)
-            {
-                return rightTarget != null;
-            }
-            if (rightTarget == null)
-            {
-                return true;
-            }
-            return !leftTarget.Equals(rightTarget);
         }
     }
 }

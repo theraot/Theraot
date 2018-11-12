@@ -48,26 +48,38 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(ExceptionStructNeedle<T> left, ExceptionStructNeedle<T> right)
         {
-            return NotEqualsExtracted(left, right);
+            var leftException = left._exception;
+            var rightException = right._exception;
+            if (leftException == null)
+            {
+                return rightException != null;
+            }
+            return !leftException.Equals(rightException);
         }
 
         public static bool operator ==(ExceptionStructNeedle<T> left, ExceptionStructNeedle<T> right)
         {
-            return EqualsExtracted(left, right);
+            var leftException = left._exception;
+            var rightException = right._exception;
+            if (leftException == null)
+            {
+                return rightException == null;
+            }
+            return leftException.Equals(rightException);
         }
 
         public override bool Equals(object obj)
         {
             if (obj is ExceptionStructNeedle<T>)
             {
-                return EqualsExtracted(this, (ExceptionStructNeedle<T>)obj);
+                return this == (ExceptionStructNeedle<T>)obj;
             }
             return obj is Exception && obj.Equals(_exception);
         }
 
         public bool Equals(ExceptionStructNeedle<T> other)
         {
-            return EqualsExtracted(this, other);
+            return this == other;
         }
 
         public override int GetHashCode()
@@ -82,28 +94,6 @@ namespace Theraot.Threading.Needles
                 return string.Format("<Exception: {0}>", _exception);
             }
             return "<Dead Needle>";
-        }
-
-        private static bool EqualsExtracted(ExceptionStructNeedle<T> left, ExceptionStructNeedle<T> right)
-        {
-            var leftException = left._exception;
-            var rightException = right._exception;
-            if (leftException == null)
-            {
-                return rightException == null;
-            }
-            return leftException.Equals(rightException);
-        }
-
-        private static bool NotEqualsExtracted(ExceptionStructNeedle<T> left, ExceptionStructNeedle<T> right)
-        {
-            var leftException = left._exception;
-            var rightException = right._exception;
-            if (leftException == null)
-            {
-                return rightException != null;
-            }
-            return !leftException.Equals(rightException);
         }
     }
 }

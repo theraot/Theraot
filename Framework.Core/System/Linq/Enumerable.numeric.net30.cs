@@ -1420,7 +1420,15 @@ namespace System.Linq
             {
                 throw new ArgumentOutOfRangeException();
             }
-            return RangeExtracted(start, count);
+            return RangeExtracted();
+
+            IEnumerable<int> RangeExtracted()
+            {
+                for (var index = start; count > 0; count--, index++)
+                {
+                    yield return index;
+                }
+            }
         }
 
         public static int Sum(this IEnumerable<int> source)
@@ -1626,14 +1634,6 @@ namespace System.Linq
         public static decimal? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector)
         {
             return Sum(Select(source, selector));
-        }
-
-        private static IEnumerable<int> RangeExtracted(int start, int count)
-        {
-            for (var index = start; count > 0; count--, index++)
-            {
-                yield return index;
-            }
         }
     }
 }

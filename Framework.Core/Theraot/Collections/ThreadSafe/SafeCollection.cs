@@ -199,7 +199,19 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("check");
             }
-            return RemoveWhereEnumerableExtracted(check);
+            return RemoveWhereEnumerableExtracted();
+
+            IEnumerable<T> RemoveWhereEnumerableExtracted()
+            {
+                var matches = _wrapped.WhereValue(check);
+                foreach (var value in matches)
+                {
+                    if (Remove(value))
+                    {
+                        yield return value;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -226,18 +238,6 @@ namespace Theraot.Collections.ThreadSafe
             foreach (var pair in wrapped)
             {
                 yield return pair.Value;
-            }
-        }
-
-        private IEnumerable<T> RemoveWhereEnumerableExtracted(Predicate<T> check)
-        {
-            var matches = _wrapped.WhereValue(check);
-            foreach (var value in matches)
-            {
-                if (Remove(value))
-                {
-                    yield return value;
-                }
             }
         }
     }

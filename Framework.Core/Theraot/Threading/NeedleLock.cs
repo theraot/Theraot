@@ -77,12 +77,24 @@ namespace Theraot.Threading
 
         public static bool operator !=(NeedleLock<T> left, NeedleLock<T> right)
         {
-            return NotEqualsExtracted(left, right);
+            if (left == null)
+            {
+                if (right == null)
+                {
+                    return false;
+                }
+                return true;
+            }
+            return !left._target.Equals(right._target);
         }
 
         public static bool operator ==(NeedleLock<T> left, NeedleLock<T> right)
         {
-            return EqualsExtracted(left, right);
+            if (left == null)
+            {
+                return right == null;
+            }
+            return left._target.Equals(right._target);
         }
 
         public override bool Equals(object obj)
@@ -92,12 +104,12 @@ namespace Theraot.Threading
             {
                 return _target.Equals(obj);
             }
-            return EqualsExtracted(this, needle);
+            return this == needle;
         }
 
         public bool Equals(NeedleLock<T> other)
         {
-            return EqualsExtracted(this, other);
+            return this == other;
         }
 
         public override int GetHashCode()
@@ -132,28 +144,6 @@ namespace Theraot.Threading
         {
             Interlocked.CompareExchange(ref _owner, -1, slot.Id);
             _capture[slot.Id] = false;
-        }
-
-        private static bool EqualsExtracted(NeedleLock<T> left, NeedleLock<T> right)
-        {
-            if (left == null)
-            {
-                return right == null;
-            }
-            return left._target.Equals(right._target);
-        }
-
-        private static bool NotEqualsExtracted(NeedleLock<T> left, NeedleLock<T> right)
-        {
-            if (left == null)
-            {
-                if (right == null)
-                {
-                    return false;
-                }
-                return true;
-            }
-            return !left._target.Equals(right._target);
         }
     }
 }

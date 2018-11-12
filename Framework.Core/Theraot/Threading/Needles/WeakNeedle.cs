@@ -153,12 +153,20 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(WeakNeedle<T> left, WeakNeedle<T> right)
         {
-            return NotEqualsExtracted(left, right);
+            if (ReferenceEquals(left, null))
+            {
+                return !ReferenceEquals(right, null);
+            }
+            return ReferenceEquals(right, null) || NotEqualsExtractedExtracted(left, right);
         }
 
         public static bool operator ==(WeakNeedle<T> left, WeakNeedle<T> right)
         {
-            return EqualsExtracted(left, right);
+            if (ReferenceEquals(left, null))
+            {
+                return ReferenceEquals(right, null);
+            }
+            return !ReferenceEquals(right, null) && EqualsExtractedExtracted(left, right);
         }
 
         public sealed override bool Equals(object obj)
@@ -233,15 +241,6 @@ namespace Theraot.Threading.Needles
             WriteTarget(value);
         }
 
-        private static bool EqualsExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
-        {
-            if (ReferenceEquals(left, null))
-            {
-                return ReferenceEquals(right, null);
-            }
-            return !ReferenceEquals(right, null) && EqualsExtractedExtracted(left, right);
-        }
-
         private static bool EqualsExtractedExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
         {
             var leftValue = left.Value;
@@ -251,15 +250,6 @@ namespace Theraot.Threading.Needles
                 return right.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
             }
             return !right.IsAlive;
-        }
-
-        private static bool NotEqualsExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
-        {
-            if (ReferenceEquals(left, null))
-            {
-                return !ReferenceEquals(right, null);
-            }
-            return ReferenceEquals(right, null) || NotEqualsExtractedExtracted(left, right);
         }
 
         private static bool NotEqualsExtractedExtracted(WeakNeedle<T> left, WeakNeedle<T> right)

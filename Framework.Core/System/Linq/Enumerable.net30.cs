@@ -153,7 +153,15 @@ namespace System.Linq
             {
                 return enumerable;
             }
-            return CastExtracted<TResult>(source);
+            return CastExtracted();
+
+            IEnumerable<TResult> CastExtracted()
+            {
+                foreach (var obj in source)
+                {
+                    yield return (TResult)obj;
+                }
+            }
         }
 
         public static IEnumerable<TSource> Concat<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second)
@@ -166,7 +174,24 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("second");
             }
-            return ConcatExtracted(first, second);
+            return ConcatExtracted();
+
+            IEnumerable<TSource> ConcatExtracted()
+            {
+                foreach (var item in first)
+                {
+                    yield return item;
+                }
+                var enumerator = second.GetEnumerator();
+                using (enumerator)
+                {
+                    while (enumerator.MoveNext())
+                    {
+                        var current = enumerator.Current;
+                        yield return current;
+                    }
+                }
+            }
         }
 
         public static bool Contains<TSource>(this IEnumerable<TSource> source, TSource value)
@@ -234,7 +259,30 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("source");
             }
-            return DefaultIfEmptyExtracted(source, defaultValue);
+            return DefaultIfEmptyExtracted();
+
+            IEnumerable<TSource> DefaultIfEmptyExtracted()
+            {
+                var enumerator = source.GetEnumerator();
+                using (enumerator)
+                {
+                    if (enumerator.MoveNext())
+                    {
+                        while (true)
+                        {
+                            yield return enumerator.Current;
+                            if (!enumerator.MoveNext())
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        yield return defaultValue;
+                    }
+                }
+            }
         }
 
         public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source)
@@ -248,7 +296,33 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("source");
             }
-            return DistinctExtracted(source, comparer);
+            return DistinctExtracted();
+
+            IEnumerable<TSource> DistinctExtracted()
+            {
+                var found = new Dictionary<TSource, object>(comparer);
+                var foundNull = false;
+                foreach (var item in source)
+                {
+                    if (ReferenceEquals(item, null))
+                    {
+                        if (foundNull)
+                        {
+                            continue;
+                        }
+                        foundNull = true;
+                    }
+                    else
+                    {
+                        if (found.ContainsKey(item))
+                        {
+                            continue;
+                        }
+                        found.Add(item, null);
+                    }
+                    yield return item;
+                }
+            }
         }
 
         public static TSource ElementAt<TSource>(this IEnumerable<TSource> source, int index)
@@ -595,7 +669,18 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("source");
             }
-            return OfTypeExtracted<TResult>(source);
+            return OfTypeExtracted();
+
+            IEnumerable<TResult> OfTypeExtracted()
+            {
+                foreach (var item in source)
+                {
+                    if (item is TResult)
+                    {
+                        yield return (TResult)item;
+                    }
+                }
+            }
         }
 
         public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
@@ -627,7 +712,15 @@ namespace System.Linq
                 throw new ArgumentOutOfRangeException("count", count, "count < 0");
             }
 
-            return RepeatExtracted(element, count);
+            return RepeatExtracted();
+
+            IEnumerable<TResult> RepeatExtracted()
+            {
+                for (var index = 0; index < count; index++)
+                {
+                    yield return element;
+                }
+            }
         }
 
         public static IEnumerable<TSource> Reverse<TSource>(this IEnumerable<TSource> source)
@@ -636,7 +729,20 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("source");
             }
-            return ReverseExtracted(source);
+            return ReverseExtracted();
+
+            IEnumerable<TSource> ReverseExtracted()
+            {
+                var stack = new Stack<TSource>();
+                foreach (var item in source)
+                {
+                    stack.Push(item);
+                }
+                foreach (var item in stack)
+                {
+                    yield return item;
+                }
+            }
         }
 
         public static IEnumerable<TResult> Select<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
@@ -659,7 +765,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("selector");
             }
-            return SelectExtracted(source, selector);
+            return SelectExtracted<TSource, TResult>(source, selector);
         }
 
         public static IEnumerable<TResult> SelectMany<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
@@ -672,7 +778,18 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("selector");
             }
-            return SelectManyExtracted(source, selector);
+            return SelectManyExtracted();
+
+            IEnumerable<TResult> SelectManyExtracted()
+            {
+                foreach (var key in source)
+                {
+                    foreach (var item in selector(key))
+                    {
+                        yield return item;
+                    }
+                }
+            }
         }
 
         public static IEnumerable<TResult> SelectMany<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, int, IEnumerable<TResult>> selector)
@@ -685,7 +802,20 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("selector");
             }
-            return SelectManyExtracted(source, selector);
+            return SelectManyExtracted();
+
+            IEnumerable<TResult> SelectManyExtracted()
+            {
+                var count = 0;
+                foreach (var key in source)
+                {
+                    foreach (var item in selector(key, count))
+                    {
+                        yield return item;
+                    }
+                    count++;
+                }
+            }
         }
 
         public static IEnumerable<TResult> SelectMany<TSource, TCollection, TResult>(this IEnumerable<TSource> source, Func<TSource, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
@@ -702,7 +832,18 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("resultSelector");
             }
-            return SelectManyExtracted(source, collectionSelector, resultSelector);
+            return SelectManyExtracted();
+
+            IEnumerable<TResult> SelectManyExtracted()
+            {
+                foreach (var element in source)
+                {
+                    foreach (var collection in collectionSelector(element))
+                    {
+                        yield return resultSelector(element, collection);
+                    }
+                }
+            }
         }
 
         public static IEnumerable<TResult> SelectMany<TSource, TCollection, TResult>(this IEnumerable<TSource> source, Func<TSource, int, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
@@ -719,7 +860,20 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("resultSelector");
             }
-            return SelectManyExtracted(source, collectionSelector, resultSelector);
+            return SelectManyExtracted();
+
+            IEnumerable<TResult> SelectManyExtracted()
+            {
+                var count = 0;
+                foreach (var element in source)
+                {
+                    foreach (var collection in collectionSelector(element, count))
+                    {
+                        yield return resultSelector(element, collection);
+                    }
+                    count++;
+                }
+            }
         }
 
         public static bool SequenceEqual<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second)
@@ -737,7 +891,27 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("second");
             }
-            return SequenceEqualExtracted(first, second, comparer ?? EqualityComparer<TSource>.Default);
+            comparer = comparer ?? EqualityComparer<TSource>.Default;
+            return SequenceEqualExtracted();
+
+            bool SequenceEqualExtracted()
+            {
+                using (IEnumerator<TSource> firstEnumerator = first.GetEnumerator(), secondEnumerator = second.GetEnumerator())
+                {
+                    while (firstEnumerator.MoveNext())
+                    {
+                        if (!secondEnumerator.MoveNext())
+                        {
+                            return false;
+                        }
+                        if (!comparer.Equals(firstEnumerator.Current, secondEnumerator.Current))
+                        {
+                            return false;
+                        }
+                    }
+                    return !secondEnumerator.MoveNext();
+                }
+            }
         }
 
         public static TSource Single<TSource>(this IEnumerable<TSource> source)
@@ -868,7 +1042,31 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("source");
             }
-            return SkipWhileExtracted(source, predicate);
+            return SkipWhileExtracted();
+
+            IEnumerable<TSource> SkipWhileExtracted()
+            {
+                var enumerator = source.GetEnumerator();
+                using (enumerator)
+                {
+                    var count = 0;
+                    while (enumerator.MoveNext())
+                    {
+                        if (!predicate(enumerator.Current, count))
+                        {
+                            while (true)
+                            {
+                                yield return enumerator.Current;
+                                if (!enumerator.MoveNext())
+                                {
+                                    yield break;
+                                }
+                            }
+                        }
+                        count++;
+                    }
+                }
+            }
         }
 
         public static IEnumerable<TSource> Take<TSource>(this IEnumerable<TSource> source, int count)
@@ -877,7 +1075,24 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("source");
             }
-            return source.TakeWhileExtracted(count);
+            return TakeWhileExtracted();
+
+            IEnumerable<TSource> TakeWhileExtracted()
+            {
+                if (count > 0)
+                {
+                    var currentCount = 0;
+                    foreach (var item in source)
+                    {
+                        yield return item;
+                        currentCount++;
+                        if (currentCount == count)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         public static IEnumerable<TSource> TakeWhile<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -899,7 +1114,21 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("source");
             }
-            return source.TakeWhileExtracted(predicate);
+            return TakeWhileExtracted();
+
+            IEnumerable<TSource> TakeWhileExtracted()
+            {
+                var count = 0;
+                foreach (var item in source)
+                {
+                    if (!predicate(item, count))
+                    {
+                        break;
+                    }
+                    yield return item;
+                    count++;
+                }
+            }
         }
 
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector)
@@ -1035,295 +1264,20 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("source");
             }
-            return WhereExtracted(source, predicate);
-        }
+            return WhereExtracted();
 
-        private static IEnumerable<TResult> CastExtracted<TResult>(IEnumerable source)
-        {
-            foreach (var obj in source)
-            {
-                yield return (TResult)obj;
-            }
-        }
-
-        private static IEnumerable<TSource> ConcatExtracted<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second)
-        {
-            foreach (var item in first)
-            {
-                yield return item;
-            }
-            var enumerator = second.GetEnumerator();
-            using (enumerator)
-            {
-                while (enumerator.MoveNext())
-                {
-                    var current = enumerator.Current;
-                    yield return current;
-                }
-            }
-        }
-
-        private static IEnumerable<TSource> DefaultIfEmptyExtracted<TSource>(IEnumerable<TSource> source, TSource defaultValue)
-        {
-            var enumerator = source.GetEnumerator();
-            using (enumerator)
-            {
-                if (enumerator.MoveNext())
-                {
-                    while (true)
-                    {
-                        yield return enumerator.Current;
-                        if (!enumerator.MoveNext())
-                        {
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    yield return defaultValue;
-                }
-            }
-        }
-
-        private static IEnumerable<TSource> DistinctExtracted<TSource>(IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
-        {
-            var found = new Dictionary<TSource, object>(comparer);
-            var foundNull = false;
-            foreach (var item in source)
-            {
-                if (ReferenceEquals(item, null))
-                {
-                    if (foundNull)
-                    {
-                        continue;
-                    }
-                    foundNull = true;
-                }
-                else
-                {
-                    if (found.ContainsKey(item))
-                    {
-                        continue;
-                    }
-                    found.Add(item, null);
-                }
-                yield return item;
-            }
-        }
-
-        private static IEnumerable<TSource> ExceptExtracted<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
-        {
-            comparer = comparer ?? EqualityComparer<TSource>.Default;
-            var items = new HashSet<TSource>(second, comparer);
-            foreach (var item in first)
-            {
-                if (items.Add(item))
-                {
-                    yield return item;
-                }
-            }
-        }
-
-        private static IEnumerable<TSource> IntersectExtracted<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
-        {
-            // We create a HashSet of the second IEnumerable.
-            // By doing so, duplicates are lost.
-            // Then by removing the contents of the first IEnumerable from the HashSet,
-            // Those elements that we can remove from the HashSet are the intersection of both IEnumerables
-            var items = new HashSet<TSource>(second, comparer);
-            foreach (var element in first)
-            {
-                if (items.Remove(element))
-                {
-                    yield return element;
-                }
-            }
-        }
-
-        private static IEnumerable<TResult> OfTypeExtracted<TResult>(IEnumerable source)
-        {
-            foreach (var item in source)
-            {
-                if (item is TResult)
-                {
-                    yield return (TResult)item;
-                }
-            }
-        }
-
-        private static IEnumerable<TResult> RepeatExtracted<TResult>(TResult element, int count)
-        {
-            for (var index = 0; index < count; index++)
-            {
-                yield return element;
-            }
-        }
-
-        private static IEnumerable<TSource> ReverseExtracted<TSource>(IEnumerable<TSource> source)
-        {
-            var stack = new Stack<TSource>();
-            foreach (var item in source)
-            {
-                stack.Push(item);
-            }
-            foreach (var item in stack)
-            {
-                yield return item;
-            }
-        }
-
-        private static IEnumerable<TResult> SelectExtracted<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, int, TResult> selector)
-        {
-            // NOTICE this method has no null check
-            var count = 0;
-            foreach (var item in source)
-            {
-                yield return selector(item, count);
-                count++;
-            }
-        }
-
-        private static IEnumerable<TResult> SelectManyExtracted<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
-        {
-            // NOTICE this method has no null check
-            foreach (var key in source)
-            {
-                foreach (var item in selector(key))
-                {
-                    yield return item;
-                }
-            }
-        }
-
-        private static IEnumerable<TResult> SelectManyExtracted<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, int, IEnumerable<TResult>> selector)
-        {
-            // NOTICE this method has no null check
-            var count = 0;
-            foreach (var key in source)
-            {
-                foreach (var item in selector(key, count))
-                {
-                    yield return item;
-                }
-                count++;
-            }
-        }
-
-        private static IEnumerable<TResult> SelectManyExtracted<TSource, TCollection, TResult>(IEnumerable<TSource> source, Func<TSource, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
-        {
-            // NOTICE this method has no null check
-            foreach (var element in source)
-            {
-                foreach (var collection in collectionSelector(element))
-                {
-                    yield return resultSelector(element, collection);
-                }
-            }
-        }
-
-        private static IEnumerable<TResult> SelectManyExtracted<TSource, TCollection, TResult>(IEnumerable<TSource> source, Func<TSource, int, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
-        {
-            // NOTICE this method has no null check
-            var count = 0;
-            foreach (var element in source)
-            {
-                foreach (var collection in collectionSelector(element, count))
-                {
-                    yield return resultSelector(element, collection);
-                }
-                count++;
-            }
-        }
-
-        private static bool SequenceEqualExtracted<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
-        {
-            using (IEnumerator<TSource> firstEnumerator = first.GetEnumerator(), secondEnumerator = second.GetEnumerator())
-            {
-                while (firstEnumerator.MoveNext())
-                {
-                    if (!secondEnumerator.MoveNext())
-                    {
-                        return false;
-                    }
-                    if (!comparer.Equals(firstEnumerator.Current, secondEnumerator.Current))
-                    {
-                        return false;
-                    }
-                }
-                return !secondEnumerator.MoveNext();
-            }
-        }
-
-        private static IEnumerable<TSource> SkipWhileExtracted<TSource>(IEnumerable<TSource> source, Func<TSource, int, bool> predicate)
-        {
-            // NOTICE this method has no null check
-            var enumerator = source.GetEnumerator();
-            using (enumerator)
-            {
-                var count = 0;
-                while (enumerator.MoveNext())
-                {
-                    if (!predicate(enumerator.Current, count))
-                    {
-                        while (true)
-                        {
-                            yield return enumerator.Current;
-                            if (!enumerator.MoveNext())
-                            {
-                                yield break;
-                            }
-                        }
-                    }
-                    count++;
-                }
-            }
-        }
-
-        private static IEnumerable<TSource> TakeWhileExtracted<TSource>(this IEnumerable<TSource> source, int maxCount)
-        {
-            if (maxCount > 0)
+            IEnumerable<TSource> WhereExtracted()
             {
                 var count = 0;
                 foreach (var item in source)
                 {
+                    if (!predicate(item, count))
+                    {
+                        continue;
+                    }
                     yield return item;
                     count++;
-                    if (count == maxCount)
-                    {
-                        break;
-                    }
                 }
-            }
-        }
-
-        private static IEnumerable<TSource> TakeWhileExtracted<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> predicate)
-        {
-            // NOTICE this method has no null check
-            var count = 0;
-            foreach (var item in source)
-            {
-                if (!predicate(item, count))
-                {
-                    break;
-                }
-                yield return item;
-                count++;
-            }
-        }
-
-        private static IEnumerable<TSource> WhereExtracted<TSource>(IEnumerable<TSource> source, Func<TSource, int, bool> predicate)
-        {
-            // NOTICE this method has no null check
-            var count = 0;
-            foreach (var item in source)
-            {
-                if (!predicate(item, count))
-                {
-                    continue;
-                }
-                yield return item;
-                count++;
             }
         }
 
@@ -1356,6 +1310,45 @@ namespace System.Linq
                         enumeratorSecond.Current
                     );
                 }
+            }
+        }
+
+        private static IEnumerable<TSource> ExceptExtracted<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
+        {
+            comparer = comparer ?? EqualityComparer<TSource>.Default;
+            var items = new HashSet<TSource>(second, comparer);
+            foreach (var item in first)
+            {
+                if (items.Add(item))
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        private static IEnumerable<TSource> IntersectExtracted<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
+        {
+            // We create a HashSet of the second IEnumerable.
+            // By doing so, duplicates are lost.
+            // Then by removing the contents of the first IEnumerable from the HashSet,
+            // Those elements that we can remove from the HashSet are the intersection of both IEnumerables
+            var items = new HashSet<TSource>(second, comparer);
+            foreach (var element in first)
+            {
+                if (items.Remove(element))
+                {
+                    yield return element;
+                }
+            }
+        }
+
+        private static IEnumerable<TResult> SelectExtracted<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, int, TResult> selector)
+        {
+            var count = 0;
+            foreach (var item in source)
+            {
+                yield return selector(item, count);
+                count++;
             }
         }
     }

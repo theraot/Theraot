@@ -431,7 +431,19 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("check");
             }
-            return RemoveWhereEnumerableExtracted(check);
+            return RemoveWhereEnumerableExtracted();
+
+            IEnumerable<T> RemoveWhereEnumerableExtracted()
+            {
+                var matches = _bucket.Where(check);
+                foreach (var value in matches)
+                {
+                    if (Remove(value))
+                    {
+                        yield return value;
+                    }
+                }
+            }
         }
 
         public bool SetEquals(IEnumerable<T> other)
@@ -554,18 +566,6 @@ namespace Theraot.Collections.ThreadSafe
             if (diff > 0)
             {
                 Interlocked.Add(ref _probing, diff);
-            }
-        }
-
-        private IEnumerable<T> RemoveWhereEnumerableExtracted(Predicate<T> check)
-        {
-            var matches = _bucket.Where(check);
-            foreach (var value in matches)
-            {
-                if (Remove(value))
-                {
-                    yield return value;
-                }
             }
         }
     }

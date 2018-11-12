@@ -16,6 +16,43 @@ namespace Theraot.Collections.Specialized
         {
             // Specify the type arguments explicitly
             _getEnumerator = getEnumerator.ChainConversion<IEnumerator, IEnumerator<T>>(ConvertEnumerator);
+
+            IEnumerator<T> ConvertEnumerator(IEnumerator enumerator)
+            {
+                if (enumerator == null)
+                {
+                    return null;
+                }
+                var genericEnumerator = enumerator as IEnumerator<T>;
+                if (genericEnumerator != null)
+                {
+                    return genericEnumerator;
+                }
+                return ConvertEnumeratorExtracted(enumerator);
+            }
+
+            IEnumerator<T> ConvertEnumeratorExtracted(IEnumerator enumerator)
+            {
+                try
+                {
+                    while (enumerator.MoveNext())
+                    {
+                        var element = enumerator.Current;
+                        if (element is T)
+                        {
+                            yield return (T)element;
+                        }
+                    }
+                }
+                finally
+                {
+                    var disposable = enumerator as IDisposable;
+                    if (disposable != null)
+                    {
+                        disposable.Dispose();
+                    }
+                }
+            }
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -26,43 +63,6 @@ namespace Theraot.Collections.Specialized
         IEnumerator IEnumerable.GetEnumerator()
         {
             return _getEnumerator.Invoke();
-        }
-
-        private static IEnumerator<T> ConvertEnumerator(IEnumerator enumerator)
-        {
-            if (enumerator == null)
-            {
-                return null;
-            }
-            var genericEnumerator = enumerator as IEnumerator<T>;
-            if (genericEnumerator != null)
-            {
-                return genericEnumerator;
-            }
-            return ConvertEnumeratorExtracted(enumerator);
-        }
-
-        private static IEnumerator<T> ConvertEnumeratorExtracted(IEnumerator enumerator)
-        {
-            try
-            {
-                while (enumerator.MoveNext())
-                {
-                    var element = enumerator.Current;
-                    if (element is T)
-                    {
-                        yield return (T)element;
-                    }
-                }
-            }
-            finally
-            {
-                var disposable = enumerator as IDisposable;
-                if (disposable != null)
-                {
-                    disposable.Dispose();
-                }
-            }
         }
     }
 }

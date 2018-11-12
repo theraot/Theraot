@@ -297,29 +297,6 @@ namespace System.Threading
             }
         }
 
-        private bool SyncWaitHandleExtracted()
-        {
-            int found;
-            var canEnter = _canEnter;
-            if (canEnter == null)
-            {
-                return false;
-            }
-            if (((found = Thread.VolatileRead(ref _count)) == 0) == canEnter.IsSet)
-            {
-                if (found == 0)
-                {
-                    canEnter.Reset();
-                }
-                else
-                {
-                    canEnter.Set();
-                    return true;
-                }
-            }
-            return false;
-        }
-
         private void SyncWaitHandle()
         {
             var awake = false;
@@ -337,6 +314,29 @@ namespace System.Threading
             if (awake)
             {
                 ThreadPool.QueueUserWorkItem(_ => Awake());
+            }
+
+            bool SyncWaitHandleExtracted()
+            {
+                int found;
+                var canEnter = _canEnter;
+                if (canEnter == null)
+                {
+                    return false;
+                }
+                if (((found = Thread.VolatileRead(ref _count)) == 0) == canEnter.IsSet)
+                {
+                    if (found == 0)
+                    {
+                        canEnter.Reset();
+                    }
+                    else
+                    {
+                        canEnter.Set();
+                        return true;
+                    }
+                }
+                return false;
             }
         }
 

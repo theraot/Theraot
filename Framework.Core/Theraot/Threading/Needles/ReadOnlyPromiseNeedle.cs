@@ -34,12 +34,20 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
         {
-            return NotEqualsExtracted(left, right);
+            if (left == null)
+            {
+                return right != null;
+            }
+            return !left._promised.Equals(right._promised);
         }
 
         public static bool operator ==(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
         {
-            return EqualsExtracted(left, right);
+            if (left == null)
+            {
+                return right == null;
+            }
+            return left._promised.Equals(right._promised);
         }
 
         public static explicit operator T(ReadOnlyPromiseNeedle<T> needle)
@@ -56,14 +64,14 @@ namespace Theraot.Threading.Needles
             var needle = obj as ReadOnlyPromiseNeedle<T>;
             if (obj != null)
             {
-                return EqualsExtracted(this, needle);
+                return this == needle;
             }
             return _promised.IsCompleted && _promised.Value.Equals(null);
         }
 
         public bool Equals(ReadOnlyPromiseNeedle<T> other)
         {
-            return EqualsExtracted(this, other);
+            return this == other;
         }
 
         public override int GetHashCode()
@@ -79,24 +87,6 @@ namespace Theraot.Threading.Needles
         public bool TryGetValue(out T value)
         {
             return _promised.TryGetValue(out value);
-        }
-
-        private static bool EqualsExtracted(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
-        {
-            if (left == null)
-            {
-                return right == null;
-            }
-            return left.Equals(right);
-        }
-
-        private static bool NotEqualsExtracted(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
-        {
-            if (left == null)
-            {
-                return right != null;
-            }
-            return !left.Equals(right);
         }
     }
 }

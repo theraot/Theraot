@@ -55,22 +55,30 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(ReadOnlyNeedle<T> left, ReadOnlyNeedle<T> right)
         {
-            return NotEqualsExtracted(left, right);
+            if (left == null)
+            {
+                return right != null;
+            }
+            return !left._target.Equals(right._target);
         }
 
         public static bool operator ==(ReadOnlyNeedle<T> left, ReadOnlyNeedle<T> right)
         {
-            return EqualsExtracted(left, right);
+            if (left == null)
+            {
+                return right == null;
+            }
+            return left._target.Equals(right._target);
         }
 
         public override bool Equals(object obj)
         {
-            return (obj is ReadOnlyNeedle<T>) ? EqualsExtracted(this, (ReadOnlyNeedle<T>)obj) : _target.Equals(obj);
+            return (obj is ReadOnlyNeedle<T>) ? this == (ReadOnlyNeedle<T>)obj : _target.Equals(obj);
         }
 
         public bool Equals(ReadOnlyNeedle<T> other)
         {
-            return EqualsExtracted(this, other);
+            return this == other;
         }
 
         public override int GetHashCode()
@@ -81,24 +89,6 @@ namespace Theraot.Threading.Needles
         public override string ToString()
         {
             return Value.ToString();
-        }
-
-        private static bool EqualsExtracted(ReadOnlyNeedle<T> left, ReadOnlyNeedle<T> right)
-        {
-            if (left == null)
-            {
-                return right == null;
-            }
-            return left._target.Equals(right._target);
-        }
-
-        private static bool NotEqualsExtracted(ReadOnlyNeedle<T> left, ReadOnlyNeedle<T> right)
-        {
-            if (left == null)
-            {
-                return right != null;
-            }
-            return !left._target.Equals(right._target);
         }
     }
 }

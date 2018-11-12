@@ -148,7 +148,24 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return StepItemsExtracted(source, stepCount);
+            return StepItemsExtracted();
+
+            IEnumerable<T> StepItemsExtracted()
+            {
+                var count = 0;
+                foreach (var item in source)
+                {
+                    if (count % stepCount == 0)
+                    {
+                        count++;
+                    }
+                    else
+                    {
+                        yield return item;
+                        count++;
+                    }
+                }
+            }
         }
 
         public static IEnumerable<T> TakeItems<T>(this IEnumerable<T> source, int takeCount)
@@ -207,23 +224,6 @@ namespace Theraot.Collections
                 else
                 {
                     yield return item;
-                }
-            }
-        }
-
-        private static IEnumerable<T> StepItemsExtracted<T>(this IEnumerable<T> source, int stepCount)
-        {
-            var count = 0;
-            foreach (var item in source)
-            {
-                if (count % stepCount == 0)
-                {
-                    count++;
-                }
-                else
-                {
-                    yield return item;
-                    count++;
                 }
             }
         }

@@ -13,7 +13,20 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return action == null ? source : AfterExtracted(source, action);
+            if (action == null)
+            {
+                return source;
+            }
+            return AfterExtracted();
+
+            IEnumerable<T> AfterExtracted()
+            {
+                foreach (var item in source)
+                {
+                    yield return item;
+                }
+                action.Invoke();
+            }
         }
 
         public static IEnumerable<T> AfterCounted<T>(this IEnumerable<T> source, Action<int> action)
@@ -22,7 +35,22 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return action == null ? source : AfterCountedExtracted(source, action);
+            if (action == null)
+            {
+                return source;
+            }
+            return AfterCountedExtracted();
+
+            IEnumerable<T> AfterCountedExtracted()
+            {
+                var count = 0;
+                foreach (var item in source)
+                {
+                    yield return item;
+                    count++;
+                }
+                action.Invoke(count);
+            }
         }
 
         public static IEnumerable<T> AfterEach<T>(this IEnumerable<T> source, Action action)
@@ -31,7 +59,20 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return action == null ? source : AfterEachExtracted(source, action);
+            if (action == null)
+            {
+                return source;
+            }
+            return AfterEachExtracted();
+
+            IEnumerable<T> AfterEachExtracted()
+            {
+                foreach (var item in source)
+                {
+                    yield return item;
+                    action.Invoke();
+                }
+            }
         }
 
         public static IEnumerable<T> AfterEach<T>(this IEnumerable<T> source, Action<T> action)
@@ -40,7 +81,20 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return action == null ? source : AfterEachExtracted(source, action);
+            if (action == null)
+            {
+                return source;
+            }
+            return AfterEachExtracted();
+
+            IEnumerable<T> AfterEachExtracted()
+            {
+                foreach (var item in source)
+                {
+                    yield return item;
+                    action.Invoke(item);
+                }
+            }
         }
 
         public static IEnumerable<T> AfterEachCounted<T>(this IEnumerable<T> source, Action<int, T> action)
@@ -49,7 +103,22 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return action == null ? source : AfterEachCountedExtracted(source, action);
+            if (action == null)
+            {
+                return source;
+            }
+            return AfterEachCountedExtracted();
+
+            IEnumerable<T> AfterEachCountedExtracted()
+            {
+                var count = 0;
+                foreach (var item in source)
+                {
+                    yield return item;
+                    action.Invoke(count, item);
+                    count++;
+                }
+            }
         }
 
         public static IEnumerable<T> AfterEachCounted<T>(this IEnumerable<T> source, Action<int> action)
@@ -58,7 +127,22 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return action == null ? source : AfterEachCountedExtracted(source, action);
+            if (action == null)
+            {
+                return source;
+            }
+            return AfterEachCountedExtracted();
+
+            IEnumerable<T> AfterEachCountedExtracted()
+            {
+                var count = 0;
+                foreach (var item in source)
+                {
+                    yield return item;
+                    action.Invoke(count);
+                    count++;
+                }
+            }
         }
 
         public static IEnumerable<T> AfterAny<T>(this IEnumerable<T> source, Action action)
@@ -67,7 +151,32 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return action == null ? source : AfterLastExtracted(source, action);
+            if (action == null)
+            {
+                return source;
+            }
+            return AfterLastExtracted();
+
+            IEnumerable<T> AfterLastExtracted()
+            {
+                var enumerator = source.GetEnumerator();
+                try
+                {
+                    if (enumerator.MoveNext())
+                    {
+                        yield return enumerator.Current;
+                        while (enumerator.MoveNext())
+                        {
+                            yield return enumerator.Current;
+                        }
+                        action.Invoke();
+                    }
+                }
+                finally
+                {
+                    enumerator.Dispose();
+                }
+            }
         }
 
         public static IEnumerable<T> AfterAny<T>(this IEnumerable<T> source, Action<T> action)
@@ -76,7 +185,34 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return action == null ? source : AfterLastExtracted(source, action);
+            if (action == null)
+            {
+                return source;
+            }
+            return AfterLastExtracted();
+
+            IEnumerable<T> AfterLastExtracted()
+            {
+                var enumerator = source.GetEnumerator();
+                try
+                {
+                    if (enumerator.MoveNext())
+                    {
+                        var found = enumerator.Current;
+                        yield return found;
+                        while (enumerator.MoveNext())
+                        {
+                            found = enumerator.Current;
+                            yield return enumerator.Current;
+                        }
+                        action.Invoke(found);
+                    }
+                }
+                finally
+                {
+                    enumerator.Dispose();
+                }
+            }
         }
 
         public static IEnumerable<T> AfterLastCounted<T>(this IEnumerable<T> source, Action<int, T> action)
@@ -85,7 +221,36 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return action == null ? source : AfterLastCountedExtracted(source, action);
+            if (action == null)
+            {
+                return source;
+            }
+            return AfterLastCountedExtracted();
+
+            IEnumerable<T> AfterLastCountedExtracted()
+            {
+                var count = 1;
+                var enumerator = source.GetEnumerator();
+                try
+                {
+                    if (enumerator.MoveNext())
+                    {
+                        var found = enumerator.Current;
+                        yield return found;
+                        while (enumerator.MoveNext())
+                        {
+                            found = enumerator.Current;
+                            yield return enumerator.Current;
+                            count++;
+                        }
+                        action.Invoke(count, found);
+                    }
+                }
+                finally
+                {
+                    enumerator.Dispose();
+                }
+            }
         }
 
         public static IEnumerable<T> AfterLastCounted<T>(this IEnumerable<T> source, Action<int> action)
@@ -94,7 +259,34 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return action == null ? source : AfterLastCountedExtracted(source, action);
+            if (action == null)
+            {
+                return source;
+            }
+            return AfterLastCountedExtracted();
+
+            IEnumerable<T> AfterLastCountedExtracted()
+            {
+                var count = 1;
+                var enumerator = source.GetEnumerator();
+                try
+                {
+                    if (enumerator.MoveNext())
+                    {
+                        yield return enumerator.Current;
+                        while (enumerator.MoveNext())
+                        {
+                            yield return enumerator.Current;
+                            count++;
+                        }
+                        action.Invoke(count);
+                    }
+                }
+                finally
+                {
+                    enumerator.Dispose();
+                }
+            }
         }
 
         public static IEnumerable<T> Before<T>(this IEnumerable<T> source, Action action)
@@ -103,7 +295,20 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return action == null ? source : BeforeExtracted(source, action);
+            if (action == null)
+            {
+                return source;
+            }
+            return BeforeExtracted();
+
+            IEnumerable<T> BeforeExtracted()
+            {
+                action.Invoke();
+                foreach (var item in source)
+                {
+                    yield return item;
+                }
+            }
         }
 
         public static IEnumerable<T> BeforeEach<T>(this IEnumerable<T> source, Action action)
@@ -112,7 +317,20 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return action == null ? source : BeforeEachExtracted(source, action);
+            if (action == null)
+            {
+                return source;
+            }
+            return BeforeEachExtracted();
+
+            IEnumerable<T> BeforeEachExtracted()
+            {
+                foreach (var item in source)
+                {
+                    action.Invoke();
+                    yield return item;
+                }
+            }
         }
 
         public static IEnumerable<T> BeforeEach<T>(this IEnumerable<T> source, Action<T> action)
@@ -121,7 +339,20 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return action == null ? source : BeforeEachExtracted(source, action);
+            if (action == null)
+            {
+                return source;
+            }
+            return BeforeEachExtracted();
+
+            IEnumerable<T> BeforeEachExtracted()
+            {
+                foreach (var item in source)
+                {
+                    action.Invoke(item);
+                    yield return item;
+                }
+            }
         }
 
         public static IEnumerable<T> BeforeEachCounted<T>(this IEnumerable<T> source, Action<int, T> action)
@@ -130,7 +361,22 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return action == null ? source : BeforeEachCountedExtracted(source, action);
+            if (action == null)
+            {
+                return source;
+            }
+            return BeforeEachCountedExtracted();
+
+            IEnumerable<T> BeforeEachCountedExtracted()
+            {
+                var count = 0;
+                foreach (var item in source)
+                {
+                    action.Invoke(count, item);
+                    yield return item;
+                    count++;
+                }
+            }
         }
 
         public static IEnumerable<T> BeforeEachCounted<T>(this IEnumerable<T> source, Action<int> action)
@@ -139,7 +385,22 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return action == null ? source : BeforeEachCountedExtracted(source, action);
+            if (action == null)
+            {
+                return source;
+            }
+            return BeforeEachCountedExtracted();
+
+            IEnumerable<T> BeforeEachCountedExtracted()
+            {
+                var count = 0;
+                foreach (var item in source)
+                {
+                    action.Invoke(count);
+                    yield return item;
+                    count++;
+                }
+            }
         }
 
         public static IEnumerable<T> BeforeAny<T>(this IEnumerable<T> source, Action action)
@@ -148,7 +409,36 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return action == null ? source : BeforeFirstExtracted(source, action);
+            if (action == null)
+            {
+                return source;
+            }
+            return BeforeFirstExtracted();
+
+            IEnumerable<T> BeforeFirstExtracted()
+            {
+                var enumerator = source.GetEnumerator();
+                try
+                {
+                    if (enumerator.MoveNext())
+                    {
+                        action.Invoke();
+                        yield return enumerator.Current;
+                    }
+                    else
+                    {
+                        yield break;
+                    }
+                    while (enumerator.MoveNext())
+                    {
+                        yield return enumerator.Current;
+                    }
+                }
+                finally
+                {
+                    enumerator.Dispose();
+                }
+            }
         }
 
         public static IEnumerable<T> BeforeAny<T>(this IEnumerable<T> source, Action<T> action)
@@ -157,258 +447,36 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            return action == null ? source : BeforeFirstExtracted(source, action);
-        }
-
-        private static IEnumerable<T> AfterCountedExtracted<T>(IEnumerable<T> source, Action<int> action)
-        {
-            var count = 0;
-            foreach (var item in source)
+            if (action == null)
             {
-                yield return item;
-                count++;
+                return source;
             }
-            action.Invoke(count);
-        }
+            return BeforeFirstExtracted();
 
-        private static IEnumerable<T> AfterEachCountedExtracted<T>(IEnumerable<T> source, Action<int> action)
-        {
-            var count = 0;
-            foreach (var item in source)
+            IEnumerable<T> BeforeFirstExtracted()
             {
-                yield return item;
-                action.Invoke(count);
-                count++;
-            }
-        }
-
-        private static IEnumerable<T> AfterEachCountedExtracted<T>(IEnumerable<T> source, Action<int, T> action)
-        {
-            var count = 0;
-            foreach (var item in source)
-            {
-                yield return item;
-                action.Invoke(count, item);
-                count++;
-            }
-        }
-
-        private static IEnumerable<T> AfterEachExtracted<T>(IEnumerable<T> source, Action action)
-        {
-            foreach (var item in source)
-            {
-                yield return item;
-                action.Invoke();
-            }
-        }
-
-        private static IEnumerable<T> AfterEachExtracted<T>(IEnumerable<T> source, Action<T> action)
-        {
-            foreach (var item in source)
-            {
-                yield return item;
-                action.Invoke(item);
-            }
-        }
-
-        private static IEnumerable<T> AfterExtracted<T>(IEnumerable<T> source, Action action)
-        {
-            foreach (var item in source)
-            {
-                yield return item;
-            }
-            action.Invoke();
-        }
-
-        private static IEnumerable<T> AfterLastCountedExtracted<T>(IEnumerable<T> source, Action<int, T> action)
-        {
-            var count = 1;
-            var enumerator = source.GetEnumerator();
-            try
-            {
-                if (enumerator.MoveNext())
+                var enumerator = source.GetEnumerator();
+                try
                 {
-                    var found = enumerator.Current;
-                    yield return found;
-                    while (enumerator.MoveNext())
+                    if (enumerator.MoveNext())
                     {
-                        found = enumerator.Current;
-                        yield return enumerator.Current;
-                        count++;
+                        var current = enumerator.Current;
+                        action.Invoke(current);
+                        yield return current;
                     }
-                    action.Invoke(count, found);
-                }
-            }
-            finally
-            {
-                enumerator.Dispose();
-            }
-        }
-
-        private static IEnumerable<T> AfterLastCountedExtracted<T>(IEnumerable<T> source, Action<int> action)
-        {
-            var count = 1;
-            var enumerator = source.GetEnumerator();
-            try
-            {
-                if (enumerator.MoveNext())
-                {
-                    yield return enumerator.Current;
-                    while (enumerator.MoveNext())
+                    else
                     {
-                        yield return enumerator.Current;
-                        count++;
+                        yield break;
                     }
-                    action.Invoke(count);
-                }
-            }
-            finally
-            {
-                enumerator.Dispose();
-            }
-        }
-
-        private static IEnumerable<T> AfterLastExtracted<T>(IEnumerable<T> source, Action<T> action)
-        {
-            var enumerator = source.GetEnumerator();
-            try
-            {
-                if (enumerator.MoveNext())
-                {
-                    var found = enumerator.Current;
-                    yield return found;
-                    while (enumerator.MoveNext())
-                    {
-                        found = enumerator.Current;
-                        yield return enumerator.Current;
-                    }
-                    action.Invoke(found);
-                }
-            }
-            finally
-            {
-                enumerator.Dispose();
-            }
-        }
-
-        private static IEnumerable<T> AfterLastExtracted<T>(IEnumerable<T> source, Action action)
-        {
-            var enumerator = source.GetEnumerator();
-            try
-            {
-                if (enumerator.MoveNext())
-                {
-                    yield return enumerator.Current;
                     while (enumerator.MoveNext())
                     {
                         yield return enumerator.Current;
                     }
-                    action.Invoke();
                 }
-            }
-            finally
-            {
-                enumerator.Dispose();
-            }
-        }
-
-        private static IEnumerable<T> BeforeEachCountedExtracted<T>(IEnumerable<T> source, Action<int> action)
-        {
-            var count = 0;
-            foreach (var item in source)
-            {
-                action.Invoke(count);
-                yield return item;
-                count++;
-            }
-        }
-
-        private static IEnumerable<T> BeforeEachCountedExtracted<T>(IEnumerable<T> source, Action<int, T> action)
-        {
-            var count = 0;
-            foreach (var item in source)
-            {
-                action.Invoke(count, item);
-                yield return item;
-                count++;
-            }
-        }
-
-        private static IEnumerable<T> BeforeEachExtracted<T>(IEnumerable<T> source, Action action)
-        {
-            foreach (var item in source)
-            {
-                action.Invoke();
-                yield return item;
-            }
-        }
-
-        private static IEnumerable<T> BeforeEachExtracted<T>(IEnumerable<T> source, Action<T> action)
-        {
-            foreach (var item in source)
-            {
-                action.Invoke(item);
-                yield return item;
-            }
-        }
-
-        private static IEnumerable<T> BeforeExtracted<T>(IEnumerable<T> source, Action action)
-        {
-            action.Invoke();
-            foreach (var item in source)
-            {
-                yield return item;
-            }
-        }
-
-        private static IEnumerable<T> BeforeFirstExtracted<T>(IEnumerable<T> source, Action<T> action)
-        {
-            var enumerator = source.GetEnumerator();
-            try
-            {
-                if (enumerator.MoveNext())
+                finally
                 {
-                    var current = enumerator.Current;
-                    action.Invoke(current);
-                    yield return current;
+                    enumerator.Dispose();
                 }
-                else
-                {
-                    yield break;
-                }
-                while (enumerator.MoveNext())
-                {
-                    yield return enumerator.Current;
-                }
-            }
-            finally
-            {
-                enumerator.Dispose();
-            }
-        }
-
-        private static IEnumerable<T> BeforeFirstExtracted<T>(IEnumerable<T> source, Action action)
-        {
-            var enumerator = source.GetEnumerator();
-            try
-            {
-                if (enumerator.MoveNext())
-                {
-                    action.Invoke();
-                    yield return enumerator.Current;
-                }
-                else
-                {
-                    yield break;
-                }
-                while (enumerator.MoveNext())
-                {
-                    yield return enumerator.Current;
-                }
-            }
-            finally
-            {
-                enumerator.Dispose();
             }
         }
     }

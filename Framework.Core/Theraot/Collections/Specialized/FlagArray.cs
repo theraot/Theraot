@@ -53,7 +53,12 @@ namespace Theraot.Collections.Specialized
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
             if (!GCMonitor.FinalizingForUnload)
             {
-                RecycleExtracted();
+                var entries = _entries;
+                if (entries != null)
+                {
+                    ArrayReservoir<int>.DonateArray(entries);
+                    _entries = null;
+                }
             }
         }
 
@@ -244,10 +249,12 @@ namespace Theraot.Collections.Specialized
         }
 
 #if !NETCOREAPP1_0 && !NETCOREAPP1_1
+
         object ICloneable.Clone()
         {
             return Clone();
         }
+
 #endif
 
         void ICollection<bool>.Add(bool item)
@@ -302,17 +309,6 @@ namespace Theraot.Collections.Specialized
         private int GetLength(int length)
         {
             return (length >> 5) + ((length & 31) == 0 ? 0 : 1);
-        }
-
-        private void RecycleExtracted()
-        {
-            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
-            var entries = _entries;
-            if (entries != null)
-            {
-                ArrayReservoir<int>.DonateArray(entries);
-                _entries = null;
-            }
         }
 
         private void SetBit(int index, int mask)
