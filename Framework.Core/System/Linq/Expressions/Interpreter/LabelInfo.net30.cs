@@ -147,6 +147,29 @@ namespace System.Linq.Expressions.Interpreter
                     throw new InvalidOperationException("Control cannot enter try");
                 }
             }
+
+            T CommonNode<T>(T first, T second, Func<T, T> parent) where T : class
+            {
+                // NOTICE this method has no null check
+                var cmp = EqualityComparer<T>.Default;
+                if (cmp.Equals(first, second))
+                {
+                    return first;
+                }
+                var set = new HashSet<T>(cmp);
+                for (var t = first; t != null; t = parent(t))
+                {
+                    set.Add(t);
+                }
+                for (var t = second; t != null; t = parent(t))
+                {
+                    if (set.Contains(t))
+                    {
+                        return t;
+                    }
+                }
+                return null;
+            }
         }
 
         internal void ValidateFinish()
@@ -220,29 +243,6 @@ namespace System.Linq.Expressions.Interpreter
         private bool HasMultipleDefinitions
         {
             get { return _definitions is HashSet<LabelScopeInfo>; }
-        }
-
-        internal static T CommonNode<T>(T first, T second, Func<T, T> parent) where T : class
-        {
-            // NOTICE this method has no null check
-            var cmp = EqualityComparer<T>.Default;
-            if (cmp.Equals(first, second))
-            {
-                return first;
-            }
-            var set = new HashSet<T>(cmp);
-            for (var t = first; t != null; t = parent(t))
-            {
-                set.Add(t);
-            }
-            for (var t = second; t != null; t = parent(t))
-            {
-                if (set.Contains(t))
-                {
-                    return t;
-                }
-            }
-            return null;
         }
     }
 

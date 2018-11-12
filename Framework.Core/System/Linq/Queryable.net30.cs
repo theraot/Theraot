@@ -704,8 +704,26 @@ namespace System.Linq
 
         public static IQueryable<TResult> Join<TOuter, TInner, TKey, TResult>(this IQueryable<TOuter> outer, IEnumerable<TInner> inner, Expression<Func<TOuter, TKey>> outerKeySelector, Expression<Func<TInner, TKey>> innerKeySelector, Expression<Func<TOuter, TInner, TResult>> resultSelector)
         {
-            LinqCheck.JoinSelectors(outer, inner, outerKeySelector, innerKeySelector, resultSelector);
-
+            if (outer == null)
+            {
+                throw new ArgumentNullException(nameof(outer));
+            }
+            if (inner == null)
+            {
+                throw new ArgumentNullException(nameof(inner));
+            }
+            if (outerKeySelector == null)
+            {
+                throw new ArgumentNullException(nameof(outerKeySelector));
+            }
+            if (innerKeySelector == null)
+            {
+                throw new ArgumentNullException(nameof(innerKeySelector));
+            }
+            if (resultSelector == null)
+            {
+                throw new ArgumentNullException(nameof(resultSelector));
+            }
             return outer.Provider.CreateQuery<TResult>(
                        StaticCall(
                            MakeGeneric(MethodBase.GetCurrentMethod(), typeof(TOuter), typeof(TInner), typeof(TKey), typeof(TResult)),
@@ -718,8 +736,26 @@ namespace System.Linq
 
         public static IQueryable<TResult> Join<TOuter, TInner, TKey, TResult>(this IQueryable<TOuter> outer, IEnumerable<TInner> inner, Expression<Func<TOuter, TKey>> outerKeySelector, Expression<Func<TInner, TKey>> innerKeySelector, Expression<Func<TOuter, TInner, TResult>> resultSelector, IEqualityComparer<TKey> comparer)
         {
-            LinqCheck.JoinSelectors(outer, inner, outerKeySelector, innerKeySelector, resultSelector);
-
+            if (outer == null)
+            {
+                throw new ArgumentNullException(nameof(outer));
+            }
+            if (inner == null)
+            {
+                throw new ArgumentNullException(nameof(inner));
+            }
+            if (outerKeySelector == null)
+            {
+                throw new ArgumentNullException(nameof(outerKeySelector));
+            }
+            if (innerKeySelector == null)
+            {
+                throw new ArgumentNullException(nameof(innerKeySelector));
+            }
+            if (resultSelector == null)
+            {
+                throw new ArgumentNullException(nameof(resultSelector));
+            }
             return outer.Provider.CreateQuery<TResult>(
                        StaticCall(
                            MakeGeneric(MethodBase.GetCurrentMethod(), typeof(TOuter), typeof(TInner), typeof(TKey), typeof(TResult)),

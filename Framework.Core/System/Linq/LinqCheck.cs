@@ -59,30 +59,6 @@ namespace System.Linq
             }
         }
 
-        public static void JoinSelectors(object outer, object inner, object outerKeySelector, object innerKeySelector, object resultSelector)
-        {
-            if (outer == null)
-            {
-                throw new ArgumentNullException(nameof(outer));
-            }
-            if (inner == null)
-            {
-                throw new ArgumentNullException(nameof(inner));
-            }
-            if (outerKeySelector == null)
-            {
-                throw new ArgumentNullException(nameof(outerKeySelector));
-            }
-            if (innerKeySelector == null)
-            {
-                throw new ArgumentNullException(nameof(innerKeySelector));
-            }
-            if (resultSelector == null)
-            {
-                throw new ArgumentNullException(nameof(resultSelector));
-            }
-        }
-
         public static void Source(object source)
         {
             if (source == null)

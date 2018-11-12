@@ -24,7 +24,59 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
-            return CreateGroupByIterator(source, keySelector, comparer);
+            return CreateGroupByIterator();
+
+            IEnumerable<IGrouping<TKey, TSource>> CreateGroupByIterator()
+            {
+                var groups = new Dictionary<TKey, List<TSource>>(comparer);
+                var nullList = new List<TSource>();
+                var counter = 0;
+                var nullCounter = -1;
+
+                foreach (TSource element in source)
+                {
+                    var key = keySelector(element);
+                    if (ReferenceEquals(key, null))
+                    {
+                        nullList.Add(element);
+                        if (nullCounter == -1)
+                        {
+                            nullCounter = counter;
+                            counter++;
+                        }
+                    }
+                    else
+                    {
+                        List<TSource> group;
+                        if (!groups.TryGetValue(key, out group))
+                        {
+                            group = new List<TSource>();
+                            groups.Add(key, group);
+                            counter++;
+                        }
+                        group.Add(element);
+                    }
+                }
+
+                counter = 0;
+                foreach (var group in groups)
+                {
+                    if (counter == nullCounter)
+                    {
+                        yield return new Grouping<TKey, TSource>(default(TKey), nullList);
+                        counter++;
+                    }
+
+                    yield return new Grouping<TKey, TSource>(group.Key, group.Value);
+                    counter++;
+                }
+
+                if (counter == nullCounter)
+                {
+                    yield return new Grouping<TKey, TSource>(default(TKey), nullList);
+                    // counter++;
+                }
+            }
         }
 
         public static IEnumerable<IGrouping<TKey, TElement>> GroupProgressiveBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
@@ -46,7 +98,60 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
-            return CreateGroupByIterator(source, keySelector, resultSelector, comparer);
+            return CreateGroupByIterator();
+
+            IEnumerable<IGrouping<TKey, TElement>> CreateGroupByIterator()
+            {
+                var groups = new Dictionary<TKey, List<TElement>>(comparer);
+                var nullList = new List<TElement>();
+                var counter = 0;
+                var nullCounter = -1;
+
+                foreach (TSource item in source)
+                {
+                    var key = keySelector(item);
+                    var element = resultSelector(item);
+                    if (ReferenceEquals(key, null))
+                    {
+                        nullList.Add(element);
+                        if (nullCounter == -1)
+                        {
+                            nullCounter = counter;
+                            counter++;
+                        }
+                    }
+                    else
+                    {
+                        List<TElement> group;
+                        if (!groups.TryGetValue(key, out group))
+                        {
+                            group = new List<TElement>();
+                            groups.Add(key, group);
+                            counter++;
+                        }
+                        group.Add(element);
+                    }
+                }
+
+                counter = 0;
+                foreach (var group in groups)
+                {
+                    if (counter == nullCounter)
+                    {
+                        yield return new Grouping<TKey, TElement>(default(TKey), nullList);
+                        counter++;
+                    }
+
+                    yield return new Grouping<TKey, TElement>(group.Key, group.Value);
+                    counter++;
+                }
+
+                if (counter == nullCounter)
+                {
+                    yield return new Grouping<TKey, TElement>(default(TKey), nullList);
+                    // counter++;
+                }
+            }
         }
 
         public static IEnumerable<TResult> GroupProgressiveBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
@@ -72,7 +177,17 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
-            return CreateGroupByIterator(source, keySelector, elementSelector, resultSelector, comparer);
+            return CreateGroupByIterator();
+
+            IEnumerable<TResult> CreateGroupByIterator()
+            {
+                var groups = GroupProgressiveBy(source, keySelector, elementSelector, comparer);
+
+                foreach (IGrouping<TKey, TElement> group in groups)
+                {
+                    yield return resultSelector(group.Key, group);
+                }
+            }
         }
 
         public static IEnumerable<TResult> GroupProgressiveBy<TSource, TKey, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TKey, IEnumerable<TSource>, TResult> resultSelector)
@@ -94,168 +209,16 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
-            return CreateGroupByIterator(source, keySelector, resultSelector, comparer);
-        }
-    }
+            return CreateGroupByIterator();
 
-    public static partial class Extensions
-    {
-        //GroupBy progressive implementation
-
-        private static IEnumerable<IGrouping<TKey, TSource>> CreateGroupByIterator<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
-        {
-#if FAT
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (keySelector == null)
+            IEnumerable<TResult> CreateGroupByIterator()
             {
-                throw new ArgumentNullException(nameof(keySelector));
-            }
-#endif
-            var groups = new Dictionary<TKey, List<TSource>>(comparer);
-            var nullList = new List<TSource>();
-            var counter = 0;
-            var nullCounter = -1;
+                var groups = GroupProgressiveBy(source, keySelector, comparer);
 
-            foreach (TSource element in source)
-            {
-                var key = keySelector(element);
-                if (ReferenceEquals(key, null))
+                foreach (IGrouping<TKey, TSource> group in groups)
                 {
-                    nullList.Add(element);
-                    if (nullCounter == -1)
-                    {
-                        nullCounter = counter;
-                        counter++;
-                    }
+                    yield return resultSelector(group.Key, group);
                 }
-                else
-                {
-                    List<TSource> group;
-                    if (!groups.TryGetValue(key, out group))
-                    {
-                        group = new List<TSource>();
-                        groups.Add(key, group);
-                        counter++;
-                    }
-                    group.Add(element);
-                }
-            }
-
-            counter = 0;
-            foreach (var group in groups)
-            {
-                if (counter == nullCounter)
-                {
-                    yield return new Grouping<TKey, TSource>(default(TKey), nullList);
-                    counter++;
-                }
-
-                yield return new Grouping<TKey, TSource>(group.Key, group.Value);
-                counter++;
-            }
-
-            if (counter == nullCounter)
-            {
-                yield return new Grouping<TKey, TSource>(default(TKey), nullList);
-                // counter++;
-            }
-        }
-
-        private static IEnumerable<IGrouping<TKey, TElement>> CreateGroupByIterator<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
-        {
-#if FAT
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (keySelector == null)
-            {
-                throw new ArgumentNullException(nameof(keySelector));
-            }
-            if (elementSelector == null)
-            {
-                throw new ArgumentNullException(nameof(elementSelector));
-            }
-#endif
-            var groups = new Dictionary<TKey, List<TElement>>(comparer);
-            var nullList = new List<TElement>();
-            var counter = 0;
-            var nullCounter = -1;
-
-            foreach (TSource item in source)
-            {
-                var key = keySelector(item);
-                var element = elementSelector(item);
-                if (ReferenceEquals(key, null))
-                {
-                    nullList.Add(element);
-                    if (nullCounter == -1)
-                    {
-                        nullCounter = counter;
-                        counter++;
-                    }
-                }
-                else
-                {
-                    List<TElement> group;
-                    if (!groups.TryGetValue(key, out group))
-                    {
-                        group = new List<TElement>();
-                        groups.Add(key, group);
-                        counter++;
-                    }
-                    group.Add(element);
-                }
-            }
-
-            counter = 0;
-            foreach (var group in groups)
-            {
-                if (counter == nullCounter)
-                {
-                    yield return new Grouping<TKey, TElement>(default(TKey), nullList);
-                    counter++;
-                }
-
-                yield return new Grouping<TKey, TElement>(group.Key, group.Value);
-                counter++;
-            }
-
-            if (counter == nullCounter)
-            {
-                yield return new Grouping<TKey, TElement>(default(TKey), nullList);
-                // counter++;
-            }
-        }
-
-        private static IEnumerable<TResult> CreateGroupByIterator<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
-        {
-#if FAT
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (resultSelector == null)
-            {
-                throw new ArgumentNullException(nameof(resultSelector));
-            }
-#endif
-            var groups = GroupProgressiveBy(source, keySelector, elementSelector, comparer);
-
-            foreach (IGrouping<TKey, TElement> group in groups)
-            {
-                yield return resultSelector(group.Key, group);
-            }
-        }
-
-        private static IEnumerable<TResult> CreateGroupByIterator<TSource, TKey, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TKey, IEnumerable<TSource>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
-        {
-#if FAT
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (resultSelector == null)
-            {
-                throw new ArgumentNullException(nameof(resultSelector));
-            }
-#endif
-            var groups = GroupProgressiveBy(source, keySelector, comparer);
-
-            foreach (IGrouping<TKey, TSource> group in groups)
-            {
-                yield return resultSelector(group.Key, group);
             }
         }
     }

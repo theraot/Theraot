@@ -13,31 +13,47 @@ namespace System.Linq
 
         public static IEnumerable<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, IEnumerable<TInner>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
         {
-            LinqCheck.JoinSelectors(outer, inner, outerKeySelector, innerKeySelector, resultSelector);
-
+            if (outer == null)
+            {
+                throw new ArgumentNullException(nameof(outer));
+            }
+            if (inner == null)
+            {
+                throw new ArgumentNullException(nameof(inner));
+            }
+            if (outerKeySelector == null)
+            {
+                throw new ArgumentNullException(nameof(outerKeySelector));
+            }
+            if (innerKeySelector == null)
+            {
+                throw new ArgumentNullException(nameof(innerKeySelector));
+            }
+            if (resultSelector == null)
+            {
+                throw new ArgumentNullException(nameof(resultSelector));
+            }
             if (comparer == null)
             {
                 comparer = EqualityComparer<TKey>.Default;
             }
+            return CreateGroupJoinIterator();
 
-            return CreateGroupJoinIterator(outer, inner, outerKeySelector, innerKeySelector, resultSelector, comparer);
-        }
-
-        private static IEnumerable<TResult> CreateGroupJoinIterator<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, IEnumerable<TInner>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
-        {
-            // NOTICE this method has no null check
-            var innerKeys = ToLookup(inner, innerKeySelector, comparer);
-
-            foreach (var element in outer)
+            IEnumerable<TResult> CreateGroupJoinIterator()
             {
-                var outerKey = outerKeySelector(element);
-                if (!ReferenceEquals(outerKey, null) && innerKeys.Contains(outerKey))
+                var innerKeys = ToLookup(inner, innerKeySelector, comparer);
+
+                foreach (var element in outer)
                 {
-                    yield return resultSelector(element, innerKeys[outerKey]);
-                }
-                else
-                {
-                    yield return resultSelector(element, Empty<TInner>());
+                    var outerKey = outerKeySelector(element);
+                    if (!ReferenceEquals(outerKey, null) && innerKeys.Contains(outerKey))
+                    {
+                        yield return resultSelector(element, innerKeys[outerKey]);
+                    }
+                    else
+                    {
+                        yield return resultSelector(element, Empty<TInner>());
+                    }
                 }
             }
         }
