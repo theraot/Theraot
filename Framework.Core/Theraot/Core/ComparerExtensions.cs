@@ -47,12 +47,12 @@ namespace Theraot.Core
             {
                 if (first == null)
                 {
-                    throw new ArgumentNullException("first");
+                    throw new ArgumentNullException(nameof(first));
                 }
                 _first = first;
                 if (second == null)
                 {
-                    throw new ArgumentNullException("second");
+                    throw new ArgumentNullException(nameof(second));
                 }
                 _second = second;
             }
@@ -76,7 +76,7 @@ namespace Theraot.Core
             {
                 if (wrapped == null)
                 {
-                    throw new ArgumentNullException("wrapped");
+                    throw new ArgumentNullException(nameof(wrapped));
                 }
                 _wrapped = wrapped;
             }

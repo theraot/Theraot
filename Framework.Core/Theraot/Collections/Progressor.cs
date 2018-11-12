@@ -20,7 +20,7 @@ namespace Theraot.Collections
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
 
             var control = 0;
@@ -66,11 +66,11 @@ namespace Theraot.Collections
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             if (preface == null)
             {
-                throw new ArgumentNullException("preface");
+                throw new ArgumentNullException(nameof(preface));
             }
             var enumerator = preface.GetEnumerator();
             if (enumerator == null)
@@ -158,7 +158,7 @@ namespace Theraot.Collections
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
 
             var guard = 0;
@@ -198,11 +198,11 @@ namespace Theraot.Collections
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             if (preface == null)
             {
-                throw new ArgumentNullException("preface");
+                throw new ArgumentNullException(nameof(preface));
             }
 
             var control = 0;
@@ -276,7 +276,7 @@ namespace Theraot.Collections
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             var enumerator = wrapped.GetEnumerator();
             if (enumerator == null)
@@ -329,7 +329,7 @@ namespace Theraot.Collections
         {
             if (tryTake == null)
             {
-                throw new ArgumentNullException("tryTake");
+                throw new ArgumentNullException(nameof(tryTake));
             }
             _proxy = new ProxyObservable<T>();
             _tryTake = GetTryTake(tryTake, doneOnFalse, this);
@@ -339,11 +339,11 @@ namespace Theraot.Collections
         {
             if (tryTake == null)
             {
-                throw new ArgumentNullException("tryTake");
+                throw new ArgumentNullException(nameof(tryTake));
             }
             if (isDone == null)
             {
-                throw new ArgumentNullException("isDone");
+                throw new ArgumentNullException(nameof(isDone));
             }
             _proxy = new ProxyObservable<T>();
             _tryTake = GetTryTake(tryTake, isDone, this);
@@ -390,11 +390,11 @@ namespace Theraot.Collections
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
 
             var control = 0;
@@ -453,11 +453,11 @@ namespace Theraot.Collections
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
 
             var control = 0;
@@ -522,15 +522,15 @@ namespace Theraot.Collections
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
 
             var control = 0;
@@ -597,7 +597,7 @@ namespace Theraot.Collections
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
 
             var control = 0;
@@ -720,7 +720,7 @@ namespace Theraot.Collections
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition));
             }
             return WhileExtracted();
 
@@ -746,7 +746,7 @@ namespace Theraot.Collections
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition));
             }
             return WhileExtracted();
 

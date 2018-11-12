@@ -13,11 +13,11 @@ namespace Theraot.Core
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition));
             }
             if (iterate == null)
             {
-                throw new ArgumentNullException("iterate");
+                throw new ArgumentNullException(nameof(iterate));
             }
             var currentState = initialState;
             do
@@ -31,15 +31,15 @@ namespace Theraot.Core
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition));
             }
             if (iterate == null)
             {
-                throw new ArgumentNullException("iterate");
+                throw new ArgumentNullException(nameof(iterate));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             var currentState = initialState;
             do
@@ -53,11 +53,11 @@ namespace Theraot.Core
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition));
             }
             if (iterate == null)
             {
-                throw new ArgumentNullException("iterate");
+                throw new ArgumentNullException(nameof(iterate));
             }
             while (condition.Invoke())
             {
@@ -69,15 +69,15 @@ namespace Theraot.Core
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition));
             }
             if (iterate == null)
             {
-                throw new ArgumentNullException("iterate");
+                throw new ArgumentNullException(nameof(iterate));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             while (condition.Invoke())
             {
@@ -89,7 +89,7 @@ namespace Theraot.Core
         {
             if (tryTake == null)
             {
-                throw new ArgumentNullException("tryTake");
+                throw new ArgumentNullException(nameof(tryTake));
             }
             T item;
             while (tryTake.Invoke(out item))
@@ -102,11 +102,11 @@ namespace Theraot.Core
         {
             if (tryTake == null)
             {
-                throw new ArgumentNullException("tryTake");
+                throw new ArgumentNullException(nameof(tryTake));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             TState item;
             while (tryTake.Invoke(out item))
@@ -119,7 +119,7 @@ namespace Theraot.Core
         {
             if (iterate == null)
             {
-                throw new ArgumentNullException("iterate");
+                throw new ArgumentNullException(nameof(iterate));
             }
             var currentState = initialState;
             while (true)
@@ -134,11 +134,11 @@ namespace Theraot.Core
         {
             if (iterate == null)
             {
-                throw new ArgumentNullException("iterate");
+                throw new ArgumentNullException(nameof(iterate));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             var currentState = initialState;
             while (true)
@@ -153,7 +153,7 @@ namespace Theraot.Core
         {
             if (iterate == null)
             {
-                throw new ArgumentNullException("iterate");
+                throw new ArgumentNullException(nameof(iterate));
             }
             while (true)
             {
@@ -166,11 +166,11 @@ namespace Theraot.Core
         {
             if (iterate == null)
             {
-                throw new ArgumentNullException("iterate");
+                throw new ArgumentNullException(nameof(iterate));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             while (true)
             {

@@ -18,7 +18,7 @@ namespace Theraot.Threading
         {
             if (release == null)
             {
-                throw new ArgumentNullException("release");
+                throw new ArgumentNullException(nameof(release));
             }
             _release = release;
         }
@@ -32,7 +32,7 @@ namespace Theraot.Threading
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition));
             }
             return DisposedConditional
                    (

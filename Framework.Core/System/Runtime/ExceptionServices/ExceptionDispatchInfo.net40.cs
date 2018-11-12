@@ -37,7 +37,7 @@ namespace System.Runtime.ExceptionServices
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return new ExceptionDispatchInfo(source);
         }

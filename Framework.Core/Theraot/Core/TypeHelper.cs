@@ -23,7 +23,7 @@ namespace Theraot.Core
         {
             if (item == null)
             {
-                throw new ArgumentNullException("item");
+                throw new ArgumentNullException(nameof(item));
             }
             return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute), inherit);
         }
@@ -32,7 +32,7 @@ namespace Theraot.Core
         {
             if (delegateType == null)
             {
-                throw new ArgumentNullException("delegateType");
+                throw new ArgumentNullException(nameof(delegateType));
             }
             var delegateTypeInfo = delegateType.GetTypeInfo();
             if (delegateTypeInfo.BaseType != typeof(MulticastDelegate))
@@ -128,7 +128,7 @@ namespace Theraot.Core
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             return IsBinaryPortableExtracted(type);
         }
@@ -137,7 +137,7 @@ namespace Theraot.Core
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             return IsBlittableExtracted(type);
         }
@@ -245,7 +245,7 @@ namespace Theraot.Core
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             return IsValueTypeRecursiveExtracted(type);
         }

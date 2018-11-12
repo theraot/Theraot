@@ -24,11 +24,11 @@ namespace Theraot.Collections
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             foreach (var item in wrapped)
             {
@@ -40,15 +40,15 @@ namespace Theraot.Collections
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
             foreach (var item in wrapped)
             {

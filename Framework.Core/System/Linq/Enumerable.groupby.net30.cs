@@ -75,19 +75,19 @@ namespace System.Linq
             {
                 if (source == null)
                 {
-                    throw new ArgumentNullException("source");
+                    throw new ArgumentNullException(nameof(source));
                 }
                 if (keySelector == null)
                 {
-                    throw new ArgumentNullException("keySelector");
+                    throw new ArgumentNullException(nameof(keySelector));
                 }
                 if (elementSelector == null)
                 {
-                    throw new ArgumentNullException("elementSelector");
+                    throw new ArgumentNullException(nameof(elementSelector));
                 }
                 if (resultSelector == null)
                 {
-                    throw new ArgumentNullException("resultSelector");
+                    throw new ArgumentNullException(nameof(resultSelector));
                 }
                 _source = source;
                 _keySelector = keySelector;
@@ -138,15 +138,15 @@ namespace System.Linq
             {
                 if (source == null)
                 {
-                    throw new ArgumentNullException("source");
+                    throw new ArgumentNullException(nameof(source));
                 }
                 if (keySelector == null)
                 {
-                    throw new ArgumentNullException("keySelector");
+                    throw new ArgumentNullException(nameof(keySelector));
                 }
                 if (elementSelector == null)
                 {
-                    throw new ArgumentNullException("elementSelector");
+                    throw new ArgumentNullException(nameof(elementSelector));
                 }
                 _source = source;
                 _keySelector = keySelector;

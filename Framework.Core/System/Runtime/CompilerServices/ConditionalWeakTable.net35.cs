@@ -59,7 +59,7 @@ namespace System.Runtime.CompilerServices
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             _wrapped.AddNew(key, value);
         }
@@ -73,7 +73,7 @@ namespace System.Runtime.CompilerServices
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             return PrivateGetValue(key, k => Activator.CreateInstance<TValue>());
         }
@@ -88,11 +88,11 @@ namespace System.Runtime.CompilerServices
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             if (createValueCallback == null)
             {
-                throw new ArgumentNullException("createValueCallback");
+                throw new ArgumentNullException(nameof(createValueCallback));
             }
             return _wrapped.GetOrAdd(key, input => createValueCallback(input));
         }
@@ -113,7 +113,7 @@ namespace System.Runtime.CompilerServices
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             return _wrapped.Remove(key);
         }
@@ -130,7 +130,7 @@ namespace System.Runtime.CompilerServices
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             return _wrapped.TryGetValue(key, out value);
         }

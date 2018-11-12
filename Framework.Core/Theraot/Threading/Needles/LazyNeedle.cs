@@ -32,7 +32,7 @@ namespace Theraot.Threading.Needles
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             _valueFactory = valueFactory;
         }
@@ -42,7 +42,7 @@ namespace Theraot.Threading.Needles
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             _valueFactory = valueFactory;
             if (cacheExceptions)
@@ -176,7 +176,7 @@ namespace Theraot.Threading.Needles
         {
             if (beforeInitialize == null)
             {
-                throw new ArgumentNullException("beforeInitialize");
+                throw new ArgumentNullException(nameof(beforeInitialize));
             }
             if (_runnerThread == Thread.CurrentThread)
             {

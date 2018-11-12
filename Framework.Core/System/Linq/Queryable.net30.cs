@@ -79,7 +79,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
 
             var queryable = source as IQueryable<TElement>;
@@ -95,7 +95,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
 
             var queryable = source as IQueryable;
@@ -616,23 +616,23 @@ namespace System.Linq
         {
             if (outer == null)
             {
-                throw new ArgumentNullException("outer");
+                throw new ArgumentNullException(nameof(outer));
             }
             if (inner == null)
             {
-                throw new ArgumentNullException("inner");
+                throw new ArgumentNullException(nameof(inner));
             }
             if (outerKeySelector == null)
             {
-                throw new ArgumentNullException("outerKeySelector");
+                throw new ArgumentNullException(nameof(outerKeySelector));
             }
             if (innerKeySelector == null)
             {
-                throw new ArgumentNullException("innerKeySelector");
+                throw new ArgumentNullException(nameof(innerKeySelector));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
 
             return outer.Provider.CreateQuery<TResult>(
@@ -649,23 +649,23 @@ namespace System.Linq
         {
             if (outer == null)
             {
-                throw new ArgumentNullException("outer");
+                throw new ArgumentNullException(nameof(outer));
             }
             if (inner == null)
             {
-                throw new ArgumentNullException("inner");
+                throw new ArgumentNullException(nameof(inner));
             }
             if (outerKeySelector == null)
             {
-                throw new ArgumentNullException("outerKeySelector");
+                throw new ArgumentNullException(nameof(outerKeySelector));
             }
             if (innerKeySelector == null)
             {
-                throw new ArgumentNullException("innerKeySelector");
+                throw new ArgumentNullException(nameof(innerKeySelector));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
 
             return outer.Provider.CreateQuery<TResult>(

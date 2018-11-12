@@ -33,7 +33,7 @@ namespace System
         {
             if (handler == null)
             {
-                throw new ArgumentNullException("handler");
+                throw new ArgumentNullException(nameof(handler));
             }
             ProgressChanged += (sender, args) => handler(args);
         }

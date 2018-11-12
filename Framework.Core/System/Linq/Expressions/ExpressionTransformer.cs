@@ -302,7 +302,7 @@ namespace System.Linq.Expressions
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (visit == null)
             {
-                throw new ArgumentNullException("visit");
+                throw new ArgumentNullException(nameof(visit));
             }
 #endif
             List<TElement> list = null;

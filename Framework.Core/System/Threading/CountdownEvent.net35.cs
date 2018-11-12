@@ -17,7 +17,7 @@ namespace System.Threading
         {
             if (initialCount < 0)
             {
-                throw new ArgumentOutOfRangeException("initialCount");
+                throw new ArgumentOutOfRangeException(nameof(initialCount));
             }
             _initialCount = initialCount;
             _currentCount = initialCount;
@@ -92,7 +92,7 @@ namespace System.Threading
             CheckDisposed();
             if (count < 0)
             {
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             }
             Thread.VolatileWrite(ref _currentCount, count);
             _initialCount = count;
@@ -130,7 +130,7 @@ namespace System.Threading
         {
             if (signalCount <= 0)
             {
-                throw new ArgumentOutOfRangeException("signalCount");
+                throw new ArgumentOutOfRangeException(nameof(signalCount));
             }
             CheckDisposed();
             int lastValue;
@@ -156,7 +156,7 @@ namespace System.Threading
         {
             if (signalCount <= 0)
             {
-                throw new ArgumentOutOfRangeException("signalCount");
+                throw new ArgumentOutOfRangeException(nameof(signalCount));
             }
             CheckDisposed();
             int lastValue;
@@ -186,7 +186,7 @@ namespace System.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -231,7 +231,7 @@ namespace System.Threading
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException("CountdownEvent");
+                throw new ObjectDisposedException(nameof(CountdownEvent));
             }
         }
     }

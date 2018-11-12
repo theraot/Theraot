@@ -30,7 +30,7 @@ namespace System.Runtime.CompilerServices
         {
             if (ReferenceEquals(stateMachine, null))
             {
-                throw new ArgumentNullException("stateMachine");
+                throw new ArgumentNullException(nameof(stateMachine));
             }
             stateMachine.MoveNext();
         }
@@ -43,7 +43,7 @@ namespace System.Runtime.CompilerServices
         {
             if (stateMachine == null)
             {
-                throw new ArgumentNullException("stateMachine");
+                throw new ArgumentNullException(nameof(stateMachine));
             }
 
             if (StateMachine != null)

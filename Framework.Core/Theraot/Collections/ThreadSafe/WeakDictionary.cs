@@ -154,11 +154,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (addValueFactory == null)
             {
-                throw new ArgumentNullException("addValueFactory");
+                throw new ArgumentNullException(nameof(addValueFactory));
             }
             if (updateValueFactory == null)
             {
-                throw new ArgumentNullException("updateValueFactory");
+                throw new ArgumentNullException(nameof(updateValueFactory));
             }
             var needle = PrivateGetNeedle(key);
             Func<WeakNeedle<TKey>, TValue, TValue> factory = (pairKey, foundValue) =>
@@ -190,7 +190,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (updateValueFactory == null)
             {
-                throw new ArgumentNullException("updateValueFactory");
+                throw new ArgumentNullException(nameof(updateValueFactory));
             }
             var needle = PrivateGetNeedle(key);
             Func<WeakNeedle<TKey>, TValue, TValue> factory = (pairKey, foundValue) =>
@@ -221,11 +221,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (addValueFactory == null)
             {
-                throw new ArgumentNullException("addValueFactory");
+                throw new ArgumentNullException(nameof(addValueFactory));
             }
             if (updateValueFactory == null)
             {
-                throw new ArgumentNullException("updateValueFactory");
+                throw new ArgumentNullException(nameof(updateValueFactory));
             }
             var needle = PrivateGetNeedle(key);
             Func<WeakNeedle<TKey>, TValue, TValue> factory = (pairKey, foundValue) =>
@@ -256,7 +256,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (updateValueFactory == null)
             {
-                throw new ArgumentNullException("updateValueFactory");
+                throw new ArgumentNullException(nameof(updateValueFactory));
             }
             var needle = PrivateGetNeedle(key);
             Func<WeakNeedle<TKey>, TValue, TValue> factory = (pairKey, foundValue) =>
@@ -368,7 +368,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             return _wrapped.ContainsKey
                 (
@@ -399,11 +399,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
             return _wrapped.ContainsKey
                 (
@@ -433,15 +433,15 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
             if (_wrapped.Count > array.Length - arrayIndex)
             {
-                throw new ArgumentException("The array can not contain the number of elements.", "array");
+                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
             GetPairs().CopyTo(array, arrayIndex);
         }
@@ -485,7 +485,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             var needle = PrivateGetNeedle(key);
             TValue result;
@@ -612,7 +612,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             return _wrapped.Remove
                 (
@@ -645,11 +645,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
             return _wrapped.Remove
                 (
@@ -710,7 +710,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             return _wrapped.RemoveWhereKey
                 (
@@ -741,7 +741,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             return _wrapped.RemoveWhereKeyEnumerable
                 (
@@ -772,7 +772,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
             return _wrapped.RemoveWhereValue(valueCheck);
         }
@@ -792,7 +792,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
             return _wrapped.RemoveWhereValueEnumerable(valueCheck);
         }
@@ -881,7 +881,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             var needle = PrivateGetNeedle(key);
             TKey foundKey;
@@ -941,7 +941,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             Predicate<WeakNeedle<TKey>> check = found =>
             {
@@ -1003,7 +1003,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             return _wrapped.Where
                 (
@@ -1034,7 +1034,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
             return _wrapped.WhereValue(valueCheck);
         }

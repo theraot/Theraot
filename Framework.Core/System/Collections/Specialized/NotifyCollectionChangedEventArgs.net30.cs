@@ -15,7 +15,7 @@ namespace System.Collections.Specialized
             _action = action;
             if (action != NotifyCollectionChangedAction.Reset)
             {
-                throw new ArgumentException("This constructor can only be used with the Reset action.", "action");
+                throw new ArgumentException("This constructor can only be used with the Reset action.", nameof(action));
             }
         }
 
@@ -44,11 +44,11 @@ namespace System.Collections.Specialized
             {
                 if (changedItems == null)
                 {
-                    throw new ArgumentNullException("changedItems");
+                    throw new ArgumentNullException(nameof(changedItems));
                 }
                 if (startingIndex < -1)
                 {
-                    throw new ArgumentException("The value of startingIndex must be -1 or greater.", "startingIndex");
+                    throw new ArgumentException("The value of startingIndex must be -1 or greater.", nameof(startingIndex));
                 }
                 if (action == NotifyCollectionChangedAction.Add)
                 {
@@ -63,16 +63,16 @@ namespace System.Collections.Specialized
             {
                 if (changedItems != null)
                 {
-                    throw new ArgumentException("This constructor can only be used with the Reset action if changedItems is null", "changedItems");
+                    throw new ArgumentException("This constructor can only be used with the Reset action if changedItems is null", nameof(changedItems));
                 }
                 if (startingIndex != -1)
                 {
-                    throw new ArgumentException("This constructor can only be used with the Reset action if startingIndex is -1", "startingIndex");
+                    throw new ArgumentException("This constructor can only be used with the Reset action if startingIndex is -1", nameof(startingIndex));
                 }
             }
             else
             {
-                throw new ArgumentException("This constructor can only be used with the Reset, Add, or Remove actions.", "action");
+                throw new ArgumentException("This constructor can only be used with the Reset, Add, or Remove actions.", nameof(action));
             }
         }
 
@@ -92,16 +92,16 @@ namespace System.Collections.Specialized
             {
                 if (changedItem != null)
                 {
-                    throw new ArgumentException("This constructor can only be used with the Reset action if changedItem is null", "changedItem");
+                    throw new ArgumentException("This constructor can only be used with the Reset action if changedItem is null", nameof(changedItem));
                 }
                 if (index != -1)
                 {
-                    throw new ArgumentException("This constructor can only be used with the Reset action if index is -1", "index");
+                    throw new ArgumentException("This constructor can only be used with the Reset action if index is -1", nameof(index));
                 }
             }
             else
             {
-                throw new ArgumentException("This constructor can only be used with the Reset, Add, or Remove actions.", "action");
+                throw new ArgumentException("This constructor can only be used with the Reset, Add, or Remove actions.", nameof(action));
             }
         }
 
@@ -116,15 +116,15 @@ namespace System.Collections.Specialized
             _action = action;
             if (action != NotifyCollectionChangedAction.Replace)
             {
-                throw new ArgumentException("This constructor can only be used with the Replace action.", "action");
+                throw new ArgumentException("This constructor can only be used with the Replace action.", nameof(action));
             }
             if (newItems == null)
             {
-                throw new ArgumentNullException("newItems");
+                throw new ArgumentNullException(nameof(newItems));
             }
             if (oldItems == null)
             {
-                throw new ArgumentNullException("oldItems");
+                throw new ArgumentNullException(nameof(oldItems));
             }
             _oldItems = oldItems;
             _newItems = newItems;
@@ -137,11 +137,11 @@ namespace System.Collections.Specialized
             _action = action;
             if (action != NotifyCollectionChangedAction.Move)
             {
-                throw new ArgumentException("This constructor can only be used with the Move action.", "action");
+                throw new ArgumentException("This constructor can only be used with the Move action.", nameof(action));
             }
             if (index < -1)
             {
-                throw new ArgumentException("The value of index must be -1 or greater.", "index");
+                throw new ArgumentException("The value of index must be -1 or greater.", nameof(index));
             }
             InitializeMove(changedItems, index, oldIndex);
         }
@@ -157,7 +157,7 @@ namespace System.Collections.Specialized
             _action = action;
             if (action != NotifyCollectionChangedAction.Replace)
             {
-                throw new ArgumentException("This constructor can only be used with the Replace action.", "action");
+                throw new ArgumentException("This constructor can only be used with the Replace action.", nameof(action));
             }
             InitializeReplace(new[] { newItem }, new[] { oldItem }, index);
         }

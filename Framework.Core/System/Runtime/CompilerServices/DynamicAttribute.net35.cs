@@ -20,7 +20,7 @@ namespace System.Runtime.CompilerServices
         {
             if (transformFlags == null)
             {
-                throw new ArgumentNullException("transformFlags");
+                throw new ArgumentNullException(nameof(transformFlags));
             }
             _transformFlags = transformFlags;
         }

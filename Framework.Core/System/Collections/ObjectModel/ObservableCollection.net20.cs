@@ -156,7 +156,7 @@ namespace System.Collections.ObjectModel
             {
                 if (release == null)
                 {
-                    throw new ArgumentNullException("release");
+                    throw new ArgumentNullException(nameof(release));
                 }
                 _release = release;
             }
@@ -165,7 +165,7 @@ namespace System.Collections.ObjectModel
             {
                 if (condition == null)
                 {
-                    throw new ArgumentNullException("condition");
+                    throw new ArgumentNullException(nameof(condition));
                 }
                 if (condition.Invoke())
                 {

@@ -35,7 +35,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (method == null)
             {
-                throw new ArgumentNullException("method");
+                throw new ArgumentNullException(nameof(method));
             }
             Add(new WeakDelegateNeedle(method, target)); // Since it is a new object, it should not fail
         }
@@ -44,7 +44,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (method == null)
             {
-                throw new ArgumentNullException("method");
+                throw new ArgumentNullException(nameof(method));
             }
             return Contains(item => item.Equals(method, target));
         }
@@ -58,7 +58,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (method == null)
             {
-                throw new ArgumentNullException("method");
+                throw new ArgumentNullException(nameof(method));
             }
             foreach (var item in RemoveWhereEnumerable(item => item.Equals(method, target)))
             {

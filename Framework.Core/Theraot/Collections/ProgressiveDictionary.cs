@@ -31,7 +31,7 @@ namespace Theraot.Collections
         {
             if (cache == null)
             {
-                throw new ArgumentNullException("cache");
+                throw new ArgumentNullException(nameof(cache));
             }
             _cache = cache;
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
@@ -57,7 +57,7 @@ namespace Theraot.Collections
         {
             if (cache == null)
             {
-                throw new ArgumentNullException("cache");
+                throw new ArgumentNullException(nameof(cache));
             }
             _cache = cache;
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;

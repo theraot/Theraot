@@ -35,7 +35,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -61,7 +61,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -90,7 +90,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -117,7 +117,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -204,7 +204,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -230,7 +230,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -259,7 +259,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -286,7 +286,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -373,7 +373,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -399,7 +399,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -428,7 +428,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -455,7 +455,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -542,7 +542,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -568,7 +568,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -597,7 +597,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -624,7 +624,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -714,7 +714,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -741,7 +741,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -771,7 +771,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -799,7 +799,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -895,7 +895,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -922,7 +922,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -952,7 +952,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -981,7 +981,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -1083,7 +1083,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -1111,7 +1111,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -1142,7 +1142,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -1172,7 +1172,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -1283,7 +1283,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -1314,7 +1314,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -1348,7 +1348,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -1381,7 +1381,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -1503,7 +1503,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -1535,7 +1535,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -1570,7 +1570,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -1604,7 +1604,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -1729,7 +1729,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -1761,7 +1761,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -1796,7 +1796,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -1830,7 +1830,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -1955,7 +1955,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -1987,7 +1987,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -2022,7 +2022,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -2056,7 +2056,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -2181,7 +2181,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -2213,7 +2213,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -2248,7 +2248,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -2282,7 +2282,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -2407,7 +2407,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -2439,7 +2439,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -2474,7 +2474,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -2508,7 +2508,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -2633,7 +2633,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -2665,7 +2665,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -2700,7 +2700,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -2734,7 +2734,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -2859,7 +2859,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -2891,7 +2891,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -2926,7 +2926,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -2960,7 +2960,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -3085,7 +3085,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -3117,7 +3117,7 @@ namespace Theraot.Threading
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -3152,7 +3152,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -3186,7 +3186,7 @@ namespace Theraot.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {

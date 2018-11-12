@@ -30,7 +30,7 @@ namespace System
         }
 
         public AggregateException(string message, Exception exception)
-            : base(message, Check.NotNullArgument(exception, "exception"))
+            : base(message, Check.NotNullArgument(exception, nameof(exception)))
         {
             _innerExceptions = new ReadOnlyCollection<Exception>(new[] { exception });
         }
@@ -63,7 +63,7 @@ namespace System
         protected AggregateException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            var value = info.GetValue("InnerExceptions", typeof(Exception[])) as Exception[];
+            var value = info.GetValue(nameof(InnerExceptions), typeof(Exception[])) as Exception[];
             if (value == null)
             {
                 throw new SerializationException("Deserialization Failure");
@@ -137,19 +137,19 @@ namespace System
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
             base.GetObjectData(info, context);
             var exceptionArray = new Exception[_innerExceptions.Count];
             _innerExceptions.CopyTo(exceptionArray, 0);
-            info.AddValue("InnerExceptions", exceptionArray, typeof(Exception[]));
+            info.AddValue(nameof(InnerExceptions), exceptionArray, typeof(Exception[]));
         }
 
         public void Handle(Func<Exception, bool> predicate)
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             var failed = new List<Exception>();
             foreach (var exception in _innerExceptions)
@@ -181,7 +181,7 @@ namespace System
         {
             if (innerExceptions == null)
             {
-                throw new ArgumentNullException("innerExceptions");
+                throw new ArgumentNullException(nameof(innerExceptions));
             }
             return new CreationInfo(customMessage, innerExceptions);
         }

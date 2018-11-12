@@ -31,11 +31,11 @@ namespace System.Linq
         {
             if (first == null)
             {
-                throw new ArgumentNullException("first");
+                throw new ArgumentNullException(nameof(first));
             }
             if (second == null)
             {
-                throw new ArgumentNullException("second");
+                throw new ArgumentNullException(nameof(second));
             }
         }
 
@@ -43,19 +43,19 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             if (elementSelector == null)
             {
-                throw new ArgumentNullException("elementSelector");
+                throw new ArgumentNullException(nameof(elementSelector));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
         }
 
@@ -63,23 +63,23 @@ namespace System.Linq
         {
             if (outer == null)
             {
-                throw new ArgumentNullException("outer");
+                throw new ArgumentNullException(nameof(outer));
             }
             if (inner == null)
             {
-                throw new ArgumentNullException("inner");
+                throw new ArgumentNullException(nameof(inner));
             }
             if (outerKeySelector == null)
             {
-                throw new ArgumentNullException("outerKeySelector");
+                throw new ArgumentNullException(nameof(outerKeySelector));
             }
             if (innerKeySelector == null)
             {
-                throw new ArgumentNullException("innerKeySelector");
+                throw new ArgumentNullException(nameof(innerKeySelector));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
         }
 
@@ -87,7 +87,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
         }
 
@@ -95,11 +95,11 @@ namespace System.Linq
         {
             if (source1 == null)
             {
-                throw new ArgumentNullException("source1");
+                throw new ArgumentNullException(nameof(source1));
             }
             if (source2 == null)
             {
-                throw new ArgumentNullException("source2");
+                throw new ArgumentNullException(nameof(source2));
             }
         }
 
@@ -107,15 +107,15 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (collectionSelector == null)
             {
-                throw new ArgumentNullException("collectionSelector");
+                throw new ArgumentNullException(nameof(collectionSelector));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
         }
 
@@ -123,15 +123,15 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (collectionSelector == null)
             {
-                throw new ArgumentNullException("collectionSelector");
+                throw new ArgumentNullException(nameof(collectionSelector));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
         }
 
@@ -139,11 +139,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (func == null)
             {
-                throw new ArgumentNullException("func");
+                throw new ArgumentNullException(nameof(func));
             }
         }
 
@@ -151,15 +151,15 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (func == null)
             {
-                throw new ArgumentNullException("func");
+                throw new ArgumentNullException(nameof(func));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
         }
 
@@ -167,15 +167,15 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             if (elementSelector == null)
             {
-                throw new ArgumentNullException("elementSelector");
+                throw new ArgumentNullException(nameof(elementSelector));
             }
         }
 
@@ -183,15 +183,15 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
         }
 
@@ -199,11 +199,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
         }
 
@@ -211,11 +211,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
         }
 
@@ -223,11 +223,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
         }
     }

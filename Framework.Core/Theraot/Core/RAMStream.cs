@@ -26,7 +26,7 @@ namespace Theraot.Core
         {
             if (clusterSize < 0)
             {
-                throw new ArgumentOutOfRangeException("clusterSize");
+                throw new ArgumentOutOfRangeException(nameof(clusterSize));
             }
             _sectorBits = NumericHelper.Log2(NumericHelper.PopulationCount(clusterSize) == 1 ? clusterSize : NumericHelper.NextPowerOf2(clusterSize));
             _length = 0;
@@ -76,7 +76,7 @@ namespace Theraot.Core
                 }
                 if (value > (long)int.MaxValue << _sectorBits)
                 {
-                    throw new ArgumentOutOfRangeException("value", "Overflow");
+                    throw new ArgumentOutOfRangeException(nameof(value), "Overflow");
                 }
                 _position = (int)value;
             }
@@ -190,7 +190,7 @@ namespace Theraot.Core
             }
             if (position > (long)int.MaxValue << _sectorBits)
             {
-                throw new ArgumentOutOfRangeException("offset", "Overflow");
+                throw new ArgumentOutOfRangeException(nameof(offset), "Overflow");
             }
             _position = position;
             return _position;
@@ -205,11 +205,11 @@ namespace Theraot.Core
             }
             if (value < 0)
             {
-                throw new ArgumentOutOfRangeException("value", "Negative length");
+                throw new ArgumentOutOfRangeException(nameof(value), "Negative length");
             }
             if (value > (long)int.MaxValue << _sectorBits)
             {
-                throw new ArgumentOutOfRangeException("value", "Overflow");
+                throw new ArgumentOutOfRangeException(nameof(value), "Overflow");
             }
             _length = (int)value;
             foreach (var node in bytes.EnumerateRange(int.MaxValue, (int)value >> _sectorBits))

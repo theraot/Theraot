@@ -253,7 +253,7 @@ namespace System.Linq.Expressions.Compiler
                         last += _expressions.Length;
                     }
                     var count = last - first + 1;
-                    ContractUtils.RequiresArrayRange(_expressions, first, count, "first", "last");
+                    ContractUtils.RequiresArrayRange(_expressions, first, count, nameof(first), nameof(last));
 
                     if (count == _expressions.Length)
                     {

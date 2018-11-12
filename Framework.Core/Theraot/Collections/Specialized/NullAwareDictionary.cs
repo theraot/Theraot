@@ -61,7 +61,7 @@ namespace Theraot.Collections.Specialized
         {
             if (dictionary == null)
             {
-                throw new ArgumentNullException("dictionary", "dictionary is null.");
+                throw new ArgumentNullException(nameof(dictionary), "dictionary is null.");
             }
             _dictionary = new Dictionary<TKey, TValue>(dictionary);
             if (typeof(TKey).CanBeNull())
@@ -79,7 +79,7 @@ namespace Theraot.Collections.Specialized
         {
             if (dictionary == null)
             {
-                throw new ArgumentNullException("dictionary", "dictionary is null.");
+                throw new ArgumentNullException(nameof(dictionary), "dictionary is null.");
             }
             if (typeof(TKey).CanBeNull())
             {
@@ -99,7 +99,7 @@ namespace Theraot.Collections.Specialized
         {
             if (dictionary == null)
             {
-                throw new ArgumentNullException("dictionary", "dictionary is null.");
+                throw new ArgumentNullException(nameof(dictionary), "dictionary is null.");
             }
             _dictionary = new Dictionary<TKey, TValue>(dictionary, comparer);
             if (typeof(TKey).CanBeNull())
@@ -403,7 +403,7 @@ namespace Theraot.Collections.Specialized
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             this.AddRange(other);
         }

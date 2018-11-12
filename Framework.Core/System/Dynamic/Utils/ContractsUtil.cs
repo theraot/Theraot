@@ -12,7 +12,7 @@ namespace System.Dynamic.Utils
         {
             get
             {
-                Debug.Assert(false, "Unreachable");
+                Debug.Assert(false, nameof(Unreachable));
                 return new InvalidOperationException("Code supposed to be unreachable");
             }
         }

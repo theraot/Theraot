@@ -18,11 +18,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             return CreateGroupByIterator(source, keySelector, comparer);
         }
@@ -36,15 +36,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             return CreateGroupByIterator(source, keySelector, resultSelector, comparer);
         }
@@ -58,19 +58,19 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             if (elementSelector == null)
             {
-                throw new ArgumentNullException("elementSelector");
+                throw new ArgumentNullException(nameof(elementSelector));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             return CreateGroupByIterator(source, keySelector, elementSelector, resultSelector, comparer);
         }
@@ -84,15 +84,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             return CreateGroupByIterator(source, keySelector, resultSelector, comparer);
         }
@@ -108,7 +108,7 @@ namespace Theraot.Collections
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
 #endif
             var groups = new Dictionary<TKey, List<TSource>>(comparer);
@@ -167,11 +167,11 @@ namespace Theraot.Collections
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             if (elementSelector == null)
             {
-                throw new ArgumentNullException("elementSelector");
+                throw new ArgumentNullException(nameof(elementSelector));
             }
 #endif
             var groups = new Dictionary<TKey, List<TElement>>(comparer);
@@ -231,7 +231,7 @@ namespace Theraot.Collections
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
 #endif
             var groups = GroupProgressiveBy(source, keySelector, elementSelector, comparer);
@@ -248,7 +248,7 @@ namespace Theraot.Collections
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
 #endif
             var groups = GroupProgressiveBy(source, keySelector, comparer);

@@ -40,11 +40,11 @@ namespace Theraot.Core
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
             if (arrayIndex == array.Length)
             {
@@ -57,19 +57,19 @@ namespace Theraot.Core
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
             if (countLimit < 0)
             {
-                throw new ArgumentOutOfRangeException("countLimit", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(countLimit), "Non-negative number is required.");
             }
             if (countLimit > array.Length - arrayIndex)
             {
-                throw new ArgumentException("startIndex plus countLimit is greater than the number of elements in array.", "array");
+                throw new ArgumentException("startIndex plus countLimit is greater than the number of elements in array.", nameof(array));
             }
             if (arrayIndex == array.Length)
             {
@@ -87,11 +87,11 @@ namespace Theraot.Core
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
             if (arrayIndex == array.Length)
             {
@@ -104,19 +104,19 @@ namespace Theraot.Core
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
             if (countLimit < 0)
             {
-                throw new ArgumentOutOfRangeException("countLimit", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(countLimit), "Non-negative number is required.");
             }
             if (countLimit > array.Length - arrayIndex)
             {
-                throw new ArgumentException("startIndex plus countLimit is greater than the number of elements in array.", "array");
+                throw new ArgumentException("startIndex plus countLimit is greater than the number of elements in array.", nameof(array));
             }
             if (arrayIndex == array.Length)
             {
@@ -129,11 +129,11 @@ namespace Theraot.Core
         {
             if (values == null)
             {
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             var stringList = new List<string>();
             var length = 0;
@@ -150,7 +150,7 @@ namespace Theraot.Core
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
             var length = text.Length;
             if (length < characterCount)
@@ -164,7 +164,7 @@ namespace Theraot.Core
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
             if (!text.EndsWith(end, comparisonType))
             {
@@ -177,7 +177,7 @@ namespace Theraot.Core
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
             if (!text.StartsWith(start, StringComparison.CurrentCulture))
             {
@@ -190,7 +190,7 @@ namespace Theraot.Core
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
             if (!text.StartsWith(start, comparisonType))
             {
@@ -203,7 +203,7 @@ namespace Theraot.Core
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
             var length = text.Length;
             if (length < characterCount)
@@ -217,7 +217,7 @@ namespace Theraot.Core
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
             var length = text.Length;
             if (length < characterCount)
@@ -235,7 +235,7 @@ namespace Theraot.Core
             }
             if (values == null)
             {
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             }
             var array = new string[values.Length];
             var index = 0;
@@ -250,11 +250,11 @@ namespace Theraot.Core
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
             if (arrayIndex == array.Length)
             {
@@ -271,19 +271,19 @@ namespace Theraot.Core
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
             if (countLimit < 0)
             {
-                throw new ArgumentOutOfRangeException("countLimit", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(countLimit), "Non-negative number is required.");
             }
             if (countLimit > array.Length - arrayIndex)
             {
-                throw new ArgumentException("The array can not contain the number of elements.", "array");
+                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
             if (arrayIndex == array.Length)
             {
@@ -300,7 +300,7 @@ namespace Theraot.Core
         {
             if (ReferenceEquals(value, null))
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
             if (ReferenceEquals(separator, null))
             {
@@ -313,11 +313,11 @@ namespace Theraot.Core
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
             if (arrayIndex == array.Length)
             {
@@ -334,19 +334,19 @@ namespace Theraot.Core
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
             if (countLimit < 0)
             {
-                throw new ArgumentOutOfRangeException("countLimit", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(countLimit), "Non-negative number is required.");
             }
             if (countLimit > array.Length - arrayIndex)
             {
-                throw new ArgumentException("The array can not contain the number of elements.", "array");
+                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
             if (arrayIndex == array.Length)
             {
@@ -363,7 +363,7 @@ namespace Theraot.Core
         {
             if (values == null)
             {
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             }
             if (separator == null)
             {
@@ -381,7 +381,7 @@ namespace Theraot.Core
         {
             if (values == null)
             {
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             }
             if (separator == null)
             {
@@ -399,11 +399,11 @@ namespace Theraot.Core
         {
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (values == null)
             {
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             }
             if (separator == null)
             {
@@ -421,7 +421,7 @@ namespace Theraot.Core
         {
             if (values == null)
             {
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             }
             if (separator == null)
             {
@@ -445,7 +445,7 @@ namespace Theraot.Core
         {
             if (values == null)
             {
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             }
             if (separator == null)
             {
@@ -469,11 +469,11 @@ namespace Theraot.Core
         {
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (values == null)
             {
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             }
             if (separator == null)
             {
@@ -643,11 +643,11 @@ namespace Theraot.Core
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
             if (end == null)
             {
-                throw new ArgumentNullException("end");
+                throw new ArgumentNullException(nameof(end));
             }
             if (text.EndsWith(end, comparisonType))
             {
@@ -660,11 +660,11 @@ namespace Theraot.Core
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
             if (start == null)
             {
-                throw new ArgumentNullException("start");
+                throw new ArgumentNullException(nameof(start));
             }
             if (text.StartsWith(start, StringComparison.CurrentCulture))
             {
@@ -677,11 +677,11 @@ namespace Theraot.Core
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
             if (start == null)
             {
-                throw new ArgumentNullException("start");
+                throw new ArgumentNullException(nameof(start));
             }
             if (text.StartsWith(start, comparisonType))
             {
@@ -703,7 +703,7 @@ namespace Theraot.Core
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
             var length = text.Length;
             if (length < characterCount)
@@ -849,7 +849,7 @@ namespace Theraot.Core
 #if NET20 || NET30 || NET35
             if (values == null)
             {
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             }
             var stringList = new List<string>();
             var length = 0;
@@ -869,7 +869,7 @@ namespace Theraot.Core
 #if NET20 || NET30 || NET35
             if (values == null)
             {
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             }
             var stringList = new List<string>();
             var length = 0;
@@ -893,7 +893,7 @@ namespace Theraot.Core
 #if NET20 || NET30 || NET35
             if (values == null)
             {
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             }
             var stringList = new List<string>();
             var length = 0;
@@ -919,7 +919,7 @@ namespace Theraot.Core
 #if NET20 || NET30 || NET35
             if (values == null)
             {
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             }
             var stringList = new List<string>();
             var length = 0;
@@ -946,7 +946,7 @@ namespace Theraot.Core
 #if NET20 || NET30 || NET35
             if (values == null)
             {
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             }
             var stringList = new List<string>();
             var length = 0;
@@ -987,7 +987,7 @@ namespace Theraot.Core
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
             if (!text.EndsWith(end, false, CultureInfo.CurrentCulture))
             {
@@ -1000,7 +1000,7 @@ namespace Theraot.Core
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
             if (!text.EndsWith(end, ignoreCase, culture))
             {
@@ -1013,7 +1013,7 @@ namespace Theraot.Core
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
             if (!text.StartsWith(start, ignoreCase, culture))
             {
@@ -1026,11 +1026,11 @@ namespace Theraot.Core
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
             if (end == null)
             {
-                throw new ArgumentNullException("end");
+                throw new ArgumentNullException(nameof(end));
             }
             if (text.EndsWith(end, false, CultureInfo.CurrentCulture))
             {
@@ -1043,11 +1043,11 @@ namespace Theraot.Core
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
             if (end == null)
             {
-                throw new ArgumentNullException("end");
+                throw new ArgumentNullException(nameof(end));
             }
             if (text.EndsWith(end, ignoreCase, culture))
             {
@@ -1060,11 +1060,11 @@ namespace Theraot.Core
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
             if (start == null)
             {
-                throw new ArgumentNullException("start");
+                throw new ArgumentNullException(nameof(start));
             }
             if (text.StartsWith(start, ignoreCase, culture))
             {

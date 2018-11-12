@@ -17,11 +17,11 @@ namespace Theraot.Core
         {
             if (next == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException(nameof(next));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             var branches = initial;
             return ExploreBreadthFirstGraphExtracted(branches, next, resultSelector);
@@ -31,7 +31,7 @@ namespace Theraot.Core
         {
             if (next == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException(nameof(next));
             }
             var branches = new[] { initial };
             return ExploreBreadthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
@@ -41,7 +41,7 @@ namespace Theraot.Core
         {
             if (next == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException(nameof(next));
             }
             var branches = initial;
             return ExploreBreadthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
@@ -51,11 +51,11 @@ namespace Theraot.Core
         {
             if (next == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException(nameof(next));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             var branches = new[] { initial };
             return ExploreBreadthFirstTreeExtracted(branches, next, resultSelector);
@@ -65,11 +65,11 @@ namespace Theraot.Core
         {
             if (next == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException(nameof(next));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             var branches = initial;
             return ExploreBreadthFirstTreeExtracted(branches, next, resultSelector);
@@ -79,7 +79,7 @@ namespace Theraot.Core
         {
             if (next == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException(nameof(next));
             }
             var branches = new[] { initial };
             return ExploreBreadthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
@@ -89,7 +89,7 @@ namespace Theraot.Core
         {
             if (next == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException(nameof(next));
             }
             var branches = initial;
             return ExploreBreadthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
@@ -165,11 +165,11 @@ namespace Theraot.Core
         {
             if (next == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException(nameof(next));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             var branches = new[] { initial };
             return ExploreDepthFirstGraphExtracted(branches, next, resultSelector);
@@ -179,11 +179,11 @@ namespace Theraot.Core
         {
             if (next == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException(nameof(next));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             var branches = initial;
             return ExploreDepthFirstGraphExtracted(branches, next, resultSelector);
@@ -193,7 +193,7 @@ namespace Theraot.Core
         {
             if (next == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException(nameof(next));
             }
             var branches = new[] { initial };
             return ExploreDepthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
@@ -203,7 +203,7 @@ namespace Theraot.Core
         {
             if (next == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException(nameof(next));
             }
             var branches = initial;
             return ExploreDepthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
@@ -213,11 +213,11 @@ namespace Theraot.Core
         {
             if (next == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException(nameof(next));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             var branches = new[] { initial };
             return ExploreDepthFirstTreeExtracted(branches, next, resultSelector);
@@ -227,11 +227,11 @@ namespace Theraot.Core
         {
             if (next == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException(nameof(next));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             var branches = initial;
             return ExploreDepthFirstTreeExtracted(branches, next, resultSelector);
@@ -241,7 +241,7 @@ namespace Theraot.Core
         {
             if (next == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException(nameof(next));
             }
             var branches = new[] { initial };
             return ExploreDepthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
@@ -251,7 +251,7 @@ namespace Theraot.Core
         {
             if (next == null)
             {
-                throw new ArgumentNullException("next");
+                throw new ArgumentNullException(nameof(next));
             }
             var branches = initial;
             return ExploreDepthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());

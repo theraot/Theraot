@@ -29,7 +29,7 @@ namespace System.Threading
         {
             if (spinCount < 0 || spinCount > 2047)
             {
-                throw new ArgumentOutOfRangeException("spinCount");
+                throw new ArgumentOutOfRangeException(nameof(spinCount));
             }
             _spinCount = spinCount;
             _status = initialState ? (int)Status.Set : (int)Status.NotSet;
@@ -291,7 +291,7 @@ namespace System.Threading
             }
             if (millisecondsTimeout < -1)
             {
-                throw new ArgumentOutOfRangeException("millisecondsTimeout");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
             if (millisecondsTimeout == Timeout.Infinite)
             {
@@ -312,7 +312,7 @@ namespace System.Threading
             GC.KeepAlive(cancellationToken.WaitHandle);
             if (millisecondsTimeout < -1)
             {
-                throw new ArgumentOutOfRangeException("millisecondsTimeout");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
             if (millisecondsTimeout == Timeout.Infinite)
             {
@@ -344,7 +344,7 @@ namespace System.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == Timeout.Infinite)
             {
@@ -366,7 +366,7 @@ namespace System.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == Timeout.Infinite)
             {

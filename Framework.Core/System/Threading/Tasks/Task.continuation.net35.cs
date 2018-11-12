@@ -641,17 +641,17 @@ namespace System.Threading.Tasks
 
             if ((continuationOptions & IllegalMask) == IllegalMask)
             {
-                throw new ArgumentOutOfRangeException("continuationOptions", "The specified TaskContinuationOptions combined LongRunning and ExecuteSynchronously.  Synchronous continuations should not be long running.");
+                throw new ArgumentOutOfRangeException(nameof(continuationOptions), "The specified TaskContinuationOptions combined LongRunning and ExecuteSynchronously.  Synchronous continuations should not be long running.");
             }
             // Check that no illegal options were specified
             if ((continuationOptions & ~(CreationOptionsMask | NotOnAnything | TaskContinuationOptions.LazyCancellation | TaskContinuationOptions.ExecuteSynchronously)) != 0)
             {
-                throw new ArgumentOutOfRangeException("continuationOptions");
+                throw new ArgumentOutOfRangeException(nameof(continuationOptions));
             }
             // Check that we didn't specify "not on anything"
             if ((continuationOptions & NotOnAnything) == NotOnAnything)
             {
-                throw new ArgumentOutOfRangeException("continuationOptions", "The specified TaskContinuationOptions excluded all continuation kinds.");
+                throw new ArgumentOutOfRangeException(nameof(continuationOptions), "The specified TaskContinuationOptions excluded all continuation kinds.");
             }
             // This passes over all but LazyCancellation, which has no representation in TaskCreationOptions
             creationOptions = (TaskCreationOptions)(continuationOptions & CreationOptionsMask);
@@ -867,12 +867,12 @@ namespace System.Threading.Tasks
             // Throw on continuation with null action
             if (continuationAction == null)
             {
-                throw new ArgumentNullException("continuationAction");
+                throw new ArgumentNullException(nameof(continuationAction));
             }
             // Throw on continuation with null TaskScheduler
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
             Contract.EndContractBlock();
             TaskCreationOptions creationOptions;
@@ -898,12 +898,12 @@ namespace System.Threading.Tasks
             // Throw on continuation with null action
             if (continuationAction == null)
             {
-                throw new ArgumentNullException("continuationAction");
+                throw new ArgumentNullException(nameof(continuationAction));
             }
             // Throw on continuation with null TaskScheduler
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
             Contract.EndContractBlock();
             TaskCreationOptions creationOptions;
@@ -929,12 +929,12 @@ namespace System.Threading.Tasks
             // Throw on continuation with null function
             if (continuationFunction == null)
             {
-                throw new ArgumentNullException("continuationFunction");
+                throw new ArgumentNullException(nameof(continuationFunction));
             }
             // Throw on continuation with null task scheduler
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
             Contract.EndContractBlock();
             TaskCreationOptions creationOptions;
@@ -958,12 +958,12 @@ namespace System.Threading.Tasks
             // Throw on continuation with null function
             if (continuationFunction == null)
             {
-                throw new ArgumentNullException("continuationFunction");
+                throw new ArgumentNullException(nameof(continuationFunction));
             }
             // Throw on continuation with null task scheduler
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
             Contract.EndContractBlock();
             TaskCreationOptions creationOptions;
@@ -1743,11 +1743,11 @@ namespace System.Threading.Tasks
         {
             if (continuationAction == null)
             {
-                throw new ArgumentNullException("continuationAction");
+                throw new ArgumentNullException(nameof(continuationAction));
             }
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
             TaskCreationOptions creationOptions;
             InternalTaskOptions internalOptions;
@@ -1776,12 +1776,12 @@ namespace System.Threading.Tasks
         {
             if (continuationAction == null)
             {
-                throw new ArgumentNullException("continuationAction");
+                throw new ArgumentNullException(nameof(continuationAction));
             }
 
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
             TaskCreationOptions creationOptions;
             InternalTaskOptions internalOptions;
@@ -1810,12 +1810,12 @@ namespace System.Threading.Tasks
         {
             if (continuationFunction == null)
             {
-                throw new ArgumentNullException("continuationFunction");
+                throw new ArgumentNullException(nameof(continuationFunction));
             }
 
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
 
             TaskCreationOptions creationOptions;
@@ -1842,12 +1842,12 @@ namespace System.Threading.Tasks
         {
             if (continuationFunction == null)
             {
-                throw new ArgumentNullException("continuationFunction");
+                throw new ArgumentNullException(nameof(continuationFunction));
             }
 
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
 
             TaskCreationOptions creationOptions;

@@ -86,11 +86,11 @@ namespace System.Linq.Expressions
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (onfield == null)
             {
-                throw new ArgumentNullException("onfield");
+                throw new ArgumentNullException(nameof(onfield));
             }
             if (onprop == null)
             {
-                throw new ArgumentNullException("onprop");
+                throw new ArgumentNullException(nameof(onprop));
             }
 #endif
             switch (self.MemberType)
@@ -114,11 +114,11 @@ namespace System.Linq.Expressions
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (onfield == null)
             {
-                throw new ArgumentNullException("onfield");
+                throw new ArgumentNullException(nameof(onfield));
             }
             if (onprop == null)
             {
-                throw new ArgumentNullException("onprop");
+                throw new ArgumentNullException(nameof(onprop));
             }
 #endif
             switch (self.MemberType)

@@ -16,11 +16,11 @@ namespace Theraot.Collections.Specialized
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             _wrapped = wrapped;
             _converter = converter;

@@ -93,7 +93,7 @@ namespace System.Diagnostics.Contracts
         {
             if (failureKind < ContractFailureKind.Precondition || failureKind > ContractFailureKind.Assume)
             {
-                throw new ArgumentException(string.Format("Invalid enum value: {0}", failureKind), "failureKind");
+                throw new ArgumentException(string.Format("Invalid enum value: {0}", failureKind), nameof(failureKind));
             }
 
             EndContractBlock();

@@ -137,8 +137,8 @@ namespace System.Linq.Expressions
         /// <returns>An instance of the <see cref="NewArrayExpression"/>.</returns>
         public static NewArrayExpression NewArrayInit(Type type, IEnumerable<Expression> initializers)
         {
-            ContractUtils.RequiresNotNull(type, "type");
-            ContractUtils.RequiresNotNull(initializers, "initializers");
+            ContractUtils.RequiresNotNull(type, nameof(type));
+            ContractUtils.RequiresNotNull(initializers, nameof(initializers));
             if (type == typeof(void))
             {
                 throw Error.ArgumentCannotBeOfTypeVoid();
@@ -151,7 +151,7 @@ namespace System.Linq.Expressions
             for (var i = 0; i < n; i++)
             {
                 var expr = initializerList[i];
-                RequiresCanRead(expr, "initializers");
+                RequiresCanRead(expr, nameof(initializers));
 
                 if (!TypeHelper.AreReferenceAssignable(type, expr.Type))
                 {
@@ -204,8 +204,8 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="NewArrayExpression"/> that has the <see cref="P:NodeType"/> property equal to type and the <see cref="P:Expressions"/> property set to the specified value.</returns>
         public static NewArrayExpression NewArrayBounds(Type type, IEnumerable<Expression> bounds)
         {
-            ContractUtils.RequiresNotNull(type, "type");
-            ContractUtils.RequiresNotNull(bounds, "bounds");
+            ContractUtils.RequiresNotNull(type, nameof(type));
+            ContractUtils.RequiresNotNull(bounds, nameof(bounds));
 
             if (type == typeof(void))
             {
@@ -223,7 +223,7 @@ namespace System.Linq.Expressions
             for (var i = 0; i < dimensions; i++)
             {
                 var expr = boundsList[i];
-                RequiresCanRead(expr, "bounds");
+                RequiresCanRead(expr, nameof(bounds));
                 if (!expr.Type.IsInteger())
                 {
                     throw Error.ArgumentMustBeInteger();

@@ -47,9 +47,9 @@ namespace System.Runtime.CompilerServices
 
             object IRuntimeVariables.this[int index]
             {
-                get { throw new ArgumentOutOfRangeException("index"); }
+                get { throw new ArgumentOutOfRangeException(nameof(index)); }
 
-                set { throw new ArgumentOutOfRangeException("index"); }
+                set { throw new ArgumentOutOfRangeException(nameof(index)); }
             }
         }
 

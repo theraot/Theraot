@@ -11,7 +11,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0L;
             var count = 0L;
@@ -36,7 +36,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0L;
             var count = 0L;
@@ -61,7 +61,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0L;
             var count = 0L;
@@ -86,7 +86,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0L;
             var count = 0L;
@@ -111,7 +111,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0.0f;
             var count = 0L;
@@ -136,7 +136,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0.0f;
             var count = 0L;
@@ -161,7 +161,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0.0d;
             var count = 0L;
@@ -186,7 +186,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0.0d;
             var count = 0L;
@@ -211,7 +211,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0.0m;
             var count = 0L;
@@ -236,7 +236,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0.0m;
             var count = 0L;
@@ -261,7 +261,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var max = int.MinValue;
@@ -281,7 +281,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var max = long.MinValue;
@@ -301,7 +301,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var max = double.MinValue;
@@ -321,7 +321,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var max = float.MinValue;
@@ -341,7 +341,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var max = decimal.MinValue;
@@ -361,7 +361,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var max = int.MinValue;
@@ -384,7 +384,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var max = long.MinValue;
@@ -407,7 +407,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var max = double.MinValue;
@@ -430,7 +430,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var max = float.MinValue;
@@ -453,7 +453,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var max = decimal.MinValue;
@@ -476,7 +476,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var comparer = Comparer<TSource>.Default;
             var max = default(TSource);
@@ -521,11 +521,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var max = int.MinValue;
@@ -545,11 +545,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var max = long.MinValue;
@@ -569,11 +569,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var max = double.MinValue;
@@ -593,11 +593,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var max = float.MinValue;
@@ -617,11 +617,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var max = decimal.MinValue;
@@ -641,11 +641,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             int? max = null;
@@ -676,11 +676,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             long? max = null;
@@ -711,11 +711,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             double? max = null;
@@ -746,11 +746,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             float? max = null;
@@ -781,11 +781,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             decimal? max = null;
@@ -816,11 +816,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             Func<TSource, int, TResult> closureSelector = (item, i) => selector(item);
             return Max
@@ -837,7 +837,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var min = int.MaxValue;
@@ -857,7 +857,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var min = long.MaxValue;
@@ -877,7 +877,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var min = double.MaxValue;
@@ -897,7 +897,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var min = float.MaxValue;
@@ -917,7 +917,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var min = decimal.MaxValue;
@@ -937,7 +937,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var min = int.MaxValue;
@@ -960,7 +960,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var min = long.MaxValue;
@@ -983,7 +983,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var min = double.MaxValue;
@@ -1006,7 +1006,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var min = float.MaxValue;
@@ -1029,7 +1029,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var min = decimal.MaxValue;
@@ -1052,7 +1052,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var comparer = Comparer<TSource>.Default;
             var min = default(TSource);
@@ -1098,11 +1098,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var min = int.MaxValue;
@@ -1122,11 +1122,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var min = long.MaxValue;
@@ -1146,11 +1146,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var min = double.MaxValue;
@@ -1170,11 +1170,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var min = float.MaxValue;
@@ -1194,11 +1194,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var min = decimal.MaxValue;
@@ -1218,11 +1218,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             int? min = null;
@@ -1253,11 +1253,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             long? min = null;
@@ -1288,11 +1288,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             float? min = null;
@@ -1323,11 +1323,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             double? min = null;
@@ -1358,11 +1358,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             decimal? min = null;
@@ -1393,11 +1393,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             Func<TSource, int, TResult> closureSelector = (item, i) => selector(item);
             return Min
@@ -1414,7 +1414,7 @@ namespace System.Linq
         {
             if (count < 0)
             {
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             }
             if (((long)start + count) - 1L > int.MaxValue)
             {
@@ -1435,7 +1435,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var count = 0;
             foreach (var item in source)
@@ -1454,7 +1454,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0;
             foreach (var item in source)
@@ -1476,7 +1476,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0L;
             foreach (var item in source)
@@ -1495,7 +1495,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0L;
             foreach (var item in source)
@@ -1517,7 +1517,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0.0f;
             foreach (var item in source)
@@ -1536,7 +1536,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0f;
             foreach (var item in source)
@@ -1558,7 +1558,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0.0d;
             foreach (var item in source)
@@ -1577,7 +1577,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             double sum = 0;
             foreach (var item in source)
@@ -1599,7 +1599,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0.0m;
             foreach (var item in source)
@@ -1618,7 +1618,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var sum = 0.0m;
             foreach (var item in source)

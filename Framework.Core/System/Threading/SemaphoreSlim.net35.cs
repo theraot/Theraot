@@ -32,11 +32,11 @@ namespace System.Threading
         {
             if (initialCount < 0 || initialCount > maxCount)
             {
-                throw new ArgumentOutOfRangeException("initialCount", "initialCount < 0 || initialCount > maxCount");
+                throw new ArgumentOutOfRangeException(nameof(initialCount), "initialCount < 0 || initialCount > maxCount");
             }
             if (maxCount <= 0)
             {
-                throw new ArgumentOutOfRangeException("initialCount", "maxCount <= 0");
+                throw new ArgumentOutOfRangeException(nameof(initialCount), "maxCount <= 0");
             }
             _maxCount = maxCount;
             _asyncWaiters = new SafeQueue<TaskCompletionSource<bool>>();
@@ -81,7 +81,7 @@ namespace System.Threading
             CheckDisposed();
             if (releaseCount < 1)
             {
-                throw new ArgumentOutOfRangeException("releaseCount", "releaseCount is less than 1");
+                throw new ArgumentOutOfRangeException(nameof(releaseCount), "releaseCount is less than 1");
             }
             var spinWait = new SpinWait();
             while (true)
@@ -127,7 +127,7 @@ namespace System.Threading
             CheckDisposed();
             if (millisecondsTimeout < -1)
             {
-                throw new ArgumentOutOfRangeException("millisecondsTimeout");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
@@ -197,7 +197,7 @@ namespace System.Threading
             CheckDisposed();
             if (millisecondsTimeout < -1)
             {
-                throw new ArgumentOutOfRangeException("millisecondsTimeout");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
             if (cancellationToken.IsCancellationRequested)
             {

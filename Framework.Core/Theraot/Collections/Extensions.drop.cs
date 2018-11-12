@@ -11,7 +11,7 @@ namespace Theraot.Collections
         {
             if (dropPoint == null)
             {
-                throw new ArgumentNullException("dropPoint");
+                throw new ArgumentNullException(nameof(dropPoint));
             }
             T item;
             if (dropPoint.TryTake(out item))
@@ -25,7 +25,7 @@ namespace Theraot.Collections
         {
             if (dropPoint == null)
             {
-                throw new ArgumentNullException("dropPoint");
+                throw new ArgumentNullException(nameof(dropPoint));
             }
             T item;
             return dropPoint.TryTake(out item);
@@ -35,11 +35,11 @@ namespace Theraot.Collections
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             if (dropPoint == null)
             {
-                throw new ArgumentNullException("dropPoint");
+                throw new ArgumentNullException(nameof(dropPoint));
             }
             back:
             if (dropPoint.TryTake(out item))
@@ -57,15 +57,15 @@ namespace Theraot.Collections
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             if (dropPoint == null)
             {
-                throw new ArgumentNullException("dropPoint");
+                throw new ArgumentNullException(nameof(dropPoint));
             }
             if (trail == null)
             {
-                throw new ArgumentNullException("trail");
+                throw new ArgumentNullException(nameof(trail));
             }
             T item;
             back:

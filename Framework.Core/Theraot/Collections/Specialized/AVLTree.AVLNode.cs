@@ -50,7 +50,7 @@ namespace Theraot.Collections.Specialized
             {
                 if (comparer == null)
                 {
-                    throw new ArgumentNullException("comparer");
+                    throw new ArgumentNullException(nameof(comparer));
                 }
                 if (other == null)
                 {
@@ -163,7 +163,7 @@ namespace Theraot.Collections.Specialized
                 // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
                 if (comparison == null)
                 {
-                    throw new ArgumentNullException("comparison");
+                    throw new ArgumentNullException(nameof(comparison));
                 }
 #endif
                 while (node != null)
@@ -249,7 +249,7 @@ namespace Theraot.Collections.Specialized
                 // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
                 if (comparison == null)
                 {
-                    throw new ArgumentNullException("comparison");
+                    throw new ArgumentNullException(nameof(comparison));
                 }
 #endif
                 if (node == null)
@@ -294,7 +294,7 @@ namespace Theraot.Collections.Specialized
                 // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
                 if (comparison == null)
                 {
-                    throw new ArgumentNullException("comparison");
+                    throw new ArgumentNullException(nameof(comparison));
                 }
 #endif
                 // Ok, it has for node only
@@ -324,7 +324,7 @@ namespace Theraot.Collections.Specialized
                 // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
                 if (comparison == null)
                 {
-                    throw new ArgumentNullException("comparison");
+                    throw new ArgumentNullException(nameof(comparison));
                 }
 #endif
                 // Ok, it has for node only
@@ -384,11 +384,11 @@ namespace Theraot.Collections.Specialized
                 // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
                 if (factory == null)
                 {
-                    throw new ArgumentNullException("factory");
+                    throw new ArgumentNullException(nameof(factory));
                 }
                 if (comparison == null)
                 {
-                    throw new ArgumentNullException("comparison");
+                    throw new ArgumentNullException(nameof(comparison));
                 }
 #endif
                 // Ok, it has for node only

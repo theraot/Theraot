@@ -22,7 +22,7 @@ namespace Theraot.Threading
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             _valueFactory = valueFactory;
             _slots = new SafeDictionary<Thread, INeedle<T>>(_maxProbingHint);

@@ -25,7 +25,7 @@ namespace Theraot.Threading.Needles
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             _valueFactory = valueFactory;
             _waitHandle = new StructNeedle<ManualResetEventSlim>(new ManualResetEventSlim(false));
@@ -36,7 +36,7 @@ namespace Theraot.Threading.Needles
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             _valueFactory = valueFactory;
             _waitHandle = new StructNeedle<ManualResetEventSlim>(new ManualResetEventSlim(false));
@@ -47,7 +47,7 @@ namespace Theraot.Threading.Needles
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             _valueFactory = valueFactory;
             if (cacheExceptions)
@@ -199,7 +199,7 @@ namespace Theraot.Threading.Needles
         {
             if (beforeInitialize == null)
             {
-                throw new ArgumentNullException("beforeInitialize");
+                throw new ArgumentNullException(nameof(beforeInitialize));
             }
             if (Volatile.Read(ref _valueFactory) == null)
             {

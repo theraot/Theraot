@@ -34,7 +34,7 @@ namespace Theraot.Collections
         {
             if (cache == null)
             {
-                throw new ArgumentNullException("cache");
+                throw new ArgumentNullException(nameof(cache));
             }
             _cache = cache;
             _progressor = new Progressor<IGrouping<TKey, T>>(wrapped);
@@ -48,7 +48,7 @@ namespace Theraot.Collections
         {
             if (cache == null)
             {
-                throw new ArgumentNullException("cache");
+                throw new ArgumentNullException(nameof(cache));
             }
             _cache = cache;
             _progressor = new Progressor<IGrouping<TKey, T>>(wrapped);
@@ -62,7 +62,7 @@ namespace Theraot.Collections
         {
             if (cache == null)
             {
-                throw new ArgumentNullException("cache");
+                throw new ArgumentNullException(nameof(cache));
             }
             _cache = cache;
             _progressor = new Progressor<IGrouping<TKey, T>>(tryTake, false); // false because the underlaying structure may change

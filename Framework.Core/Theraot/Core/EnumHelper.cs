@@ -14,11 +14,11 @@ namespace Theraot.Core
             var type = value.GetType();
             if (ReferenceEquals(value, null))
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
             if (ReferenceEquals(flag, null))
             {
-                throw new ArgumentNullException("flag");
+                throw new ArgumentNullException(nameof(flag));
             }
             if (flag.GetType() != type)
             {

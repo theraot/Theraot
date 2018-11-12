@@ -12,11 +12,11 @@ namespace Theraot.Collections
         {
             if (items == null)
             {
-                throw new ArgumentNullException("items");
+                throw new ArgumentNullException(nameof(items));
             }
             if (partitionSize < 1)
             {
-                throw new ArgumentOutOfRangeException("partitionSize");
+                throw new ArgumentOutOfRangeException(nameof(partitionSize));
             }
             return new PartitionEnumerable<T>(items, partitionSize);
         }

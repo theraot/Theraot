@@ -40,7 +40,7 @@ namespace System.Runtime.CompilerServices
         {
             if (transformNames == null)
             {
-                throw new ArgumentNullException("transformNames");
+                throw new ArgumentNullException(nameof(transformNames));
             }
             _transformNames = transformNames;
         }

@@ -177,7 +177,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             for (var attempts = 0; attempts < _probing; attempts++)
             {
@@ -357,7 +357,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             value = default(T);
             for (var attempts = 0; attempts < _probing; attempts++)
@@ -401,7 +401,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             var matches = _bucket.Where(check);
             var count = 0;
@@ -429,7 +429,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             return RemoveWhereEnumerableExtracted();
 
@@ -469,7 +469,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             value = default(T);
             for (var attempts = 0; attempts < _probing; attempts++)
@@ -506,7 +506,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             return _bucket.Where(check);
         }
@@ -523,7 +523,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueOverwriteCheck == null)
             {
-                throw new ArgumentNullException("valueOverwriteCheck");
+                throw new ArgumentNullException(nameof(valueOverwriteCheck));
             }
             var hashCode = _comparer.GetHashCode(value);
             var attempts = 0;

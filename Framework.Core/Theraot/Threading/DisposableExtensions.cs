@@ -182,7 +182,7 @@ namespace Theraot.Threading
         {
             if (action == null)
             {
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             }
             action.Invoke(obj);
         }
@@ -191,7 +191,7 @@ namespace Theraot.Threading
         {
             if (action == null)
             {
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             }
             return action.Invoke(obj);
         }

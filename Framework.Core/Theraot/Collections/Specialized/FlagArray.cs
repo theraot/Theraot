@@ -20,7 +20,7 @@ namespace Theraot.Collections.Specialized
         {
             if (ReferenceEquals(prototype, null))
             {
-                throw new ArgumentNullException("prototype", "prototype is null.");
+                throw new ArgumentNullException(nameof(prototype), "prototype is null.");
             }
             _capacity = prototype._capacity;
             _entries = ArrayReservoir<int>.GetArray(GetLength(_capacity));
@@ -32,7 +32,7 @@ namespace Theraot.Collections.Specialized
         {
             if (capacity < 0)
             {
-                throw new ArgumentOutOfRangeException("capacity", "length < 0");
+                throw new ArgumentOutOfRangeException(nameof(capacity), "length < 0");
             }
             _capacity = capacity;
             _entries = ArrayReservoir<int>.GetArray(GetLength(_capacity));

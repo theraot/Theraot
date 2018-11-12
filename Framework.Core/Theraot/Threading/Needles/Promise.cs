@@ -81,7 +81,7 @@ namespace Theraot.Threading.Needles
         {
             if (beforeFree == null)
             {
-                throw new ArgumentNullException("beforeFree");
+                throw new ArgumentNullException(nameof(beforeFree));
             }
             var waitHandle = _waitHandle.Value;
             if (waitHandle == null || waitHandle.IsSet)

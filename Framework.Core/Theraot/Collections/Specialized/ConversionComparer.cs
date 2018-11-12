@@ -15,12 +15,12 @@ namespace Theraot.Collections.Specialized
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             _comparer = comparer;
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             _converter = converter;
         }

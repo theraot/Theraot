@@ -523,7 +523,7 @@ namespace System.Linq.Expressions
         /// <exception cref="InvalidOperationException">Thown when <paramref name="method"/> is null and the unary minus operator is not defined for expression.Type or expression.Type (or its corresponding non-nullable type if it is a nullable value type) is not assignable to the argument type of the method represented by method.</exception>
         public static UnaryExpression Negate(Expression expression, MethodInfo method)
         {
-            RequiresCanRead(expression, "expression");
+            RequiresCanRead(expression, nameof(expression));
             if (method == null)
             {
                 if (expression.Type.IsArithmetic() && !expression.Type.IsUnsignedInteger())
@@ -558,7 +558,7 @@ namespace System.Linq.Expressions
         /// <exception cref="InvalidOperationException">Thown when <paramref name="method"/> is null and the unary minus operator is not defined for expression.Type or expression.Type (or its corresponding non-nullable type if it is a nullable value type) is not assignable to the argument type of the method represented by method.</exception>
         public static UnaryExpression UnaryPlus(Expression expression, MethodInfo method)
         {
-            RequiresCanRead(expression, "expression");
+            RequiresCanRead(expression, nameof(expression));
             if (method == null)
             {
                 if (expression.Type.IsArithmetic())
@@ -593,7 +593,7 @@ namespace System.Linq.Expressions
         ///<paramref name="method" /> is null and the unary minus operator is not defined for <paramref name="expression" />.Type.-or-<paramref name="expression" />.Type (or its corresponding non-nullable type if it is a nullable value type) is not assignable to the argument type of the method represented by <paramref name="method" />.</exception>
         public static UnaryExpression NegateChecked(Expression expression, MethodInfo method)
         {
-            RequiresCanRead(expression, "expression");
+            RequiresCanRead(expression, nameof(expression));
             if (method == null)
             {
                 if (expression.Type.IsArithmetic() && !expression.Type.IsUnsignedInteger())
@@ -628,7 +628,7 @@ namespace System.Linq.Expressions
         ///<paramref name="method" /> is null and the unary not operator is not defined for <paramref name="expression" />.Type.-or-<paramref name="expression" />.Type (or its corresponding non-nullable type if it is a nullable value type) is not assignable to the argument type of the method represented by <paramref name="method" />.</exception>
         public static UnaryExpression Not(Expression expression, MethodInfo method)
         {
-            RequiresCanRead(expression, "expression");
+            RequiresCanRead(expression, nameof(expression));
             if (method == null)
             {
                 if (expression.Type.IsIntegerOrBool())
@@ -663,7 +663,7 @@ namespace System.Linq.Expressions
         /// <returns>An instance of <see cref="UnaryExpression"/>.</returns>
         public static UnaryExpression IsFalse(Expression expression, MethodInfo method)
         {
-            RequiresCanRead(expression, "expression");
+            RequiresCanRead(expression, nameof(expression));
             if (method == null)
             {
                 if (expression.Type.IsBool())
@@ -693,7 +693,7 @@ namespace System.Linq.Expressions
         /// <returns>An instance of <see cref="UnaryExpression"/>.</returns>
         public static UnaryExpression IsTrue(Expression expression, MethodInfo method)
         {
-            RequiresCanRead(expression, "expression");
+            RequiresCanRead(expression, nameof(expression));
             if (method == null)
             {
                 if (expression.Type.IsBool())
@@ -723,7 +723,7 @@ namespace System.Linq.Expressions
         /// <returns>An instance of <see cref="UnaryExpression"/>.</returns>
         public static UnaryExpression OnesComplement(Expression expression, MethodInfo method)
         {
-            RequiresCanRead(expression, "expression");
+            RequiresCanRead(expression, nameof(expression));
             if (method == null)
             {
                 if (expression.Type.IsInteger())
@@ -743,8 +743,8 @@ namespace System.Linq.Expressions
         ///<paramref name="expression" /> or <paramref name="type" /> is null.</exception>
         public static UnaryExpression TypeAs(Expression expression, Type type)
         {
-            RequiresCanRead(expression, "expression");
-            ContractUtils.RequiresNotNull(type, "type");
+            RequiresCanRead(expression, nameof(expression));
+            ContractUtils.RequiresNotNull(type, nameof(type));
             TypeHelper.ValidateType(type);
 
             if (type.IsValueType && !type.IsNullable())
@@ -762,8 +762,8 @@ namespace System.Linq.Expressions
         /// <returns>An instance of <see cref="UnaryExpression"/>.</returns>
         public static UnaryExpression Unbox(Expression expression, Type type)
         {
-            RequiresCanRead(expression, "expression");
-            ContractUtils.RequiresNotNull(type, "type");
+            RequiresCanRead(expression, nameof(expression));
+            ContractUtils.RequiresNotNull(type, nameof(type));
             if (!expression.Type.IsInterface && expression.Type != typeof(object))
             {
                 throw Error.InvalidUnboxType();
@@ -802,8 +802,8 @@ namespace System.Linq.Expressions
         ///<exception cref="T:System.InvalidOperationException">No conversion operator is defined between <paramref name="expression" />.Type and <paramref name="type" />.-or-<paramref name="expression" />.Type is not assignable to the argument type of the method represented by <paramref name="method" />.-or-The return type of the method represented by <paramref name="method" /> is not assignable to <paramref name="type" />.-or-<paramref name="expression" />.Type or <paramref name="type" /> is a nullable value type and the corresponding non-nullable value type does not equal the argument type or the return type, respectively, of the method represented by <paramref name="method" />.</exception>
         public static UnaryExpression Convert(Expression expression, Type type, MethodInfo method)
         {
-            RequiresCanRead(expression, "expression");
-            ContractUtils.RequiresNotNull(type, "type");
+            RequiresCanRead(expression, nameof(expression));
+            ContractUtils.RequiresNotNull(type, nameof(type));
             TypeHelper.ValidateType(type);
 
             if (method == null)
@@ -843,8 +843,8 @@ namespace System.Linq.Expressions
         ///<exception cref="T:System.InvalidOperationException">No conversion operator is defined between <paramref name="expression" />.Type and <paramref name="type" />.-or-<paramref name="expression" />.Type is not assignable to the argument type of the method represented by <paramref name="method" />.-or-The return type of the method represented by <paramref name="method" /> is not assignable to <paramref name="type" />.-or-<paramref name="expression" />.Type or <paramref name="type" /> is a nullable value type and the corresponding non-nullable value type does not equal the argument type or the return type, respectively, of the method represented by <paramref name="method" />.</exception>
         public static UnaryExpression ConvertChecked(Expression expression, Type type, MethodInfo method)
         {
-            RequiresCanRead(expression, "expression");
-            ContractUtils.RequiresNotNull(type, "type");
+            RequiresCanRead(expression, nameof(expression));
+            ContractUtils.RequiresNotNull(type, nameof(type));
             TypeHelper.ValidateType(type);
 
             if (method == null)
@@ -871,7 +871,7 @@ namespace System.Linq.Expressions
         ///<paramref name="array" />.Type does not represent an array type.</exception>
         public static UnaryExpression ArrayLength(Expression array)
         {
-            ContractUtils.RequiresNotNull(array, "array");
+            ContractUtils.RequiresNotNull(array, nameof(array));
             if (!array.Type.IsArray || !typeof(Array).IsAssignableFrom(array.Type))
             {
                 throw Error.ArgumentMustBeArray();
@@ -890,7 +890,7 @@ namespace System.Linq.Expressions
         ///<paramref name="expression" /> is null.</exception>
         public static UnaryExpression Quote(Expression expression)
         {
-            RequiresCanRead(expression, "expression");
+            RequiresCanRead(expression, nameof(expression));
             var validQuote = expression is LambdaExpression;
             if (!validQuote)
             {
@@ -937,12 +937,12 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="T:System.Linq.Expressions.UnaryExpression"/> that represents the exception.</returns>
         public static UnaryExpression Throw(Expression value, Type type)
         {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
             TypeHelper.ValidateType(type);
 
             if (value != null)
             {
-                RequiresCanRead(value, "value");
+                RequiresCanRead(value, nameof(value));
                 if (value.Type.IsValueType)
                 {
                     throw Error.ArgumentMustNotHaveValueType();
@@ -969,7 +969,7 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="T:System.Linq.Expressions.UnaryExpression"/> that represents the incremented expression.</returns>
         public static UnaryExpression Increment(Expression expression, MethodInfo method)
         {
-            RequiresCanRead(expression, "expression");
+            RequiresCanRead(expression, nameof(expression));
             if (method == null)
             {
                 if (expression.Type.IsArithmetic())
@@ -999,7 +999,7 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="T:System.Linq.Expressions.UnaryExpression"/> that represents the decremented expression.</returns>
         public static UnaryExpression Decrement(Expression expression, MethodInfo method)
         {
-            RequiresCanRead(expression, "expression");
+            RequiresCanRead(expression, nameof(expression));
             if (method == null)
             {
                 if (expression.Type.IsArithmetic())
@@ -1105,8 +1105,8 @@ namespace System.Linq.Expressions
 
         private static UnaryExpression MakeOpAssignUnary(ExpressionType kind, Expression expression, MethodInfo method)
         {
-            RequiresCanRead(expression, "expression");
-            RequiresCanWrite(expression, "expression");
+            RequiresCanRead(expression, nameof(expression));
+            RequiresCanWrite(expression, nameof(expression));
 
             UnaryExpression result;
             if (method == null)

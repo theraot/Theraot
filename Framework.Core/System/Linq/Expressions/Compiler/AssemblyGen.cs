@@ -51,8 +51,8 @@ namespace System.Linq.Expressions.Compiler
 
         private TypeBuilder DefineType(string name, Type parent, TypeAttributes attr)
         {
-            ContractUtils.RequiresNotNull(name, "name");
-            ContractUtils.RequiresNotNull(parent, "parent");
+            ContractUtils.RequiresNotNull(name, nameof(name));
+            ContractUtils.RequiresNotNull(parent, nameof(parent));
 
             var sb = new StringBuilder(name);
 

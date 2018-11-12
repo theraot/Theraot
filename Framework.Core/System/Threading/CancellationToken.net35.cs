@@ -111,7 +111,7 @@ namespace System.Threading
         {
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
             return Register(callback, false);
         }
@@ -120,7 +120,7 @@ namespace System.Threading
         {
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
             if (_source == null)
             {
@@ -133,7 +133,7 @@ namespace System.Threading
         {
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
             return Register(() => callback(state), false);
         }
@@ -142,7 +142,7 @@ namespace System.Threading
         {
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
             return Register(() => callback(state), useSynchronizationContext);
         }

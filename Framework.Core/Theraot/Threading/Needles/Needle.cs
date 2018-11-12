@@ -78,7 +78,7 @@ namespace Theraot.Threading.Needles
         {
             if (needle == null)
             {
-                throw new ArgumentNullException("needle");
+                throw new ArgumentNullException(nameof(needle));
             }
             return needle.Value;
         }

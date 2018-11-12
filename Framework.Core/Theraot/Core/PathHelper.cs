@@ -38,7 +38,7 @@ namespace Theraot.Core
 #if NET20 || NET30 || NET35
             if (paths == null)
             {
-                throw new ArgumentNullException("paths");
+                throw new ArgumentNullException(nameof(paths));
             }
             var combine = new List<string>();
             for (var index = paths.Length - 1; index >= 0; index--)
@@ -202,7 +202,7 @@ namespace Theraot.Core
         {
             if (path == null)
             {
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             }
             if (path.Length == 0)
             {
@@ -215,7 +215,7 @@ namespace Theraot.Core
         {
             if (fileName == null)
             {
-                throw new ArgumentNullException("fileName");
+                throw new ArgumentNullException(nameof(fileName));
             }
             return fileName.ContainsAny(Path.GetInvalidFileNameChars());
         }

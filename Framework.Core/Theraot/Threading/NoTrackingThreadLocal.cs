@@ -26,7 +26,7 @@ namespace Theraot.Threading
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             _valueFactory = valueFactory;
             _slot = Thread.AllocateDataSlot();

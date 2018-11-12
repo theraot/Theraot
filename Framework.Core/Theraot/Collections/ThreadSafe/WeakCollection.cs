@@ -108,7 +108,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (itemCheck == null)
             {
-                throw new ArgumentNullException("itemCheck");
+                throw new ArgumentNullException(nameof(itemCheck));
             }
             Predicate<TNeedle> check = Check(itemCheck);
             return _wrapped.Where(check).Any();

@@ -26,7 +26,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (level < 0 || level > 7)
             {
-                throw new ArgumentOutOfRangeException("level", "level < 0 || level > 7");
+                throw new ArgumentOutOfRangeException(nameof(level), "level < 0 || level > 7");
             }
             _level = level;
             _arrayFirst = ArrayReservoir<object>.GetArray(_capacity);
@@ -207,11 +207,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (indexFrom < 0)
             {
-                throw new ArgumentOutOfRangeException("indexFrom", "indexFrom < 0");
+                throw new ArgumentOutOfRangeException(nameof(indexFrom), "indexFrom < 0");
             }
             if (indexTo < 0)
             {
-                throw new ArgumentOutOfRangeException("indexTo", "indexTo < 0");
+                throw new ArgumentOutOfRangeException(nameof(indexTo), "indexTo < 0");
             }
             var startSubIndex = SubIndex(indexFrom);
             var endSubIndex = SubIndex(indexTo);
@@ -299,7 +299,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
 #endif
             var foundFirst = Interlocked.CompareExchange(ref first, null, null);
@@ -324,7 +324,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (factory == null)
             {
-                throw new ArgumentNullException("factory");
+                throw new ArgumentNullException(nameof(factory));
             }
 #endif
             try
@@ -385,7 +385,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
 #endif
             try
@@ -414,7 +414,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
 #endif
             try

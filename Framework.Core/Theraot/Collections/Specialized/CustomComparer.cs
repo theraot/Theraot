@@ -14,7 +14,7 @@ namespace Theraot.Collections.Specialized
         {
             if (comparison == null)
             {
-                throw new ArgumentNullException("comparison");
+                throw new ArgumentNullException(nameof(comparison));
             }
             _comparison = comparison;
         }
@@ -23,7 +23,7 @@ namespace Theraot.Collections.Specialized
         {
             if (comparison == null)
             {
-                throw new ArgumentNullException("comparison");
+                throw new ArgumentNullException(nameof(comparison));
             }
             _comparison = comparison.Invoke;
         }

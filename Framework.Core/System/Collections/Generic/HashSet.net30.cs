@@ -21,7 +21,7 @@ namespace System.Collections.Generic
         {
             if (collection == null)
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
             }
             _wrapped = new NullAwareDictionary<T, object>();
             foreach (var item in collection)
@@ -39,7 +39,7 @@ namespace System.Collections.Generic
         {
             if (collection == null)
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
             }
             _wrapped = new NullAwareDictionary<T, object>(comparer);
             foreach (var item in collection)
@@ -54,7 +54,7 @@ namespace System.Collections.Generic
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
             _wrapped = new NullAwareDictionary<T, object>(info.GetValue("dictionary", typeof(KeyValuePair<T, object>[])) as KeyValuePair<T, object>[]);
         }
@@ -104,7 +104,7 @@ namespace System.Collections.Generic
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (Count > array.Length)
             {
@@ -117,15 +117,15 @@ namespace System.Collections.Generic
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "arrayIndex < 0");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "arrayIndex < 0");
             }
             if (Count > array.Length - arrayIndex)
             {
-                throw new ArgumentException("The array can not contain the number of elements.", "array");
+                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
             _wrapped.Keys.CopyTo(array, arrayIndex);
         }
@@ -134,19 +134,19 @@ namespace System.Collections.Generic
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
             if (count < 0)
             {
-                throw new ArgumentOutOfRangeException("count", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(count), "Non-negative number is required.");
             }
             if (count > array.Length - arrayIndex)
             {
-                throw new ArgumentException("The array can not contain the number of elements.", "array");
+                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
 
             var copiedCount = 0;
@@ -167,7 +167,7 @@ namespace System.Collections.Generic
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             foreach (var item in other)
             {
@@ -185,11 +185,11 @@ namespace System.Collections.Generic
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
             KeyValuePair<T, object>[] dictionary;
             _wrapped.Deconstruct(out dictionary);
-            info.AddValue("dictionary", dictionary);
+            info.AddValue(nameof(dictionary), dictionary);
         }
 
         void ICollection<T>.Add(T item)
@@ -206,7 +206,7 @@ namespace System.Collections.Generic
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             this.IntersectWith(other, _wrapped.Comparer);
         }
@@ -235,7 +235,7 @@ namespace System.Collections.Generic
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             foreach (var item in other)
             {
@@ -266,7 +266,7 @@ namespace System.Collections.Generic
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             var containsCount = 0;
             foreach (var item in ToHashSet(other))
@@ -284,7 +284,7 @@ namespace System.Collections.Generic
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             var tmpSet = new HashSet<T>(other);
             foreach (var item in tmpSet)
@@ -310,7 +310,7 @@ namespace System.Collections.Generic
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             foreach (var item in other)
             {
@@ -325,7 +325,7 @@ namespace System.Collections.Generic
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             var elementCount = 0;
             var matchCount = 0;
@@ -348,7 +348,7 @@ namespace System.Collections.Generic
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             var elementCount = 0;
             foreach (var item in other)

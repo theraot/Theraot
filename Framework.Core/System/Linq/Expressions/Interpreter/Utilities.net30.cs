@@ -504,7 +504,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             get
             {
-                Debug.Assert(false, "Unreachable");
+                Debug.Assert(false, nameof(Unreachable));
                 return new InvalidOperationException("Code supposed to be unreachable");
             }
         }

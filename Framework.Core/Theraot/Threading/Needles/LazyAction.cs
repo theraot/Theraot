@@ -26,7 +26,7 @@ namespace Theraot.Threading.Needles
         {
             if (action == null)
             {
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             }
             _action = action;
         }
@@ -36,7 +36,7 @@ namespace Theraot.Threading.Needles
         {
             if (action == null)
             {
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             }
             _action = action;
             if (cacheExceptions)
@@ -141,7 +141,7 @@ namespace Theraot.Threading.Needles
         {
             if (beforeInitialize == null)
             {
-                throw new ArgumentNullException("beforeInitialize");
+                throw new ArgumentNullException(nameof(beforeInitialize));
             }
             if (_runnerThread == Thread.CurrentThread)
             {

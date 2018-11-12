@@ -11,7 +11,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
@@ -33,7 +33,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
@@ -57,7 +57,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
@@ -79,7 +79,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
@@ -101,7 +101,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
@@ -125,7 +125,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
@@ -149,7 +149,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
@@ -183,7 +183,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
@@ -219,7 +219,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
@@ -257,7 +257,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
@@ -293,7 +293,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
@@ -315,7 +315,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
@@ -337,7 +337,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
@@ -359,7 +359,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
@@ -383,7 +383,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
@@ -407,7 +407,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
@@ -445,7 +445,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {

@@ -147,7 +147,7 @@ namespace System.Threading.Tasks
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1 || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
 
             return WaitAll(tasks, (int)milliseconds);
@@ -256,11 +256,11 @@ namespace System.Threading.Tasks
         {
             if (tasks == null)
             {
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
             if (millisecondsTimeout < -1)
             {
-                throw new ArgumentOutOfRangeException("millisecondsTimeout");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
             Contract.EndContractBlock();
             cancellationToken.ThrowIfCancellationRequested(); // early check before we make any allocations
@@ -417,7 +417,7 @@ namespace System.Threading.Tasks
             if (tasks == null)
             {
                 Contract.Assert(false, "Expected a non-null list of tasks");
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
             Contract.Assert(tasks.Count > 0, "Expected at least one task");
             bool waitCompleted;
@@ -555,7 +555,7 @@ namespace System.Threading.Tasks
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1 || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
 
             return WaitAny(tasks, (int)milliseconds);
@@ -653,11 +653,11 @@ namespace System.Threading.Tasks
         {
             if (tasks == null)
             {
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
             if (millisecondsTimeout < -1)
             {
-                throw new ArgumentOutOfRangeException("millisecondsTimeout");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
             Contract.EndContractBlock();
             cancellationToken.ThrowIfCancellationRequested(); // early check before we make any allocations
@@ -669,7 +669,7 @@ namespace System.Threading.Tasks
                 var task = tasks[taskIndex];
                 if (task == null)
                 {
-                    throw new ArgumentException("The tasks array included at least one null element.", "tasks");
+                    throw new ArgumentException("The tasks array included at least one null element.", nameof(tasks));
                 }
                 if (signaledTaskIndex == -1 && task.IsCompleted)
                 {

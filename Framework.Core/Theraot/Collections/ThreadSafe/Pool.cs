@@ -23,7 +23,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (recycler == null)
             {
-                throw new ArgumentNullException("recycler");
+                throw new ArgumentNullException(nameof(recycler));
             }
             _id = RuntimeUniqueIdProdiver.GetNextId();
             _entries = new FixedSizeQueue<T>(capacity);

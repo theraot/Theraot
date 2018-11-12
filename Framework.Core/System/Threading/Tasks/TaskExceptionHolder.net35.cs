@@ -324,7 +324,7 @@ namespace System.Threading.Tasks
                         // Anything else is a programming error
                         else
                         {
-                            throw new ArgumentException("(Internal)Expected an Exception or an IEnumerable<Exception>", "exceptionObject");
+                            throw new ArgumentException("(Internal)Expected an Exception or an IEnumerable<Exception>", nameof(exceptionObject));
                         }
                     }
                 }

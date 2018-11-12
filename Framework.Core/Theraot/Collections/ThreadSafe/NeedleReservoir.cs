@@ -26,7 +26,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (needleFactory == null)
             {
-                throw new ArgumentNullException("needleFactory");
+                throw new ArgumentNullException(nameof(needleFactory));
             }
             _needleFactory = needleFactory;
             _pool = new Pool<TNeedle>(64, Recycle);

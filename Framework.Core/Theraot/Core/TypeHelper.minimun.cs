@@ -41,7 +41,7 @@ namespace Theraot.Core
         {
             if (alternative == null)
             {
-                throw new ArgumentNullException("alternative");
+                throw new ArgumentNullException(nameof(alternative));
             }
             var sourceAsTarget = source as TTarget;
             if (sourceAsTarget == null)
@@ -55,7 +55,7 @@ namespace Theraot.Core
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             var info = type.GetTypeInfo();
             return !info.IsValueType || !ReferenceEquals(Nullable.GetUnderlyingType(type), null);
@@ -85,7 +85,7 @@ namespace Theraot.Core
         {
             if (alternative == null)
             {
-                throw new ArgumentNullException("alternative");
+                throw new ArgumentNullException(nameof(alternative));
             }
             try
             {
@@ -135,7 +135,7 @@ namespace Theraot.Core
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             var info = type.GetTypeInfo();
             return (TAttribute[])info.GetCustomAttributes(typeof(TAttribute), inherit);
@@ -165,7 +165,7 @@ namespace Theraot.Core
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             var info = type.GetTypeInfo();
             if (info.IsValueType && !IsNullable(type))
@@ -208,7 +208,7 @@ namespace Theraot.Core
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             return PrivateIsContravariant(type);
         }
@@ -217,7 +217,7 @@ namespace Theraot.Core
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             return PrivateIsCovariant(type);
         }
@@ -226,7 +226,7 @@ namespace Theraot.Core
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             return PrivateIsDelegate(type);
         }
@@ -378,7 +378,7 @@ namespace Theraot.Core
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             return PrivateIsInvariant(type);
         }

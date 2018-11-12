@@ -30,7 +30,7 @@ namespace Theraot.Core
         {
             if (str == null)
             {
-                throw new ArgumentNullException("str", "The string is null.");
+                throw new ArgumentNullException(nameof(str), "The string is null.");
             }
             _string = str;
             _length = str.Length;
@@ -71,7 +71,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    throw new ArgumentOutOfRangeException("value", "The position must be greater than zero and less or equal to the length of the underlying string.");
+                    throw new ArgumentOutOfRangeException(nameof(value), "The position must be greater than zero and less or equal to the length of the underlying string.");
                 }
             }
         }
@@ -106,7 +106,7 @@ namespace Theraot.Core
         {
             if (target == null)
             {
-                throw new ArgumentNullException("target", "The target string is null.");
+                throw new ArgumentNullException(nameof(target), "The target string is null.");
             }
             if (target.Length != 0)
             {
@@ -161,7 +161,7 @@ namespace Theraot.Core
         {
             if (target == null)
             {
-                throw new ArgumentNullException("target", "The target string is null.");
+                throw new ArgumentNullException(nameof(target), "The target string is null.");
             }
             if (target.Length != 0)
             {
@@ -220,7 +220,7 @@ namespace Theraot.Core
         {
             if (target == null)
             {
-                throw new ArgumentNullException("target", "The target string is null.");
+                throw new ArgumentNullException(nameof(target), "The target string is null.");
             }
             var length = target.Length;
             if (_position + length <= _length)
@@ -267,7 +267,7 @@ namespace Theraot.Core
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate", "The predicate is null.");
+                throw new ArgumentNullException(nameof(predicate), "The predicate is null.");
             }
             if (_position == _length)
             {
@@ -327,11 +327,11 @@ namespace Theraot.Core
         {
             if (destination == null)
             {
-                throw new ArgumentNullException("destination", "Buffer cannot be null.");
+                throw new ArgumentNullException(nameof(destination), "Buffer cannot be null.");
             }
             if (count < 0)
             {
-                throw new ArgumentOutOfRangeException("count", "Non-negative number required.");
+                throw new ArgumentOutOfRangeException(nameof(count), "Non-negative number required.");
             }
             var readed = _length - _position;
             if (readed > 0)
@@ -358,7 +358,7 @@ namespace Theraot.Core
         {
             if (target == null)
             {
-                throw new ArgumentNullException("target", "The target string is null.");
+                throw new ArgumentNullException(nameof(target), "The target string is null.");
             }
             var length = target.Length;
             if (_position + length <= _length)
@@ -424,13 +424,13 @@ namespace Theraot.Core
         {
             if (targets == null)
             {
-                throw new ArgumentNullException("targets", "The targets collection is null.");
+                throw new ArgumentNullException(nameof(targets), "The targets collection is null.");
             }
             foreach (var target in targets)
             {
                 if (target == null)
                 {
-                    throw new ArgumentException("Found nulls in the targets collection.", "targets");
+                    throw new ArgumentException("Found nulls in the targets collection.", nameof(targets));
                 }
                 var length = target.Length;
                 if (_position + length <= _length)
@@ -514,7 +514,7 @@ namespace Theraot.Core
             }
             if (position < _position)
             {
-                throw new ArgumentOutOfRangeException("position", "The new position must be greater than the current position.");
+                throw new ArgumentOutOfRangeException(nameof(position), "The new position must be greater than the current position.");
             }
             return PrivateReadToPosition(position);
         }
@@ -543,7 +543,7 @@ namespace Theraot.Core
         {
             if (target == null)
             {
-                throw new ArgumentNullException("target", "The target string is null.");
+                throw new ArgumentNullException(nameof(target), "The target string is null.");
             }
             if (target.Length != 0)
             {
@@ -676,7 +676,7 @@ namespace Theraot.Core
         {
             if (targets == null)
             {
-                throw new ArgumentNullException("targets");
+                throw new ArgumentNullException(nameof(targets));
             }
             return PrivateReadUntil(targets);
         }
@@ -722,7 +722,7 @@ namespace Theraot.Core
         {
             if (target == null)
             {
-                throw new ArgumentNullException("target", "The target string is null.");
+                throw new ArgumentNullException(nameof(target), "The target string is null.");
             }
             if (target.Length != 0)
             {
@@ -811,7 +811,7 @@ namespace Theraot.Core
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate", "The predicate is null.");
+                throw new ArgumentNullException(nameof(predicate), "The predicate is null.");
             }
             if (_position == _length)
             {
@@ -848,7 +848,7 @@ namespace Theraot.Core
         {
             if (target == null)
             {
-                throw new ArgumentNullException("target", "The target string is null.");
+                throw new ArgumentNullException(nameof(target), "The target string is null.");
             }
             if (target.Length != 0)
             {
@@ -908,7 +908,7 @@ namespace Theraot.Core
         {
             if (target == null)
             {
-                throw new ArgumentNullException("target", "The target string is null.");
+                throw new ArgumentNullException(nameof(target), "The target string is null.");
             }
             if (target.Length != 0)
             {
@@ -981,7 +981,7 @@ namespace Theraot.Core
         {
             if (target == null)
             {
-                throw new ArgumentNullException("target", "The target string is null.");
+                throw new ArgumentNullException(nameof(target), "The target string is null.");
             }
             if (target.Length != 0)
             {
@@ -1046,7 +1046,7 @@ namespace Theraot.Core
         {
             if (targets == null)
             {
-                throw new ArgumentNullException("targets", "The targets collection is null.");
+                throw new ArgumentNullException(nameof(targets), "The targets collection is null.");
             }
             var bestPosition = 0;
             var result = false;
@@ -1054,7 +1054,7 @@ namespace Theraot.Core
             {
                 if (target == null)
                 {
-                    throw new ArgumentException("Found nulls in the targets collection.", "targets");
+                    throw new ArgumentException("Found nulls in the targets collection.", nameof(targets));
                 }
                 if (target.Length != 0)
                 {
@@ -1108,7 +1108,7 @@ namespace Theraot.Core
         {
             if (targets == null)
             {
-                throw new ArgumentNullException("targets", "The targets collection is null.");
+                throw new ArgumentNullException(nameof(targets), "The targets collection is null.");
             }
             found = null;
             var bestPosition = 0;
@@ -1117,7 +1117,7 @@ namespace Theraot.Core
             {
                 if (target == null)
                 {
-                    throw new ArgumentException("Found nulls in the targets collection.", "targets");
+                    throw new ArgumentException("Found nulls in the targets collection.", nameof(targets));
                 }
                 if (target.Length != 0)
                 {
@@ -1156,7 +1156,7 @@ namespace Theraot.Core
         {
             if (targets == null)
             {
-                throw new ArgumentNullException("targets");
+                throw new ArgumentNullException(nameof(targets));
             }
             var bestPosition = 0;
             var result = false;
@@ -1195,7 +1195,7 @@ namespace Theraot.Core
         {
             if (targets == null)
             {
-                throw new ArgumentNullException("targets");
+                throw new ArgumentNullException(nameof(targets));
             }
             return PrivateSkipUntil(targets);
         }
@@ -1211,7 +1211,7 @@ namespace Theraot.Core
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate", "The predicate is null.");
+                throw new ArgumentNullException(nameof(predicate), "The predicate is null.");
             }
             if (_position == _length)
             {
@@ -1256,7 +1256,7 @@ namespace Theraot.Core
         {
             if (target == null)
             {
-                throw new ArgumentNullException("target", "The target string is null.");
+                throw new ArgumentNullException(nameof(target), "The target string is null.");
             }
             if (target.Length != 0)
             {
@@ -1335,7 +1335,7 @@ namespace Theraot.Core
         {
             if (targets == null)
             {
-                throw new ArgumentNullException("targets");
+                throw new ArgumentNullException(nameof(targets));
             }
             if (_position == _length)
             {
@@ -1370,7 +1370,7 @@ namespace Theraot.Core
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (_position == _length)
             {

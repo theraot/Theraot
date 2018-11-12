@@ -23,7 +23,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             _bucketCore = new BucketCore(7);
             var index = 0;
@@ -182,7 +182,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             return _bucketCore.DoMayDecrement
                 (
@@ -249,11 +249,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (itemUpdateFactory == null)
             {
-                throw new ArgumentNullException("itemUpdateFactory");
+                throw new ArgumentNullException(nameof(itemUpdateFactory));
             }
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             var found = BucketHelper.Null;
             var compare = BucketHelper.Null;
@@ -290,7 +290,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             return WhereExtracted();
 

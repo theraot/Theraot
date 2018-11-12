@@ -30,7 +30,7 @@ namespace System.Collections.Concurrent
         {
             if (ReferenceEquals(collection, null))
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
             }
             AddRange(collection);
         }
@@ -46,7 +46,7 @@ namespace System.Collections.Concurrent
         {
             if (ReferenceEquals(collection, null))
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
             }
             AddRange(collection);
         }
@@ -56,7 +56,7 @@ namespace System.Collections.Concurrent
         {
             if (ReferenceEquals(collection, null))
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
             }
             AddRange(collection);
         }
@@ -65,15 +65,15 @@ namespace System.Collections.Concurrent
         {
             if (ReferenceEquals(comparer, null))
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (concurrencyLevel < 1)
             {
-                throw new ArgumentOutOfRangeException("concurrencyLevel", "concurrencyLevel < 1");
+                throw new ArgumentOutOfRangeException(nameof(concurrencyLevel), "concurrencyLevel < 1");
             }
             if (capacity < 0)
             {
-                throw new ArgumentOutOfRangeException("capacity", "capacity < 0");
+                throw new ArgumentOutOfRangeException(nameof(capacity), "capacity < 0");
             }
             _wrapped = new SafeDictionary<TKey, TValue>();
             _valueCollection = new ValueCollection<TKey, TValue>(_wrapped);
@@ -146,7 +146,7 @@ namespace System.Collections.Concurrent
                 if (ReferenceEquals(key, null))
                 {
                     // ConcurrentDictionary hates null
-                    throw new ArgumentNullException("key");
+                    throw new ArgumentNullException(nameof(key));
                 }
                 return _wrapped[key];
             }
@@ -155,7 +155,7 @@ namespace System.Collections.Concurrent
                 if (ReferenceEquals(key, null))
                 {
                     // ConcurrentDictionary hates null
-                    throw new ArgumentNullException("key");
+                    throw new ArgumentNullException(nameof(key));
                 }
                 _wrapped.Set(key, value);
             }
@@ -167,7 +167,7 @@ namespace System.Collections.Concurrent
             {
                 if (key == null)
                 {
-                    throw new ArgumentNullException("key");
+                    throw new ArgumentNullException(nameof(key));
                 }
                 // keep the is operator
                 if (key is TKey)
@@ -185,7 +185,7 @@ namespace System.Collections.Concurrent
                 if (ReferenceEquals(key, null))
                 {
                     // ConcurrentDictionary hates null
-                    throw new ArgumentNullException("key");
+                    throw new ArgumentNullException(nameof(key));
                 }
                 // keep the is operator
                 if (key is TKey && value is TValue)
@@ -201,7 +201,7 @@ namespace System.Collections.Concurrent
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             _wrapped.AddNew(key, value);
         }
@@ -211,7 +211,7 @@ namespace System.Collections.Concurrent
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             // keep the is operator
             if (key is TKey && value is TValue)
@@ -238,7 +238,7 @@ namespace System.Collections.Concurrent
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             // addValueFactory and updateValueFactory are checked for null inside the call
             var result = _wrapped.AddOrUpdate
@@ -255,7 +255,7 @@ namespace System.Collections.Concurrent
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             // updateValueFactory is checked for null inside the call
             var result = _wrapped.AddOrUpdate
@@ -278,7 +278,7 @@ namespace System.Collections.Concurrent
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             // keep the is operator
             if (key is TKey)
@@ -313,7 +313,7 @@ namespace System.Collections.Concurrent
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             // No existing value is set, so no locking, right?
             return _wrapped.ContainsKey(key);
@@ -371,7 +371,7 @@ namespace System.Collections.Concurrent
             }
             catch (IndexOutOfRangeException exception)
             {
-                throw new ArgumentException("array", exception.Message);
+                throw new ArgumentException(nameof(array), exception.Message);
             }
         }
 
@@ -396,7 +396,7 @@ namespace System.Collections.Concurrent
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             // valueFactory is checked for null inside the call
             return _wrapped.GetOrAdd(key, valueFactory);
@@ -408,7 +408,7 @@ namespace System.Collections.Concurrent
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             return _wrapped.GetOrAdd(key, value);
         }
@@ -418,7 +418,7 @@ namespace System.Collections.Concurrent
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             // keep the is operator
             if (key is TKey)
@@ -462,7 +462,7 @@ namespace System.Collections.Concurrent
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             return _wrapped.TryAdd(key, value);
         }
@@ -472,7 +472,7 @@ namespace System.Collections.Concurrent
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             return _wrapped.TryGetValue(key, out value);
         }
@@ -482,7 +482,7 @@ namespace System.Collections.Concurrent
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             return _wrapped.Remove(key, out value);
         }
@@ -492,7 +492,7 @@ namespace System.Collections.Concurrent
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             return _wrapped.TryUpdate(key, newValue, comparisonValue);
         }
@@ -500,7 +500,7 @@ namespace System.Collections.Concurrent
         private static ArgumentNullException CreateArgumentNullExceptionKey(TKey key)
         {
             GC.KeepAlive(key);
-            return new ArgumentNullException("key");
+            return new ArgumentNullException(nameof(key));
         }
 
         private void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> collection)

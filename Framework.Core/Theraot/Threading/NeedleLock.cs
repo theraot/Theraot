@@ -20,7 +20,7 @@ namespace Theraot.Threading
         {
             if (context == null)
             {
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException(nameof(context));
             }
             _context = context;
             _hashCode = base.GetHashCode();
@@ -32,7 +32,7 @@ namespace Theraot.Threading
         {
             if (context == null)
             {
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException(nameof(context));
             }
             _context = context;
             if (ReferenceEquals(target, null))
@@ -70,7 +70,7 @@ namespace Theraot.Threading
         {
             if (needle == null)
             {
-                throw new ArgumentNullException("needle");
+                throw new ArgumentNullException(nameof(needle));
             }
             return needle.Value;
         }

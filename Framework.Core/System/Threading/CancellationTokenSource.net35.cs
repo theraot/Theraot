@@ -70,7 +70,7 @@ namespace System.Threading
         {
             if (millisecondsDelay < -1)
             {
-                throw new ArgumentOutOfRangeException("millisecondsDelay");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsDelay));
             }
             if (millisecondsDelay != Timeout.Infinite)
             {
@@ -116,7 +116,7 @@ namespace System.Threading
         {
             if (tokens == null)
             {
-                throw new ArgumentNullException("tokens");
+                throw new ArgumentNullException(nameof(tokens));
             }
             if (tokens.Length == 0)
             {
@@ -157,7 +157,7 @@ namespace System.Threading
         {
             if (millisecondsDelay < -1)
             {
-                throw new ArgumentOutOfRangeException("millisecondsDelay");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsDelay));
             }
             CheckDisposed();
             if (Thread.VolatileRead(ref _cancelRequested) == 0 && millisecondsDelay != Timeout.Infinite)
@@ -280,7 +280,7 @@ namespace System.Threading
             }
             catch (OverflowException)
             {
-                throw new ArgumentOutOfRangeException("delay");
+                throw new ArgumentOutOfRangeException(nameof(delay));
             }
         }
 

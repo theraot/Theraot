@@ -75,11 +75,11 @@ namespace System.Threading.Tasks
         {
             if (action == null)
             {
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             }
             if (ReferenceEquals(scheduler, null))
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
             Contract.EndContractBlock();
             // This is readonly, and so must be set in the constructor
@@ -115,7 +115,7 @@ namespace System.Threading.Tasks
                       TaskCreationOptions.PreferFairness |
                       TaskCreationOptions.RunContinuationsAsynchronously)) != 0)
             {
-                throw new ArgumentOutOfRangeException("creationOptions");
+                throw new ArgumentOutOfRangeException(nameof(creationOptions));
             }
             // Throw exception if the user specifies both LongRunning and SelfReplicating
             if (((creationOptions & TaskCreationOptions.LongRunning) != 0) &&
@@ -314,7 +314,7 @@ namespace System.Threading.Tasks
         {
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
             if (Thread.VolatileRead(ref _isDisposed) == 1)
             {
@@ -355,7 +355,7 @@ namespace System.Threading.Tasks
             }
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
             if ((_internalOptions & InternalTaskOptions.ContinuationTask) != 0)
             {
@@ -395,7 +395,7 @@ namespace System.Threading.Tasks
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -409,7 +409,7 @@ namespace System.Threading.Tasks
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {

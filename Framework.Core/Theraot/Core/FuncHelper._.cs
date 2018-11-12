@@ -10,11 +10,11 @@ namespace Theraot.Core
         {
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return () => converter.Invoke(source.Invoke());
         }

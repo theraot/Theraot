@@ -35,7 +35,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var collection = source as ICollection<T>;
             _entries = ArrayReservoir<object>.GetArray(collection == null ? 64 : collection.Count);
@@ -65,7 +65,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             _entries = ArrayReservoir<object>.GetArray(source.Length);
             _capacity = _entries.Length;
@@ -118,15 +118,15 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
             if (_count > array.Length - arrayIndex)
             {
-                throw new ArgumentException("The array can not contain the number of elements.", "array");
+                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
             try
             {
@@ -148,7 +148,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             catch (IndexOutOfRangeException exception)
             {
-                throw new ArgumentOutOfRangeException("array", exception.Message);
+                throw new ArgumentOutOfRangeException(nameof(array), exception.Message);
             }
         }
 
@@ -166,7 +166,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (index < 0 || index >= _capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
             return ExchangeInternal(index, item, out previous);
         }
@@ -217,7 +217,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (index < 0 || index >= _capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity.");
             }
             return InsertInternal(index, item);
         }
@@ -240,7 +240,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (index < 0 || index >= _capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
             return InsertInternal(index, item, out previous);
         }
@@ -257,7 +257,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (index < 0 || index >= _capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
             var found = Interlocked.Exchange(ref _entries[index], null);
             if (found == null)
@@ -281,7 +281,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (index < 0 || index >= _capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
             return RemoveAtInternal(index, out previous);
         }
@@ -299,11 +299,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (index < 0 || index >= _capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             var found = Interlocked.CompareExchange(ref _entries[index], null, null);
             if (found != null)
@@ -333,7 +333,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (index < 0 || index >= _capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
             SetInternal(index, item, out isNew);
         }
@@ -351,7 +351,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (index < 0 || index >= _capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
             return TryGetInternal(index, out value);
         }
@@ -375,15 +375,15 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (index < 0 || index >= _capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity.");
             }
             if (itemUpdateFactory == null)
             {
-                throw new ArgumentNullException("itemUpdateFactory");
+                throw new ArgumentNullException(nameof(itemUpdateFactory));
             }
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             return UpdateInternal(index, itemUpdateFactory, check, out isEmpty);
         }
@@ -392,7 +392,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             return WhereExtracted();
 
@@ -515,11 +515,11 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             if (itemUpdateFactory == null)
             {
-                throw new ArgumentNullException("itemUpdateFactory");
+                throw new ArgumentNullException(nameof(itemUpdateFactory));
             }
 #endif
             var found = Interlocked.CompareExchange(ref _entries[index], null, null);

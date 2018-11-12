@@ -14,15 +14,15 @@ namespace Theraot.Collections
         {
             if (observer == null)
             {
-                throw new ArgumentNullException("observer");
+                throw new ArgumentNullException(nameof(observer));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
             _observer = observer;
             _converter = converter;

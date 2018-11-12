@@ -178,7 +178,7 @@ namespace System.Threading.Tasks
             if (callback == null)
             {
                 Contract.Requires(false);
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
 
             Contract.Assert(currentTask == Task.InternalCurrent);

@@ -263,12 +263,12 @@ namespace System.Linq.Expressions.Interpreter
 
         internal static MethodInfo GotoMethod
         {
-            get { return _goto ?? (_goto = typeof(InterpretedFrame).GetMethod("Goto")); }
+            get { return _goto ?? (_goto = typeof(InterpretedFrame).GetMethod(nameof(Goto))); }
         }
 
         internal static MethodInfo VoidGotoMethod
         {
-            get { return _voidGoto ?? (_voidGoto = typeof(InterpretedFrame).GetMethod("VoidGoto")); }
+            get { return _voidGoto ?? (_voidGoto = typeof(InterpretedFrame).GetMethod(nameof(VoidGoto))); }
         }
 
         public int VoidGoto(int labelIndex)

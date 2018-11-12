@@ -34,7 +34,7 @@ namespace System.Threading
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             if (trackAllValues)
             {

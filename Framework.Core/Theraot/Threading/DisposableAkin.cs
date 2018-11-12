@@ -21,11 +21,11 @@ namespace Theraot.Threading
         {
             if (release == null)
             {
-                throw new ArgumentNullException("release");
+                throw new ArgumentNullException(nameof(release));
             }
             if (thread == null)
             {
-                throw new ArgumentNullException("thread");
+                throw new ArgumentNullException(nameof(thread));
             }
             _release = release;
             _thread = thread;
@@ -70,7 +70,7 @@ namespace Theraot.Threading
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition));
             }
             if (ReferenceEquals(Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread), Thread.CurrentThread))
             {

@@ -174,7 +174,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="IndexExpression"/>.</returns>
         public static IndexExpression ArrayAccess(Expression array, IEnumerable<Expression> indexes)
         {
-            RequiresCanRead(array, "array");
+            RequiresCanRead(array, nameof(array));
 
             var arrayType = array.Type;
             if (!arrayType.IsArray)
@@ -190,7 +190,7 @@ namespace System.Linq.Expressions
 
             foreach (var e in indexList)
             {
-                RequiresCanRead(e, "indexes");
+                RequiresCanRead(e, nameof(indexes));
                 if (e.Type != typeof(int))
                 {
                     throw Error.ArgumentMustBeArrayIndexType();
@@ -213,7 +213,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="IndexExpression"/>.</returns>
         public static IndexExpression Property(Expression instance, string propertyName, params Expression[] arguments)
         {
-            RequiresCanRead(instance, "instance");
+            RequiresCanRead(instance, nameof(instance));
             ContractUtils.RequiresNotNull(propertyName, "indexerName");
             var pi = FindInstanceProperty(instance.Type, propertyName, arguments);
             return Property(instance, pi, arguments);
@@ -391,7 +391,7 @@ namespace System.Linq.Expressions
             // should match the type returned by the get method.
             // Accessor parameters cannot be ByRef.
 
-            ContractUtils.RequiresNotNull(property, "property");
+            ContractUtils.RequiresNotNull(property, nameof(property));
             if (property.PropertyType.IsByRef)
             {
                 throw Error.PropertyCannotHaveRefType();
@@ -470,7 +470,7 @@ namespace System.Linq.Expressions
 
         private static void ValidateAccessor(Expression instance, MethodInfo method, ParameterInfo[] indexes, ref ReadOnlyCollection<Expression> arguments)
         {
-            ContractUtils.RequiresNotNull(arguments, "arguments");
+            ContractUtils.RequiresNotNull(arguments, nameof(arguments));
 
             ValidateMethodInfo(method);
             if ((method.CallingConvention & CallingConventions.VarArgs) != 0)
@@ -492,7 +492,7 @@ namespace System.Linq.Expressions
                     throw Error.OnlyStaticMethodsHaveNullInstance();
                 }
 
-                RequiresCanRead(instance, "instance");
+                RequiresCanRead(instance, nameof(instance));
                 ValidateCallInstanceType(instance.Type, method);
             }
 
@@ -513,7 +513,7 @@ namespace System.Linq.Expressions
                 {
                     var arg = arguments[i];
                     var pi = indexes[i];
-                    RequiresCanRead(arg, "arguments");
+                    RequiresCanRead(arg, nameof(arguments));
 
                     var pType = pi.ParameterType;
                     if (pType.IsByRef)

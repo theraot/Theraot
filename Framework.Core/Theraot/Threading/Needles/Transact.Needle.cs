@@ -37,7 +37,7 @@ namespace Theraot.Threading.Needles
             {
                 if (ReferenceEquals(cloner, null))
                 {
-                    throw new ArgumentNullException("cloner");
+                    throw new ArgumentNullException(nameof(cloner));
                 }
                 _cloner = cloner;
                 _comparer = EqualityComparer<T>.Default;
@@ -63,7 +63,7 @@ namespace Theraot.Threading.Needles
             {
                 if (ReferenceEquals(cloner, null))
                 {
-                    throw new ArgumentNullException("cloner");
+                    throw new ArgumentNullException(nameof(cloner));
                 }
                 _cloner = cloner;
                 _comparer = comparer ?? EqualityComparer<T>.Default;

@@ -2179,8 +2179,8 @@ namespace System.Linq.Expressions.Interpreter
 
         private ByRefUpdater CompileArrayIndexAddress(Expression array, Expression index, int argumentIndex)
         {
-            var left = _locals.DefineLocal(Expression.Parameter(array.Type, "array"), _instructions.Count);
-            var right = _locals.DefineLocal(Expression.Parameter(index.Type, "index"), _instructions.Count);
+            var left = _locals.DefineLocal(Expression.Parameter(array.Type, nameof(array)), _instructions.Count);
+            var right = _locals.DefineLocal(Expression.Parameter(index.Type, nameof(index)), _instructions.Count);
             Compile(array);
             _instructions.EmitStoreLocal(left.Index);
             Compile(index);
@@ -2262,7 +2262,7 @@ namespace System.Linq.Expressions.Interpreter
                     LocalDefinition? memberTemp = null;
                     if (member.Expression != null)
                     {
-                        memberTemp = _locals.DefineLocal(Expression.Parameter(member.Expression.Type, "member"), _instructions.Count);
+                        memberTemp = _locals.DefineLocal(Expression.Parameter(member.Expression.Type, nameof(member)), _instructions.Count);
                         EmitThisForMethodCall(member.Expression);
                         _instructions.EmitDup();
                         _instructions.EmitStoreLocal(memberTemp.Value.Index);

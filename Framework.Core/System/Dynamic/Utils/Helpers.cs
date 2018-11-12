@@ -14,7 +14,7 @@ namespace System.Dynamic.Utils
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (parent == null)
             {
-                throw new ArgumentNullException("parent");
+                throw new ArgumentNullException(nameof(parent));
             }
 #endif
             var cmp = EqualityComparer<T>.Default;

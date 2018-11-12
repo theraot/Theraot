@@ -98,7 +98,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (itemCheck == null)
             {
-                throw new ArgumentNullException("itemCheck");
+                throw new ArgumentNullException(nameof(itemCheck));
             }
             foreach (var input in this)
             {
@@ -169,7 +169,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             var matches = _wrapped.WhereValue(check);
             var count = 0;
@@ -197,7 +197,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             return RemoveWhereEnumerableExtracted();
 
@@ -228,7 +228,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             return _wrapped.WhereValue(check);
         }

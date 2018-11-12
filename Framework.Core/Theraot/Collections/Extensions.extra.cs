@@ -32,7 +32,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var progressive = new ProgressiveCollection<T>(source);
             while (true)

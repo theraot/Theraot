@@ -144,7 +144,7 @@ namespace System.Threading.Tasks
         {
             if (exception == null)
             {
-                throw new ArgumentNullException("exception");
+                throw new ArgumentNullException(nameof(exception));
             }
             var rval = _task.Value.TrySetException(exception);
             if (!rval && !_task.Value.IsCompleted)
@@ -178,7 +178,7 @@ namespace System.Threading.Tasks
         {
             if (exceptions == null)
             {
-                throw new ArgumentNullException("exceptions");
+                throw new ArgumentNullException(nameof(exceptions));
             }
 
             var defensiveCopy = new List<Exception>();
@@ -186,14 +186,14 @@ namespace System.Threading.Tasks
             {
                 if (e == null)
                 {
-                    throw new ArgumentException("The exceptions collection included at least one null element.", "exceptions");
+                    throw new ArgumentException("The exceptions collection included at least one null element.", nameof(exceptions));
                 }
 
                 defensiveCopy.Add(e);
             }
             if (defensiveCopy.Count == 0)
             {
-                throw new ArgumentException("The exceptions collection was empty.", "exceptions");
+                throw new ArgumentException("The exceptions collection was empty.", nameof(exceptions));
             }
             var rval = _task.Value.TrySetException(defensiveCopy);
             if (!rval && !_task.Value.IsCompleted)
@@ -224,7 +224,7 @@ namespace System.Threading.Tasks
         {
             if (exception == null)
             {
-                throw new ArgumentNullException("exception");
+                throw new ArgumentNullException(nameof(exception));
             }
 
             if (!TrySetException(exception))

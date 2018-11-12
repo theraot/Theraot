@@ -638,12 +638,12 @@ namespace System.Threading
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException("ReaderWriterLockSlim");
+                throw new ObjectDisposedException(nameof(ReaderWriterLockSlim));
             }
 
             if (millisecondsTimeout < -1)
             {
-                throw new ArgumentOutOfRangeException("millisecondsTimeout");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
 
             // Detect and prevent recursion
@@ -682,7 +682,7 @@ namespace System.Threading
             }
             catch (OverflowException)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
         }
 

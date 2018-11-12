@@ -18,7 +18,7 @@ namespace Theraot.Collections
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             _wrapped = wrapped;
         }

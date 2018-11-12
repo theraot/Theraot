@@ -209,7 +209,7 @@ namespace System.Numerics
             ArgumentException argumentException;
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
             if (!TryValidateParseStyleInteger(style, out argumentException))
             {
@@ -499,7 +499,7 @@ namespace System.Numerics
         {
             if (((int)style & -1024) != (int)NumberStyles.None)
             {
-                e = new ArgumentException("An undefined NumberStyles value is being used.", "style");
+                e = new ArgumentException("An undefined NumberStyles value is being used.", nameof(style));
                 return false;
             }
             if ((style & NumberStyles.AllowHexSpecifier) == NumberStyles.None || (style & (NumberStyles.AllowLeadingSign | NumberStyles.AllowTrailingSign | NumberStyles.AllowParentheses | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands | NumberStyles.AllowExponent | NumberStyles.AllowCurrencySymbol)) == NumberStyles.None)

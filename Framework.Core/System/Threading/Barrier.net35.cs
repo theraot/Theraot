@@ -209,7 +209,7 @@ namespace System.Threading
             // the count must be non negative value
             if (participantCount < 0 || participantCount > _maxParticipants)
             {
-                throw new ArgumentOutOfRangeException("participantCount", participantCount, "The participantCount argument must be non-negative and less than or equal to 32767");
+                throw new ArgumentOutOfRangeException(nameof(participantCount), participantCount, "The participantCount argument must be non-negative and less than or equal to 32767");
             }
             _currentTotalCount = participantCount;
             _postPhaseAction = postPhaseAction;
@@ -310,12 +310,12 @@ namespace System.Threading
 
             if (participantCount < 1)
             {
-                throw new ArgumentOutOfRangeException("participantCount", participantCount,
+                throw new ArgumentOutOfRangeException(nameof(participantCount), participantCount,
                     "The participantCount argument must be a positive value.");
             }
             if (participantCount > _maxParticipants) //overflow
             {
-                throw new ArgumentOutOfRangeException("participantCount",
+                throw new ArgumentOutOfRangeException(nameof(participantCount),
                     "Adding participantCount participants would result in the number of participants exceeding the maximum number allowed.");
             }
 
@@ -336,7 +336,7 @@ namespace System.Threading
                 GetCurrentTotal(currentTotal, out current, out total, out sense);
                 if (participantCount + total > _maxParticipants) //overflow
                 {
-                    throw new ArgumentOutOfRangeException("participantCount",
+                    throw new ArgumentOutOfRangeException(nameof(participantCount),
                         "Adding participantCount participants would result in the number of participants exceeding the maximum number allowed.");
                 }
 
@@ -420,7 +420,7 @@ namespace System.Threading
             // Validate input
             if (participantCount < 1)
             {
-                throw new ArgumentOutOfRangeException("participantCount", participantCount,
+                throw new ArgumentOutOfRangeException(nameof(participantCount), participantCount,
                     "The participantCount argument must be a positive value.");
             }
 
@@ -441,7 +441,7 @@ namespace System.Threading
 
                 if (total < participantCount)
                 {
-                    throw new ArgumentOutOfRangeException("participantCount",
+                    throw new ArgumentOutOfRangeException(nameof(participantCount),
                         "The participantCount argument must be less than or equal the number of participants.");
                 }
                 if (total - participantCount < current)
@@ -503,7 +503,7 @@ namespace System.Threading
 #if DEBUG
             var result =
 #endif
- SignalAndWait(Timeout.Infinite, cancellationToken);
+            SignalAndWait(Timeout.Infinite, cancellationToken);
 #if DEBUG
             Debug.Assert(result);
 #endif
@@ -558,7 +558,7 @@ namespace System.Threading
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout", timeout,
+                throw new ArgumentOutOfRangeException(nameof(timeout), timeout,
                     "The specified timeout must represent a value between -1 and Int32.MaxValue, inclusive.");
             }
             return SignalAndWait((int)milliseconds, cancellationToken);
@@ -610,7 +610,7 @@ namespace System.Threading
 
             if (millisecondsTimeout < -1)
             {
-                throw new ArgumentOutOfRangeException("millisecondsTimeout", millisecondsTimeout,
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout), millisecondsTimeout,
                     "The specified timeout must represent a value between -1 and Int32.MaxValue, inclusive.");
             }
 
@@ -945,7 +945,7 @@ namespace System.Threading
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException("Barrier", "The barrier has been disposed.");
+                throw new ObjectDisposedException(nameof(Barrier), "The barrier has been disposed.");
             }
         }
     }

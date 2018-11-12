@@ -19,7 +19,7 @@ namespace Theraot.Collections.Specialized
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             _wrapped = wrapped;
             _readOnly = new ExtendedReadOnlyCollection<T>(this);

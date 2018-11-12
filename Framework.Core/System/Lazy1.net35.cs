@@ -55,7 +55,7 @@ namespace System
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             switch (mode)
             {

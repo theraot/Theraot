@@ -32,7 +32,7 @@ namespace System.Collections.Generic
         {
             _comparer = Comparer<T>.Default;
             _wrapped = new AVLTree<T, T>();
-            foreach (var item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, nameof(collection)))
             {
                 _wrapped.AddNonDuplicate(item, item);
             }
@@ -42,7 +42,7 @@ namespace System.Collections.Generic
         {
             _comparer = comparer ?? Comparer<T>.Default;
             _wrapped = new AVLTree<T, T>();
-            foreach (var item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, nameof(collection)))
             {
                 _wrapped.AddNonDuplicate(item, item);
             }
@@ -283,8 +283,8 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException();
             }
-            info.AddValue("Comparer", _comparer, typeof(IComparer<T>));
-            info.AddValue("Count", Count);
+            info.AddValue(nameof(Comparer), _comparer, typeof(IComparer<T>));
+            info.AddValue(nameof(Count), Count);
             if (Count > 0)
             {
                 info.AddValue("Items", this.ToArray(), typeof(T[]));
@@ -300,8 +300,8 @@ namespace System.Collections.Generic
                 {
                     throw new SerializationException();
                 }
-                _comparer = (IComparer<T>)_serializationInfo.GetValue("Comparer", typeof(IComparer<T>));
-                var count = _serializationInfo.GetInt32("Count");
+                _comparer = (IComparer<T>)_serializationInfo.GetValue(nameof(Comparer), typeof(IComparer<T>));
+                var count = _serializationInfo.GetInt32(nameof(Count));
                 if (count != 0)
                 {
                     var value = (T[])_serializationInfo.GetValue("Items", typeof(T[]));
@@ -365,11 +365,11 @@ namespace System.Collections.Generic
                 }
                 if (!InRange(lowerValue))
                 {
-                    throw new ArgumentOutOfRangeException("lowerValue");
+                    throw new ArgumentOutOfRangeException(nameof(lowerValue));
                 }
                 if (!InRange(upperValue))
                 {
-                    throw new ArgumentOutOfRangeException("upperValue");
+                    throw new ArgumentOutOfRangeException(nameof(upperValue));
                 }
                 return new SortedSubSet(_wrapped, lowerValue, upperValue);
             }
@@ -378,7 +378,7 @@ namespace System.Collections.Generic
             {
                 if (other == null)
                 {
-                    throw new ArgumentNullException("other");
+                    throw new ArgumentNullException(nameof(other));
                 }
                 var slice = new SortedSet<T>(this);
                 slice.IntersectWith(other);
@@ -390,7 +390,7 @@ namespace System.Collections.Generic
             {
                 if (!InRange(item))
                 {
-                    throw new ArgumentOutOfRangeException("item");
+                    throw new ArgumentOutOfRangeException(nameof(item));
                 }
                 return _wrapped.AddExtracted(item);
             }
@@ -429,10 +429,10 @@ namespace System.Collections.Generic
             {
                 if (info == null)
                 {
-                    throw new ArgumentNullException("info");
+                    throw new ArgumentNullException(nameof(info));
                 }
-                info.AddValue("Max", _lower, typeof(T));
-                info.AddValue("Min", _upper, typeof(T));
+                info.AddValue(nameof(Max), _lower, typeof(T));
+                info.AddValue(nameof(Min), _upper, typeof(T));
                 info.AddValue("lBoundActive", true);
                 info.AddValue("uBoundActive", true);
                 base.GetObjectData(info, context);

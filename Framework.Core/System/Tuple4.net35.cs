@@ -99,7 +99,7 @@ namespace System
             var tuple = other as Tuple<T1, T2, T3, T4>;
             if (tuple == null)
             {
-                throw new ArgumentException("other");
+                throw new ArgumentException(nameof(other));
             }
             var result = comparer.Compare(_item1, tuple._item1);
             if (result == 0)

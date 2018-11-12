@@ -81,7 +81,7 @@ namespace Theraot.Core
         {
             if (millisecondsTimeout < -1)
             {
-                throw new ArgumentOutOfRangeException("millisecondsTimeout");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
             if (millisecondsTimeout == -1)
             {
@@ -116,7 +116,7 @@ namespace Theraot.Core
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {

@@ -95,7 +95,7 @@ namespace System.Linq.Expressions
         /// <returns>An instance of <see cref="T:System.Linq.Expressions.RuntimeVariablesExpression" /> that has the <see cref="P:System.Linq.Expressions.Expression.NodeType" /> property equal to <see cref="F:System.Linq.Expressions.ExpressionType.RuntimeVariables" /> and the <see cref="P:System.Linq.Expressions.RuntimeVariablesExpression.Variables" /> property set to the specified value.</returns>
         public static RuntimeVariablesExpression RuntimeVariables(IEnumerable<ParameterExpression> variables)
         {
-            ContractUtils.RequiresNotNull(variables, "variables");
+            ContractUtils.RequiresNotNull(variables, nameof(variables));
 
             var vars = variables.ToReadOnly();
             for (var i = 0; i < vars.Count; i++)

@@ -182,7 +182,7 @@ namespace System.Runtime.CompilerServices
         {
             if (continuation == null)
             {
-                throw new ArgumentNullException("continuation");
+                throw new ArgumentNullException(nameof(continuation));
             }
 
             var syncContext = continueOnCapturedContext ? SynchronizationContext.Current : null;

@@ -19,7 +19,7 @@ namespace Theraot.Collections
         {
             if (dictionary == null)
             {
-                throw new ArgumentNullException("dictionary");
+                throw new ArgumentNullException(nameof(dictionary));
             }
             _wrapped = dictionary;
             _keys = new ExtendedReadOnlyCollection<TKey>(new DelegatedCollection<TKey>(() => _wrapped.Keys));

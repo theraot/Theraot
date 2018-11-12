@@ -11,7 +11,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (source is string && typeof(T) == typeof(char))
             {
@@ -59,7 +59,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             // Remember that On .NET 3.5 HashSet is not an ISet
             var resultISet = source as ISet<T>;
@@ -91,7 +91,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (count == 0)
             {
@@ -128,7 +128,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return SkipItemsExtracted(source, skipCount);
         }
@@ -137,7 +137,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return predicateCount == null ? SkipItemsExtracted(source, skipCount) : SkipItemsExtracted(source, predicateCount, skipCount);
         }
@@ -146,7 +146,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return StepItemsExtracted();
 
@@ -172,7 +172,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return TakeItemsExtracted(source, takeCount);
         }
@@ -181,7 +181,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return predicateCount == null ? TakeItemsExtracted(source, takeCount) : TakeItemsExtracted(source, predicateCount, takeCount);
         }
@@ -208,7 +208,7 @@ namespace Theraot.Collections
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (predicateCount == null)
             {
-                throw new ArgumentNullException("predicateCount");
+                throw new ArgumentNullException(nameof(predicateCount));
             }
 #endif
             var count = 0;
@@ -248,7 +248,7 @@ namespace Theraot.Collections
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (predicateCount == null)
             {
-                throw new ArgumentNullException("predicateCount");
+                throw new ArgumentNullException(nameof(predicateCount));
             }
 #endif
             var count = 0;

@@ -32,7 +32,7 @@ namespace System.Threading.Tasks
         {
             if (task == null)
             {
-                throw new ArgumentNullException("task");
+                throw new ArgumentNullException(nameof(task));
             }
 
             // Fast path for an already successfully completed outer task: just return the inner one.
@@ -67,7 +67,7 @@ namespace System.Threading.Tasks
         {
             if (task == null)
             {
-                throw new ArgumentNullException("task");
+                throw new ArgumentNullException(nameof(task));
             }
 
             // Fast path for an already successfully completed outer task: just return the inner one.

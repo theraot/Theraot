@@ -56,9 +56,9 @@ namespace System.Diagnostics.Contracts
         private ContractException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            _kind = (ContractFailureKind)info.GetInt32("Kind");
-            _userMessage = info.GetString("UserMessage");
-            _condition = info.GetString("Condition");
+            _kind = (ContractFailureKind)info.GetInt32(nameof(Kind));
+            _userMessage = info.GetString(nameof(UserMessage));
+            _condition = info.GetString(nameof(Condition));
         }
 
         [SecurityCritical]
@@ -67,9 +67,9 @@ namespace System.Diagnostics.Contracts
         {
             base.GetObjectData(info, context);
 
-            info.AddValue("Kind", _kind);
-            info.AddValue("UserMessage", _userMessage);
-            info.AddValue("Condition", _condition);
+            info.AddValue(nameof(Kind), _kind);
+            info.AddValue(nameof(UserMessage), _userMessage);
+            info.AddValue(nameof(Condition), _condition);
         }
     }
 }

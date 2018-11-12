@@ -133,7 +133,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 if (_keyComparer.Equals(found.Key, key))
                 {
-                    throw new ArgumentException("An item with the same key has already been added", "key");
+                    throw new ArgumentException("An item with the same key has already been added", nameof(key));
                 }
                 attempts++;
             }
@@ -192,7 +192,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             for (var attempts = 0; attempts < _probing; attempts++)
             {
@@ -221,11 +221,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
             for (var attempts = 0; attempts < _probing; attempts++)
             {
@@ -269,7 +269,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             var hashCode = GetHashCode(key);
             var attempts = 0;
@@ -475,7 +475,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             value = default(TValue);
             for (var attempts = 0; attempts < _probing; attempts++)
@@ -519,7 +519,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
             value = default(TValue);
             var hashCode = GetHashCode(key);
@@ -568,11 +568,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
             value = default(TValue);
             for (var attempts = 0; attempts < _probing; attempts++)
@@ -620,7 +620,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             var matches = _bucket.Where(pair => keyCheck(pair.Key));
             return matches.Count(pair => Remove(pair.Key));
@@ -640,7 +640,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             var matches = _bucket.Where(pair => keyCheck(pair.Key));
             return from pair in matches where Remove(pair.Key) select pair.Value;
@@ -660,7 +660,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
             var matches = _bucket.Where(pair => valueCheck(pair.Value));
             return matches.Count(pair => Remove(pair.Key));
@@ -680,7 +680,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
             var matches = _bucket.Where(pair => valueCheck(pair.Value));
             return from pair in matches where Remove(pair.Key) select pair.Value;
@@ -816,7 +816,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueFactory == null)
             {
-                throw new ArgumentException("valueFactory");
+                throw new ArgumentException(nameof(valueFactory));
             }
             var hashCode = GetHashCode(key);
             var attempts = 0;
@@ -894,7 +894,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, newValue);
@@ -924,7 +924,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (newValue == null)
             {
-                throw new ArgumentNullException("newValue");
+                throw new ArgumentNullException(nameof(newValue));
             }
             var hashCode = GetHashCode(key);
             for (var attempts = 0; attempts < _probing; attempts++)
@@ -963,7 +963,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             var matches = _bucket.Where(pair => keyCheck(pair.Key));
             return matches.Select(pair => pair.Value);
@@ -983,7 +983,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
             var matches = _bucket.Where(pair => valueCheck(pair.Value));
             return matches.Select(pair => pair.Value);
@@ -1002,7 +1002,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
-                throw new ArgumentNullException("keyOverwriteCheck");
+                throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
 #endif
             var hashCode = GetHashCode(key);
@@ -1047,7 +1047,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
-                throw new ArgumentNullException("keyOverwriteCheck");
+                throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
 #endif
             var hashCode = GetHashCode(key);
@@ -1079,7 +1079,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
-                throw new ArgumentNullException("keyOverwriteCheck");
+                throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
 #endif
             var hashCode = GetHashCode(key);
@@ -1112,7 +1112,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
-                throw new ArgumentNullException("keyOverwriteCheck");
+                throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
 #endif
             var hashCode = GetHashCode(key);
@@ -1158,7 +1158,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
-                throw new ArgumentNullException("keyOverwriteCheck");
+                throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
 #endif
             var hashCode = GetHashCode(key);
@@ -1233,11 +1233,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (addValueFactory == null)
             {
-                throw new ArgumentNullException("addValueFactory");
+                throw new ArgumentNullException(nameof(addValueFactory));
             }
             if (updateValueFactory == null)
             {
-                throw new ArgumentNullException("updateValueFactory");
+                throw new ArgumentNullException(nameof(updateValueFactory));
             }
             var hashCode = GetHashCode(key);
             var attempts = 0;
@@ -1270,7 +1270,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (updateValueFactory == null)
             {
-                throw new ArgumentNullException("updateValueFactory");
+                throw new ArgumentNullException(nameof(updateValueFactory));
             }
             var hashCode = GetHashCode(key);
             var attempts = 0;
@@ -1302,11 +1302,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (addValueFactory == null)
             {
-                throw new ArgumentNullException("addValueFactory");
+                throw new ArgumentNullException(nameof(addValueFactory));
             }
             if (updateValueFactory == null)
             {
-                throw new ArgumentNullException("updateValueFactory");
+                throw new ArgumentNullException(nameof(updateValueFactory));
             }
             var hashCode = GetHashCode(key);
             var attempts = 0;
@@ -1338,7 +1338,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (updateValueFactory == null)
             {
-                throw new ArgumentNullException("updateValueFactory");
+                throw new ArgumentNullException(nameof(updateValueFactory));
             }
             var hashCode = GetHashCode(key);
             var attempts = 0;
@@ -1378,7 +1378,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             value = default(TValue);
             for (var attempts = 0; attempts < _probing; attempts++)
@@ -1412,7 +1412,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
-                throw new ArgumentNullException("keyOverwriteCheck");
+                throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
 #endif
             var hashCode = GetHashCode(key);
@@ -1462,11 +1462,11 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (addValueFactory == null)
             {
-                throw new ArgumentNullException("addValueFactory");
+                throw new ArgumentNullException(nameof(addValueFactory));
             }
             if (updateValueFactory == null)
             {
-                throw new ArgumentNullException("updateValueFactory");
+                throw new ArgumentNullException(nameof(updateValueFactory));
             }
 #endif
             var hashCode = GetHashCode(key);
@@ -1513,7 +1513,7 @@ namespace Theraot.Collections.ThreadSafe
         private static ArgumentException CreateKeyArgumentException(object key)
         {
             GC.KeepAlive(key);
-            return new ArgumentException("An item with the same key has already been added", "key");
+            return new ArgumentException("An item with the same key has already been added", nameof(key));
         }
     }
 }

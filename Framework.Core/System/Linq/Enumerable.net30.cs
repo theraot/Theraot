@@ -12,11 +12,11 @@ namespace System.Linq
         {
             if (func == null)
             {
-                throw new ArgumentNullException("func");
+                throw new ArgumentNullException(nameof(func));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var enumerator = source.GetEnumerator();
             using (enumerator)
@@ -39,11 +39,11 @@ namespace System.Linq
         {
             if (func == null)
             {
-                throw new ArgumentNullException("func");
+                throw new ArgumentNullException(nameof(func));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var folded = seed;
             foreach (var item in source)
@@ -57,15 +57,15 @@ namespace System.Linq
         {
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             if (func == null)
             {
-                throw new ArgumentNullException("func");
+                throw new ArgumentNullException(nameof(func));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var result = seed;
             foreach (var item in source)
@@ -79,11 +79,11 @@ namespace System.Linq
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var enumerator = source.GetEnumerator();
             using (enumerator)
@@ -103,7 +103,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var collection = source as ICollection<TSource>;
             if (collection == null)
@@ -121,11 +121,11 @@ namespace System.Linq
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             foreach (var item in source)
             {
@@ -146,7 +146,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var enumerable = source as IEnumerable<TResult>;
             if (enumerable != null)
@@ -168,11 +168,11 @@ namespace System.Linq
         {
             if (first == null)
             {
-                throw new ArgumentNullException("first");
+                throw new ArgumentNullException(nameof(first));
             }
             if (second == null)
             {
-                throw new ArgumentNullException("second");
+                throw new ArgumentNullException(nameof(second));
             }
             return ConcatExtracted();
 
@@ -203,7 +203,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             comparer = comparer ?? EqualityComparer<TSource>.Default;
             foreach (var item in source)
@@ -220,7 +220,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var collection = source as ICollection<TSource>;
             if (collection == null)
@@ -257,7 +257,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return DefaultIfEmptyExtracted();
 
@@ -294,7 +294,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return DistinctExtracted();
 
@@ -329,11 +329,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (index < 0)
             {
-                throw new ArgumentOutOfRangeException("index", index, "index < 0");
+                throw new ArgumentOutOfRangeException(nameof(index), index, "index < 0");
             }
 
             var list = source as IList<TSource>;
@@ -362,7 +362,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (index < 0)
             {
@@ -410,11 +410,11 @@ namespace System.Linq
         {
             if (first == null)
             {
-                throw new ArgumentNullException("first");
+                throw new ArgumentNullException(nameof(first));
             }
             if (second == null)
             {
-                throw new ArgumentNullException("second");
+                throw new ArgumentNullException(nameof(second));
             }
             return ExceptExtracted(first, second, null);
         }
@@ -423,11 +423,11 @@ namespace System.Linq
         {
             if (first == null)
             {
-                throw new ArgumentNullException("first");
+                throw new ArgumentNullException(nameof(first));
             }
             if (second == null)
             {
-                throw new ArgumentNullException("second");
+                throw new ArgumentNullException(nameof(second));
             }
             return ExceptExtracted(first, second, comparer);
         }
@@ -436,7 +436,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var list = source as IList<TSource>;
             if (list == null)
@@ -464,11 +464,11 @@ namespace System.Linq
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             foreach (var item in source)
             {
@@ -484,7 +484,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             foreach (var item in source)
             {
@@ -502,11 +502,11 @@ namespace System.Linq
         {
             if (first == null)
             {
-                throw new ArgumentNullException("first");
+                throw new ArgumentNullException(nameof(first));
             }
             if (second == null)
             {
-                throw new ArgumentNullException("second");
+                throw new ArgumentNullException(nameof(second));
             }
             return IntersectExtracted(first, second, EqualityComparer<TSource>.Default);
         }
@@ -515,11 +515,11 @@ namespace System.Linq
         {
             if (first == null)
             {
-                throw new ArgumentNullException("first");
+                throw new ArgumentNullException(nameof(first));
             }
             if (second == null)
             {
-                throw new ArgumentNullException("second");
+                throw new ArgumentNullException(nameof(second));
             }
             return IntersectExtracted(first, second, comparer ?? EqualityComparer<TSource>.Default);
         }
@@ -528,7 +528,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var collection = source as ICollection<TSource>;
             if (collection != null && collection.Count == 0)
@@ -561,11 +561,11 @@ namespace System.Linq
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var result = default(TSource);
@@ -590,7 +590,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var list = source as IList<TSource>;
             if (list == null)
@@ -617,11 +617,11 @@ namespace System.Linq
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var result = default(TSource);
             foreach (var item in source)
@@ -639,7 +639,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var array = source as TSource[];
             if (array == null)
@@ -667,7 +667,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return OfTypeExtracted();
 
@@ -709,7 +709,7 @@ namespace System.Linq
         {
             if (count < 0)
             {
-                throw new ArgumentOutOfRangeException("count", count, "count < 0");
+                throw new ArgumentOutOfRangeException(nameof(count), count, "count < 0");
             }
 
             return RepeatExtracted();
@@ -727,7 +727,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return ReverseExtracted();
 
@@ -749,7 +749,7 @@ namespace System.Linq
         {
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
 
             return Select(source, (item, i) => selector(item));
@@ -759,11 +759,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             return SelectExtracted<TSource, TResult>(source, selector);
         }
@@ -772,11 +772,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             return SelectManyExtracted();
 
@@ -796,11 +796,11 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             return SelectManyExtracted();
 
@@ -822,15 +822,15 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (collectionSelector == null)
             {
-                throw new ArgumentNullException("collectionSelector");
+                throw new ArgumentNullException(nameof(collectionSelector));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             return SelectManyExtracted();
 
@@ -850,15 +850,15 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (collectionSelector == null)
             {
-                throw new ArgumentNullException("collectionSelector");
+                throw new ArgumentNullException(nameof(collectionSelector));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             return SelectManyExtracted();
 
@@ -885,11 +885,11 @@ namespace System.Linq
         {
             if (first == null)
             {
-                throw new ArgumentNullException("first");
+                throw new ArgumentNullException(nameof(first));
             }
             if (second == null)
             {
-                throw new ArgumentNullException("second");
+                throw new ArgumentNullException(nameof(second));
             }
             comparer = comparer ?? EqualityComparer<TSource>.Default;
             return SequenceEqualExtracted();
@@ -918,7 +918,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var result = default(TSource);
@@ -942,11 +942,11 @@ namespace System.Linq
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var result = default(TSource);
@@ -974,7 +974,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var result = default(TSource);
@@ -994,11 +994,11 @@ namespace System.Linq
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var found = false;
             var result = default(TSource);
@@ -1027,7 +1027,7 @@ namespace System.Linq
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             return SkipWhile(source, (item, i) => predicate(item));
         }
@@ -1036,11 +1036,11 @@ namespace System.Linq
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return SkipWhileExtracted();
 
@@ -1073,7 +1073,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return TakeWhileExtracted();
 
@@ -1099,7 +1099,7 @@ namespace System.Linq
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             return TakeWhile(source, (item, i) => predicate(item));
         }
@@ -1108,11 +1108,11 @@ namespace System.Linq
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return TakeWhileExtracted();
 
@@ -1177,15 +1177,15 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (elementSelector == null)
             {
-                throw new ArgumentNullException("elementSelector");
+                throw new ArgumentNullException(nameof(elementSelector));
             }
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             comparer = comparer ?? EqualityComparer<TKey>.Default;
             var result = new Dictionary<TKey, TElement>(comparer);
@@ -1210,7 +1210,7 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return new List<TSource>(source);
         }
@@ -1249,7 +1249,7 @@ namespace System.Linq
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             return Where(source, (item, i) => predicate(item));
         }
@@ -1258,11 +1258,11 @@ namespace System.Linq
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return WhereExtracted();
 
@@ -1285,15 +1285,15 @@ namespace System.Linq
         {
             if (first == null)
             {
-                throw new ArgumentNullException("first");
+                throw new ArgumentNullException(nameof(first));
             }
             if (second == null)
             {
-                throw new ArgumentNullException("second");
+                throw new ArgumentNullException(nameof(second));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             using (var enumeratorFirst = first.GetEnumerator())
             using (var enumeratorSecond = second.GetEnumerator())

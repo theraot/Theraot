@@ -12,7 +12,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             source.Insert(index, item);
         }
@@ -22,11 +22,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (item == null)
             {
-                throw new ArgumentNullException("item");
+                throw new ArgumentNullException(nameof(item));
             }
             source.Insert(index, item());
         }
@@ -36,11 +36,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (items == null)
             {
-                throw new ArgumentNullException("items");
+                throw new ArgumentNullException(nameof(items));
             }
             var initialIndex = index;
             foreach (var item in items)
@@ -59,11 +59,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (items == null)
             {
-                throw new ArgumentNullException("items");
+                throw new ArgumentNullException(nameof(items));
             }
             var initialIndex = index;
             foreach (var item in items)

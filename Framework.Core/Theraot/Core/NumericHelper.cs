@@ -106,7 +106,7 @@ namespace Theraot.Core
         {
             if (number < 0)
             {
-                throw new ArgumentOutOfRangeException("number", "The logarithm of a negative number is imaginary.");
+                throw new ArgumentOutOfRangeException(nameof(number), "The logarithm of a negative number is imaginary.");
             }
             return Log2(unchecked((uint)number));
         }
@@ -117,7 +117,7 @@ namespace Theraot.Core
         {
             if (number == 0)
             {
-                throw new ArgumentOutOfRangeException("number", "The logarithm of zero is not defined.");
+                throw new ArgumentOutOfRangeException(nameof(number), "The logarithm of zero is not defined.");
             }
             number |= number >> 1;
             number |= number >> 2;
@@ -132,7 +132,7 @@ namespace Theraot.Core
         {
             if (number < 0)
             {
-                throw new ArgumentOutOfRangeException("number", "The logarithm of a negative number is imaginary.");
+                throw new ArgumentOutOfRangeException(nameof(number), "The logarithm of a negative number is imaginary.");
             }
             return Log2(unchecked((ulong)number));
         }
@@ -143,7 +143,7 @@ namespace Theraot.Core
         {
             if (number == 0)
             {
-                throw new ArgumentOutOfRangeException("number", "The logarithm of zero is not defined.");
+                throw new ArgumentOutOfRangeException(nameof(number), "The logarithm of zero is not defined.");
             }
             number |= number >> 1;
             number |= number >> 2;

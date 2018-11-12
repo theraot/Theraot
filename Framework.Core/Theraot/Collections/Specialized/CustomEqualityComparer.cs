@@ -15,11 +15,11 @@ namespace Theraot.Collections.Specialized
         {
             if (comparison == null)
             {
-                throw new ArgumentNullException("comparison");
+                throw new ArgumentNullException(nameof(comparison));
             }
             if (getHashCode == null)
             {
-                throw new ArgumentNullException("getHashCode");
+                throw new ArgumentNullException(nameof(getHashCode));
             }
             _comparison = comparison;
             _getHashCode = getHashCode;
@@ -29,11 +29,11 @@ namespace Theraot.Collections.Specialized
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (getHashCode == null)
             {
-                throw new ArgumentNullException("getHashCode");
+                throw new ArgumentNullException(nameof(getHashCode));
             }
             _comparison = (x, y) => comparer.Compare(x, y) == 0;
             _getHashCode = getHashCode;
@@ -43,11 +43,11 @@ namespace Theraot.Collections.Specialized
         {
             if (comparison == null)
             {
-                throw new ArgumentNullException("comparison");
+                throw new ArgumentNullException(nameof(comparison));
             }
             if (getHashCode == null)
             {
-                throw new ArgumentNullException("getHashCode");
+                throw new ArgumentNullException(nameof(getHashCode));
             }
             _comparison = (x, y) => comparison.Invoke(x, y) == 0;
             _getHashCode = getHashCode;
@@ -57,11 +57,11 @@ namespace Theraot.Collections.Specialized
         {
             if (comparison == null)
             {
-                throw new ArgumentNullException("comparison");
+                throw new ArgumentNullException(nameof(comparison));
             }
             if (getHashCode == null)
             {
-                throw new ArgumentNullException("getHashCode");
+                throw new ArgumentNullException(nameof(getHashCode));
             }
             _comparison = (x, y) => comparison.Invoke(x, y) == 0;
             _getHashCode = getHashCode;

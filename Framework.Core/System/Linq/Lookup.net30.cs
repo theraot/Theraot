@@ -74,15 +74,15 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (elementSelector == null)
             {
-                throw new ArgumentNullException("elementSelector");
+                throw new ArgumentNullException(nameof(elementSelector));
             }
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             var result = new Lookup<TKey, TElement>(comparer);
             foreach (var item in source)

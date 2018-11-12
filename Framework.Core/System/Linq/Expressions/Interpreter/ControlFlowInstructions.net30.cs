@@ -27,7 +27,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get { return "Offset"; }
+            get { return nameof(Offset); }
         }
 
         public Instruction Fixup(int offset)
@@ -247,7 +247,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (labelIndexer == null)
             {
-                throw new ArgumentNullException("labelIndexer");
+                throw new ArgumentNullException(nameof(labelIndexer));
             }
             Debug.Assert(LabelIndex != UnknownInstrIndex);
             var targetIndex = labelIndexer(LabelIndex);
@@ -758,7 +758,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get { return "Throw"; }
+            get { return nameof(Throw); }
         }
 
         private ThrowInstruction(bool hasResult, bool isRethrow)

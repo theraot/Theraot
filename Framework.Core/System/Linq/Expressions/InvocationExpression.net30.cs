@@ -168,7 +168,7 @@ namespace System.Linq.Expressions
         ///<paramref name="arguments" /> does not contain the same number of elements as the list of parameters for the delegate represented by <paramref name="expression" />.</exception>
         public static InvocationExpression Invoke(Expression expression, IEnumerable<Expression> arguments)
         {
-            RequiresCanRead(expression, "expression");
+            RequiresCanRead(expression, nameof(expression));
 
             var args = arguments.ToReadOnly();
             var mi = GetInvokeMethod(expression);

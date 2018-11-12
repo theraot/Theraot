@@ -35,7 +35,7 @@ namespace Theraot.Collections
             _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
             if (prototype == null)
             {
-                throw new ArgumentNullException("prototype");
+                throw new ArgumentNullException(nameof(prototype));
             }
             this.AddRange(prototype);
         }
@@ -45,7 +45,7 @@ namespace Theraot.Collections
             _valueComparer = EqualityComparer<TValue>.Default;
             if (keyComparer == null)
             {
-                throw new ArgumentNullException("keyComparer");
+                throw new ArgumentNullException(nameof(keyComparer));
             }
             _wrapped = new Dictionary<TKey, TValue>(keyComparer);
             _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
@@ -53,7 +53,7 @@ namespace Theraot.Collections
             _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
             if (prototype == null)
             {
-                throw new ArgumentNullException("prototype");
+                throw new ArgumentNullException(nameof(prototype));
             }
             this.AddRange(prototype);
         }
@@ -63,7 +63,7 @@ namespace Theraot.Collections
             _valueComparer = EqualityComparer<TValue>.Default;
             if (keyComparer == null)
             {
-                throw new ArgumentNullException("keyComparer");
+                throw new ArgumentNullException(nameof(keyComparer));
             }
             _wrapped = new Dictionary<TKey, TValue>(keyComparer);
             _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
@@ -75,12 +75,12 @@ namespace Theraot.Collections
         {
             if (valueComparer == null)
             {
-                throw new ArgumentNullException("valueComparer");
+                throw new ArgumentNullException(nameof(valueComparer));
             }
             _valueComparer = valueComparer;
             if (keyComparer == null)
             {
-                throw new ArgumentNullException("keyComparer");
+                throw new ArgumentNullException(nameof(keyComparer));
             }
             _wrapped = new Dictionary<TKey, TValue>(keyComparer);
             _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
@@ -88,7 +88,7 @@ namespace Theraot.Collections
             _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
             if (prototype == null)
             {
-                throw new ArgumentNullException("prototype");
+                throw new ArgumentNullException(nameof(prototype));
             }
             this.AddRange(prototype);
         }
@@ -97,12 +97,12 @@ namespace Theraot.Collections
         {
             if (valueComparer == null)
             {
-                throw new ArgumentNullException("valueComparer");
+                throw new ArgumentNullException(nameof(valueComparer));
             }
             _valueComparer = valueComparer;
             if (keyComparer == null)
             {
-                throw new ArgumentNullException("keyComparer");
+                throw new ArgumentNullException(nameof(keyComparer));
             }
             _wrapped = new Dictionary<TKey, TValue>(keyComparer);
             _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
@@ -200,7 +200,7 @@ namespace Theraot.Collections
             {
                 if (comparer == null)
                 {
-                    throw new ArgumentNullException("comparer");
+                    throw new ArgumentNullException(nameof(comparer));
                 }
                 return comparer.Equals(new KeyValuePair<TKey, TValue>(item.Key, _wrapped[item.Key]), item);
             }

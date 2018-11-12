@@ -16,7 +16,7 @@ namespace Theraot.Collections.Specialized
             _comparer = comparer ?? EqualityComparer<TOutput>.Default;
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             _converter = converter;
         }

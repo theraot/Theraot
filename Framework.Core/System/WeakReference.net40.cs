@@ -29,7 +29,7 @@ namespace System
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
             var value = (T)info.GetValue("TrackedObject", typeof(T));
             _trackResurrection = info.GetBoolean("TrackResurrection");
@@ -41,7 +41,7 @@ namespace System
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
             T value;
             TryGetTarget(out value);

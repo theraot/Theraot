@@ -16,11 +16,11 @@ namespace Theraot.Core
 
             if (destination == null)
             {
-                throw new ArgumentNullException("destination");
+                throw new ArgumentNullException(nameof(destination));
             }
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
             var syncroot = new object();
             var buffer = new byte[BufferSize];

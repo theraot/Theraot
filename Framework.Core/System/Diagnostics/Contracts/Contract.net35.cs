@@ -128,7 +128,7 @@ namespace System.Diagnostics.Contracts
         public static void Ensures(bool condition)
         {
             GC.KeepAlive(condition);
-            AssertMustUseRewriter(ContractFailureKind.Postcondition, "Ensures");
+            AssertMustUseRewriter(ContractFailureKind.Postcondition, nameof(Ensures));
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace System.Diagnostics.Contracts
         {
             GC.KeepAlive(condition);
             GC.KeepAlive(userMessage);
-            AssertMustUseRewriter(ContractFailureKind.Postcondition, "Ensures");
+            AssertMustUseRewriter(ContractFailureKind.Postcondition, nameof(Ensures));
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace System.Diagnostics.Contracts
         {
             GC.KeepAlive(typeof(TException));
             GC.KeepAlive(condition);
-            AssertMustUseRewriter(ContractFailureKind.PostconditionOnException, "EnsuresOnThrow");
+            AssertMustUseRewriter(ContractFailureKind.PostconditionOnException, nameof(EnsuresOnThrow));
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace System.Diagnostics.Contracts
             GC.KeepAlive(typeof(TException));
             GC.KeepAlive(condition);
             GC.KeepAlive(userMessage);
-            AssertMustUseRewriter(ContractFailureKind.PostconditionOnException, "EnsuresOnThrow");
+            AssertMustUseRewriter(ContractFailureKind.PostconditionOnException, nameof(EnsuresOnThrow));
         }
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace System.Diagnostics.Contracts
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             EndContractBlock();
 
@@ -242,11 +242,11 @@ namespace System.Diagnostics.Contracts
         {
             if (collection == null)
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             EndContractBlock();
 
@@ -280,7 +280,7 @@ namespace System.Diagnostics.Contracts
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             EndContractBlock();
 
@@ -310,11 +310,11 @@ namespace System.Diagnostics.Contracts
         {
             if (collection == null)
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             EndContractBlock();
 
@@ -342,7 +342,7 @@ namespace System.Diagnostics.Contracts
         public static void Invariant(bool condition)
         {
             GC.KeepAlive(condition);
-            AssertMustUseRewriter(ContractFailureKind.Invariant, "Invariant");
+            AssertMustUseRewriter(ContractFailureKind.Invariant, nameof(Invariant));
         }
 
         /// <summary>
@@ -361,7 +361,7 @@ namespace System.Diagnostics.Contracts
         {
             GC.KeepAlive(condition);
             GC.KeepAlive(userMessage);
-            AssertMustUseRewriter(ContractFailureKind.Invariant, "Invariant");
+            AssertMustUseRewriter(ContractFailureKind.Invariant, nameof(Invariant));
         }
 
         /// <summary>
@@ -395,7 +395,7 @@ namespace System.Diagnostics.Contracts
         public static void Requires(bool condition)
         {
             GC.KeepAlive(condition);
-            AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires");
+            AssertMustUseRewriter(ContractFailureKind.Precondition, nameof(Requires));
         }
 
         /// <summary>
@@ -414,7 +414,7 @@ namespace System.Diagnostics.Contracts
         {
             GC.KeepAlive(condition);
             GC.KeepAlive(userMessage);
-            AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires");
+            AssertMustUseRewriter(ContractFailureKind.Precondition, nameof(Requires));
         }
 
         /// <summary>

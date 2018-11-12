@@ -52,7 +52,7 @@ namespace System.Threading.Tasks
                 {
                     if (task == null)
                     {
-                        throw new ArgumentException("The tasks argument included a null value.", "tasks");
+                        throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
                     }
 
                     taskArray[index++] = task;
@@ -62,7 +62,7 @@ namespace System.Threading.Tasks
             // Do some argument checking and convert tasks to a List (and later an array).
             if (tasks == null)
             {
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
 
             var taskList = new List<Task>();
@@ -70,7 +70,7 @@ namespace System.Threading.Tasks
             {
                 if (task == null)
                 {
-                    throw new ArgumentException("The tasks argument included a null value.", "tasks");
+                    throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
                 }
 
                 taskList.Add(task);
@@ -111,7 +111,7 @@ namespace System.Threading.Tasks
             // Do some argument checking and make a defensive copy of the tasks array
             if (tasks == null)
             {
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
 
             Contract.EndContractBlock();
@@ -127,7 +127,7 @@ namespace System.Threading.Tasks
                 var task = tasks[i];
                 if (task == null)
                 {
-                    throw new ArgumentException("The tasks argument included a null value.", "tasks");
+                    throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
                 }
 
                 tasksCopy[i] = task;
@@ -184,7 +184,7 @@ namespace System.Threading.Tasks
                 {
                     if (task == null)
                     {
-                        throw new ArgumentException("The tasks argument included a null value.", "tasks");
+                        throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
                     }
 
                     taskArray[index++] = task;
@@ -194,7 +194,7 @@ namespace System.Threading.Tasks
             // Do some argument checking and convert tasks into a List (later an array)
             if (tasks == null)
             {
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
 
             var taskList = new List<Task<TResult>>();
@@ -202,7 +202,7 @@ namespace System.Threading.Tasks
             {
                 if (task == null)
                 {
-                    throw new ArgumentException("Task_MultiTaskContinuation_NullTask", "tasks");
+                    throw new ArgumentException("Task_MultiTaskContinuation_NullTask", nameof(tasks));
                 }
 
                 taskList.Add(task);
@@ -246,7 +246,7 @@ namespace System.Threading.Tasks
             // Do some argument checking and make a defensive copy of the tasks array
             if (tasks == null)
             {
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
 
             Contract.EndContractBlock();
@@ -262,7 +262,7 @@ namespace System.Threading.Tasks
                 var task = tasks[i];
                 if (task == null)
                 {
-                    throw new ArgumentException("The tasks argument included a null value.", "tasks");
+                    throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
                 }
 
                 tasksCopy[i] = task;
@@ -279,7 +279,7 @@ namespace System.Threading.Tasks
             if (tasks == null)
             {
                 Contract.Assert(false, "Expected non-null array of tasks");
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
             foreach (var task in tasks)
             {
@@ -340,11 +340,11 @@ namespace System.Threading.Tasks
         {
             if (tasks == null)
             {
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
             if (tasks.Length == 0)
             {
-                throw new ArgumentException("The tasks argument contains no tasks.", "tasks");
+                throw new ArgumentException("The tasks argument contains no tasks.", nameof(tasks));
             }
             Contract.EndContractBlock();
             // Make a defensive copy, as the user may manipulate the tasks array
@@ -356,7 +356,7 @@ namespace System.Threading.Tasks
                 var task = tasks[index];
                 if (task == null)
                 {
-                    throw new ArgumentException("The tasks argument included a null value.", "tasks");
+                    throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
                 }
                 tasksCopy[index] = task;
             }
@@ -383,7 +383,7 @@ namespace System.Threading.Tasks
         {
             if (tasks == null)
             {
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
             Contract.EndContractBlock();
             // Make a defensive copy, as the user may manipulate the tasks collection
@@ -393,13 +393,13 @@ namespace System.Threading.Tasks
             {
                 if (task == null)
                 {
-                    throw new ArgumentException("The tasks argument included a null value.", "tasks");
+                    throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
                 }
                 taskList.Add(task);
             }
             if (taskList.Count == 0)
             {
-                throw new ArgumentException("The tasks argument contains no tasks.", "tasks");
+                throw new ArgumentException("The tasks argument contains no tasks.", nameof(tasks));
             }
             var signaledTaskIndex = -1;
             return PrivateWhenAny(taskList, ref signaledTaskIndex);

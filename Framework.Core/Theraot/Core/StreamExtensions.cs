@@ -16,11 +16,11 @@ namespace Theraot.Core
             //Added in .NET 4.0
             if (ReferenceEquals(input, null))
             {
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
             }
             if (ReferenceEquals(output, null))
             {
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
             }
             var buffer = new byte[_defaultBufferSize];
             int read;
@@ -47,11 +47,11 @@ namespace Theraot.Core
             //Added in .NET 4.0
             if (ReferenceEquals(input, null))
             {
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
             }
             if (ReferenceEquals(output, null))
             {
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
             }
             var buffer = new byte[bufferSize];
             int read;
@@ -88,7 +88,7 @@ namespace Theraot.Core
         {
             if (ReferenceEquals(stream, null))
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
             while (length > 0)
             {
@@ -106,7 +106,7 @@ namespace Theraot.Core
         {
             if (ReferenceEquals(stream, null))
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
             var streamAsMemoryStream = stream as MemoryStream;
             if (streamAsMemoryStream != null)

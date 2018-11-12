@@ -18,7 +18,7 @@ namespace Theraot.Collections.Specialized
         {
             if (enumerateTarget == null)
             {
-                throw new ArgumentNullException("enumerateTarget");
+                throw new ArgumentNullException(nameof(enumerateTarget));
             }
             _enumerateTarget = enumerateTarget;
             _enumerateAppend = enumerateAppend ?? (null == append ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc());

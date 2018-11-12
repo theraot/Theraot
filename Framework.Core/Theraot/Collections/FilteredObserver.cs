@@ -13,11 +13,11 @@ namespace Theraot.Collections
         {
             if (observer == null)
             {
-                throw new ArgumentNullException("observer");
+                throw new ArgumentNullException(nameof(observer));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
             _observer = observer;
             _filter = filter;

@@ -11,7 +11,7 @@ namespace Theraot.Core
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             return y => comparer.Equals(comparand, y);
         }
@@ -20,7 +20,7 @@ namespace Theraot.Core
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             return y => !comparer.Equals(comparand, y);
         }
@@ -109,7 +109,7 @@ namespace Theraot.Core
             {
                 if (func == null)
                 {
-                    throw new ArgumentNullException("func");
+                    throw new ArgumentNullException(nameof(func));
                 }
                 _func = func;
             }
@@ -133,7 +133,7 @@ namespace Theraot.Core
             {
                 if (predicate == null)
                 {
-                    throw new ArgumentNullException("predicate");
+                    throw new ArgumentNullException(nameof(predicate));
                 }
                 _predicate = predicate;
             }

@@ -22,7 +22,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             T previous;
             if (bucket.Insert(index, item, out previous))
@@ -36,7 +36,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             T stored;
             if (!bucket.TryGet(index, out stored))
@@ -91,7 +91,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             isNew = true;
             while (true)
@@ -152,7 +152,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             isNew = true;
             while (true)
@@ -215,7 +215,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             isNew = true;
             while (true)
@@ -262,7 +262,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             bool isNew;
             return InsertOrUpdate(bucket, index, itemFactory, itemUpdateFactory, check, out isNew);
@@ -288,7 +288,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             isNew = true;
             var factoryUsed = false;
@@ -338,7 +338,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             bool isNew;
             InsertOrUpdate(bucket, index, itemFactory, itemUpdateFactory, out isNew);
@@ -360,7 +360,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             isNew = true;
             var factoryUsed = false;
@@ -409,7 +409,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             bool isNew;
             return InsertOrUpdate(bucket, index, itemFactory, check, out isNew);
@@ -434,7 +434,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             isNew = true;
             var factoryUsed = false;
@@ -474,7 +474,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             bool isNew;
             bucket.Set(index, value, out isNew);
@@ -484,7 +484,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             T previous;
             if (bucket.Insert(index, item, out previous))
@@ -500,7 +500,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             if (bucket.TryGet(index, out stored))
             {
@@ -519,7 +519,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             bool isEmpty;
             return bucket.Update(index, _ => item, check, out isEmpty);
@@ -529,7 +529,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             return bucket.Update(index, _ => item, check, out isEmpty);
         }
@@ -538,7 +538,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             bool isEmpty;
             return bucket.Update(index, itemUpdateFactory, Tautology, out isEmpty);
@@ -548,7 +548,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (bucket == null)
             {
-                throw new ArgumentNullException("bucket");
+                throw new ArgumentNullException(nameof(bucket));
             }
             return bucket.Update(index, itemUpdateFactory, Tautology, out isEmpty);
         }

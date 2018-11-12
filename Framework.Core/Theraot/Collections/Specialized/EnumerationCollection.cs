@@ -21,7 +21,7 @@ namespace Theraot.Collections.Specialized
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             _wrapped = wrapped;
             _count = _wrapped.Count;
@@ -32,7 +32,7 @@ namespace Theraot.Collections.Specialized
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             _wrapped = wrapped;
             _count = () => wrapped.Length;
@@ -43,7 +43,7 @@ namespace Theraot.Collections.Specialized
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             _wrapped = wrapped;
             _count = () => wrapped.Count;
@@ -54,12 +54,12 @@ namespace Theraot.Collections.Specialized
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             _wrapped = wrapped;
             if (count == null)
             {
-                throw new ArgumentNullException("count");
+                throw new ArgumentNullException(nameof(count));
             }
             _count = count;
             _contains = item => _wrapped.Contains(item, EqualityComparer<T>.Default);
@@ -69,13 +69,13 @@ namespace Theraot.Collections.Specialized
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             _wrapped = wrapped;
             _count = _wrapped.Count;
             if (contains == null)
             {
-                throw new ArgumentNullException("contains");
+                throw new ArgumentNullException(nameof(contains));
             }
             _contains = contains;
         }
@@ -84,17 +84,17 @@ namespace Theraot.Collections.Specialized
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             _wrapped = wrapped;
             if (count == null)
             {
-                throw new ArgumentNullException("count");
+                throw new ArgumentNullException(nameof(count));
             }
             _count = count;
             if (contains == null)
             {
-                throw new ArgumentNullException("contains");
+                throw new ArgumentNullException(nameof(contains));
             }
             _contains = contains;
         }

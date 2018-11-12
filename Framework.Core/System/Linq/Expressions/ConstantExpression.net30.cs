@@ -117,7 +117,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static ConstantExpression Constant(object value, Type type)
         {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
             if (value == null && type.IsValueType && !type.IsNullable())
             {
                 throw Error.ArgumentTypesMustMatch();

@@ -119,20 +119,20 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(methodInfo, null))
             {
-                throw new ArgumentNullException("methodInfo");
+                throw new ArgumentNullException(nameof(methodInfo));
             }
             if (methodInfo.IsStatic != ReferenceEquals(null, target))
             {
                 if (ReferenceEquals(target, null))
                 {
-                    throw new ArgumentNullException("target", "target is null and the method is not static.");
+                    throw new ArgumentNullException(nameof(target), "target is null and the method is not static.");
                 }
-                throw new ArgumentException("target is not null and the method is static", "target");
+                throw new ArgumentException("target is not null and the method is static", nameof(target));
             }
             var type = methodInfo.DeclaringType;
             if (ReferenceEquals(type, null))
             {
-                throw new ArgumentException("methodInfo.DeclaringType is null", "methodInfo");
+                throw new ArgumentException("methodInfo.DeclaringType is null", nameof(methodInfo));
             }
             return methodInfo.CreateDelegate(type, target);
         }

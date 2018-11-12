@@ -31,7 +31,7 @@ namespace Theraot.Collections
             _readOnly = CreateReadOnly();
             if (prototype == null)
             {
-                throw new ArgumentNullException("prototype");
+                throw new ArgumentNullException(nameof(prototype));
             }
             this.AddRange(prototype);
         }
@@ -40,14 +40,14 @@ namespace Theraot.Collections
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             _comparer = comparer;
             _wrapped = new List<T>();
             _readOnly = CreateReadOnly();
             if (prototype == null)
             {
-                throw new ArgumentNullException("prototype");
+                throw new ArgumentNullException(nameof(prototype));
             }
             this.AddRange(prototype);
         }
@@ -56,7 +56,7 @@ namespace Theraot.Collections
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             _comparer = comparer;
             _wrapped = new List<T>();
@@ -178,7 +178,7 @@ namespace Theraot.Collections
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             if (Count == 0)
             {
@@ -245,7 +245,7 @@ namespace Theraot.Collections
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             var that = Extensions.AsDistinctCollection(other);
             foreach (var item in that.Where(input => !Contains(input)))

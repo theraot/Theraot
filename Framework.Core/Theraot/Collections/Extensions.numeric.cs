@@ -14,11 +14,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var max = int.MinValue;
@@ -41,11 +41,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var max = long.MinValue;
@@ -68,11 +68,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var max = double.MinValue;
@@ -95,11 +95,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var max = float.MinValue;
@@ -122,11 +122,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var max = decimal.MinValue;
@@ -149,11 +149,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var max = int.MinValue;
@@ -176,11 +176,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var max = long.MinValue;
@@ -202,11 +202,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var max = double.MinValue;
@@ -228,11 +228,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var max = float.MinValue;
@@ -254,11 +254,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var max = decimal.MinValue;
@@ -280,11 +280,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var max = default(TSource);
             if (typeof(TSource).CanBeNull())
@@ -328,15 +328,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var max = int.MinValue;
@@ -360,15 +360,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var max = long.MinValue;
@@ -392,15 +392,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var max = double.MinValue;
@@ -424,15 +424,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var max = float.MinValue;
@@ -456,15 +456,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var max = decimal.MinValue;
@@ -488,15 +488,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             int? max = null;
@@ -523,15 +523,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             long? max = null;
@@ -558,15 +558,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             double? max = null;
@@ -593,15 +593,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             float? max = null;
@@ -628,15 +628,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             decimal? max = null;
@@ -663,15 +663,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             Func<TSource, int, TResult> selectorWrapper = (item, i) => selector(item);
             return Max(source.Select(selectorWrapper), comparer);
@@ -681,11 +681,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var min = int.MinValue;
@@ -708,11 +708,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var min = long.MinValue;
@@ -735,11 +735,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var min = double.MinValue;
@@ -762,11 +762,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var min = float.MinValue;
@@ -789,11 +789,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var min = decimal.MinValue;
@@ -816,11 +816,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var min = int.MinValue;
@@ -843,11 +843,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var min = long.MinValue;
@@ -869,11 +869,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var min = double.MinValue;
@@ -895,11 +895,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var min = float.MinValue;
@@ -921,11 +921,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var found = false;
             var min = decimal.MinValue;
@@ -947,11 +947,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             var min = default(TSource);
             if (typeof(TSource).CanBeNull())
@@ -995,15 +995,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var min = int.MinValue;
@@ -1027,15 +1027,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var min = long.MinValue;
@@ -1059,15 +1059,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var min = double.MinValue;
@@ -1091,15 +1091,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var min = float.MinValue;
@@ -1123,15 +1123,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             var min = decimal.MinValue;
@@ -1155,15 +1155,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             int? min = null;
@@ -1190,15 +1190,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             long? min = null;
@@ -1225,15 +1225,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             double? min = null;
@@ -1260,15 +1260,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             float? min = null;
@@ -1295,15 +1295,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             var found = false;
             decimal? min = null;
@@ -1330,15 +1330,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (selector == null)
             {
-                throw new ArgumentNullException("selector");
+                throw new ArgumentNullException(nameof(selector));
             }
             Func<TSource, int, TResult> selectorWrapper = (item, i) => selector(item);
             return Min(source.Select(selectorWrapper), comparer);

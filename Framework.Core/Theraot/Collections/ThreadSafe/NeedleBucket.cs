@@ -40,11 +40,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             if (needleFactory == null)
             {
-                throw new ArgumentNullException("needleFactory");
+                throw new ArgumentNullException(nameof(needleFactory));
             }
             _needleFactory = needleFactory;
             _reservoir = new NeedleReservoir<T, TNeedle>(_needleFactory);
@@ -64,11 +64,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             if (needleFactory == null)
             {
-                throw new ArgumentNullException("needleFactory");
+                throw new ArgumentNullException(nameof(needleFactory));
             }
             _needleFactory = needleFactory;
             _reservoir = new NeedleReservoir<T, TNeedle>(_needleFactory);
@@ -172,7 +172,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (index < 0 || index >= _entries.Capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
             // Using TryGetValue first just avoid wasting a needle
             TNeedle found;
@@ -377,7 +377,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             TNeedle found = null;
             Predicate<TNeedle> replacementCheck = needle =>
@@ -475,11 +475,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (itemUpdateFactory == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             TNeedle newNeedle = null;
             Func<TNeedle, TNeedle> replacementFactory = needle => newNeedle = Reservoir.GetNeedle(itemUpdateFactory(needle.Value));
@@ -499,7 +499,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             foreach (var needle in _entries.Where(needle => check(needle.Value)))
             {

@@ -260,7 +260,7 @@ namespace System.Numerics
         {
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
             var valueLength = value.Length;
             var isNegative = (valueLength > 0 && (value[valueLength - 1] & 128) == 128);
@@ -396,7 +396,7 @@ namespace System.Numerics
         {
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
             var length = value.Length;
             while (length > 0 && value[length - 1] == 0)
@@ -428,7 +428,7 @@ namespace System.Numerics
         {
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
             var dwordCount = value.Length;
             var isNegative = (dwordCount > 0 && (value[dwordCount - 1] & unchecked((uint)int.MinValue)) == unchecked((uint)int.MinValue));
@@ -962,7 +962,7 @@ namespace System.Numerics
         {
             if (exponent.Sign < 0)
             {
-                throw new ArgumentOutOfRangeException("exponent", "The number must be greater than or equal to zero.");
+                throw new ArgumentOutOfRangeException(nameof(exponent), "The number must be greater than or equal to zero.");
             }
             var signRes = 1;
             var signVal = 1;
@@ -1976,7 +1976,7 @@ namespace System.Numerics
         {
             if (exponent < 0)
             {
-                throw new ArgumentOutOfRangeException("exponent", "The number must be greater than or equal to zero.");
+                throw new ArgumentOutOfRangeException(nameof(exponent), "The number must be greater than or equal to zero.");
             }
             if (exponent == 0)
             {

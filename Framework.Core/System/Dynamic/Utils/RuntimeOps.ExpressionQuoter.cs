@@ -149,7 +149,7 @@ namespace System.Runtime.CompilerServices
 
                 // Otherwise, we need to return an object that merges them
                 return Expression.Call(
-                    typeof(RuntimeOps).GetMethod("MergeRuntimeVariables"),
+                    typeof(RuntimeOps).GetMethod(nameof(MergeRuntimeVariables)),
                     Expression.RuntimeVariables(new TrueReadOnlyCollection<ParameterExpression>(vars.ToArray())),
                     boxesConst,
                     Expression.Constant(indexes)

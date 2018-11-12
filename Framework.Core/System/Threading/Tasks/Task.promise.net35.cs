@@ -32,7 +32,7 @@ namespace System.Threading.Tasks
         {
             if ((creationOptions & ~(TaskCreationOptions.AttachedToParent | TaskCreationOptions.RunContinuationsAsynchronously)) != 0)
             {
-                throw new ArgumentOutOfRangeException("creationOptions");
+                throw new ArgumentOutOfRangeException(nameof(creationOptions));
             }
             // Only set a parent if AttachedToParent is specified.
             if ((creationOptions & TaskCreationOptions.AttachedToParent) != 0)

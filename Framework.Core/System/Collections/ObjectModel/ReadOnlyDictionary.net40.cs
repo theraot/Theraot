@@ -17,7 +17,7 @@ namespace System.Collections.ObjectModel
         {
             if (dictionary == null)
             {
-                throw new ArgumentNullException("dictionary");
+                throw new ArgumentNullException(nameof(dictionary));
             }
             _wrapped = dictionary;
             _keys = new KeyCollection(new DelegatedCollection<TKey>(() => _wrapped.Keys));
@@ -105,7 +105,7 @@ namespace System.Collections.ObjectModel
             {
                 if (ReferenceEquals(key, null))
                 {
-                    throw new ArgumentNullException("key");
+                    throw new ArgumentNullException(nameof(key));
                 }
                 if (key is TKey)
                 {
@@ -185,7 +185,7 @@ namespace System.Collections.ObjectModel
         {
             if (ReferenceEquals(key, null))
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             return key is TKey && ContainsKey((TKey)key);
         }

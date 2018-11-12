@@ -333,11 +333,11 @@ namespace Theraot.Core
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (target == null)
             {
-                throw new ArgumentNullException("target");
+                throw new ArgumentNullException(nameof(target));
             }
 
             // Identity conversion
@@ -372,11 +372,11 @@ namespace Theraot.Core
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (target == null)
             {
-                throw new ArgumentNullException("target");
+                throw new ArgumentNullException(nameof(target));
             }
             // void -> void is  an identity conversion, not a reference conversion
             if (source == typeof(void) || target == typeof(void))
@@ -541,11 +541,11 @@ namespace Theraot.Core
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (target == null)
             {
-                throw new ArgumentNullException("target");
+                throw new ArgumentNullException(nameof(target));
             }
 
             // There *might* be a legal conversion from a generic delegate type S to generic delegate type  T,

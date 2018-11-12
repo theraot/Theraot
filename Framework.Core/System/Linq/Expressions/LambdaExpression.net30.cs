@@ -453,7 +453,7 @@ public class ExpressionCreator<TDelegate>
         /// <returns>A <see cref="LambdaExpression"/> that has the <see cref="P:NodeType"/> property equal to Lambda and the <see cref="P:Body"/> and <see cref="P:Parameters"/> properties set to the specified values.</returns>
         public static LambdaExpression Lambda(Expression body, string name, bool tailCall, IEnumerable<ParameterExpression> parameters)
         {
-            ContractUtils.RequiresNotNull(body, "body");
+            ContractUtils.RequiresNotNull(body, nameof(body));
 
             var parameterList = parameters.ToReadOnly();
 
@@ -516,8 +516,8 @@ public class ExpressionCreator<TDelegate>
 
         private static void ValidateLambdaArgs(Type delegateType, ref Expression body, ReadOnlyCollection<ParameterExpression> parameters)
         {
-            ContractUtils.RequiresNotNull(delegateType, "delegateType");
-            RequiresCanRead(body, "body");
+            ContractUtils.RequiresNotNull(delegateType, nameof(delegateType));
+            RequiresCanRead(body, nameof(body));
 
             if (!typeof(MulticastDelegate).IsAssignableFrom(delegateType) || delegateType == typeof(MulticastDelegate))
             {
@@ -549,7 +549,7 @@ public class ExpressionCreator<TDelegate>
                 {
                     var pex = parameters[i];
                     var pi = pis[i];
-                    RequiresCanRead(pex, "parameters");
+                    RequiresCanRead(pex, nameof(parameters));
                     var pType = pi.ParameterType;
                     if (pex.IsByRef)
                     {
@@ -588,7 +588,7 @@ public class ExpressionCreator<TDelegate>
         {
             if (typeArgs == null)
             {
-                throw new ArgumentNullException("typeArgs");
+                throw new ArgumentNullException(nameof(typeArgs));
             }
             var n = typeArgs.Length;
             for (int i = 0; i < n; i++)
@@ -596,7 +596,7 @@ public class ExpressionCreator<TDelegate>
                 var a = typeArgs[i];
                 if (a == null)
                 {
-                    throw new ArgumentNullException("typeArgs");
+                    throw new ArgumentNullException(nameof(typeArgs));
                 }
                 if (a.IsByRef)
                 {
@@ -692,8 +692,8 @@ public class ExpressionCreator<TDelegate>
         /// to System.Void to produce an Action.</remarks>
         public static Type GetDelegateType(params Type[] typeArgs)
         {
-            ContractUtils.RequiresNotEmpty(typeArgs, "typeArgs");
-            ContractUtils.RequiresNotNullItems(typeArgs, "typeArgs");
+            ContractUtils.RequiresNotEmpty(typeArgs, nameof(typeArgs));
+            ContractUtils.RequiresNotNullItems(typeArgs, nameof(typeArgs));
             return Compiler.DelegateHelpers.MakeDelegateType(typeArgs);
         }
     }

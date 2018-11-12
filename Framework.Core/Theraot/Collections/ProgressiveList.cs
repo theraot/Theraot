@@ -44,7 +44,7 @@ namespace Theraot.Collections
         {
             if (cache == null)
             {
-                throw new ArgumentNullException("cache");
+                throw new ArgumentNullException(nameof(cache));
             }
             _cache = cache;
         }
@@ -54,7 +54,7 @@ namespace Theraot.Collections
         {
             if (cache == null)
             {
-                throw new ArgumentNullException("cache");
+                throw new ArgumentNullException(nameof(cache));
             }
             _cache = cache;
         }

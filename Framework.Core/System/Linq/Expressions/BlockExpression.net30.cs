@@ -423,7 +423,7 @@ namespace System.Linq.Expressions
             if (variables != null && variables != VariablesList)
             {
                 // Need to validate the new variables (uniqueness, not byref)
-                ValidateVariables(variables, "variables");
+                ValidateVariables(variables, nameof(variables));
                 return variables;
             }
             return VariablesList;
@@ -685,8 +685,8 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="BlockExpression"/>.</returns>
         public static BlockExpression Block(Expression arg0, Expression arg1)
         {
-            RequiresCanRead(arg0, "arg0");
-            RequiresCanRead(arg1, "arg1");
+            RequiresCanRead(arg0, nameof(arg0));
+            RequiresCanRead(arg1, nameof(arg1));
 
             return new Block2(arg0, arg1);
         }
@@ -700,9 +700,9 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="BlockExpression"/>.</returns>
         public static BlockExpression Block(Expression arg0, Expression arg1, Expression arg2)
         {
-            RequiresCanRead(arg0, "arg0");
-            RequiresCanRead(arg1, "arg1");
-            RequiresCanRead(arg2, "arg2");
+            RequiresCanRead(arg0, nameof(arg0));
+            RequiresCanRead(arg1, nameof(arg1));
+            RequiresCanRead(arg2, nameof(arg2));
             return new Block3(arg0, arg1, arg2);
         }
 
@@ -716,10 +716,10 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="BlockExpression"/>.</returns>
         public static BlockExpression Block(Expression arg0, Expression arg1, Expression arg2, Expression arg3)
         {
-            RequiresCanRead(arg0, "arg0");
-            RequiresCanRead(arg1, "arg1");
-            RequiresCanRead(arg2, "arg2");
-            RequiresCanRead(arg3, "arg3");
+            RequiresCanRead(arg0, nameof(arg0));
+            RequiresCanRead(arg1, nameof(arg1));
+            RequiresCanRead(arg2, nameof(arg2));
+            RequiresCanRead(arg3, nameof(arg3));
             return new Block4(arg0, arg1, arg2, arg3);
         }
 
@@ -734,11 +734,11 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="BlockExpression"/>.</returns>
         public static BlockExpression Block(Expression arg0, Expression arg1, Expression arg2, Expression arg3, Expression arg4)
         {
-            RequiresCanRead(arg0, "arg0");
-            RequiresCanRead(arg1, "arg1");
-            RequiresCanRead(arg2, "arg2");
-            RequiresCanRead(arg3, "arg3");
-            RequiresCanRead(arg4, "arg4");
+            RequiresCanRead(arg0, nameof(arg0));
+            RequiresCanRead(arg1, nameof(arg1));
+            RequiresCanRead(arg2, nameof(arg2));
+            RequiresCanRead(arg3, nameof(arg3));
+            RequiresCanRead(arg4, nameof(arg4));
 
             return new Block5(arg0, arg1, arg2, arg3, arg4);
         }
@@ -750,7 +750,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="BlockExpression"/>.</returns>
         public static BlockExpression Block(params Expression[] expressions)
         {
-            ContractUtils.RequiresNotNull(expressions, "expressions");
+            ContractUtils.RequiresNotNull(expressions, nameof(expressions));
 
             switch (expressions.Length)
             {
@@ -767,8 +767,8 @@ namespace System.Linq.Expressions
                     return Block(expressions[0], expressions[1], expressions[2], expressions[3], expressions[4]);
 
                 default:
-                    ContractUtils.RequiresNotEmpty(expressions, "expressions");
-                    RequiresCanRead(expressions, "expressions");
+                    ContractUtils.RequiresNotEmpty(expressions, nameof(expressions));
+                    RequiresCanRead(expressions, nameof(expressions));
                     return new BlockN(expressions.Copy());
             }
         }
@@ -791,7 +791,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="BlockExpression"/>.</returns>
         public static BlockExpression Block(Type type, params Expression[] expressions)
         {
-            ContractUtils.RequiresNotNull(expressions, "expressions");
+            ContractUtils.RequiresNotNull(expressions, nameof(expressions));
             return Block(type, (IEnumerable<Expression>)expressions);
         }
 
@@ -837,10 +837,10 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="BlockExpression"/>.</returns>
         public static BlockExpression Block(IEnumerable<ParameterExpression> variables, IEnumerable<Expression> expressions)
         {
-            ContractUtils.RequiresNotNull(expressions, "expressions");
+            ContractUtils.RequiresNotNull(expressions, nameof(expressions));
             var expressionList = expressions.ToReadOnly();
-            ContractUtils.RequiresNotEmpty(expressionList, "expressions");
-            RequiresCanRead(expressionList, "expressions");
+            ContractUtils.RequiresNotEmpty(expressionList, nameof(expressions));
+            RequiresCanRead(expressionList, nameof(expressions));
 
             return Block(expressionList.Last().Type, variables, expressionList);
         }
@@ -854,15 +854,15 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="BlockExpression"/>.</returns>
         public static BlockExpression Block(Type type, IEnumerable<ParameterExpression> variables, IEnumerable<Expression> expressions)
         {
-            ContractUtils.RequiresNotNull(type, "type");
-            ContractUtils.RequiresNotNull(expressions, "expressions");
+            ContractUtils.RequiresNotNull(type, nameof(type));
+            ContractUtils.RequiresNotNull(expressions, nameof(expressions));
 
             var expressionList = expressions.ToReadOnly();
             var variableList = variables.ToReadOnly();
 
-            ContractUtils.RequiresNotEmpty(expressionList, "expressions");
-            RequiresCanRead(expressionList, "expressions");
-            ValidateVariables(variableList, "variables");
+            ContractUtils.RequiresNotEmpty(expressionList, nameof(expressions));
+            RequiresCanRead(expressionList, nameof(expressions));
+            ValidateVariables(variableList, nameof(variables));
 
             var last = expressionList.Last();
             if (type != typeof(void))

@@ -20,12 +20,12 @@ namespace Theraot.Core
             _comparer = comparer ?? Comparer<TKey>.Default;
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             _source = source;
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             _selector = keySelector;
         }

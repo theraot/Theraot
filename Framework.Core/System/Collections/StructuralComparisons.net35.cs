@@ -124,11 +124,11 @@ namespace System.Collections
                 }
                 if ((int)xRankInfo.GetValue(x, TypeHelper.EmptyObjects) != 1)
                 {
-                    throw new ArgumentException("Only one-dimensional arrays are supported", "x");
+                    throw new ArgumentException("Only one-dimensional arrays are supported", nameof(x));
                 }
                 if ((int)yRankInfo.GetValue(y, TypeHelper.EmptyObjects) != 1)
                 {
-                    throw new ArgumentException("Only one-dimensional arrays are supported", "y");
+                    throw new ArgumentException("Only one-dimensional arrays are supported", nameof(y));
                 }
             }
 

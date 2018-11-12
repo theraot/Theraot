@@ -24,7 +24,7 @@ namespace Theraot.Core
         {
             if (ranges == null)
             {
-                throw new ArgumentNullException("ranges");
+                throw new ArgumentNullException(nameof(ranges));
             }
             _comparer = Comparer<T>.Default;
             _ranges = new List<Range<T>>();
@@ -38,7 +38,7 @@ namespace Theraot.Core
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             _comparer = comparer;
             _ranges = new List<Range<T>>();
@@ -48,11 +48,11 @@ namespace Theraot.Core
         {
             if (ranges == null)
             {
-                throw new ArgumentNullException("ranges");
+                throw new ArgumentNullException(nameof(ranges));
             }
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             _comparer = comparer;
             foreach (var range in ranges)
@@ -129,7 +129,7 @@ namespace Theraot.Core
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             foreach (var stored in _ranges)
             {
@@ -147,7 +147,7 @@ namespace Theraot.Core
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             foreach (var stored in _ranges)
             {
@@ -201,7 +201,7 @@ namespace Theraot.Core
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (_ranges.Count == 0)
             {
@@ -219,7 +219,7 @@ namespace Theraot.Core
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             return !Overlapped(_ranges, range, comparer).IsEmpty();
         }

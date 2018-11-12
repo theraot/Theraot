@@ -123,7 +123,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="LoopExpression"/>.</returns>
         public static LoopExpression Loop(Expression body, LabelTarget @break, LabelTarget @continue)
         {
-            RequiresCanRead(body, "body");
+            RequiresCanRead(body, nameof(body));
             if (@continue != null && @continue.Type != typeof(void))
             {
                 throw Error.LabelTypeMustBeVoid();

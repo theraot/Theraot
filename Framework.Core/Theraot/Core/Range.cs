@@ -85,7 +85,7 @@ namespace Theraot.Core
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             return IterateIterator(increment, comparer, _minimun, _closedMinimun, _maximun, _closedMaximun);
         }
@@ -99,7 +99,7 @@ namespace Theraot.Core
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             return ReverseIterateIterator(decrement, comparer, _minimun, _closedMinimun, _maximun, _closedMaximun);
         }

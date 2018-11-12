@@ -16,7 +16,7 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(context, null))
             {
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException(nameof(context));
             }
             _context = context;
             _needleLock = new NeedleLock<Thread>(_context.Context);
@@ -83,7 +83,7 @@ namespace Theraot.Threading.Needles
         {
             if (updateValueFactory == null)
             {
-                throw new ArgumentNullException("updateValueFactory");
+                throw new ArgumentNullException(nameof(updateValueFactory));
             }
             CaptureAndWait();
             var result = updateValueFactory(base.Value);
