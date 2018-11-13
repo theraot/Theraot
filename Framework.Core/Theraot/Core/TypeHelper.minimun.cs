@@ -92,8 +92,9 @@ namespace Theraot.Core
                 var sourceAsTarget = (TTarget)source;
                 return sourceAsTarget;
             }
-            catch
+            catch (Exception exception)
             {
+                GC.KeepAlive(exception);
                 return alternative();
             }
         }
