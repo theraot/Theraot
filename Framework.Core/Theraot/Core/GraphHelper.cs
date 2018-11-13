@@ -97,6 +97,7 @@ namespace Theraot.Core
 
         private static IEnumerable<TOutput> ExploreBreadthFirstGraphExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
+            // NOTICE this method has no null check
             var known = new HashSet<TInput>();
             var queue = new Queue<TInput>();
             while (true)
@@ -131,6 +132,7 @@ namespace Theraot.Core
 
         private static IEnumerable<TOutput> ExploreBreadthFirstTreeExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
+            // NOTICE this method has no null check
             var queue = new Queue<TInput>();
             while (true)
             {
@@ -259,6 +261,7 @@ namespace Theraot.Core
 
         private static IEnumerable<TOutput> ExploreDepthFirstGraphExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
+            // NOTICE this method has no null check
             var known = new HashSet<TInput>();
             var stack = new Stack<TInput>();
             while (true)
@@ -293,6 +296,7 @@ namespace Theraot.Core
 
         private static IEnumerable<TOutput> ExploreDepthFirstTreeExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
+            // NOTICE this method has no null check
             var stack = new Stack<TInput>();
             while (true)
             {

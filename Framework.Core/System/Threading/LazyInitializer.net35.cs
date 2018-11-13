@@ -24,6 +24,7 @@ namespace System.Threading
         public static T EnsureInitialized<T>(ref T target, Func<T> valueFactory)
             where T : class
         {
+            // MICROSFT doens't do a null check for valueFactory
             var found = target;
             Thread.MemoryBarrier();
             if (found != null)
@@ -62,6 +63,7 @@ namespace System.Threading
 
         public static T EnsureInitialized<T>(ref T target, ref bool initialized, ref object syncLock, Func<T> valueFactory)
         {
+            // MICROSFT doens't do a null check for valueFactory
             if (syncLock == null)
             {
                 Interlocked.CompareExchange(ref syncLock, new object(), null);

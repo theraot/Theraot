@@ -1344,6 +1344,7 @@ namespace System.Linq
 
         private static IEnumerable<TResult> SelectExtracted<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, int, TResult> selector)
         {
+            // NOTICE this method has no null check
             var count = 0;
             foreach (var item in source)
             {
