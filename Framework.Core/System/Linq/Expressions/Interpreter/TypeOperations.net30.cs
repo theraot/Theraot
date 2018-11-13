@@ -2722,11 +2722,11 @@ namespace System.Linq.Expressions.Interpreter
                     boxesConst,
                     Expression.Constant(indexes)
                 );
-            }
 
-            private static IRuntimeVariables MergeRuntimeVariables(IRuntimeVariables first, IRuntimeVariables second, int[] indexes)
-            {
-                return new MergedRuntimeVariables(first, second, indexes);
+                IRuntimeVariables MergeRuntimeVariables(IRuntimeVariables first, IRuntimeVariables second, int[] indexArray)
+                {
+                    return new MergedRuntimeVariables(first, second, indexArray);
+                }
             }
 
             protected internal override Expression VisitParameter(ParameterExpression node)

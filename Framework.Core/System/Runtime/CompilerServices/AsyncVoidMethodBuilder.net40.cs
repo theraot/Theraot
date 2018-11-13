@@ -91,6 +91,7 @@ namespace System.Runtime.CompilerServices
         [DebuggerStepThrough]
         public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
         {
+            // Should not be static
             AsyncMethodBuilderCore.Start(ref stateMachine);
         }
 

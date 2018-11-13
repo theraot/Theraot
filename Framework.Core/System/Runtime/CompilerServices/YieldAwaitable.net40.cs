@@ -16,6 +16,7 @@ namespace System.Runtime.CompilerServices
         /// <remarks>This method is intended for compiler user rather than use directly in code.</remarks>
         public YieldAwaiter GetAwaiter()
         {
+            // Should not be static
             return new YieldAwaiter();
         }
 

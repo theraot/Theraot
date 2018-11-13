@@ -491,6 +491,22 @@ namespace System.Linq.Expressions.Interpreter
             return result;
         }
 
+        private static bool EndsWithRethrow(Expression expr)
+        {
+            if (expr.NodeType == ExpressionType.Throw)
+            {
+                var node = (UnaryExpression)expr;
+                return node.Operand == null;
+            }
+
+            var block = expr as BlockExpression;
+            if (block != null)
+            {
+                return EndsWithRethrow(block.Expressions[block.Expressions.Count - 1]);
+            }
+            return false;
+        }
+
         private static Type GetMemberType(MemberInfo member)
         {
             var fi = member as FieldInfo;
@@ -2935,22 +2951,6 @@ namespace System.Linq.Expressions.Interpreter
             {
                 _instructions.EmitCall(node.Method);
             }
-        }
-
-        private bool EndsWithRethrow(Expression expr)
-        {
-            if (expr.NodeType == ExpressionType.Throw)
-            {
-                var node = (UnaryExpression)expr;
-                return node.Operand == null;
-            }
-
-            var block = expr as BlockExpression;
-            if (block != null)
-            {
-                return EndsWithRethrow(block.Expressions[block.Expressions.Count - 1]);
-            }
-            return false;
         }
 
         private LocalVariable EnsureAvailableForClosure(ParameterExpression expr)

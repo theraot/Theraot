@@ -366,19 +366,6 @@ namespace System.Threading.Tasks
             }
         }
 
-        private static void ExecutionContextCallback(object obj)
-        {
-            var task = obj as Task;
-            if (task == null)
-            {
-                Contract.Assert(false, "expected a task object");
-            }
-            else
-            {
-                task.Execute();
-            }
-        }
-
         private static void TaskCancelCallback(object obj)
         {
             var task = obj as Task;
@@ -533,6 +520,19 @@ namespace System.Threading.Tasks
             finally
             {
                 InternalCurrent = previousTask;
+            }
+
+            void ExecutionContextCallback(object obj)
+            {
+                var task = obj as Task;
+                if (task == null)
+                {
+                    Contract.Assert(false, "expected a task object");
+                }
+                else
+                {
+                    task.Execute();
+                }
             }
         }
 
