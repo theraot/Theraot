@@ -1360,7 +1360,7 @@ namespace MonoTests.System.Linq
             AssertAreSame(expected1, data.Select<string, string>(x => x + "x"));
 
             // Select<TSource,TResult> (Func<TSource, int, TResult>)
-            AssertAreSame(expected2, data.Select<string, string>((x, y) => x + "x" + y));
+            AssertAreSame(expected2, data.Select<string, string>((x, y) => x + "x" + y.ToString()));
         }
 
         [Test]
@@ -1397,10 +1397,10 @@ namespace MonoTests.System.Linq
             AssertAreSame(expected, data.SelectMany(x => new[] { x, x + x }));
 
             // SelectMany<TSource,TResult> (Func<TSource, int, IEnumerable<TResult>>)
-            AssertAreSame(expected, data.SelectMany((x, y) => new[] { x, x + y }));
+            AssertAreSame(expected, data.SelectMany((x, y) => new[] { x, x + y.ToString() }));
 
             // SelectMany<TSource,TCollection,TResult> (Func<string, int, IEnumerable<TCollection>>, Func<TSource, TCollection, TResult>)
-            AssertAreSame(expected, data.SelectMany((x, y) => new[] { x, x + y }, (x, y) => y));
+            AssertAreSame(expected, data.SelectMany((x, y) => new[] { x, x + y.ToString() }, (x, y) => y));
 
             // SelectMany<TSource,TCollection,TResult> (Func<TSource, IEnumerable<TCollection>>, Func<TSource, TCollection, TResult>)
             AssertAreSame(expected, data.SelectMany(x => new[] { x, x + x }, (x, y) => y));

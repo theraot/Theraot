@@ -185,7 +185,8 @@ namespace System.Linq.Expressions.Compiler
             var n = node.Cases.Count;
             for (int i = 0; i < n; i++)
             {
-                DefineSwitchCaseLabel(node.Cases[i], out labels[i], out isGoto[i]);
+                ref var current = ref labels[i];
+                DefineSwitchCaseLabel(node.Cases[i], out current, out isGoto[i]);
                 foreach (Expression test in node.Cases[i].TestValues)
                 {
                     // Pull the test out into a temp so it runs on the same
@@ -193,7 +194,7 @@ namespace System.Linq.Expressions.Compiler
                     EmitExpression(test);
                     _scope.EmitSet(testValue);
                     Debug.Assert(TypeHelper.AreReferenceAssignable(testValue.Type, test.Type));
-                    EmitExpressionAndBranch(true, Expression.Equal(switchValue, testValue, false, node.Comparison), labels[i]);
+                    EmitExpressionAndBranch(true, Expression.Equal(switchValue, testValue, false, node.Comparison), current);
                 }
             }
 
@@ -367,7 +368,8 @@ namespace System.Linq.Expressions.Compiler
             var keys = new List<SwitchLabel>();
             for (var i = 0; i < node.Cases.Count; i++)
             {
-                DefineSwitchCaseLabel(node.Cases[i], out labels[i], out isGoto[i]);
+                ref var current = ref labels[i];
+                DefineSwitchCaseLabel(node.Cases[i], out current, out isGoto[i]);
 
                 foreach (ConstantExpression test in node.Cases[i].TestValues) // TODO: test coverage?
                 {
@@ -381,7 +383,7 @@ namespace System.Linq.Expressions.Compiler
                     // allowed, but can't be reached.
                     if (!uniqueKeys.Contains(key))
                     {
-                        keys.Add(new SwitchLabel(key, test.Value, labels[i]));
+                        keys.Add(new SwitchLabel(key, test.Value, current));
                         uniqueKeys.Add(key);
                     }
                 }

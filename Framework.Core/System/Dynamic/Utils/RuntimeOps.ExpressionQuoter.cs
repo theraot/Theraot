@@ -121,15 +121,16 @@ namespace System.Runtime.CompilerServices
                 var indexes = new int[count];
                 for (var i = 0; i < count; i++)
                 {
+                    ref var current = ref indexes[i];
                     var box = GetBox(node.Variables[i]);
                     if (box == null)
                     {
-                        indexes[i] = vars.Count;
+                        current = vars.Count;
                         vars.Add(node.Variables[i]);
                     }
                     else
                     {
-                        indexes[i] = -1 - boxes.Count;
+                        current = -1 - boxes.Count;
                         boxes.Add(box);
                     }
                 }

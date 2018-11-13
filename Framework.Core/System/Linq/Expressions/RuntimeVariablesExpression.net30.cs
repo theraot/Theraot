@@ -103,7 +103,7 @@ namespace System.Linq.Expressions
                 Expression v = vars[i];
                 if (v == null)
                 {
-                    throw new ArgumentNullException("variables[" + i + "]");
+                    throw new ArgumentNullException("variables[" + i.ToString() + "]");
                 }
             }
 

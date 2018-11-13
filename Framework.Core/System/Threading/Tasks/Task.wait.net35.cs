@@ -458,21 +458,22 @@ namespace System.Threading.Tasks
             // Collects incomplete tasks in "waitedOnTaskList" and their cooperative events in "cooperativeEventList"
             for (var taskIndex = tasks.Length - 1; taskIndex >= 0; taskIndex--)
             {
-                if (!tasks[taskIndex].IsCompleted)
+                ref var current = ref tasks[taskIndex];
+                if (!current.IsCompleted)
                 {
                     // Just attempting to inline here... result doesn't matter.
                     // We'll do a second pass to do actual wait on each task, and to aggregate their exceptions.
                     // If the task is inlined here, it will register as IsCompleted in the second pass
                     // and will just give us the exception.
-                    tasks[taskIndex].TryStart(tasks[taskIndex].ExecutingTaskScheduler, true);
+                    current.TryStart(current.ExecutingTaskScheduler, true);
                 }
             }
             // Wait on the tasks.
             for (var taskIndex = tasks.Length - 1; taskIndex >= 0; taskIndex--)
             {
-                var task = tasks[taskIndex];
-                task.Wait();
-                AddExceptionsForCompletedTask(ref exceptions, task);
+                ref var current = ref tasks[taskIndex];
+                current.Wait();
+                AddExceptionsForCompletedTask(ref exceptions, current);
                 // Note that unlike other wait code paths, we do not check
                 // task.NotifyDebuggerOfWaitCompletionIfNecessary() here, because this method is currently
                 // only used from contexts where the tasks couldn't have that bit set, namely

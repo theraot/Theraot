@@ -338,12 +338,13 @@ namespace System.Linq.Expressions
 
             for (var i = 0; i < args.Length; i++)
             {
-                if (args[i] == null)
+                ref var current = ref args[i];
+                if (current == null)
                 {
                     return false;
                 }
 
-                if (!TypeHelper.AreReferenceAssignable(parms[i].ParameterType, args[i].Type))
+                if (!TypeHelper.AreReferenceAssignable(parms[i].ParameterType, current.Type))
                 {
                     return false;
                 }

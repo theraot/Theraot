@@ -268,7 +268,7 @@ namespace MonoTests.System.Linq.Expressions
 
         public static string DoAnotherThing(ref int a, string s)
         {
-            return s + a;
+            return s + a.ToString();
         }
 
         [Test]

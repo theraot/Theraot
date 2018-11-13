@@ -225,8 +225,7 @@ namespace Theraot.Core
             var length = target.Length;
             if (_position + length <= _length)
             {
-                var result = _string.Substring(_position, length);
-                if (result == target)
+                if (string.CompareOrdinal(target, 0, _string, _position, length) == 0)
                 {
                     return true;
                 }
@@ -363,8 +362,7 @@ namespace Theraot.Core
             var length = target.Length;
             if (_position + length <= _length)
             {
-                var result = _string.Substring(_position, length);
-                if (result == target)
+                if (string.CompareOrdinal(target, 0, _string, _position, length) == 0)
                 {
                     _position += length;
                     return true;

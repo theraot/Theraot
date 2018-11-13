@@ -128,9 +128,10 @@ namespace System.Threading.Tasks
                 // Do not use IndexOf
                 for (var index = 0; index < tasks.Length; index++)
                 {
-                    if (tasks[index] == completingTask)
+                    ref var current = ref tasks[index];
+                    if (current == completingTask)
                     {
-                        tasks[index] = null;
+                        current = null;
                         break;
                     }
                 }

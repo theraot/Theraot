@@ -64,7 +64,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return InstructionName + "(" + From + "->" + To + ")";
+            return InstructionName + "(" + From.ToString() + "->" + To.ToString() + ")";
         }
 
         internal sealed class Unchecked : NumericConvertInstruction

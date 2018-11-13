@@ -2682,10 +2682,11 @@ namespace System.Linq.Expressions.Interpreter
                 var indexes = new int[count];
                 for (var i = 0; i < count; i++)
                 {
+                    ref var current = ref indexes[i];
                     LocalVariable var;
                     if (_variables.TryGetValue(node.Variables[i], out var))
                     {
-                        indexes[i] = -1 - boxes.Count;
+                        current = -1 - boxes.Count;
                         if (var.InClosure)
                         {
                             boxes.Add(_frame.Closure[var.Index]);
@@ -2697,7 +2698,7 @@ namespace System.Linq.Expressions.Interpreter
                     }
                     else
                     {
-                        indexes[i] = vars.Count;
+                        current = vars.Count;
                         vars.Add(node.Variables[i]);
                     }
                 }

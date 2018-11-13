@@ -57,7 +57,7 @@ namespace System.Linq.Expressions.Compiler
                     }
                 }
                 // Not on the free-list, create a brand new one.
-                temp = Expression.Variable(type, "$temp$" + _temp++);
+                temp = Expression.Variable(type, "$temp$" + _temp++.ToString());
                 _temps.Add(temp);
                 return UseTemp(temp);
             }
@@ -194,10 +194,11 @@ namespace System.Linq.Expressions.Compiler
                         var comma = new List<Expression>(count + 1);
                         for (var i = 0; i < count; i++)
                         {
-                            if (clone[i] != null)
+                            ref var current = ref clone[i];
+                            if (current != null)
                             {
                                 Expression temp;
-                                clone[i] = _self.ToTemp(clone[i], out temp);
+                                current = _self.ToTemp(current, out temp);
                                 comma.Add(temp);
                             }
                         }

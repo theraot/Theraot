@@ -45,7 +45,7 @@ namespace System.Linq.Expressions.Compiler
         }
 
         // Result of a rewrite operation. Always contains an action and a node.
-        private struct Result
+        private readonly struct Result
         {
             internal readonly RewriteAction Action;
             internal readonly Expression Node;
@@ -647,14 +647,15 @@ namespace System.Linq.Expressions.Compiler
                     var newInits = new ElementInit[inits.Count];
                     for (var i = 0; i < inits.Count; i++)
                     {
+                        ref var current = ref newInits[i];
                         var cr = cloneCrs[i];
                         if (cr.Action == RewriteAction.None)
                         {
-                            newInits[i] = inits[i];
+                            current = inits[i];
                         }
                         else
                         {
-                            newInits[i] = Expression.ElementInit(inits[i].AddMethod, cr[0, -1]);
+                            current = Expression.ElementInit(inits[i].AddMethod, cr[0, -1]);
                         }
                     }
                     expr = Expression.ListInit((NewExpression)rewrittenNew, new TrueReadOnlyCollection<ElementInit>(newInits));

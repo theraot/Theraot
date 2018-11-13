@@ -284,11 +284,12 @@ namespace System.Numerics
                 var dwordIndex = 0;
                 for (; dwordIndex < dwordCount - (unalignedBytes == 0 ? 0 : 1); dwordIndex++)
                 {
+                    ref var current = ref internalBits[dwordIndex];
                     for (var byteInDword = 0; byteInDword < 4; byteInDword++)
                     {
                         isZero &= value[byteIndex] == 0;
-                        internalBits[dwordIndex] <<= 8;
-                        internalBits[dwordIndex] |= value[byteIndex];
+                        current <<= 8;
+                        current |= value[byteIndex];
                         byteIndex--;
                     }
                     byteIndex += 8;
@@ -301,9 +302,11 @@ namespace System.Numerics
                     }
                     for (byteIndex = valueLength - 1; byteIndex >= valueLength - unalignedBytes; byteIndex--)
                     {
-                        isZero &= value[byteIndex] == 0;
-                        internalBits[dwordIndex] <<= 8;
-                        internalBits[dwordIndex] |= value[byteIndex];
+                        ref var current = ref internalBits[dwordIndex];
+                        ref var currentValue = ref value[byteIndex];
+                        isZero &= currentValue == 0;
+                        current <<= 8;
+                        current |= currentValue;
                     }
                 }
                 if (isZero)

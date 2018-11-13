@@ -2088,7 +2088,7 @@ namespace MonoTests.System.Threading.Tasks
                         try
                         {
                             var result = t.Wait(10000);
-                            Assert.Fail("#2 " + result);
+                            Assert.Fail("#2 " + result.ToString());
                         }
                         catch (AggregateException e)
                         {

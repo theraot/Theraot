@@ -70,8 +70,9 @@ namespace System.Dynamic.Utils
             var hasRefArgs = false;
             for (var i = 0; i < parameters.Length; i++)
             {
-                var paramIsByReference = parameters[i].ParameterType.IsByRef;
-                var paramType = parameters[i].ParameterType;
+                ref var current = ref parameters[i];
+                var paramIsByReference = current.ParameterType.IsByRef;
+                var paramType = current.ParameterType;
                 if (paramIsByReference)
                 {
                     paramType = paramType.GetElementType();
@@ -117,9 +118,10 @@ namespace System.Dynamic.Utils
                 ilgen.BeginFinallyBlock();
                 for (var i = 0; i < parameters.Length; i++)
                 {
-                    if (parameters[i].ParameterType.IsByRef)
+                    ref var current = ref parameters[i];
+                    if (current.ParameterType.IsByRef)
                     {
-                        var byrefToType = parameters[i].ParameterType.GetElementType();
+                        var byrefToType = current.ParameterType.GetElementType();
                         if (byrefToType == null)
                         {
                             throw new ArgumentException("Valid parameter types required");

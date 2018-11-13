@@ -131,12 +131,14 @@ namespace System.Numerics
                 // first do complement and +1 as long as carry is needed
                 for (; d[i - 1] == 0 && i < d.Length; i++)
                 {
-                    d[i] = ~d[i] + 1;
+                    ref var current = ref d[i];
+                    current = ~current + 1;
                 }
                 // now ones complement is sufficient
                 for (; i < d.Length; i++)
                 {
-                    d[i] = ~d[i];
+                    ref var current = ref d[i];
+                    current = ~current;
                 }
             }
         }

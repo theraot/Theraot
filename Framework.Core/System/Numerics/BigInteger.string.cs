@@ -301,7 +301,7 @@ namespace System.Numerics
                             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C',
                             'D', 'E', 'F'
                         });
-                    if (input == string.Empty)
+                    if (input.Length == 0)
                     {
                         break;
                     }
@@ -366,7 +366,7 @@ namespace System.Numerics
                 while (true)
                 {
                     var input = reader.ReadWhile(digits);
-                    if (input == string.Empty)
+                    if (input.Length == 0)
                     {
                         if (allowDecimalPoint && !decimalFound)
                         {
@@ -535,8 +535,9 @@ namespace System.Numerics
                 // Add it to converted
                 for (var convertedIndex = 0; convertedIndex < convertedLength; convertedIndex++)
                 {
-                    var cipherBlock = NumericsHelpers.MakeUlong(converted[convertedIndex], carry);
-                    converted[convertedIndex] = (uint)(cipherBlock % NumericBase);
+                    ref var current = ref converted[convertedIndex];
+                    var cipherBlock = NumericsHelpers.MakeUlong(current, carry);
+                    current = (uint)(cipherBlock % NumericBase);
                     carry = (uint)(cipherBlock / NumericBase);
                 }
                 if (carry != 0)
@@ -598,8 +599,8 @@ namespace System.Numerics
 
         private static string FormatBigIntegerToHexString(BigInteger value, char format, int digits, NumberFormatInfo info)
         {
-            var stringBuilder = new StringBuilder();
             var byteArray = value.ToByteArray();
+            var stringBuilder = new StringBuilder(byteArray.Length * 2 + 1);
             string str1;
             var length = byteArray.Length - 1;
             if (length > -1)
@@ -805,7 +806,7 @@ namespace System.Numerics
                             case 9:
                                 result.Append(info.NegativeSign);
                                 result.Append(info.CurrencySymbol);
-                                result.Append(" ");
+                                result.Append(' ');
                                 break;
 
                             case 10:
@@ -814,26 +815,26 @@ namespace System.Numerics
 
                             case 11:
                                 result.Append(info.CurrencySymbol);
-                                result.Append(" ");
+                                result.Append(' ');
                                 close = info.NegativeSign;
                                 break;
 
                             case 12:
                                 result.Append(info.CurrencySymbol);
-                                result.Append(" ");
+                                result.Append(' ');
                                 result.Append(info.NegativeSign);
                                 break;
 
                             case 13:
                                 result.Append(info.CurrencySymbol);
                                 result.Append(info.NegativeSign);
-                                result.Append(" ");
+                                result.Append(' ');
                                 break;
 
                             case 14:
                                 result.Append('(');
                                 result.Append(info.CurrencySymbol);
-                                result.Append(" ");
+                                result.Append(' ');
                                 close = ")";
                                 break;
 
@@ -860,7 +861,7 @@ namespace System.Numerics
 
                             case 2:
                                 result.Append(info.CurrencySymbol);
-                                result.Append(" ");
+                                result.Append(' ');
                                 break;
 
                             case 3:
@@ -914,7 +915,7 @@ namespace System.Numerics
                             case 7:
                                 result.Append(info.NegativeSign);
                                 result.Append(info.PercentSymbol);
-                                result.Append(" ");
+                                result.Append(' ');
                                 break;
 
                             case 8:
@@ -923,13 +924,13 @@ namespace System.Numerics
 
                             case 9:
                                 result.Append(info.PercentSymbol);
-                                result.Append(" ");
+                                result.Append(' ');
                                 close = info.NegativeSign;
                                 break;
 
                             case 10:
                                 result.Append(info.PercentSymbol);
-                                result.Append(" ");
+                                result.Append(' ');
                                 result.Append(info.NegativeSign);
                                 break;
 
@@ -959,7 +960,7 @@ namespace System.Numerics
 
                             case 3:
                                 result.Append(info.PercentSymbol);
-                                result.Append(" ");
+                                result.Append(' ');
                                 break;
 
                             default:

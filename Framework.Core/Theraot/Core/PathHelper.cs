@@ -43,23 +43,24 @@ namespace Theraot.Core
             var combine = new List<string>();
             for (var index = paths.Length - 1; index >= 0; index--)
             {
-                if (HasInvalidPathChars(paths[index]))
+                ref var current = ref paths[index];
+                if (HasInvalidPathChars(current))
                 {
                     throw new ArgumentException("invalid characters in path");
                 }
-                if (string.Empty != paths[index])
+                if (current.Length != 0)
                 {
                     if (combine.Count > 0)
                     {
-                        if (!paths[index].EndsWith(_directorySeparatorString, StringComparison.Ordinal)
-                            && !paths[index].EndsWith(_altDirectorySeparatorString, StringComparison.Ordinal)
-                            && !paths[index].EndsWith(_volumeSeparatorString, StringComparison.Ordinal))
+                        if (!current.EndsWith(_directorySeparatorString, StringComparison.Ordinal)
+                            && !current.EndsWith(_altDirectorySeparatorString, StringComparison.Ordinal)
+                            && !current.EndsWith(_volumeSeparatorString, StringComparison.Ordinal))
                         {
-                            paths[index] += _directorySeparatorString;
+                            current += _directorySeparatorString;
                         }
                     }
-                    combine.Insert(0, paths[index]);
-                    if (Path.IsPathRooted(paths[index]))
+                    combine.Insert(0, current);
+                    if (Path.IsPathRooted(current))
                     {
                         break;
                     }
@@ -79,14 +80,14 @@ namespace Theraot.Core
             {
                 throw new ArgumentException("invalid characters in path");
             }
-            if (string.Empty != path2)
+            if (path2.Length != 0)
             {
                 if (Path.IsPathRooted(path2))
                 {
                     return path2;
                 }
             }
-            if (string.Empty != path1)
+            if (path1.Length != 0)
             {
                 if (!path1.EndsWith(_directorySeparatorString, StringComparison.Ordinal)
                     && !path1.EndsWith(_altDirectorySeparatorString, StringComparison.Ordinal)
@@ -108,14 +109,14 @@ namespace Theraot.Core
             {
                 throw new ArgumentException("invalid characters in path");
             }
-            if (string.Empty != path3)
+            if (path3.Length != 0)
             {
                 if (Path.IsPathRooted(path3))
                 {
                     return path3;
                 }
             }
-            if (string.Empty != path2)
+            if (path2.Length != 0)
             {
                 if (!path2.EndsWith(_directorySeparatorString, StringComparison.Ordinal)
                     && !path2.EndsWith(_altDirectorySeparatorString, StringComparison.Ordinal)
@@ -128,7 +129,7 @@ namespace Theraot.Core
                     return string.Concat(path2, path3);
                 }
             }
-            if (string.Empty != path1)
+            if (path1.Length != 0)
             {
                 if (!path1.EndsWith(_directorySeparatorString, StringComparison.Ordinal)
                     && !path1.EndsWith(_altDirectorySeparatorString, StringComparison.Ordinal)
@@ -150,14 +151,14 @@ namespace Theraot.Core
             {
                 throw new ArgumentException("invalid characters in path");
             }
-            if (string.Empty != path4)
+            if (path4.Length != 0)
             {
                 if (Path.IsPathRooted(path4))
                 {
                     return path4;
                 }
             }
-            if (string.Empty != path3)
+            if (path3.Length != 0)
             {
                 if (!path3.EndsWith(_directorySeparatorString, StringComparison.Ordinal)
                     && !path3.EndsWith(_altDirectorySeparatorString, StringComparison.Ordinal)
@@ -170,7 +171,7 @@ namespace Theraot.Core
                     return string.Concat(path3, path4);
                 }
             }
-            if (string.Empty != path2)
+            if (path2.Length != 0)
             {
                 if (!path2.EndsWith(_directorySeparatorString, StringComparison.Ordinal)
                     && !path2.EndsWith(_altDirectorySeparatorString, StringComparison.Ordinal)
@@ -183,7 +184,7 @@ namespace Theraot.Core
                     return string.Concat(path2, path3, path4);
                 }
             }
-            if (string.Empty != path1)
+            if (path1.Length != 0)
             {
                 if (!path1.EndsWith(_directorySeparatorString, StringComparison.Ordinal)
                     && !path1.EndsWith(_altDirectorySeparatorString, StringComparison.Ordinal)

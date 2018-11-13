@@ -163,14 +163,15 @@ namespace System.Linq.Expressions.Compiler
                         var newInits = new ElementInit[_inits.Count];
                         for (var i = 0; i < _inits.Count; i++)
                         {
+                            ref var current = ref newInits[i];
                             var cr = _childRewriters[i];
                             if (cr.Action == RewriteAction.None)
                             {
-                                newInits[i] = _inits[i];
+                                current = _inits[i];
                             }
                             else
                             {
-                                newInits[i] = Expression.ElementInit(_inits[i].AddMethod, cr[0, -1]);
+                                current = Expression.ElementInit(_inits[i].AddMethod, cr[0, -1]);
                             }
                         }
                         return Expression.ListBind(MemberBinding.Member, new TrueReadOnlyCollection<ElementInit>(newInits));

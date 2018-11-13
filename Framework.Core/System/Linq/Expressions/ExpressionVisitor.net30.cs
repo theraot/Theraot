@@ -552,9 +552,10 @@ namespace System.Linq.Expressions
             }
             for (var i = 0; i < count; i++)
             {
-                if (nodes[i] == null)
+                ref var current = ref nodes[i];
+                if (current == null)
                 {
-                    nodes[i] = node.GetExpression(i);
+                    current = node.GetExpression(i);
                 }
             }
 

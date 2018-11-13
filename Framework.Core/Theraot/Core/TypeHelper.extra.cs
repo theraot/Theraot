@@ -31,10 +31,11 @@ namespace Theraot.Core
                 var nextIndex = 0;
                 for (int index = 0; index < constructors.Length; index++)
                 {
-                    var constructorParameters = constructors[index].GetParameters();
+                    ref var current = ref constructors[index];
+                    var constructorParameters = current.GetParameters();
                     if (constructorParameters.Length == methodParameters.Length)
                     {
-                        next[nextIndex] = constructors[index];
+                        next[nextIndex] = current;
                         nextIndex++;
                     }
                 }

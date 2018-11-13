@@ -728,8 +728,8 @@ namespace MonoTests.System.Numerics
         private static void Check(long value, byte[] array)
         {
             // Created by value
-            Check(array, new BigInteger(value), "Created by Value: " + value);
-            Check(array, new BigInteger(array), "Created by Array for value: " + value);
+            Check(array, new BigInteger(value), "Created by Value: " + value.ToString());
+            Check(array, new BigInteger(array), "Created by Array for value: " + value.ToString());
         }
 
         private static void Check(byte[] array, BigInteger a, string msg)
@@ -739,7 +739,7 @@ namespace MonoTests.System.Numerics
             {
                 Debug.Print(" - Failed - ");
                 Debug.Print(msg);
-                Debug.Print("Value = " + a);
+                Debug.Print("Value = " + a.ToString());
                 Debug.Print("ToByteArray returned:");
                 foreach (var item in result)
                 {

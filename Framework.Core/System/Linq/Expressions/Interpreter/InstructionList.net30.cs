@@ -14,7 +14,7 @@ using System.Runtime.CompilerServices;
 namespace System.Linq.Expressions.Interpreter
 {
     [DebuggerTypeProxy(typeof(DebugView))]
-    internal struct InstructionArray
+    internal readonly struct InstructionArray
     {
         // list of (instruction index, cookie) sorted by instruction index:
         internal readonly List<KeyValuePair<int, object>> DebugCookies;
@@ -57,10 +57,11 @@ namespace System.Linq.Expressions.Interpreter
             {
                 get
                 {
+                    var labels = _array.Labels;
                     return InstructionList.DebugView.GetInstructionViews(
                         _array.Instructions,
                         _array.Objects,
-                        (index) => _array.Labels[index].Index,
+                        (index) => labels[index].Index,
                         _array.DebugCookies
                     );
                 }
@@ -102,10 +103,11 @@ namespace System.Linq.Expressions.Interpreter
             {
                 get
                 {
+                    var labels = _list._labels;
                     return GetInstructionViews(
                         _list._instructions,
                         _list._objects,
-                        (index) => _list._labels[index].TargetIndex,
+                        (index) => labels[index].TargetIndex,
                         _list._debugCookies
                     );
                 }
@@ -145,7 +147,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             [DebuggerDisplay("{GetValue(),nq}", Name = "{GetName(),nq}", Type = "{GetDisplayType(), nq}")]
-            internal struct InstructionView
+            internal readonly struct InstructionView
             {
                 private readonly int _continuationsDepth;
                 private readonly int _index;
@@ -164,14 +166,14 @@ namespace System.Linq.Expressions.Interpreter
 
                 internal string GetDisplayType()
                 {
-                    return _instruction.ContinuationsBalance + "/" + _instruction.StackBalance;
+                    return _instruction.ContinuationsBalance.ToString() + "/" + _instruction.StackBalance.ToString();
                 }
 
                 internal string GetName()
                 {
-                    return _index +
-                        (_continuationsDepth == 0 ? "" : " C(" + _continuationsDepth + ")") +
-                        (_stackDepth == 0 ? "" : " S(" + _stackDepth + ")");
+                    return _index.ToString() +
+                        (_continuationsDepth == 0 ? "" : " C(" + _continuationsDepth.ToString() + ")") +
+                        (_stackDepth == 0 ? "" : " S(" + _stackDepth.ToString() + ")");
                 }
 
                 internal string GetValue()

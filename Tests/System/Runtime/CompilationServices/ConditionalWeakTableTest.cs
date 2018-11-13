@@ -246,7 +246,7 @@ namespace MonoTests.System.Runtime.CompilerServices
 
             for (var i = 0; i < res.Count; ++i)
             {
-                Assert.IsFalse(res[i].IsAlive, "#r" + i);
+                Assert.IsFalse(res[i].IsAlive, "#r" + i.ToString());
             }
         }
 
@@ -284,13 +284,13 @@ namespace MonoTests.System.Runtime.CompilerServices
                 Val val;
                 foreach (var key in keys)
                 {
-                    Assert.IsTrue(table.TryGetValue(key, out val), "#1-" + i + "-k-" + key);
+                    Assert.IsTrue(table.TryGetValue(key, out val), "#1-" + i.ToString() + "-k-" + key);
                 }
 
                 // Remove all keys from the ConditionalWeakTable
                 foreach (var key in keys)
                 {
-                    Assert.IsTrue(table.Remove(key), "#2-" + i + "-k-" + key);
+                    Assert.IsTrue(table.Remove(key), "#2-" + i.ToString() + "-k-" + key);
                 }
             }
         }
@@ -327,19 +327,19 @@ namespace MonoTests.System.Runtime.CompilerServices
 
             for (var i = 0; i < res.Count; ++i)
             {
-                Assert.IsFalse(res[i].IsAlive, "#r0-" + i);
+                Assert.IsFalse(res[i].IsAlive, "#r0-" + i.ToString());
             }
 
             for (var i = 0; i < res2.Count; ++i)
             {
-                Assert.IsFalse(res2[i].IsAlive, "#r1-" + i);
+                Assert.IsFalse(res2[i].IsAlive, "#r1-" + i.ToString());
             }
 
             for (var i = 0; i < k.Count; ++i)
             {
                 object val;
-                Assert.IsTrue(cwt[0].TryGetValue(k[i], out val), "k0-" + i);
-                Assert.AreEqual(i, val, "k1-" + i);
+                Assert.IsTrue(cwt[0].TryGetValue(k[i], out val), "k0-" + i.ToString());
+                Assert.AreEqual(i, val, "k1-" + i.ToString());
             }
         }
 
@@ -616,7 +616,7 @@ namespace MonoTests.System.Runtime.CompilerServices
 
             public override string ToString()
             {
-                return "key-" + Foo;
+                return "key-" + Foo.ToString();
             }
         }
 
@@ -626,7 +626,7 @@ namespace MonoTests.System.Runtime.CompilerServices
 
             public override string ToString()
             {
-                return "value-" + Foo;
+                return "value-" + Foo.ToString();
             }
         }
     }

@@ -559,7 +559,7 @@ namespace Tests.Theraot.Threading.Needles
                                     }
                                     info.Add("Work A - before commit");
                                     didA = transact.Commit();
-                                    info.Add("Work A - after commit: " + didA);
+                                    info.Add("Work A - after commit: " + didA.ToString());
                                     if (didA != bucket.SequenceEqual(set))
                                     {
                                         info.Add("Work A - ???");
@@ -595,7 +595,7 @@ namespace Tests.Theraot.Threading.Needles
                                 }
                                 info.Add("Work B - before commit");
                                 didB = transact.Commit();
-                                info.Add("Work B - after commit: " + didB);
+                                info.Add("Work B - after commit: " + didB.ToString());
                                 if (didB != bucket.SequenceEqual(set))
                                 {
                                     info.Add("Work B - ???");

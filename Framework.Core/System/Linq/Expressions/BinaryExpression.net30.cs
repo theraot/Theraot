@@ -288,7 +288,7 @@ namespace System.Linq.Expressions
             var tempArgs = new List<Expression>(index.Arguments.Count);
             foreach (var arg in index.Arguments)
             {
-                var tempArg = Variable(arg.Type, "tempArg" + tempArgs.Count);
+                var tempArg = Variable(arg.Type, "tempArg" + tempArgs.Count.ToString());
                 vars.Add(tempArg);
                 tempArgs.Add(tempArg);
                 exprs.Add(Assign(tempArg, arg));

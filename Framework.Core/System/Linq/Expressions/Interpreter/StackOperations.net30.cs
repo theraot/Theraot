@@ -71,7 +71,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return "LoadCached(" + _index + ")";
+            return "LoadCached(" + _index.ToString() + ")";
         }
     }
 

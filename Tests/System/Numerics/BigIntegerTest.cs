@@ -88,7 +88,7 @@ namespace MonoTests.System.Numerics
                     var a = new BigInteger(values[i]);
                     var b = new BigInteger(values[j]);
                     var c = a * b;
-                    Assert.AreEqual(values[i] * values[j], (long)c, "#_" + i + "_" + j);
+                    Assert.AreEqual(values[i] * values[j], (long)c, "#_" + i.ToString() + "_" + j.ToString());
                 }
             }
         }
@@ -119,8 +119,8 @@ namespace MonoTests.System.Numerics
                     BigInteger d;
                     var c = BigInteger.DivRem(a, b, out d);
 
-                    Assert.AreEqual(values[i] / values[j], (long)c, "#a_" + i + "_" + j);
-                    Assert.AreEqual(values[i] % values[j], (long)d, "#b_" + i + "_" + j);
+                    Assert.AreEqual(values[i] / values[j], (long)c, "#a_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] % values[j], (long)d, "#b_" + i.ToString() + "_" + j.ToString());
                 }
             }
         }
@@ -269,10 +269,10 @@ namespace MonoTests.System.Numerics
                 var b = new BigInteger(_addB[i]);
                 var c = new BigInteger(_addC[i]);
 
-                Assert.AreEqual(c, a + b, "#" + i + "a");
-                Assert.AreEqual(c, b + a, "#" + i + "b");
-                Assert.AreEqual(c, BigInteger.Add(a, b), "#" + i + "c");
-                Assert.AreEqual(_addC[i], (a + b).ToByteArray(), "#" + i + "d");
+                Assert.AreEqual(c, a + b, "#" + i.ToString() + "a");
+                Assert.AreEqual(c, b + a, "#" + i.ToString() + "b");
+                Assert.AreEqual(c, BigInteger.Add(a, b), "#" + i.ToString() + "c");
+                Assert.AreEqual(_addC[i], (a + b).ToByteArray(), "#" + i.ToString() + "d");
             }
         }
 
@@ -287,7 +287,7 @@ namespace MonoTests.System.Numerics
                     var a = new BigInteger(values[i]);
                     var b = new BigInteger(values[j]);
                     var c = a + b;
-                    Assert.AreEqual(values[i] + values[j], (long)c, "#_" + i + "_" + j);
+                    Assert.AreEqual(values[i] + values[j], (long)c, "#_" + i.ToString() + "_" + j.ToString());
                 }
             }
         }
@@ -314,8 +314,8 @@ namespace MonoTests.System.Numerics
                     var c = a - b;
                     var d = BigInteger.Subtract(a, b);
 
-                    Assert.AreEqual(values[i] - values[j], (long)c, "#_" + i + "_" + j);
-                    Assert.AreEqual(values[i] - values[j], (long)d, "#_" + i + "_" + j);
+                    Assert.AreEqual(values[i] - values[j], (long)c, "#_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] - values[j], (long)d, "#_" + i.ToString() + "_" + j.ToString());
                 }
             }
         }
@@ -332,7 +332,7 @@ namespace MonoTests.System.Numerics
                     var b = new BigInteger(values[j]);
                     var c = BigInteger.Min(a, b);
 
-                    Assert.AreEqual(Math.Min(values[i], values[j]), (long)c, "#_" + i + "_" + j);
+                    Assert.AreEqual(Math.Min(values[i], values[j]), (long)c, "#_" + i.ToString() + "_" + j.ToString());
                 }
             }
         }
@@ -349,7 +349,7 @@ namespace MonoTests.System.Numerics
                     var b = new BigInteger(values[j]);
                     var c = BigInteger.Max(a, b);
 
-                    Assert.AreEqual(Math.Max(values[i], values[j]), (long)c, "#_" + i + "_" + j);
+                    Assert.AreEqual(Math.Max(values[i], values[j]), (long)c, "#_" + i.ToString() + "_" + j.ToString());
                 }
             }
         }
@@ -363,7 +363,7 @@ namespace MonoTests.System.Numerics
                 var a = new BigInteger(values[i]);
                 var c = BigInteger.Abs(a);
 
-                Assert.AreEqual(Math.Abs(values[i]), (long)c, "#_" + i);
+                Assert.AreEqual(Math.Abs(values[i]), (long)c, "#_" + i.ToString());
             }
         }
 
@@ -377,8 +377,8 @@ namespace MonoTests.System.Numerics
                 var c = -a;
                 var d = BigInteger.Negate(a);
 
-                Assert.AreEqual(-values[i], (long)c, "#_" + i);
-                Assert.AreEqual(-values[i], (long)d, "#_" + i);
+                Assert.AreEqual(-values[i], (long)c, "#_" + i.ToString());
+                Assert.AreEqual(-values[i], (long)d, "#_" + i.ToString());
             }
         }
 
@@ -391,7 +391,7 @@ namespace MonoTests.System.Numerics
                 var a = new BigInteger(values[i]);
                 var b = ++a;
 
-                Assert.AreEqual(++values[i], (long)b, "#_" + i);
+                Assert.AreEqual(++values[i], (long)b, "#_" + i.ToString());
             }
         }
 
@@ -404,7 +404,7 @@ namespace MonoTests.System.Numerics
                 var a = new BigInteger(values[i]);
                 var b = --a;
 
-                Assert.AreEqual(--values[i], (long)b, "#_" + i);
+                Assert.AreEqual(--values[i], (long)b, "#_" + i.ToString());
             }
         }
 
@@ -419,10 +419,10 @@ namespace MonoTests.System.Numerics
                     var a = new BigInteger(values[i]);
                     var b = new BigInteger(values[j]);
 
-                    Assert.AreEqual(values[i] | values[j], (long)(a | b), "#b_" + i + "_" + j);
-                    Assert.AreEqual(values[i] & values[j], (long)(a & b), "#a_" + i + "_" + j);
-                    Assert.AreEqual(values[i] ^ values[j], (long)(a ^ b), "#c_" + i + "_" + j);
-                    Assert.AreEqual(~values[i], (long)~a, "#d_" + i + "_" + j);
+                    Assert.AreEqual(values[i] | values[j], (long)(a | b), "#b_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] & values[j], (long)(a & b), "#a_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] ^ values[j], (long)(a ^ b), "#c_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(~values[i], (long)~a, "#d_" + i.ToString() + "_" + j.ToString());
                 }
             }
         }
@@ -491,15 +491,15 @@ namespace MonoTests.System.Numerics
                     var a = new BigInteger(values[i]);
                     var b = new BigInteger(values[j]);
 
-                    Assert.AreEqual(values[i].CompareTo(values[j]), a.CompareTo(b), "#a_" + i + "_" + j);
-                    Assert.AreEqual(values[i].CompareTo(values[j]), BigInteger.Compare(a, b), "#b_" + i + "_" + j);
+                    Assert.AreEqual(values[i].CompareTo(values[j]), a.CompareTo(b), "#a_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i].CompareTo(values[j]), BigInteger.Compare(a, b), "#b_" + i.ToString() + "_" + j.ToString());
 
-                    Assert.AreEqual(values[i] < values[j], a < b, "#c_" + i + "_" + j);
-                    Assert.AreEqual(values[i] <= values[j], a <= b, "#d_" + i + "_" + j);
-                    Assert.AreEqual(values[i] == values[j], a == b, "#e_" + i + "_" + j);
-                    Assert.AreEqual(values[i] != values[j], a != b, "#f_" + i + "_" + j);
-                    Assert.AreEqual(values[i] >= values[j], a >= b, "#g_" + i + "_" + j);
-                    Assert.AreEqual(values[i] > values[j], a > b, "#h_" + i + "_" + j);
+                    Assert.AreEqual(values[i] < values[j], a < b, "#c_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] <= values[j], a <= b, "#d_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] == values[j], a == b, "#e_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] != values[j], a != b, "#f_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] >= values[j], a >= b, "#g_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] > values[j], a > b, "#h_" + i.ToString() + "_" + j.ToString());
                 }
             }
         }
@@ -530,21 +530,21 @@ namespace MonoTests.System.Numerics
                     var b = uvalues[j];
                     var c = new BigInteger(b);
 
-                    Assert.AreEqual(a.CompareTo(c), a.CompareTo(b), "#a_" + i + "_" + j);
+                    Assert.AreEqual(a.CompareTo(c), a.CompareTo(b), "#a_" + i.ToString() + "_" + j.ToString());
 
-                    Assert.AreEqual(a > c, a > b, "#b_" + i + "_" + j);
-                    Assert.AreEqual(a < c, a < b, "#c_" + i + "_" + j);
-                    Assert.AreEqual(a <= c, a <= b, "#d_" + i + "_" + j);
-                    Assert.AreEqual(a == c, a == b, "#e_" + i + "_" + j);
-                    Assert.AreEqual(a != c, a != b, "#f_" + i + "_" + j);
-                    Assert.AreEqual(a >= c, a >= b, "#g_" + i + "_" + j);
+                    Assert.AreEqual(a > c, a > b, "#b_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a < c, a < b, "#c_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a <= c, a <= b, "#d_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a == c, a == b, "#e_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a != c, a != b, "#f_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a >= c, a >= b, "#g_" + i.ToString() + "_" + j.ToString());
 
-                    Assert.AreEqual(c > a, b > a, "#ib_" + i + "_" + j);
-                    Assert.AreEqual(c < a, b < a, "#ic_" + i + "_" + j);
-                    Assert.AreEqual(c <= a, b <= a, "#id_" + i + "_" + j);
-                    Assert.AreEqual(c == a, b == a, "#ie_" + i + "_" + j);
-                    Assert.AreEqual(c != a, b != a, "#if_" + i + "_" + j);
-                    Assert.AreEqual(c >= a, b >= a, "#ig_" + i + "_" + j);
+                    Assert.AreEqual(c > a, b > a, "#ib_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c < a, b < a, "#ic_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c <= a, b <= a, "#id_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c == a, b == a, "#ie_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c != a, b != a, "#if_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c >= a, b >= a, "#ig_" + i.ToString() + "_" + j.ToString());
                 }
             }
         }
@@ -562,21 +562,21 @@ namespace MonoTests.System.Numerics
                     var b = values[j];
                     var c = new BigInteger(b);
 
-                    Assert.AreEqual(a.CompareTo(c), a.CompareTo(b), "#a_" + i + "_" + j);
+                    Assert.AreEqual(a.CompareTo(c), a.CompareTo(b), "#a_" + i.ToString() + "_" + j.ToString());
 
-                    Assert.AreEqual(a > c, a > b, "#b_" + i + "_" + j);
-                    Assert.AreEqual(a < c, a < b, "#c_" + i + "_" + j);
-                    Assert.AreEqual(a <= c, a <= b, "#d_" + i + "_" + j);
-                    Assert.AreEqual(a == c, a == b, "#e_" + i + "_" + j);
-                    Assert.AreEqual(a != c, a != b, "#f_" + i + "_" + j);
-                    Assert.AreEqual(a >= c, a >= b, "#g_" + i + "_" + j);
+                    Assert.AreEqual(a > c, a > b, "#b_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a < c, a < b, "#c_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a <= c, a <= b, "#d_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a == c, a == b, "#e_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a != c, a != b, "#f_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a >= c, a >= b, "#g_" + i.ToString() + "_" + j.ToString());
 
-                    Assert.AreEqual(c > a, b > a, "#ib_" + i + "_" + j);
-                    Assert.AreEqual(c < a, b < a, "#ic_" + i + "_" + j);
-                    Assert.AreEqual(c <= a, b <= a, "#id_" + i + "_" + j);
-                    Assert.AreEqual(c == a, b == a, "#ie_" + i + "_" + j);
-                    Assert.AreEqual(c != a, b != a, "#if_" + i + "_" + j);
-                    Assert.AreEqual(c >= a, b >= a, "#ig_" + i + "_" + j);
+                    Assert.AreEqual(c > a, b > a, "#ib_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c < a, b < a, "#ic_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c <= a, b <= a, "#id_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c == a, b == a, "#ie_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c != a, b != a, "#if_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c >= a, b >= a, "#ig_" + i.ToString() + "_" + j.ToString());
                 }
             }
         }
@@ -626,8 +626,8 @@ namespace MonoTests.System.Numerics
                 var a = new BigInteger(val);
                 var b = new BigInteger(a.ToByteArray());
 
-                Assert.AreEqual(val, (int)a, "#a_" + val);
-                Assert.AreEqual(val, (int)b, "#b_" + val);
+                Assert.AreEqual(val, (int)a, "#a_" + val.ToString());
+                Assert.AreEqual(val, (int)b, "#b_" + val.ToString());
             }
         }
 
@@ -642,9 +642,9 @@ namespace MonoTests.System.Numerics
                 var a = new BigInteger(val);
                 var b = new BigInteger(a.ToByteArray());
 
-                Assert.AreEqual(val, (long)a, "#a_" + val);
-                Assert.AreEqual(val, (long)b, "#b_" + val);
-                Assert.AreEqual(a, b, "#a  == #b (" + val + ")");
+                Assert.AreEqual(val, (long)a, "#a_" + val.ToString());
+                Assert.AreEqual(val, (long)b, "#b_" + val.ToString());
+                Assert.AreEqual(a, b, "#a  == #b (" + val.ToString() + ")");
             }
         }
 

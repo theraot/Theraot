@@ -58,7 +58,7 @@ namespace MonoTests.System.Collections.Concurrent
                 {
                     var own = Interlocked.Increment(ref index);
 
-                    while (!_map.TryAdd("monkey" + own, own))
+                    while (!_map.TryAdd("monkey" + own.ToString(), own))
                     {
                     }
                 }, 4);
@@ -254,7 +254,7 @@ namespace MonoTests.System.Collections.Concurrent
 
             foreach (var id in ids)
             {
-                Assert.IsFalse(dict.TryGetValue(id, out result), id + " (second)");
+                Assert.IsFalse(dict.TryGetValue(id, out result), id.ToString() + " (second)");
             }
         }
 
@@ -304,7 +304,7 @@ namespace MonoTests.System.Collections.Concurrent
                 Assert.IsTrue(r2, "2");
                 Assert.IsTrue(r3, "3");
 
-                Assert.IsFalse(_map.TryGetValue("foo", out value), "#1b " + value);
+                Assert.IsFalse(_map.TryGetValue("foo", out value), "#1b " + value.ToString());
                 Assert.IsFalse(_map.TryGetValue("bar", out value), "#2b");
                 Assert.IsFalse(_map.TryGetValue("foobar", out value), "#3b");
             });

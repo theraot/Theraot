@@ -46,12 +46,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects)
         {
-            return ToString() + (_offset != Unknown ? " -> " + (instructionIndex + _offset) : "");
+            return ToString() + (_offset != Unknown ? " -> " + (instructionIndex + _offset).ToString() : "");
         }
 
         public override string ToString()
         {
-            return InstructionName + (_offset == Unknown ? "(?)" : "(" + _offset + ")");
+            return InstructionName + (_offset == Unknown ? "(?)" : "(" + _offset.ToString() + ")");
         }
     }
 
@@ -251,13 +251,13 @@ namespace System.Linq.Expressions.Interpreter
             }
             Debug.Assert(LabelIndex != UnknownInstrIndex);
             var targetIndex = labelIndexer(LabelIndex);
-            return ToString() + (targetIndex != BranchLabel.UnknownIndex ? " -> " + targetIndex : "");
+            return ToString() + (targetIndex != BranchLabel.UnknownIndex ? " -> " + targetIndex.ToString() : "");
         }
 
         public override string ToString()
         {
             Debug.Assert(LabelIndex != UnknownInstrIndex);
-            return InstructionName + "[" + LabelIndex + "]";
+            return InstructionName + "[" + LabelIndex.ToString() + "]";
         }
     }
 
@@ -518,7 +518,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return _hasFinally ? "EnterTryFinally[" + LabelIndex + "]" : "EnterTryCatch";
+            return _hasFinally ? "EnterTryFinally[" + LabelIndex.ToString() + "]" : "EnterTryCatch";
         }
     }
 

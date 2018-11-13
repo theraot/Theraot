@@ -152,7 +152,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static string GetUniqueMethodName()
         {
-            return "<ExpressionCompilerImplementationDetails>{" + Interlocked.Increment(ref _counter) + "}lambda_method";
+            return "<ExpressionCompilerImplementationDetails>{" + Interlocked.Increment(ref _counter).ToString() + "}lambda_method";
         }
 
         private void EmitLambdaBody()

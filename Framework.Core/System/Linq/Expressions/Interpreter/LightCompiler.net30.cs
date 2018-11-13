@@ -14,7 +14,7 @@ using AstUtils = System.Linq.Expressions.Interpreter.Utils;
 
 namespace System.Linq.Expressions.Interpreter
 {
-    internal struct InterpretedFrameInfo
+    internal readonly struct InterpretedFrameInfo
     {
         public readonly DebugInfo DebugInfo;
         public readonly string MethodName;
@@ -749,7 +749,7 @@ namespace System.Linq.Expressions.Interpreter
                     break;
 
                 default:
-                    throw new InvalidOperationException("Invalid lvalue for assignment: " + node.Left.NodeType);
+                    throw new InvalidOperationException("Invalid lvalue for assignment: " + node.Left.NodeType.ToString());
             }
         }
 

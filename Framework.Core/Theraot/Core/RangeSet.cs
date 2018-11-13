@@ -233,7 +233,7 @@ namespace Theraot.Core
         {
             var sb = new StringBuilder();
             var first = true;
-            sb.Append("{");
+            sb.Append('{');
             foreach (var item in _ranges)
             {
                 if (first)
@@ -246,7 +246,7 @@ namespace Theraot.Core
                 }
                 sb.Append(item.ToString());
             }
-            sb.Append("}");
+            sb.Append('}');
             return sb.ToString();
         }
 

@@ -27,11 +27,12 @@ namespace Theraot.Core
             var index = 2;
             for (; index < _smallPrimes.Length; index++)
             {
-                if (number % _smallPrimes[index] == 0)
+                ref var current = ref _smallPrimes[index];
+                if (number % current == 0)
                 {
                     return false;
                 }
-                if (_smallPrimes[index] > max)
+                if (current > max)
                 {
                     return true;
                 }

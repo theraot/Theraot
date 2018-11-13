@@ -177,15 +177,15 @@ namespace MonoTests.System.Collections.Concurrent
         {
             int value;
             _queue.TryPeek(out value);
-            Assert.AreEqual(0, value, "#1 : " + value);
+            Assert.AreEqual(0, value, "#1 : " + value.ToString());
             _queue.TryDequeue(out value);
-            Assert.AreEqual(0, value, "#2 : " + value);
+            Assert.AreEqual(0, value, "#2 : " + value.ToString());
             _queue.TryDequeue(out value);
-            Assert.AreEqual(1, value, "#3 : " + value);
+            Assert.AreEqual(1, value, "#3 : " + value.ToString());
             _queue.TryPeek(out value);
-            Assert.AreEqual(2, value, "#4 : " + value);
+            Assert.AreEqual(2, value, "#4 : " + value.ToString());
             _queue.TryPeek(out value);
-            Assert.AreEqual(2, value, "#5 : " + value);
+            Assert.AreEqual(2, value, "#5 : " + value.ToString());
         }
 
         [Test()]

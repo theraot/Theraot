@@ -550,7 +550,7 @@ namespace System.Linq.Expressions
                 // No guarantee for not having name conflicts with user provided variable names.
                 //
                 var id = GetParamId(node);
-                Out("var" + id);
+                Out("var" + id.ToString());
             }
             else
             {
@@ -1415,7 +1415,7 @@ namespace System.Linq.Expressions
         {
             if (string.IsNullOrEmpty(lambda.Name))
             {
-                return "#Lambda" + GetLambdaId(lambda);
+                return "#Lambda" + GetLambdaId(lambda).ToString();
             }
             return GetDisplayName(lambda.Name);
         }

@@ -71,7 +71,7 @@ namespace MonoTests.System.Collections.Concurrent
 
                 for (var i = 0; i < Threads; i++)
                 {
-                    Assert.AreEqual(Count, values[i], "#" + i);
+                    Assert.AreEqual(Count, values[i], "#" + i.ToString());
                 }
             });
         }
@@ -132,7 +132,7 @@ namespace MonoTests.System.Collections.Concurrent
                     range = range.Reverse();
                 }
 
-                var expected = range.Aggregate(string.Empty, (acc, v) => acc + v);
+                var expected = range.Aggregate(string.Empty, (acc, v) => acc + v.ToString());
 
                 if (order == CheckOrderingType.DontCare)
                 {
