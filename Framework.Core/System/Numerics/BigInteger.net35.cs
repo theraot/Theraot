@@ -621,14 +621,15 @@ namespace System.Numerics
             }
             if (other.InternalBits != null)
             {
+                var length = Length(InternalBits);
                 var otherLength = Length(other.InternalBits);
-                if (Length(InternalBits) <= otherLength)
+                if (length <= otherLength)
                 {
-                    if (Length(InternalBits) < otherLength)
+                    if (length < otherLength)
                     {
                         return -InternalSign;
                     }
-                    var diffLength = GetDiffLength(InternalBits, other.InternalBits, Length(InternalBits));
+                    var diffLength = GetDiffLength(InternalBits, other.InternalBits, length);
                     if (diffLength == 0)
                     {
                         return 0;

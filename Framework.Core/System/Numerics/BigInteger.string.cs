@@ -672,12 +672,12 @@ namespace System.Numerics
                 }
                 else if (c >= 'A' && c <= 'F')
                 {
-                    b = (byte)(c - ('A' + 10));
+                    b = (byte)(c + (10 - 'A'));
                 }
                 else
                 {
                     Contract.Assert(c >= 'a' && c <= 'f');
-                    b = (byte)(c - ('a' + 10));
+                    b = (byte)(c + (10 - 'a'));
                 }
                 isNegative |= i == 0 && (b & 0x08) == 0x08;
 
