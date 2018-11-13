@@ -155,16 +155,11 @@ namespace System.Runtime.CompilerServices
                     _invokeMoveNext = callback = InvokeMoveNext;
                 }
                 ExecutionContext.Run(_context, callback, StateMachine);
-            }
 
-            /// <summary>
-            /// Invokes the MoveNext method on the supplied IAsyncStateMachine.
-            /// </summary>
-            /// <param name="stateMachine">The IAsyncStateMachine machine instance.</param>
-            [SecurityCritical]
-            private static void InvokeMoveNext(object stateMachine)
-            {
-                ((IAsyncStateMachine)stateMachine).MoveNext();
+                void InvokeMoveNext(object stateMachine)
+                {
+                    ((IAsyncStateMachine)stateMachine).MoveNext();
+                }
             }
         }
     }

@@ -204,13 +204,6 @@ namespace Theraot.Collections
 
         private static IEnumerable<T> SkipItemsExtracted<T>(IEnumerable<T> source, Predicate<T> predicateCount, int skipCount)
         {
-#if FAT
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (predicateCount == null)
-            {
-                throw new ArgumentNullException(nameof(predicateCount));
-            }
-#endif
             var count = 0;
             foreach (var item in source)
             {
@@ -244,13 +237,6 @@ namespace Theraot.Collections
 
         private static IEnumerable<T> TakeItemsExtracted<T>(IEnumerable<T> source, Predicate<T> predicateCount, int takeCount)
         {
-#if FAT
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (predicateCount == null)
-            {
-                throw new ArgumentNullException(nameof(predicateCount));
-            }
-#endif
             var count = 0;
             foreach (var item in source)
             {

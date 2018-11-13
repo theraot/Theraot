@@ -30,6 +30,19 @@ namespace Theraot.Collections.ThreadSafe
             }
             _needleFactory = needleFactory;
             _pool = new Pool<TNeedle>(64, Recycle);
+
+            void Recycle(TNeedle obj)
+            {
+                try
+                {
+                    NeedleReservoir.InternalRecycling++;
+                    obj.Free();
+                }
+                finally
+                {
+                    NeedleReservoir.InternalRecycling--;
+                }
+            }
         }
 
         internal void DonateNeedle(TNeedle donation)
@@ -58,19 +71,6 @@ namespace Theraot.Collections.ThreadSafe
                 result = _needleFactory(value);
             }
             return result;
-        }
-
-        private static void Recycle(TNeedle obj)
-        {
-            try
-            {
-                NeedleReservoir.InternalRecycling++;
-                obj.Free();
-            }
-            finally
-            {
-                NeedleReservoir.InternalRecycling--;
-            }
         }
     }
 }

@@ -1295,20 +1295,25 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
-            using (var enumeratorFirst = first.GetEnumerator())
-            using (var enumeratorSecond = second.GetEnumerator())
+            return ZipExtracted();
+
+            IEnumerable<TReturn> ZipExtracted()
             {
-                while
-                (
-                    enumeratorFirst.MoveNext()
-                    && enumeratorSecond.MoveNext()
-                )
+                using (var enumeratorFirst = first.GetEnumerator())
+                using (var enumeratorSecond = second.GetEnumerator())
                 {
-                    yield return resultSelector
+                    while
                     (
-                        enumeratorFirst.Current,
-                        enumeratorSecond.Current
-                    );
+                        enumeratorFirst.MoveNext()
+                        && enumeratorSecond.MoveNext()
+                    )
+                    {
+                        yield return resultSelector
+                        (
+                            enumeratorFirst.Current,
+                            enumeratorSecond.Current
+                        );
+                    }
                 }
             }
         }

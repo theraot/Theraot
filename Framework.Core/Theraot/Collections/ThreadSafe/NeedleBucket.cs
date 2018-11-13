@@ -501,9 +501,14 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(check));
             }
-            foreach (var needle in _entries.Where(needle => check(needle.Value)))
+            return WhereExtracted();
+
+            IEnumerable<T> WhereExtracted()
             {
-                yield return needle.Value;
+                foreach (var needle in _entries.Where(needle => check(needle.Value)))
+                {
+                    yield return needle.Value;
+                }
             }
         }
     }

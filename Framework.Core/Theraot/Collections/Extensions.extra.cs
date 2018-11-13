@@ -35,14 +35,19 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(source));
             }
             var progressive = new ProgressiveCollection<T>(source);
-            while (true)
+            return CycleExtracted();
+
+            IEnumerable<T> CycleExtracted()
             {
-                foreach (var item in progressive)
+                while (true)
                 {
-                    yield return item;
+                    foreach (var item in progressive)
+                    {
+                        yield return item;
+                    }
                 }
+                // Infinite Loop - This method creates an endless IEnumerable<T>
             }
-            // Infinite Loop - This method creates an endless IEnumerable<T>
         }
 
 #endif

@@ -717,17 +717,6 @@ namespace System.Threading
         }
 
         /// <summary>
-        /// Helper method to call the post phase action
-        /// </summary>
-        /// <param name="obj"></param>
-        [SecurityCritical]
-        private static void InvokePostPhaseAction(object obj)
-        {
-            var thisBarrier = (Barrier)obj;
-            thisBarrier._postPhaseAction(thisBarrier);
-        }
-
-        /// <summary>
         /// The reason of discontinuous waiting instead of direct waiting on the event is to avoid the race where the sense is
         /// changed twice because the next phase is finished (due to either RemoveParticipant is called or another thread joined
         /// the next phase instead of the current thread) so the current thread will be stuck on the event because it is reset back
@@ -823,6 +812,12 @@ namespace System.Threading
             else
             {
                 SetResetEvents(observedSense);
+            }
+
+            void InvokePostPhaseAction(object obj)
+            {
+                var thisBarrier = (Barrier)obj;
+                thisBarrier._postPhaseAction(thisBarrier);
             }
         }
 

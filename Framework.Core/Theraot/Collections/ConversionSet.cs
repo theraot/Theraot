@@ -30,9 +30,14 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(converter));
             }
-            foreach (var item in wrapped)
+            return BuildEnumerableExtracted();
+
+            IEnumerable<TOutput> BuildEnumerableExtracted()
             {
-                yield return converter(item);
+                foreach (var item in wrapped)
+                {
+                    yield return converter(item);
+                }
             }
         }
 
@@ -50,11 +55,16 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(filter));
             }
-            foreach (var item in wrapped)
+            return BuildEnumerableExtracted();
+
+            IEnumerable<TOutput> BuildEnumerableExtracted()
             {
-                if (filter(item))
+                foreach (var item in wrapped)
                 {
-                    yield return converter(item);
+                    if (filter(item))
+                    {
+                        yield return converter(item);
+                    }
                 }
             }
         }
