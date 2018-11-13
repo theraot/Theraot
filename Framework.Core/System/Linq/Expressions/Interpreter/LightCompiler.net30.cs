@@ -14,197 +14,70 @@ using AstUtils = System.Linq.Expressions.Interpreter.Utils;
 
 namespace System.Linq.Expressions.Interpreter
 {
-    internal sealed class ExceptionHandler
+    internal struct InterpretedFrameInfo
     {
-        public readonly Type ExceptionType;
-        public readonly int StartIndex;
-        public readonly int EndIndex;
-        public readonly int LabelIndex;
-        public readonly int HandlerStartIndex;
-        public readonly int HandlerEndIndex;
+        public readonly DebugInfo DebugInfo;
+        public readonly string MethodName;
 
-        internal TryCatchFinallyHandler Parent;
-
-        public bool IsFault
+        public InterpretedFrameInfo(string methodName, DebugInfo info)
         {
-            get { return ExceptionType == null; }
-        }
-
-        internal ExceptionHandler(int start, int end, int labelIndex, int handlerStartIndex, int handlerEndIndex, Type exceptionType)
-        {
-            StartIndex = start;
-            EndIndex = end;
-            LabelIndex = labelIndex;
-            ExceptionType = exceptionType;
-            HandlerStartIndex = handlerStartIndex;
-            HandlerEndIndex = handlerEndIndex;
-        }
-
-        internal void SetParent(TryCatchFinallyHandler tryHandler)
-        {
-            Debug.Assert(Parent == null);
-            Parent = tryHandler;
-        }
-
-        public bool Matches(Type exceptionType)
-        {
-            if (ExceptionType == null || ExceptionType.IsAssignableFrom(exceptionType))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public bool IsBetterThan(ExceptionHandler other)
-        {
-            if (other == null)
-            {
-                return true;
-            }
-
-            Debug.Assert(StartIndex == other.StartIndex && EndIndex == other.EndIndex, "we only need to compare handlers for the same try block");
-            return HandlerStartIndex < other.HandlerStartIndex;
-        }
-
-        internal bool IsInsideTryBlock(int index)
-        {
-            return index >= StartIndex && index < EndIndex;
-        }
-
-        internal bool IsInsideCatchBlock(int index)
-        {
-            return index >= HandlerStartIndex && index < HandlerEndIndex;
-        }
-
-        internal bool IsInsideFinallyBlock(int index)
-        {
-            Debug.Assert(Parent != null);
-            return Parent.IsFinallyBlockExist && index >= Parent.FinallyStartIndex && index < Parent.FinallyEndIndex;
+            MethodName = methodName;
+            DebugInfo = info;
         }
 
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "{0} [{1}-{2}] [{3}->{4}]",
-                (IsFault ? "fault" : "catch(" + ExceptionType.Name + ")"),
-                StartIndex, EndIndex,
-                HandlerStartIndex, HandlerEndIndex
-            );
+            return MethodName + (DebugInfo != null ? ": " + DebugInfo : null);
         }
     }
 
-    internal sealed class TryCatchFinallyHandler
+    internal class ArrayByRefUpdater : ByRefUpdater
     {
-        internal readonly int TryStartIndex;
-        internal readonly int TryEndIndex;
-        internal readonly int FinallyStartIndex;
-        internal readonly int FinallyEndIndex;
-        internal readonly int GotoEndTargetIndex;
+        private readonly LocalDefinition _array, _index;
 
-        private readonly ExceptionHandler[] _handlers;
-
-        internal bool IsFinallyBlockExist
+        public ArrayByRefUpdater(LocalDefinition array, LocalDefinition index, int argumentIndex)
+            : base(argumentIndex)
         {
-            get { return (FinallyStartIndex != Instruction.UnknownInstrIndex && FinallyEndIndex != Instruction.UnknownInstrIndex); }
+            _array = array;
+            _index = index;
         }
 
-        internal bool IsCatchBlockExist
+        public override void UndefineTemps(InstructionList instructions, LocalVariables locals)
         {
-            get { return (_handlers != null); }
+            locals.UndefineLocal(_array, instructions.Count);
+            locals.UndefineLocal(_index, instructions.Count);
         }
 
-        /// <summary>
-        /// No finally block
-        /// </summary>
-        internal TryCatchFinallyHandler(int tryStart, int tryEnd, int gotoEndTargetIndex, ExceptionHandler[] handlers)
-            : this(tryStart, tryEnd, gotoEndTargetIndex, Instruction.UnknownInstrIndex, Instruction.UnknownInstrIndex, handlers)
+        public override void Update(InterpretedFrame frame, object value)
         {
-            Debug.Assert(handlers != null, "catch blocks should exist");
-        }
-
-        /// <summary>
-        /// No catch blocks
-        /// </summary>
-        internal TryCatchFinallyHandler(int tryStart, int tryEnd, int gotoEndTargetIndex, int finallyStart, int finallyEnd)
-            : this(tryStart, tryEnd, gotoEndTargetIndex, finallyStart, finallyEnd, null)
-        {
-            Debug.Assert(finallyStart != Instruction.UnknownInstrIndex && finallyEnd != Instruction.UnknownInstrIndex, "finally block should exist");
-        }
-
-        /// <summary>
-        /// Generic constructor
-        /// </summary>
-        internal TryCatchFinallyHandler(int tryStart, int tryEnd, int gotoEndLabelIndex, int finallyStart, int finallyEnd, ExceptionHandler[] handlers)
-        {
-            TryStartIndex = tryStart;
-            TryEndIndex = tryEnd;
-            FinallyStartIndex = finallyStart;
-            FinallyEndIndex = finallyEnd;
-            GotoEndTargetIndex = gotoEndLabelIndex;
-
-            _handlers = handlers;
-
-            if (handlers != null)
-            {
-                foreach (var handler in handlers)
-                {
-                    handler.SetParent(this);
-                }
-            }
-        }
-
-        internal int GotoHandler(InterpretedFrame frame, object exception, out ExceptionHandler handler)
-        {
-            var handlers = _handlers;
-            Debug.Assert(handlers != null, "we should have at least one handler if the method gets called");
-            handler = null;
-            foreach (var candidateHandler in handlers)
-            {
-                if (candidateHandler.Matches(exception.GetType()))
-                {
-                    handler = candidateHandler;
-                    break;
-                }
-            }
-            if (handler == null)
-            {
-                return 0;
-            }
-            return frame.Goto(handler.LabelIndex, exception, /*gotoExceptionHandler*/ true);
+            var index = frame.Data[_index.Index];
+            ((Array)frame.Data[_array.Index]).SetValue(value, (int)index);
         }
     }
 
-    /// <summary>
-    /// The re-throw instrcution will throw this exception
-    /// </summary>
-    [Serializable]
-    internal sealed class RethrowException : Exception
+    internal abstract class ByRefUpdater
     {
+        public readonly int ArgumentIndex;
+
+        protected ByRefUpdater(int argumentIndex)
+        {
+            ArgumentIndex = argumentIndex;
+        }
+
+        public virtual void UndefineTemps(InstructionList instructions, LocalVariables locals)
+        {
+        }
+
+        public abstract void Update(InterpretedFrame frame, object value);
     }
 
     internal class DebugInfo
     {
-        public int StartLine, EndLine;
-        public int Index;
         public string FileName;
+        public int Index;
         public bool IsClear;
+        public int StartLine, EndLine;
         private static readonly DebugInfoComparer _debugComparer = new DebugInfoComparer();
-
-        private class DebugInfoComparer : IComparer<DebugInfo>
-        {
-            //We allow comparison between int and DebugInfo here
-            int IComparer<DebugInfo>.Compare(DebugInfo x, DebugInfo y)
-            {
-                if (x.Index > y.Index)
-                {
-                    return 1;
-                }
-                if (x.Index == y.Index)
-                {
-                    return 0;
-                }
-                return -1;
-            }
-        }
 
         public static DebugInfo GetMatchingDebugInfo(DebugInfo[] debugInfos, int index)
         {
@@ -238,40 +111,181 @@ namespace System.Linq.Expressions.Interpreter
             }
             return string.Format(CultureInfo.InvariantCulture, "{0}: [{1}-{2}] '{3}'", Index, StartLine, EndLine, FileName);
         }
+
+        private class DebugInfoComparer : IComparer<DebugInfo>
+        {
+            //We allow comparison between int and DebugInfo here
+            int IComparer<DebugInfo>.Compare(DebugInfo x, DebugInfo y)
+            {
+                if (x.Index > y.Index)
+                {
+                    return 1;
+                }
+                if (x.Index == y.Index)
+                {
+                    return 0;
+                }
+                return -1;
+            }
+        }
     }
 
-    internal struct InterpretedFrameInfo
+    internal sealed class ExceptionHandler
     {
-        public readonly string MethodName;
+        public readonly int EndIndex;
+        public readonly Type ExceptionType;
+        public readonly int HandlerEndIndex;
+        public readonly int HandlerStartIndex;
+        public readonly int LabelIndex;
+        public readonly int StartIndex;
+        internal TryCatchFinallyHandler Parent;
 
-        public readonly DebugInfo DebugInfo;
-
-        public InterpretedFrameInfo(string methodName, DebugInfo info)
+        internal ExceptionHandler(int start, int end, int labelIndex, int handlerStartIndex, int handlerEndIndex, Type exceptionType)
         {
-            MethodName = methodName;
-            DebugInfo = info;
+            StartIndex = start;
+            EndIndex = end;
+            LabelIndex = labelIndex;
+            ExceptionType = exceptionType;
+            HandlerStartIndex = handlerStartIndex;
+            HandlerEndIndex = handlerEndIndex;
+        }
+
+        public bool IsFault
+        {
+            get { return ExceptionType == null; }
+        }
+
+        public bool IsBetterThan(ExceptionHandler other)
+        {
+            if (other == null)
+            {
+                return true;
+            }
+
+            Debug.Assert(StartIndex == other.StartIndex && EndIndex == other.EndIndex, "we only need to compare handlers for the same try block");
+            return HandlerStartIndex < other.HandlerStartIndex;
+        }
+
+        public bool Matches(Type exceptionType)
+        {
+            if (ExceptionType == null || ExceptionType.IsAssignableFrom(exceptionType))
+            {
+                return true;
+            }
+            return false;
         }
 
         public override string ToString()
         {
-            return MethodName + (DebugInfo != null ? ": " + DebugInfo : null);
+            return string.Format(CultureInfo.InvariantCulture, "{0} [{1}-{2}] [{3}->{4}]",
+                (IsFault ? "fault" : "catch(" + ExceptionType.Name + ")"),
+                StartIndex, EndIndex,
+                HandlerStartIndex, HandlerEndIndex
+            );
+        }
+
+        internal bool IsInsideCatchBlock(int index)
+        {
+            return index >= HandlerStartIndex && index < HandlerEndIndex;
+        }
+
+        internal bool IsInsideFinallyBlock(int index)
+        {
+            Debug.Assert(Parent != null);
+            return Parent.IsFinallyBlockExist && index >= Parent.FinallyStartIndex && index < Parent.FinallyEndIndex;
+        }
+
+        internal bool IsInsideTryBlock(int index)
+        {
+            return index >= StartIndex && index < EndIndex;
+        }
+
+        internal void SetParent(TryCatchFinallyHandler tryHandler)
+        {
+            Debug.Assert(Parent == null);
+            Parent = tryHandler;
+        }
+    }
+
+    internal class FieldByRefUpdater : ByRefUpdater
+    {
+        private readonly FieldInfo _field;
+        private readonly LocalDefinition? _object;
+
+        public FieldByRefUpdater(LocalDefinition? obj, FieldInfo field, int argumentIndex)
+            : base(argumentIndex)
+        {
+            _object = obj;
+            _field = field;
+        }
+
+        public override void UndefineTemps(InstructionList instructions, LocalVariables locals)
+        {
+            if (_object != null)
+            {
+                locals.UndefineLocal(_object.Value, instructions.Count);
+            }
+        }
+
+        public override void Update(InterpretedFrame frame, object value)
+        {
+            var obj = _object == null ? null : frame.Data[_object.Value.Index];
+            _field.SetValue(obj, value);
+        }
+    }
+
+    internal class IndexMethodByRefUpdater : ByRefUpdater
+    {
+        private readonly LocalDefinition[] _args;
+        private readonly MethodInfo _indexer;
+        private readonly LocalDefinition? _obj;
+
+        public IndexMethodByRefUpdater(LocalDefinition? obj, LocalDefinition[] args, MethodInfo indexer, int argumentIndex)
+            : base(argumentIndex)
+        {
+            _obj = obj;
+            _args = args;
+            _indexer = indexer;
+        }
+
+        public override void UndefineTemps(InstructionList instructions, LocalVariables locals)
+        {
+            if (_obj != null)
+            {
+                locals.UndefineLocal(_obj.Value, instructions.Count);
+            }
+
+            for (var i = 0; i < _args.Length; i++)
+            {
+                locals.UndefineLocal(_args[i], instructions.Count);
+            }
+        }
+
+        public override void Update(InterpretedFrame frame, object value)
+        {
+            var args = new object[_args.Length + 1];
+            for (var i = 0; i < args.Length - 1; i++)
+            {
+                args[i] = frame.Data[_args[i].Index];
+            }
+            args[args.Length - 1] = value;
+            _indexer.Invoke(
+                _obj == null ? null : frame.Data[_obj.Value.Index],
+                args
+            );
         }
     }
 
     internal sealed class LightCompiler
     {
+        private static readonly LocalDefinition[] _emptyLocals = ArrayReservoir<LocalDefinition>.EmptyArray;
+        private readonly List<DebugInfo> _debugInfos = new List<DebugInfo>();
+        private readonly Stack<ParameterExpression> _exceptionForRethrowStack = new Stack<ParameterExpression>();
         private readonly InstructionList _instructions;
         private readonly LocalVariables _locals = new LocalVariables();
-
-        private readonly List<DebugInfo> _debugInfos = new List<DebugInfo>();
+        private readonly LightCompiler _parent;
         private readonly HybridReferenceDictionary<LabelTarget, LabelInfo> _treeLabels = new HybridReferenceDictionary<LabelTarget, LabelInfo>();
         private LabelScopeInfo _labelBlock = new LabelScopeInfo(null, LabelScopeKind.Lambda);
-
-        private readonly Stack<ParameterExpression> _exceptionForRethrowStack = new Stack<ParameterExpression>();
-
-        private readonly LightCompiler _parent;
-
-        private static readonly LocalDefinition[] _emptyLocals = ArrayReservoir<LocalDefinition>.EmptyArray;
 
         public LightCompiler()
         {
@@ -294,138 +308,14 @@ namespace System.Linq.Expressions.Interpreter
             get { return _locals; }
         }
 
-        public LightDelegateCreator CompileTop(LambdaExpression node)
+        public void Compile(Expression expr)
         {
-            //Console.WriteLine(node.DebugView);
-            foreach (var p in node.Parameters)
+            var pushLabelBlock = TryPushLabelBlock(expr);
+            CompileNoLabelPush(expr);
+            if (pushLabelBlock)
             {
-                var local = _locals.DefineLocal(p, 0);
-                _instructions.EmitInitializeParameter(local.Index, p.Type);
+                PopLabelBlock(_labelBlock.Kind);
             }
-
-            Compile(node.Body);
-
-            // pop the result of the last expression:
-            if (node.Body.Type != typeof(void) && node.ReturnType == typeof(void))
-            {
-                _instructions.EmitPop();
-            }
-
-            Debug.Assert(_instructions.CurrentStackDepth == (node.ReturnType != typeof(void) ? 1 : 0));
-
-            return new LightDelegateCreator(MakeInterpreter(node.Name), node);
-        }
-
-        private Interpreter MakeInterpreter(string lambdaName)
-        {
-            var debugInfos = _debugInfos.ToArray();
-            return new Interpreter(lambdaName, _locals, GetBranchMapping(), _instructions.ToArray(), debugInfos);
-        }
-
-        private void CompileConstantExpression(Expression expr)
-        {
-            var node = (ConstantExpression)expr;
-            _instructions.EmitLoad(node.Value, node.Type);
-        }
-
-        private void CompileDefaultExpression(Expression expr)
-        {
-            CompileDefaultExpression(expr.Type);
-        }
-
-        private void CompileDefaultExpression(Type type)
-        {
-            if (type != typeof(void))
-            {
-                if (type.IsValueType)
-                {
-                    var value = ScriptingRuntimeHelpers.GetPrimitiveDefaultValue(type);
-                    if (value != null)
-                    {
-                        _instructions.EmitLoad(value);
-                    }
-                    else
-                    {
-                        _instructions.EmitDefaultValue(type);
-                    }
-                }
-                else
-                {
-                    _instructions.EmitLoad(null);
-                }
-            }
-        }
-
-        private LocalVariable EnsureAvailableForClosure(ParameterExpression expr)
-        {
-            LocalVariable local;
-            if (_locals.TryGetLocalOrClosure(expr, out local))
-            {
-                if (!local.InClosure && !local.IsBoxed)
-                {
-                    _locals.Box(expr, _instructions);
-                }
-                return local;
-            }
-            if (_parent != null)
-            {
-                _parent.EnsureAvailableForClosure(expr);
-                return _locals.AddClosureVariable(expr);
-            }
-            throw new InvalidOperationException("unbound variable: " + expr);
-        }
-
-        private LocalVariable ResolveLocal(ParameterExpression variable)
-        {
-            LocalVariable local;
-            if (!_locals.TryGetLocalOrClosure(variable, out local))
-            {
-                local = EnsureAvailableForClosure(variable);
-            }
-            return local;
-        }
-
-        public void CompileGetVariable(ParameterExpression variable)
-        {
-            LoadLocalNoValueTypeCopy(variable);
-
-            _instructions.SetDebugCookie(variable.Name);
-
-            EmitCopyValueType(variable.Type);
-        }
-
-        private void EmitCopyValueType(Type valueType)
-        {
-            if (MaybeMutableValueType(valueType))
-            {
-                // loading a value type on the stack has copy semantics unless
-                // we are specifically loading the address of the object, so we
-                // emit a copy here if we don't know the type is immutable.
-                _instructions.Emit(ValueTypeCopyInstruction.Instruction);
-            }
-        }
-
-        private void LoadLocalNoValueTypeCopy(ParameterExpression variable)
-        {
-            var local = ResolveLocal(variable);
-
-            if (local.InClosure)
-            {
-                _instructions.EmitLoadLocalFromClosure(local.Index);
-            }
-            else if (local.IsBoxed)
-            {
-                _instructions.EmitLoadLocalBoxed(local.Index);
-            }
-            else
-            {
-                _instructions.EmitLoadLocal(local.Index);
-            }
-        }
-
-        private bool MaybeMutableValueType(Type type)
-        {
-            return type.IsValueType && !type.IsEnum && !type.IsPrimitive;
         }
 
         public void CompileGetBoxedVariable(ParameterExpression variable)
@@ -443,6 +333,21 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             _instructions.SetDebugCookie(variable.Name);
+        }
+
+        public void CompileGetVariable(ParameterExpression variable)
+        {
+            LoadLocalNoValueTypeCopy(variable);
+
+            _instructions.SetDebugCookie(variable.Name);
+
+            EmitCopyValueType(variable.Type);
+        }
+
+        public void CompileParameterExpression(Expression expr)
+        {
+            var node = (ParameterExpression)expr;
+            CompileGetVariable(node);
         }
 
         public void CompileSetVariable(ParameterExpression variable, bool isVoid)
@@ -486,208 +391,326 @@ namespace System.Linq.Expressions.Interpreter
             _instructions.SetDebugCookie(variable.Name);
         }
 
-        public void CompileParameterExpression(Expression expr)
+        public LightDelegateCreator CompileTop(LambdaExpression node)
         {
-            var node = (ParameterExpression)expr;
-            CompileGetVariable(node);
-        }
-
-        private void CompileBlockExpression(Expression expr, bool asVoid)
-        {
-            var node = (BlockExpression)expr;
-            var end = CompileBlockStart(node);
-
-            var lastExpression = node.Expressions[node.Expressions.Count - 1];
-            Compile(lastExpression, asVoid);
-            CompileBlockEnd(end);
-        }
-
-        private LocalDefinition[] CompileBlockStart(BlockExpression node)
-        {
-            var start = _instructions.Count;
-
-            LocalDefinition[] locals;
-            var variables = node.Variables;
-            if (variables.Count != 0)
+            //Console.WriteLine(node.DebugView);
+            foreach (var p in node.Parameters)
             {
-                // TODO: basic flow analysis so we don't have to initialize all
-                // variables.
-                locals = new LocalDefinition[variables.Count];
-                var localCnt = 0;
-                foreach (var variable in variables)
-                {
-                    var local = _locals.DefineLocal(variable, start);
-                    locals[localCnt++] = local;
+                var local = _locals.DefineLocal(p, 0);
+                _instructions.EmitInitializeParameter(local.Index, p.Type);
+            }
 
-                    _instructions.EmitInitializeLocal(local.Index, variable.Type);
-                    _instructions.SetDebugCookie(variable.Name);
-                }
+            Compile(node.Body);
+
+            // pop the result of the last expression:
+            if (node.Body.Type != typeof(void) && node.ReturnType == typeof(void))
+            {
+                _instructions.EmitPop();
+            }
+
+            Debug.Assert(_instructions.CurrentStackDepth == (node.ReturnType != typeof(void) ? 1 : 0));
+
+            return new LightDelegateCreator(MakeInterpreter(node.Name), node);
+        }
+
+        public BranchLabel GetBranchLabel(LabelTarget target)
+        {
+            return ReferenceLabel(target).GetLabel(this);
+        }
+
+        public void PopLabelBlock(LabelScopeKind kind)
+        {
+            Debug.Assert(_labelBlock != null && _labelBlock.Kind == kind);
+            _labelBlock = _labelBlock.Parent;
+        }
+
+        public void PushLabelBlock(LabelScopeKind type)
+        {
+            _labelBlock = new LabelScopeInfo(_labelBlock, type);
+        }
+
+        internal void Compile(Expression expr, bool asVoid)
+        {
+            if (asVoid)
+            {
+                CompileAsVoid(expr);
             }
             else
             {
-                locals = _emptyLocals;
-            }
-
-            for (var i = 0; i < node.Expressions.Count - 1; i++)
-            {
-                CompileAsVoid(node.Expressions[i]);
-            }
-            return locals;
-        }
-
-        private void CompileBlockEnd(LocalDefinition[] locals)
-        {
-            foreach (var local in locals)
-            {
-                _locals.UndefineLocal(local, _instructions.Count);
+                Compile(expr);
             }
         }
 
-        private void CompileIndexExpression(Expression expr)
+        internal void CompileAsVoid(Expression expr)
         {
-            var index = (IndexExpression)expr;
+            var pushLabelBlock = TryPushLabelBlock(expr);
+            var startingStackDepth = _instructions.CurrentStackDepth;
+            switch (expr.NodeType)
+            {
+                case ExpressionType.Assign:
+                    CompileAssignBinaryExpression(expr, true);
+                    break;
 
-            // instance:
-            if (index.Object != null)
-            {
-                EmitThisForMethodCall(index.Object);
-            }
+                case ExpressionType.Block:
+                    CompileBlockExpression(expr, true);
+                    break;
 
-            // indexes, byref args not allowed.
-            foreach (var arg in index.Arguments)
-            {
-                Compile(arg);
-            }
+                case ExpressionType.Throw:
+                    CompileThrowUnaryExpression(expr, true);
+                    break;
 
-            EmitIndexGet(index);
-        }
+                case ExpressionType.Constant:
+                case ExpressionType.Default:
+                case ExpressionType.Parameter:
+                    // no-op
+                    break;
 
-        private void EmitIndexGet(IndexExpression index)
-        {
-            if (index.Indexer != null)
-            {
-                _instructions.EmitCall(index.Indexer.GetGetMethod(true));
+                default:
+                    CompileNoLabelPush(expr);
+                    if (expr.Type != typeof(void))
+                    {
+                        _instructions.EmitPop();
+                    }
+                    break;
             }
-            else if (index.Arguments.Count != 1)
+            Debug.Assert(_instructions.CurrentStackDepth == startingStackDepth);
+            if (pushLabelBlock)
             {
-                _instructions.EmitCall(index.Object.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance));
-            }
-            else
-            {
-                _instructions.EmitGetArrayItem();
-            }
-        }
-
-        private void CompileIndexAssignment(BinaryExpression node, bool asVoid)
-        {
-            var index = (IndexExpression)node.Left;
-
-            // instance:
-            if (index.Object != null)
-            {
-                EmitThisForMethodCall(index.Object);
-            }
-
-            // indexes, byref args not allowed.
-            foreach (var arg in index.Arguments)
-            {
-                Compile(arg);
-            }
-
-            // value:
-            Compile(node.Right);
-            var local = default(LocalDefinition);
-            if (!asVoid)
-            {
-                local = _locals.DefineLocal(Expression.Parameter(node.Right.Type), _instructions.Count);
-                _instructions.EmitAssignLocal(local.Index);
-            }
-
-            if (index.Indexer != null)
-            {
-                _instructions.EmitCall(index.Indexer.GetSetMethod(true));
-            }
-            else if (index.Arguments.Count != 1)
-            {
-                _instructions.EmitCall(index.Object.Type.GetMethod("Set", BindingFlags.Public | BindingFlags.Instance));
-            }
-            else
-            {
-                _instructions.EmitSetArrayItem();
-            }
-
-            if (!asVoid)
-            {
-                _instructions.EmitLoadLocal(local.Index);
-                _locals.UndefineLocal(local, _instructions.Count);
+                PopLabelBlock(_labelBlock.Kind);
             }
         }
 
-        private void CompileMemberAssignment(BinaryExpression node, bool asVoid)
+        internal LabelInfo DefineLabel(LabelTarget node)
         {
-            var member = (MemberExpression)node.Left;
-            var expr = member.Expression;
-            if (expr != null)
+            if (node == null)
             {
-                EmitThisForMethodCall(expr);
+                return new LabelInfo(null);
             }
-
-            CompileMemberAssignment(asVoid, member.Member, node.Right);
+            var result = EnsureLabel(node);
+            result.Define(_labelBlock);
+            return result;
         }
 
-        private void CompileMemberAssignment(bool asVoid, MemberInfo refMember, Expression value)
+        private static Type GetMemberType(MemberInfo member)
         {
-            var pi = refMember as PropertyInfo;
+            var fi = member as FieldInfo;
+            if (fi != null)
+            {
+                return fi.FieldType;
+            }
+
+            var pi = member as PropertyInfo;
             if (pi != null)
             {
-                var method = pi.GetSetMethod(true);
-                EmitThisForMethodCall(value);
+                return pi.PropertyType;
+            }
 
-                var start = _instructions.Count;
-                if (!asVoid)
+            throw new InvalidOperationException("MemberNotFieldOrProperty");
+        }
+
+        private static bool MaybeMutableValueType(Type type)
+        {
+            return type.IsValueType && !type.IsEnum && !type.IsPrimitive;
+        }
+
+        private void CheckRethrow()
+        {
+            // Rethrow is only valid inside a catch.
+            for (var j = _labelBlock; j != null; j = j.Parent)
+            {
+                if (j.Kind == LabelScopeKind.Catch)
                 {
-                    var local = _locals.DefineLocal(Expression.Parameter(value.Type), start);
-                    _instructions.EmitAssignLocal(local.Index);
-                    _instructions.EmitCall(method);
-                    _instructions.EmitLoadLocal(local.Index);
-                    _locals.UndefineLocal(local, _instructions.Count);
+                    return;
                 }
-                else
+                if (j.Kind == LabelScopeKind.Finally)
                 {
-                    _instructions.EmitCall(method);
+                    // Rethrow from inside finally is not verifiable
+                    break;
                 }
             }
-            else
-            {
-                // other types inherited from MemberInfo (EventInfo\MethodBase\Type) cannot be used in MemberAssignment
-                var fi = (FieldInfo)refMember;
-                if (fi != null)
-                {
-                    EmitThisForMethodCall(value);
+            throw new InvalidOperationException("Rethrow requires catch");
+        }
 
-                    var start = _instructions.Count;
-                    if (!asVoid)
+        /// <summary>
+        /// Emits the address of the specified node.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private ByRefUpdater CompileAddress(Expression node, int index)
+        {
+            switch (node.NodeType)
+            {
+                case ExpressionType.Parameter:
+                    LoadLocalNoValueTypeCopy((ParameterExpression)node);
+
+                    return new ParameterByRefUpdater(ResolveLocal((ParameterExpression)node), index);
+
+                case ExpressionType.ArrayIndex:
+                    var array = (BinaryExpression)node;
+
+                    return CompileArrayIndexAddress(array.Left, array.Right, index);
+
+                case ExpressionType.Index:
+                    var indexNode = (IndexExpression)node;
+                    if (/*!TypeHelper.AreEquivalent(type, node.Type) || */indexNode.Indexer != null)
                     {
-                        var local = _locals.DefineLocal(Expression.Parameter(value.Type), start);
-                        _instructions.EmitAssignLocal(local.Index);
-                        _instructions.EmitStoreField(fi);
-                        _instructions.EmitLoadLocal(local.Index);
-                        _locals.UndefineLocal(local, _instructions.Count);
+                        LocalDefinition? objTmp = null;
+                        if (indexNode.Object != null)
+                        {
+                            Compile(indexNode.Object);
+                            objTmp = _locals.DefineLocal(Expression.Parameter(indexNode.Object.Type), _instructions.Count);
+                            _instructions.EmitDup();
+                            _instructions.EmitStoreLocal(objTmp.Value.Index);
+                        }
+
+                        var indexLocals = new List<LocalDefinition>();
+                        // Do not convert to foreach, the loop modifies the list
+                        for (var i = 0; i < indexNode.Arguments.Count; i++)
+                        {
+                            Compile(indexNode.Arguments[i]);
+
+                            var argTmp = _locals.DefineLocal(Expression.Parameter(indexNode.Arguments[i].Type), _instructions.Count);
+                            _instructions.EmitDup();
+                            _instructions.EmitStoreLocal(argTmp.Index);
+
+                            indexLocals.Add(argTmp);
+                        }
+
+                        EmitIndexGet(indexNode);
+
+                        return new IndexMethodByRefUpdater(objTmp, indexLocals.ToArray(), indexNode.Indexer.GetSetMethod(), index);
+                    }
+                    else if (indexNode.Arguments.Count == 1)
+                    {
+                        return CompileArrayIndexAddress(indexNode.Object, indexNode.Arguments[0], index);
                     }
                     else
                     {
-                        _instructions.EmitStoreField(fi);
+                        return CompileMultiDimArrayAccess(indexNode.Object, indexNode.Arguments, index);
                     }
-                }
+                case ExpressionType.MemberAccess:
+                    var member = (MemberExpression)node;
+
+                    LocalDefinition? memberTemp = null;
+                    if (member.Expression != null)
+                    {
+                        memberTemp = _locals.DefineLocal(Expression.Parameter(member.Expression.Type, nameof(member)), _instructions.Count);
+                        EmitThisForMethodCall(member.Expression);
+                        _instructions.EmitDup();
+                        _instructions.EmitStoreLocal(memberTemp.Value.Index);
+                    }
+
+                    if (member.Member is FieldInfo)
+                    {
+                        _instructions.EmitLoadField((FieldInfo)member.Member);
+                        return new FieldByRefUpdater(memberTemp, (FieldInfo)member.Member, index);
+                    }
+                    else if (member.Member is PropertyInfo)
+                    {
+                        _instructions.EmitCall(((PropertyInfo)member.Member).GetGetMethod(true));
+                        if (((PropertyInfo)member.Member).CanWrite)
+                        {
+                            return new PropertyByRefUpdater(memberTemp, (PropertyInfo)member.Member, index);
+                        }
+                        return null;
+                    }
+                    throw new InvalidOperationException(string.Format("Address of {0}", node.NodeType));
+                case ExpressionType.Call:
+                    // An array index of a multi-dimensional array is represented by a call to Array.Get,
+                    // rather than having its own array-access node. This means that when we are trying to
+                    // get the address of a member of a multi-dimensional array, we'll be trying to
+                    // get the address of a Get method, and it will fail to do so. Instead, detect
+                    // this situation and replace it with a call to the Address method.
+                    var call = (MethodCallExpression)node;
+                    if (!call.Method.IsStatic &&
+                        call.Object.Type.IsArray &&
+                        call.Method == call.Object.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance))
+                    {
+                        return CompileMultiDimArrayAccess(
+                            call.Object,
+                            call.Arguments,
+                            index
+                        );
+                    }
+                    else
+                    {
+                        goto default;
+                    }
+
+                case ExpressionType.Unbox:
+                    Compile(node);
+                    return null;
+
+                default:
+                    Compile(node);
+                    return null;
             }
         }
 
-        private void CompileVariableAssignment(BinaryExpression node, bool asVoid)
+        private void CompileAndAlsoBinaryExpression(Expression expr)
         {
-            Compile(node.Right);
+            CompileLogicalBinaryExpression((BinaryExpression)expr, true);
+        }
 
-            var target = (ParameterExpression)node.Left;
-            CompileSetVariable(target, asVoid);
+        private void CompileArithmetic(ExpressionType nodeType, Expression left, Expression right)
+        {
+            Debug.Assert(left.Type == right.Type && left.Type.IsArithmetic());
+            Compile(left);
+            Compile(right);
+            switch (nodeType)
+            {
+                case ExpressionType.Add:
+                    _instructions.EmitAdd(left.Type, false);
+                    break;
+
+                case ExpressionType.AddChecked:
+                    _instructions.EmitAdd(left.Type, true);
+                    break;
+
+                case ExpressionType.Subtract:
+                    _instructions.EmitSub(left.Type, false);
+                    break;
+
+                case ExpressionType.SubtractChecked:
+                    _instructions.EmitSub(left.Type, true);
+                    break;
+
+                case ExpressionType.Multiply:
+                    _instructions.EmitMul(left.Type, false);
+                    break;
+
+                case ExpressionType.MultiplyChecked:
+                    _instructions.EmitMul(left.Type, true);
+                    break;
+
+                case ExpressionType.Divide:
+                    _instructions.EmitDiv(left.Type);
+                    break;
+
+                case ExpressionType.Modulo:
+                    _instructions.EmitModulo(left.Type);
+                    break;
+
+                default:
+                    throw Assert.Unreachable;
+            }
+        }
+
+        private ByRefUpdater CompileArrayIndexAddress(Expression array, Expression index, int argumentIndex)
+        {
+            var left = _locals.DefineLocal(Expression.Parameter(array.Type, nameof(array)), _instructions.Count);
+            var right = _locals.DefineLocal(Expression.Parameter(index.Type, nameof(index)), _instructions.Count);
+            Compile(array);
+            _instructions.EmitStoreLocal(left.Index);
+            Compile(index);
+            _instructions.EmitStoreLocal(right.Index);
+
+            _instructions.EmitLoadLocal(left.Index);
+            _instructions.EmitLoadLocal(right.Index);
+            _instructions.EmitGetArrayItem();
+
+            return new ArrayByRefUpdater(left, right, argumentIndex);
         }
 
         private void CompileAssignBinaryExpression(Expression expr, bool asVoid)
@@ -712,6 +735,26 @@ namespace System.Linq.Expressions.Interpreter
                 default:
                     throw new InvalidOperationException("Invalid lvalue for assignment: " + node.Left.NodeType);
             }
+        }
+
+        private void CompileAsVoidRemoveRethrow(Expression expr)
+        {
+            var stackDepth = _instructions.CurrentStackDepth;
+
+            if (expr.NodeType == ExpressionType.Throw)
+            {
+                Debug.Assert(((UnaryExpression)expr).Operand == null);
+                return;
+            }
+
+            var node = (BlockExpression)expr;
+            var end = CompileBlockStart(node);
+
+            CompileAsVoidRemoveRethrow(node.Expressions[node.Expressions.Count - 1]);
+
+            Debug.Assert(stackDepth == _instructions.CurrentStackDepth);
+
+            CompileBlockEnd(end);
         }
 
         private void CompileBinaryExpression(Expression expr)
@@ -935,20 +978,92 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        private void CompileEqual(Expression left, Expression right, bool liftedToNull)
+        private void CompileBlockEnd(LocalDefinition[] locals)
         {
-            Debug.Assert(left.Type == right.Type || !left.Type.IsValueType && !right.Type.IsValueType);
-            Compile(left);
-            Compile(right);
-            _instructions.EmitEqual(left.Type, liftedToNull);
+            foreach (var local in locals)
+            {
+                _locals.UndefineLocal(local, _instructions.Count);
+            }
         }
 
-        private void CompileNotEqual(Expression left, Expression right, bool liftedToNull)
+        private void CompileBlockExpression(Expression expr, bool asVoid)
         {
-            Debug.Assert(left.Type == right.Type || !left.Type.IsValueType && !right.Type.IsValueType);
-            Compile(left);
-            Compile(right);
-            _instructions.EmitNotEqual(left.Type, liftedToNull);
+            var node = (BlockExpression)expr;
+            var end = CompileBlockStart(node);
+
+            var lastExpression = node.Expressions[node.Expressions.Count - 1];
+            Compile(lastExpression, asVoid);
+            CompileBlockEnd(end);
+        }
+
+        private LocalDefinition[] CompileBlockStart(BlockExpression node)
+        {
+            var start = _instructions.Count;
+
+            LocalDefinition[] locals;
+            var variables = node.Variables;
+            if (variables.Count != 0)
+            {
+                // TODO: basic flow analysis so we don't have to initialize all
+                // variables.
+                locals = new LocalDefinition[variables.Count];
+                var localCnt = 0;
+                foreach (var variable in variables)
+                {
+                    var local = _locals.DefineLocal(variable, start);
+                    locals[localCnt++] = local;
+
+                    _instructions.EmitInitializeLocal(local.Index, variable.Type);
+                    _instructions.SetDebugCookie(variable.Name);
+                }
+            }
+            else
+            {
+                locals = _emptyLocals;
+            }
+
+            for (var i = 0; i < node.Expressions.Count - 1; i++)
+            {
+                CompileAsVoid(node.Expressions[i]);
+            }
+            return locals;
+        }
+
+        private void CompileCoalesceBinaryExpression(Expression expr)
+        {
+            var node = (BinaryExpression)expr;
+
+            var leftNotNull = _instructions.MakeLabel();
+            BranchLabel end = null;
+
+            Compile(node.Left);
+            _instructions.EmitCoalescingBranch(leftNotNull);
+            _instructions.EmitPop();
+            Compile(node.Right);
+
+            if (node.Conversion != null)
+            {
+                // skip over conversion on RHS
+                end = _instructions.MakeLabel();
+                _instructions.EmitBranch(end);
+            }
+
+            _instructions.MarkLabel(leftNotNull);
+
+            if (node.Conversion != null)
+            {
+                var temp = Expression.Parameter(node.Left.Type, "temp");
+                var local = _locals.DefineLocal(temp, _instructions.Count);
+                _instructions.EmitStoreLocal(local.Index);
+
+                CompileMethodCallExpression(
+                    Expression.Call(node.Conversion, node.Conversion.Type.GetMethod("Invoke"), temp)
+                );
+
+                _locals.UndefineLocal(local, _instructions.Count);
+
+                _instructions.MarkLabel(end);
+            }
         }
 
         private void CompileComparison(BinaryExpression node)
@@ -983,98 +1098,43 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        private void CompileArithmetic(ExpressionType nodeType, Expression left, Expression right)
+        private void CompileConditionalExpression(Expression expr, bool asVoid)
         {
-            Debug.Assert(left.Type == right.Type && left.Type.IsArithmetic());
-            Compile(left);
-            Compile(right);
-            switch (nodeType)
+            var node = (ConditionalExpression)expr;
+            Compile(node.Test);
+
+            if (node.IfTrue == AstUtils.Empty())
             {
-                case ExpressionType.Add:
-                    _instructions.EmitAdd(left.Type, false);
-                    break;
-
-                case ExpressionType.AddChecked:
-                    _instructions.EmitAdd(left.Type, true);
-                    break;
-
-                case ExpressionType.Subtract:
-                    _instructions.EmitSub(left.Type, false);
-                    break;
-
-                case ExpressionType.SubtractChecked:
-                    _instructions.EmitSub(left.Type, true);
-                    break;
-
-                case ExpressionType.Multiply:
-                    _instructions.EmitMul(left.Type, false);
-                    break;
-
-                case ExpressionType.MultiplyChecked:
-                    _instructions.EmitMul(left.Type, true);
-                    break;
-
-                case ExpressionType.Divide:
-                    _instructions.EmitDiv(left.Type);
-                    break;
-
-                case ExpressionType.Modulo:
-                    _instructions.EmitModulo(left.Type);
-                    break;
-
-                default:
-                    throw Assert.Unreachable;
-            }
-        }
-
-        private void CompileConvertUnaryExpression(Expression expr)
-        {
-            var node = (UnaryExpression)expr;
-            if (node.Method != null)
-            {
-                var end = _instructions.MakeLabel();
-                var loadDefault = _instructions.MakeLabel();
-
-                var opTemp = _locals.DefineLocal(Expression.Parameter(node.Operand.Type), _instructions.Count);
-                Compile(node.Operand);
-                _instructions.EmitStoreLocal(opTemp.Index);
-
-                if (!node.Operand.Type.IsValueType ||
-                    (node.Operand.Type.IsNullable() && node.IsLiftedToNull))
-                {
-                    _instructions.EmitLoadLocal(opTemp.Index);
-                    _instructions.EmitLoad(null, typeof(object));
-                    _instructions.EmitEqual(typeof(object));
-                    _instructions.EmitBranchTrue(loadDefault);
-                }
-
-                _instructions.EmitLoadLocal(opTemp.Index);
-                if (node.Operand.Type.IsNullable()
-                    && node.Method.GetParameters()[0].ParameterType == node.Operand.Type.GetNonNullableType())
-                {
-                    _instructions.Emit(NullableMethodCallInstruction.Create("get_Value", 1));
-                }
-
-                _instructions.EmitCall(node.Method);
-
-                _instructions.EmitBranch(end, false, true);
-
-                _instructions.MarkLabel(loadDefault);
-                _instructions.EmitLoad(null, typeof(object));
-
-                _instructions.MarkLabel(end);
-
-                _locals.UndefineLocal(opTemp, _instructions.Count);
-            }
-            else if (node.Type == typeof(void))
-            {
-                CompileAsVoid(node.Operand);
+                var endOfFalse = _instructions.MakeLabel();
+                _instructions.EmitBranchTrue(endOfFalse);
+                Compile(node.IfFalse, asVoid);
+                _instructions.MarkLabel(endOfFalse);
             }
             else
             {
-                Compile(node.Operand);
-                CompileConvertToType(node.Operand.Type, node.Type, node.NodeType == ExpressionType.ConvertChecked, node.IsLiftedToNull);
+                var endOfTrue = _instructions.MakeLabel();
+                _instructions.EmitBranchFalse(endOfTrue);
+                Compile(node.IfTrue, asVoid);
+
+                if (node.IfFalse != AstUtils.Empty())
+                {
+                    var endOfFalse = _instructions.MakeLabel();
+                    _instructions.EmitBranch(endOfFalse, false, !asVoid);
+                    _instructions.MarkLabel(endOfTrue);
+                    Compile(node.IfFalse, asVoid);
+                    _instructions.MarkLabel(endOfFalse);
+                }
+                else
+                {
+                    _instructions.MarkLabel(endOfTrue);
+                }
             }
+        }
+
+        private void CompileConstantExpression(Expression expr)
+        {
+            var node = (ConstantExpression)expr;
+            _instructions.EmitLoad(node.Value, node.Type);
         }
 
         private void CompileConvertToType(Type typeFrom, Type typeTo, bool isChecked, bool isLiftedToNull)
@@ -1168,143 +1228,335 @@ namespace System.Linq.Expressions.Interpreter
             _instructions.EmitCast(typeTo);
         }
 
-        private void CompileNotExpression(UnaryExpression node)
-        {
-            Compile(node.Operand);
-            _instructions.EmitNot(node.Operand.Type);
-        }
-
-        private void CompileUnaryExpression(Expression expr)
+        private void CompileConvertUnaryExpression(Expression expr)
         {
             var node = (UnaryExpression)expr;
-
             if (node.Method != null)
             {
-                EmitUnaryMethodCall(node);
+                var end = _instructions.MakeLabel();
+                var loadDefault = _instructions.MakeLabel();
+
+                var opTemp = _locals.DefineLocal(Expression.Parameter(node.Operand.Type), _instructions.Count);
+                Compile(node.Operand);
+                _instructions.EmitStoreLocal(opTemp.Index);
+
+                if (!node.Operand.Type.IsValueType ||
+                    (node.Operand.Type.IsNullable() && node.IsLiftedToNull))
+                {
+                    _instructions.EmitLoadLocal(opTemp.Index);
+                    _instructions.EmitLoad(null, typeof(object));
+                    _instructions.EmitEqual(typeof(object));
+                    _instructions.EmitBranchTrue(loadDefault);
+                }
+
+                _instructions.EmitLoadLocal(opTemp.Index);
+                if (node.Operand.Type.IsNullable()
+                    && node.Method.GetParameters()[0].ParameterType == node.Operand.Type.GetNonNullableType())
+                {
+                    _instructions.Emit(NullableMethodCallInstruction.Create("get_Value", 1));
+                }
+
+                _instructions.EmitCall(node.Method);
+
+                _instructions.EmitBranch(end, false, true);
+
+                _instructions.MarkLabel(loadDefault);
+                _instructions.EmitLoad(null, typeof(object));
+
+                _instructions.MarkLabel(end);
+
+                _locals.UndefineLocal(opTemp, _instructions.Count);
+            }
+            else if (node.Type == typeof(void))
+            {
+                CompileAsVoid(node.Operand);
             }
             else
             {
-                switch (node.NodeType)
+                Compile(node.Operand);
+                CompileConvertToType(node.Operand.Type, node.Type, node.NodeType == ExpressionType.ConvertChecked, node.IsLiftedToNull);
+            }
+        }
+
+        private void CompileDebugInfoExpression(Expression expr)
+        {
+            var node = (DebugInfoExpression)expr;
+            var start = _instructions.Count;
+            var info = new DebugInfo
+            {
+                Index = start,
+                FileName = node.Document.FileName,
+                StartLine = node.StartLine,
+                EndLine = node.EndLine,
+                IsClear = node.IsClear
+            };
+            _debugInfos.Add(info);
+        }
+
+        private void CompileDefaultExpression(Expression expr)
+        {
+            CompileDefaultExpression(expr.Type);
+        }
+
+        private void CompileDefaultExpression(Type type)
+        {
+            if (type != typeof(void))
+            {
+                if (type.IsValueType)
                 {
-                    case ExpressionType.Not:
-                        CompileNotExpression(node);
-                        break;
-
-                    case ExpressionType.TypeAs:
-                        CompileTypeAsExpression(node);
-                        break;
-
-                    case ExpressionType.ArrayLength:
-                        Compile(node.Operand);
-                        _instructions.EmitArrayLength();
-                        break;
-
-                    case ExpressionType.NegateChecked:
-                        Compile(node.Operand);
-                        _instructions.EmitNegateChecked(node.Type);
-                        break;
-
-                    case ExpressionType.Negate:
-                        Compile(node.Operand);
-                        _instructions.EmitNegate(node.Type);
-                        break;
-
-                    case ExpressionType.Increment:
-                        Compile(node.Operand);
-                        _instructions.EmitIncrement(node.Type);
-                        break;
-
-                    case ExpressionType.Decrement:
-                        Compile(node.Operand);
-                        _instructions.EmitDecrement(node.Type);
-                        break;
-
-                    default:
-                        throw new PlatformNotSupportedException(SR.Format(SR.UnsupportedExpressionType, node.NodeType));
+                    var value = ScriptingRuntimeHelpers.GetPrimitiveDefaultValue(type);
+                    if (value != null)
+                    {
+                        _instructions.EmitLoad(value);
+                    }
+                    else
+                    {
+                        _instructions.EmitDefaultValue(type);
+                    }
+                }
+                else
+                {
+                    _instructions.EmitLoad(null);
                 }
             }
         }
 
-        private void EmitUnaryMethodCall(UnaryExpression node)
+        private void CompileEqual(Expression left, Expression right, bool liftedToNull)
         {
-            Compile(node.Operand);
-            if (node.IsLifted)
+            Debug.Assert(left.Type == right.Type || !left.Type.IsValueType && !right.Type.IsValueType);
+            Compile(left);
+            Compile(right);
+            _instructions.EmitEqual(left.Type, liftedToNull);
+        }
+
+        private void CompileExtensionExpression(Expression expr)
+        {
+            var instructionProvider = expr as IInstructionProvider; // TODO: Test coverage?
+            if (instructionProvider != null)
             {
-                var temp = _locals.DefineLocal(
-                    Expression.Parameter(node.Operand.Type),
-                    _instructions.Count
+                instructionProvider.AddInstructions(this);
+                return;
+            }
+
+            if (expr.CanReduce)
+            {
+                Compile(expr.Reduce());
+            }
+            else
+            {
+                throw new PlatformNotSupportedException(SR.NonReducibleExpressionExtensionsNotSupported);
+            }
+        }
+
+        private void CompileGotoExpression(Expression expr)
+        {
+            var node = (GotoExpression)expr;
+            var labelInfo = ReferenceLabel(node.Target);
+
+            if (node.Value != null)
+            {
+                Compile(node.Value);
+            }
+
+            _instructions.EmitGoto(labelInfo.GetLabel(this),
+                node.Type != typeof(void),
+                node.Value != null && node.Value.Type != typeof(void),
+                node.Target.Type != typeof(void));
+        }
+
+        private void CompileIndexAssignment(BinaryExpression node, bool asVoid)
+        {
+            var index = (IndexExpression)node.Left;
+
+            // instance:
+            if (index.Object != null)
+            {
+                EmitThisForMethodCall(index.Object);
+            }
+
+            // indexes, byref args not allowed.
+            foreach (var arg in index.Arguments)
+            {
+                Compile(arg);
+            }
+
+            // value:
+            Compile(node.Right);
+            var local = default(LocalDefinition);
+            if (!asVoid)
+            {
+                local = _locals.DefineLocal(Expression.Parameter(node.Right.Type), _instructions.Count);
+                _instructions.EmitAssignLocal(local.Index);
+            }
+
+            if (index.Indexer != null)
+            {
+                _instructions.EmitCall(index.Indexer.GetSetMethod(true));
+            }
+            else if (index.Arguments.Count != 1)
+            {
+                _instructions.EmitCall(index.Object.Type.GetMethod("Set", BindingFlags.Public | BindingFlags.Instance));
+            }
+            else
+            {
+                _instructions.EmitSetArrayItem();
+            }
+
+            if (!asVoid)
+            {
+                _instructions.EmitLoadLocal(local.Index);
+                _locals.UndefineLocal(local, _instructions.Count);
+            }
+        }
+
+        private void CompileIndexExpression(Expression expr)
+        {
+            var index = (IndexExpression)expr;
+
+            // instance:
+            if (index.Object != null)
+            {
+                EmitThisForMethodCall(index.Object);
+            }
+
+            // indexes, byref args not allowed.
+            foreach (var arg in index.Arguments)
+            {
+                Compile(arg);
+            }
+
+            EmitIndexGet(index);
+        }
+
+        private void CompileIntSwitchExpression<T>(SwitchExpression node)
+        {
+            var end = DefineLabel(null);
+            var hasValue = node.Type != typeof(void);
+
+            Compile(node.SwitchValue);
+            var caseDict = new Dictionary<T, int>();
+            var switchIndex = _instructions.Count;
+            _instructions.EmitIntSwitch(caseDict);
+
+            if (node.DefaultBody != null)
+            {
+                Compile(node.DefaultBody);
+            }
+            else
+            {
+                Debug.Assert(!hasValue);
+            }
+            _instructions.EmitBranch(end.GetLabel(this), false, hasValue);
+
+            for (var i = 0; i < node.Cases.Count; i++)
+            {
+                var switchCase = node.Cases[i];
+
+                var caseOffset = _instructions.Count - switchIndex;
+                foreach (ConstantExpression testValue in switchCase.TestValues) // TODO: Test coverage?
+                {
+                    var key = (T)testValue.Value;
+                    if (!caseDict.ContainsKey(key))
+                    {
+                        caseDict.Add(key, caseOffset);
+                    }
+                }
+
+                Compile(switchCase.Body);
+
+                if (i < node.Cases.Count - 1)
+                {
+                    _instructions.EmitBranch(end.GetLabel(this), false, hasValue);
+                }
+            }
+
+            _instructions.MarkLabel(end.GetLabel(this));
+        }
+
+        private void CompileInvocationExpression(Expression expr)
+        {
+            var node = (InvocationExpression)expr;
+
+            if (typeof(LambdaExpression).IsAssignableFrom(node.Expression.Type))
+            {
+                var compMethod = node.Expression.Type.GetMethod("Compile", ArrayReservoir<Type>.EmptyArray);
+                CompileMethodCallExpression(
+                    Expression.Call(
+                        Expression.Call(
+                            node.Expression,
+                            compMethod
+                        ),
+                        compMethod.ReturnType.GetMethod("Invoke"),
+                        node.Arguments
+                    )
                 );
-                var notNull = _instructions.MakeLabel();
-                var computed = _instructions.MakeLabel();
-
-                _instructions.EmitStoreLocal(temp.Index);
-                _instructions.EmitLoadLocal(temp.Index);
-                _instructions.EmitLoad(null, typeof(object));
-                _instructions.EmitEqual(typeof(object));
-                _instructions.EmitBranchFalse(notNull);
-
-                _instructions.EmitLoad(null, typeof(object));
-                _instructions.EmitBranch(computed);
-
-                _instructions.MarkLabel(notNull);
-                _instructions.EmitCall(node.Method);
-
-                _instructions.MarkLabel(computed);
-                _locals.UndefineLocal(temp, _instructions.Count);
             }
             else
             {
-                _instructions.EmitCall(node.Method);
+                CompileMethodCallExpression(
+                    Expression.Call(node.Expression, node.Expression.Type.GetMethod("Invoke"), node.Arguments)
+                );
             }
         }
 
-        private void CompileAndAlsoBinaryExpression(Expression expr)
+        private void CompileLabelExpression(Expression expr)
         {
-            CompileLogicalBinaryExpression((BinaryExpression)expr, true);
+            var node = (LabelExpression)expr;
+
+            // If we're an immediate child of a block, our label will already
+            // be defined. If not, we need to define our own block so this
+            // label isn't exposed except to its own child expression.
+            LabelInfo label = null;
+
+            if (_labelBlock.Kind == LabelScopeKind.Block)
+            {
+                _labelBlock.TryGetLabelInfo(node.Target, out label);
+
+                // We're in a block but didn't find our label, try switch
+                if (label == null && _labelBlock.Parent.Kind == LabelScopeKind.Switch)
+                {
+                    _labelBlock.Parent.TryGetLabelInfo(node.Target, out label);
+                }
+
+                // if we're in a switch or block, we should've found the label
+                Debug.Assert(label != null);
+            }
+
+            if (label == null)
+            {
+                label = DefineLabel(node.Target);
+            }
+
+            if (node.DefaultValue != null)
+            {
+                if (node.Target.Type == typeof(void))
+                {
+                    CompileAsVoid(node.DefaultValue);
+                }
+                else
+                {
+                    Compile(node.DefaultValue);
+                }
+            }
+
+            _instructions.MarkLabel(label.GetLabel(this));
         }
 
-        private void CompileOrElseBinaryExpression(Expression expr)
+        private void CompileLambdaExpression(Expression expr)
         {
-            CompileLogicalBinaryExpression((BinaryExpression)expr, false);
-        }
+            var node = (LambdaExpression)expr;
+            var compiler = new LightCompiler(this);
+            var creator = compiler.CompileTop(node);
 
-        private void CompileLogicalBinaryExpression(BinaryExpression b, bool andAlso)
-        {
-            if (b.Method != null && !b.IsLiftedLogical)
+            if (compiler._locals.ClosureVariables != null)
             {
-                CompileMethodLogicalBinaryExpression(b, andAlso);
+                foreach (var variable in compiler._locals.ClosureVariables.Keys)
+                {
+                    EnsureAvailableForClosure(variable);
+                    CompileGetBoxedVariable(variable);
+                }
             }
-            else if (b.Left.Type == typeof(bool?))
-            {
-                CompileLiftedLogicalBinaryExpression(b, andAlso);
-            }
-            else if (b.IsLiftedLogical)
-            {
-                Compile(b.ReduceUserdefinedLifted());
-            }
-            else
-            {
-                CompileUnliftedLogicalBinaryExpression(b, andAlso);
-            }
-        }
-
-        private void CompileMethodLogicalBinaryExpression(BinaryExpression expr, bool andAlso)
-        {
-            var labEnd = _instructions.MakeLabel();
-            Compile(expr.Left);
-            _instructions.EmitDup();
-
-            var opTrue = TypeHelper.GetBooleanOperator(expr.Method.DeclaringType, andAlso ? "op_False" : "op_True");
-            Debug.Assert(opTrue != null, "factory should check that the method exists");
-            _instructions.EmitCall(opTrue);
-            _instructions.EmitBranchTrue(labEnd);
-
-            Compile(expr.Right);
-
-            Debug.Assert(expr.Method.IsStatic);
-            _instructions.EmitCall(expr.Method);
-
-            _instructions.MarkLabel(labEnd);
+            _instructions.EmitCreateDelegate(creator);
         }
 
         private void CompileLiftedLogicalBinaryExpression(BinaryExpression node, bool andAlso)
@@ -1387,717 +1639,206 @@ namespace System.Linq.Expressions.Interpreter
             _locals.UndefineLocal(result, _instructions.Count);
         }
 
-        private void CompileUnliftedLogicalBinaryExpression(BinaryExpression expr, bool andAlso)
+        private void CompileListInit(IList<ElementInit> initializers)
         {
-            var elseLabel = _instructions.MakeLabel();
-            var endLabel = _instructions.MakeLabel();
-            Compile(expr.Left);
-
-            if (andAlso)
+            foreach (var init in initializers)
             {
-                _instructions.EmitBranchFalse(elseLabel);
+                _instructions.EmitDup();
+                foreach (var arg in init.Arguments)
+                {
+                    Compile(arg);
+                }
+                _instructions.EmitCall(init.AddMethod);
+            }
+        }
+
+        private void CompileListInitExpression(Expression expr)
+        {
+            var node = (ListInitExpression)expr;
+            EmitThisForMethodCall(node.NewExpression);
+            var initializers = node.Initializers;
+            CompileListInit(initializers);
+        }
+
+        private void CompileLogicalBinaryExpression(BinaryExpression b, bool andAlso)
+        {
+            if (b.Method != null && !b.IsLiftedLogical)
+            {
+                CompileMethodLogicalBinaryExpression(b, andAlso);
+            }
+            else if (b.Left.Type == typeof(bool?))
+            {
+                CompileLiftedLogicalBinaryExpression(b, andAlso);
+            }
+            else if (b.IsLiftedLogical)
+            {
+                Compile(b.ReduceUserdefinedLifted());
             }
             else
             {
-                _instructions.EmitBranchTrue(elseLabel);
+                CompileUnliftedLogicalBinaryExpression(b, andAlso);
             }
-            Compile(expr.Right);
-            _instructions.EmitBranch(endLabel, false, true);
-            _instructions.MarkLabel(elseLabel);
-            _instructions.EmitLoad(!andAlso);
-            _instructions.MarkLabel(endLabel);
         }
 
-        private void CompileConditionalExpression(Expression expr, bool asVoid)
+        private void CompileMember(Expression from, MemberInfo member)
         {
-            var node = (ConditionalExpression)expr;
-            Compile(node.Test);
-
-            if (node.IfTrue == AstUtils.Empty())
+            var fi = member as FieldInfo;
+            if (fi != null)
             {
-                var endOfFalse = _instructions.MakeLabel();
-                _instructions.EmitBranchTrue(endOfFalse);
-                Compile(node.IfFalse, asVoid);
-                _instructions.MarkLabel(endOfFalse);
-            }
-            else
-            {
-                var endOfTrue = _instructions.MakeLabel();
-                _instructions.EmitBranchFalse(endOfTrue);
-                Compile(node.IfTrue, asVoid);
-
-                if (node.IfFalse != AstUtils.Empty())
+                if (fi.IsLiteral)
                 {
-                    var endOfFalse = _instructions.MakeLabel();
-                    _instructions.EmitBranch(endOfFalse, false, !asVoid);
-                    _instructions.MarkLabel(endOfTrue);
-                    Compile(node.IfFalse, asVoid);
-                    _instructions.MarkLabel(endOfFalse);
+                    _instructions.EmitLoad(fi.GetValue(null), fi.FieldType);
                 }
-                else
+                else if (fi.IsStatic)
                 {
-                    _instructions.MarkLabel(endOfTrue);
-                }
-            }
-        }
-
-        #region Loops
-
-        private void CompileLoopExpression(Expression expr)
-        {
-            var node = (LoopExpression)expr;
-            var enterLoop = new EnterLoopInstruction(node, _locals, _instructions.Count);
-
-            PushLabelBlock(LabelScopeKind.Statement);
-            var breakLabel = DefineLabel(node.BreakLabel);
-            var continueLabel = DefineLabel(node.ContinueLabel);
-
-            _instructions.MarkLabel(continueLabel.GetLabel(this));
-
-            // emit loop body:
-            _instructions.Emit(enterLoop);
-            CompileAsVoid(node.Body);
-
-            // emit loop branch:
-            _instructions.EmitBranch(continueLabel.GetLabel(this), expr.Type != typeof(void), false);
-
-            _instructions.MarkLabel(breakLabel.GetLabel(this));
-
-            PopLabelBlock(LabelScopeKind.Statement);
-
-            enterLoop.FinishLoop(_instructions.Count);
-        }
-
-        #endregion Loops
-
-        private void CompileSwitchExpression(Expression expr)
-        {
-            var node = (SwitchExpression)expr;
-
-            if (node.Cases.All(c => c.TestValues.All(t => t is ConstantExpression)))
-            {
-                var switchType = node.SwitchValue.Type.GetTypeCode();
-
-                if (node.Comparison == null)
-                {
-                    switch (switchType)
+                    if (fi.IsInitOnly)
                     {
-                        case TypeCode.Int32:
-                            CompileIntSwitchExpression<int>(node);
-                            return;
-
-                        // the following cases are uncomon,
-                        // so to avoid numerous unecessary generic
-                        // instantiations of Dictionary<K, V> and related types
-                        // in AOT scenarios, we will just use "object" as the key
-                        // NOTE: this does not actually result in any
-                        //       extra boxing since both keys and values
-                        //       are already boxed when we get them
-                        case TypeCode.Byte:
-                        case TypeCode.SByte:
-                        case TypeCode.UInt16:
-                        case TypeCode.Int16:
-                        case TypeCode.UInt32:
-                        case TypeCode.UInt64:
-                        case TypeCode.Int64:
-                            CompileIntSwitchExpression<object>(node);
-                            return;
-
-                        default:
-                            break;
-                    }
-                }
-
-                if (switchType == TypeCode.String)
-                {
-                    // If we have a comparison other than string equality, bail
-                    var equality = typeof(string).GetMethod("op_Equality", new[] { typeof(string), typeof(string) });
-                    if (equality != null && !equality.IsStatic)
-                    {
-                        equality = null;
-                    }
-
-                    if (Equals(node.Comparison, equality))
-                    {
-                        CompileStringSwitchExpression(node);
-                        return;
-                    }
-                }
-            }
-
-            var temp = _locals.DefineLocal(Expression.Parameter(node.SwitchValue.Type), _instructions.Count);
-            Compile(node.SwitchValue);
-            _instructions.EmitStoreLocal(temp.Index);
-
-            var doneLabel = Expression.Label(node.Type, "done");
-
-            foreach (var @case in node.Cases)
-            {
-                foreach (var val in @case.TestValues)
-                {
-                    //  temp == val ?
-                    //          goto(Body) doneLabel:
-                    //          {};
-                    CompileConditionalExpression(
-                        Expression.Condition(
-                            Expression.Equal(temp.Parameter, val, false, node.Comparison),
-                            Expression.Goto(doneLabel, @case.Body),
-                            AstUtils.Empty()
-                        ),
-                        /*asVoid*/ true);
-                }
-            }
-
-            // doneLabel(DefaultBody):
-            CompileLabelExpression(Expression.Label(doneLabel, node.DefaultBody));
-
-            _locals.UndefineLocal(temp, _instructions.Count);
-        }
-
-        private void CompileIntSwitchExpression<T>(SwitchExpression node)
-        {
-            var end = DefineLabel(null);
-            var hasValue = node.Type != typeof(void);
-
-            Compile(node.SwitchValue);
-            var caseDict = new Dictionary<T, int>();
-            var switchIndex = _instructions.Count;
-            _instructions.EmitIntSwitch(caseDict);
-
-            if (node.DefaultBody != null)
-            {
-                Compile(node.DefaultBody);
-            }
-            else
-            {
-                Debug.Assert(!hasValue);
-            }
-            _instructions.EmitBranch(end.GetLabel(this), false, hasValue);
-
-            for (var i = 0; i < node.Cases.Count; i++)
-            {
-                var switchCase = node.Cases[i];
-
-                var caseOffset = _instructions.Count - switchIndex;
-                foreach (ConstantExpression testValue in switchCase.TestValues) // TODO: Test coverage?
-                {
-                    var key = (T)testValue.Value;
-                    if (!caseDict.ContainsKey(key))
-                    {
-                        caseDict.Add(key, caseOffset);
-                    }
-                }
-
-                Compile(switchCase.Body);
-
-                if (i < node.Cases.Count - 1)
-                {
-                    _instructions.EmitBranch(end.GetLabel(this), false, hasValue);
-                }
-            }
-
-            _instructions.MarkLabel(end.GetLabel(this));
-        }
-
-        private void CompileStringSwitchExpression(SwitchExpression node)
-        {
-            var end = DefineLabel(null);
-            var hasValue = node.Type != typeof(void);
-
-            Compile(node.SwitchValue);
-            var caseDict = new Dictionary<string, int>();
-            var switchIndex = _instructions.Count;
-            // by default same as default
-            var nullCase = new StrongBox<int>(1);
-            _instructions.EmitStringSwitch(caseDict, nullCase);
-
-            if (node.DefaultBody != null)
-            {
-                Compile(node.DefaultBody);
-            }
-            else
-            {
-                Debug.Assert(!hasValue);
-            }
-            _instructions.EmitBranch(end.GetLabel(this), false, hasValue);
-
-            for (var i = 0; i < node.Cases.Count; i++)
-            {
-                var switchCase = node.Cases[i];
-
-                var caseOffset = _instructions.Count - switchIndex;
-                foreach (ConstantExpression testValue in switchCase.TestValues) // TODO: Test coverage?
-                {
-                    var key = (string)testValue.Value;
-                    if (key == null)
-                    {
-                        if (nullCase.Value == 1)
-                        {
-                            nullCase.Value = caseOffset;
-                        }
-                    }
-                    else if (!caseDict.ContainsKey(key))
-                    {
-                        caseDict.Add(key, caseOffset);
-                    }
-                }
-
-                Compile(switchCase.Body);
-
-                if (i < node.Cases.Count - 1)
-                {
-                    _instructions.EmitBranch(end.GetLabel(this), false, hasValue);
-                }
-            }
-
-            _instructions.MarkLabel(end.GetLabel(this));
-        }
-
-        private void CompileLabelExpression(Expression expr)
-        {
-            var node = (LabelExpression)expr;
-
-            // If we're an immediate child of a block, our label will already
-            // be defined. If not, we need to define our own block so this
-            // label isn't exposed except to its own child expression.
-            LabelInfo label = null;
-
-            if (_labelBlock.Kind == LabelScopeKind.Block)
-            {
-                _labelBlock.TryGetLabelInfo(node.Target, out label);
-
-                // We're in a block but didn't find our label, try switch
-                if (label == null && _labelBlock.Parent.Kind == LabelScopeKind.Switch)
-                {
-                    _labelBlock.Parent.TryGetLabelInfo(node.Target, out label);
-                }
-
-                // if we're in a switch or block, we should've found the label
-                Debug.Assert(label != null);
-            }
-
-            if (label == null)
-            {
-                label = DefineLabel(node.Target);
-            }
-
-            if (node.DefaultValue != null)
-            {
-                if (node.Target.Type == typeof(void))
-                {
-                    CompileAsVoid(node.DefaultValue);
-                }
-                else
-                {
-                    Compile(node.DefaultValue);
-                }
-            }
-
-            _instructions.MarkLabel(label.GetLabel(this));
-        }
-
-        private void CompileGotoExpression(Expression expr)
-        {
-            var node = (GotoExpression)expr;
-            var labelInfo = ReferenceLabel(node.Target);
-
-            if (node.Value != null)
-            {
-                Compile(node.Value);
-            }
-
-            _instructions.EmitGoto(labelInfo.GetLabel(this),
-                node.Type != typeof(void),
-                node.Value != null && node.Value.Type != typeof(void),
-                node.Target.Type != typeof(void));
-        }
-
-        public BranchLabel GetBranchLabel(LabelTarget target)
-        {
-            return ReferenceLabel(target).GetLabel(this);
-        }
-
-        public void PushLabelBlock(LabelScopeKind type)
-        {
-            _labelBlock = new LabelScopeInfo(_labelBlock, type);
-        }
-
-        public void PopLabelBlock(LabelScopeKind kind)
-        {
-            Debug.Assert(_labelBlock != null && _labelBlock.Kind == kind);
-            _labelBlock = _labelBlock.Parent;
-        }
-
-        private LabelInfo EnsureLabel(LabelTarget node)
-        {
-            LabelInfo result;
-            if (!_treeLabels.TryGetValue(node, out result))
-            {
-                _treeLabels[node] = result = new LabelInfo(node);
-            }
-            return result;
-        }
-
-        private LabelInfo ReferenceLabel(LabelTarget node)
-        {
-            var result = EnsureLabel(node);
-            result.Reference(_labelBlock);
-            return result;
-        }
-
-        internal LabelInfo DefineLabel(LabelTarget node)
-        {
-            if (node == null)
-            {
-                return new LabelInfo(null);
-            }
-            var result = EnsureLabel(node);
-            result.Define(_labelBlock);
-            return result;
-        }
-
-        private bool TryPushLabelBlock(Expression node)
-        {
-            // Anything that is "statement-like" -- e.g. has no associated
-            // stack state can be jumped into, with the exception of try-blocks
-            // We indicate this by a "Block"
-            //
-            // Otherwise, we push an "Expression" to indicate that it can't be
-            // jumped into
-            switch (node.NodeType)
-            {
-                default:
-                    if (_labelBlock.Kind != LabelScopeKind.Expression)
-                    {
-                        PushLabelBlock(LabelScopeKind.Expression);
-                        return true;
-                    }
-                    return false;
-
-                case ExpressionType.Label:
-                    // LabelExpression is a bit special, if it's directly in a
-                    // block it becomes associate with the block's scope. Same
-                    // thing if it's in a switch case body.
-                    if (_labelBlock.Kind == LabelScopeKind.Block)
-                    {
-                        var label = ((LabelExpression)node).Target;
-                        if (_labelBlock.ContainsTarget(label))
-                        {
-                            return false;
-                        }
-                        if (_labelBlock.Parent.Kind == LabelScopeKind.Switch &&
-                            _labelBlock.Parent.ContainsTarget(label))
-                        {
-                            return false;
-                        }
-                    }
-                    PushLabelBlock(LabelScopeKind.Statement);
-                    return true;
-
-                case ExpressionType.Block:
-                    PushLabelBlock(LabelScopeKind.Block);
-                    // Labels defined immediately in the block are valid for
-                    // the whole block.
-                    if (_labelBlock.Parent.Kind != LabelScopeKind.Switch)
-                    {
-                        DefineBlockLabels(node);
-                    }
-                    return true;
-
-                case ExpressionType.Switch:
-                    PushLabelBlock(LabelScopeKind.Switch);
-                    // Define labels inside of the switch cases so theyare in
-                    // scope for the whole switch. This allows "goto case" and
-                    // "goto default" to be considered as local jumps.
-                    var @switch = (SwitchExpression)node;
-                    foreach (var c in @switch.Cases)
-                    {
-                        DefineBlockLabels(c.Body);
-                    }
-                    DefineBlockLabels(@switch.DefaultBody);
-                    return true;
-
-                // Remove this when Convert(Void) goes away.
-                case ExpressionType.Convert:
-                    if (node.Type != typeof(void))
-                    {
-                        // treat it as an expression
-                        goto default;
-                    }
-                    PushLabelBlock(LabelScopeKind.Statement);
-                    return true;
-
-                case ExpressionType.Conditional:
-                case ExpressionType.Loop:
-                case ExpressionType.Goto:
-                    PushLabelBlock(LabelScopeKind.Statement);
-                    return true;
-            }
-        }
-
-        private void DefineBlockLabels(Expression node)
-        {
-            var block = node as BlockExpression;
-            if (block == null)
-            {
-                return;
-            }
-            var n = block.Expressions.Count;
-            for (var i = 0; i < n; i++)
-            {
-                var e = block.Expressions[i];
-
-                var label = e as LabelExpression;
-                if (label != null)
-                {
-                    DefineLabel(label.Target);
-                }
-            }
-        }
-
-        private HybridReferenceDictionary<LabelTarget, BranchLabel> GetBranchMapping()
-        {
-            var newLabelMapping = new HybridReferenceDictionary<LabelTarget, BranchLabel>(_treeLabels.Count);
-            foreach (var kvp in _treeLabels)
-            {
-                kvp.Value.ValidateFinish();
-                newLabelMapping[kvp.Key] = kvp.Value.GetLabel(this);
-            }
-            return newLabelMapping;
-        }
-
-        private void CheckRethrow()
-        {
-            // Rethrow is only valid inside a catch.
-            for (var j = _labelBlock; j != null; j = j.Parent)
-            {
-                if (j.Kind == LabelScopeKind.Catch)
-                {
-                    return;
-                }
-                if (j.Kind == LabelScopeKind.Finally)
-                {
-                    // Rethrow from inside finally is not verifiable
-                    break;
-                }
-            }
-            throw new InvalidOperationException("Rethrow requires catch");
-        }
-
-        private void CompileThrowUnaryExpression(Expression expr, bool asVoid)
-        {
-            var node = (UnaryExpression)expr;
-
-            if (node.Operand == null)
-            {
-                CheckRethrow();
-
-                CompileParameterExpression(_exceptionForRethrowStack.Peek());
-                if (asVoid)
-                {
-                    _instructions.EmitRethrowVoid();
-                }
-                else
-                {
-                    _instructions.EmitRethrow();
-                }
-            }
-            else
-            {
-                Compile(node.Operand);
-                if (asVoid)
-                {
-                    _instructions.EmitThrowVoid();
-                }
-                else
-                {
-                    _instructions.EmitThrow();
-                }
-            }
-        }
-
-        private bool EndsWithRethrow(Expression expr)
-        {
-            if (expr.NodeType == ExpressionType.Throw)
-            {
-                var node = (UnaryExpression)expr;
-                return node.Operand == null;
-            }
-
-            var block = expr as BlockExpression;
-            if (block != null)
-            {
-                return EndsWithRethrow(block.Expressions[block.Expressions.Count - 1]);
-            }
-            return false;
-        }
-
-        private void CompileAsVoidRemoveRethrow(Expression expr)
-        {
-            var stackDepth = _instructions.CurrentStackDepth;
-
-            if (expr.NodeType == ExpressionType.Throw)
-            {
-                Debug.Assert(((UnaryExpression)expr).Operand == null);
-                return;
-            }
-
-            var node = (BlockExpression)expr;
-            var end = CompileBlockStart(node);
-
-            CompileAsVoidRemoveRethrow(node.Expressions[node.Expressions.Count - 1]);
-
-            Debug.Assert(stackDepth == _instructions.CurrentStackDepth);
-
-            CompileBlockEnd(end);
-        }
-
-        private void CompileTryExpression(Expression expr)
-        {
-            var node = (TryExpression)expr;
-
-            var end = _instructions.MakeLabel();
-            var gotoEnd = _instructions.MakeLabel();
-            var tryStart = _instructions.Count;
-
-            BranchLabel startOfFinally = null;
-            if (node.Finally != null)
-            {
-                startOfFinally = _instructions.MakeLabel();
-                _instructions.EmitEnterTryFinally(startOfFinally);
-            }
-            else
-            {
-                _instructions.EmitEnterTryCatch();
-            }
-
-            List<ExceptionHandler> exHandlers = null;
-            var enterTryInstr = _instructions.GetInstruction(tryStart) as EnterTryCatchFinallyInstruction;
-            Debug.Assert(enterTryInstr != null);
-
-            PushLabelBlock(LabelScopeKind.Try);
-            Compile(node.Body);
-
-            var hasValue = node.Body.Type != typeof(void);
-            var tryEnd = _instructions.Count;
-
-            // handlers jump here:
-            _instructions.MarkLabel(gotoEnd);
-            _instructions.EmitGoto(end, hasValue, hasValue, hasValue);
-
-            // keep the result on the stack:
-            if (node.Handlers.Count > 0)
-            {
-                exHandlers = new List<ExceptionHandler>();
-
-                // emulates faults
-                if (node.Finally == null && node.Handlers.Count == 1)
-                {
-                    var handler = node.Handlers[0];
-                    if (handler.Filter == null && handler.Test == typeof(Exception) && handler.Variable == null)
-                    {
-                        if (EndsWithRethrow(handler.Body))
-                        {
-                            if (hasValue)
-                            {
-                                _instructions.EmitEnterExceptionHandlerNonVoid();
-                            }
-                            else
-                            {
-                                _instructions.EmitEnterExceptionHandlerVoid();
-                            }
-
-                            // at this point the stack balance is prepared for the hidden exception variable:
-                            var handlerLabel = _instructions.MarkRuntimeLabel();
-                            var handlerStart = _instructions.Count;
-
-                            CompileAsVoidRemoveRethrow(handler.Body);
-                            _instructions.EmitLeaveFault(hasValue);
-                            _instructions.MarkLabel(end);
-
-                            exHandlers.Add(new ExceptionHandler(tryStart, tryEnd, handlerLabel, handlerStart, _instructions.Count, null));
-                            enterTryInstr.SetTryHandler(new TryCatchFinallyHandler(tryStart, tryEnd, gotoEnd.TargetIndex, exHandlers.ToArray()));
-                            PopLabelBlock(LabelScopeKind.Try);
-                            return;
-                        }
-                    }
-                }
-
-                foreach (var handler in node.Handlers)
-                {
-                    PushLabelBlock(LabelScopeKind.Catch);
-
-                    if (handler.Filter != null)
-                    {
-                        throw new PlatformNotSupportedException(SR.FilterBlockNotSupported);
-                    }
-
-                    var parameter = handler.Variable ?? Expression.Parameter(handler.Test);
-
-                    var local = _locals.DefineLocal(parameter, _instructions.Count);
-                    _exceptionForRethrowStack.Push(parameter);
-
-                    // add a stack balancing nop instruction (exception handling pushes the current exception):
-                    if (hasValue)
-                    {
-                        _instructions.EmitEnterExceptionHandlerNonVoid();
+                        _instructions.EmitLoad(fi.GetValue(null), fi.FieldType);
                     }
                     else
                     {
-                        _instructions.EmitEnterExceptionHandlerVoid();
+                        _instructions.EmitLoadField(fi);
                     }
-
-                    // at this point the stack balance is prepared for the hidden exception variable:
-                    var handlerLabel = _instructions.MarkRuntimeLabel();
-                    var handlerStart = _instructions.Count;
-
-                    CompileSetVariable(parameter, true);
-                    Compile(handler.Body);
-
-                    _exceptionForRethrowStack.Pop();
-
-                    // keep the value of the body on the stack:
-                    Debug.Assert(hasValue == (handler.Body.Type != typeof(void)));
-                    _instructions.EmitLeaveExceptionHandler(hasValue, gotoEnd);
-
-                    exHandlers.Add(new ExceptionHandler(tryStart, tryEnd, handlerLabel, handlerStart, _instructions.Count, handler.Test));
-                    PopLabelBlock(LabelScopeKind.Catch);
-
-                    _locals.UndefineLocal(local, _instructions.Count);
                 }
-
-                if (node.Fault != null)
+                else
                 {
-                    throw new PlatformNotSupportedException(SR.FaultBlockNotSupported);
+                    if (from != null)
+                    {
+                        EmitThisForMethodCall(from);
+                    }
+                    _instructions.EmitLoadField(fi);
                 }
-            }
-
-            if (node.Finally != null)
-            {
-                Debug.Assert(startOfFinally != null);
-                PushLabelBlock(LabelScopeKind.Finally);
-
-                _instructions.MarkLabel(startOfFinally);
-                _instructions.EmitEnterFinally(startOfFinally);
-                CompileAsVoid(node.Finally);
-                _instructions.EmitLeaveFinally();
-
-                enterTryInstr.SetTryHandler(
-                    new TryCatchFinallyHandler(tryStart, tryEnd, gotoEnd.TargetIndex,
-                        startOfFinally.TargetIndex, _instructions.Count,
-                        exHandlers != null ? exHandlers.ToArray() : null));
-                PopLabelBlock(LabelScopeKind.Finally);
             }
             else
             {
-                Debug.Assert(exHandlers != null);
-                enterTryInstr.SetTryHandler(
-                    new TryCatchFinallyHandler(tryStart, tryEnd, gotoEnd.TargetIndex, exHandlers.ToArray()));
+                // MemberExpression can use either FieldInfo or PropertyInfo - other types derived from MemberInfo are not permitted
+                var pi = (PropertyInfo)member;
+                if (pi != null)
+                {
+                    var method = pi.GetGetMethod(true);
+                    if (from != null)
+                    {
+                        EmitThisForMethodCall(from);
+                    }
+                    _instructions.EmitCall(method);
+                }
+            }
+        }
+
+        private void CompileMemberAssignment(BinaryExpression node, bool asVoid)
+        {
+            var member = (MemberExpression)node.Left;
+            var expr = member.Expression;
+            if (expr != null)
+            {
+                EmitThisForMethodCall(expr);
             }
 
-            _instructions.MarkLabel(end);
+            CompileMemberAssignment(asVoid, member.Member, node.Right);
+        }
 
-            PopLabelBlock(LabelScopeKind.Try);
+        private void CompileMemberAssignment(bool asVoid, MemberInfo refMember, Expression value)
+        {
+            var pi = refMember as PropertyInfo;
+            if (pi != null)
+            {
+                var method = pi.GetSetMethod(true);
+                EmitThisForMethodCall(value);
+
+                var start = _instructions.Count;
+                if (!asVoid)
+                {
+                    var local = _locals.DefineLocal(Expression.Parameter(value.Type), start);
+                    _instructions.EmitAssignLocal(local.Index);
+                    _instructions.EmitCall(method);
+                    _instructions.EmitLoadLocal(local.Index);
+                    _locals.UndefineLocal(local, _instructions.Count);
+                }
+                else
+                {
+                    _instructions.EmitCall(method);
+                }
+            }
+            else
+            {
+                // other types inherited from MemberInfo (EventInfo\MethodBase\Type) cannot be used in MemberAssignment
+                var fi = (FieldInfo)refMember;
+                if (fi != null)
+                {
+                    EmitThisForMethodCall(value);
+
+                    var start = _instructions.Count;
+                    if (!asVoid)
+                    {
+                        var local = _locals.DefineLocal(Expression.Parameter(value.Type), start);
+                        _instructions.EmitAssignLocal(local.Index);
+                        _instructions.EmitStoreField(fi);
+                        _instructions.EmitLoadLocal(local.Index);
+                        _locals.UndefineLocal(local, _instructions.Count);
+                    }
+                    else
+                    {
+                        _instructions.EmitStoreField(fi);
+                    }
+                }
+            }
+        }
+
+        private void CompileMemberExpression(Expression expr)
+        {
+            var node = (MemberExpression)expr;
+
+            CompileMember(node.Expression, node.Member);
+        }
+
+        private void CompileMemberInit(Collections.ObjectModel.ReadOnlyCollection<MemberBinding> bindings)
+        {
+            foreach (var binding in bindings)
+            {
+                switch (binding.BindingType)
+                {
+                    case MemberBindingType.Assignment:
+                        _instructions.EmitDup();
+                        CompileMemberAssignment(
+                            true,
+                            ((MemberAssignment)binding).Member,
+                            ((MemberAssignment)binding).Expression
+                        );
+                        break;
+
+                    case MemberBindingType.ListBinding:
+                        var memberList = (MemberListBinding)binding;
+                        _instructions.EmitDup();
+                        CompileMember(null, memberList.Member);
+                        CompileListInit(memberList.Initializers);
+                        _instructions.EmitPop();
+                        break;
+
+                    case MemberBindingType.MemberBinding:
+                        var memberMember = (MemberMemberBinding)binding;
+                        _instructions.EmitDup();
+                        var type = GetMemberType(memberMember.Member);
+                        if (memberMember.Member is PropertyInfo && type.IsValueType)
+                        {
+                            throw new InvalidOperationException("CannotAutoInitializeValueTypeMemberThroughProperty");
+                        }
+
+                        CompileMember(null, memberMember.Member);
+                        CompileMemberInit(memberMember.Bindings);
+                        _instructions.EmitPop();
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private void CompileMemberInitExpression(Expression expr)
+        {
+            var node = (MemberInitExpression)expr;
+            EmitThisForMethodCall(node.NewExpression);
+            CompileMemberInit(node.Bindings);
         }
 
         private void CompileMethodCallExpression(Expression expr)
@@ -2177,142 +1918,23 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        private ByRefUpdater CompileArrayIndexAddress(Expression array, Expression index, int argumentIndex)
+        private void CompileMethodLogicalBinaryExpression(BinaryExpression expr, bool andAlso)
         {
-            var left = _locals.DefineLocal(Expression.Parameter(array.Type, nameof(array)), _instructions.Count);
-            var right = _locals.DefineLocal(Expression.Parameter(index.Type, nameof(index)), _instructions.Count);
-            Compile(array);
-            _instructions.EmitStoreLocal(left.Index);
-            Compile(index);
-            _instructions.EmitStoreLocal(right.Index);
+            var labEnd = _instructions.MakeLabel();
+            Compile(expr.Left);
+            _instructions.EmitDup();
 
-            _instructions.EmitLoadLocal(left.Index);
-            _instructions.EmitLoadLocal(right.Index);
-            _instructions.EmitGetArrayItem();
+            var opTrue = TypeHelper.GetBooleanOperator(expr.Method.DeclaringType, andAlso ? "op_False" : "op_True");
+            Debug.Assert(opTrue != null, "factory should check that the method exists");
+            _instructions.EmitCall(opTrue);
+            _instructions.EmitBranchTrue(labEnd);
 
-            return new ArrayByRefUpdater(left, right, argumentIndex);
-        }
+            Compile(expr.Right);
 
-        private void EmitThisForMethodCall(Expression node)
-        {
-            CompileAddress(node, -1);
-        }
+            Debug.Assert(expr.Method.IsStatic);
+            _instructions.EmitCall(expr.Method);
 
-        /// <summary>
-        /// Emits the address of the specified node.
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        private ByRefUpdater CompileAddress(Expression node, int index)
-        {
-            switch (node.NodeType)
-            {
-                case ExpressionType.Parameter:
-                    LoadLocalNoValueTypeCopy((ParameterExpression)node);
-
-                    return new ParameterByRefUpdater(ResolveLocal((ParameterExpression)node), index);
-
-                case ExpressionType.ArrayIndex:
-                    var array = (BinaryExpression)node;
-
-                    return CompileArrayIndexAddress(array.Left, array.Right, index);
-
-                case ExpressionType.Index:
-                    var indexNode = (IndexExpression)node;
-                    if (/*!TypeHelper.AreEquivalent(type, node.Type) || */indexNode.Indexer != null)
-                    {
-                        LocalDefinition? objTmp = null;
-                        if (indexNode.Object != null)
-                        {
-                            Compile(indexNode.Object);
-                            objTmp = _locals.DefineLocal(Expression.Parameter(indexNode.Object.Type), _instructions.Count);
-                            _instructions.EmitDup();
-                            _instructions.EmitStoreLocal(objTmp.Value.Index);
-                        }
-
-                        var indexLocals = new List<LocalDefinition>();
-                        // Do not convert to foreach, the loop modifies the list
-                        for (var i = 0; i < indexNode.Arguments.Count; i++)
-                        {
-                            Compile(indexNode.Arguments[i]);
-
-                            var argTmp = _locals.DefineLocal(Expression.Parameter(indexNode.Arguments[i].Type), _instructions.Count);
-                            _instructions.EmitDup();
-                            _instructions.EmitStoreLocal(argTmp.Index);
-
-                            indexLocals.Add(argTmp);
-                        }
-
-                        EmitIndexGet(indexNode);
-
-                        return new IndexMethodByRefUpdater(objTmp, indexLocals.ToArray(), indexNode.Indexer.GetSetMethod(), index);
-                    }
-                    else if (indexNode.Arguments.Count == 1)
-                    {
-                        return CompileArrayIndexAddress(indexNode.Object, indexNode.Arguments[0], index);
-                    }
-                    else
-                    {
-                        return CompileMultiDimArrayAccess(indexNode.Object, indexNode.Arguments, index);
-                    }
-                case ExpressionType.MemberAccess:
-                    var member = (MemberExpression)node;
-
-                    LocalDefinition? memberTemp = null;
-                    if (member.Expression != null)
-                    {
-                        memberTemp = _locals.DefineLocal(Expression.Parameter(member.Expression.Type, nameof(member)), _instructions.Count);
-                        EmitThisForMethodCall(member.Expression);
-                        _instructions.EmitDup();
-                        _instructions.EmitStoreLocal(memberTemp.Value.Index);
-                    }
-
-                    if (member.Member is FieldInfo)
-                    {
-                        _instructions.EmitLoadField((FieldInfo)member.Member);
-                        return new FieldByRefUpdater(memberTemp, (FieldInfo)member.Member, index);
-                    }
-                    else if (member.Member is PropertyInfo)
-                    {
-                        _instructions.EmitCall(((PropertyInfo)member.Member).GetGetMethod(true));
-                        if (((PropertyInfo)member.Member).CanWrite)
-                        {
-                            return new PropertyByRefUpdater(memberTemp, (PropertyInfo)member.Member, index);
-                        }
-                        return null;
-                    }
-                    throw new InvalidOperationException(string.Format("Address of {0}", node.NodeType));
-                case ExpressionType.Call:
-                    // An array index of a multi-dimensional array is represented by a call to Array.Get,
-                    // rather than having its own array-access node. This means that when we are trying to
-                    // get the address of a member of a multi-dimensional array, we'll be trying to
-                    // get the address of a Get method, and it will fail to do so. Instead, detect
-                    // this situation and replace it with a call to the Address method.
-                    var call = (MethodCallExpression)node;
-                    if (!call.Method.IsStatic &&
-                        call.Object.Type.IsArray &&
-                        call.Method == call.Object.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance))
-                    {
-                        return CompileMultiDimArrayAccess(
-                            call.Object,
-                            call.Arguments,
-                            index
-                        );
-                    }
-                    else
-                    {
-                        goto default;
-                    }
-
-                case ExpressionType.Unbox:
-                    Compile(node);
-                    return null;
-
-                default:
-                    Compile(node);
-                    return null;
-            }
+            _instructions.MarkLabel(labEnd);
         }
 
         private ByRefUpdater CompileMultiDimArrayAccess(Expression array, IList<Expression> arguments, int index)
@@ -2338,6 +1960,36 @@ namespace System.Linq.Expressions.Interpreter
             _instructions.EmitCall(array.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance));
 
             return new IndexMethodByRefUpdater(objTmp, indexLocals.ToArray(), array.Type.GetMethod("Set", BindingFlags.Public | BindingFlags.Instance), index);
+        }
+
+        private void CompileNewArrayExpression(Expression expr)
+        {
+            var node = (NewArrayExpression)expr;
+
+            foreach (var arg in node.Expressions)
+            {
+                Compile(arg);
+            }
+
+            var elementType = node.Type.GetElementType();
+            var rank = node.Expressions.Count;
+
+            if (node.NodeType == ExpressionType.NewArrayInit)
+            {
+                _instructions.EmitNewArrayInit(elementType, rank);
+            }
+            else
+            {
+                Debug.Assert(node.NodeType == ExpressionType.NewArrayBounds);
+                if (rank == 1)
+                {
+                    _instructions.EmitNewArray(elementType);
+                }
+                else
+                {
+                    _instructions.EmitNewArrayBounds(elementType, rank);
+                }
+            }
         }
 
         private void CompileNewExpression(Expression expr)
@@ -2382,524 +2034,6 @@ namespace System.Linq.Expressions.Interpreter
             {
                 Debug.Assert(expr.Type.IsValueType);
                 _instructions.EmitDefaultValue(node.Type);
-            }
-        }
-
-        private void CompileMemberExpression(Expression expr)
-        {
-            var node = (MemberExpression)expr;
-
-            CompileMember(node.Expression, node.Member);
-        }
-
-        private void CompileMember(Expression from, MemberInfo member)
-        {
-            var fi = member as FieldInfo;
-            if (fi != null)
-            {
-                if (fi.IsLiteral)
-                {
-                    _instructions.EmitLoad(fi.GetValue(null), fi.FieldType);
-                }
-                else if (fi.IsStatic)
-                {
-                    if (fi.IsInitOnly)
-                    {
-                        _instructions.EmitLoad(fi.GetValue(null), fi.FieldType);
-                    }
-                    else
-                    {
-                        _instructions.EmitLoadField(fi);
-                    }
-                }
-                else
-                {
-                    if (from != null)
-                    {
-                        EmitThisForMethodCall(from);
-                    }
-                    _instructions.EmitLoadField(fi);
-                }
-            }
-            else
-            {
-                // MemberExpression can use either FieldInfo or PropertyInfo - other types derived from MemberInfo are not permitted
-                var pi = (PropertyInfo)member;
-                if (pi != null)
-                {
-                    var method = pi.GetGetMethod(true);
-                    if (from != null)
-                    {
-                        EmitThisForMethodCall(from);
-                    }
-                    _instructions.EmitCall(method);
-                }
-            }
-        }
-
-        private void CompileNewArrayExpression(Expression expr)
-        {
-            var node = (NewArrayExpression)expr;
-
-            foreach (var arg in node.Expressions)
-            {
-                Compile(arg);
-            }
-
-            var elementType = node.Type.GetElementType();
-            var rank = node.Expressions.Count;
-
-            if (node.NodeType == ExpressionType.NewArrayInit)
-            {
-                _instructions.EmitNewArrayInit(elementType, rank);
-            }
-            else
-            {
-                Debug.Assert(node.NodeType == ExpressionType.NewArrayBounds);
-                if (rank == 1)
-                {
-                    _instructions.EmitNewArray(elementType);
-                }
-                else
-                {
-                    _instructions.EmitNewArrayBounds(elementType, rank);
-                }
-            }
-        }
-
-        private void CompileExtensionExpression(Expression expr)
-        {
-            var instructionProvider = expr as IInstructionProvider; // TODO: Test coverage?
-            if (instructionProvider != null)
-            {
-                instructionProvider.AddInstructions(this);
-                return;
-            }
-
-            if (expr.CanReduce)
-            {
-                Compile(expr.Reduce());
-            }
-            else
-            {
-                throw new PlatformNotSupportedException(SR.NonReducibleExpressionExtensionsNotSupported);
-            }
-        }
-
-        private void CompileDebugInfoExpression(Expression expr)
-        {
-            var node = (DebugInfoExpression)expr;
-            var start = _instructions.Count;
-            var info = new DebugInfo
-            {
-                Index = start,
-                FileName = node.Document.FileName,
-                StartLine = node.StartLine,
-                EndLine = node.EndLine,
-                IsClear = node.IsClear
-            };
-            _debugInfos.Add(info);
-        }
-
-        private void CompileRuntimeVariablesExpression(Expression expr)
-        {
-            // Generates IRuntimeVariables for all requested variables
-            var node = (RuntimeVariablesExpression)expr;
-            foreach (var variable in node.Variables)
-            {
-                EnsureAvailableForClosure(variable);
-                CompileGetBoxedVariable(variable);
-            }
-
-            _instructions.EmitNewRuntimeVariables(node.Variables.Count);
-        }
-
-        private void CompileLambdaExpression(Expression expr)
-        {
-            var node = (LambdaExpression)expr;
-            var compiler = new LightCompiler(this);
-            var creator = compiler.CompileTop(node);
-
-            if (compiler._locals.ClosureVariables != null)
-            {
-                foreach (var variable in compiler._locals.ClosureVariables.Keys)
-                {
-                    EnsureAvailableForClosure(variable);
-                    CompileGetBoxedVariable(variable);
-                }
-            }
-            _instructions.EmitCreateDelegate(creator);
-        }
-
-        private void CompileCoalesceBinaryExpression(Expression expr)
-        {
-            var node = (BinaryExpression)expr;
-
-            var leftNotNull = _instructions.MakeLabel();
-            BranchLabel end = null;
-
-            Compile(node.Left);
-            _instructions.EmitCoalescingBranch(leftNotNull);
-            _instructions.EmitPop();
-            Compile(node.Right);
-
-            if (node.Conversion != null)
-            {
-                // skip over conversion on RHS
-                end = _instructions.MakeLabel();
-                _instructions.EmitBranch(end);
-            }
-
-            _instructions.MarkLabel(leftNotNull);
-
-            if (node.Conversion != null)
-            {
-                var temp = Expression.Parameter(node.Left.Type, "temp");
-                var local = _locals.DefineLocal(temp, _instructions.Count);
-                _instructions.EmitStoreLocal(local.Index);
-
-                CompileMethodCallExpression(
-                    Expression.Call(node.Conversion, node.Conversion.Type.GetMethod("Invoke"), temp)
-                );
-
-                _locals.UndefineLocal(local, _instructions.Count);
-
-                _instructions.MarkLabel(end);
-            }
-        }
-
-        private void CompileInvocationExpression(Expression expr)
-        {
-            var node = (InvocationExpression)expr;
-
-            if (typeof(LambdaExpression).IsAssignableFrom(node.Expression.Type))
-            {
-                var compMethod = node.Expression.Type.GetMethod("Compile", ArrayReservoir<Type>.EmptyArray);
-                CompileMethodCallExpression(
-                    Expression.Call(
-                        Expression.Call(
-                            node.Expression,
-                            compMethod
-                        ),
-                        compMethod.ReturnType.GetMethod("Invoke"),
-                        node.Arguments
-                    )
-                );
-            }
-            else
-            {
-                CompileMethodCallExpression(
-                    Expression.Call(node.Expression, node.Expression.Type.GetMethod("Invoke"), node.Arguments)
-                );
-            }
-        }
-
-        private void CompileListInitExpression(Expression expr)
-        {
-            var node = (ListInitExpression)expr;
-            EmitThisForMethodCall(node.NewExpression);
-            var initializers = node.Initializers;
-            CompileListInit(initializers);
-        }
-
-        private void CompileListInit(IList<ElementInit> initializers)
-        {
-            foreach (var init in initializers)
-            {
-                _instructions.EmitDup();
-                foreach (var arg in init.Arguments)
-                {
-                    Compile(arg);
-                }
-                _instructions.EmitCall(init.AddMethod);
-            }
-        }
-
-        private void CompileMemberInitExpression(Expression expr)
-        {
-            var node = (MemberInitExpression)expr;
-            EmitThisForMethodCall(node.NewExpression);
-            CompileMemberInit(node.Bindings);
-        }
-
-        private void CompileMemberInit(Collections.ObjectModel.ReadOnlyCollection<MemberBinding> bindings)
-        {
-            foreach (var binding in bindings)
-            {
-                switch (binding.BindingType)
-                {
-                    case MemberBindingType.Assignment:
-                        _instructions.EmitDup();
-                        CompileMemberAssignment(
-                            true,
-                            ((MemberAssignment)binding).Member,
-                            ((MemberAssignment)binding).Expression
-                        );
-                        break;
-
-                    case MemberBindingType.ListBinding:
-                        var memberList = (MemberListBinding)binding;
-                        _instructions.EmitDup();
-                        CompileMember(null, memberList.Member);
-                        CompileListInit(memberList.Initializers);
-                        _instructions.EmitPop();
-                        break;
-
-                    case MemberBindingType.MemberBinding:
-                        var memberMember = (MemberMemberBinding)binding;
-                        _instructions.EmitDup();
-                        var type = GetMemberType(memberMember.Member);
-                        if (memberMember.Member is PropertyInfo && type.IsValueType)
-                        {
-                            throw new InvalidOperationException("CannotAutoInitializeValueTypeMemberThroughProperty");
-                        }
-
-                        CompileMember(null, memberMember.Member);
-                        CompileMemberInit(memberMember.Bindings);
-                        _instructions.EmitPop();
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-        }
-
-        private static Type GetMemberType(MemberInfo member)
-        {
-            var fi = member as FieldInfo;
-            if (fi != null)
-            {
-                return fi.FieldType;
-            }
-
-            var pi = member as PropertyInfo;
-            if (pi != null)
-            {
-                return pi.PropertyType;
-            }
-
-            throw new InvalidOperationException("MemberNotFieldOrProperty");
-        }
-
-        private void CompileQuoteUnaryExpression(Expression expr)
-        {
-            var unary = (UnaryExpression)expr;
-
-            var visitor = new QuoteVisitor();
-            visitor.Visit(unary.Operand);
-
-            var mapping = new Dictionary<ParameterExpression, LocalVariable>();
-
-            foreach (var local in visitor.HoistedParameters)
-            {
-                EnsureAvailableForClosure(local);
-                mapping[local] = ResolveLocal(local);
-            }
-
-            _instructions.Emit(new QuoteInstruction(unary.Operand, mapping.Count > 0 ? mapping : null));
-        }
-
-        private class QuoteVisitor : ExpressionVisitor
-        {
-            private readonly Dictionary<ParameterExpression, int> _definedParameters = new Dictionary<ParameterExpression, int>();
-            public readonly HashSet<ParameterExpression> HoistedParameters = new HashSet<ParameterExpression>();
-
-            protected internal override Expression VisitParameter(ParameterExpression node)
-            {
-                if (!_definedParameters.ContainsKey(node))
-                {
-                    HoistedParameters.Add(node);
-                }
-                return node;
-            }
-
-            protected internal override Expression VisitBlock(BlockExpression node)
-            {
-                PushParameters(node.Variables);
-
-                base.VisitBlock(node);
-
-                PopParameters(node.Variables);
-
-                return node;
-            }
-
-            protected override CatchBlock VisitCatchBlock(CatchBlock node)
-            {
-                if (node.Variable != null)
-                {
-                    PushParameters(new[] { node.Variable });
-                }
-                Visit(node.Body);
-                Visit(node.Filter);
-                if (node.Variable != null)
-                {
-                    PopParameters(new[] { node.Variable });
-                }
-                return node;
-            }
-
-            protected internal override Expression VisitLambda(LambdaExpression node)
-            {
-                PushParameters(node.Parameters);
-
-                base.VisitLambda(node);
-
-                PopParameters(node.Parameters);
-
-                return node;
-            }
-
-            private void PushParameters(ICollection<ParameterExpression> parameters)
-            {
-                foreach (var param in parameters)
-                {
-                    int count;
-                    if (_definedParameters.TryGetValue(param, out count))
-                    {
-                        _definedParameters[param] = count + 1;
-                    }
-                    else
-                    {
-                        _definedParameters[param] = 1;
-                    }
-                }
-            }
-
-            private void PopParameters(ICollection<ParameterExpression> parameters)
-            {
-                foreach (var param in parameters)
-                {
-                    var count = _definedParameters[param];
-                    if (count == 0)
-                    {
-                        _definedParameters.Remove(param);
-                    }
-                    else
-                    {
-                        _definedParameters[param] = count - 1;
-                    }
-                }
-            }
-        }
-
-        private void CompileUnboxUnaryExpression(Expression expr)
-        {
-            var node = (UnaryExpression)expr;
-            // unboxing is a nop:
-            Compile(node.Operand);
-        }
-
-        private void CompileTypeEqualExpression(Expression expr)
-        {
-            Debug.Assert(expr.NodeType == ExpressionType.TypeEqual);
-            var node = (TypeBinaryExpression)expr;
-
-            Compile(node.Expression);
-            if (node.TypeOperand.IsGenericType && node.TypeOperand.GetGenericTypeDefinition() == typeof(Nullable<>))
-            {
-                _instructions.EmitLoad(node.TypeOperand.GetGenericArguments()[0]);
-                _instructions.EmitNullableTypeEquals();
-            }
-            else
-            {
-                _instructions.EmitLoad(node.TypeOperand);
-                _instructions.EmitTypeEquals();
-            }
-        }
-
-        private void CompileTypeAsExpression(UnaryExpression node)
-        {
-            Compile(node.Operand);
-            _instructions.EmitTypeAs(node.Type);
-        }
-
-        private void CompileTypeIsExpression(Expression expr)
-        {
-            Debug.Assert(expr.NodeType == ExpressionType.TypeIs);
-            var node = (TypeBinaryExpression)expr;
-
-            var result = ConstantCheck.AnalyzeTypeIs(node);
-
-            Compile(node.Expression);
-
-            if (result == AnalyzeTypeIsResult.KnownTrue ||
-                result == AnalyzeTypeIsResult.KnownFalse)
-            {
-                // Result is known statically, so just emit the expression for
-                // its side effects and return the result
-                if (node.Expression.Type != typeof(void))
-                {
-                    _instructions.EmitPop();
-                }
-
-                _instructions.EmitLoad(
-                    ScriptingRuntimeHelpers.BooleanToObject(result == AnalyzeTypeIsResult.KnownTrue),
-                    typeof(bool)
-                );
-                return;
-            }
-
-            if (node.TypeOperand.IsGenericType && node.TypeOperand.GetGenericTypeDefinition() == typeof(Nullable<>))
-            {
-                _instructions.EmitLoad(node.TypeOperand.GetGenericArguments()[0]);
-                _instructions.EmitNullableTypeEquals();
-            }
-            else
-            {
-                _instructions.EmitTypeIs(node.TypeOperand);
-            }
-        }
-
-        internal void Compile(Expression expr, bool asVoid)
-        {
-            if (asVoid)
-            {
-                CompileAsVoid(expr);
-            }
-            else
-            {
-                Compile(expr);
-            }
-        }
-
-        internal void CompileAsVoid(Expression expr)
-        {
-            var pushLabelBlock = TryPushLabelBlock(expr);
-            var startingStackDepth = _instructions.CurrentStackDepth;
-            switch (expr.NodeType)
-            {
-                case ExpressionType.Assign:
-                    CompileAssignBinaryExpression(expr, true);
-                    break;
-
-                case ExpressionType.Block:
-                    CompileBlockExpression(expr, true);
-                    break;
-
-                case ExpressionType.Throw:
-                    CompileThrowUnaryExpression(expr, true);
-                    break;
-
-                case ExpressionType.Constant:
-                case ExpressionType.Default:
-                case ExpressionType.Parameter:
-                    // no-op
-                    break;
-
-                default:
-                    CompileNoLabelPush(expr);
-                    if (expr.Type != typeof(void))
-                    {
-                        _instructions.EmitPop();
-                    }
-                    break;
-            }
-            Debug.Assert(_instructions.CurrentStackDepth == startingStackDepth);
-            if (pushLabelBlock)
-            {
-                PopLabelBlock(_labelBlock.Kind);
             }
         }
 
@@ -3202,30 +2336,894 @@ namespace System.Linq.Expressions.Interpreter
                 string.Format("{0} vs {1} for {2}", _instructions.CurrentStackDepth, startingStackDepth + (expr.Type == typeof(void) ? 0 : 1), expr.NodeType));
         }
 
-        public void Compile(Expression expr)
+        private void CompileNotEqual(Expression left, Expression right, bool liftedToNull)
         {
-            var pushLabelBlock = TryPushLabelBlock(expr);
-            CompileNoLabelPush(expr);
-            if (pushLabelBlock)
+            Debug.Assert(left.Type == right.Type || !left.Type.IsValueType && !right.Type.IsValueType);
+            Compile(left);
+            Compile(right);
+            _instructions.EmitNotEqual(left.Type, liftedToNull);
+        }
+
+        private void CompileNotExpression(UnaryExpression node)
+        {
+            Compile(node.Operand);
+            _instructions.EmitNot(node.Operand.Type);
+        }
+
+        private void CompileOrElseBinaryExpression(Expression expr)
+        {
+            CompileLogicalBinaryExpression((BinaryExpression)expr, false);
+        }
+
+        private void CompileQuoteUnaryExpression(Expression expr)
+        {
+            var unary = (UnaryExpression)expr;
+
+            var visitor = new QuoteVisitor();
+            visitor.Visit(unary.Operand);
+
+            var mapping = new Dictionary<ParameterExpression, LocalVariable>();
+
+            foreach (var local in visitor.HoistedParameters)
             {
-                PopLabelBlock(_labelBlock.Kind);
+                EnsureAvailableForClosure(local);
+                mapping[local] = ResolveLocal(local);
+            }
+
+            _instructions.Emit(new QuoteInstruction(unary.Operand, mapping.Count > 0 ? mapping : null));
+        }
+
+        private void CompileRuntimeVariablesExpression(Expression expr)
+        {
+            // Generates IRuntimeVariables for all requested variables
+            var node = (RuntimeVariablesExpression)expr;
+            foreach (var variable in node.Variables)
+            {
+                EnsureAvailableForClosure(variable);
+                CompileGetBoxedVariable(variable);
+            }
+
+            _instructions.EmitNewRuntimeVariables(node.Variables.Count);
+        }
+
+        private void CompileStringSwitchExpression(SwitchExpression node)
+        {
+            var end = DefineLabel(null);
+            var hasValue = node.Type != typeof(void);
+
+            Compile(node.SwitchValue);
+            var caseDict = new Dictionary<string, int>();
+            var switchIndex = _instructions.Count;
+            // by default same as default
+            var nullCase = new StrongBox<int>(1);
+            _instructions.EmitStringSwitch(caseDict, nullCase);
+
+            if (node.DefaultBody != null)
+            {
+                Compile(node.DefaultBody);
+            }
+            else
+            {
+                Debug.Assert(!hasValue);
+            }
+            _instructions.EmitBranch(end.GetLabel(this), false, hasValue);
+
+            for (var i = 0; i < node.Cases.Count; i++)
+            {
+                var switchCase = node.Cases[i];
+
+                var caseOffset = _instructions.Count - switchIndex;
+                foreach (ConstantExpression testValue in switchCase.TestValues) // TODO: Test coverage?
+                {
+                    var key = (string)testValue.Value;
+                    if (key == null)
+                    {
+                        if (nullCase.Value == 1)
+                        {
+                            nullCase.Value = caseOffset;
+                        }
+                    }
+                    else if (!caseDict.ContainsKey(key))
+                    {
+                        caseDict.Add(key, caseOffset);
+                    }
+                }
+
+                Compile(switchCase.Body);
+
+                if (i < node.Cases.Count - 1)
+                {
+                    _instructions.EmitBranch(end.GetLabel(this), false, hasValue);
+                }
+            }
+
+            _instructions.MarkLabel(end.GetLabel(this));
+        }
+
+        private void CompileSwitchExpression(Expression expr)
+        {
+            var node = (SwitchExpression)expr;
+
+            if (node.Cases.All(c => c.TestValues.All(t => t is ConstantExpression)))
+            {
+                var switchType = node.SwitchValue.Type.GetTypeCode();
+
+                if (node.Comparison == null)
+                {
+                    switch (switchType)
+                    {
+                        case TypeCode.Int32:
+                            CompileIntSwitchExpression<int>(node);
+                            return;
+
+                        // the following cases are uncomon,
+                        // so to avoid numerous unecessary generic
+                        // instantiations of Dictionary<K, V> and related types
+                        // in AOT scenarios, we will just use "object" as the key
+                        // NOTE: this does not actually result in any
+                        //       extra boxing since both keys and values
+                        //       are already boxed when we get them
+                        case TypeCode.Byte:
+                        case TypeCode.SByte:
+                        case TypeCode.UInt16:
+                        case TypeCode.Int16:
+                        case TypeCode.UInt32:
+                        case TypeCode.UInt64:
+                        case TypeCode.Int64:
+                            CompileIntSwitchExpression<object>(node);
+                            return;
+
+                        default:
+                            break;
+                    }
+                }
+
+                if (switchType == TypeCode.String)
+                {
+                    // If we have a comparison other than string equality, bail
+                    var equality = typeof(string).GetMethod("op_Equality", new[] { typeof(string), typeof(string) });
+                    if (equality != null && !equality.IsStatic)
+                    {
+                        equality = null;
+                    }
+
+                    if (Equals(node.Comparison, equality))
+                    {
+                        CompileStringSwitchExpression(node);
+                        return;
+                    }
+                }
+            }
+
+            var temp = _locals.DefineLocal(Expression.Parameter(node.SwitchValue.Type), _instructions.Count);
+            Compile(node.SwitchValue);
+            _instructions.EmitStoreLocal(temp.Index);
+
+            var doneLabel = Expression.Label(node.Type, "done");
+
+            foreach (var @case in node.Cases)
+            {
+                foreach (var val in @case.TestValues)
+                {
+                    //  temp == val ?
+                    //          goto(Body) doneLabel:
+                    //          {};
+                    CompileConditionalExpression(
+                        Expression.Condition(
+                            Expression.Equal(temp.Parameter, val, false, node.Comparison),
+                            Expression.Goto(doneLabel, @case.Body),
+                            AstUtils.Empty()
+                        ),
+                        /*asVoid*/ true);
+                }
+            }
+
+            // doneLabel(DefaultBody):
+            CompileLabelExpression(Expression.Label(doneLabel, node.DefaultBody));
+
+            _locals.UndefineLocal(temp, _instructions.Count);
+        }
+
+        private void CompileThrowUnaryExpression(Expression expr, bool asVoid)
+        {
+            var node = (UnaryExpression)expr;
+
+            if (node.Operand == null)
+            {
+                CheckRethrow();
+
+                CompileParameterExpression(_exceptionForRethrowStack.Peek());
+                if (asVoid)
+                {
+                    _instructions.EmitRethrowVoid();
+                }
+                else
+                {
+                    _instructions.EmitRethrow();
+                }
+            }
+            else
+            {
+                Compile(node.Operand);
+                if (asVoid)
+                {
+                    _instructions.EmitThrowVoid();
+                }
+                else
+                {
+                    _instructions.EmitThrow();
+                }
             }
         }
-    }
 
-    internal abstract class ByRefUpdater
-    {
-        public readonly int ArgumentIndex;
-
-        protected ByRefUpdater(int argumentIndex)
+        private void CompileTryExpression(Expression expr)
         {
-            ArgumentIndex = argumentIndex;
+            var node = (TryExpression)expr;
+
+            var end = _instructions.MakeLabel();
+            var gotoEnd = _instructions.MakeLabel();
+            var tryStart = _instructions.Count;
+
+            BranchLabel startOfFinally = null;
+            if (node.Finally != null)
+            {
+                startOfFinally = _instructions.MakeLabel();
+                _instructions.EmitEnterTryFinally(startOfFinally);
+            }
+            else
+            {
+                _instructions.EmitEnterTryCatch();
+            }
+
+            List<ExceptionHandler> exHandlers = null;
+            var enterTryInstr = _instructions.GetInstruction(tryStart) as EnterTryCatchFinallyInstruction;
+            Debug.Assert(enterTryInstr != null);
+
+            PushLabelBlock(LabelScopeKind.Try);
+            Compile(node.Body);
+
+            var hasValue = node.Body.Type != typeof(void);
+            var tryEnd = _instructions.Count;
+
+            // handlers jump here:
+            _instructions.MarkLabel(gotoEnd);
+            _instructions.EmitGoto(end, hasValue, hasValue, hasValue);
+
+            // keep the result on the stack:
+            if (node.Handlers.Count > 0)
+            {
+                exHandlers = new List<ExceptionHandler>();
+
+                // emulates faults
+                if (node.Finally == null && node.Handlers.Count == 1)
+                {
+                    var handler = node.Handlers[0];
+                    if (handler.Filter == null && handler.Test == typeof(Exception) && handler.Variable == null)
+                    {
+                        if (EndsWithRethrow(handler.Body))
+                        {
+                            if (hasValue)
+                            {
+                                _instructions.EmitEnterExceptionHandlerNonVoid();
+                            }
+                            else
+                            {
+                                _instructions.EmitEnterExceptionHandlerVoid();
+                            }
+
+                            // at this point the stack balance is prepared for the hidden exception variable:
+                            var handlerLabel = _instructions.MarkRuntimeLabel();
+                            var handlerStart = _instructions.Count;
+
+                            CompileAsVoidRemoveRethrow(handler.Body);
+                            _instructions.EmitLeaveFault(hasValue);
+                            _instructions.MarkLabel(end);
+
+                            exHandlers.Add(new ExceptionHandler(tryStart, tryEnd, handlerLabel, handlerStart, _instructions.Count, null));
+                            enterTryInstr.SetTryHandler(new TryCatchFinallyHandler(tryStart, tryEnd, gotoEnd.TargetIndex, exHandlers.ToArray()));
+                            PopLabelBlock(LabelScopeKind.Try);
+                            return;
+                        }
+                    }
+                }
+
+                foreach (var handler in node.Handlers)
+                {
+                    PushLabelBlock(LabelScopeKind.Catch);
+
+                    if (handler.Filter != null)
+                    {
+                        throw new PlatformNotSupportedException(SR.FilterBlockNotSupported);
+                    }
+
+                    var parameter = handler.Variable ?? Expression.Parameter(handler.Test);
+
+                    var local = _locals.DefineLocal(parameter, _instructions.Count);
+                    _exceptionForRethrowStack.Push(parameter);
+
+                    // add a stack balancing nop instruction (exception handling pushes the current exception):
+                    if (hasValue)
+                    {
+                        _instructions.EmitEnterExceptionHandlerNonVoid();
+                    }
+                    else
+                    {
+                        _instructions.EmitEnterExceptionHandlerVoid();
+                    }
+
+                    // at this point the stack balance is prepared for the hidden exception variable:
+                    var handlerLabel = _instructions.MarkRuntimeLabel();
+                    var handlerStart = _instructions.Count;
+
+                    CompileSetVariable(parameter, true);
+                    Compile(handler.Body);
+
+                    _exceptionForRethrowStack.Pop();
+
+                    // keep the value of the body on the stack:
+                    Debug.Assert(hasValue == (handler.Body.Type != typeof(void)));
+                    _instructions.EmitLeaveExceptionHandler(hasValue, gotoEnd);
+
+                    exHandlers.Add(new ExceptionHandler(tryStart, tryEnd, handlerLabel, handlerStart, _instructions.Count, handler.Test));
+                    PopLabelBlock(LabelScopeKind.Catch);
+
+                    _locals.UndefineLocal(local, _instructions.Count);
+                }
+
+                if (node.Fault != null)
+                {
+                    throw new PlatformNotSupportedException(SR.FaultBlockNotSupported);
+                }
+            }
+
+            if (node.Finally != null)
+            {
+                Debug.Assert(startOfFinally != null);
+                PushLabelBlock(LabelScopeKind.Finally);
+
+                _instructions.MarkLabel(startOfFinally);
+                _instructions.EmitEnterFinally(startOfFinally);
+                CompileAsVoid(node.Finally);
+                _instructions.EmitLeaveFinally();
+
+                enterTryInstr.SetTryHandler(
+                    new TryCatchFinallyHandler(tryStart, tryEnd, gotoEnd.TargetIndex,
+                        startOfFinally.TargetIndex, _instructions.Count,
+                        exHandlers != null ? exHandlers.ToArray() : null));
+                PopLabelBlock(LabelScopeKind.Finally);
+            }
+            else
+            {
+                Debug.Assert(exHandlers != null);
+                enterTryInstr.SetTryHandler(
+                    new TryCatchFinallyHandler(tryStart, tryEnd, gotoEnd.TargetIndex, exHandlers.ToArray()));
+            }
+
+            _instructions.MarkLabel(end);
+
+            PopLabelBlock(LabelScopeKind.Try);
         }
 
-        public abstract void Update(InterpretedFrame frame, object value);
-
-        public virtual void UndefineTemps(InstructionList instructions, LocalVariables locals)
+        private void CompileTypeAsExpression(UnaryExpression node)
         {
+            Compile(node.Operand);
+            _instructions.EmitTypeAs(node.Type);
+        }
+
+        private void CompileTypeEqualExpression(Expression expr)
+        {
+            Debug.Assert(expr.NodeType == ExpressionType.TypeEqual);
+            var node = (TypeBinaryExpression)expr;
+
+            Compile(node.Expression);
+            if (node.TypeOperand.IsGenericType && node.TypeOperand.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                _instructions.EmitLoad(node.TypeOperand.GetGenericArguments()[0]);
+                _instructions.EmitNullableTypeEquals();
+            }
+            else
+            {
+                _instructions.EmitLoad(node.TypeOperand);
+                _instructions.EmitTypeEquals();
+            }
+        }
+
+        private void CompileTypeIsExpression(Expression expr)
+        {
+            Debug.Assert(expr.NodeType == ExpressionType.TypeIs);
+            var node = (TypeBinaryExpression)expr;
+
+            var result = ConstantCheck.AnalyzeTypeIs(node);
+
+            Compile(node.Expression);
+
+            if (result == AnalyzeTypeIsResult.KnownTrue ||
+                result == AnalyzeTypeIsResult.KnownFalse)
+            {
+                // Result is known statically, so just emit the expression for
+                // its side effects and return the result
+                if (node.Expression.Type != typeof(void))
+                {
+                    _instructions.EmitPop();
+                }
+
+                _instructions.EmitLoad(
+                    ScriptingRuntimeHelpers.BooleanToObject(result == AnalyzeTypeIsResult.KnownTrue),
+                    typeof(bool)
+                );
+                return;
+            }
+
+            if (node.TypeOperand.IsGenericType && node.TypeOperand.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                _instructions.EmitLoad(node.TypeOperand.GetGenericArguments()[0]);
+                _instructions.EmitNullableTypeEquals();
+            }
+            else
+            {
+                _instructions.EmitTypeIs(node.TypeOperand);
+            }
+        }
+
+        private void CompileUnaryExpression(Expression expr)
+        {
+            var node = (UnaryExpression)expr;
+
+            if (node.Method != null)
+            {
+                EmitUnaryMethodCall(node);
+            }
+            else
+            {
+                switch (node.NodeType)
+                {
+                    case ExpressionType.Not:
+                        CompileNotExpression(node);
+                        break;
+
+                    case ExpressionType.TypeAs:
+                        CompileTypeAsExpression(node);
+                        break;
+
+                    case ExpressionType.ArrayLength:
+                        Compile(node.Operand);
+                        _instructions.EmitArrayLength();
+                        break;
+
+                    case ExpressionType.NegateChecked:
+                        Compile(node.Operand);
+                        _instructions.EmitNegateChecked(node.Type);
+                        break;
+
+                    case ExpressionType.Negate:
+                        Compile(node.Operand);
+                        _instructions.EmitNegate(node.Type);
+                        break;
+
+                    case ExpressionType.Increment:
+                        Compile(node.Operand);
+                        _instructions.EmitIncrement(node.Type);
+                        break;
+
+                    case ExpressionType.Decrement:
+                        Compile(node.Operand);
+                        _instructions.EmitDecrement(node.Type);
+                        break;
+
+                    default:
+                        throw new PlatformNotSupportedException(SR.Format(SR.UnsupportedExpressionType, node.NodeType));
+                }
+            }
+        }
+
+        private void CompileUnboxUnaryExpression(Expression expr)
+        {
+            var node = (UnaryExpression)expr;
+            // unboxing is a nop:
+            Compile(node.Operand);
+        }
+
+        private void CompileUnliftedLogicalBinaryExpression(BinaryExpression expr, bool andAlso)
+        {
+            var elseLabel = _instructions.MakeLabel();
+            var endLabel = _instructions.MakeLabel();
+            Compile(expr.Left);
+
+            if (andAlso)
+            {
+                _instructions.EmitBranchFalse(elseLabel);
+            }
+            else
+            {
+                _instructions.EmitBranchTrue(elseLabel);
+            }
+            Compile(expr.Right);
+            _instructions.EmitBranch(endLabel, false, true);
+            _instructions.MarkLabel(elseLabel);
+            _instructions.EmitLoad(!andAlso);
+            _instructions.MarkLabel(endLabel);
+        }
+
+        private void CompileVariableAssignment(BinaryExpression node, bool asVoid)
+        {
+            Compile(node.Right);
+
+            var target = (ParameterExpression)node.Left;
+            CompileSetVariable(target, asVoid);
+        }
+
+        private void DefineBlockLabels(Expression node)
+        {
+            var block = node as BlockExpression;
+            if (block == null)
+            {
+                return;
+            }
+            var n = block.Expressions.Count;
+            for (var i = 0; i < n; i++)
+            {
+                var e = block.Expressions[i];
+
+                var label = e as LabelExpression;
+                if (label != null)
+                {
+                    DefineLabel(label.Target);
+                }
+            }
+        }
+
+        private void EmitCopyValueType(Type valueType)
+        {
+            if (MaybeMutableValueType(valueType))
+            {
+                // loading a value type on the stack has copy semantics unless
+                // we are specifically loading the address of the object, so we
+                // emit a copy here if we don't know the type is immutable.
+                _instructions.Emit(ValueTypeCopyInstruction.Instruction);
+            }
+        }
+
+        private void EmitIndexGet(IndexExpression index)
+        {
+            if (index.Indexer != null)
+            {
+                _instructions.EmitCall(index.Indexer.GetGetMethod(true));
+            }
+            else if (index.Arguments.Count != 1)
+            {
+                _instructions.EmitCall(index.Object.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance));
+            }
+            else
+            {
+                _instructions.EmitGetArrayItem();
+            }
+        }
+
+        private void EmitThisForMethodCall(Expression node)
+        {
+            CompileAddress(node, -1);
+        }
+
+        private void EmitUnaryMethodCall(UnaryExpression node)
+        {
+            Compile(node.Operand);
+            if (node.IsLifted)
+            {
+                var temp = _locals.DefineLocal(
+                    Expression.Parameter(node.Operand.Type),
+                    _instructions.Count
+                );
+                var notNull = _instructions.MakeLabel();
+                var computed = _instructions.MakeLabel();
+
+                _instructions.EmitStoreLocal(temp.Index);
+                _instructions.EmitLoadLocal(temp.Index);
+                _instructions.EmitLoad(null, typeof(object));
+                _instructions.EmitEqual(typeof(object));
+                _instructions.EmitBranchFalse(notNull);
+
+                _instructions.EmitLoad(null, typeof(object));
+                _instructions.EmitBranch(computed);
+
+                _instructions.MarkLabel(notNull);
+                _instructions.EmitCall(node.Method);
+
+                _instructions.MarkLabel(computed);
+                _locals.UndefineLocal(temp, _instructions.Count);
+            }
+            else
+            {
+                _instructions.EmitCall(node.Method);
+            }
+        }
+
+        private bool EndsWithRethrow(Expression expr)
+        {
+            if (expr.NodeType == ExpressionType.Throw)
+            {
+                var node = (UnaryExpression)expr;
+                return node.Operand == null;
+            }
+
+            var block = expr as BlockExpression;
+            if (block != null)
+            {
+                return EndsWithRethrow(block.Expressions[block.Expressions.Count - 1]);
+            }
+            return false;
+        }
+
+        private LocalVariable EnsureAvailableForClosure(ParameterExpression expr)
+        {
+            LocalVariable local;
+            if (_locals.TryGetLocalOrClosure(expr, out local))
+            {
+                if (!local.InClosure && !local.IsBoxed)
+                {
+                    _locals.Box(expr, _instructions);
+                }
+                return local;
+            }
+            if (_parent != null)
+            {
+                _parent.EnsureAvailableForClosure(expr);
+                return _locals.AddClosureVariable(expr);
+            }
+            throw new InvalidOperationException("unbound variable: " + expr);
+        }
+
+        private LabelInfo EnsureLabel(LabelTarget node)
+        {
+            LabelInfo result;
+            if (!_treeLabels.TryGetValue(node, out result))
+            {
+                _treeLabels[node] = result = new LabelInfo(node);
+            }
+            return result;
+        }
+
+        private HybridReferenceDictionary<LabelTarget, BranchLabel> GetBranchMapping()
+        {
+            var newLabelMapping = new HybridReferenceDictionary<LabelTarget, BranchLabel>(_treeLabels.Count);
+            foreach (var kvp in _treeLabels)
+            {
+                kvp.Value.ValidateFinish();
+                newLabelMapping[kvp.Key] = kvp.Value.GetLabel(this);
+            }
+            return newLabelMapping;
+        }
+
+        private void LoadLocalNoValueTypeCopy(ParameterExpression variable)
+        {
+            var local = ResolveLocal(variable);
+
+            if (local.InClosure)
+            {
+                _instructions.EmitLoadLocalFromClosure(local.Index);
+            }
+            else if (local.IsBoxed)
+            {
+                _instructions.EmitLoadLocalBoxed(local.Index);
+            }
+            else
+            {
+                _instructions.EmitLoadLocal(local.Index);
+            }
+        }
+
+        private Interpreter MakeInterpreter(string lambdaName)
+        {
+            var debugInfos = _debugInfos.ToArray();
+            return new Interpreter(lambdaName, _locals, GetBranchMapping(), _instructions.ToArray(), debugInfos);
+        }
+
+        private LabelInfo ReferenceLabel(LabelTarget node)
+        {
+            var result = EnsureLabel(node);
+            result.Reference(_labelBlock);
+            return result;
+        }
+
+        private LocalVariable ResolveLocal(ParameterExpression variable)
+        {
+            LocalVariable local;
+            if (!_locals.TryGetLocalOrClosure(variable, out local))
+            {
+                local = EnsureAvailableForClosure(variable);
+            }
+            return local;
+        }
+
+        #region Loops
+
+        private void CompileLoopExpression(Expression expr)
+        {
+            var node = (LoopExpression)expr;
+            var enterLoop = new EnterLoopInstruction(node, _locals, _instructions.Count);
+
+            PushLabelBlock(LabelScopeKind.Statement);
+            var breakLabel = DefineLabel(node.BreakLabel);
+            var continueLabel = DefineLabel(node.ContinueLabel);
+
+            _instructions.MarkLabel(continueLabel.GetLabel(this));
+
+            // emit loop body:
+            _instructions.Emit(enterLoop);
+            CompileAsVoid(node.Body);
+
+            // emit loop branch:
+            _instructions.EmitBranch(continueLabel.GetLabel(this), expr.Type != typeof(void), false);
+
+            _instructions.MarkLabel(breakLabel.GetLabel(this));
+
+            PopLabelBlock(LabelScopeKind.Statement);
+
+            enterLoop.FinishLoop(_instructions.Count);
+        }
+
+        #endregion Loops
+
+        private bool TryPushLabelBlock(Expression node)
+        {
+            // Anything that is "statement-like" -- e.g. has no associated
+            // stack state can be jumped into, with the exception of try-blocks
+            // We indicate this by a "Block"
+            //
+            // Otherwise, we push an "Expression" to indicate that it can't be
+            // jumped into
+            switch (node.NodeType)
+            {
+                default:
+                    if (_labelBlock.Kind != LabelScopeKind.Expression)
+                    {
+                        PushLabelBlock(LabelScopeKind.Expression);
+                        return true;
+                    }
+                    return false;
+
+                case ExpressionType.Label:
+                    // LabelExpression is a bit special, if it's directly in a
+                    // block it becomes associate with the block's scope. Same
+                    // thing if it's in a switch case body.
+                    if (_labelBlock.Kind == LabelScopeKind.Block)
+                    {
+                        var label = ((LabelExpression)node).Target;
+                        if (_labelBlock.ContainsTarget(label))
+                        {
+                            return false;
+                        }
+                        if (_labelBlock.Parent.Kind == LabelScopeKind.Switch &&
+                            _labelBlock.Parent.ContainsTarget(label))
+                        {
+                            return false;
+                        }
+                    }
+                    PushLabelBlock(LabelScopeKind.Statement);
+                    return true;
+
+                case ExpressionType.Block:
+                    PushLabelBlock(LabelScopeKind.Block);
+                    // Labels defined immediately in the block are valid for
+                    // the whole block.
+                    if (_labelBlock.Parent.Kind != LabelScopeKind.Switch)
+                    {
+                        DefineBlockLabels(node);
+                    }
+                    return true;
+
+                case ExpressionType.Switch:
+                    PushLabelBlock(LabelScopeKind.Switch);
+                    // Define labels inside of the switch cases so theyare in
+                    // scope for the whole switch. This allows "goto case" and
+                    // "goto default" to be considered as local jumps.
+                    var @switch = (SwitchExpression)node;
+                    foreach (var c in @switch.Cases)
+                    {
+                        DefineBlockLabels(c.Body);
+                    }
+                    DefineBlockLabels(@switch.DefaultBody);
+                    return true;
+
+                // Remove this when Convert(Void) goes away.
+                case ExpressionType.Convert:
+                    if (node.Type != typeof(void))
+                    {
+                        // treat it as an expression
+                        goto default;
+                    }
+                    PushLabelBlock(LabelScopeKind.Statement);
+                    return true;
+
+                case ExpressionType.Conditional:
+                case ExpressionType.Loop:
+                case ExpressionType.Goto:
+                    PushLabelBlock(LabelScopeKind.Statement);
+                    return true;
+            }
+        }
+
+        private class QuoteVisitor : ExpressionVisitor
+        {
+            public readonly HashSet<ParameterExpression> HoistedParameters = new HashSet<ParameterExpression>();
+            private readonly Dictionary<ParameterExpression, int> _definedParameters = new Dictionary<ParameterExpression, int>();
+
+            protected internal override Expression VisitBlock(BlockExpression node)
+            {
+                PushParameters(node.Variables);
+
+                base.VisitBlock(node);
+
+                PopParameters(node.Variables);
+
+                return node;
+            }
+
+            protected internal override Expression VisitLambda(LambdaExpression node)
+            {
+                PushParameters(node.Parameters);
+
+                base.VisitLambda(node);
+
+                PopParameters(node.Parameters);
+
+                return node;
+            }
+
+            protected internal override Expression VisitParameter(ParameterExpression node)
+            {
+                if (!_definedParameters.ContainsKey(node))
+                {
+                    HoistedParameters.Add(node);
+                }
+                return node;
+            }
+
+            protected override CatchBlock VisitCatchBlock(CatchBlock node)
+            {
+                if (node.Variable != null)
+                {
+                    PushParameters(new[] { node.Variable });
+                }
+                Visit(node.Body);
+                Visit(node.Filter);
+                if (node.Variable != null)
+                {
+                    PopParameters(new[] { node.Variable });
+                }
+                return node;
+            }
+
+            private void PopParameters(ICollection<ParameterExpression> parameters)
+            {
+                foreach (var param in parameters)
+                {
+                    var count = _definedParameters[param];
+                    if (count == 0)
+                    {
+                        _definedParameters.Remove(param);
+                    }
+                    else
+                    {
+                        _definedParameters[param] = count - 1;
+                    }
+                }
+            }
+
+            private void PushParameters(ICollection<ParameterExpression> parameters)
+            {
+                foreach (var param in parameters)
+                {
+                    int count;
+                    if (_definedParameters.TryGetValue(param, out count))
+                    {
+                        _definedParameters[param] = count + 1;
+                    }
+                    else
+                    {
+                        _definedParameters[param] = 1;
+                    }
+                }
+            }
         }
     }
 
@@ -3258,57 +3256,6 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    internal class ArrayByRefUpdater : ByRefUpdater
-    {
-        private readonly LocalDefinition _array, _index;
-
-        public ArrayByRefUpdater(LocalDefinition array, LocalDefinition index, int argumentIndex)
-            : base(argumentIndex)
-        {
-            _array = array;
-            _index = index;
-        }
-
-        public override void Update(InterpretedFrame frame, object value)
-        {
-            var index = frame.Data[_index.Index];
-            ((Array)frame.Data[_array.Index]).SetValue(value, (int)index);
-        }
-
-        public override void UndefineTemps(InstructionList instructions, LocalVariables locals)
-        {
-            locals.UndefineLocal(_array, instructions.Count);
-            locals.UndefineLocal(_index, instructions.Count);
-        }
-    }
-
-    internal class FieldByRefUpdater : ByRefUpdater
-    {
-        private readonly LocalDefinition? _object;
-        private readonly FieldInfo _field;
-
-        public FieldByRefUpdater(LocalDefinition? obj, FieldInfo field, int argumentIndex)
-            : base(argumentIndex)
-        {
-            _object = obj;
-            _field = field;
-        }
-
-        public override void Update(InterpretedFrame frame, object value)
-        {
-            var obj = _object == null ? null : frame.Data[_object.Value.Index];
-            _field.SetValue(obj, value);
-        }
-
-        public override void UndefineTemps(InstructionList instructions, LocalVariables locals)
-        {
-            if (_object != null)
-            {
-                locals.UndefineLocal(_object.Value, instructions.Count);
-            }
-        }
-    }
-
     internal class PropertyByRefUpdater : ByRefUpdater
     {
         private readonly LocalDefinition? _object;
@@ -3321,12 +3268,6 @@ namespace System.Linq.Expressions.Interpreter
             _property = property;
         }
 
-        public override void Update(InterpretedFrame frame, object value)
-        {
-            var obj = _object == null ? null : frame.Data[_object.Value.Index];
-            _property.SetValue(obj, value);
-        }
-
         public override void UndefineTemps(InstructionList instructions, LocalVariables locals)
         {
             if (_object != null)
@@ -3334,47 +3275,99 @@ namespace System.Linq.Expressions.Interpreter
                 locals.UndefineLocal(_object.Value, instructions.Count);
             }
         }
-    }
-
-    internal class IndexMethodByRefUpdater : ByRefUpdater
-    {
-        private readonly MethodInfo _indexer;
-        private readonly LocalDefinition? _obj;
-        private readonly LocalDefinition[] _args;
-
-        public IndexMethodByRefUpdater(LocalDefinition? obj, LocalDefinition[] args, MethodInfo indexer, int argumentIndex)
-            : base(argumentIndex)
-        {
-            _obj = obj;
-            _args = args;
-            _indexer = indexer;
-        }
 
         public override void Update(InterpretedFrame frame, object value)
         {
-            var args = new object[_args.Length + 1];
-            for (var i = 0; i < args.Length - 1; i++)
-            {
-                args[i] = frame.Data[_args[i].Index];
-            }
-            args[args.Length - 1] = value;
-            _indexer.Invoke(
-                _obj == null ? null : frame.Data[_obj.Value.Index],
-                args
-            );
+            var obj = _object == null ? null : frame.Data[_object.Value.Index];
+            _property.SetValue(obj, value);
+        }
+    }
+
+    /// <summary>
+    /// The re-throw instrcution will throw this exception
+    /// </summary>
+    [Serializable]
+    internal sealed class RethrowException : Exception
+    {
+    }
+
+    internal sealed class TryCatchFinallyHandler
+    {
+        internal readonly int FinallyEndIndex;
+        internal readonly int FinallyStartIndex;
+        internal readonly int GotoEndTargetIndex;
+        internal readonly int TryEndIndex;
+        internal readonly int TryStartIndex;
+        private readonly ExceptionHandler[] _handlers;
+
+        /// <summary>
+        /// No finally block
+        /// </summary>
+        internal TryCatchFinallyHandler(int tryStart, int tryEnd, int gotoEndTargetIndex, ExceptionHandler[] handlers)
+            : this(tryStart, tryEnd, gotoEndTargetIndex, Instruction.UnknownInstrIndex, Instruction.UnknownInstrIndex, handlers)
+        {
+            Debug.Assert(handlers != null, "catch blocks should exist");
         }
 
-        public override void UndefineTemps(InstructionList instructions, LocalVariables locals)
+        /// <summary>
+        /// No catch blocks
+        /// </summary>
+        internal TryCatchFinallyHandler(int tryStart, int tryEnd, int gotoEndTargetIndex, int finallyStart, int finallyEnd)
+            : this(tryStart, tryEnd, gotoEndTargetIndex, finallyStart, finallyEnd, null)
         {
-            if (_obj != null)
-            {
-                locals.UndefineLocal(_obj.Value, instructions.Count);
-            }
+            Debug.Assert(finallyStart != Instruction.UnknownInstrIndex && finallyEnd != Instruction.UnknownInstrIndex, "finally block should exist");
+        }
 
-            for (var i = 0; i < _args.Length; i++)
+        /// <summary>
+        /// Generic constructor
+        /// </summary>
+        internal TryCatchFinallyHandler(int tryStart, int tryEnd, int gotoEndLabelIndex, int finallyStart, int finallyEnd, ExceptionHandler[] handlers)
+        {
+            TryStartIndex = tryStart;
+            TryEndIndex = tryEnd;
+            FinallyStartIndex = finallyStart;
+            FinallyEndIndex = finallyEnd;
+            GotoEndTargetIndex = gotoEndLabelIndex;
+
+            _handlers = handlers;
+
+            if (handlers != null)
             {
-                locals.UndefineLocal(_args[i], instructions.Count);
+                foreach (var handler in handlers)
+                {
+                    handler.SetParent(this);
+                }
             }
+        }
+
+        internal bool IsCatchBlockExist
+        {
+            get { return (_handlers != null); }
+        }
+
+        internal bool IsFinallyBlockExist
+        {
+            get { return (FinallyStartIndex != Instruction.UnknownInstrIndex && FinallyEndIndex != Instruction.UnknownInstrIndex); }
+        }
+
+        internal int GotoHandler(InterpretedFrame frame, object exception, out ExceptionHandler handler)
+        {
+            var handlers = _handlers;
+            Debug.Assert(handlers != null, "we should have at least one handler if the method gets called");
+            handler = null;
+            foreach (var candidateHandler in handlers)
+            {
+                if (candidateHandler.Matches(exception.GetType()))
+                {
+                    handler = candidateHandler;
+                    break;
+                }
+            }
+            if (handler == null)
+            {
+                return 0;
+            }
+            return frame.Goto(handler.LabelIndex, exception, /*gotoExceptionHandler*/ true);
         }
     }
 }

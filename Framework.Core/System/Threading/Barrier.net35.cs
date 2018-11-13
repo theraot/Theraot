@@ -12,59 +12,6 @@ using Theraot.Core;
 namespace System.Threading
 {
     /// <summary>
-    /// The exception that is thrown when the post-phase action of a <see cref="Barrier"/> fails.
-    /// </summary>
-    [Serializable]
-    public class BarrierPostPhaseException : Exception
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BarrierPostPhaseException"/> class.
-        /// </summary>
-        public BarrierPostPhaseException()
-            : this((string)null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BarrierPostPhaseException"/> class with the specified inner exception.
-        /// </summary>
-        /// <param name="innerException">The exception that is the cause of the current exception.</param>
-        public BarrierPostPhaseException(Exception innerException)
-            : this(null, innerException)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BarrierPostPhaseException"/> class with a specified error message.
-        /// </summary>
-        /// <param name="message">A string that describes the exception.</param>
-        public BarrierPostPhaseException(string message)
-            : this(message, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BarrierPostPhaseException"/> class with a specified error message and inner exception.
-        /// </summary>
-        /// <param name="message">A string that describes the exception.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception.</param>
-        public BarrierPostPhaseException(string message, Exception innerException)
-            : base(message ?? "The postPhaseAction failed with an exception.", innerException)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the BarrierPostPhaseException class with serialized data.
-        /// </summary>
-        /// <param name="info">The object that holds the serialized object data.</param>
-        /// <param name="context">The contextual information about the source or destination.</param>
-        protected BarrierPostPhaseException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-    }
-
-    /// <summary>
     /// Enables multiple tasks to cooperatively work on an algorithm in parallel through multiple phases.
     /// </summary>
     /// <remarks>
@@ -83,6 +30,44 @@ namespace System.Threading
     [DebuggerDisplay("Participant Count={ParticipantCount},Participants Remaining={ParticipantsRemaining}")]
     public class Barrier : IDisposable
     {
+        // Bitmask to extract the current count
+        private const int _currentMask = 0x7FFF0000;
+
+        // The maximum participants the barrier can operate = 32767 ( 2 power 15 - 1 )
+        private const int _maxParticipants = _totalMask;
+
+        // Bitmask to extract the sense flag
+        private const int _senseMask = unchecked((int)0x80000000);
+
+        // Bitmask to extract the total count
+        private const int _totalMask = 0x00007FFF;
+
+        // The EC callback that invokes the post phase action
+        [SecurityCritical]
+        private static ContextCallback _invokePostPhaseAction;
+
+        // Even phases event
+        private readonly ManualResetEventSlim _evenEvent;
+
+        // Odd phases event
+        private readonly ManualResetEventSlim _oddEvent;
+
+        // The execution context of the creator thread
+        private readonly ExecutionContext _ownerThreadContext;
+
+        // Post phase action after each phase
+        private readonly Action<Barrier> _postPhaseAction;
+
+        // This is the ManagedThreadID of the postPhaseAction caller thread, this is used to determine if the SignalAndWait, Dispose or Add/RemoveParticipant caller thread is
+        // the same thread as the postPhaseAction thread which means this method was called from the postPhaseAction which is illegal.
+        // This value is captured before calling the action and reset back to zero after it.
+        private int _actionCallerId;
+
+        // The current barrier phase
+        // We don't need to worry about overflow, the max value is 2^63-1; If it starts from 0 at a
+        // rate of 4 billion increments per second, it will takes about 64 years to overflow.
+        private long _currentPhase;
+
         //This variable holds the basic barrier variables:
         // 1- The current participants count
         // 2- The total participants count
@@ -93,51 +78,32 @@ namespace System.Threading
         // And the last highest bit is for the sense
         private int _currentTotalCount;
 
-        // Bitmask to extract the current count
-        private const int _currentMask = 0x7FFF0000;
-
-        // Bitmask to extract the total count
-        private const int _totalMask = 0x00007FFF;
-
-        // Bitmask to extract the sense flag
-        private const int _senseMask = unchecked((int)0x80000000);
-
-        // The maximum participants the barrier can operate = 32767 ( 2 power 15 - 1 )
-        private const int _maxParticipants = _totalMask;
-
-        // The current barrier phase
-        // We don't need to worry about overflow, the max value is 2^63-1; If it starts from 0 at a
-        // rate of 4 billion increments per second, it will takes about 64 years to overflow.
-        private long _currentPhase;
-
         // dispose flag
         private bool _disposed;
-
-        // Odd phases event
-        private readonly ManualResetEventSlim _oddEvent;
-
-        // Even phases event
-        private readonly ManualResetEventSlim _evenEvent;
-
-        // The execution context of the creator thread
-        private readonly ExecutionContext _ownerThreadContext;
-
-        // The EC callback that invokes the post phase action
-        [SecurityCritical]
-        private static ContextCallback _invokePostPhaseAction;
-
-        // Post phase action after each phase
-        private readonly Action<Barrier> _postPhaseAction;
 
         // In case the post phase action throws an exception, wraps it in BarrierPostPhaseException
         private Exception _exception;
 
-        // This is the ManagedThreadID of the postPhaseAction caller thread, this is used to determine if the SignalAndWait, Dispose or Add/RemoveParticipant caller thread is
-        // the same thread as the postPhaseAction thread which means this method was called from the postPhaseAction which is illegal.
-        // This value is captured before calling the action and reset back to zero after it.
-        private int _actionCallerId;
-
         #region Properties
+
+        /// <summary>
+        /// Gets the number of the barrier's current phase.
+        /// </summary>
+        public long CurrentPhaseNumber
+        {
+            // use the new Volatile.Read/Write method because it is cheaper than Interlocked.Read on AMD64 architecture
+            get { return Volatile.Read(ref _currentPhase); }
+
+            internal set { Volatile.Write(ref _currentPhase, value); }
+        }
+
+        /// <summary>
+        /// Gets the total number of participants in the barrier.
+        /// </summary>
+        public int ParticipantCount
+        {
+            get { return Volatile.Read(ref _currentTotalCount) & _totalMask; }
+        }
 
         /// <summary>
         /// Gets the number of participants in the barrier that haven't yet signaled
@@ -156,25 +122,6 @@ namespace System.Threading
                 var current = (currentTotal & _currentMask) >> 16;
                 return total - current;
             }
-        }
-
-        /// <summary>
-        /// Gets the total number of participants in the barrier.
-        /// </summary>
-        public int ParticipantCount
-        {
-            get { return Volatile.Read(ref _currentTotalCount) & _totalMask; }
-        }
-
-        /// <summary>
-        /// Gets the number of the barrier's current phase.
-        /// </summary>
-        public long CurrentPhaseNumber
-        {
-            // use the new Volatile.Read/Write method because it is cheaper than Interlocked.Read on AMD64 architecture
-            get { return Volatile.Read(ref _currentPhase); }
-
-            internal set { Volatile.Write(ref _currentPhase, value); }
         }
 
         #endregion Properties
@@ -225,40 +172,6 @@ namespace System.Threading
             }
 
             _actionCallerId = 0;
-        }
-
-        /// <summary>
-        /// Extract the three variables current, total and sense from a given big variable
-        /// </summary>
-        /// <param name="currentTotal">The integer variable that contains the other three variables</param>
-        /// <param name="current">The current participant count</param>
-        /// <param name="total">The total participants count</param>
-        /// <param name="sense">The sense flag</param>
-        private void GetCurrentTotal(int currentTotal, out int current, out int total, out bool sense)
-        {
-            total = currentTotal & _totalMask;
-            current = (currentTotal & _currentMask) >> 16;
-            sense = (currentTotal & _senseMask) == 0;
-        }
-
-        /// <summary>
-        /// Write the three variables current. total and the sense to the m_currentTotal
-        /// </summary>
-        /// <param name="currentTotal">The old current total to compare</param>
-        /// <param name="current">The current participant count</param>
-        /// <param name="total">The total participants count</param>
-        /// <param name="sense">The sense flag</param>
-        /// <returns>True if the CAS succeeded, false otherwise</returns>
-        private bool SetCurrentTotal(int currentTotal, int current, int total, bool sense)
-        {
-            var newCurrentTotal = (current << 16) | total;
-
-            if (!sense)
-            {
-                newCurrentTotal |= _senseMask;
-            }
-
-            return Interlocked.CompareExchange(ref _currentTotalCount, newCurrentTotal, currentTotal) == currentTotal;
         }
 
         /// <summary>
@@ -383,6 +296,33 @@ namespace System.Threading
                 spinner.SpinOnce();
             }
             return newPhase;
+        }
+
+        /// <summary>
+        /// Releases all resources used by the current instance of <see cref="Barrier"/>.
+        /// </summary>
+        /// <exception cref="T:System.InvalidOperationException">
+        /// The method was invoked from within a post-phase action.
+        /// </exception>
+        /// <remarks>
+        /// Unlike most of the members of <see cref="Barrier"/>, Dispose is not thread-safe and may not be
+        /// used concurrently with other members of this instance.
+        /// </remarks>
+        public void Dispose()
+        {
+            // in case of this is called from the PHA
+            if (_actionCallerId != 0 && Thread.CurrentThread.ManagedThreadId == _actionCallerId)
+            {
+                throw new InvalidOperationException("This method may not be called from within the postPhaseAction.");
+            }
+            try
+            {
+                Dispose(true);
+            }
+            finally
+            {
+                GC.SuppressFinalize(this);
+            }
         }
 
         /// <summary>
@@ -740,6 +680,100 @@ namespace System.Threading
         }
 
         /// <summary>
+        /// When overridden in a derived class, releases the unmanaged resources used by the
+        /// <see cref="Barrier"/>, and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release
+        /// only unmanaged resources.</param>
+        /// <remarks>
+        /// Unlike most of the members of <see cref="Barrier"/>, Dispose is not thread-safe and may not be
+        /// used concurrently with other members of this instance.
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _oddEvent.Dispose();
+                    _evenEvent.Dispose();
+                }
+                _disposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Extract the three variables current, total and sense from a given big variable
+        /// </summary>
+        /// <param name="currentTotal">The integer variable that contains the other three variables</param>
+        /// <param name="current">The current participant count</param>
+        /// <param name="total">The total participants count</param>
+        /// <param name="sense">The sense flag</param>
+        private static void GetCurrentTotal(int currentTotal, out int current, out int total, out bool sense)
+        {
+            total = currentTotal & _totalMask;
+            current = (currentTotal & _currentMask) >> 16;
+            sense = (currentTotal & _senseMask) == 0;
+        }
+
+        /// <summary>
+        /// Helper method to call the post phase action
+        /// </summary>
+        /// <param name="obj"></param>
+        [SecurityCritical]
+        private static void InvokePostPhaseAction(object obj)
+        {
+            var thisBarrier = (Barrier)obj;
+            thisBarrier._postPhaseAction(thisBarrier);
+        }
+
+        /// <summary>
+        /// The reason of discontinuous waiting instead of direct waiting on the event is to avoid the race where the sense is
+        /// changed twice because the next phase is finished (due to either RemoveParticipant is called or another thread joined
+        /// the next phase instead of the current thread) so the current thread will be stuck on the event because it is reset back
+        /// The maxWait and the shift numbers are arbitrarily chosen, there were no references picking them
+        /// </summary>
+        /// <param name="currentPhaseEvent">The current phase event</param>
+        /// <param name="totalTimeout">wait timeout in milliseconds</param>
+        /// <param name="token">cancellation token passed to SignalAndWait</param>
+        /// <param name="observedPhase">The current phase number for this thread</param>
+        /// <returns>True if the event is set or the phase number changed, false if the timeout expired</returns>
+        private bool DiscontinuousWait(ManualResetEventSlim currentPhaseEvent, int totalTimeout, CancellationToken token, long observedPhase)
+        {
+            var maxWait = 100; // 100 ms
+            const int WaitTimeCeiling = 10000; // 10 seconds
+            while (observedPhase == CurrentPhaseNumber)
+            {
+                // the next wait time, the min of the maxWait and the totalTimeout
+                var waitTime = totalTimeout == Timeout.Infinite ? maxWait : Math.Min(maxWait, totalTimeout);
+
+                if (currentPhaseEvent.Wait(waitTime, token))
+                {
+                    return true;
+                }
+
+                //update the total wait time
+                if (totalTimeout != Timeout.Infinite)
+                {
+                    totalTimeout -= waitTime;
+                    if (totalTimeout <= 0)
+                    {
+                        return false;
+                    }
+                }
+
+                //if the maxwait exceeded 10 seconds then we will stop increasing the maxWait time and keep it 10 seconds, otherwise keep doubling it
+                maxWait = maxWait >= WaitTimeCeiling ? WaitTimeCeiling : Math.Min(maxWait << 1, WaitTimeCeiling);
+            }
+
+            //if we exited the loop because the observed phase doesn't match the current phase, then we have to spin to make sure
+            //the event is set or the next phase is finished
+            WaitCurrentPhase(currentPhaseEvent, observedPhase);
+
+            return true;
+        }
+
+        /// <summary>
         /// Finish the phase by invoking the post phase action, and setting the event, this must be called by the
         /// last arrival thread
         /// </summary>
@@ -793,14 +827,23 @@ namespace System.Threading
         }
 
         /// <summary>
-        /// Helper method to call the post phase action
+        /// Write the three variables current. total and the sense to the m_currentTotal
         /// </summary>
-        /// <param name="obj"></param>
-        [SecurityCritical]
-        private static void InvokePostPhaseAction(object obj)
+        /// <param name="currentTotal">The old current total to compare</param>
+        /// <param name="current">The current participant count</param>
+        /// <param name="total">The total participants count</param>
+        /// <param name="sense">The sense flag</param>
+        /// <returns>True if the CAS succeeded, false otherwise</returns>
+        private bool SetCurrentTotal(int currentTotal, int current, int total, bool sense)
         {
-            var thisBarrier = (Barrier)obj;
-            thisBarrier._postPhaseAction(thisBarrier);
+            var newCurrentTotal = (current << 16) | total;
+
+            if (!sense)
+            {
+                newCurrentTotal |= _senseMask;
+            }
+
+            return Interlocked.CompareExchange(ref _currentTotalCount, newCurrentTotal, currentTotal) == currentTotal;
         }
 
         /// <summary>
@@ -824,6 +867,17 @@ namespace System.Threading
         }
 
         /// <summary>
+        /// Throw ObjectDisposedException if the barrier is disposed
+        /// </summary>
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(Barrier), "The barrier has been disposed.");
+            }
+        }
+
+        /// <summary>
         /// Wait until the current phase finishes completely by spinning until either the event is set,
         /// or the phase count is incremented more than one time
         /// </summary>
@@ -841,112 +895,58 @@ namespace System.Threading
                 spinner.SpinOnce();
             }
         }
+    }
 
+    /// <summary>
+    /// The exception that is thrown when the post-phase action of a <see cref="Barrier"/> fails.
+    /// </summary>
+    [Serializable]
+    public class BarrierPostPhaseException : Exception
+    {
         /// <summary>
-        /// The reason of discontinuous waiting instead of direct waiting on the event is to avoid the race where the sense is
-        /// changed twice because the next phase is finished (due to either RemoveParticipant is called or another thread joined
-        /// the next phase instead of the current thread) so the current thread will be stuck on the event because it is reset back
-        /// The maxWait and the shift numbers are arbitrarily chosen, there were no references picking them
+        /// Initializes a new instance of the <see cref="BarrierPostPhaseException"/> class.
         /// </summary>
-        /// <param name="currentPhaseEvent">The current phase event</param>
-        /// <param name="totalTimeout">wait timeout in milliseconds</param>
-        /// <param name="token">cancellation token passed to SignalAndWait</param>
-        /// <param name="observedPhase">The current phase number for this thread</param>
-        /// <returns>True if the event is set or the phase number changed, false if the timeout expired</returns>
-        private bool DiscontinuousWait(ManualResetEventSlim currentPhaseEvent, int totalTimeout, CancellationToken token, long observedPhase)
+        public BarrierPostPhaseException()
+            : this((string)null)
         {
-            var maxWait = 100; // 100 ms
-            const int WaitTimeCeiling = 10000; // 10 seconds
-            while (observedPhase == CurrentPhaseNumber)
-            {
-                // the next wait time, the min of the maxWait and the totalTimeout
-                var waitTime = totalTimeout == Timeout.Infinite ? maxWait : Math.Min(maxWait, totalTimeout);
-
-                if (currentPhaseEvent.Wait(waitTime, token))
-                {
-                    return true;
-                }
-
-                //update the total wait time
-                if (totalTimeout != Timeout.Infinite)
-                {
-                    totalTimeout -= waitTime;
-                    if (totalTimeout <= 0)
-                    {
-                        return false;
-                    }
-                }
-
-                //if the maxwait exceeded 10 seconds then we will stop increasing the maxWait time and keep it 10 seconds, otherwise keep doubling it
-                maxWait = maxWait >= WaitTimeCeiling ? WaitTimeCeiling : Math.Min(maxWait << 1, WaitTimeCeiling);
-            }
-
-            //if we exited the loop because the observed phase doesn't match the current phase, then we have to spin to make sure
-            //the event is set or the next phase is finished
-            WaitCurrentPhase(currentPhaseEvent, observedPhase);
-
-            return true;
         }
 
         /// <summary>
-        /// Releases all resources used by the current instance of <see cref="Barrier"/>.
+        /// Initializes a new instance of the <see cref="BarrierPostPhaseException"/> class with the specified inner exception.
         /// </summary>
-        /// <exception cref="T:System.InvalidOperationException">
-        /// The method was invoked from within a post-phase action.
-        /// </exception>
-        /// <remarks>
-        /// Unlike most of the members of <see cref="Barrier"/>, Dispose is not thread-safe and may not be
-        /// used concurrently with other members of this instance.
-        /// </remarks>
-        public void Dispose()
+        /// <param name="innerException">The exception that is the cause of the current exception.</param>
+        public BarrierPostPhaseException(Exception innerException)
+            : this(null, innerException)
         {
-            // in case of this is called from the PHA
-            if (_actionCallerId != 0 && Thread.CurrentThread.ManagedThreadId == _actionCallerId)
-            {
-                throw new InvalidOperationException("This method may not be called from within the postPhaseAction.");
-            }
-            try
-            {
-                Dispose(true);
-            }
-            finally
-            {
-                GC.SuppressFinalize(this);
-            }
         }
 
         /// <summary>
-        /// When overridden in a derived class, releases the unmanaged resources used by the
-        /// <see cref="Barrier"/>, and optionally releases the managed resources.
+        /// Initializes a new instance of the <see cref="BarrierPostPhaseException"/> class with a specified error message.
         /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release
-        /// only unmanaged resources.</param>
-        /// <remarks>
-        /// Unlike most of the members of <see cref="Barrier"/>, Dispose is not thread-safe and may not be
-        /// used concurrently with other members of this instance.
-        /// </remarks>
-        protected virtual void Dispose(bool disposing)
+        /// <param name="message">A string that describes the exception.</param>
+        public BarrierPostPhaseException(string message)
+            : this(message, null)
         {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    _oddEvent.Dispose();
-                    _evenEvent.Dispose();
-                }
-                _disposed = true;
-            }
         }
 
         /// <summary>
-        /// Throw ObjectDisposedException if the barrier is disposed
+        /// Initializes a new instance of the <see cref="BarrierPostPhaseException"/> class with a specified error message and inner exception.
         /// </summary>
-        private void ThrowIfDisposed()
+        /// <param name="message">A string that describes the exception.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception.</param>
+        public BarrierPostPhaseException(string message, Exception innerException)
+            : base(message ?? "The postPhaseAction failed with an exception.", innerException)
         {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(nameof(Barrier), "The barrier has been disposed.");
-            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the BarrierPostPhaseException class with serialized data.
+        /// </summary>
+        /// <param name="info">The object that holds the serialized object data.</param>
+        /// <param name="context">The contextual information about the source or destination.</param>
+        protected BarrierPostPhaseException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
         }
     }
 }

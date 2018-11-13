@@ -111,6 +111,7 @@ namespace System.Linq.Expressions.Compiler
             [Conditional("DEBUG")]
             internal void VerifyTemps()
             {
+                // Should not be static
                 Debug.Assert(_usedTemps == null || _usedTemps.Count == 0);
             }
         }
@@ -287,6 +288,7 @@ namespace System.Linq.Expressions.Compiler
         [Conditional("DEBUG")]
         private void VerifyTemps()
         {
+            // Should not be static
             _tm.VerifyTemps();
         }
 

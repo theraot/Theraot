@@ -91,7 +91,7 @@ namespace System.Runtime.CompilerServices
         [DebuggerStepThrough]
         public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
         {
-            _coreState.Start(ref stateMachine);
+            AsyncMethodBuilderCore.Start(ref stateMachine);
         }
 
         /// <summary>

@@ -296,7 +296,7 @@ namespace System.Linq.Expressions
             return operand != u.Operand ? Expression.MakeUnary(u.NodeType, operand, u.Type, u.Method) : u;
         }
 
-        private IList<TElement> VisitList<TElement>(ReadOnlyCollection<TElement> original, Func<TElement, TElement> visit)
+        private static IList<TElement> VisitList<TElement>(ReadOnlyCollection<TElement> original, Func<TElement, TElement> visit)
         {
 #if FAT
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons

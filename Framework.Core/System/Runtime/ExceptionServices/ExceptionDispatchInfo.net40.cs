@@ -89,37 +89,37 @@ namespace System.Runtime.ExceptionServices
                 SetStackTrace(_exception, newStackTrace);
                 throw;
             }
-        }
 
-        private string BuildStackTrace(string trace)
-        {
-            var items = trace.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-            var newStackTrace = new Text.StringBuilder();
-            var found = false;
-            foreach (var item in items)
+            string BuildStackTrace(string trace)
             {
-                // Only include lines that has files in the source code
-                if (item.Contains(":"))
+                var items = trace.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                var newStackTrace = new Text.StringBuilder();
+                var found = false;
+                foreach (var item in items)
                 {
-                    if (item.Contains("System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()"))
+                    // Only include lines that has files in the source code
+                    if (item.Contains(":"))
                     {
-                        // Stacktrace from here on will be added by the CLR
+                        if (item.Contains("System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()"))
+                        {
+                            // Stacktrace from here on will be added by the CLR
+                            break;
+                        }
+                        if (found)
+                        {
+                            newStackTrace.Append(Environment.NewLine);
+                        }
+                        found = true;
+                        newStackTrace.Append(item);
+                    }
+                    else if (found)
+                    {
                         break;
                     }
-                    if (found)
-                    {
-                        newStackTrace.Append(Environment.NewLine);
-                    }
-                    found = true;
-                    newStackTrace.Append(item);
                 }
-                else if (found)
-                {
-                    break;
-                }
+                var result = newStackTrace.ToString();
+                return result;
             }
-            var result = newStackTrace.ToString();
-            return result;
         }
     }
 }

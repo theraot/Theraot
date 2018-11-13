@@ -167,9 +167,24 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        void ICollection<bool>.Add(bool item)
+        {
+            throw new NotSupportedException();
+        }
+
+        void ICollection<bool>.Clear()
+        {
+            throw new NotSupportedException();
+        }
+
         public FlagArray Clone()
         {
             return new FlagArray(this);
+        }
+
+        object ICloneable.Clone()
+        {
+            return Clone();
         }
 
         public bool Contains(bool item)
@@ -249,20 +264,19 @@ namespace Theraot.Collections.Specialized
         }
 
 #if !NETCOREAPP1_0 && !NETCOREAPP1_1
-
-        object ICloneable.Clone()
-        {
-            return Clone();
-        }
-
 #endif
 
-        void ICollection<bool>.Add(bool item)
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            throw new NotSupportedException();
+            return GetEnumerator();
         }
 
-        void ICollection<bool>.Clear()
+        public int IndexOf(bool item)
+        {
+            return Extensions.IndexOf(this, item);
+        }
+
+        void IList<bool>.Insert(int index, bool item)
         {
             throw new NotSupportedException();
         }
@@ -272,24 +286,14 @@ namespace Theraot.Collections.Specialized
             throw new NotSupportedException();
         }
 
-        void IList<bool>.Insert(int index, bool item)
-        {
-            throw new NotSupportedException();
-        }
-
         void IList<bool>.RemoveAt(int index)
         {
             throw new NotSupportedException();
         }
 
-        public int IndexOf(bool item)
+        private static int GetLength(int length)
         {
-            return Extensions.IndexOf(this, item);
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            return (length >> 5) + ((length & 31) == 0 ? 0 : 1);
         }
 
         private void Fill(bool value)
@@ -304,11 +308,6 @@ namespace Theraot.Collections.Specialized
         private bool GetBit(int index, int mask)
         {
             return (Volatile.Read(ref _entries[index]) & mask) != 0;
-        }
-
-        private int GetLength(int length)
-        {
-            return (length >> 5) + ((length & 31) == 0 ? 0 : 1);
         }
 
         private void SetBit(int index, int mask)

@@ -21,21 +21,6 @@ namespace System.Runtime.CompilerServices
         internal IAsyncStateMachine StateMachine;
 
         /// <summary>
-        /// Initiates the builder's execution with the associated state machine.
-        /// </summary>
-        /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam><param name="stateMachine">The state machine instance, passed by reference.</param><exception cref="T:System.ArgumentNullException">The <paramref name="stateMachine"/> argument is null (Nothing in Visual Basic).</exception>
-        [SecuritySafeCritical]
-        [DebuggerStepThrough]
-        internal void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
-        {
-            if (ReferenceEquals(stateMachine, null))
-            {
-                throw new ArgumentNullException(nameof(stateMachine));
-            }
-            stateMachine.MoveNext();
-        }
-
-        /// <summary>
         /// Associates the builder with the state machine it represents.
         /// </summary>
         /// <param name="stateMachine">The heap-allocated state machine object.</param><exception cref="T:System.ArgumentNullException">The <paramref name="stateMachine"/> argument was null (Nothing in Visual Basic).</exception><exception cref="T:System.InvalidOperationException">The builder is incorrectly initialized.</exception>
@@ -55,29 +40,18 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Gets the Action to use with an awaiter's OnCompleted or UnsafeOnCompleted method.
-        ///             On first invocation, the supplied state machine will be boxed.
-        ///
+        /// Initiates the builder's execution with the associated state machine.
         /// </summary>
-        /// <typeparam name="TMethodBuilder">Specifies the type of the method builder used.</typeparam><typeparam name="TStateMachine">Specifies the type of the state machine used.</typeparam><param name="builder">The builder.</param><param name="stateMachine">The state machine.</param>
-        /// <returns>
-        /// An Action to provide to the awaiter.
-        /// </returns>
+        /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam><param name="stateMachine">The state machine instance, passed by reference.</param><exception cref="T:System.ArgumentNullException">The <paramref name="stateMachine"/> argument is null (Nothing in Visual Basic).</exception>
         [SecuritySafeCritical]
-        internal Action GetCompletionAction<TMethodBuilder, TStateMachine>(ref TMethodBuilder builder, ref TStateMachine stateMachine)
-            where TMethodBuilder : IAsyncMethodBuilder
-            where TStateMachine : IAsyncStateMachine
+        [DebuggerStepThrough]
+        internal static void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
         {
-            var moveNextRunner = new MoveNextRunner(ExecutionContext.Capture());
-            Action action = moveNextRunner.Run;
-            if (StateMachine == null)
+            if (ReferenceEquals(stateMachine, null))
             {
-                builder.PreBoxInitialization();
-                StateMachine = stateMachine;
-                StateMachine.SetStateMachine(StateMachine);
+                throw new ArgumentNullException(nameof(stateMachine));
             }
-            moveNextRunner.StateMachine = StateMachine;
-            return action;
+            stateMachine.MoveNext();
         }
 
         /// <summary>
@@ -108,15 +82,36 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
+        /// Gets the Action to use with an awaiter's OnCompleted or UnsafeOnCompleted method.
+        ///             On first invocation, the supplied state machine will be boxed.
+        ///
+        /// </summary>
+        /// <typeparam name="TMethodBuilder">Specifies the type of the method builder used.</typeparam><typeparam name="TStateMachine">Specifies the type of the state machine used.</typeparam><param name="builder">The builder.</param><param name="stateMachine">The state machine.</param>
+        /// <returns>
+        /// An Action to provide to the awaiter.
+        /// </returns>
+        [SecuritySafeCritical]
+        internal Action GetCompletionAction<TMethodBuilder, TStateMachine>(ref TMethodBuilder builder, ref TStateMachine stateMachine)
+            where TMethodBuilder : IAsyncMethodBuilder
+            where TStateMachine : IAsyncStateMachine
+        {
+            var moveNextRunner = new MoveNextRunner(ExecutionContext.Capture());
+            Action action = moveNextRunner.Run;
+            if (StateMachine == null)
+            {
+                builder.PreBoxInitialization();
+                StateMachine = stateMachine;
+                StateMachine.SetStateMachine(StateMachine);
+            }
+            moveNextRunner.StateMachine = StateMachine;
+            return action;
+        }
+
+        /// <summary>
         /// Provides the ability to invoke a state machine's MoveNext method under a supplied ExecutionContext.
         /// </summary>
         private sealed class MoveNextRunner
         {
-            /// <summary>
-            /// The context with which to run MoveNext.
-            /// </summary>
-            private readonly ExecutionContext _context;
-
             /// <summary>
             /// The state machine whose MoveNext method should be invoked.
             /// </summary>
@@ -127,6 +122,11 @@ namespace System.Runtime.CompilerServices
             /// </summary>
             [SecurityCritical]
             private static ContextCallback _invokeMoveNext;
+
+            /// <summary>
+            /// The context with which to run MoveNext.
+            /// </summary>
+            private readonly ExecutionContext _context;
 
             /// <summary>
             /// Initializes the runner.

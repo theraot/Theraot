@@ -37,6 +37,7 @@ namespace System.Runtime.CompilerServices
             /// <summary>Ends the await operation.</summary>
             public void GetResult()
             {
+                // Should not be static
                 // Empty
             }
 

@@ -96,7 +96,7 @@ namespace System
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        private GCHandle GetNewHandle(T value, bool trackResurrection)
+        private static GCHandle GetNewHandle(T value, bool trackResurrection)
         {
             return GCHandle.Alloc(value, trackResurrection ? GCHandleType.WeakTrackResurrection : GCHandleType.Weak);
         }
