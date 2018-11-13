@@ -34,7 +34,7 @@ namespace Theraot.Threading
             {
                 if (Volatile.Read(ref _disposing) == 1)
                 {
-                    throw new ObjectDisposedException(GetType().FullName);
+                    throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
                 }
                 INeedle<T> needle;
                 if (_slots.TryGetValue(Thread.CurrentThread, out needle))
@@ -106,7 +106,7 @@ namespace Theraot.Threading
         {
             if (Volatile.Read(ref _disposing) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
             }
             INeedle<T> tmp;
             if (_slots.TryGetValue(thread, out tmp))
@@ -147,7 +147,7 @@ namespace Theraot.Threading
         {
             if (Volatile.Read(ref _disposing) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
             }
             _slots.Remove(thread);
         }
@@ -156,7 +156,7 @@ namespace Theraot.Threading
         {
             if (Volatile.Read(ref _disposing) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
             }
             INeedle<T> needle;
             if (_slots.TryGetOrAdd(thread, ThreadLocalHelper<T>.RecursionGuardNeedle, out needle))
@@ -181,7 +181,7 @@ namespace Theraot.Threading
         {
             if (Volatile.Read(ref _disposing) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
             }
             _slots.Set(thread, new ExceptionStructNeedle<T>(error));
         }
@@ -190,7 +190,7 @@ namespace Theraot.Threading
         {
             if (Volatile.Read(ref _disposing) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
             }
             _slots.Set(thread, new ReadOnlyStructNeedle<T>(value));
         }

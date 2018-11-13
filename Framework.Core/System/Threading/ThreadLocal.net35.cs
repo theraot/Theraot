@@ -65,7 +65,7 @@ namespace System.Threading
             {
                 if (Thread.VolatileRead(ref _disposing) == 1)
                 {
-                    throw new ObjectDisposedException(GetType().FullName);
+                    throw new ObjectDisposedException(nameof(ThreadLocal<T>));
                 }
                 return _wrapped.IsValueCreated;
             }
@@ -77,7 +77,7 @@ namespace System.Threading
             {
                 if (Thread.VolatileRead(ref _disposing) == 1)
                 {
-                    throw new ObjectDisposedException(GetType().FullName);
+                    throw new ObjectDisposedException(nameof(ThreadLocal<T>));
                 }
                 return _wrapped.Value;
             }
@@ -85,7 +85,7 @@ namespace System.Threading
             {
                 if (Thread.VolatileRead(ref _disposing) == 1)
                 {
-                    throw new ObjectDisposedException(GetType().FullName);
+                    throw new ObjectDisposedException(nameof(ThreadLocal<T>));
                 }
                 _wrapped.Value = value;
             }

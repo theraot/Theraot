@@ -293,7 +293,7 @@ namespace System.Threading
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException(GetType().Name);
+                throw new ObjectDisposedException(nameof(SemaphoreSlim));
             }
         }
 

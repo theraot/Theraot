@@ -199,7 +199,7 @@ namespace System.Threading.Tasks
             {
                 if (Thread.VolatileRead(ref _isDisposed) == 1)
                 {
-                    throw new ObjectDisposedException(GetType().FullName);
+                    throw new ObjectDisposedException(nameof(Task));
                 }
                 return _waitHandle.Value.WaitHandle;
             }
@@ -305,7 +305,7 @@ namespace System.Threading.Tasks
         {
             if (Thread.VolatileRead(ref _isDisposed) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(Task));
             }
             PrivateRunSynchronously(ExecutingTaskScheduler);
         }
@@ -318,7 +318,7 @@ namespace System.Threading.Tasks
             }
             if (Thread.VolatileRead(ref _isDisposed) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(Task));
             }
             PrivateRunSynchronously(scheduler);
         }
@@ -339,7 +339,7 @@ namespace System.Threading.Tasks
             }
             if (Thread.VolatileRead(ref _isDisposed) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(Task));
             }
             if (!InternalStart(ExecutingTaskScheduler, false, true))
             {
@@ -367,7 +367,7 @@ namespace System.Threading.Tasks
             }
             if (Thread.VolatileRead(ref _isDisposed) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(Task));
             }
             if (!InternalStart(scheduler, false, true))
             {
@@ -610,7 +610,7 @@ namespace System.Threading.Tasks
         {
             if (Thread.VolatileRead(ref _isDisposed) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(Task));
             }
             InternalStart(scheduler, inline, true);
         }
@@ -619,7 +619,7 @@ namespace System.Threading.Tasks
         {
             if (Thread.VolatileRead(ref _isDisposed) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(Task));
             }
             InternalStart(scheduler, inline, throwSchedulerExceptions);
         }

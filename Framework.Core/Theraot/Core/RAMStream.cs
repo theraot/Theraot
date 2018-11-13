@@ -54,7 +54,7 @@ namespace Theraot.Core
             {
                 if (_position == -1)
                 {
-                    throw new ObjectDisposedException(typeof(RamStream).Name);
+                    throw new ObjectDisposedException(nameof(RamStream));
                 }
                 return _length;
             }
@@ -68,7 +68,7 @@ namespace Theraot.Core
             {
                 if (_position == -1)
                 {
-                    throw new ObjectDisposedException(typeof(RamStream).Name);
+                    throw new ObjectDisposedException(nameof(RamStream));
                 }
                 if (value < 0)
                 {
@@ -92,7 +92,7 @@ namespace Theraot.Core
             var bytes = _bytes;
             if (_position == -1)
             {
-                throw new ObjectDisposedException(typeof(RamStream).Name);
+                throw new ObjectDisposedException(nameof(RamStream));
             }
             Extensions.CanCopyTo(buffer, offset, count);
             if (_position <= _length && _position + count > _length)
@@ -164,7 +164,7 @@ namespace Theraot.Core
         {
             if (_position == -1)
             {
-                throw new ObjectDisposedException(typeof(RamStream).Name);
+                throw new ObjectDisposedException(nameof(RamStream));
             }
             var position = _position;
             switch (origin)
@@ -201,7 +201,7 @@ namespace Theraot.Core
             var bytes = _bytes;
             if (_position == -1)
             {
-                throw new ObjectDisposedException(typeof(RamStream).Name);
+                throw new ObjectDisposedException(nameof(RamStream));
             }
             if (value < 0)
             {
@@ -223,7 +223,7 @@ namespace Theraot.Core
             var bytes = _bytes;
             if (_position == -1)
             {
-                throw new ObjectDisposedException(typeof(RamStream).Name);
+                throw new ObjectDisposedException(nameof(RamStream));
             }
             if (offset + count > buffer.Length)
             {

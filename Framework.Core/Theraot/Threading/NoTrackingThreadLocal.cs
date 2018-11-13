@@ -38,7 +38,7 @@ namespace Theraot.Threading
             {
                 if (Thread.VolatileRead(ref _disposing) == 1)
                 {
-                    throw new ObjectDisposedException(GetType().FullName);
+                    throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
                 }
                 return Thread.GetData(_slot) is ReadOnlyStructNeedle<T>;
             }
@@ -50,7 +50,7 @@ namespace Theraot.Threading
             {
                 if (Thread.VolatileRead(ref _disposing) == 1)
                 {
-                    throw new ObjectDisposedException(GetType().FullName);
+                    throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
                 }
                 var bundle = Thread.GetData(_slot);
                 var needle = bundle as INeedle<T>;
@@ -78,7 +78,7 @@ namespace Theraot.Threading
             {
                 if (Thread.VolatileRead(ref _disposing) == 1)
                 {
-                    throw new ObjectDisposedException(GetType().FullName);
+                    throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
                 }
                 Thread.SetData(_slot, new ReadOnlyStructNeedle<T>(value));
             }
@@ -133,7 +133,7 @@ namespace Theraot.Threading
         {
             if (Thread.VolatileRead(ref _disposing) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
             }
             Thread.SetData(_slot, null);
         }
@@ -165,7 +165,7 @@ namespace Theraot.Threading
         {
             if (Thread.VolatileRead(ref _disposing) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
             }
             Thread.SetData(_slot, new ExceptionStructNeedle<T>(error));
         }

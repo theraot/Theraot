@@ -157,13 +157,13 @@ namespace Theraot.Threading.Needles
         [System.Diagnostics.DebuggerNonUserCode]
         protected void ThrowDisposedexception()
         {
-            throw new ObjectDisposedException(GetType().FullName);
+            throw new ObjectDisposedException(nameof(WeakNeedle<T>));
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
         protected TReturn ThrowDisposedexception<TReturn>()
         {
-            throw new ObjectDisposedException(GetType().FullName);
+            throw new ObjectDisposedException(nameof(WeakNeedle<T>));
         }
 
         [System.Diagnostics.DebuggerNonUserCode]

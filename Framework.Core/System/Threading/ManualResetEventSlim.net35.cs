@@ -94,7 +94,7 @@ namespace System.Threading
                 // If Disposed, throw
                 if (Thread.VolatileRead(ref _status) == (int)Status.Disposed)
                 {
-                    throw new ObjectDisposedException(GetType().FullName);
+                    throw new ObjectDisposedException(nameof(ManualResetEventSlim));
                 }
                 // Get the wait handle
                 return GetOrCreateWaitHandle();
@@ -124,7 +124,7 @@ namespace System.Threading
                 {
                     case Status.Disposed:
                         // Disposed
-                        throw new ObjectDisposedException(GetType().FullName);
+                        throw new ObjectDisposedException(nameof(ManualResetEventSlim));
 
                     case Status.NotSet:
                         // Nothing to do
@@ -260,7 +260,7 @@ namespace System.Threading
             // If Disposed, throw
             if (Thread.VolatileRead(ref _status) == (int)Status.Disposed)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(ManualResetEventSlim));
             }
             var spinWait = new SpinWait();
             var spinCount = _spinCount;
@@ -287,7 +287,7 @@ namespace System.Threading
             // If Disposed, throw
             if (Thread.VolatileRead(ref _status) == (int)Status.Disposed)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(ManualResetEventSlim));
             }
             if (millisecondsTimeout < -1)
             {
@@ -306,7 +306,7 @@ namespace System.Threading
             // If Disposed, throw
             if (Thread.VolatileRead(ref _status) == (int)Status.Disposed)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(ManualResetEventSlim));
             }
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
@@ -327,7 +327,7 @@ namespace System.Threading
             // If Disposed, throw
             if (Thread.VolatileRead(ref _status) == (int)Status.Disposed)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(ManualResetEventSlim));
             }
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
@@ -339,7 +339,7 @@ namespace System.Threading
             // If Disposed, throw
             if (Thread.VolatileRead(ref _status) == (int)Status.Disposed)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(ManualResetEventSlim));
             }
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
@@ -359,7 +359,7 @@ namespace System.Threading
             // If Disposed, throw
             if (Thread.VolatileRead(ref _status) == (int)Status.Disposed)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(ManualResetEventSlim));
             }
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
@@ -405,7 +405,7 @@ namespace System.Threading
                 {
                     case Status.Disposed:
                         // Disposed
-                        throw new ObjectDisposedException(GetType().FullName);
+                        throw new ObjectDisposedException(nameof(ManualResetEventSlim));
 
                     case Status.NotSet:
                     case Status.Set:

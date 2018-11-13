@@ -193,7 +193,7 @@ namespace System.Threading
         {
             if (Thread.VolatileRead(ref _disposeRequested) == 1)
             {
-                throw new ObjectDisposedException(GetType().Name);
+                throw new ObjectDisposedException(nameof(CancellationTokenSource));
             }
         }
 
@@ -202,7 +202,7 @@ namespace System.Threading
             var result = _callbacks;
             if (result == null || Thread.VolatileRead(ref _disposeRequested) == 1)
             {
-                throw new ObjectDisposedException(GetType().Name);
+                throw new ObjectDisposedException(nameof(CancellationTokenSource));
             }
             return result;
         }
