@@ -58,7 +58,7 @@ namespace System.Runtime.CompilerServices
                 }
                 else
                 {
-                    Task.Factory.StartNew(continuation, default(CancellationToken), TaskCreationOptions.PreferFairness, TaskScheduler.Current);
+                    Task.Factory.StartNew(continuation, default, TaskCreationOptions.PreferFairness, TaskScheduler.Current);
                 }
             }
 
@@ -78,7 +78,7 @@ namespace System.Runtime.CompilerServices
                 }
                 else
                 {
-                    Task.Factory.StartNew(continuation, default(CancellationToken), TaskCreationOptions.PreferFairness, TaskScheduler.Current);
+                    Task.Factory.StartNew(continuation, default, TaskCreationOptions.PreferFairness, TaskScheduler.Current);
                 }
             }
 

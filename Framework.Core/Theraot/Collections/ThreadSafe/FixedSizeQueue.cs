@@ -103,9 +103,8 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.InvalidOperationException">No more items to be taken.</exception>
         public T Peek()
         {
-            T item;
             var index = Interlocked.Add(ref _indexEnqueue, 0);
-            if (index < _capacity && index > 0 && _entries.TryGet(index, out item))
+            if (index < _capacity && index > 0 && _entries.TryGet(index, out T item))
             {
                 return item;
             }
@@ -137,7 +136,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool TryPeek(out T item)
         {
-            item = default(T);
+            item = default;
             var index = Interlocked.Add(ref _indexDequeue, 0);
             return index < _capacity && index > 0 && _entries.TryGetInternal(index, out item);
         }
@@ -164,7 +163,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 Interlocked.Increment(ref _preCount);
             }
-            item = default(T);
+            item = default;
             return false;
         }
 

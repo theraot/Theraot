@@ -286,14 +286,13 @@ namespace Theraot.Core
             }
             while (count > 0)
             {
-                KeyValuePair<long, byte[]> pair;
                 var left = new byte[1 << _sectorBits];
                 var index = _position - ((_position >> _sectorBits) << _sectorBits);
                 var diff = (1 << _sectorBits) - index;
                 var contribution = diff > count ? count : diff;
                 var intContribution = (int)contribution;
                 Array.Copy(buffer, offset, left, (int)index, intContribution);
-                if (!Add(bytes, left, out pair))
+                if (!Add(bytes, left, out KeyValuePair<long, byte[]> pair))
                 {
                     goto again;
                 }

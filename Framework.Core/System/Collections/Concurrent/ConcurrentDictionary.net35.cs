@@ -172,8 +172,7 @@ namespace System.Collections.Concurrent
                 // keep the is operator
                 if (key is TKey)
                 {
-                    TValue result;
-                    if (_wrapped.TryGetValue((TKey)key, out result))
+                    if (_wrapped.TryGetValue((TKey)key, out TValue result))
                     {
                         return result;
                     }
@@ -297,8 +296,7 @@ namespace System.Collections.Concurrent
                 // This is what happens when you do the call on Microsoft's implementation
                 throw CreateArgumentNullExceptionKey(item.Key);
             }
-            TValue found;
-            if (_wrapped.TryGetValue(item.Key, out found))
+            if (_wrapped.TryGetValue(item.Key, out TValue found))
             {
                 if (EqualityComparer<TValue>.Default.Equals(found, item.Value))
                 {
@@ -333,8 +331,8 @@ namespace System.Collections.Concurrent
             Extensions.CanCopyTo(_wrapped.Count, array, index);
             try
             {
-                var pairs = array as KeyValuePair<TKey, TValue>[]; // most decent alternative
-                if (pairs != null)
+                // most decent alternative
+                if (array is KeyValuePair<TKey, TValue>[] pairs)
                 {
                     var keyValuePairs = pairs;
                     foreach (var pair in _wrapped)
@@ -344,8 +342,7 @@ namespace System.Collections.Concurrent
                     }
                     return;
                 }
-                var objects = array as object[];
-                if (objects != null)
+                if (array is object[] objects)
                 {
                     var valuePairs = objects;
                     foreach (var pair in _wrapped)
@@ -355,9 +352,8 @@ namespace System.Collections.Concurrent
                     }
                     return;
                 }
-                var entries = array as DictionaryEntry[];
                 // that thing exists, I was totally unaware, I may as well use it.
-                if (entries != null)
+                if (array is DictionaryEntry[] entries)
                 {
                     var dictionaryEntries = entries;
                     foreach (var pair in _wrapped)
@@ -436,14 +432,12 @@ namespace System.Collections.Concurrent
                 // This is what happens when you do the call on Microsoft's implementation
                 throw CreateArgumentNullExceptionKey(item.Key);
             }
-            TValue found;
-            return _wrapped.Remove(item.Key, input => EqualityComparer<TValue>.Default.Equals(item.Value, item.Value), out found);
+            return _wrapped.Remove(item.Key, input => EqualityComparer<TValue>.Default.Equals(item.Value, item.Value), out TValue found);
         }
 
         bool IDictionary<TKey, TValue>.Remove(TKey key)
         {
-            TValue bundle;
-            return TryRemove(key, out bundle);
+            return TryRemove(key, out TValue bundle);
         }
 
         public KeyValuePair<TKey, TValue>[] ToArray()

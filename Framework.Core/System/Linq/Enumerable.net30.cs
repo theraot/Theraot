@@ -105,8 +105,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            var collection = source as ICollection<TSource>;
-            if (collection == null)
+            if (!(source is ICollection<TSource> collection))
             {
                 using (var enumerator = source.GetEnumerator())
                 {
@@ -148,8 +147,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            var enumerable = source as IEnumerable<TResult>;
-            if (enumerable != null)
+            if (source is IEnumerable<TResult> enumerable)
             {
                 return enumerable;
             }
@@ -222,8 +220,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            var collection = source as ICollection<TSource>;
-            if (collection == null)
+            if (!(source is ICollection<TSource> collection))
             {
                 var result = 0;
                 using (var item = source.GetEnumerator())
@@ -336,13 +333,11 @@ namespace System.Linq
                 throw new ArgumentOutOfRangeException(nameof(index), index, "index < 0");
             }
 
-            var list = source as IList<TSource>;
-            if (list != null)
+            if (source is IList<TSource> list)
             {
                 return list[index];
             }
-            var readOnlyList = source as IReadOnlyList<TSource>;
-            if (readOnlyList != null)
+            if (source is IReadOnlyList<TSource> readOnlyList)
             {
                 return readOnlyList[index];
             }
@@ -366,28 +361,26 @@ namespace System.Linq
             }
             if (index < 0)
             {
-                return default(TSource);
+                return default;
             }
 
-            var list = source as IList<TSource>;
-            if (list != null)
+            if (source is IList<TSource> list)
             {
                 if (index < list.Count)
                 {
                     return list[index];
                 }
 
-                return default(TSource);
+                return default;
             }
-            var readOnlyList = source as IReadOnlyList<TSource>;
-            if (readOnlyList != null)
+            if (source is IReadOnlyList<TSource> readOnlyList)
             {
                 if (index < readOnlyList.Count)
                 {
                     return readOnlyList[index];
                 }
 
-                return default(TSource);
+                return default;
             }
             var count = 0L;
             foreach (var item in source)
@@ -398,7 +391,7 @@ namespace System.Linq
                 }
                 count++;
             }
-            return default(TSource);
+            return default;
         }
 
         public static IEnumerable<TResult> Empty<TResult>()
@@ -438,8 +431,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            var list = source as IList<TSource>;
-            if (list == null)
+            if (!(source is IList<TSource> list))
             {
                 using (var enumerator = source.GetEnumerator())
                 {
@@ -490,7 +482,7 @@ namespace System.Linq
             {
                 return item;
             }
-            return default(TSource);
+            return default;
         }
 
         public static TSource FirstOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -530,14 +522,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            var collection = source as ICollection<TSource>;
-            if (collection != null && collection.Count == 0)
+            if (source is ICollection<TSource> collection && collection.Count == 0)
             {
                 throw new InvalidOperationException();
             }
 
-            var list = source as IList<TSource>;
-            if (list == null)
+            if (!(source is IList<TSource> list))
             {
                 var found = false;
                 var result = default(TSource);
@@ -592,8 +582,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            var list = source as IList<TSource>;
-            if (list == null)
+            if (!(source is IList<TSource> list))
             {
                 var found = false;
                 var result = default(TSource);
@@ -607,10 +596,10 @@ namespace System.Linq
                     return result;
                 }
 
-                return default(TSource);
+                return default;
             }
 
-            return list.Count > 0 ? list[list.Count - 1] : default(TSource);
+            return list.Count > 0 ? list[list.Count - 1] : default;
         }
 
         public static TSource LastOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -641,8 +630,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            var array = source as TSource[];
-            if (array == null)
+            if (!(source is TSource[] array))
             {
                 long count = 0;
                 using (var item = source.GetEnumerator())
@@ -1139,8 +1127,7 @@ namespace System.Linq
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
         {
             LinqCheck.SourceAndKeySelector(source, keySelector);
-            var oe = source as OrderedEnumerable<TSource>;
-            if (oe != null)
+            if (source is OrderedEnumerable<TSource> oe)
             {
                 return oe.CreateOrderedEnumerable(keySelector, comparer, false);
             }
@@ -1155,8 +1142,7 @@ namespace System.Linq
         public static IOrderedEnumerable<TSource> ThenByDescending<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
         {
             LinqCheck.SourceAndKeySelector(source, keySelector);
-            var oe = source as OrderedEnumerable<TSource>;
-            if (oe != null)
+            if (source is OrderedEnumerable<TSource> oe)
             {
                 return oe.CreateOrderedEnumerable(keySelector, comparer, true);
             }

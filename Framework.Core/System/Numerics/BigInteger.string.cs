@@ -13,8 +13,7 @@ namespace System.Numerics
     {
         internal static string FormatBigInteger(BigInteger value, string format, NumberFormatInfo info)
         {
-            int digits;
-            var fmt = ParseFormatSpecifier(format, out digits);
+            var fmt = ParseFormatSpecifier(format, out int digits);
             if (fmt == 'x' || fmt == 'X')
             {
                 return FormatBigIntegerToHexString(value, fmt, digits, info);
@@ -42,7 +41,7 @@ namespace System.Numerics
                 {
                     value /= 10;
                 }
-                if ((Log10(value) > precision + 1))
+                if (Log10(value) > precision + 1)
                 {
                     var round = value % 10 >= 5;
                     value = (value / 10) + (round ? One : Zero);
@@ -92,7 +91,7 @@ namespace System.Numerics
             }
             else
             {
-                var decimalFmt = (fmt == 'g' || fmt == 'G' || fmt == 'd' || fmt == 'D' || fmt == 'r' || fmt == 'R');
+                var decimalFmt = fmt == 'g' || fmt == 'G' || fmt == 'd' || fmt == 'D' || fmt == 'r' || fmt == 'R';
                 if (value.InternalBits == null)
                 {
                     if (fmt == 'g' || fmt == 'G' || fmt == 'r' || fmt == 'R')
@@ -168,7 +167,7 @@ namespace System.Numerics
                     }
                     else
                     {
-                        throw new NotImplementedException();
+                        throw new NotSupportedException();
                     }
                 }
                 var result = new StringBuilder(builder.Length + 20);
@@ -190,7 +189,7 @@ namespace System.Numerics
                     }
                     else
                     {
-                        append = StringWithGroups(extra + builder.Length, builder, groupingSizes, groupingSeparator);
+                        append = StringWithGroups(length, builder, groupingSizes, groupingSeparator);
                     }
                 }
                 result.Append(append);
@@ -206,17 +205,15 @@ namespace System.Numerics
 
         internal static BigInteger ParseBigInteger(string value, NumberStyles style, NumberFormatInfo info)
         {
-            ArgumentException argumentException;
             if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
-            if (!TryValidateParseStyleInteger(style, out argumentException))
+            if (!TryValidateParseStyleInteger(style, out ArgumentException argumentException))
             {
                 throw argumentException;
             }
-            BigInteger zero;
-            if (!TryParseBigInteger(value, style, info, out zero))
+            if (!TryParseBigInteger(value, style, info, out BigInteger zero))
             {
                 throw new FormatException("The value could not be parsed.");
             }
@@ -263,14 +260,6 @@ namespace System.Numerics
 
         internal static bool ParseNumber(StringProcessor reader, NumberStyles options, BigNumberBuffer number, NumberFormatInfo info)
         {
-            // Percent intentionally not supported
-            // After testig with .NET the patterns are ignored... all patterns are welcome
-
-            var currencySymbol = info.CurrencySymbol;
-            var numberGroupSeparator = info.NumberGroupSeparator;
-            var currencyGroupSeparator = info.CurrencyGroupSeparator;
-            var positiveSign = info.PositiveSign;
-            var negativeSign = info.NegativeSign;
             if ((options & NumberStyles.AllowHexSpecifier) != NumberStyles.None)
             {
                 var allowLeadingWhite = (options & NumberStyles.AllowLeadingWhite) != NumberStyles.None;
@@ -335,12 +324,18 @@ namespace System.Numerics
                 {
                     reader.SkipWhile(CharHelper.IsClassicWhitespace);
                 }
+                // Percent intentionally not supported
+                // After testig with .NET the patterns are ignored... all patterns are welcome
+
+                var currencySymbol = info.CurrencySymbol;
                 // [$][sign][digits,]digits[E[sign]exponential_digits][ws]
                 if (allowCurrencySymbol && reader.Read(currencySymbol))
                 {
                     isCurrency = true;
                     reader.SkipWhile(CharHelper.IsClassicWhitespace);
                 }
+                var positiveSign = info.PositiveSign;
+                var negativeSign = info.NegativeSign;
                 // [sign][digits,]digits[E[sign]exponential_digits][ws
                 if (allowLeadingSign)
                 {
@@ -395,11 +390,13 @@ namespace System.Numerics
                     number.Digits.Append(input);
                     if (allowThousands)
                     {
+                        var currencyGroupSeparator = info.CurrencyGroupSeparator;
                         // Testing on .NET show that combining currency and number group separators is allowed
                         // But not if the currency symbol has already appeared
                         reader.SkipWhile(currencyGroupSeparator);
                         if (!isCurrency)
                         {
+                            var numberGroupSeparator = info.NumberGroupSeparator;
                             reader.SkipWhile(numberGroupSeparator);
                         }
                     }
@@ -464,8 +461,7 @@ namespace System.Numerics
         internal static bool TryParseBigInteger(string value, NumberStyles style, NumberFormatInfo info, out BigInteger result)
         {
             result = Zero;
-            ArgumentException e;
-            if (!TryValidateParseStyleInteger(style, out e))
+            if (!TryValidateParseStyleInteger(style, out ArgumentException e))
             {
                 throw e; // TryParse still throws ArgumentException on invalid NumberStyles
             }
@@ -635,7 +631,7 @@ namespace System.Numerics
                 string str;
                 if (value.InternalSign < 0)
                 {
-                    str = (format != 'x' ? "F" : "f");
+                    str = format != 'x' ? "F" : "f";
                 }
                 else
                 {
@@ -676,14 +672,14 @@ namespace System.Numerics
                 }
                 else if (c >= 'A' && c <= 'F')
                 {
-                    b = (byte)((c - 'A') + 10);
+                    b = (byte)(c - ('A' + 10));
                 }
                 else
                 {
                     Contract.Assert(c >= 'a' && c <= 'f');
-                    b = (byte)((c - 'a') + 10);
+                    b = (byte)(c - ('a' + 10));
                 }
-                isNegative |= (i == 0 && (b & 0x08) == 0x08);
+                isNegative |= i == 0 && (b & 0x08) == 0x08;
 
                 if (shift)
                 {
@@ -692,7 +688,7 @@ namespace System.Numerics
                 }
                 else
                 {
-                    bits[bitIndex] = isNegative ? (byte)(b | 0xF0) : (b);
+                    bits[bitIndex] = isNegative ? (byte)(b | 0xF0) : b;
                 }
                 shift = !shift;
             }
@@ -711,7 +707,7 @@ namespace System.Numerics
                 while (--i >= 0)
                 {
                     value *= 10;
-                    value += (number.Digits[cur++] - '0');
+                    value += number.Digits[cur++] - '0';
                 }
                 var adjust = number.Scale - number.Digits.Length;
                 while (adjust > 9)
@@ -732,7 +728,7 @@ namespace System.Numerics
                 while (--i >= 0)
                 {
                     value *= 10;
-                    value += (number.Digits[cur++] - '0');
+                    value += number.Digits[cur++] - '0';
                 }
                 for (; cur < number.Digits.Length - 1; cur++)
                 {

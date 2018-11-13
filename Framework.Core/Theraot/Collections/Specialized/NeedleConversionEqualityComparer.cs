@@ -19,7 +19,7 @@ namespace Theraot.Collections.Specialized
         {
             if (ReferenceEquals(needle, null))
             {
-                return default(T);
+                return default;
             }
             return needle.Value;
         }

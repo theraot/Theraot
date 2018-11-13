@@ -37,9 +37,7 @@ namespace Theraot.Core
         [CLSCompliant(false)]
         public static ulong BinaryReverse(this ulong value)
         {
-            uint lo;
-            uint hi;
-            GetParts(value, out lo, out hi);
+            GetParts(value, out uint lo, out uint hi);
             return BuildUInt64(BinaryReverse(lo), BinaryReverse(hi));
         }
 

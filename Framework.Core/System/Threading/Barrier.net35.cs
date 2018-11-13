@@ -243,10 +243,7 @@ namespace System.Threading
             while (true)
             {
                 var currentTotal = Volatile.Read(ref _currentTotalCount);
-                int total;
-                int current;
-                bool sense;
-                GetCurrentTotal(currentTotal, out current, out total, out sense);
+                GetCurrentTotal(currentTotal, out int current, out int total, out bool sense);
                 if (participantCount + total > _maxParticipants) //overflow
                 {
                     throw new ArgumentOutOfRangeException(nameof(participantCount),
@@ -374,10 +371,7 @@ namespace System.Threading
             while (true)
             {
                 var currentTotal = Volatile.Read(ref _currentTotalCount);
-                int total;
-                int current;
-                bool sense;
-                GetCurrentTotal(currentTotal, out current, out total, out sense);
+                GetCurrentTotal(currentTotal, out int current, out int total, out bool sense);
 
                 if (total < participantCount)
                 {
@@ -603,7 +597,7 @@ namespace System.Threading
 
             // ** Perform the real wait **
             // select the correct event to wait on, based on the current sense.
-            var eventToWaitOn = (sense) ? _evenEvent : _oddEvent;
+            var eventToWaitOn = sense ? _evenEvent : _oddEvent;
 
             var waitWasCanceled = false;
             var waitResult = false;
@@ -636,9 +630,8 @@ namespace System.Threading
                 //If the wait timeout expired and all other thread didn't reach the barrier yet, update the current count back
                 while (true)
                 {
-                    bool newSense;
                     currentTotal = Volatile.Read(ref _currentTotalCount);
-                    GetCurrentTotal(currentTotal, out current, out total, out newSense);
+                    GetCurrentTotal(currentTotal, out current, out total, out bool newSense);
                     // If the timeout expired and the phase has just finished, return true and this is considered as succeeded SignalAndWait
                     //otherwise the timeout expired and the current phase has not been finished yet, return false
                     //The phase is finished if the phase member variable is changed (incremented) or the sense has been changed

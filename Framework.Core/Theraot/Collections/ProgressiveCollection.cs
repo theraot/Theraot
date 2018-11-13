@@ -121,8 +121,7 @@ namespace Theraot.Collections
             {
                 return true;
             }
-            T found;
-            while (_progressor.TryTake(out found))
+            while (_progressor.TryTake(out T found))
             {
                 if (_comparer.Equals(item, found))
                 {
@@ -163,8 +162,7 @@ namespace Theraot.Collections
                 yield return item;
             }
             {
-                T item;
-                while (_progressor.TryTake(out item))
+                while (_progressor.TryTake(out T item))
                 {
                     yield return item;
                 }

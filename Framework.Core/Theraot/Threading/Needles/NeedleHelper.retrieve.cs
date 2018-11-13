@@ -9,12 +9,11 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(needle, null))
             {
-                target = default(T);
+                target = default;
                 return false;
             }
             bool done;
-            var cacheNeedle = needle as ICacheNeedle<T>;
-            if (cacheNeedle == null)
+            if (!(needle is ICacheNeedle<T> cacheNeedle))
             {
                 target = ((INeedle<T>)needle).Value;
                 done = needle.IsAlive;

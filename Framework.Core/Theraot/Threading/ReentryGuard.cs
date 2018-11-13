@@ -111,8 +111,7 @@ namespace Theraot.Threading
                     // called from inside this method - skip
                     return;
                 }
-                Action action;
-                while (queue.TryTake(out action))
+                while (queue.TryTake(out Action action))
                 {
                     action.Invoke();
                 }

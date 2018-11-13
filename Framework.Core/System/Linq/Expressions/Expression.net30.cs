@@ -78,8 +78,7 @@ namespace System.Linq.Expressions
         {
             get
             {
-                ExtensionInfo extInfo;
-                if (_legacyCtorSupportTable != null && _legacyCtorSupportTable.TryGetValue(this, out extInfo))
+                if (_legacyCtorSupportTable != null && _legacyCtorSupportTable.TryGetValue(this, out ExtensionInfo extInfo))
                 {
                     return extInfo.NodeType;
                 }
@@ -96,8 +95,7 @@ namespace System.Linq.Expressions
         {
             get
             {
-                ExtensionInfo extInfo;
-                if (_legacyCtorSupportTable != null && _legacyCtorSupportTable.TryGetValue(this, out extInfo))
+                if (_legacyCtorSupportTable != null && _legacyCtorSupportTable.TryGetValue(this, out ExtensionInfo extInfo))
                 {
                     return extInfo.Type;
                 }
@@ -272,8 +270,7 @@ namespace System.Linq.Expressions
             if (items != null)
             {
                 // this is called a lot, avoid allocating an enumerator if we can...
-                var listItems = items as IList<Expression>;
-                if (listItems != null)
+                if (items is IList<Expression> listItems)
                 {
                     foreach (var item in listItems)
                     {
@@ -320,8 +317,7 @@ namespace System.Linq.Expressions
                     }
                     else
                     {
-                        var field = member.Member as FieldInfo;
-                        if (field != null)
+                        if (member.Member is FieldInfo field)
                         {
                             canWrite = !(field.IsInitOnly || field.IsLiteral);
                         }

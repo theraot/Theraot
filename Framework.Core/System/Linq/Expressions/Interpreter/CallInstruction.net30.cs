@@ -123,11 +123,9 @@ namespace System.Linq.Expressions.Interpreter
         /// <returns></returns>
         protected static bool TryGetLightLambdaTarget(object instance, out LightLambda lightLambda)
         {
-            var del = instance as Delegate;
-            if ((object)del != null)
+            if (instance is Delegate del)
             {
-                var thunk = del.Target as Func<object[], object>;
-                if ((object)thunk != null)
+                if (del.Target is Func<object[], object> thunk)
                 {
                     lightLambda = thunk.Target as LightLambda;
                     if (lightLambda != null)
@@ -206,8 +204,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            LightLambda targetLambda;
-            if (TryGetLightLambdaTarget(instance, out targetLambda))
+            if (TryGetLightLambdaTarget(instance, out LightLambda targetLambda))
             {
                 // no need to Invoke, just interpret the lambda body
                 return InterpretLambdaInvoke(targetLambda, SkipFirstArg(args));
@@ -237,8 +234,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            LightLambda targetLambda;
-            if (TryGetLightLambdaTarget(args[0], out targetLambda))
+            if (TryGetLightLambdaTarget(args[0], out LightLambda targetLambda))
             {
                 // no need to Invoke, just interpret the lambda body
                 return InterpretLambdaInvoke(targetLambda, SkipFirstArg(args));
@@ -307,7 +303,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedStack
         {
-            get { return (_target.ReturnType == typeof(void) ? 0 : 1); }
+            get { return _target.ReturnType == typeof(void) ? 0 : 1; }
         }
 
         public sealed override int Run(InterpretedFrame frame)
@@ -344,8 +340,7 @@ namespace System.Linq.Expressions.Interpreter
 
                     instance = frame.Data[first];
 
-                    LightLambda targetLambda;
-                    if (TryGetLightLambdaTarget(instance, out targetLambda))
+                    if (TryGetLightLambdaTarget(instance, out LightLambda targetLambda))
                     {
                         // no need to Invoke, just interpret the lambda body
                         ret = InterpretLambdaInvoke(targetLambda, args);

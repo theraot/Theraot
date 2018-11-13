@@ -92,8 +92,7 @@ namespace System.Linq.Expressions
             }
 
             // expression is a ByVal parameter. Can safely reevaluate.
-            var parameter = Expression as ParameterExpression;
-            if (parameter != null && !parameter.IsByRef)
+            if (Expression is ParameterExpression parameter && !parameter.IsByRef)
             {
                 return ByValParameterTypeEqual(parameter);
             }

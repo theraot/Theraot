@@ -1045,8 +1045,7 @@ namespace System.Linq.Expressions
             var n = nodes.Count;
             for (var i = 0; i < n; i++)
             {
-                var node = Visit(nodes[i]) as T;
-                if (node == null)
+                if (!(Visit(nodes[i]) is T node))
                 {
                     throw Error.MustRewriteToSameNode(callerName, typeof(T), callerName);
                 }

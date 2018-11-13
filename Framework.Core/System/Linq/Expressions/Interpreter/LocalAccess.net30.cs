@@ -27,8 +27,8 @@ namespace System.Linq.Expressions.Interpreter
         public override string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects)
         {
             return cookie == null ?
-                InstructionName + "(" + Index.ToString() + ")" :
-                InstructionName + "(" + cookie + ": " + Index.ToString() + ")";
+                $"{base.InstructionName}({Index})" :
+                $"{base.InstructionName}({cookie}: {Index})";
         }
     }
 

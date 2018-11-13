@@ -100,10 +100,10 @@ namespace System.Linq.Expressions
             var vars = variables.ToReadOnly();
             for (var i = 0; i < vars.Count; i++)
             {
-                Expression v = vars[i];
+                var v = vars[i];
                 if (v == null)
                 {
-                    throw new ArgumentNullException("variables[" + i.ToString() + "]");
+                    throw new ArgumentNullException($"variables[{i}]");
                 }
             }
 

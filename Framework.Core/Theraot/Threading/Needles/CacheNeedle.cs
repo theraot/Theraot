@@ -143,7 +143,7 @@ namespace Theraot.Threading.Needles
 
         public override bool TryGetValue(out T value)
         {
-            value = default(T);
+            value = default;
             return IsCompleted && base.TryGetValue(out value);
         }
 

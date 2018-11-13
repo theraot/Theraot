@@ -23,8 +23,7 @@ namespace Theraot.Collections.Specialized
                 {
                     return null;
                 }
-                var genericEnumerator = enumerator as IEnumerator<T>;
-                if (genericEnumerator != null)
+                if (enumerator is IEnumerator<T> genericEnumerator)
                 {
                     return genericEnumerator;
                 }
@@ -46,8 +45,7 @@ namespace Theraot.Collections.Specialized
                 }
                 finally
                 {
-                    var disposable = enumerator as IDisposable;
-                    if (disposable != null)
+                    if (enumerator is IDisposable disposable)
                     {
                         disposable.Dispose();
                     }

@@ -20,8 +20,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal void Enqueue(TK key, TV value)
         {
-            Queue<TV> queue;
-            if (!_data.TryGetValue(key, out queue))
+            if (!_data.TryGetValue(key, out Queue<TV> queue))
             {
                 _data.Add(key, queue = new Queue<TV>());
             }
@@ -30,8 +29,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal TV Dequeue(TK key)
         {
-            Queue<TV> queue;
-            if (!_data.TryGetValue(key, out queue))
+            if (!_data.TryGetValue(key, out Queue<TV> queue))
             {
                 throw Error.QueueEmpty();
             }
@@ -45,8 +43,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal bool TryDequeue(TK key, out TV value)
         {
-            Queue<TV> queue;
-            if (_data.TryGetValue(key, out queue) && queue.Count > 0)
+            if (_data.TryGetValue(key, out Queue<TV> queue) && queue.Count > 0)
             {
                 value = queue.Dequeue();
                 if (queue.Count == 0)
@@ -55,14 +52,13 @@ namespace System.Linq.Expressions.Compiler
                 }
                 return true;
             }
-            value = default(TV);
+            value = default;
             return false;
         }
 
         internal TV Peek(TK key)
         {
-            Queue<TV> queue;
-            if (!_data.TryGetValue(key, out queue))
+            if (!_data.TryGetValue(key, out Queue<TV> queue))
             {
                 throw Error.QueueEmpty();
             }
@@ -71,8 +67,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal int GetCount(TK key)
         {
-            Queue<TV> queue;
-            if (!_data.TryGetValue(key, out queue))
+            if (!_data.TryGetValue(key, out Queue<TV> queue))
             {
                 return 0;
             }

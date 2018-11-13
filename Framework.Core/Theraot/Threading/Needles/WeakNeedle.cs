@@ -56,11 +56,9 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                object target;
-                if (ReadTarget(out target))
+                if (ReadTarget(out object target))
                 {
-                    var exception = target as Exception;
-                    if (exception != null && _faultExpected)
+                    if (target is Exception exception && _faultExpected)
                     {
                         return exception;
                     }
@@ -83,8 +81,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                object target;
-                if (ReadTarget(out target))
+                if (ReadTarget(out object target))
                 {
                     if (target is T && !_faultExpected)
                     {
@@ -99,8 +96,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                object target;
-                if (ReadTarget(out target))
+                if (ReadTarget(out object target))
                 {
                     if (target is Exception && _faultExpected)
                     {
@@ -121,11 +117,9 @@ namespace Theraot.Threading.Needles
             [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
             get
             {
-                object target;
-                if (ReadTarget(out target))
+                if (ReadTarget(out object target))
                 {
-                    var inner = target as T;
-                    if (inner != null && !_faultExpected)
+                    if (target is T inner && !_faultExpected)
                     {
                         return inner;
                     }
@@ -176,8 +170,7 @@ namespace Theraot.Threading.Needles
             {
                 return EqualsExtractedExtracted(this, needle);
             }
-            var value = obj as T;
-            if (value != null)
+            if (obj is T value)
             {
                 var target = Value;
                 return IsAlive && EqualityComparer<T>.Default.Equals(target, value);
@@ -214,11 +207,9 @@ namespace Theraot.Threading.Needles
         public virtual bool TryGetValue(out T value)
         {
             value = null;
-            object target;
-            if (ReadTarget(out target))
+            if (ReadTarget(out object target))
             {
-                var inner = target as T;
-                if (inner != null)
+                if (target is T inner)
                 {
                     value = inner;
                     return true;

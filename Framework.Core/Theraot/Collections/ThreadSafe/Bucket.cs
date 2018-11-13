@@ -54,14 +54,14 @@ namespace Theraot.Collections.ThreadSafe
         {
             foreach (var value in _bucketCore.EnumerateRange(indexFrom, indexTo))
             {
-                yield return value == BucketHelper.Null ? default(T) : (T)value;
+                yield return value == BucketHelper.Null ? default : (T)value;
             }
         }
 
         public bool Exchange(int index, T item, out T previous)
         {
             var found = BucketHelper.Null;
-            previous = default(T);
+            previous = default;
             var result = _bucketCore.DoMayIncrement
                 (
                     index,
@@ -87,7 +87,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             foreach (var value in _bucketCore)
             {
-                yield return value == BucketHelper.Null ? default(T) : (T)value;
+                yield return value == BucketHelper.Null ? default : (T)value;
             }
         }
 
@@ -117,7 +117,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool Insert(int index, T item, out T previous)
         {
             var found = BucketHelper.Null;
-            previous = default(T);
+            previous = default;
             var result = _bucketCore.DoMayIncrement
                 (
                     index,
@@ -156,7 +156,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool RemoveAt(int index, out T previous)
         {
             var found = BucketHelper.Null;
-            previous = default(T);
+            previous = default;
             var result = _bucketCore.DoMayDecrement
                 (
                     index,
@@ -192,7 +192,7 @@ namespace Theraot.Collections.ThreadSafe
                         var found = Interlocked.CompareExchange(ref target, null, null);
                         if (found != null)
                         {
-                            var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
+                            var comparisonItem = found == BucketHelper.Null ? default : (T)found;
                             if (check(comparisonItem))
                             {
                                 var compare = Interlocked.CompareExchange(ref target, null, found);
@@ -224,7 +224,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryGet(int index, out T value)
         {
             var found = BucketHelper.Null;
-            value = default(T);
+            value = default;
             var done = _bucketCore.Do
                 (
                     index,
@@ -266,7 +266,7 @@ namespace Theraot.Collections.ThreadSafe
                         found = Interlocked.CompareExchange(ref target, null, null);
                         if (found != null)
                         {
-                            var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
+                            var comparisonItem = found == BucketHelper.Null ? default : (T)found;
                             if (check(comparisonItem))
                             {
                                 var item = itemUpdateFactory(comparisonItem);
@@ -298,7 +298,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 foreach (var value in _bucketCore)
                 {
-                    var castedValue = value == BucketHelper.Null ? default(T) : (T)value;
+                    var castedValue = value == BucketHelper.Null ? default : (T)value;
                     if (check(castedValue))
                     {
                         yield return castedValue;

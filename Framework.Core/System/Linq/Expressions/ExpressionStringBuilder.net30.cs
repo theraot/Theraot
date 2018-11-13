@@ -58,8 +58,7 @@ namespace System.Linq.Expressions
                 AddLabel(label);
                 return 0;
             }
-            int id;
-            if (!_ids.TryGetValue(label, out id))
+            if (!_ids.TryGetValue(label, out int id))
             {
                 //label is met the first time
                 id = _ids.Count;
@@ -94,8 +93,7 @@ namespace System.Linq.Expressions
                 AddParam(p);
                 return 0;
             }
-            int id;
-            if (!_ids.TryGetValue(p, out id))
+            if (!_ids.TryGetValue(p, out int id))
             {
                 // p is met the first time
                 id = _ids.Count;
@@ -408,7 +406,7 @@ namespace System.Linq.Expressions
             var name = node.Name;
             if (string.IsNullOrEmpty(name))
             {
-                Out("Param_" + GetParamId(node).ToString());
+                Out($"Param_{GetParamId(node)}");
             }
             else
             {
@@ -949,7 +947,7 @@ namespace System.Linq.Expressions
             else
             {
                 var labelId = GetLabelId(target);
-                Out("UnamedLabel_" + labelId.ToString());
+                Out($"UnamedLabel_{labelId}");
             }
         }
 

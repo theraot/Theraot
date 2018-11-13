@@ -200,7 +200,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override object Invoke(object arg0)
         {
-            _target(arg0 != null ? (T0)arg0 : default(T0));
+            _target(arg0 != null ? (T0)arg0 : default);
             return null;
         }
 
@@ -238,7 +238,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override object Invoke(object arg0, object arg1)
         {
-            _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1));
+            _target(arg0 != null ? (T0)arg0 : default, arg1 != null ? (T1)arg1 : default);
             return null;
         }
 
@@ -313,7 +313,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override object Invoke(object arg0)
         {
-            return _target(arg0 != null ? (T0)arg0 : default(T0));
+            return _target(arg0 != null ? (T0)arg0 : default);
         }
 
         public override int Run(InterpretedFrame frame)
@@ -350,7 +350,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override object Invoke(object arg0, object arg1)
         {
-            return _target(arg0 != null ? (T0)arg0 : default(T0), arg1 != null ? (T1)arg1 : default(T1));
+            return _target(arg0 != null ? (T0)arg0 : default, arg1 != null ? (T1)arg1 : default);
         }
 
         public override int Run(InterpretedFrame frame)

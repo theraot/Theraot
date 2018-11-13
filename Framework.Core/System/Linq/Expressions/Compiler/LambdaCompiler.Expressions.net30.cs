@@ -741,15 +741,13 @@ namespace System.Linq.Expressions.Compiler
                 _ilg.Emit(OpCodes.Stloc, temp = GetLocal(node.Type));
             }
 
-            var fld = member as FieldInfo;
-            if (fld != null)
+            if (member is FieldInfo fld)
             {
                 _ilg.EmitFieldSet((FieldInfo)member);
             }
             else
             {
-                var prop = member as PropertyInfo;
-                if (prop != null)
+                if (member is PropertyInfo prop)
                 {
                     EmitCall(objectType, prop.GetSetMethod(true));
                 }
@@ -783,12 +781,9 @@ namespace System.Linq.Expressions.Compiler
         // assumes instance is already on the stack
         private void EmitMemberGet(MemberInfo member, Type objectType)
         {
-            var fi = member as FieldInfo;
-            if (fi != null)
+            if (member is FieldInfo fi)
             {
-                object value;
-
-                if (fi.IsLiteral && TryGetRawConstantValue(fi, out value))
+                if (fi.IsLiteral && TryGetRawConstantValue(fi, out object value))
                 {
                     EmitConstant(value, fi.FieldType);
                 }
@@ -799,8 +794,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
-                var prop = member as PropertyInfo;
-                if (prop != null)
+                if (member is PropertyInfo prop)
                 {
                     EmitCall(objectType, prop.GetGetMethod(true));
                 }
@@ -907,15 +901,13 @@ namespace System.Linq.Expressions.Compiler
         private void EmitMemberAssignment(MemberAssignment binding, Type objectType)
         {
             EmitExpression(binding.Expression);
-            var fi = binding.Member as FieldInfo;
-            if (fi != null)
+            if (binding.Member is FieldInfo fi)
             {
                 _ilg.Emit(OpCodes.Stfld, fi);
             }
             else
             {
-                var pi = binding.Member as PropertyInfo;
-                if (pi != null)
+                if (binding.Member is PropertyInfo pi)
                 {
                     EmitCall(objectType, pi.GetSetMethod(true));
                 }
@@ -1057,14 +1049,12 @@ namespace System.Linq.Expressions.Compiler
 
         private static Type GetMemberType(MemberInfo member)
         {
-            var fi = member as FieldInfo;
-            if (fi != null)
+            if (member is FieldInfo fi)
             {
                 return fi.FieldType;
             }
 
-            var pi = member as PropertyInfo;
-            if (pi != null)
+            if (member is PropertyInfo pi)
             {
                 return pi.PropertyType;
             }

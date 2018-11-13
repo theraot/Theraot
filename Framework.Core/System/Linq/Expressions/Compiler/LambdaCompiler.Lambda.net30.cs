@@ -82,8 +82,7 @@ namespace System.Linq.Expressions.Compiler
         private void EmitDelegateConstruction(LambdaCompiler inner)
         {
             var delegateType = inner._lambda.Type;
-            var dynamicMethod = inner._method as DynamicMethod;
-            if (dynamicMethod != null)
+            if (inner._method is DynamicMethod dynamicMethod)
             {
                 var types = new[] { typeof(Type), typeof(object) };
                 var createDelegate = typeof(DynamicMethod).GetMethod("CreateDelegate", types);
@@ -111,7 +110,7 @@ namespace System.Linq.Expressions.Compiler
                 // new DelegateType(closure)
                 EmitClosureCreation(inner);
                 _ilg.Emit(OpCodes.Ldftn, inner._method);
-                _ilg.Emit(OpCodes.Newobj, (ConstructorInfo)(delegateType.GetMember(".ctor")[0]));
+                _ilg.Emit(OpCodes.Newobj, (ConstructorInfo)delegateType.GetMember(".ctor")[0]);
             }
         }
 
@@ -152,7 +151,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static string GetUniqueMethodName()
         {
-            return "<ExpressionCompilerImplementationDetails>{" + Interlocked.Increment(ref _counter).ToString() + "}lambda_method";
+            return $"<ExpressionCompilerImplementationDetails>{{{Interlocked.Increment(ref _counter)}}}lambda_method";
         }
 
         private void EmitLambdaBody()

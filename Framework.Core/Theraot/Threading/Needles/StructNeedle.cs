@@ -93,7 +93,7 @@ namespace Theraot.Threading.Needles
 
         void IRecyclableNeedle<T>.Free()
         {
-            Value = default(T);
+            Value = default;
         }
 
         public override string ToString()

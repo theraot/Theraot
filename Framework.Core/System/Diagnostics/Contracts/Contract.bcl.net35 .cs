@@ -82,7 +82,7 @@ namespace System.Diagnostics.Contracts
                 probablyNotRewritten = thisAssembly;
             }
             var simpleName = probablyNotRewritten.GetName().Name;
-            ContractHelper.TriggerFailure(kind, string.Format("The code has not been rewriten. ContractKind: {0} - Source: {1}", contractKind, simpleName), null, null, null);
+            ContractHelper.TriggerFailure(kind, $"The code has not been rewriten. ContractKind: {contractKind} - Source: {simpleName}", null, null, null);
 
             _assertingMustUseRewriter = false;
         }

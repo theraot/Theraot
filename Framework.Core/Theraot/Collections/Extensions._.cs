@@ -755,8 +755,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentException("onEmpty");
             }
-            var sourceCollection = source as ICollection<T>;
-            if (sourceCollection != null)
+            if (source is ICollection<T> sourceCollection)
             {
                 if (sourceCollection.Count == 0)
                 {
@@ -781,8 +780,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentException("onNotEmpty");
             }
-            var sourceCollection = source as ICollection<T>;
-            if (sourceCollection != null)
+            if (source is ICollection<T> sourceCollection)
             {
                 if (sourceCollection.Count == 0)
                 {
@@ -812,8 +810,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentException("onKnownSize");
             }
-            var sourceCollection = source as ICollection<T>;
-            if (sourceCollection != null)
+            if (source is ICollection<T> sourceCollection)
             {
                 if (sourceCollection.Count == 0)
                 {
@@ -958,7 +955,7 @@ namespace Theraot.Collections
                     }
                     currentIndex++;
                 }
-                return default(T);
+                return default;
             }
         }
 
@@ -991,7 +988,7 @@ namespace Theraot.Collections
                     }
                     currentIndex++;
                 }
-                return default(T);
+                return default;
             }
         }
 
@@ -1014,7 +1011,7 @@ namespace Theraot.Collections
                         return enumerator.Current;
                     }
                 }
-                return default(T);
+                return default;
             }
         }
 
@@ -1486,8 +1483,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(dictionary));
             }
-            TValue value;
-            if (dictionary.TryGetValue(key, out value))
+            if (dictionary.TryGetValue(key, out TValue value))
             {
                 return value;
             }
@@ -1501,12 +1497,11 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(dictionary));
             }
-            TValue value;
-            if (dictionary.TryGetValue(key, out value))
+            if (dictionary.TryGetValue(key, out TValue value))
             {
                 return value;
             }
-            var newValue = create == null ? default(TValue) : create();
+            var newValue = create == null ? default : create();
             dictionary.Add(key, newValue);
             return newValue;
         }
@@ -2074,8 +2069,7 @@ namespace Theraot.Collections
                 onEmpty();
                 return ArrayReservoir<T>.EmptyArray;
             }
-            var sourceCollection = source as ICollection<T>;
-            if (sourceCollection != null)
+            if (source is ICollection<T> sourceCollection)
             {
                 if (sourceCollection.Count == 0)
                 {
@@ -2101,8 +2095,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentException("onNotEmpty");
             }
-            var sourceCollection = source as ICollection<T>;
-            if (sourceCollection != null)
+            if (source is ICollection<T> sourceCollection)
             {
                 if (sourceCollection.Count == 0)
                 {
@@ -2133,8 +2126,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentException("onEmpty");
             }
-            var sourceCollection = source as ICollection<T>;
-            if (sourceCollection != null)
+            if (source is ICollection<T> sourceCollection)
             {
                 if (sourceCollection.Count == 0)
                 {
@@ -2419,7 +2411,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            return (new List<T>(source)).ToArray();
+            return new List<T>(source).ToArray();
         }
 
         public static ReadOnlyCollection<TSource> ToReadOnly<TSource>(this IEnumerable<TSource> source)
@@ -2428,8 +2420,7 @@ namespace Theraot.Collections
             {
                 return new ReadOnlyCollection<TSource>(ArrayReservoir<TSource>.EmptyArray);
             }
-            var sourceAsReadOnlyCollection = source as ReadOnlyCollection<TSource>;
-            if (sourceAsReadOnlyCollection != null)
+            if (source is ReadOnlyCollection<TSource> sourceAsReadOnlyCollection)
             {
                 return sourceAsReadOnlyCollection;
             }
@@ -2489,7 +2480,7 @@ namespace Theraot.Collections
                     }
                     currentIndex++;
                 }
-                founT = default(T);
+                founT = default;
                 return false;
             }
         }
@@ -2524,7 +2515,7 @@ namespace Theraot.Collections
                     }
                     currentIndex++;
                 }
-                founT = default(T);
+                founT = default;
                 return false;
             }
         }
@@ -2549,7 +2540,7 @@ namespace Theraot.Collections
                         return true;
                     }
                 }
-                founT = default(T);
+                founT = default;
                 return false;
             }
         }
@@ -2566,7 +2557,7 @@ namespace Theraot.Collections
             }
             var currentIndex = 0;
             var limit = index + count;
-            foundItem = default(T);
+            foundItem = default;
             var found = false;
             using (var enumerator = source.GetEnumerator())
             {
@@ -2606,7 +2597,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
-            foundItem = default(T);
+            foundItem = default;
             var found = false;
             using (var enumerator = source.GetEnumerator())
             {
@@ -2641,7 +2632,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            foundItem = default(T);
+            foundItem = default;
             var found = false;
             using (var enumerator = source.GetEnumerator())
             {
@@ -2670,7 +2661,7 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default(T);
+                item = default;
                 return false;
             }
         }
@@ -2688,7 +2679,7 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default(T);
+                item = default;
                 return false;
             }
         }

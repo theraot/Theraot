@@ -13,8 +13,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(dropPoint));
             }
-            T item;
-            if (dropPoint.TryTake(out item))
+            if (dropPoint.TryTake(out T item))
             {
                 return item;
             }
@@ -27,8 +26,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(dropPoint));
             }
-            T item;
-            return dropPoint.TryTake(out item);
+            return dropPoint.TryTake(out T item);
         }
 
         public static bool TryTakeUntil<T>(this IDropPoint<T> dropPoint, Predicate<T> check, out T item)
@@ -67,9 +65,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(trail));
             }
-            T item;
             back:
-            if (dropPoint.TryTake(out item))
+            if (dropPoint.TryTake(out T item))
             {
                 if (check(item))
                 {

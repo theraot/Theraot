@@ -86,8 +86,7 @@ namespace System.Threading
             var spinWait = new SpinWait();
             while (true)
             {
-                int expected;
-                if (TryOffset(releaseCount, out expected))
+                if (TryOffset(releaseCount, out int expected))
                 {
                     return expected;
                 }
@@ -204,10 +203,9 @@ namespace System.Threading
                 return Task<bool>.FromCancellation(cancellationToken);
             }
             var source = new TaskCompletionSource<bool>();
-            int dummy;
             if (_canEnter.Wait(0, cancellationToken))
             {
-                if (TryOffset(-1, out dummy))
+                if (TryOffset(-1, out int dummy))
                 {
                     source.SetResult(true);
                     return source.Task;
@@ -265,17 +263,15 @@ namespace System.Threading
 
         private void Awake()
         {
-            TaskCompletionSource<bool> waiter;
             var spinWait = new SpinWait();
-            int dummy;
-            while (_asyncWaiters.TryTake(out waiter))
+            while (_asyncWaiters.TryTake(out TaskCompletionSource<bool> waiter))
             {
                 if (waiter.Task.IsCompleted)
                 {
                     // Skip - either canceled or timed out
                     continue;
                 }
-                if (TryOffset(-1, out dummy))
+                if (TryOffset(-1, out int dummy))
                 {
                     waiter.SetResult(true);
                 }
@@ -300,7 +296,7 @@ namespace System.Threading
         private void SyncWaitHandle()
         {
             var awake = false;
-            if ((Volatile.Read(ref _count) == 0) == _canEnter.IsSet && Interlocked.CompareExchange(ref _syncroot, 1, 0) == 0)
+            if (Volatile.Read(ref _count) == 0 == _canEnter.IsSet && Interlocked.CompareExchange(ref _syncroot, 1, 0) == 0)
             {
                 try
                 {
@@ -324,7 +320,7 @@ namespace System.Threading
                 {
                     return false;
                 }
-                if (((found = Thread.VolatileRead(ref _count)) == 0) == canEnter.IsSet)
+                if ((found = Thread.VolatileRead(ref _count)) == 0 == canEnter.IsSet)
                 {
                     if (found == 0)
                     {

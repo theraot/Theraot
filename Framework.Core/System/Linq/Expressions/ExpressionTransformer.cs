@@ -120,7 +120,7 @@ namespace System.Linq.Expressions
                     return VisitListInit((ListInitExpression)exp);
 
                 default:
-                    throw new Exception(string.Format("Unhandled expression type: '{0}'", exp.NodeType));
+                    throw new Exception($"Unhandled expression type: '{exp.NodeType}'");
             }
         }
 
@@ -150,7 +150,7 @@ namespace System.Linq.Expressions
                     return VisitMemberListBinding((MemberListBinding)binding);
 
                 default:
-                    throw new Exception(string.Format("Unhandled binding type '{0}'", binding.BindingType));
+                    throw new Exception($"Unhandled binding type '{binding.BindingType}'");
             }
         }
 
@@ -195,7 +195,7 @@ namespace System.Linq.Expressions
 
         protected virtual Expression VisitInvocation(InvocationExpression iv)
         {
-            IEnumerable<Expression> args = VisitExpressionList(iv.Arguments);
+            var args = VisitExpressionList(iv.Arguments);
             var expr = Visit(iv.Expression);
             return args != iv.Arguments || expr != iv.Expression ? Expression.Invoke(expr, args) : iv;
         }
@@ -251,7 +251,7 @@ namespace System.Linq.Expressions
         protected virtual Expression VisitMethodCall(MethodCallExpression methodCall)
         {
             var obj = Visit(methodCall.Object);
-            IEnumerable<Expression> args = VisitExpressionList(methodCall.Arguments);
+            var args = VisitExpressionList(methodCall.Arguments);
             if (obj != methodCall.Object || args != methodCall.Arguments)
             {
                 return Expression.Call(obj, methodCall.Method, args);
@@ -261,7 +261,7 @@ namespace System.Linq.Expressions
 
         protected virtual NewExpression VisitNew(NewExpression nex)
         {
-            IEnumerable<Expression> args = VisitExpressionList(nex.Arguments);
+            var args = VisitExpressionList(nex.Arguments);
             return args != nex.Arguments ? (
                 nex.Members != null
                     ? Expression.New(nex.Constructor, args, nex.Members)
@@ -271,7 +271,7 @@ namespace System.Linq.Expressions
 
         protected virtual Expression VisitNewArray(NewArrayExpression na)
         {
-            IEnumerable<Expression> exprs = VisitExpressionList(na.Expressions);
+            var exprs = VisitExpressionList(na.Expressions);
             if (exprs != na.Expressions)
             {
                 return na.NodeType == ExpressionType.NewArrayInit ? Expression.NewArrayInit(na.Type.GetElementType(), exprs) : Expression.NewArrayBounds(na.Type.GetElementType(), exprs);

@@ -127,7 +127,7 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default(T);
+                item = default;
                 return false;
             }
         }

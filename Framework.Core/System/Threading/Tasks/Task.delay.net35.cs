@@ -37,7 +37,7 @@ namespace System.Threading.Tasks
         /// </remarks>
         public static Task Delay(TimeSpan delay)
         {
-            return Delay(delay, default(CancellationToken));
+            return Delay(delay, default);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace System.Threading.Tasks
         /// </remarks>
         public static Task Delay(int millisecondsDelay)
         {
-            return Delay(millisecondsDelay, default(CancellationToken));
+            return Delay(millisecondsDelay, default);
         }
 
         /// <summary>

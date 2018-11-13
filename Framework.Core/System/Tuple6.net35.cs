@@ -73,8 +73,7 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            var tuple = other as Tuple<T1, T2, T3, T4, T5, T6>;
-            if (tuple == null)
+            if (!(other is Tuple<T1, T2, T3, T4, T5, T6> tuple))
             {
                 return false;
             }
@@ -114,8 +113,7 @@ namespace System
             {
                 return 1;
             }
-            var tuple = other as Tuple<T1, T2, T3, T4, T5, T6>;
-            if (tuple == null)
+            if (!(other is Tuple<T1, T2, T3, T4, T5, T6> tuple))
             {
                 throw new ArgumentException(nameof(other));
             }

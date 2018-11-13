@@ -40,7 +40,7 @@ namespace System.Threading.Tasks
             Contract.Requires(scheduler != null);
 
             return new Task(
-                action, state, null, default(CancellationToken),
+                action, state, null, default,
                 TaskCreationOptions.None, InternalTaskOptions.QueuedByRuntime, scheduler)
             {
                 CapturedContext = _capturedContext

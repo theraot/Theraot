@@ -14,14 +14,7 @@ namespace System.Linq.Expressions.Interpreter
         internal const int Unknown = int.MinValue;
         internal const int CacheSize = 32;
 
-        // the offset to jump to (relative to this instruction):
-        private int _offset = Unknown;
-
-        public int Offset
-        {
-            get { return _offset; }
-            protected set { _offset = value; }
-        }
+        public int Offset { get; set; } = Unknown;
 
         public abstract Instruction[] Cache { get; }
 
@@ -32,8 +25,8 @@ namespace System.Linq.Expressions.Interpreter
 
         public Instruction Fixup(int offset)
         {
-            Debug.Assert(_offset == Unknown && offset != Unknown);
-            _offset = offset;
+            Debug.Assert(Offset == Unknown && offset != Unknown);
+            Offset = offset;
 
             var cache = Cache;
             if (cache != null && offset >= 0 && offset < cache.Length)
@@ -46,12 +39,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects)
         {
-            return ToString() + (_offset != Unknown ? " -> " + (instructionIndex + _offset).ToString() : "");
+            return ToString() + (Offset != Unknown ? $" -> {instructionIndex + Offset}" : string.Empty);
         }
 
         public override string ToString()
         {
-            return InstructionName + (_offset == Unknown ? "(?)" : "(" + _offset.ToString() + ")");
+            return InstructionName + (Offset == Unknown ? "(?)" : $"({Offset})");
         }
     }
 
@@ -251,13 +244,13 @@ namespace System.Linq.Expressions.Interpreter
             }
             Debug.Assert(LabelIndex != UnknownInstrIndex);
             var targetIndex = labelIndexer(LabelIndex);
-            return ToString() + (targetIndex != BranchLabel.UnknownIndex ? " -> " + targetIndex.ToString() : "");
+            return ToString() + (targetIndex != BranchLabel.UnknownIndex ? $" -> {targetIndex}" : "");
         }
 
         public override string ToString()
         {
             Debug.Assert(LabelIndex != UnknownInstrIndex);
-            return InstructionName + "[" + LabelIndex.ToString() + "]";
+            return $"{InstructionName}[{LabelIndex}]";
         }
     }
 
@@ -435,8 +428,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
 
                 // Search for the best handler in the TryCatchFianlly block. If no suitable handler is found, rethrow
-                ExceptionHandler exHandler;
-                frame.InstructionIndex += _tryHandler.GotoHandler(frame, exception, out exHandler);
+                frame.InstructionIndex += _tryHandler.GotoHandler(frame, exception, out ExceptionHandler exHandler);
                 if (exHandler == null)
                 {
                     throw;
@@ -518,7 +510,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return _hasFinally ? "EnterTryFinally[" + LabelIndex.ToString() + "]" : "EnterTryCatch";
+            return _hasFinally ? $"EnterTryFinally[{LabelIndex}]" : "EnterTryCatch";
         }
     }
 
@@ -815,8 +807,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            int target;
-            return _cases.TryGetValue((T)frame.Pop(), out target) ? target : 1;
+            return _cases.TryGetValue((T)frame.Pop(), out int target) ? target : 1;
         }
     }
 
@@ -857,8 +848,7 @@ namespace System.Linq.Expressions.Interpreter
                 return _nullCase.Value;
             }
 
-            int target;
-            return _cases.TryGetValue((string)value, out target) ? target : 1;
+            return _cases.TryGetValue((string)value, out int target) ? target : 1;
         }
     }
 

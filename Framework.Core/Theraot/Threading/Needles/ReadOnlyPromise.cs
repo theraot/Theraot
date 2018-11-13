@@ -15,8 +15,7 @@ namespace Theraot.Threading.Needles
             _promised = promised;
             if (allowWait)
             {
-                var promise = _promised as IWaitablePromise;
-                if (promise != null)
+                if (_promised is IWaitablePromise promise)
                 {
                     _wait = promise.Wait;
                 }

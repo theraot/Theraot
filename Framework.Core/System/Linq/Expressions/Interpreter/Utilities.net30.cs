@@ -161,8 +161,8 @@ namespace System.Linq.Expressions.Interpreter
             return b ? True : False;
         }
 
-        internal static object True = true;
-        internal static object False = false;
+        internal static readonly object True = true;
+        internal static readonly object False = false;
 
         internal static object GetPrimitiveDefaultValue(Type type)
         {
@@ -344,7 +344,7 @@ namespace System.Linq.Expressions.Interpreter
                     }
                 }
             }
-            value = default(TValue);
+            value = default;
             return false;
         }
 
@@ -436,8 +436,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 Debug.Assert(key != null);
 
-                TValue res;
-                if (TryGetValue(key, out res))
+                if (TryGetValue(key, out TValue res))
                 {
                     return res;
                 }

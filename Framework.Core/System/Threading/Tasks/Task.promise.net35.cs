@@ -61,7 +61,7 @@ namespace System.Threading.Tasks
         {
             return new Task<TResult>(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose)
             {
-                CancellationToken = default(CancellationToken),
+                CancellationToken = default,
                 InternalResult = result
             };
         }
@@ -184,8 +184,8 @@ namespace System.Threading.Tasks
             Contract.Assert(Action == null);
             var returnValue = false;
             Contract.Assert(IsPromiseTask, "Task.RecordInternalCancellationRequest(CancellationToken) only valid for promise-style task");
-            Contract.Assert(CancellationToken == default(CancellationToken));
-            if (tokenToRecord != default(CancellationToken))
+            Contract.Assert(CancellationToken == default);
+            if (tokenToRecord != default)
             {
                 CancellationToken = tokenToRecord;
             }
@@ -242,7 +242,7 @@ namespace System.Threading.Tasks
         {
             return new Task(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose)
             {
-                CancellationToken = default(CancellationToken)
+                CancellationToken = default
             };
         }
 

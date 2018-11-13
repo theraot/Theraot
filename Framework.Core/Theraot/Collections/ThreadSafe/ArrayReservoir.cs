@@ -96,9 +96,8 @@ namespace Theraot.Collections.ThreadSafe
             if (capacity <= _maxCapacity && Volatile.Read(ref _done) == 1)
             {
                 var index = NumericHelper.Log2(capacity) - _minCapacityLog2;
-                T[] result;
                 var currentPool = _pools[index];
-                if (currentPool.TryGet(out result))
+                if (currentPool.TryGet(out T[] result))
                 {
                     return result;
                 }

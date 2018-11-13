@@ -254,7 +254,7 @@ namespace System.Collections.Generic
             var node = _wrapped.Root;
             if (node == null)
             {
-                return default(T);
+                return default;
             }
             while (node.Right != null)
             {
@@ -268,7 +268,7 @@ namespace System.Collections.Generic
             var node = _wrapped.Root;
             if (node == null)
             {
-                return default(T);
+                return default;
             }
             while (node.Left != null)
             {
@@ -410,7 +410,7 @@ namespace System.Collections.Generic
                 var bound = _wrapped._wrapped.GetNearestLeft(_upper);
                 if (bound == null || Comparer.Compare(_lower, bound.Key) > 0)
                 {
-                    return default(T);
+                    return default;
                 }
                 return bound.Key;
             }
@@ -420,7 +420,7 @@ namespace System.Collections.Generic
                 var bound = _wrapped._wrapped.GetNearestRight(_lower);
                 if (bound == null || Comparer.Compare(_upper, bound.Key) < 0)
                 {
-                    return default(T);
+                    return default;
                 }
                 return bound.Key;
             }

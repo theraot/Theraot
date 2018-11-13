@@ -37,14 +37,12 @@ namespace System.Threading.Tasks
         public static Task WhenAll(IEnumerable<Task> tasks)
         {
             // Take a more efficient path if tasks is actually an array
-            var taskArray = tasks as Task[];
-            if (taskArray != null)
+            if (tasks is Task[] taskArray)
             {
                 return WhenAll(taskArray);
             }
             // Skip a List allocation/copy if tasks is a collection
-            var taskCollection = tasks as ICollection<Task>;
-            if (taskCollection != null)
+            if (tasks is ICollection<Task> taskCollection)
             {
                 var index = 0;
                 taskArray = new Task[taskCollection.Count];
@@ -169,14 +167,12 @@ namespace System.Threading.Tasks
         public static Task<TResult[]> WhenAll<TResult>(IEnumerable<Task<TResult>> tasks)
         {
             // Take a more efficient route if tasks is actually an array
-            var taskArray = tasks as Task<TResult>[];
-            if (taskArray != null)
+            if (tasks is Task<TResult>[] taskArray)
             {
                 return WhenAll(taskArray);
             }
             // Skip a List allocation/copy if tasks is a collection
-            var taskCollection = tasks as ICollection<Task<TResult>>;
-            if (taskCollection != null)
+            if (tasks is ICollection<Task<TResult>> taskCollection)
             {
                 var index = 0;
                 taskArray = new Task<TResult>[taskCollection.Count];
@@ -428,7 +424,7 @@ namespace System.Threading.Tasks
             // Call WhenAny(Task[]) for basic functionality
             var intermediate = WhenAny((Task[])tasks);
             // Return a continuation task with the correct result type
-            return intermediate.ContinueWith(Task<TResult>.ContinuationConvertion, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
+            return intermediate.ContinueWith(Task<TResult>.ContinuationConvertion, default, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
         }
 
         /// <summary>
@@ -454,7 +450,7 @@ namespace System.Threading.Tasks
             // Call WhenAny(IEnumerable<Task>) for basic functionality
             var intermediate = WhenAny((IEnumerable<Task>)tasks);
             // Return a continuation task with the correct result type
-            return intermediate.ContinueWith(Task<TResult>.ContinuationConvertion, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
+            return intermediate.ContinueWith(Task<TResult>.ContinuationConvertion, default, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
         }
     }
 }

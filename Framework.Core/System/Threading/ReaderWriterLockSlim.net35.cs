@@ -481,7 +481,7 @@ namespace System.Threading
             {
                 GC.KeepAlive(ex);
                 // An async exception occured, if we had taken the upgradable mode, release it
-                _upgradableTaken.Value &= (!taken || success);
+                _upgradableTaken.Value &= !taken || success;
             }
 
             return success;
@@ -625,8 +625,7 @@ namespace System.Threading
                 Interlocked.CompareExchange(ref _currentThreadState, new Dictionary<int, ThreadLockState>(), null);
             }
 
-            ThreadLockState state;
-            if (!_currentThreadState.TryGetValue(_id, out state))
+            if (!_currentThreadState.TryGetValue(_id, out ThreadLockState state))
             {
                 _currentThreadState[_id] = state = new ThreadLockState();
             }

@@ -393,7 +393,7 @@ namespace Theraot.Collections.Specialized
                     value = _valueForNull[0];
                     return true;
                 }
-                value = default(TValue);
+                value = default;
                 return false;
             }
             return _dictionary.TryGetValue(key, out value);
@@ -465,7 +465,7 @@ namespace Theraot.Collections.Specialized
 
         private void TakeValueForNull(IDictionary<TKey, TValue> dictionary)
         {
-            TValue valueForNull = default(TValue);
+            TValue valueForNull = default;
             try
             {
                 _hasNull = dictionary.TryGetValue(_typedNull, out valueForNull);

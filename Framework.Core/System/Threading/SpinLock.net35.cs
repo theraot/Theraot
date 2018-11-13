@@ -135,7 +135,7 @@ namespace System.Threading
                     //Throw on recursion
                     throw new LockRecursionException();
                 }
-                lockTaken |= (ThreadingHelper.SpinWaitSet(ref _isHeld, 1, 0, millisecondsTimeout) && ReferenceEquals(Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null), null));
+                lockTaken |= ThreadingHelper.SpinWaitSet(ref _isHeld, 1, 0, millisecondsTimeout) && ReferenceEquals(Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null), null);
             }
         }
 

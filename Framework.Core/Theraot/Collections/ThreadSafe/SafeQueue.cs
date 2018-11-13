@@ -107,7 +107,7 @@ namespace Theraot.Collections.ThreadSafe
                     break;
                 }
             }
-            item = default(T);
+            item = default;
             return false;
         }
 
@@ -138,7 +138,7 @@ namespace Theraot.Collections.ThreadSafe
                     break;
                 }
             }
-            item = default(T);
+            item = default;
             return false;
         }
 

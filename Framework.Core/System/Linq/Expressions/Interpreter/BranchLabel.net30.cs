@@ -73,8 +73,8 @@ namespace System.Linq.Expressions.Interpreter
 
         internal void AddBranch(InstructionList instructions, int branchIndex)
         {
-            Debug.Assert(((TargetIndex == UnknownIndex) == (StackDepth == UnknownDepth)));
-            Debug.Assert(((TargetIndex == UnknownIndex) == (ContinuationStackDepth == UnknownDepth)));
+            Debug.Assert(TargetIndex == UnknownIndex == (StackDepth == UnknownDepth));
+            Debug.Assert(TargetIndex == UnknownIndex == (ContinuationStackDepth == UnknownDepth));
 
             if (TargetIndex == UnknownIndex)
             {

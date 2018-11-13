@@ -133,8 +133,7 @@ namespace System.Threading
                 throw new ArgumentOutOfRangeException(nameof(signalCount));
             }
             CheckDisposed();
-            int lastValue;
-            if (ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _currentCount, -signalCount, out lastValue))
+            if (ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _currentCount, -signalCount, out int lastValue))
             {
                 var result = lastValue - signalCount;
                 if (result == 0)
@@ -159,8 +158,7 @@ namespace System.Threading
                 throw new ArgumentOutOfRangeException(nameof(signalCount));
             }
             CheckDisposed();
-            int lastValue;
-            if (ThreadingHelper.SpinWaitRelativeExchangeBounded(ref _currentCount, signalCount, 1, int.MaxValue, out lastValue))
+            if (ThreadingHelper.SpinWaitRelativeExchangeBounded(ref _currentCount, signalCount, 1, int.MaxValue, out int lastValue))
             {
                 return true;
             }

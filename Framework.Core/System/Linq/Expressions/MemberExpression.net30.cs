@@ -42,8 +42,7 @@ namespace System.Linq.Expressions
 
         internal static MemberExpression Make(Expression expression, MemberInfo member)
         {
-            var fi = member as FieldInfo;
-            if (fi != null)
+            if (member is FieldInfo fi)
             {
                 return new FieldExpression(expression, fi);
             }
@@ -325,7 +324,7 @@ namespace System.Linq.Expressions
         {
             var type = mi.DeclaringType;
             var flags = BindingFlags.Public | BindingFlags.NonPublic;
-            flags |= (mi.IsStatic) ? BindingFlags.Static : BindingFlags.Instance;
+            flags |= mi.IsStatic ? BindingFlags.Static : BindingFlags.Instance;
             var props = type.GetProperties(flags);
             foreach (var pi in props)
             {
@@ -407,13 +406,11 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(member, nameof(member));
 
-            var fi = member as FieldInfo;
-            if (fi != null)
+            if (member is FieldInfo fi)
             {
                 return Field(expression, fi);
             }
-            var pi = member as PropertyInfo;
-            if (pi != null)
+            if (member is PropertyInfo pi)
             {
                 return Property(expression, pi);
             }

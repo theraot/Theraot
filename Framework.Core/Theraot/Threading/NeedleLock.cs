@@ -57,8 +57,7 @@ namespace Theraot.Threading
         {
             get
             {
-                LockSlot<T> slot;
-                if (_context.Read(_capture, ref _owner, out slot))
+                if (_context.Read(_capture, ref _owner, out LockSlot<T> slot))
                 {
                     _target = slot.Value;
                 }
@@ -136,7 +135,7 @@ namespace Theraot.Threading
         {
             if (Volatile.Read(ref _capture).Flags.IsEmpty())
             {
-                _target = default(T);
+                _target = default;
             }
         }
 

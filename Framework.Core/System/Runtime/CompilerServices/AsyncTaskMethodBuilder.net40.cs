@@ -158,7 +158,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// A cached task for default(TResult).
         /// </summary>
-        internal static readonly TaskCompletionSource<TResult> DefaultResultTask = AsyncMethodTaskCache<TResult>.CreateCompleted(default(TResult));
+        internal static readonly TaskCompletionSource<TResult> DefaultResultTask = AsyncMethodTaskCache<TResult>.CreateCompleted(default);
 
         /// <summary>
         /// State related to the IAsyncStateMachine.
@@ -289,7 +289,7 @@ namespace System.Runtime.CompilerServices
             }
 
             var completionSource = CompletionSource;
-            var setException = (exception is OperationCanceledException ? completionSource.TrySetCanceled() : completionSource.TrySetException(exception));
+            var setException = exception is OperationCanceledException ? completionSource.TrySetCanceled() : completionSource.TrySetException(exception);
             if (!setException)
             {
                 throw new InvalidOperationException("The Task was already completed.");

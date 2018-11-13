@@ -24,8 +24,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
-            T previous;
-            if (bucket.Insert(index, item, out previous))
+            if (bucket.Insert(index, item, out T previous))
             {
                 return item;
             }
@@ -38,8 +37,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
-            T stored;
-            if (!bucket.TryGet(index, out stored))
+            if (!bucket.TryGet(index, out T stored))
             {
                 var created = itemFactory.Invoke();
                 if (bucket.Insert(index, created, out stored))
@@ -67,8 +65,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public static bool InsertOrUpdate<T>(this IBucket<T> bucket, int index, T item, Func<T, T> itemUpdateFactory, Predicate<T> check)
         {
-            bool isNew;
-            return InsertOrUpdate(bucket, index, item, itemUpdateFactory, check, out isNew);
+            return InsertOrUpdate(bucket, index, item, itemUpdateFactory, check, out bool isNew);
         }
 
         /// <summary>
@@ -98,8 +95,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 if (isNew)
                 {
-                    T stored;
-                    if (bucket.Insert(index, item, out stored))
+                    if (bucket.Insert(index, item, out T stored))
                     {
                         return true;
                     }
@@ -132,8 +128,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public static void InsertOrUpdate<T>(this IBucket<T> bucket, int index, T item, Func<T, T> itemUpdateFactory)
         {
-            bool isNew;
-            InsertOrUpdate(bucket, index, item, itemUpdateFactory, out isNew);
+            InsertOrUpdate(bucket, index, item, itemUpdateFactory, out bool isNew);
         }
 
         /// <summary>
@@ -159,8 +154,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 if (isNew)
                 {
-                    T stored;
-                    if (bucket.Insert(index, item, out stored))
+                    if (bucket.Insert(index, item, out T stored))
                     {
                         return;
                     }
@@ -192,8 +186,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public static bool InsertOrUpdate<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check)
         {
-            bool isNew;
-            return InsertOrUpdate(bucket, index, item, check, out isNew);
+            return InsertOrUpdate(bucket, index, item, check, out bool isNew);
         }
 
         /// <summary>
@@ -222,8 +215,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 if (isNew)
                 {
-                    T stored;
-                    if (bucket.Insert(index, item, out stored))
+                    if (bucket.Insert(index, item, out T stored))
                     {
                         return true;
                     }
@@ -264,8 +256,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
-            bool isNew;
-            return InsertOrUpdate(bucket, index, itemFactory, itemUpdateFactory, check, out isNew);
+            return InsertOrUpdate(bucket, index, itemFactory, itemUpdateFactory, check, out bool isNew);
         }
 
         /// <summary>
@@ -297,13 +288,12 @@ namespace Theraot.Collections.ThreadSafe
             {
                 if (isNew)
                 {
-                    T stored;
                     if (!factoryUsed)
                     {
                         created = itemFactory.Invoke();
                         factoryUsed = true;
                     }
-                    if (bucket.Insert(index, created, out stored))
+                    if (bucket.Insert(index, created, out T stored))
                     {
                         return true;
                     }
@@ -340,8 +330,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
-            bool isNew;
-            InsertOrUpdate(bucket, index, itemFactory, itemUpdateFactory, out isNew);
+            InsertOrUpdate(bucket, index, itemFactory, itemUpdateFactory, out bool isNew);
         }
 
         /// <summary>
@@ -369,13 +358,12 @@ namespace Theraot.Collections.ThreadSafe
             {
                 if (isNew)
                 {
-                    T stored;
                     if (!factoryUsed)
                     {
                         created = itemFactory.Invoke();
                         factoryUsed = true;
                     }
-                    if (bucket.Insert(index, created, out stored))
+                    if (bucket.Insert(index, created, out T stored))
                     {
                         return;
                     }
@@ -411,8 +399,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
-            bool isNew;
-            return InsertOrUpdate(bucket, index, itemFactory, check, out isNew);
+            return InsertOrUpdate(bucket, index, itemFactory, check, out bool isNew);
         }
 
         /// <summary>
@@ -443,13 +430,12 @@ namespace Theraot.Collections.ThreadSafe
             {
                 if (isNew)
                 {
-                    T stored;
                     if (!factoryUsed)
                     {
                         created = itemFactory.Invoke();
                         factoryUsed = true;
                     }
-                    if (bucket.Insert(index, created, out stored))
+                    if (bucket.Insert(index, created, out T stored))
                     {
                         return true;
                     }
@@ -476,8 +462,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
-            bool isNew;
-            bucket.Set(index, value, out isNew);
+            bucket.Set(index, value, out bool isNew);
         }
 
         public static bool TryGetOrInsert<T>(this IBucket<T> bucket, int index, T item, out T stored)
@@ -486,8 +471,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
-            T previous;
-            if (bucket.Insert(index, item, out previous))
+            if (bucket.Insert(index, item, out T previous))
             {
                 stored = item;
                 return true;
@@ -521,8 +505,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
-            bool isEmpty;
-            return bucket.Update(index, _ => item, check, out isEmpty);
+            return bucket.Update(index, _ => item, check, out bool isEmpty);
         }
 
         public static bool Update<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check, out bool isEmpty)
@@ -540,8 +523,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
-            bool isEmpty;
-            return bucket.Update(index, itemUpdateFactory, Tautology, out isEmpty);
+            return bucket.Update(index, itemUpdateFactory, Tautology, out bool isEmpty);
         }
 
         public static bool Update<T>(this IBucket<T> bucket, int index, Func<T, T> itemUpdateFactory, out bool isEmpty)

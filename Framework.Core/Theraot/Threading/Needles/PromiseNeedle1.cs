@@ -13,14 +13,14 @@ namespace Theraot.Threading.Needles
         public PromiseNeedle(bool done)
             : base(done)
         {
-            _target = default(T);
+            _target = default;
             _hashCode = base.GetHashCode();
         }
 
         public PromiseNeedle(Exception exception)
             : base(exception)
         {
-            _target = default(T);
+            _target = default;
             _hashCode = exception.GetHashCode();
         }
 
@@ -104,7 +104,7 @@ namespace Theraot.Threading.Needles
         public override void Free()
         {
             base.Free();
-            _target = default(T);
+            _target = default;
         }
 
         public override int GetHashCode()

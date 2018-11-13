@@ -47,8 +47,7 @@ namespace Theraot.Collections
 
         public static IList<T> AsList<T>(IEnumerable<T> source)
         {
-            var result = source as IList<T>;
-            if (result == null)
+            if (!(source is IList<T> result))
             {
                 return new ProgressiveList<T>(source);
             }
@@ -101,8 +100,7 @@ namespace Theraot.Collections
             {
                 return (source as string).Length >= count;
             }
-            var sourceAsCollection = source as ICollection<TSource>;
-            if (sourceAsCollection != null)
+            if (source is ICollection<TSource> sourceAsCollection)
             {
                 return sourceAsCollection.Count >= count;
             }

@@ -237,8 +237,7 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     else
                     {
-                        var core = foundFirst as BucketCore;
-                        if (core == null)
+                        if (!(foundFirst is BucketCore core))
                         {
                             continue;
                         }

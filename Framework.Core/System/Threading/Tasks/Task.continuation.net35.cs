@@ -34,7 +34,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task ContinueWith(Action<Task> continuationAction)
         {
-            return ContinueWith(continuationAction, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationAction, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task ContinueWith(Action<Task> continuationAction, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationAction, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationAction, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task ContinueWith(Action<Task> continuationAction, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationAction, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+            return ContinueWith(continuationAction, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task ContinueWith(Action<Task, object> continuationAction, object state)
         {
-            return ContinueWith(continuationAction, state, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationAction, state, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -231,7 +231,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task ContinueWith(Action<Task, object> continuationAction, object state, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationAction, state, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationAction, state, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -261,7 +261,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task ContinueWith(Action<Task, object> continuationAction, object state, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationAction, state, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+            return ContinueWith(continuationAction, state, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -326,7 +326,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, TResult> continuationFunction)
         {
-            return ContinueWith(continuationFunction, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationFunction, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -384,7 +384,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, TResult> continuationFunction, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationFunction, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationFunction, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -416,7 +416,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, TResult> continuationFunction, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationFunction, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+            return ContinueWith(continuationFunction, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -484,7 +484,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, object, TResult> continuationFunction, object state)
         {
-            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -544,7 +544,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, object, TResult> continuationFunction, object state, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationFunction, state, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationFunction, state, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -577,7 +577,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, object, TResult> continuationFunction, object state, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -762,8 +762,7 @@ namespace System.Threading.Tasks
                 {
                     // Synchronous continuation tasks will have the ExecuteSynchronously option,
                     // and we're looking for asynchronous tasks...
-                    var tc = continuations[index] as StandardTaskContinuation;
-                    if (tc == null || (tc.Options & TaskContinuationOptions.ExecuteSynchronously) != 0)
+                    if (!(continuations[index] is StandardTaskContinuation tc) || (tc.Options & TaskContinuationOptions.ExecuteSynchronously) != 0)
                     {
                         continue;
                     }
@@ -785,16 +784,14 @@ namespace System.Threading.Tasks
                     continuations[index] = null; // to enable free'ing up memory earlier
                     // If the continuation is an Action delegate, it came from an await continuation,
                     // and we should use AwaitTaskContinuation to run it.
-                    var ad = currentContinuation as Action;
-                    if (ad != null)
+                    if (currentContinuation is Action ad)
                     {
                         AwaitTaskContinuation.RunOrScheduleAction(ad, canInlineContinuations, ref InternalCurrent);
                     }
                     else
                     {
                         // If it's a TaskContinuation object of some kind, invoke it.
-                        var tc = currentContinuation as TaskContinuation;
-                        if (tc != null)
+                        if (currentContinuation is TaskContinuation tc)
                         {
                             // We know that this is a synchronous continuation because the
                             // asynchronous ones have been weeded out
@@ -875,9 +872,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(scheduler));
             }
             Contract.EndContractBlock();
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
-            CreationOptionsFromContinuationOptions(continuationOptions, out creationOptions, out internalOptions);
+            CreationOptionsFromContinuationOptions(continuationOptions, out TaskCreationOptions creationOptions, out InternalTaskOptions internalOptions);
             Task continuationTask = new ContinuationTaskFromTask
             (
                 this,
@@ -906,9 +901,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(scheduler));
             }
             Contract.EndContractBlock();
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
-            CreationOptionsFromContinuationOptions(continuationOptions, out creationOptions, out internalOptions);
+            CreationOptionsFromContinuationOptions(continuationOptions, out TaskCreationOptions creationOptions, out InternalTaskOptions internalOptions);
             Task continuationTask = new ContinuationTaskFromTask
             (
                 this,
@@ -937,9 +930,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(scheduler));
             }
             Contract.EndContractBlock();
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
-            CreationOptionsFromContinuationOptions(continuationOptions, out creationOptions, out internalOptions);
+            CreationOptionsFromContinuationOptions(continuationOptions, out TaskCreationOptions creationOptions, out InternalTaskOptions internalOptions);
             Task<TResult> continuationTask = new ContinuationResultTaskFromTask<TResult>
             (
                 this, continuationFunction, null,
@@ -966,9 +957,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(scheduler));
             }
             Contract.EndContractBlock();
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
-            CreationOptionsFromContinuationOptions(continuationOptions, out creationOptions, out internalOptions);
+            CreationOptionsFromContinuationOptions(continuationOptions, out TaskCreationOptions creationOptions, out InternalTaskOptions internalOptions);
             Task<TResult> continuationTask = new ContinuationResultTaskFromTask<TResult>
             (
                 this, continuationFunction, state,
@@ -1103,7 +1092,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction)
         {
-            return ContinueWith(continuationAction, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationAction, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1157,7 +1146,7 @@ namespace System.Threading.Tasks
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationAction, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationAction, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1187,7 +1176,7 @@ namespace System.Threading.Tasks
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationAction, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+            return ContinueWith(continuationAction, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -1251,7 +1240,7 @@ namespace System.Threading.Tasks
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state)
         {
-            return ContinueWith(continuationAction, state, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationAction, state, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1307,7 +1296,7 @@ namespace System.Threading.Tasks
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationAction, state, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationAction, state, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1338,7 +1327,7 @@ namespace System.Threading.Tasks
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationAction, state, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+            return ContinueWith(continuationAction, state, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -1405,7 +1394,7 @@ namespace System.Threading.Tasks
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction)
         {
-            return ContinueWith(continuationFunction, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationFunction, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1465,7 +1454,7 @@ namespace System.Threading.Tasks
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationFunction, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationFunction, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1504,7 +1493,7 @@ namespace System.Threading.Tasks
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationFunction, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+            return ContinueWith(continuationFunction, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -1581,7 +1570,7 @@ namespace System.Threading.Tasks
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state)
         {
-            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1643,7 +1632,7 @@ namespace System.Threading.Tasks
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationFunction, state, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationFunction, state, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1683,7 +1672,7 @@ namespace System.Threading.Tasks
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -1749,13 +1738,11 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(scheduler));
             }
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
             CreationOptionsFromContinuationOptions
             (
                 continuationOptions,
-                out creationOptions,
-                out internalOptions
+                out TaskCreationOptions creationOptions,
+                out InternalTaskOptions internalOptions
             );
             Task continuationTask = new ContinuationTaskFromResultTask<TResult>
             (
@@ -1783,13 +1770,11 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(scheduler));
             }
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
             CreationOptionsFromContinuationOptions
             (
                 continuationOptions,
-                out creationOptions,
-                out internalOptions
+                out TaskCreationOptions creationOptions,
+                out InternalTaskOptions internalOptions
             );
             Task continuationTask = new ContinuationTaskFromResultTask<TResult>
             (
@@ -1817,13 +1802,10 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(scheduler));
             }
-
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
             CreationOptionsFromContinuationOptions(
                 continuationOptions,
-                out creationOptions,
-                out internalOptions);
+                out TaskCreationOptions creationOptions,
+                out InternalTaskOptions internalOptions);
 
             Task<TNewResult> continuationFuture = new ContinuationResultTaskFromResultTask<TResult, TNewResult>(
                 this, continuationFunction, null,
@@ -1849,13 +1831,10 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(scheduler));
             }
-
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
             CreationOptionsFromContinuationOptions(
                 continuationOptions,
-                out creationOptions,
-                out internalOptions);
+                out TaskCreationOptions creationOptions,
+                out InternalTaskOptions internalOptions);
 
             Task<TNewResult> continuationFuture = new ContinuationResultTaskFromResultTask<TResult, TNewResult>(
                 this, continuationFunction, state,

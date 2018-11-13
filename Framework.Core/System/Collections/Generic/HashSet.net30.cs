@@ -187,8 +187,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException(nameof(info));
             }
-            KeyValuePair<T, object>[] dictionary;
-            _wrapped.Deconstruct(out dictionary);
+            _wrapped.Deconstruct(out KeyValuePair<T, object>[] dictionary);
             info.AddValue(nameof(dictionary), dictionary);
         }
 
@@ -366,11 +365,10 @@ namespace System.Collections.Generic
             return true;
         }
 
-        private IEnumerable<T> ToHashSet(IEnumerable<T> other)
+        private HashSet<T> ToHashSet(IEnumerable<T> other)
         {
-            var test = other as HashSet<T>;
             var comparer = Comparer;
-            if (test != null && comparer.Equals(test.Comparer))
+            if (other is HashSet<T> test && comparer.Equals(test.Comparer))
             {
                 return test;
             }
@@ -387,7 +385,7 @@ namespace System.Collections.Generic
             {
                 _enumerator = hashSet._wrapped.GetEnumerator();
                 _valid = false;
-                _current = default(T);
+                _current = default;
             }
 
             public T Current
@@ -468,7 +466,7 @@ namespace System.Collections.Generic
             {
                 try
                 {
-                    IEqualityComparer<T> comparer = EqualityComparer<T>.Default;
+                    var comparer = EqualityComparer<T>.Default;
                     var hash = 0;
                     foreach (var item in obj)
                     {

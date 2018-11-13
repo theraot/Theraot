@@ -14,8 +14,7 @@ namespace System.Linq.Expressions.Compiler
     {
         private LabelInfo EnsureLabel(LabelTarget node)
         {
-            LabelInfo result;
-            if (!_labelInfo.TryGetValue(node, out result))
+            if (!_labelInfo.TryGetValue(node, out LabelInfo result))
             {
                 _labelInfo.Add(node, result = new LabelInfo(_ilg, node, false));
             }
@@ -230,8 +229,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void DefineBlockLabels(Expression node)
         {
-            var block = node as BlockExpression;
-            if (block == null || block is SpilledExpressionBlock)
+            if (!(node is BlockExpression block) || block is SpilledExpressionBlock)
             {
                 return;
             }
@@ -240,8 +238,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 var e = block.GetExpression(i);
 
-                var label = e as LabelExpression;
-                if (label != null)
+                if (e is LabelExpression label)
                 {
                     DefineLabel(label.Target);
                 }

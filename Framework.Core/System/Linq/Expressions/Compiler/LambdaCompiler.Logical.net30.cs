@@ -46,8 +46,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static bool NotEmpty(Expression node)
         {
-            var empty = node as DefaultExpression;
-            if (empty == null || empty.Type != typeof(void))
+            if (!(node is DefaultExpression empty) || empty.Type != typeof(void))
             {
                 return true;
             }
@@ -57,8 +56,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static bool Significant(Expression node)
         {
-            var block = node as BlockExpression;
-            if (block != null)
+            if (node is BlockExpression block)
             {
                 for (var i = 0; i < block.ExpressionCount; i++)
                 {

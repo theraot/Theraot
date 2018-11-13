@@ -14,7 +14,7 @@ namespace System.Threading.Tasks
         }
 
         public Task(Func<TResult> function)
-            : base(function, null, null, default(CancellationToken), TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
+            : base(function, null, null, default, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
@@ -26,7 +26,7 @@ namespace System.Threading.Tasks
         }
 
         public Task(Func<TResult> function, TaskCreationOptions creationOptions)
-            : base(function, null, null, default(CancellationToken), creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
+            : base(function, null, null, default, creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
@@ -76,14 +76,12 @@ namespace System.Threading.Tasks
 
         internal override void InnerInvoke()
         {
-            var action = Action as Func<TResult>;
-            if (action != null)
+            if (Action is Func<TResult> action)
             {
                 InternalResult = action();
                 return;
             }
-            var withState = Action as Func<object, TResult>;
-            if (withState != null)
+            if (Action is Func<object, TResult> withState)
             {
                 InternalResult = withState(State);
                 return;

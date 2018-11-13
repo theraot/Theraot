@@ -112,7 +112,7 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    internal class ByRefNewInstruction : Instruction
+    internal sealed class ByRefNewInstruction : Instruction
     {
         private readonly ByRefUpdater[] _byrefArgs;
         private readonly ConstructorInfo _constructor;
@@ -2206,7 +2206,7 @@ namespace System.Linq.Expressions.Interpreter
         {
         }
 
-        private class HasValue : NullableMethodCallInstruction
+        private sealed class HasValue : NullableMethodCallInstruction
         {
             public override int Run(InterpretedFrame frame)
             {
@@ -2216,7 +2216,7 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        private class GetValue : NullableMethodCallInstruction
+        private sealed class GetValue : NullableMethodCallInstruction
         {
             public override int Run(InterpretedFrame frame)
             {
@@ -2230,7 +2230,7 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        private class GetValueOrDefault : NullableMethodCallInstruction
+        private sealed class GetValueOrDefault : NullableMethodCallInstruction
         {
             public override int Run(InterpretedFrame frame)
             {
@@ -2239,7 +2239,7 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        private class GetValueOrDefault1 : NullableMethodCallInstruction
+        private sealed class GetValueOrDefault1 : NullableMethodCallInstruction
         {
             public override int ConsumedStack
             {
@@ -2262,7 +2262,7 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        private class EqualsClass : NullableMethodCallInstruction
+        private sealed class EqualsClass : NullableMethodCallInstruction
         {
             public override int ConsumedStack
             {
@@ -2289,7 +2289,7 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        private class ToStringClass : NullableMethodCallInstruction
+        private sealed class ToStringClass : NullableMethodCallInstruction
         {
             public override int Run(InterpretedFrame frame)
             {
@@ -2306,7 +2306,7 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        private class GetHashCodeClass : NullableMethodCallInstruction
+        private sealed class GetHashCodeClass : NullableMethodCallInstruction
         {
             public override int Run(InterpretedFrame frame)
             {
@@ -2377,7 +2377,7 @@ namespace System.Linq.Expressions.Interpreter
             get { return "Cast"; }
         }
 
-        private class CastInstructionT<T> : CastInstruction
+        private sealed class CastInstructionT<T> : CastInstruction
         {
             public override int Run(InterpretedFrame frame)
             {
@@ -2394,7 +2394,7 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        private class CastInstructionNoT : CastInstruction
+        private sealed class CastInstructionNoT : CastInstruction
         {
             private readonly Type _t;
 
@@ -2483,7 +2483,7 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    internal class CastToEnumInstruction : CastInstruction
+    internal sealed class CastToEnumInstruction : CastInstruction
     {
         private readonly Type _t;
 
@@ -2503,7 +2503,7 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    internal class NullCheckInstruction : Instruction
+    internal sealed class NullCheckInstruction : Instruction
     {
         private readonly int _stackOffset;
         private const int _cacheSize = 12;
@@ -2566,7 +2566,7 @@ namespace System.Linq.Expressions.Interpreter
 
 #endif
 
-    internal class QuoteInstruction : Instruction
+    internal sealed class QuoteInstruction : Instruction
     {
         private readonly Expression _operand;
         private readonly Dictionary<ParameterExpression, LocalVariable> _hoistedVariables;
@@ -2683,8 +2683,7 @@ namespace System.Linq.Expressions.Interpreter
                 for (var i = 0; i < count; i++)
                 {
                     ref var current = ref indexes[i];
-                    LocalVariable var;
-                    if (_variables.TryGetValue(node.Variables[i], out var))
+                    if (_variables.TryGetValue(node.Variables[i], out LocalVariable var))
                     {
                         current = -1 - boxes.Count;
                         if (var.InClosure)
@@ -2732,8 +2731,7 @@ namespace System.Linq.Expressions.Interpreter
 
             protected internal override Expression VisitParameter(ParameterExpression node)
             {
-                LocalVariable var;
-                if (_variables.TryGetValue(node, out var))
+                if (_variables.TryGetValue(node, out LocalVariable var))
                 {
                     return Expression.Convert(
                         Expression.Field(

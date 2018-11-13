@@ -95,7 +95,7 @@ namespace System.Numerics
 
         public static Complex Atan(Complex value)
         {
-            return (ImaginaryOne / new Complex(2, 0)) * (Log(One - (ImaginaryOne * value)) - Log(One + (ImaginaryOne * value)));
+            return ImaginaryOne / new Complex(2, 0) * (Log(One - (ImaginaryOne * value)) - Log(One + (ImaginaryOne * value)));
         }
 
         public static Complex Conjugate(Complex value)
@@ -378,7 +378,7 @@ namespace System.Numerics
 
         public override string ToString()
         {
-            return string.Format("({0}, {1})", _real, _imaginary);
+            return $"({_real}, {_imaginary})";
         }
 
         public string ToString(IFormatProvider provider)
@@ -388,12 +388,12 @@ namespace System.Numerics
 
         public string ToString(string format)
         {
-            return string.Format("({0}, {1})", _real.ToString(format), _imaginary.ToString(format));
+            return $"({_real.ToString(format)}, {_imaginary.ToString(format)})";
         }
 
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            return string.Format("({0}, {1})", _real.ToString(format, formatProvider), _imaginary.ToString(format, formatProvider));
+            return $"({_real.ToString(format, formatProvider)}, {_imaginary.ToString(format, formatProvider)})";
         }
     }
 }

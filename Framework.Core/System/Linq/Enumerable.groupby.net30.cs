@@ -102,8 +102,7 @@ namespace System.Linq
                 foreach (var item in _source)
                 {
                     var key = _keySelector(item);
-                    Lookup<TKey, TElement>.Grouping grouping;
-                    if (!groupings.TryGetValue(key, out grouping))
+                    if (!groupings.TryGetValue(key, out Lookup<TKey, TElement>.Grouping grouping))
                     {
                         grouping = new Lookup<TKey, TElement>.Grouping(key);
                         groupings.Add(key, grouping);
@@ -160,8 +159,7 @@ namespace System.Linq
                 foreach (var item in _source)
                 {
                     var key = _keySelector(item);
-                    Lookup<TKey, TElement>.Grouping grouping;
-                    if (!groupings.TryGetValue(key, out grouping))
+                    if (!groupings.TryGetValue(key, out Lookup<TKey, TElement>.Grouping grouping))
                     {
                         grouping = new Lookup<TKey, TElement>.Grouping(key);
                         groupings.Add(key, grouping);

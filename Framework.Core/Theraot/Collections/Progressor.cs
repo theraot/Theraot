@@ -25,7 +25,7 @@ namespace Theraot.Collections
 
             var control = 0;
 
-            Predicate<T> newFilter = item => Volatile.Read(ref control) == 0;
+            bool newFilter(T item) => Volatile.Read(ref control) == 0;
             var buffer = new SafeQueue<T>();
             wrapped.SubscribeAction
             (
@@ -81,7 +81,7 @@ namespace Theraot.Collections
             var control = 0;
             var guard = 0;
 
-            Predicate<T> newFilter = item => Volatile.Read(ref control) == 0;
+            bool newFilter(T item) => Volatile.Read(ref control) == 0;
             var buffer = new SafeQueue<T>();
             wrapped.SubscribeAction
             (
@@ -95,7 +95,7 @@ namespace Theraot.Collections
             );
             _proxy = new ProxyObservable<T>();
 
-            TryTake<T> tryTakeReplacement = (out T value) =>
+            bool tryTakeReplacement(out T value)
             {
                 Interlocked.Increment(ref control);
                 try
@@ -115,11 +115,11 @@ namespace Theraot.Collections
                 {
                     Interlocked.Decrement(ref control);
                 }
-            };
+            }
 
             _tryTake = (out T value) =>
             {
-                value = default(T);
+                value = default;
                 if (Volatile.Read(ref guard) == 0)
                 {
                     bool result;
@@ -166,15 +166,15 @@ namespace Theraot.Collections
 
             _proxy = new ProxyObservable<T>();
 
-            TryTake<T> tryTakeReplacement = (out T value) =>
+            bool tryTakeReplacement(out T value)
             {
-                value = default(T);
+                value = default;
                 return false;
-            };
+            }
 
             _tryTake = (out T value) =>
             {
-                value = default(T);
+                value = default;
                 if (Volatile.Read(ref guard) == 0)
                 {
                     var currentIndex = Interlocked.Increment(ref index);
@@ -209,7 +209,7 @@ namespace Theraot.Collections
             var guard = 0;
             var index = -1;
 
-            Predicate<T> newFilter = item => Volatile.Read(ref control) == 0;
+            bool newFilter(T item) => Volatile.Read(ref control) == 0;
             var buffer = new SafeQueue<T>();
             wrapped.SubscribeAction
             (
@@ -223,7 +223,7 @@ namespace Theraot.Collections
             );
             _proxy = new ProxyObservable<T>();
 
-            TryTake<T> tryTakeReplacement = (out T value) =>
+            bool tryTakeReplacement(out T value)
             {
                 Interlocked.Increment(ref control);
                 try
@@ -243,7 +243,7 @@ namespace Theraot.Collections
                 {
                     Interlocked.Decrement(ref control);
                 }
-            };
+            }
 
             _tryTake = (out T value) =>
             {
@@ -288,15 +288,15 @@ namespace Theraot.Collections
 
             _proxy = new ProxyObservable<T>();
 
-            TryTake<T> tryTakeReplacement = (out T value) =>
+            bool tryTakeReplacement(out T value)
             {
-                value = default(T);
+                value = default;
                 return false;
-            };
+            }
 
             _tryTake = (out T value) =>
             {
-                value = default(T);
+                value = default;
                 if (Volatile.Read(ref guard) == 0)
                 {
                     bool result;
@@ -370,7 +370,7 @@ namespace Theraot.Collections
                     _proxy.OnNext(value);
                     return true;
                 }
-                value = default(T);
+                value = default;
                 return false;
             };
         }
@@ -399,7 +399,7 @@ namespace Theraot.Collections
 
             var control = 0;
 
-            Predicate<TInput> newFilter = item => Volatile.Read(ref control) == 0;
+            bool newFilter(TInput item) => Volatile.Read(ref control) == 0;
             var buffer = new SafeQueue<T>();
             var proxy = new ProxyObservable<T>();
 
@@ -409,19 +409,18 @@ namespace Theraot.Collections
                     Interlocked.Increment(ref control);
                     try
                     {
-                        TInput item;
                         if (buffer.TryTake(out value))
                         {
                             proxy.OnNext(value);
                             return true;
                         }
-                        else if (wrapped.TryTake(out item))
+                        else if (wrapped.TryTake(out TInput item))
                         {
                             value = converter(item);
                             proxy.OnNext(value);
                             return true;
                         }
-                        value = default(T);
+                        value = default;
                         return false;
                     }
                     finally
@@ -462,7 +461,7 @@ namespace Theraot.Collections
 
             var control = 0;
 
-            Predicate<T> newFilter = item => Volatile.Read(ref control) == 0 && filter(item);
+            bool newFilter(T item) => Volatile.Read(ref control) == 0 && filter(item);
             var buffer = new SafeQueue<T>();
             var proxy = new ProxyObservable<T>();
 
@@ -490,7 +489,7 @@ namespace Theraot.Collections
                                 goto again;
                             }
                         }
-                        value = default(T);
+                        value = default;
                         return false;
                     }
                     finally
@@ -535,7 +534,7 @@ namespace Theraot.Collections
 
             var control = 0;
 
-            Predicate<TInput> newFilter = item => Volatile.Read(ref control) == 0 && filter(item);
+            bool newFilter(TInput item) => Volatile.Read(ref control) == 0 && filter(item);
             var buffer = new SafeQueue<T>();
             var proxy = new ProxyObservable<T>();
 
@@ -545,14 +544,13 @@ namespace Theraot.Collections
                     Interlocked.Increment(ref control);
                     try
                     {
-                        TInput item;
                         again:
                         if (buffer.TryTake(out value))
                         {
                             proxy.OnNext(value);
                             return true;
                         }
-                        else if (wrapped.TryTake(out item))
+                        else if (wrapped.TryTake(out TInput item))
                         {
                             if (filter(item))
                             {
@@ -565,7 +563,7 @@ namespace Theraot.Collections
                                 goto again;
                             }
                         }
-                        value = default(T);
+                        value = default;
                         return false;
                     }
                     finally
@@ -603,7 +601,7 @@ namespace Theraot.Collections
             var control = 0;
 
             var buffer = new SafeDictionary<T, bool>();
-            Predicate<T> newFilter = item => Volatile.Read(ref control) == 0;
+            bool newFilter(T item) => Volatile.Read(ref control) == 0;
             var proxy = new ProxyObservable<T>();
 
             var result = new Progressor<T>(
@@ -622,8 +620,7 @@ namespace Theraot.Collections
                         }
                         if (wrapped.TryTake(out value))
                         {
-                            bool seen;
-                            if (!buffer.TryGetValue(value, out seen) || !seen)
+                            if (!buffer.TryGetValue(value, out bool seen) || !seen)
                             {
                                 buffer.Set(value, true);
                                 proxy.OnNext(value);
@@ -669,9 +666,8 @@ namespace Theraot.Collections
             // After enumerating - the consumer of this method must check if the Progressor is closed.
             while (true)
             {
-                T item;
                 var tryTake = _tryTake;
-                if (tryTake(out item))
+                if (tryTake(out T item))
                 {
                     yield return item;
                 }
@@ -712,7 +708,7 @@ namespace Theraot.Collections
                 }
                 return false;
             }
-            item = default(T);
+            item = default;
             return false;
         }
 
@@ -728,9 +724,8 @@ namespace Theraot.Collections
             {
                 while (true)
                 {
-                    T item;
                     var tryTake = _tryTake;
-                    if (tryTake(out item) && condition(item))
+                    if (tryTake(out T item) && condition(item))
                     {
                         yield return item;
                     }
@@ -754,9 +749,8 @@ namespace Theraot.Collections
             {
                 while (true)
                 {
-                    T item;
                     var tryTake = _tryTake;
-                    if (tryTake(out item) && condition())
+                    if (tryTake(out T item) && condition())
                     {
                         yield return item;
                     }

@@ -97,13 +97,13 @@ namespace Theraot.Threading.Needles
             {
                 if (whenDisposed == null)
                 {
-                    return default(TReturn);
+                    return default;
                 }
                 return whenDisposed.Invoke();
             }
             if (whenNotDisposed == null)
             {
-                return default(TReturn);
+                return default;
             }
             if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
             {
@@ -118,14 +118,14 @@ namespace Theraot.Threading.Needles
             }
             if (whenDisposed == null)
             {
-                return default(TReturn);
+                return default;
             }
             return whenDisposed.Invoke();
         }
 
         public override void Initialize()
         {
-            Initialize(() => UnDispose());
+            Initialize(UnDispose);
         }
 
         public void Reinitialize()
@@ -153,26 +153,26 @@ namespace Theraot.Threading.Needles
 
         protected override void Initialize(Action beforeInitialize)
         {
-            Action beforeInitializeReplacement = () =>
-                       {
-                           try
-                           {
-                               var waitHandle = WaitHandle.Value;
-                               if (!WaitHandle.IsAlive)
-                               {
-                                   WaitHandle.Value = new System.Threading.ManualResetEventSlim(false);
-                                   GC.KeepAlive(waitHandle);
-                               }
-                               if (beforeInitialize != null)
-                               {
-                                   beforeInitialize.Invoke();
-                               }
-                           }
-                           finally
-                           {
-                               UnDispose();
-                           }
-                       };
+            void beforeInitializeReplacement()
+            {
+                try
+                {
+                    var waitHandle = WaitHandle.Value;
+                    if (!WaitHandle.IsAlive)
+                    {
+                        WaitHandle.Value = new System.Threading.ManualResetEventSlim(false);
+                        GC.KeepAlive(waitHandle);
+                    }
+                    if (beforeInitialize != null)
+                    {
+                        beforeInitialize.Invoke();
+                    }
+                }
+                finally
+                {
+                    UnDispose();
+                }
+            }
             base.Initialize(beforeInitializeReplacement);
         }
 

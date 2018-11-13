@@ -83,7 +83,7 @@ namespace Theraot.Collections
                         return true;
                     }
                     enumerator.Dispose();
-                    value = default(T);
+                    value = default;
                     return false;
                 },
                 cache,

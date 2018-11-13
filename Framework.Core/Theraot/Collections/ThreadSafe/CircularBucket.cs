@@ -52,8 +52,7 @@ namespace Theraot.Collections.ThreadSafe
         public int Add(T item)
         {
             var index = Interlocked.Increment(ref _index) & (_capacity - 1);
-            bool isNew;
-            _entries.SetInternal(index, item, out isNew);
+            _entries.SetInternal(index, item, out bool isNew);
             return index;
         }
 

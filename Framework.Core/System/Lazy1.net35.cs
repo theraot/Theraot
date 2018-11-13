@@ -106,13 +106,13 @@ namespace System
 
             T CachingNoneMode(HashSet<Thread> threads)
             {
-                var currentThread = Thread.CurrentThread;
                 if (Thread.VolatileRead(ref _isValueCreated) == 0)
                 {
                     try
                     {
                         // lock (threads) // This is meant to not be thread-safe
                         {
+                            var currentThread = Thread.CurrentThread;
                             if (threads.Contains(currentThread))
                             {
                                 throw new InvalidOperationException();
@@ -142,13 +142,13 @@ namespace System
 
             T NoneMode(HashSet<Thread> threads)
             {
-                var currentThread = Thread.CurrentThread;
                 if (Thread.VolatileRead(ref _isValueCreated) == 0)
                 {
                     try
                     {
                         // lock (threads) // This is meant to not be thread-safe
                         {
+                            var currentThread = Thread.CurrentThread;
                             if (threads.Contains(currentThread))
                             {
                                 throw new InvalidOperationException();

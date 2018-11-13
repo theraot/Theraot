@@ -53,8 +53,7 @@ namespace System.Collections.ObjectModel
 
         protected void CheckReentrancy()
         {
-            int value;
-            if (_entryCheck.Value.TryGetValue(out value) && value > 0)
+            if (_entryCheck.Value.TryGetValue(out int value) && value > 0)
             {
                 throw new InvalidOperationException("Reentry");
             }

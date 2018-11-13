@@ -337,7 +337,7 @@ namespace System.Threading.Tasks
                 }
                 else
                 {
-                    TrySetResult(default(VoidStruct));
+                    TrySetResult(default);
                 }
             }
 

@@ -32,7 +32,7 @@ namespace System.Numerics
 
         public uint High
         {
-            get { return (_iuLast != 0 ? _bits[_iuLast] : _uSmall); }
+            get { return _iuLast != 0 ? _bits[_iuLast] : _uSmall; }
         }
 
         public int Size
@@ -398,8 +398,7 @@ namespace System.Numerics
 
         public BigInteger GetInteger(int sign)
         {
-            uint[] numArray;
-            GetIntegerParts(sign, out sign, out numArray);
+            GetIntegerParts(sign, out sign, out uint[] numArray);
             return new BigInteger(sign, numArray);
         }
 
@@ -791,7 +790,7 @@ namespace System.Numerics
                     }
                 }
                 var num14 = num12 / num5;
-                var num15 = (ulong)((uint)(num12 % num5));
+                var num15 = (ulong)(uint)(num12 % num5);
                 if (num14 > uint.MaxValue)
                 {
                     num15 += num5 * (num14 - uint.MaxValue);
@@ -1120,7 +1119,7 @@ namespace System.Numerics
             }
             if (num == 0)
             {
-                _uSmall <<= (cbitShift & 31);
+                _uSmall <<= cbitShift & 31;
                 return;
             }
             var numArray = _bits;
@@ -1192,7 +1191,7 @@ namespace System.Numerics
             }
             if (_iuLast == 0)
             {
-                _uSmall >>= (cbitShift & 31);
+                _uSmall >>= cbitShift & 31;
                 return;
             }
             var numArray = _bits;
@@ -1338,7 +1337,7 @@ namespace System.Numerics
         {
             var num = u1 - (ulong)u2 - uBorrow;
             u1 = (uint)num;
-            return (uint)(-(int)(num >> 32));
+            return (uint)-(int)(num >> 32);
         }
 
         private void SubRev(ref BigIntegerBuilder reg)
@@ -1366,7 +1365,7 @@ namespace System.Numerics
         {
             var num = u2 - (ulong)u1 - uBorrow;
             u1 = (uint)num;
-            return (uint)(-(int)(num >> 32));
+            return (uint)-(int)(num >> 32);
         }
 
         private void Trim()

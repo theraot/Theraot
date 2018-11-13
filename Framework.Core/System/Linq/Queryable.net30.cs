@@ -82,8 +82,7 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(source));
             }
 
-            var queryable = source as IQueryable<TElement>;
-            if (queryable != null)
+            if (source is IQueryable<TElement> queryable)
             {
                 return queryable;
             }
@@ -98,14 +97,12 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(source));
             }
 
-            var queryable = source as IQueryable;
-            if (queryable != null)
+            if (source is IQueryable queryable)
             {
                 return queryable;
             }
 
-            Type ienumerable;
-            if (!source.GetType().IsGenericImplementationOf(out ienumerable, typeof(IEnumerable<>)))
+            if (!source.GetType().IsGenericImplementationOf(out Type ienumerable, typeof(IEnumerable<>)))
             {
                 throw new ArgumentException("source is not IEnumerable<>");
             }

@@ -38,8 +38,7 @@ namespace Theraot.Core
         public static Func<T, bool> ToFunc<T>(this Predicate<T> predicate)
         {
             var target = predicate.Target;
-            var funcWrapper = target as FuncWrapper<T>;
-            if (funcWrapper != null)
+            if (target is FuncWrapper<T> funcWrapper)
             {
                 return funcWrapper.Func;
             }
@@ -50,8 +49,7 @@ namespace Theraot.Core
         public static Predicate<T> ToPredicate<T>(this Func<T, bool> func)
         {
             var target = func.Target;
-            var predicateWrapper = target as PredicateWrapper<T>;
-            if (predicateWrapper != null)
+            if (target is PredicateWrapper<T> predicateWrapper)
             {
                 return predicateWrapper.Predicate;
             }

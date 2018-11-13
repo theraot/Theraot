@@ -47,8 +47,7 @@ namespace Theraot.Collections
                     }
                     else
                     {
-                        List<TSource> group;
-                        if (!groups.TryGetValue(key, out group))
+                        if (!groups.TryGetValue(key, out List<TSource> group))
                         {
                             group = new List<TSource>();
                             groups.Add(key, group);
@@ -63,7 +62,7 @@ namespace Theraot.Collections
                 {
                     if (counter == nullCounter)
                     {
-                        yield return new Grouping<TKey, TSource>(default(TKey), nullList);
+                        yield return new Grouping<TKey, TSource>(default, nullList);
                         counter++;
                     }
 
@@ -73,7 +72,7 @@ namespace Theraot.Collections
 
                 if (counter == nullCounter)
                 {
-                    yield return new Grouping<TKey, TSource>(default(TKey), nullList);
+                    yield return new Grouping<TKey, TSource>(default, nullList);
                     // counter++;
                 }
             }
@@ -122,8 +121,7 @@ namespace Theraot.Collections
                     }
                     else
                     {
-                        List<TElement> group;
-                        if (!groups.TryGetValue(key, out group))
+                        if (!groups.TryGetValue(key, out List<TElement> group))
                         {
                             group = new List<TElement>();
                             groups.Add(key, group);
@@ -138,7 +136,7 @@ namespace Theraot.Collections
                 {
                     if (counter == nullCounter)
                     {
-                        yield return new Grouping<TKey, TElement>(default(TKey), nullList);
+                        yield return new Grouping<TKey, TElement>(default, nullList);
                         counter++;
                     }
 
@@ -148,7 +146,7 @@ namespace Theraot.Collections
 
                 if (counter == nullCounter)
                 {
-                    yield return new Grouping<TKey, TElement>(default(TKey), nullList);
+                    yield return new Grouping<TKey, TElement>(default, nullList);
                     // counter++;
                 }
             }

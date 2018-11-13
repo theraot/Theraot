@@ -493,7 +493,7 @@ namespace Theraot.Core
         /// <returns>The content from the current position to the end of the underlying string.</returns>
         public string ReadToEnd()
         {
-            var result = (_position != 0 ? _string.Substring(_position, _length - _position) : _string);
+            var result = _position != 0 ? _string.Substring(_position, _length - _position) : _string;
             _position = _length;
             return result;
         }
@@ -1402,7 +1402,7 @@ namespace Theraot.Core
         {
             if (_position == _length)
             {
-                character = default(char);
+                character = default;
                 return false;
             }
             character = _string[_position];
@@ -1420,7 +1420,7 @@ namespace Theraot.Core
         {
             if (_position == _length)
             {
-                character = default(char);
+                character = default;
                 return false;
             }
             character = _string[_position];

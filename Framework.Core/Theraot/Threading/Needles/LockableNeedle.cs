@@ -28,8 +28,7 @@ namespace Theraot.Threading.Needles
 
             set
             {
-                LockableSlot slot;
-                if (_context.TryGetSlot(out slot))
+                if (_context.TryGetSlot(out LockableSlot slot))
                 {
                     CaptureAndWait(slot);
                     ThreadingHelper.MemoryBarrier();
@@ -45,8 +44,7 @@ namespace Theraot.Threading.Needles
 
         public void CaptureAndWait()
         {
-            LockableSlot slot;
-            if (!_context.TryGetSlot(out slot))
+            if (!_context.TryGetSlot(out LockableSlot slot))
             {
                 throw new InvalidOperationException("The current thread has not entered the LockableContext of this LockableNeedle.");
             }

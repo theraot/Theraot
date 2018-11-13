@@ -89,13 +89,13 @@ namespace Theraot.Threading
             {
                 if (ReferenceEquals(whenDisposed, null))
                 {
-                    return default(TReturn);
+                    return default;
                 }
                 return whenDisposed.Invoke();
             }
             if (ReferenceEquals(whenNotDisposed, null))
             {
-                return default(TReturn);
+                return default;
             }
             if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
             {
@@ -110,7 +110,7 @@ namespace Theraot.Threading
             }
             if (ReferenceEquals(whenDisposed, null))
             {
-                return default(TReturn);
+                return default;
             }
             return whenDisposed.Invoke();
         }

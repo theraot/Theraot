@@ -184,24 +184,18 @@ namespace MonoTests.System.Linq.Expressions
 
     public class MemberClass
     {
-        public int TestField1; // Used by Reflection
         public readonly int TestField2 = 1; // Used by Reflection
 
         public int TestProperty1
         {
-            get { return TestField1; }
+            get { return TestProperty2; }
         }
 
-        public int TestProperty2
-        {
-            get { return TestField1; }
-
-            set { TestField1 = value; }
-        }
+        public int TestProperty2 { get; set; }
 
         public int TestMethod(int i)
         {
-            return TestField1 + i;
+            return TestProperty2 + i;
         }
 
         public T TestGenericMethod<T>(T arg)
@@ -219,13 +213,7 @@ namespace MonoTests.System.Linq.Expressions
             GC.KeepAlive(OnTest);
         }
 
-        public static int StaticField;
-
-        public static int StaticProperty
-        {
-            get { return StaticField; }
-            set { StaticField = value; }
-        }
+        public static int StaticProperty { get; set; }
 
         public static int StaticMethod(int i)
         {

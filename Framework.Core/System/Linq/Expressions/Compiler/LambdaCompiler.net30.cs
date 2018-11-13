@@ -202,8 +202,7 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(type != null);
 
-            LocalBuilder local;
-            if (_freeLocals.TryDequeue(type, out local))
+            if (_freeLocals.TryDequeue(type, out LocalBuilder local))
             {
                 Debug.Assert(type == local.LocalType);
                 return local;
@@ -258,14 +257,14 @@ namespace System.Linq.Expressions.Compiler
             // conflicts, so choose a long name that is unlikely to conflict.
             // Naming scheme chosen here is similar to what the C# compiler
             // uses.
-            return _typeBuilder.DefineField("<ExpressionCompilerImplementationDetails>{" + Interlocked.Increment(ref _counter).ToString() + "}" + name, type, FieldAttributes.Static | FieldAttributes.Private);
+            return _typeBuilder.DefineField($"<ExpressionCompilerImplementationDetails>{{{Interlocked.Increment(ref _counter)}}}{name}", type, FieldAttributes.Static | FieldAttributes.Private);
         }
 
         private MemberExpression CreateLazyInitializedField<T>(string name)
         {
             if (_method is DynamicMethod)
             {
-                return Expression.Field(Expression.Constant(new StrongBox<T>(default(T))), "Value");
+                return Expression.Field(Expression.Constant(new StrongBox<T>(default)), "Value");
             }
             return Expression.Field(null, CreateStaticField(name, typeof(T)));
         }

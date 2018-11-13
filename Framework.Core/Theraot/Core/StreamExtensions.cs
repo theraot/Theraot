@@ -108,8 +108,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(stream));
             }
-            var streamAsMemoryStream = stream as MemoryStream;
-            if (streamAsMemoryStream != null)
+            if (stream is MemoryStream streamAsMemoryStream)
             {
                 return streamAsMemoryStream.ToArray();
             }

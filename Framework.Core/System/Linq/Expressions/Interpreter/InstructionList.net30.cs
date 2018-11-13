@@ -166,14 +166,14 @@ namespace System.Linq.Expressions.Interpreter
 
                 internal string GetDisplayType()
                 {
-                    return _instruction.ContinuationsBalance.ToString() + "/" + _instruction.StackBalance.ToString();
+                    return $"{_instruction.ContinuationsBalance}/{_instruction.StackBalance}";
                 }
 
                 internal string GetName()
                 {
-                    return _index.ToString() +
-                        (_continuationsDepth == 0 ? "" : " C(" + _continuationsDepth.ToString() + ")") +
-                        (_stackDepth == 0 ? "" : " S(" + _stackDepth.ToString() + ")");
+                    return _index +
+                        (_continuationsDepth == 0 ? "" : $" C({_continuationsDepth})") +
+                        (_stackDepth == 0 ? "" : $" S({_stackDepth})");
                 }
 
                 internal string GetValue()
@@ -641,9 +641,7 @@ namespace System.Linq.Expressions.Interpreter
 
         internal void SwitchToBoxed(int index, int instructionIndex)
         {
-            var instruction = _instructions[instructionIndex] as IBoxableInstruction;
-
-            if (instruction != null)
+            if (_instructions[instructionIndex] is IBoxableInstruction instruction)
             {
                 var newInstruction = instruction.BoxIfIndexMatches(index);
                 if (newInstruction != null)
@@ -955,8 +953,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             lock (_loadFields)
             {
-                Instruction instruction;
-                if (!_loadFields.TryGetValue(field, out instruction))
+                if (!_loadFields.TryGetValue(field, out Instruction instruction))
                 {
                     if (field.IsStatic)
                     {

@@ -53,8 +53,7 @@ namespace Theraot.Threading
                     throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
                 }
                 var bundle = Thread.GetData(_slot);
-                var needle = bundle as INeedle<T>;
-                if (needle == null)
+                if (!(bundle is INeedle<T> needle))
                 {
                     try
                     {
@@ -146,10 +145,9 @@ namespace Theraot.Threading
         public bool TryGetValue(out T value)
         {
             var bundle = Thread.GetData(_slot);
-            var container = bundle as INeedle<T>;
-            if (container == null)
+            if (!(bundle is INeedle<T> container))
             {
-                value = default(T);
+                value = default;
                 return false;
             }
             value = container.Value;
@@ -184,8 +182,7 @@ namespace Theraot.Threading
         {
             get
             {
-                T target;
-                return TryGetValue(out target) ? target : default(T);
+                return TryGetValue(out T target) ? target : default;
             }
         }
     }

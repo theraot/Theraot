@@ -804,8 +804,7 @@ namespace Theraot.Core
         /// <param name="delegateType">Delegate type with a matching signature.</param>
         public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType)
         {
-            var dynamicMethod = methodInfo as DynamicMethod;
-            if (dynamicMethod != null)
+            if (methodInfo is DynamicMethod dynamicMethod)
             {
                 return dynamicMethod.CreateDelegate(delegateType);
             }
@@ -820,8 +819,7 @@ namespace Theraot.Core
         /// <param name="target">The object to which the delegate is bound, or null to treat method as static.</param>
         public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
         {
-            var dynamicMethod = methodInfo as DynamicMethod;
-            if (dynamicMethod != null)
+            if (methodInfo is DynamicMethod dynamicMethod)
             {
                 return dynamicMethod.CreateDelegate(delegateType, target);
             }

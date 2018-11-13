@@ -822,7 +822,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(selector));
             }
-            Func<TSource, int, TResult> closureSelector = (item, i) => selector(item);
+            TResult closureSelector(TSource item, int i) => selector(item);
             return Max
             (
                 SelectExtracted
@@ -1399,7 +1399,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(selector));
             }
-            Func<TSource, int, TResult> closureSelector = (item, i) => selector(item);
+            TResult closureSelector(TSource item, int i) => selector(item);
             return Min
             (
                 SelectExtracted
@@ -1416,7 +1416,7 @@ namespace System.Linq
             {
                 throw new ArgumentOutOfRangeException(nameof(count));
             }
-            if (((long)start + count) - 1L > int.MaxValue)
+            if ((long)start + count - 1L > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException();
             }

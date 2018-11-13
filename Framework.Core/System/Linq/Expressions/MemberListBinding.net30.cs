@@ -81,8 +81,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(member, nameof(member));
             ContractUtils.RequiresNotNull(initializers, nameof(initializers));
-            Type memberType;
-            ValidateGettableFieldOrPropertyMember(member, out memberType);
+            ValidateGettableFieldOrPropertyMember(member, out Type memberType);
             var initList = initializers.ToReadOnly();
             ValidateListInitArgs(memberType, initList);
             return new MemberListBinding(member, initList);

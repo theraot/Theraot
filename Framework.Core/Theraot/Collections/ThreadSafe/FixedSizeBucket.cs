@@ -136,7 +136,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         if (entry == BucketHelper.Null)
                         {
-                            array[arrayIndex] = default(T);
+                            array[arrayIndex] = default;
                         }
                         else
                         {
@@ -185,7 +185,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     if (entry == BucketHelper.Null)
                     {
-                        yield return default(T);
+                        yield return default;
                     }
                     else
                     {
@@ -308,7 +308,7 @@ namespace Theraot.Collections.ThreadSafe
             var found = Interlocked.CompareExchange(ref _entries[index], null, null);
             if (found != null)
             {
-                var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
+                var comparisonItem = found == BucketHelper.Null ? default : (T)found;
                 if (check(comparisonItem))
                 {
                     var compare = Interlocked.CompareExchange(ref _entries[index], null, found);
@@ -418,7 +418,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool ExchangeInternal(int index, T item, out T previous)
         {
-            previous = default(T);
+            previous = default;
             var found = Interlocked.Exchange(ref _entries[index], (object)item ?? BucketHelper.Null);
             if (found == null)
             {
@@ -434,7 +434,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool InsertInternal(int index, T item, out T previous)
         {
-            previous = default(T);
+            previous = default;
             var found = Interlocked.CompareExchange(ref _entries[index], (object)item ?? BucketHelper.Null, null);
             if (found == null)
             {
@@ -467,7 +467,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool RemoveAtInternal(int index, out T previous)
         {
-            previous = default(T);
+            previous = default;
             var found = Interlocked.Exchange(ref _entries[index], null);
             if (found == null)
             {
@@ -495,12 +495,12 @@ namespace Theraot.Collections.ThreadSafe
             var found = Interlocked.CompareExchange(ref _entries[index], null, null);
             if (found == null)
             {
-                value = default(T);
+                value = default;
                 return false;
             }
             if (found == BucketHelper.Null)
             {
-                value = default(T);
+                value = default;
             }
             else
             {
@@ -527,7 +527,7 @@ namespace Theraot.Collections.ThreadSafe
             var result = false;
             if (found != null)
             {
-                var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
+                var comparisonItem = found == BucketHelper.Null ? default : (T)found;
                 if (check(comparisonItem))
                 {
                     var item = itemUpdateFactory(comparisonItem);

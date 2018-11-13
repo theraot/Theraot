@@ -23,8 +23,7 @@ namespace System.Collections
         {
             int IComparer.Compare(object x, object y)
             {
-                var comparable = x as IStructuralComparable;
-                if (comparable != null)
+                if (x is IStructuralComparable comparable)
                 {
                     return comparable.CompareTo(y, this);
                 }
@@ -33,13 +32,11 @@ namespace System.Collections
 
             bool IEqualityComparer.Equals(object x, object y)
             {
-                bool result;
-                if (NullComparison(x, y, out result))
+                if (NullComparison(x, y, out bool result))
                 {
                     return result;
                 }
-                var comparable = x as IStructuralEquatable;
-                if (comparable != null)
+                if (x is IStructuralEquatable comparable)
                 {
                     return comparable.Equals(y, this);
                 }
@@ -86,13 +83,11 @@ namespace System.Collections
                         }
                         finally
                         {
-                            var disposableX = firstEnumerator as IDisposable;
-                            if (disposableX != null)
+                            if (firstEnumerator is IDisposable disposableX)
                             {
                                 disposableX.Dispose();
                             }
-                            var disposableY = secondEnumerator as IDisposable;
-                            if (disposableY != null)
+                            if (secondEnumerator is IDisposable disposableY)
                             {
                                 disposableY.Dispose();
                             }
@@ -105,8 +100,7 @@ namespace System.Collections
 
             int IEqualityComparer.GetHashCode(object obj)
             {
-                var comparer = obj as IStructuralEquatable;
-                if (comparer != null)
+                if (obj is IStructuralEquatable comparer)
                 {
                     return comparer.GetHashCode(this);
                 }

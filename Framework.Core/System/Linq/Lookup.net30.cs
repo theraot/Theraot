@@ -34,8 +34,7 @@ namespace System.Linq
         {
             get
             {
-                Grouping grouping;
-                if (_groupings.TryGetValue(key, out grouping))
+                if (_groupings.TryGetValue(key, out Grouping grouping))
                 {
                     return grouping;
                 }
@@ -94,8 +93,7 @@ namespace System.Linq
 
         private ICollection<TElement> GetOrCreateGrouping(TKey key)
         {
-            Grouping grouping;
-            if (!_groupings.TryGetValue(key, out grouping))
+            if (!_groupings.TryGetValue(key, out Grouping grouping))
             {
                 grouping = new Grouping(key);
                 _groupings.Add(key, grouping);

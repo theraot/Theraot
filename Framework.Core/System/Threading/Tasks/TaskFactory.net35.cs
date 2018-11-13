@@ -4,7 +4,7 @@ namespace System.Threading.Tasks
 {
     public class TaskFactory
     {
-        internal static TaskFactory DefaultInstance = new TaskFactory();
+        internal static readonly TaskFactory DefaultInstance = new TaskFactory();
 
         private readonly TaskScheduler _scheduler;
 

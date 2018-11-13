@@ -43,8 +43,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(alternative));
             }
-            var sourceAsTarget = source as TTarget;
-            if (sourceAsTarget == null)
+            if (!(source is TTarget sourceAsTarget))
             {
                 return alternative();
             }

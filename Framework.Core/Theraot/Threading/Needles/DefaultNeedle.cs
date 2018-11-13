@@ -27,7 +27,7 @@ namespace Theraot.Threading.Needles
 
         public T Value
         {
-            get { return default(T); }
+            get { return default; }
         }
 
         public static explicit operator T(DefaultNeedle<T> needle)
@@ -56,7 +56,7 @@ namespace Theraot.Threading.Needles
 
         public override int GetHashCode()
         {
-            return EqualityComparer<T>.Default.GetHashCode(default(T));
+            return EqualityComparer<T>.Default.GetHashCode(default);
         }
 
         public override string ToString()

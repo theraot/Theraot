@@ -80,28 +80,30 @@ namespace System.Collections.Specialized
         {
             IList changedItems = new[] { changedItem };
             _action = action;
-            if (action == NotifyCollectionChangedAction.Add)
+            switch (action)
             {
-                InitializeAdd(changedItems, index);
-            }
-            else if (action == NotifyCollectionChangedAction.Remove)
-            {
-                InitializeRemove(changedItems, index);
-            }
-            else if (action == NotifyCollectionChangedAction.Reset)
-            {
-                if (changedItem != null)
-                {
-                    throw new ArgumentException("This constructor can only be used with the Reset action if changedItem is null", nameof(changedItem));
-                }
-                if (index != -1)
-                {
-                    throw new ArgumentException("This constructor can only be used with the Reset action if index is -1", nameof(index));
-                }
-            }
-            else
-            {
-                throw new ArgumentException("This constructor can only be used with the Reset, Add, or Remove actions.", nameof(action));
+                case NotifyCollectionChangedAction.Add:
+                    InitializeAdd(changedItems, index);
+                    break;
+
+                case NotifyCollectionChangedAction.Remove:
+                    InitializeRemove(changedItems, index);
+                    break;
+
+                case NotifyCollectionChangedAction.Reset:
+                    if (changedItem != null)
+                    {
+                        throw new ArgumentException("This constructor can only be used with the Reset action if changedItem is null", nameof(changedItem));
+                    }
+                    if (index != -1)
+                    {
+                        throw new ArgumentException("This constructor can only be used with the Reset action if index is -1", nameof(index));
+                    }
+
+                    break;
+
+                default:
+                    throw new ArgumentException("This constructor can only be used with the Reset, Add, or Remove actions.", nameof(action));
             }
         }
 

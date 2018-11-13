@@ -128,8 +128,7 @@ namespace System.Linq
             {
                 return base.ToString();
             }
-            var constant = _expression as ConstantExpression;
-            return constant != null && constant.Value == this ? base.ToString() : _expression.ToString();
+            return _expression is ConstantExpression constant && constant.Value == this ? base.ToString() : _expression.ToString();
         }
 
         private static Expression TransformQueryable(Expression expression)

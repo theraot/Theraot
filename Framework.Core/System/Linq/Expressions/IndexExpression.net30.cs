@@ -267,9 +267,8 @@ namespace System.Linq.Expressions
                 return null;
             }
 
-            PropertyInfo pi;
             var propertyInfos = members.Map(t => t);
-            var count = FindBestProperty(propertyInfos, arguments, out pi);
+            var count = FindBestProperty(propertyInfos, arguments, out PropertyInfo pi);
 
             if (count == 0)
             {

@@ -178,7 +178,7 @@ namespace System.Linq.Expressions.Interpreter
         public override string ToString()
         {
             return string.Format(CultureInfo.InvariantCulture, "{0} [{1}-{2}] [{3}->{4}]",
-                (IsFault ? "fault" : "catch(" + ExceptionType.Name + ")"),
+                IsFault ? "fault" : "catch(" + ExceptionType.Name + ")",
                 StartIndex, EndIndex,
                 HandlerStartIndex, HandlerEndIndex
             );
@@ -499,8 +499,7 @@ namespace System.Linq.Expressions.Interpreter
                 return node.Operand == null;
             }
 
-            var block = expr as BlockExpression;
-            if (block != null)
+            if (expr is BlockExpression block)
             {
                 return EndsWithRethrow(block.Expressions[block.Expressions.Count - 1]);
             }
@@ -509,14 +508,12 @@ namespace System.Linq.Expressions.Interpreter
 
         private static Type GetMemberType(MemberInfo member)
         {
-            var fi = member as FieldInfo;
-            if (fi != null)
+            if (member is FieldInfo fi)
             {
                 return fi.FieldType;
             }
 
-            var pi = member as PropertyInfo;
-            if (pi != null)
+            if (member is PropertyInfo pi)
             {
                 return pi.PropertyType;
             }
@@ -631,7 +628,7 @@ namespace System.Linq.Expressions.Interpreter
                         }
                         return null;
                     }
-                    throw new InvalidOperationException(string.Format("Address of {0}", node.NodeType));
+                    throw new InvalidOperationException($"Address of {node.NodeType}");
                 case ExpressionType.Call:
                     // An array index of a multi-dimensional array is represented by a call to Array.Get,
                     // rather than having its own array-access node. This means that when we are trying to
@@ -749,7 +746,7 @@ namespace System.Linq.Expressions.Interpreter
                     break;
 
                 default:
-                    throw new InvalidOperationException("Invalid lvalue for assignment: " + node.Left.NodeType.ToString());
+                    throw new InvalidOperationException($"Invalid lvalue for assignment: {node.Left.NodeType}");
             }
         }
 
@@ -1347,8 +1344,8 @@ namespace System.Linq.Expressions.Interpreter
 
         private void CompileExtensionExpression(Expression expr)
         {
-            var instructionProvider = expr as IInstructionProvider; // TODO: Test coverage?
-            if (instructionProvider != null)
+            // TODO: Test coverage?
+            if (expr is IInstructionProvider instructionProvider)
             {
                 instructionProvider.AddInstructions(this);
                 return;
@@ -1698,8 +1695,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private void CompileMember(Expression from, MemberInfo member)
         {
-            var fi = member as FieldInfo;
-            if (fi != null)
+            if (member is FieldInfo fi)
             {
                 if (fi.IsLiteral)
                 {
@@ -1755,8 +1751,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private void CompileMemberAssignment(bool asVoid, MemberInfo refMember, Expression value)
         {
-            var pi = refMember as PropertyInfo;
-            if (pi != null)
+            if (refMember is PropertyInfo pi)
             {
                 var method = pi.GetSetMethod(true);
                 EmitThisForMethodCall(value);
@@ -2349,7 +2344,7 @@ namespace System.Linq.Expressions.Interpreter
                     throw new PlatformNotSupportedException(SR.Format(SR.UnsupportedExpressionType, expr.NodeType));
             }
             Debug.Assert(_instructions.CurrentStackDepth == startingStackDepth + (expr.Type == typeof(void) ? 0 : 1),
-                string.Format("{0} vs {1} for {2}", _instructions.CurrentStackDepth, startingStackDepth + (expr.Type == typeof(void) ? 0 : 1), expr.NodeType));
+                    $"{_instructions.CurrentStackDepth} vs {startingStackDepth + (expr.Type == typeof(void) ? 0 : 1)} for {expr.NodeType}");
         }
 
         private void CompileNotEqual(Expression left, Expression right, bool liftedToNull)
@@ -2870,8 +2865,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private void DefineBlockLabels(Expression node)
         {
-            var block = node as BlockExpression;
-            if (block == null)
+            if (!(node is BlockExpression block))
             {
                 return;
             }
@@ -2880,8 +2874,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 var e = block.Expressions[i];
 
-                var label = e as LabelExpression;
-                if (label != null)
+                if (e is LabelExpression label)
                 {
                     DefineLabel(label.Target);
                 }
@@ -2955,8 +2948,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private LocalVariable EnsureAvailableForClosure(ParameterExpression expr)
         {
-            LocalVariable local;
-            if (_locals.TryGetLocalOrClosure(expr, out local))
+            if (_locals.TryGetLocalOrClosure(expr, out LocalVariable local))
             {
                 if (!local.InClosure && !local.IsBoxed)
                 {
@@ -2974,8 +2966,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private LabelInfo EnsureLabel(LabelTarget node)
         {
-            LabelInfo result;
-            if (!_treeLabels.TryGetValue(node, out result))
+            if (!_treeLabels.TryGetValue(node, out LabelInfo result))
             {
                 _treeLabels[node] = result = new LabelInfo(node);
             }
@@ -3026,8 +3017,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private LocalVariable ResolveLocal(ParameterExpression variable)
         {
-            LocalVariable local;
-            if (!_locals.TryGetLocalOrClosure(variable, out local))
+            if (!_locals.TryGetLocalOrClosure(variable, out LocalVariable local))
             {
                 local = EnsureAvailableForClosure(variable);
             }
@@ -3213,8 +3203,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 foreach (var param in parameters)
                 {
-                    int count;
-                    if (_definedParameters.TryGetValue(param, out count))
+                    if (_definedParameters.TryGetValue(param, out int count))
                     {
                         _definedParameters[param] = count + 1;
                     }
@@ -3342,12 +3331,12 @@ namespace System.Linq.Expressions.Interpreter
 
         internal bool IsCatchBlockExist
         {
-            get { return (_handlers != null); }
+            get { return _handlers != null; }
         }
 
         internal bool IsFinallyBlockExist
         {
-            get { return (FinallyStartIndex != Instruction.UnknownInstrIndex && FinallyEndIndex != Instruction.UnknownInstrIndex); }
+            get { return FinallyStartIndex != Instruction.UnknownInstrIndex && FinallyEndIndex != Instruction.UnknownInstrIndex; }
         }
 
         internal int GotoHandler(InterpretedFrame frame, object exception, out ExceptionHandler handler)

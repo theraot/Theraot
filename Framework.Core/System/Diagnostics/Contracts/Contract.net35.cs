@@ -378,7 +378,7 @@ namespace System.Diagnostics.Contracts
         public static T OldValue<T>(T value)
         {
             GC.KeepAlive(value);
-            return default(T);
+            return default;
         }
 
         /// <summary>
@@ -469,7 +469,7 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public static T Result<T>()
         {
-            return default(T);
+            return default;
         }
 
         /// <summary>
@@ -485,7 +485,7 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public static T ValueAtReturn<T>(out T value)
         {
-            value = default(T);
+            value = default;
             return value;
         }
     }

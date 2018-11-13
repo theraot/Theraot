@@ -156,18 +156,11 @@ namespace MonoTests.System.Linq.Expressions
 
         public struct Bar
         {
-            private string _slot; // Do not use auto-implemented property
-
-            public string Prop
-            {
-                get { return _slot; }
-
-                set { _slot = value; }
-            }
+            public string Prop { get; set; }
 
             public Bar(string slot)
             {
-                _slot = slot;
+                Prop = slot;
             }
         }
 

@@ -18,8 +18,7 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(methodBase is MethodInfo || methodBase is ConstructorInfo);
 
-            var ctor = methodBase as ConstructorInfo;
-            if (ctor != null)
+            if (methodBase is ConstructorInfo ctor)
             {
                 il.Emit(opcode, ctor);
             }
@@ -549,14 +548,12 @@ namespace System.Linq.Expressions.Compiler
                 return true;
             }
 
-            var t = value as Type;
-            if (t != null && ShouldLdtoken(t))
+            if (value is Type t && ShouldLdtoken(t))
             {
                 return true;
             }
 
-            var mb = value as MethodBase;
-            if (mb != null && ShouldLdtoken(mb))
+            if (value is MethodBase mb && ShouldLdtoken(mb))
             {
                 return true;
             }
@@ -617,8 +614,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // Check for a few more types that we support emitting as constants
-            var t = value as Type;
-            if (t != null && ShouldLdtoken(t))
+            if (value is Type t && ShouldLdtoken(t))
             {
                 il.EmitType(t);
                 if (type != typeof(Type))
@@ -628,8 +624,7 @@ namespace System.Linq.Expressions.Compiler
                 return;
             }
 
-            var mb = value as MethodBase;
-            if (mb != null && ShouldLdtoken(mb))
+            if (value is MethodBase mb && ShouldLdtoken(mb))
             {
                 il.Emit(OpCodes.Ldtoken, mb);
                 var dt = mb.DeclaringType;
@@ -750,9 +745,6 @@ namespace System.Linq.Expressions.Compiler
                 throw ContractUtils.Unreachable;
             }
 
-            var isTypeFromNullable = typeFrom.IsNullable();
-            var isTypeToNullable = typeTo.IsNullable();
-
             var nnExprType = typeFrom.GetNonNullableType();
             var nnType = typeTo.GetNonNullableType();
 
@@ -766,7 +758,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 il.EmitCastToType(typeFrom, typeTo);
             }
-            else if (isTypeFromNullable || isTypeToNullable)
+            else if (typeFrom.IsNullable() || typeTo.IsNullable())
             {
                 il.EmitNullableConversion(typeFrom, typeTo, isChecked);
             }
@@ -814,11 +806,9 @@ namespace System.Linq.Expressions.Compiler
 
         private static void EmitNumericConversion(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked)
         {
-            var isFromUnsigned = typeFrom.IsUnsigned();
-            var isFromFloatingPoint = typeFrom.IsFloatingPoint();
             if (typeTo == typeof(float))
             {
-                if (isFromUnsigned)
+                if (typeFrom.IsUnsigned())
                 {
                     il.Emit(OpCodes.Conv_R_Un);
                 }
@@ -827,7 +817,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else if (typeTo == typeof(double))
             {
-                if (isFromUnsigned)
+                if (typeFrom.IsUnsigned())
                 {
                     il.Emit(OpCodes.Conv_R_Un);
                 }
@@ -840,7 +830,7 @@ namespace System.Linq.Expressions.Compiler
                 if (isChecked)
                 {
                     // Overflow checking needs to know if the source value on the IL stack is unsigned or not.
-                    if (isFromUnsigned)
+                    if (typeFrom.IsUnsigned())
                     {
                         switch (tc)
                         {
@@ -953,7 +943,7 @@ namespace System.Linq.Expressions.Compiler
                             break;
 
                         case TypeCode.Int64:
-                            if (isFromUnsigned)
+                            if (typeFrom.IsUnsigned())
                             {
                                 il.Emit(OpCodes.Conv_U8);
                             }
@@ -964,7 +954,7 @@ namespace System.Linq.Expressions.Compiler
                             break;
 
                         case TypeCode.UInt64:
-                            if (isFromUnsigned || isFromFloatingPoint)
+                            if (typeFrom.IsUnsigned() || typeFrom.IsFloatingPoint())
                             {
                                 il.Emit(OpCodes.Conv_U8);
                             }

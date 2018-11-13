@@ -125,7 +125,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal class FullConditionalExpressionWithType : FullConditionalExpression
+    internal sealed class FullConditionalExpressionWithType : FullConditionalExpression
     {
         private readonly Type _type;
 

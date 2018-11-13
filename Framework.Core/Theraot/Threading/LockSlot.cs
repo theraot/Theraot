@@ -76,7 +76,7 @@ namespace Theraot.Threading
         {
             if (Interlocked.CompareExchange(ref _free, 1, 0) == 0)
             {
-                Value = default(T);
+                Value = default;
                 _context.Close(this);
             }
         }

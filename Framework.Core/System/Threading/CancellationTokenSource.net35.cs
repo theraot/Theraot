@@ -247,8 +247,7 @@ namespace System.Threading
                 var callbacks = _callbacks;
                 if (callbacks != null)
                 {
-                    Action dummy;
-                    return callbacks.Remove(reg, out dummy);
+                    return callbacks.Remove(reg, out Action dummy);
                 }
             }
             return true;
@@ -331,9 +330,8 @@ namespace System.Threading
                     var id = _currentId;
                     do
                     {
-                        Action callback;
                         var checkId = id;
-                        if (callbacks.Remove(id, registration => registration.Equals(checkId, this), out callback) && callback != null)
+                        if (callbacks.Remove(id, registration => registration.Equals(checkId, this), out Action callback) && callback != null)
                         {
                             RunCallback(throwOnFirstException, callback, ref exceptions);
                         }

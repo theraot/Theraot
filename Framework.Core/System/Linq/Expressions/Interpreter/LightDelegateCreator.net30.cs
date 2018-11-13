@@ -45,8 +45,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             get
             {
-                var le = _lambda as LambdaExpression;
-                if (le != null)
+                if (_lambda is LambdaExpression le)
                 {
                     return le.Type;
                 }

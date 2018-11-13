@@ -9,7 +9,7 @@ namespace System.Threading.Tasks
         private Task _antecedent;
 
         public ContinuationResultTaskFromTask(Task antecedent, Delegate function, object state, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions)
-            : base(function, state, InternalCurrentIfAttached(creationOptions), default(CancellationToken), creationOptions, internalOptions, antecedent.ExecutingTaskScheduler)
+            : base(function, state, InternalCurrentIfAttached(creationOptions), default, creationOptions, internalOptions, antecedent.ExecutingTaskScheduler)
         {
             Contract.Requires(function is Func<Task, TResult> || function is Func<Task, object, TResult>, "Invalid delegate type in ContinuationResultTaskFromTask");
             _antecedent = antecedent;
@@ -33,14 +33,12 @@ namespace System.Threading.Tasks
             _antecedent = null;
             // Invoke the delegate
             Contract.Assert(Action != null);
-            var func = Action as Func<Task, TResult>;
-            if (func != null)
+            if (Action is Func<Task, TResult> func)
             {
                 InternalResult = func(antecedent);
                 return;
             }
-            var funcWithState = Action as Func<Task, object, TResult>;
-            if (funcWithState != null)
+            if (Action is Func<Task, object, TResult> funcWithState)
             {
                 InternalResult = funcWithState(antecedent, State);
                 return;

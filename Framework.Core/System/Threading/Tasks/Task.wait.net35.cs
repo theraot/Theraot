@@ -182,7 +182,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptions.NoOptimization)]  // this is needed for the parallel debugger
         public static bool WaitAll(Task[] tasks, int millisecondsTimeout)
         {
-            return WaitAll(tasks, millisecondsTimeout, default(CancellationToken));
+            return WaitAll(tasks, millisecondsTimeout, default);
         }
 
         /// <summary>
@@ -616,7 +616,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptions.NoOptimization)]  // this is needed for the parallel debugger
         public static int WaitAny(Task[] tasks, int millisecondsTimeout)
         {
-            return WaitAny(tasks, millisecondsTimeout, default(CancellationToken));
+            return WaitAny(tasks, millisecondsTimeout, default);
         }
 
         /// <summary>

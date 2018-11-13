@@ -80,7 +80,7 @@ namespace Theraot.Collections
                     return true;
                 }
                 enumerator.Dispose();
-                pair = default(KeyValuePair<TKey, TValue>);
+                pair = default;
                 return false;
             }, cache, comparer)
         {
@@ -142,8 +142,7 @@ namespace Theraot.Collections
                 }
                 catch (KeyNotFoundException)
                 {
-                    KeyValuePair<TKey, TValue> item;
-                    while (Progressor.TryTake(out item))
+                    while (Progressor.TryTake(out KeyValuePair<TKey, TValue> item))
                     {
                         if (_keyComparer.Equals(key, item.Key))
                         {
@@ -167,8 +166,7 @@ namespace Theraot.Collections
                 }
                 catch (KeyNotFoundException)
                 {
-                    KeyValuePair<TKey, TValue> item;
-                    while (Progressor.TryTake(out item))
+                    while (Progressor.TryTake(out KeyValuePair<TKey, TValue> item))
                     {
                         if (_keyComparer.Equals(key, item.Key))
                         {
@@ -186,8 +184,7 @@ namespace Theraot.Collections
             {
                 return true;
             }
-            KeyValuePair<TKey, TValue> item;
-            while (Progressor.TryTake(out item))
+            while (Progressor.TryTake(out KeyValuePair<TKey, TValue> item))
             {
                 if (_keyComparer.Equals(key, item.Key))
                 {
@@ -271,7 +268,7 @@ namespace Theraot.Collections
             }
             catch (KeyNotFoundException)
             {
-                value = default(TValue);
+                value = default;
                 return false;
             }
         }

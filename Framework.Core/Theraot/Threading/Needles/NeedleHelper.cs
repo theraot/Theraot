@@ -92,16 +92,14 @@ namespace Theraot.Threading.Needles
                 _canCreate = TypeHelper.TryGetCreate(out _create);
                 if (!_canCreate)
                 {
-                    Func<T, TNeedle> tmpA;
-                    _canCreate = TypeHelper.TryGetCreate(out tmpA);
+                    _canCreate = TypeHelper.TryGetCreate(out Func<T, TNeedle> tmpA);
                     if (_canCreate)
                     {
                         _create = target => tmpA(target.Invoke());
                     }
                     else
                     {
-                        Func<TNeedle> tmpB;
-                        _canCreate = TypeHelper.TryGetCreate(out tmpB);
+                        _canCreate = TypeHelper.TryGetCreate(out Func<TNeedle> tmpB);
                         if (_canCreate)
                         {
                             _create =
@@ -146,8 +144,7 @@ namespace Theraot.Threading.Needles
                 _canCreate = TypeHelper.TryGetCreate(out _create);
                 if (!_canCreate)
                 {
-                    Func<T, TNeedle> tmp;
-                    _canCreate = TypeHelper.TryGetCreate(out tmp);
+                    _canCreate = TypeHelper.TryGetCreate(out Func<T, TNeedle> tmp);
                     if (_canCreate)
                     {
                         _create = target => tmp(target.Invoke());
@@ -185,8 +182,7 @@ namespace Theraot.Threading.Needles
                 _canCreate = TypeHelper.TryGetCreate(out _create);
                 if (!_canCreate)
                 {
-                    Func<TNeedle> tmpA;
-                    _canCreate = TypeHelper.TryGetCreate(out tmpA);
+                    _canCreate = TypeHelper.TryGetCreate(out Func<TNeedle> tmpA);
                     if (_canCreate)
                     {
                         _create =
@@ -199,8 +195,7 @@ namespace Theraot.Threading.Needles
                     }
                     else
                     {
-                        Func<Func<T>, TNeedle> tmpB;
-                        _canCreate = TypeHelper.TryGetCreate(out tmpB);
+                        _canCreate = TypeHelper.TryGetCreate(out Func<Func<T>, TNeedle> tmpB);
                         if (_canCreate)
                         {
                             _create = target => tmpB(() => target);
@@ -239,8 +234,7 @@ namespace Theraot.Threading.Needles
                 _canCreate = TypeHelper.TryGetCreate(out _create);
                 if (!_canCreate)
                 {
-                    Func<Func<INeedle<T>>, TNeedle> tmp;
-                    _canCreate = TypeHelper.TryGetCreate(out tmp);
+                    _canCreate = TypeHelper.TryGetCreate(out Func<Func<INeedle<T>>, TNeedle> tmp);
                     if (_canCreate)
                     {
                         _create = target => tmp(() => target);
@@ -278,8 +272,7 @@ namespace Theraot.Threading.Needles
                 _canCreate = TypeHelper.TryGetCreate(out _create);
                 if (!_canCreate)
                 {
-                    Func<Func<IReadOnlyNeedle<T>>, TNeedle> tmp;
-                    _canCreate = TypeHelper.TryGetCreate(out tmp);
+                    _canCreate = TypeHelper.TryGetCreate(out Func<Func<IReadOnlyNeedle<T>>, TNeedle> tmp);
                     if (_canCreate)
                     {
                         _create = target => tmp(() => target);
@@ -317,8 +310,7 @@ namespace Theraot.Threading.Needles
                 _canCreate = TypeHelper.TryGetCreate(out _create);
                 if (!_canCreate)
                 {
-                    Func<Func<T>, TNeedle> tmp;
-                    _canCreate = TypeHelper.TryGetCreate(out tmp);
+                    _canCreate = TypeHelper.TryGetCreate(out Func<Func<T>, TNeedle> tmp);
                     if (_canCreate)
                     {
                         _create = target => tmp(() => target);

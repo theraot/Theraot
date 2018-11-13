@@ -127,7 +127,7 @@ namespace System.Threading.Tasks
             }
 
             // If it can be cast to an array, use it directly
-            var activeTasksArray = activeTasksSource as Task[] ?? (new List<Task>(activeTasksSource)).ToArray();
+            var activeTasksArray = activeTasksSource as Task[] ?? new List<Task>(activeTasksSource).ToArray();
 
             // touch all Task.Id fields so that the debugger doesn't need to do a lot of cross-proc calls to generate them
             foreach (var t in activeTasksArray)

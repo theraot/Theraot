@@ -43,8 +43,7 @@ namespace System
             {
                 throw new ArgumentNullException(nameof(info));
             }
-            T value;
-            TryGetTarget(out value);
+            TryGetTarget(out T value);
             info.AddValue("TrackedObject", value, typeof(T));
             info.AddValue("TrackResurrection", _trackResurrection);
         }
@@ -74,7 +73,7 @@ namespace System
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         public bool TryGetTarget(out T target)
         {
-            target = default(T);
+            target = default;
             if (!_handle.IsAllocated)
             {
                 return false;

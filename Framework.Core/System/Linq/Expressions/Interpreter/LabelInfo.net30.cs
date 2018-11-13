@@ -196,8 +196,7 @@ namespace System.Linq.Expressions.Interpreter
                 return true;
             }
 
-            var definitions = _definitions as HashSet<LabelScopeInfo>;
-            if (definitions != null)
+            if (_definitions is HashSet<LabelScopeInfo> definitions)
             {
                 return definitions.Contains(scope);
             }
@@ -211,8 +210,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private LabelScopeInfo FirstDefinition()
         {
-            var scope = _definitions as LabelScopeInfo;
-            if (scope != null)
+            if (_definitions is LabelScopeInfo scope)
             {
                 return scope;
             }
@@ -231,8 +229,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else
             {
-                var set = _definitions as HashSet<LabelScopeInfo>;
-                if (set == null)
+                if (!(_definitions is HashSet<LabelScopeInfo> set))
                 {
                     _definitions = set = new HashSet<LabelScopeInfo> { (LabelScopeInfo)_definitions };
                 }

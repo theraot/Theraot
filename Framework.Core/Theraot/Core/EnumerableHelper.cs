@@ -115,8 +115,7 @@ namespace Theraot.Core
 
             IEnumerable<T> CreateExtracted()
             {
-                T item;
-                while (tryTake.Invoke(out item))
+                while (tryTake.Invoke(out T item))
                 {
                     yield return item;
                 }
@@ -137,8 +136,7 @@ namespace Theraot.Core
 
             IEnumerable<TResult> CreateExtracted()
             {
-                TState item;
-                while (tryTake.Invoke(out item))
+                while (tryTake.Invoke(out TState item))
                 {
                     yield return converter.Invoke(item);
                 }

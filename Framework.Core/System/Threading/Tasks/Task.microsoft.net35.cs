@@ -10,8 +10,8 @@ namespace System.Threading.Tasks
 {
     public partial class Task
     {
-        private static readonly Predicate<Task> _isExceptionObservedByParentPredicate = (t => t.IsExceptionObservedByParent);
-        private static readonly Action<object> _taskCancelCallback = (TaskCancelCallback);
+        private static readonly Predicate<Task> _isExceptionObservedByParentPredicate = t => t.IsExceptionObservedByParent;
+        private static readonly Action<object> _taskCancelCallback = TaskCancelCallback;
 
         private int _cancellationAcknowledged;
         private StrongBox<CancellationTokenRegistration> _cancellationRegistration;
@@ -272,14 +272,12 @@ namespace System.Threading.Tasks
         {
             // Invoke the delegate
             Contract.Assert(Action != null, "Null action in InnerInvoke()");
-            var action = Action as Action;
-            if (action != null)
+            if (Action is Action action)
             {
                 action();
                 return;
             }
-            var actionWithState = Action as Action<object>;
-            if (actionWithState != null)
+            if (Action is Action<object> actionWithState)
             {
                 actionWithState(State);
                 return;
@@ -371,8 +369,7 @@ namespace System.Threading.Tasks
             var task = obj as Task;
             if (task == null)
             {
-                var tuple = obj as Tuple<Task, Task, TaskContinuation>;
-                if (tuple == null)
+                if (!(obj is Tuple<Task, Task, TaskContinuation> tuple))
                 {
                     Contract.Assert(false, "task should have been non-null");
                     return;
@@ -524,8 +521,7 @@ namespace System.Threading.Tasks
 
             void ExecutionContextCallback(object obj)
             {
-                var task = obj as Task;
-                if (task == null)
+                if (!(obj is Task task))
                 {
                     Contract.Assert(false, "expected a task object");
                 }
@@ -617,8 +613,7 @@ namespace System.Threading.Tasks
         {
             Contract.Requires(unhandledException != null);
 
-            var exceptionAsOce = unhandledException as NewOperationCanceledException;
-            if (exceptionAsOce != null && IsCancellationRequested && CancellationToken == exceptionAsOce.CancellationToken)
+            if (unhandledException is NewOperationCanceledException exceptionAsOce && IsCancellationRequested && CancellationToken == exceptionAsOce.CancellationToken)
             {
                 // All conditions are satisfied for us to go into canceled state in Finish().
                 // Mark the acknowledgement.  The exception is also stored to enable it to be

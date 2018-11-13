@@ -129,8 +129,7 @@ namespace System.Linq.Expressions.Compiler
         private ReadOnlyCollection<Expression> MergeScopes(Expression node)
         {
             ReadOnlyCollection<Expression> body;
-            var lambda = node as LambdaExpression;
-            if (lambda != null)
+            if (node is LambdaExpression lambda)
             {
                 body = new ReadOnlyCollection<Expression>(new[] { lambda.Body });
             }
@@ -258,8 +257,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 foreach (var scope in _scopes)
                 {
-                    var lambda = scope.Node as LambdaExpression;
-                    if (lambda != null)
+                    if (scope.Node is LambdaExpression lambda)
                     {
                         return lambda.Name;
                     }

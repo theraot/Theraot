@@ -207,7 +207,7 @@ namespace Theraot.Collections.Specialized
                 {
                     foreach (var bit in entry.BinaryReverse().BitsBinary())
                     {
-                        if ((bit == 1) == item)
+                        if (bit == 1 == item)
                         {
                             return true;
                         }

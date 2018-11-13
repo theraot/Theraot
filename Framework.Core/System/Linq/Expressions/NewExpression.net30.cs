@@ -243,8 +243,7 @@ namespace System.Linq.Expressions
                     {
                         throw Error.ArgumentMemberNotDeclOnType(member.Name, constructor.DeclaringType.Name);
                     }
-                    Type memberType;
-                    ValidateAnonymousTypeMember(ref member, out memberType);
+                    ValidateAnonymousTypeMember(ref member, out Type memberType);
                     if (!TypeHelper.AreReferenceAssignable(memberType, arg.Type))
                     {
                         if (!TryQuote(memberType, ref arg))
@@ -312,8 +311,7 @@ namespace System.Linq.Expressions
 
         private static void ValidateAnonymousTypeMember(ref MemberInfo member, out Type memberType)
         {
-            var field = member as FieldInfo;
-            if (field != null)
+            if (member is FieldInfo field)
             {
                 if (field.IsStatic)
                 {
@@ -323,8 +321,7 @@ namespace System.Linq.Expressions
                 return;
             }
 
-            var pi = member as PropertyInfo;
-            if (pi != null)
+            if (member is PropertyInfo pi)
             {
                 if (!pi.CanRead)
                 {
@@ -338,8 +335,7 @@ namespace System.Linq.Expressions
                 return;
             }
 
-            var method = member as MethodInfo;
-            if (method != null)
+            if (member is MethodInfo method)
             {
                 if (method.IsStatic)
                 {

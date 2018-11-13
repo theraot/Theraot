@@ -111,8 +111,7 @@ namespace System.Threading.Tasks
         private static void LongRunningThreadWork(object obj)
         {
             Contract.Requires(obj != null, "TaskScheduler.LongRunningThreadWork: obj is null");
-            var task = obj as Task;
-            if (task != null)
+            if (obj is Task task)
             {
                 task.ExecuteEntry(false);
             }
@@ -124,8 +123,7 @@ namespace System.Threading.Tasks
 
         private static void TaskExecuteCallback(object obj)
         {
-            var task = obj as Task;
-            if (task != null)
+            if (obj is Task task)
             {
                 task.ExecuteEntry(true);
             }

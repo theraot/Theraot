@@ -73,7 +73,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal class TypedConstantExpression : ConstantExpression
+    internal sealed class TypedConstantExpression : ConstantExpression
     {
         private readonly Type _type;
 

@@ -288,7 +288,7 @@ namespace System.Linq.Expressions
             var tempArgs = new List<Expression>(index.Arguments.Count);
             foreach (var arg in index.Arguments)
             {
-                var tempArg = Variable(arg.Type, "tempArg" + tempArgs.Count.ToString());
+                var tempArg = Variable(arg.Type, $"tempArg{tempArgs.Count}");
                 vars.Add(tempArg);
                 tempArgs.Add(tempArg);
                 exprs.Add(Assign(tempArg, arg));
@@ -854,8 +854,7 @@ namespace System.Linq.Expressions
         // become "smarter" or that would break tree construction.
         private static bool IsNullConstant(Expression e)
         {
-            var c = e as ConstantExpression;
-            return c != null && c.Value == null;
+            return e is ConstantExpression c && c.Value == null;
         }
 
         private static void ValidateUserDefinedConditionalLogicOperator(ExpressionType nodeType, Type left, Type right, MethodInfo method)

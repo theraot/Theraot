@@ -111,7 +111,7 @@ namespace Theraot.Threading.Needles
                 result = (TResult)value.DynamicInvoke(args);
                 return true;
             }
-            result = default(TResult);
+            result = default;
             return false;
         }
 

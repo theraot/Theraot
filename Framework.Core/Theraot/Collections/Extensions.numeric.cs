@@ -673,7 +673,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(selector));
             }
-            Func<TSource, int, TResult> selectorWrapper = (item, i) => selector(item);
+            TResult selectorWrapper(TSource item, int i) => selector(item);
             return Max(source.Select(selectorWrapper), comparer);
         }
 
@@ -1340,7 +1340,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(selector));
             }
-            Func<TSource, int, TResult> selectorWrapper = (item, i) => selector(item);
+            TResult selectorWrapper(TSource item, int i) => selector(item);
             return Min(source.Select(selectorWrapper), comparer);
         }
     }

@@ -16,7 +16,7 @@ namespace Theraot.Threading.Needles
         public ReadOnlyDisposableNeedle()
         {
             _isAlive = false;
-            _hashCode = EqualityComparer<T>.Default.GetHashCode(default(T));
+            _hashCode = EqualityComparer<T>.Default.GetHashCode(default);
         }
 
         public ReadOnlyDisposableNeedle(T target)
@@ -133,13 +133,13 @@ namespace Theraot.Threading.Needles
             {
                 if (whenDisposed == null)
                 {
-                    return default(TReturn);
+                    return default;
                 }
                 return whenDisposed.Invoke();
             }
             if (whenNotDisposed == null)
             {
-                return default(TReturn);
+                return default;
             }
             if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
             {
@@ -154,7 +154,7 @@ namespace Theraot.Threading.Needles
             }
             if (whenDisposed == null)
             {
-                return default(TReturn);
+                return default;
             }
             return whenDisposed.Invoke();
         }
@@ -197,7 +197,7 @@ namespace Theraot.Threading.Needles
         private void Kill()
         {
             _isAlive = false;
-            _target = default(T);
+            _target = default;
         }
 
         private bool TakeDisposalExecution()

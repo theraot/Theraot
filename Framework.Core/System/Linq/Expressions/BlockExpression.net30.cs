@@ -130,8 +130,7 @@ namespace System.Linq.Expressions
 
         internal static ReadOnlyCollection<Expression> ReturnReadOnlyExpressions(BlockExpression provider, ref object collection)
         {
-            var tObj = collection as Expression;
-            if (tObj != null)
+            if (collection is Expression tObj)
             {
                 // otherwise make sure only one readonly collection ever gets exposed
                 Interlocked.CompareExchange(

@@ -30,13 +30,11 @@ namespace System.Linq.Expressions.Compiler
             for (var index = 0; index < count - 1; index++)
             {
                 var e = node.GetExpression(index);
-                var next = node.GetExpression(index + 1);
 
                 CompilationFlags tailCallFlag;
                 if (tailCall != CompilationFlags.EmitAsNoTail)
                 {
-                    var g = next as GotoExpression;
-                    if (g != null && (g.Value == null || !Significant(g.Value)) && ReferenceLabel(g.Target).CanReturn)
+                    if (node.GetExpression(index + 1) is GotoExpression g && (g.Value == null || !Significant(g.Value)) && ReferenceLabel(g.Target).CanReturn)
                     {
                         // Since tail call flags are not passed into EmitTryExpression, CanReturn means the goto will be emitted
                         // as Ret. Therefore we can emit the current expression with tail call.
@@ -79,8 +77,7 @@ namespace System.Linq.Expressions.Compiler
             if (HasVariables(node) &&
                 (_scope.MergedScopes == null || !_scope.MergedScopes.Contains(node)))
             {
-                CompilerScope scope;
-                if (!_tree.Scopes.TryGetValue(node, out scope))
+                if (!_tree.Scopes.TryGetValue(node, out CompilerScope scope))
                 {
                     //
                     // Very often, we want to compile nodes as reductions
@@ -103,8 +100,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static bool HasVariables(object node)
         {
-            var block = node as BlockExpression;
-            if (block != null)
+            if (node is BlockExpression block)
             {
                 return block.Variables.Count > 0;
             }
@@ -428,9 +424,8 @@ namespace System.Linq.Expressions.Compiler
 
         private void DefineSwitchCaseLabel(SwitchCase @case, out Label label, out bool isGoto)
         {
-            var jump = @case.Body as GotoExpression;
             // if it's a goto with no value
-            if (jump != null && jump.Value == null)
+            if (@case.Body is GotoExpression jump && jump.Value == null)
             {
                 // Reference the label from the switch. This will cause us to
                 // analyze the jump target and determine if it is safe.
@@ -664,7 +659,7 @@ namespace System.Linq.Expressions.Compiler
             // If we happen to initialize it twice (multithreaded case), it's
             // not the end of the world. The C# compiler does better here by
             // emitting a volatile access to the field.
-            Expression dictInit = Expression.Condition(
+            var dictInit = Expression.Condition(
                 Expression.Equal(dictField, Expression.Constant(null, dictField.Type)),
                 Expression.Assign(
                     dictField,

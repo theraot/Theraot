@@ -127,8 +127,8 @@ namespace System.Linq.Expressions.Interpreter
             var result = new LocalVariable(_localCount++, false, false);
             _maxLocalCount = Math.Max(_localCount, _maxLocalCount);
 
-            VariableScope existing, newScope;
-            if (_variables.TryGetValue(variable, out existing))
+            VariableScope newScope;
+            if (_variables.TryGetValue(variable, out VariableScope existing))
             {
                 newScope = new VariableScope(result, start, existing);
                 if (existing.ChildScopes == null)
@@ -204,14 +204,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public int GetLocalIndex(ParameterExpression var)
         {
-            VariableScope loc;
-            return _variables.TryGetValue(var, out loc) ? loc.Variable.Index : -1;
+            return _variables.TryGetValue(var, out VariableScope loc) ? loc.Variable.Index : -1;
         }
 
         public bool TryGetLocalOrClosure(ParameterExpression var, out LocalVariable local)
         {
-            VariableScope scope;
-            if (_variables.TryGetValue(var, out scope))
+            if (_variables.TryGetValue(var, out VariableScope scope))
             {
                 local = scope.Variable;
                 return true;

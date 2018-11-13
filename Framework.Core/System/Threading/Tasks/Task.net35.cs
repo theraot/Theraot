@@ -25,7 +25,7 @@ namespace System.Threading.Tasks
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
         public Task(Action action)
-            : this(action, null, null, default(CancellationToken), TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
+            : this(action, null, null, default, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
@@ -37,7 +37,7 @@ namespace System.Threading.Tasks
         }
 
         public Task(Action action, TaskCreationOptions creationOptions)
-            : this(action, null, InternalCurrentIfAttached(creationOptions), default(CancellationToken), creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
+            : this(action, null, InternalCurrentIfAttached(creationOptions), default, creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }

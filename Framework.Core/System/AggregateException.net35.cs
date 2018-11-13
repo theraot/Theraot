@@ -63,8 +63,7 @@ namespace System
         protected AggregateException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            var value = info.GetValue(nameof(InnerExceptions), typeof(Exception[])) as Exception[];
-            if (value == null)
+            if (!(info.GetValue(nameof(InnerExceptions), typeof(Exception[])) is Exception[] value))
             {
                 throw new SerializationException("Deserialization Failure");
             }
@@ -98,8 +97,7 @@ namespace System
                 var current = queue.Dequeue();
                 foreach (var exception in current._innerExceptions)
                 {
-                    var aggregatedException = exception as AggregateException;
-                    if (aggregatedException != null)
+                    if (exception is AggregateException aggregatedException)
                     {
                         queue.Enqueue(aggregatedException);
                     }
@@ -122,8 +120,7 @@ namespace System
                 {
                     return result;
                 }
-                var tmp = item as AggregateException;
-                if (tmp == null)
+                if (!(item is AggregateException tmp))
                 {
                     return item;
                 }
@@ -186,7 +183,7 @@ namespace System
             return new CreationInfo(customMessage, innerExceptions);
         }
 
-        private class CreationInfo
+        private sealed class CreationInfo
         {
             private readonly Exception _exception;
 
@@ -197,7 +194,7 @@ namespace System
             public CreationInfo(string customMessage, IEnumerable<Exception> innerExceptions)
             {
                 var exceptions = new List<Exception>();
-                var result = new Text.StringBuilder(string.Format(_baseMessage, customMessage));
+                var result = new Text.StringBuilder($"Exception(s) occurred while inside the Parallel loop. {customMessage}.");
                 var first = true;
                 _exception = null;
                 foreach (var exception in innerExceptions)

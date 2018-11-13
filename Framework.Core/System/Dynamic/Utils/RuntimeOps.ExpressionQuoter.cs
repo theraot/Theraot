@@ -182,8 +182,7 @@ namespace System.Runtime.CompilerServices
                 var locals = _locals;
                 while (true)
                 {
-                    int hoistIndex;
-                    if (scope.Indexes.TryGetValue(variable, out hoistIndex))
+                    if (scope.Indexes.TryGetValue(variable, out int hoistIndex))
                     {
                         return (IStrongBox)locals[hoistIndex];
                     }

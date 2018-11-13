@@ -69,11 +69,10 @@ namespace Theraot.Threading
 
         public static void DisposedConditional(this IExtendedDisposable disposable, string exceptionMessageWhenDisposed, Action whenNotDisposed)
         {
-            Action whenDisposed =
-            () =>
+            void whenDisposed()
             {
                 throw new ObjectDisposedException(exceptionMessageWhenDisposed);
-            };
+            }
             if (disposable == null)
             {
                 whenDisposed();
@@ -90,11 +89,10 @@ namespace Theraot.Threading
 
         public static TReturn DisposedConditional<TReturn>(this IExtendedDisposable disposable, string exceptionMessageWhenDisposed, Func<TReturn> whenNotDisposed)
         {
-            Func<TReturn> whenDisposed =
-            () =>
+            TReturn whenDisposed()
             {
                 throw new ObjectDisposedException(exceptionMessageWhenDisposed);
-            };
+            }
             if (disposable == null)
             {
                 return whenDisposed();

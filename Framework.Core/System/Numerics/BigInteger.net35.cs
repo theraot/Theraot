@@ -25,7 +25,7 @@ namespace System.Numerics
         /// <returns>true if the value of the <see cref="T:System.Numerics.BigInteger" /> object is an even number; otherwise, false.</returns>
         public bool IsEven
         {
-            get { return (InternalBits != null ? (InternalBits[0] & 1) == 0 : (InternalSign & 1) == 0); }
+            get { return InternalBits != null ? (InternalBits[0] & 1) == 0 : (InternalSign & 1) == 0; }
         }
 
         /// <summary>Indicates whether the value of the current <see cref="T:System.Numerics.BigInteger" /> object is <see cref="P:System.Numerics.BigInteger.One" />.</summary>
@@ -160,7 +160,7 @@ namespace System.Numerics
             }
             else
             {
-                num = (ulong)(-value);
+                num = (ulong)-value;
                 InternalSign = -1;
             }
             InternalBits = new[] { (uint)num, (uint)(num >> 32) };
@@ -241,7 +241,7 @@ namespace System.Numerics
                 {
                     InternalBits[2] = (uint)bits[2];
                 }
-                InternalSign = ((bits[3] & int.MinValue) == 0 ? 1 : -1);
+                InternalSign = (bits[3] & int.MinValue) == 0 ? 1 : -1;
             }
             else
             {
@@ -263,7 +263,7 @@ namespace System.Numerics
                 throw new ArgumentNullException(nameof(value));
             }
             var valueLength = value.Length;
-            var isNegative = (valueLength > 0 && (value[valueLength - 1] & 128) == 128);
+            var isNegative = valueLength > 0 && (value[valueLength - 1] & 128) == 128;
             while (valueLength > 0 && value[valueLength - 1] == 0)
             {
                 valueLength--;
@@ -412,13 +412,13 @@ namespace System.Numerics
             }
             else if (length != 1 || value[0] >= unchecked((uint)int.MinValue))
             {
-                InternalSign = (!negative ? 1 : -1);
+                InternalSign = !negative ? 1 : -1;
                 InternalBits = new uint[length];
                 Array.Copy(value, InternalBits, length);
             }
             else
             {
-                InternalSign = (!negative ? (int)value[0] : (int)(-value[0]));
+                InternalSign = !negative ? (int)value[0] : (int)-value[0];
                 InternalBits = null;
                 if (InternalSign == int.MinValue)
                 {
@@ -434,7 +434,7 @@ namespace System.Numerics
                 throw new ArgumentNullException(nameof(value));
             }
             var dwordCount = value.Length;
-            var isNegative = (dwordCount > 0 && (value[dwordCount - 1] & unchecked((uint)int.MinValue)) == unchecked((uint)int.MinValue));
+            var isNegative = dwordCount > 0 && (value[dwordCount - 1] & unchecked((uint)int.MinValue)) == unchecked((uint)int.MinValue);
             while (dwordCount > 0 && value[dwordCount - 1] == 0)
             {
                 dwordCount--;
@@ -517,7 +517,7 @@ namespace System.Numerics
         /// <param name="value">A number.</param>
         public static BigInteger Abs(BigInteger value)
         {
-            return (value < Zero ? -value : value);
+            return value < Zero ? -value : value;
         }
 
         /// <summary>Adds two <see cref="T:System.Numerics.BigInteger" /> values and returns the result.</summary>
@@ -563,8 +563,8 @@ namespace System.Numerics
                 var length = Length(InternalBits);
                 if (length <= 2)
                 {
-                    var magnitude = (other >= 0 ? (ulong)other : (ulong)(-other));
-                    var unsigned = (length != 2 ? InternalBits[0] : NumericsHelpers.MakeUlong(InternalBits[1], InternalBits[0]));
+                    var magnitude = other >= 0 ? (ulong)other : (ulong)-other;
+                    var unsigned = length != 2 ? InternalBits[0] : NumericsHelpers.MakeUlong(InternalBits[1], InternalBits[0]);
                     return InternalSign * unsigned.CompareTo(magnitude);
                 }
             }
@@ -590,7 +590,7 @@ namespace System.Numerics
             {
                 return 1;
             }
-            return ((length != 2 ? InternalBits[0] : NumericsHelpers.MakeUlong(InternalBits[1], InternalBits[0]))).CompareTo(other);
+            return (length != 2 ? InternalBits[0] : NumericsHelpers.MakeUlong(InternalBits[1], InternalBits[0])).CompareTo(other);
         }
 
         /// <summary>Compares this instance to a second <see cref="T:System.Numerics.BigInteger" /> and returns an integer that indicates whether the value of this instance is less than, equal to, or greater than the value of the specified object.</summary>
@@ -600,7 +600,7 @@ namespace System.Numerics
         {
             if ((InternalSign ^ other.InternalSign) < 0)
             {
-                return (InternalSign >= 0 ? 1 : -1);
+                return InternalSign >= 0 ? 1 : -1;
             }
             if (InternalBits == null)
             {
@@ -611,7 +611,7 @@ namespace System.Numerics
                 int result;
                 if (InternalSign >= other.InternalSign)
                 {
-                    result = (InternalSign <= other.InternalSign ? 0 : 1);
+                    result = InternalSign <= other.InternalSign ? 0 : 1;
                 }
                 else
                 {
@@ -621,20 +621,19 @@ namespace System.Numerics
             }
             if (other.InternalBits != null)
             {
-                var length = Length(InternalBits);
                 var otherLength = Length(other.InternalBits);
                 if (Length(InternalBits) <= otherLength)
                 {
-                    if (length < otherLength)
+                    if (Length(InternalBits) < otherLength)
                     {
                         return -InternalSign;
                     }
-                    var diffLength = GetDiffLength(InternalBits, other.InternalBits, length);
+                    var diffLength = GetDiffLength(InternalBits, other.InternalBits, Length(InternalBits));
                     if (diffLength == 0)
                     {
                         return 0;
                     }
-                    return (InternalBits[diffLength - 1] >= other.InternalBits[diffLength - 1] ? InternalSign : -InternalSign);
+                    return InternalBits[diffLength - 1] >= other.InternalBits[diffLength - 1] ? InternalSign : -InternalSign;
                 }
             }
             return InternalSign;
@@ -714,7 +713,7 @@ namespace System.Numerics
                 var length = Length(InternalBits);
                 if (length <= 2)
                 {
-                    var magnitude = (other >= 0 ? (ulong)other : (ulong)(-other));
+                    var magnitude = other >= 0 ? (ulong)other : (ulong)-other;
                     if (length == 1)
                     {
                         return InternalBits[0] == magnitude;
@@ -829,7 +828,7 @@ namespace System.Numerics
             {
                 xd = new[] { unchecked((uint)-x.InternalSign) };
             }
-            xl = (x.InternalBits != null ? x.InternalBits.Length : 1);
+            xl = x.InternalBits != null ? x.InternalBits.Length : 1;
             return x.InternalSign < 0;
         }
 
@@ -885,7 +884,7 @@ namespace System.Numerics
             }
             if (double.IsPositiveInfinity(baseValue))
             {
-                return (!value.IsOne ? double.NaN : 0);
+                return !value.IsOne ? double.NaN : 0;
             }
             if (NumericHelper.IsZero(baseValue) && !value.IsOne)
             {
@@ -1141,11 +1140,11 @@ namespace System.Numerics
             var x = left.ToUInt32Array();
             var y = right.ToUInt32Array();
             var z = new uint[Math.Max(x.Length, y.Length)];
-            var xExtend = (uint)((left.InternalSign >= 0 ? 0 : -1));
-            var yExtend = (uint)((right.InternalSign >= 0 ? 0 : -1));
+            var xExtend = (uint)(left.InternalSign >= 0 ? 0 : -1);
+            var yExtend = (uint)(right.InternalSign >= 0 ? 0 : -1);
             for (var index = 0; index < z.Length; index++)
             {
-                var num2 = (index >= x.Length ? xExtend : x[index]);
+                var num2 = index >= x.Length ? xExtend : x[index];
                 z[index] = num2 & (index >= y.Length ? yExtend : y[index]);
             }
             return new BigInteger(z);
@@ -1168,11 +1167,11 @@ namespace System.Numerics
             var x = left.ToUInt32Array();
             var y = right.ToUInt32Array();
             var z = new uint[Math.Max(x.Length, y.Length)];
-            var xExtend = (uint)((left.InternalSign >= 0 ? 0 : -1));
-            var yExtend = (uint)((right.InternalSign >= 0 ? 0 : -1));
+            var xExtend = (uint)(left.InternalSign >= 0 ? 0 : -1);
+            var yExtend = (uint)(right.InternalSign >= 0 ? 0 : -1);
             for (var index = 0; index < z.Length; index++)
             {
-                var num2 = (index >= x.Length ? xExtend : x[index]);
+                var num2 = index >= x.Length ? xExtend : x[index];
                 z[index] = num2 | (index >= y.Length ? yExtend : y[index]);
             }
             return new BigInteger(z);
@@ -1257,11 +1256,11 @@ namespace System.Numerics
             var x = left.ToUInt32Array();
             var y = right.ToUInt32Array();
             var z = new uint[Math.Max(x.Length, y.Length)];
-            var xEntend = (uint)((left.InternalSign >= 0 ? 0 : -1));
-            var yExtend = (uint)((right.InternalSign >= 0 ? 0 : -1));
+            var xEntend = (uint)(left.InternalSign >= 0 ? 0 : -1);
+            var yExtend = (uint)(right.InternalSign >= 0 ? 0 : -1);
             for (var index = 0; index < z.Length; index++)
             {
-                var num2 = (index >= x.Length ? xEntend : x[index]);
+                var num2 = index >= x.Length ? xEntend : x[index];
                 z[index] = num2 ^ (index >= y.Length ? yExtend : y[index]);
             }
             return new BigInteger(z);
@@ -1284,24 +1283,24 @@ namespace System.Numerics
 
         public static explicit operator byte(BigInteger value)
         {
-            return checked((byte)((int)value));
+            return checked((byte)(int)value);
         }
 
         [CLSCompliant(false)]
         public static explicit operator sbyte(BigInteger value)
         {
-            return checked((sbyte)((int)value));
+            return checked((sbyte)(int)value);
         }
 
         public static explicit operator short(BigInteger value)
         {
-            return checked((short)((int)value));
+            return checked((short)(int)value);
         }
 
         [CLSCompliant(false)]
         public static explicit operator ushort(BigInteger value)
         {
-            return checked((ushort)((int)value));
+            return checked((ushort)(int)value);
         }
 
         public static explicit operator int(BigInteger value)
@@ -1322,7 +1321,7 @@ namespace System.Numerics
             {
                 throw new OverflowException("Value was either too large or too small for an Int32.");
             }
-            return (int)(-value.InternalBits[0]);
+            return (int)-value.InternalBits[0];
         }
 
         [CLSCompliant(false)]
@@ -1350,8 +1349,8 @@ namespace System.Numerics
             {
                 throw new OverflowException("Value was either too large or too small for an Int64.");
             }
-            var target = (length <= 1 ? value.InternalBits[0] : NumericsHelpers.MakeUlong(value.InternalBits[1], value.InternalBits[0]));
-            var result = (value.InternalSign <= 0 ? -(long)(target) : (long)target);
+            var target = length <= 1 ? value.InternalBits[0] : NumericsHelpers.MakeUlong(value.InternalBits[1], value.InternalBits[0]);
+            var result = value.InternalSign <= 0 ? -(long)target : (long)target;
             if ((result <= 0 || value.InternalSign <= 0) && (result >= 0 || value.InternalSign >= 0))
             {
                 throw new OverflowException("Value was either too large or too small for an Int64.");
@@ -1380,20 +1379,18 @@ namespace System.Numerics
 
         public static explicit operator float(BigInteger value)
         {
-            return (float)((double)value);
+            return (float)(double)value;
         }
 
         public static explicit operator double(BigInteger value)
         {
-            ulong man;
-            int exp;
             if (value.InternalBits == null)
             {
                 return value.InternalSign;
             }
             var sign = 1;
             var bigIntegerBuilder = new BigIntegerBuilder(value, ref sign);
-            bigIntegerBuilder.GetApproxParts(out exp, out man);
+            bigIntegerBuilder.GetApproxParts(out int exp, out ulong man);
             return NumericsHelpers.GetDoubleFromParts(sign, exp, man);
         }
 
@@ -1625,15 +1622,13 @@ namespace System.Numerics
         /// <param name="shift">The number of bits to shift <paramref name="value" /> to the left.</param>
         public static BigInteger operator <<(BigInteger value, int shift)
         {
-            uint[] xd;
-            int xl;
             if (shift == 0)
             {
                 return value;
             }
             if (shift == int.MinValue)
             {
-                return (value >> int.MaxValue) >> 1;
+                return value >> int.MaxValue >> 1;
             }
             if (shift < 0)
             {
@@ -1641,7 +1636,7 @@ namespace System.Numerics
             }
             var digitShift = shift / 32;
             var smallShift = shift - digitShift * 32;
-            var partsForBitManipulation = GetPartsForBitManipulation(ref value, out xd, out xl);
+            var partsForBitManipulation = GetPartsForBitManipulation(ref value, out uint[] xd, out int xl);
             var zd = new uint[xl + digitShift + 1];
             if (smallShift != 0)
             {
@@ -1803,15 +1798,13 @@ namespace System.Numerics
         /// <param name="shift">The number of bits to shift <paramref name="value" /> to the right.</param>
         public static BigInteger operator >>(BigInteger value, int shift)
         {
-            uint[] xd;
-            int xl;
             if (shift == 0)
             {
                 return value;
             }
             if (shift == int.MinValue)
             {
-                return (value << int.MaxValue) << 1;
+                return value << int.MaxValue << 1;
             }
             if (shift < 0)
             {
@@ -1819,7 +1812,7 @@ namespace System.Numerics
             }
             var digitShift = shift / 32;
             var smallShift = shift - digitShift * 32;
-            var negx = GetPartsForBitManipulation(ref value, out xd, out xl);
+            var negx = GetPartsForBitManipulation(ref value, out uint[] xd, out int xl);
             if (negx)
             {
                 if (shift >= 32 * xl)
@@ -2076,13 +2069,9 @@ namespace System.Numerics
 
         private static void SetBitsFromDouble(double value, out uint[] bits, out int sign)
         {
-            int valueSign;
-            int valueExp;
-            ulong valueMan;
-            bool valueFinite;
             sign = 0;
             bits = null;
-            NumericsHelpers.GetDoubleParts(value, out valueSign, out valueExp, out valueMan, out valueFinite);
+            NumericsHelpers.GetDoubleParts(value, out int valueSign, out int valueExp, out ulong valueMan, out bool valueFinite);
             if (valueMan == 0)
             {
                 return;
@@ -2258,7 +2247,7 @@ namespace System.Numerics
             if (InternalBits == null)
             {
                 internalBits = new[] { unchecked((uint)InternalSign) };
-                highDword = (uint)((InternalSign >= 0 ? 0 : -1));
+                highDword = (uint)(InternalSign >= 0 ? 0 : -1);
             }
             else if (InternalSign != -1)
             {

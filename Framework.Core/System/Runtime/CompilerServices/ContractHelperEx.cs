@@ -37,27 +37,27 @@ namespace System.Runtime.CompilerServices
             switch (failureKind)
             {
                 case ContractFailureKind.Assert:
-                    result = withCondition ? string.Format("Assertion failed: {0}", conditionText) : "Assertion failed.";
+                    result = withCondition ? $"Assertion failed: {conditionText}" : "Assertion failed.";
                     break;
 
                 case ContractFailureKind.Assume:
-                    result = withCondition ? string.Format("Assumption failed: {0}", conditionText) : "Assumption failed.";
+                    result = withCondition ? $"Assumption failed: {conditionText}" : "Assumption failed.";
                     break;
 
                 case ContractFailureKind.Precondition:
-                    result = withCondition ? string.Format("Precondition failed: {0}", conditionText) : "Precondition failed.";
+                    result = withCondition ? $"Precondition failed: {conditionText}" : "Precondition failed.";
                     break;
 
                 case ContractFailureKind.Postcondition:
-                    result = withCondition ? string.Format("Postcondition failed: {0}", conditionText) : "Postcondition failed.";
+                    result = withCondition ? $"Postcondition failed: {conditionText}" : "Postcondition failed.";
                     break;
 
                 case ContractFailureKind.Invariant:
-                    result = withCondition ? string.Format("Invariant failed: {0}", conditionText) : "Invariant failed.";
+                    result = withCondition ? $"Invariant failed: {conditionText}" : "Invariant failed.";
                     break;
 
                 case ContractFailureKind.PostconditionOnException:
-                    result = withCondition ? string.Format("Postcondition failed after throwing an exception: {0}", conditionText) : "Postcondition failed after throwing an exception.";
+                    result = withCondition ? $"Postcondition failed after throwing an exception: {conditionText}" : "Postcondition failed after throwing an exception.";
                     break;
 
                 default:

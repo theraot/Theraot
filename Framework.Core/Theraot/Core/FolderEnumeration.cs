@@ -71,8 +71,8 @@ namespace Theraot.Core
                 return
                     directories.Where(
                         subFolder =>
-                            ((File.GetAttributes(subFolder) & FileAttributes.ReparsePoint)
-                             != FileAttributes.ReparsePoint));
+                            (File.GetAttributes(subFolder) & FileAttributes.ReparsePoint)
+                             != FileAttributes.ReparsePoint);
             }
             catch
             {

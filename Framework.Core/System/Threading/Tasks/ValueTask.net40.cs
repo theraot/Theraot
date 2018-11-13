@@ -80,7 +80,7 @@ namespace System.Threading.Tasks
             }
 
             _task = task;
-            _result = default(TResult);
+            _result = default;
         }
 
         /// <summary>Returns the hash code for this instance.</summary>

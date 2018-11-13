@@ -1024,9 +1024,7 @@ namespace System.Linq.Expressions
                 throw Error.MethodDoesNotExistOnType(methodName, type);
             }
 
-            MethodInfo method;
-
-            var count = FindBestMethod(members, typeArgs, args, out method);
+            var count = FindBestMethod(members, typeArgs, args, out MethodInfo method);
 
             if (count == 0)
             {

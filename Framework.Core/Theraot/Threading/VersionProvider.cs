@@ -25,8 +25,7 @@ namespace Theraot.Threading
         /// </summary>
         public void Advance()
         {
-            long number;
-            if (!_tryAdvance.Invoke(out number))
+            if (!_tryAdvance.Invoke(out long number))
             {
                 _target = new Target(out _tryAdvance);
             }
@@ -38,8 +37,7 @@ namespace Theraot.Threading
         /// <returns>A VersionToken representing the advanced version</returns>
         public VersionToken AdvanceNewToken()
         {
-            long number;
-            if (!_tryAdvance.Invoke(out number))
+            if (!_tryAdvance.Invoke(out long number))
             {
                 _target = new Target(out _tryAdvance);
             }

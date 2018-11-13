@@ -137,7 +137,7 @@ namespace Theraot.Threading.Needles
 
             public override void Free()
             {
-                Value = default(T);
+                Value = default;
             }
 
             public override int GetHashCode()
@@ -172,8 +172,7 @@ namespace Theraot.Threading.Needles
             {
                 Volatile.Write(ref _inUse, 1);
                 var transaction = CurrentTransaction;
-                object value;
-                if (transaction._readLog.TryGetValue(this, out value))
+                if (transaction._readLog.TryGetValue(this, out object value))
                 {
                     var original = RetrieveValue(transaction._parentTransaction);
                     var found = (T)value;
@@ -187,9 +186,8 @@ namespace Theraot.Threading.Needles
                 var transaction = CurrentTransaction;
                 if (_needleLock.Value == Thread.CurrentThread)
                 {
-                    object value;
                     Volatile.Write(ref _inUse, 1);
-                    if (transaction._writeLog.TryGetValue(this, out value))
+                    if (transaction._writeLog.TryGetValue(this, out object value))
                     {
                         StoreValue(transaction._parentTransaction, (T)value);
                     }
@@ -237,9 +235,8 @@ namespace Theraot.Threading.Needles
                 {
                     return base.Value;
                 }
-                object value;
                 Volatile.Write(ref _inUse, 1);
-                if (transaction._writeLog.TryGetValue(this, out value))
+                if (transaction._writeLog.TryGetValue(this, out object value))
                 {
                     return (T)value;
                 }
@@ -265,9 +262,8 @@ namespace Theraot.Threading.Needles
                 {
                     return base.Value;
                 }
-                object value;
                 Volatile.Write(ref _inUse, 1);
-                if (transaction._writeLog.TryGetValue(this, out value))
+                if (transaction._writeLog.TryGetValue(this, out object value))
                 {
                     return (T)value;
                 }

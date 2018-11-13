@@ -68,8 +68,7 @@ namespace Theraot.Threading
             var resultLock = -1;
             foreach (var flag in flags.Flags)
             {
-                LockSlot<T> testSlot;
-                if (!_slots.TryGet(flag, out testSlot))
+                if (!_slots.TryGet(flag, out LockSlot<T> testSlot))
                 {
                     continue;
                 }
@@ -98,8 +97,7 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            LockSlot<T> found;
-            if (_slots.TryGet(got, out found) && found.IsOpen)
+            if (_slots.TryGet(got, out LockSlot<T> found) && found.IsOpen)
             {
                 slot = found;
                 return true;

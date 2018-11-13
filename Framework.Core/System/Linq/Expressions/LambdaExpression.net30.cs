@@ -226,7 +226,6 @@ public class ExpressionCreator<TDelegate>
             // Get or create a delegate to the public Expression.Lambda<T>
             // method and call that will be used for creating instances of this
             // delegate type
-            Func<Expression, string, bool, ReadOnlyCollection<ParameterExpression>, LambdaExpression> fastPath;
             var factories = _lambdaFactories;
             if (factories == null)
             {
@@ -234,7 +233,7 @@ public class ExpressionCreator<TDelegate>
             }
 
             MethodInfo create = null;
-            if (!factories.TryGetValue(delegateType, out fastPath))
+            if (!factories.TryGetValue(delegateType, out Func<Expression, string, bool, ReadOnlyCollection<ParameterExpression>, LambdaExpression> fastPath))
             {
 #if FEATURE_CORECLR
                 create = typeof(Expression<>).MakeGenericType(delegateType).GetMethod("Create", BindingFlags.Static | BindingFlags.NonPublic);
@@ -524,9 +523,8 @@ public class ExpressionCreator<TDelegate>
                 throw Error.LambdaTypeMustBeDerivedFromSystemDelegate();
             }
 
-            MethodInfo mi;
             var ldc = _lambdaDelegateCache;
-            if (!ldc.TryGetValue(delegateType, out mi))
+            if (!ldc.TryGetValue(delegateType, out MethodInfo mi))
             {
                 mi = delegateType.GetMethod("Invoke");
                 if (delegateType.CanCache())

@@ -70,7 +70,7 @@ namespace Theraot.Core
             catch (Exception ex)
             {
                 GC.KeepAlive(ex);
-                result = default(TEnum);
+                result = default;
                 return false;
             }
         }
@@ -89,7 +89,7 @@ namespace Theraot.Core
             catch (Exception ex)
             {
                 GC.KeepAlive(ex);
-                result = default(TEnum);
+                result = default;
                 return false;
             }
         }

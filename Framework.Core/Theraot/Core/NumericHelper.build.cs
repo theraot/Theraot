@@ -243,8 +243,7 @@ namespace Theraot.Core
 
         public static void GetParts(double value, out int sign, out long mantissa, out int exponent, out bool finite)
         {
-            ulong tmpMantissa;
-            GetDoubleParts(value, out sign, out exponent, out tmpMantissa, out finite);
+            GetDoubleParts(value, out sign, out exponent, out ulong tmpMantissa, out finite);
             mantissa = (long)tmpMantissa;
         }
 

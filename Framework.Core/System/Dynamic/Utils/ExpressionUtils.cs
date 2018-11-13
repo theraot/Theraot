@@ -19,8 +19,7 @@ namespace System.Dynamic.Utils
             var value = collection;
 
             // if it's already read-only just return it.
-            var res = value as ReadOnlyCollection<T>;
-            if (res != null)
+            if (value is ReadOnlyCollection<T> res)
             {
                 return res;
             }
@@ -38,8 +37,7 @@ namespace System.Dynamic.Utils
 
         public static ReadOnlyCollection<Expression> ReturnReadOnly(IArgumentProvider provider, ref object collection)
         {
-            var tObj = collection as Expression;
-            if (tObj != null)
+            if (collection is Expression tObj)
             {
                 // otherwise make sure only one readonly collection ever gets exposed
                 Interlocked.CompareExchange(
@@ -55,8 +53,7 @@ namespace System.Dynamic.Utils
 
         public static T ReturnObject<T>(object collectionOrT) where T : class
         {
-            var t = collectionOrT as T;
-            if (t != null)
+            if (collectionOrT is T t)
             {
                 return t;
             }

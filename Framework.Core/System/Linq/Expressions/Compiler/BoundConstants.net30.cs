@@ -102,8 +102,7 @@ namespace System.Linq.Expressions.Compiler
                 throw Error.CannotCompileConstant(value);
             }
 
-            LocalBuilder local;
-            if (_cache.TryGetValue(new TypedConstant(value, type), out local))
+            if (_cache.TryGetValue(new TypedConstant(value, type), out LocalBuilder local))
             {
                 lc.IL.Emit(OpCodes.Ldloc, local);
                 return;
@@ -172,8 +171,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitConstantFromArray(LambdaCompiler lc, object value, Type type)
         {
-            int index;
-            if (!_indexes.TryGetValue(value, out index))
+            if (!_indexes.TryGetValue(value, out int index))
             {
                 _indexes.Add(value, index = _values.Count);
                 _values.Add(value);

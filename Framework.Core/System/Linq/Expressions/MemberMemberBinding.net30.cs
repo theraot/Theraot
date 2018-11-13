@@ -81,8 +81,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(member, nameof(member));
             ContractUtils.RequiresNotNull(bindings, nameof(bindings));
             var roBindings = bindings.ToReadOnly();
-            Type memberType;
-            ValidateGettableFieldOrPropertyMember(member, out memberType);
+            ValidateGettableFieldOrPropertyMember(member, out Type memberType);
             ValidateMemberInitArgs(memberType, roBindings);
             return new MemberMemberBinding(member, roBindings);
         }
@@ -121,11 +120,9 @@ namespace System.Linq.Expressions
 
         private static void ValidateGettableFieldOrPropertyMember(MemberInfo member, out Type memberType)
         {
-            var fi = member as FieldInfo;
-            if (fi == null)
+            if (!(member is FieldInfo fi))
             {
-                var pi = member as PropertyInfo;
-                if (pi == null)
+                if (!(member is PropertyInfo pi))
                 {
                     throw Error.ArgumentMustBeFieldInfoOrPropertInfo();
                 }

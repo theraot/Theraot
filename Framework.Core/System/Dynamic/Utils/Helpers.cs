@@ -39,8 +39,7 @@ namespace System.Dynamic.Utils
 
         internal static void IncrementCount<T>(T key, Dictionary<T, int> dict)
         {
-            int count;
-            dict.TryGetValue(key, out count);
+            dict.TryGetValue(key, out int count);
             dict[key] = count + 1;
         }
     }

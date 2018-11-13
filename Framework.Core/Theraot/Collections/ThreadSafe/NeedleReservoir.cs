@@ -49,8 +49,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (!_pool.Donate(donation))
             {
-                var disposable = donation as IDisposable;
-                if (disposable != null)
+                if (donation is IDisposable disposable)
                 {
                     disposable.Dispose();
                 }
@@ -59,8 +58,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal TNeedle GetNeedle(T value)
         {
-            TNeedle result;
-            if (_pool.TryGet(out result))
+            if (_pool.TryGet(out TNeedle result))
             {
                 NeedleReservoir.InternalRecycling++;
                 result.Value = value;

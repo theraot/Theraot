@@ -151,7 +151,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(T item)
         {
-            Predicate<T> check = input => _comparer.Equals(input, item);
+            bool check(T input) => _comparer.Equals(input, item);
             return _wrapped.RemoveWhereValueEnumerable(check).Any();
         }
 

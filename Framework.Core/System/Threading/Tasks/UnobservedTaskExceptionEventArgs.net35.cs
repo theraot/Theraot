@@ -19,7 +19,6 @@ namespace System.Threading.Tasks
     public class UnobservedTaskExceptionEventArgs : EventArgs
     {
         private readonly AggregateException _exception;
-        private bool _observed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UnobservedTaskExceptionEventArgs"/> class
@@ -37,17 +36,13 @@ namespace System.Threading.Tasks
         /// </summary>
         public void SetObserved()
         {
-            _observed = true;
+            Observed = true;
         }
 
         /// <summary>
         /// Gets whether this exception has been marked as "observed."
         /// </summary>
-        public bool Observed
-        {
-            get { return _observed; }
-            internal set { _observed = value; }
-        }
+        public bool Observed { get; set; }
 
         /// <summary>
         /// The Exception that went unobserved.

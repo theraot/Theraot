@@ -207,7 +207,7 @@ namespace System.Threading.Tasks
                     var resultTask = task as Task<TResult>;
                     result = resultTask != null ?
                         completionSource.TrySetResult(resultTask.Result) :
-                        completionSource.TrySetResult(default(TResult));
+                        completionSource.TrySetResult(default);
                     break;
 
                 default:

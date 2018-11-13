@@ -36,8 +36,7 @@ namespace Theraot.Threading
                 {
                     throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
                 }
-                INeedle<T> needle;
-                if (_slots.TryGetValue(Thread.CurrentThread, out needle))
+                if (_slots.TryGetValue(Thread.CurrentThread, out INeedle<T> needle))
                 {
                     return needle is ReadOnlyStructNeedle<T>;
                 }
@@ -108,13 +107,12 @@ namespace Theraot.Threading
             {
                 throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
             }
-            INeedle<T> tmp;
-            if (_slots.TryGetValue(thread, out tmp))
+            if (_slots.TryGetValue(thread, out INeedle<T> tmp))
             {
                 target = tmp.Value;
                 return true;
             }
-            target = default(T);
+            target = default;
             return false;
         }
 
@@ -158,8 +156,7 @@ namespace Theraot.Threading
             {
                 throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
             }
-            INeedle<T> needle;
-            if (_slots.TryGetOrAdd(thread, ThreadLocalHelper<T>.RecursionGuardNeedle, out needle))
+            if (_slots.TryGetOrAdd(thread, ThreadLocalHelper<T>.RecursionGuardNeedle, out INeedle<T> needle))
             {
                 try
                 {
@@ -199,8 +196,7 @@ namespace Theraot.Threading
         {
             get
             {
-                T target;
-                return TryGetValue(Thread.CurrentThread, out target) ? target : default(T);
+                return TryGetValue(Thread.CurrentThread, out T target) ? target : default;
             }
         }
     }

@@ -30,7 +30,6 @@ namespace Theraot.Core
         static EqualityComparerHelper()
         {
             var type = typeof(T);
-            Type tmp;
             PropertyInfo property;
             if (type.IsImplementationOf(typeof(IEquatable<>).MakeGenericType(type)))
             {
@@ -44,7 +43,7 @@ namespace Theraot.Core
             {
                 property = typeof(ReferenceEqualityComparer).GetProperty("Default", BindingFlags.Public | BindingFlags.Static);
             }
-            else if (type.IsGenericImplementationOf(out tmp, typeof(INeedle<>)))
+            else if (type.IsGenericImplementationOf(out Type tmp, typeof(INeedle<>)))
             {
                 var types = tmp.GetGenericArguments();
                 var conversionType = typeof(NeedleConversionEqualityComparer<,>).MakeGenericType(tmp, types[0]);
