@@ -17,7 +17,10 @@ namespace Theraot.Collections.ThreadSafe
     /// <remarks>
     /// Consider wrapping this class to implement <see cref="IDictionary{TKey, TValue}" /> or any other desired interface.
     /// </remarks
+#if !NETCOREAPP1_0 && NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
     [Serializable]
+#endif
+
     public sealed partial class SafeDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private const int _defaultProbing = 1;
@@ -26,13 +29,108 @@ namespace Theraot.Collections.ThreadSafe
         private readonly IEqualityComparer<TValue> _valueComparer;
         private Bucket<KeyValuePair<TKey, TValue>> _bucket;
 
+#if !NETCOREAPP1_0 && NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+        private readonly KeyCollection<TKey, TValue> _keyCollection;
+        private readonly ValueCollection<TKey, TValue> _valueCollection;
+
+                /// <summary>
+        /// Initializes a new instance of the <see cref="SafeDictionary{TKey,TValue}" /> class.
+        /// </summary>
+        /// <param name="comparer">The key comparer.</param>
+        /// <param name="initialProbing">The number of steps in linear probing.</param>
+        public SafeDictionary(IEqualityComparer<TKey> comparer, int initialProbing)
+        {
+            _keyComparer = comparer ?? EqualityComparer<TKey>.Default;
+            _valueComparer = EqualityComparer<TValue>.Default;
+            _bucket = new Bucket<KeyValuePair<TKey, TValue>>();
+            _probing = initialProbing;
+            _keyCollection = new KeyCollection<TKey, TValue>(this);
+            _valueCollection = new ValueCollection<TKey, TValue>(this);
+        }
+
+        public ICollection<TKey> Keys
+        {
+            get
+            {
+                return _keyCollection;
+            }
+        }
+
+        public ICollection<TValue> Values
+        {
+            get
+            {
+                return _valueCollection;
+            }
+        }
+#else
+
         [NonSerialized]
         private KeyCollection<TKey, TValue> _keyCollection;
 
-        private int _probing;
-
         [NonSerialized]
         private ValueCollection<TKey, TValue> _valueCollection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SafeDictionary{TKey,TValue}" /> class.
+        /// </summary>
+        /// <param name="comparer">The key comparer.</param>
+        /// <param name="initialProbing">The number of steps in linear probing.</param>
+        public SafeDictionary(IEqualityComparer<TKey> comparer, int initialProbing)
+        {
+            _keyComparer = comparer ?? EqualityComparer<TKey>.Default;
+            _valueComparer = EqualityComparer<TValue>.Default;
+            _bucket = new Bucket<KeyValuePair<TKey, TValue>>();
+            _probing = initialProbing;
+        }
+
+        public ICollection<TKey> Keys
+        {
+            get
+            {
+                if (_keyCollection == null)
+                {
+                    var found = Volatile.Read(ref _keyCollection);
+                    if (found == null)
+                    {
+                        var created = new KeyCollection<TKey, TValue>(this);
+                        found = Interlocked.CompareExchange(ref _keyCollection, created, null);
+                        if (found == null)
+                        {
+                            return created;
+                        }
+                    }
+                    return found;
+                }
+                return _keyCollection;
+            }
+        }
+
+        public ICollection<TValue> Values
+        {
+            get
+            {
+                if (_valueCollection == null)
+                {
+                    var found = Volatile.Read(ref _valueCollection);
+                    if (found == null)
+                    {
+                        var created = new ValueCollection<TKey, TValue>(this);
+                        found = Interlocked.CompareExchange(ref _valueCollection, created, null);
+                        if (found == null)
+                        {
+                            return created;
+                        }
+                    }
+                    return found;
+                }
+                return _valueCollection;
+            }
+        }
+
+#endif
+
+        private int _probing;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SafeDictionary{TKey,TValue}" /> class.
@@ -63,19 +161,6 @@ namespace Theraot.Collections.ThreadSafe
             // Empty
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SafeDictionary{TKey,TValue}" /> class.
-        /// </summary>
-        /// <param name="comparer">The key comparer.</param>
-        /// <param name="initialProbing">The number of steps in linear probing.</param>
-        public SafeDictionary(IEqualityComparer<TKey> comparer, int initialProbing)
-        {
-            _keyComparer = comparer ?? EqualityComparer<TKey>.Default;
-            _valueComparer = EqualityComparer<TValue>.Default;
-            _bucket = new Bucket<KeyValuePair<TKey, TValue>>();
-            _probing = initialProbing;
-        }
-
         public int Count
         {
             get { return _bucket.Count; }
@@ -89,36 +174,6 @@ namespace Theraot.Collections.ThreadSafe
         public IEqualityComparer<TKey> KeyComparer
         {
             get { return _keyComparer; }
-        }
-
-        public ICollection<TKey> Keys
-        {
-            get
-            {
-                if (_keyCollection == null)
-                {
-                    if (Volatile.Read(ref _keyCollection) == null)
-                    {
-                        Interlocked.CompareExchange(ref _keyCollection, new KeyCollection<TKey, TValue>(this), null);
-                    }
-                }
-                return _keyCollection;
-            }
-        }
-
-        public ICollection<TValue> Values
-        {
-            get
-            {
-                if (_valueCollection == null)
-                {
-                    if (Volatile.Read(ref _valueCollection) == null)
-                    {
-                        Interlocked.CompareExchange(ref _valueCollection, new ValueCollection<TKey, TValue>(this), null);
-                    }
-                }
-                return _valueCollection;
-            }
         }
 
         public TValue this[TKey key]
