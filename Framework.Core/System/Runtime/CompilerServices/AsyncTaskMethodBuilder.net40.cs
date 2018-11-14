@@ -158,7 +158,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// A cached task for default(TResult).
         /// </summary>
-        internal static readonly TaskCompletionSource<TResult> DefaultResultTask = AsyncMethodTaskCache<TResult>.CreateCompleted(default);
+        internal static readonly TaskCompletionSource<TResult> DefaultResultTask;
 
         /// <summary>
         /// State related to the IAsyncStateMachine.
@@ -178,6 +178,7 @@ namespace System.Runtime.CompilerServices
         /// </summary>
         static AsyncTaskMethodBuilder()
         {
+            DefaultResultTask = AsyncMethodTaskCache<TResult>.CreateCompleted(default);
             try
             {
                 AsyncVoidMethodBuilder.PreventUnobservedTaskExceptions();

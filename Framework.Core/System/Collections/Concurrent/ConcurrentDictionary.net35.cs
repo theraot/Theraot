@@ -10,8 +10,10 @@ namespace System.Collections.Concurrent
     [SerializableAttribute]
     public class ConcurrentDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary
     {
-        private readonly ValueCollection<TKey, TValue> _valueCollection;
         private readonly SafeDictionary<TKey, TValue> _wrapped;
+
+        [NonSerialized]
+        private ValueCollection<TKey, TValue> _valueCollection;
 
         public ConcurrentDictionary()
             : this(4, 31, EqualityComparer<TKey>.Default)
@@ -76,7 +78,6 @@ namespace System.Collections.Concurrent
                 throw new ArgumentOutOfRangeException(nameof(capacity), "capacity < 0");
             }
             _wrapped = new SafeDictionary<TKey, TValue>();
-            _valueCollection = new ValueCollection<TKey, TValue>(_wrapped);
         }
 
         public int Count
@@ -130,12 +131,18 @@ namespace System.Collections.Concurrent
 
         public ICollection<TValue> Values
         {
-            get { return _valueCollection; }
+            get
+            {
+                return GetValues();
+            }
         }
 
         ICollection IDictionary.Values
         {
-            get { return _valueCollection; }
+            get
+            {
+                return GetValues();
+            }
         }
 
         public TValue this[TKey key]
@@ -506,6 +513,21 @@ namespace System.Collections.Concurrent
                     throw new ArgumentException("The source contains duplicate keys.");
                 }
             }
+        }
+
+        private ValueCollection<TKey, TValue> GetValues()
+        {
+            if (_valueCollection == null)
+            {
+                lock (_wrapped)
+                {
+                    if (_valueCollection == null)
+                    {
+                        _valueCollection = new ValueCollection<TKey, TValue>(this);
+                    }
+                }
+            }
+            return _valueCollection;
         }
 
         private sealed class DictionaryEnumerator : IDictionaryEnumerator

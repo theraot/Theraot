@@ -1,5 +1,6 @@
 // Needed for NET40
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -9,6 +10,7 @@ namespace Theraot.Collections.ThreadSafe
     /// Represent a fixed size thread-safe wait-free queue.
     /// </summary>
     /// <typeparam name="T">The type of items stored in the queue.</typeparam>
+    [Serializable]
     public sealed class SafeQueue<T> : IEnumerable<T>
     {
         private int _count;
@@ -147,6 +149,7 @@ namespace Theraot.Collections.ThreadSafe
             return GetEnumerator();
         }
 
+        [Serializable]
         private class Node
         {
             internal readonly FixedSizeQueue<T> Queue;

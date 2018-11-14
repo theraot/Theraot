@@ -16,17 +16,23 @@ namespace Theraot.Collections.ThreadSafe
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <remarks>
     /// Consider wrapping this class to implement <see cref="IDictionary{TKey, TValue}" /> or any other desired interface.
-    /// </remarks>
+    /// </remarks
+    [Serializable]
     public sealed partial class SafeDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private const int _defaultProbing = 1;
 
-        private readonly KeyCollection<TKey, TValue> _keyCollection;
         private readonly IEqualityComparer<TKey> _keyComparer;
-        private readonly ValueCollection<TKey, TValue> _valueCollection;
         private readonly IEqualityComparer<TValue> _valueComparer;
         private Bucket<KeyValuePair<TKey, TValue>> _bucket;
+
+        [NonSerialized]
+        private KeyCollection<TKey, TValue> _keyCollection;
+
         private int _probing;
+
+        [NonSerialized]
+        private ValueCollection<TKey, TValue> _valueCollection;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SafeDictionary{TKey,TValue}" /> class.
@@ -68,8 +74,6 @@ namespace Theraot.Collections.ThreadSafe
             _valueComparer = EqualityComparer<TValue>.Default;
             _bucket = new Bucket<KeyValuePair<TKey, TValue>>();
             _probing = initialProbing;
-            _keyCollection = new KeyCollection<TKey, TValue>(this);
-            _valueCollection = new ValueCollection<TKey, TValue>(this);
         }
 
         public int Count
@@ -89,12 +93,32 @@ namespace Theraot.Collections.ThreadSafe
 
         public ICollection<TKey> Keys
         {
-            get { return _keyCollection; }
+            get
+            {
+                if (_keyCollection == null)
+                {
+                    if (Volatile.Read(ref _keyCollection) == null)
+                    {
+                        Interlocked.CompareExchange(ref _keyCollection, new KeyCollection<TKey, TValue>(this), null);
+                    }
+                }
+                return _keyCollection;
+            }
         }
 
         public ICollection<TValue> Values
         {
-            get { return _valueCollection; }
+            get
+            {
+                if (_valueCollection == null)
+                {
+                    if (Volatile.Read(ref _valueCollection) == null)
+                    {
+                        Interlocked.CompareExchange(ref _valueCollection, new ValueCollection<TKey, TValue>(this), null);
+                    }
+                }
+                return _valueCollection;
+            }
         }
 
         public TValue this[TKey key]
@@ -109,6 +133,16 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             set { Set(key, value); }
+        }
+
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
+        {
+            AddNew(item.Key, item.Value);
+        }
+
+        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
+        {
+            AddNew(key, value);
         }
 
         /// <summary>
@@ -152,6 +186,26 @@ namespace Theraot.Collections.ThreadSafe
         public IEnumerable<KeyValuePair<TKey, TValue>> ClearEnumerable()
         {
             return Interlocked.Exchange(ref _bucket, _bucket = new Bucket<KeyValuePair<TKey, TValue>>());
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
+        {
+            var hashCode = GetHashCode(item.Key);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                if (_bucket.TryGet(hashCode + attempts, out KeyValuePair<TKey, TValue> found))
+                {
+                    if (_keyComparer.Equals(found.Key, item.Key))
+                    {
+                        if (_valueComparer.Equals(found.Value, item.Value))
+                        {
+                            return true;
+                        }
+                        return false;
+                    }
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -260,6 +314,11 @@ namespace Theraot.Collections.ThreadSafe
             return _bucket.GetEnumerator();
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
         {
             if (valueFactory == null)
@@ -314,31 +373,6 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
-        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
-        {
-            AddNew(item.Key, item.Value);
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
-        {
-            var hashCode = GetHashCode(item.Key);
-            for (var attempts = 0; attempts < _probing; attempts++)
-            {
-                if (_bucket.TryGet(hashCode + attempts, out KeyValuePair<TKey, TValue> found))
-                {
-                    if (_keyComparer.Equals(found.Key, item.Key))
-                    {
-                        if (_valueComparer.Equals(found.Value, item.Value))
-                        {
-                            return true;
-                        }
-                        return false;
-                    }
-                }
-            }
-            return false;
-        }
-
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
         {
             var hashCode = GetHashCode(item.Key);
@@ -367,16 +401,6 @@ namespace Theraot.Collections.ThreadSafe
                 }
             }
             return false;
-        }
-
-        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
-        {
-            AddNew(key, value);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         /// <summary>
