@@ -1,9 +1,10 @@
-#if NET20 || NET30 || NET35
+﻿#if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
+using Theraot.Core;
 
 namespace System.Collections.Concurrent
 {
@@ -30,11 +31,7 @@ namespace System.Collections.Concurrent
         public ConcurrentDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection)
             : this(4, 31, EqualityComparer<TKey>.Default)
         {
-            if (ReferenceEquals(collection, null))
-            {
-                throw new ArgumentNullException(nameof(collection));
-            }
-            AddRange(collection);
+            AddRange(collection ?? throw new ArgumentNullException(nameof(collection)));
         }
 
         public ConcurrentDictionary(IEqualityComparer<TKey> comparer)
@@ -46,29 +43,17 @@ namespace System.Collections.Concurrent
         public ConcurrentDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection, IEqualityComparer<TKey> comparer)
             : this(4, 31, comparer)
         {
-            if (ReferenceEquals(collection, null))
-            {
-                throw new ArgumentNullException(nameof(collection));
-            }
-            AddRange(collection);
+            AddRange(collection ?? throw new ArgumentNullException(nameof(collection)));
         }
 
         public ConcurrentDictionary(int concurrencyLevel, IEnumerable<KeyValuePair<TKey, TValue>> collection, IEqualityComparer<TKey> comparer)
             : this(concurrencyLevel, 31, comparer)
         {
-            if (ReferenceEquals(collection, null))
-            {
-                throw new ArgumentNullException(nameof(collection));
-            }
-            AddRange(collection);
+            AddRange(collection ?? throw new ArgumentNullException(nameof(collection)));
         }
 
         public ConcurrentDictionary(int concurrencyLevel, int capacity, IEqualityComparer<TKey> comparer)
         {
-            if (ReferenceEquals(comparer, null))
-            {
-                throw new ArgumentNullException(nameof(comparer));
-            }
             if (concurrencyLevel < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel), "concurrencyLevel < 1");
@@ -77,7 +62,7 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentOutOfRangeException(nameof(capacity), "capacity < 0");
             }
-            _wrapped = new SafeDictionary<TKey, TValue>();
+            _wrapped = new SafeDictionary<TKey, TValue>(comparer ?? throw new ArgumentNullException(nameof(comparer)));
         }
 
         public int Count
@@ -149,7 +134,7 @@ namespace System.Collections.Concurrent
         {
             get
             {
-                // key can be null
+                // key could be null
                 if (ReferenceEquals(key, null))
                 {
                     // ConcurrentDictionary hates null
@@ -159,6 +144,7 @@ namespace System.Collections.Concurrent
             }
             set
             {
+                // key could be null
                 if (ReferenceEquals(key, null))
                 {
                     // ConcurrentDictionary hates null
@@ -172,6 +158,7 @@ namespace System.Collections.Concurrent
         {
             get
             {
+                // key could be null
                 if (key == null)
                 {
                     throw new ArgumentNullException(nameof(key));
@@ -188,7 +175,8 @@ namespace System.Collections.Concurrent
             }
             set
             {
-                if (ReferenceEquals(key, null))
+                // key could be null
+                if (key == null)
                 {
                     // ConcurrentDictionary hates null
                     throw new ArgumentNullException(nameof(key));
@@ -204,6 +192,7 @@ namespace System.Collections.Concurrent
 
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
+            // key could be null
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
@@ -214,6 +203,7 @@ namespace System.Collections.Concurrent
 
         void IDictionary.Add(object key, object value)
         {
+            // key could be null
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
@@ -229,6 +219,7 @@ namespace System.Collections.Concurrent
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
+            // key could be null
             if (ReferenceEquals(item.Key, null))
             {
                 // ConcurrentDictionary hates null
@@ -241,6 +232,7 @@ namespace System.Collections.Concurrent
 
         public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
         {
+            // key could be null
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
@@ -258,6 +250,7 @@ namespace System.Collections.Concurrent
 
         public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory)
         {
+            // key could be null
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
@@ -281,6 +274,7 @@ namespace System.Collections.Concurrent
 
         bool IDictionary.Contains(object key)
         {
+            // key could be null
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
@@ -296,6 +290,7 @@ namespace System.Collections.Concurrent
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
         {
+            // key could be null
             if (ReferenceEquals(item.Key, null))
             {
                 // ConcurrentDictionary hates null
@@ -315,6 +310,7 @@ namespace System.Collections.Concurrent
 
         public bool ContainsKey(TKey key)
         {
+            // key could be null
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
@@ -395,7 +391,7 @@ namespace System.Collections.Concurrent
 
         public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
         {
-            // No existing value is set, so no locking, right?
+            // key could be null
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
@@ -407,7 +403,7 @@ namespace System.Collections.Concurrent
 
         public TValue GetOrAdd(TKey key, TValue value)
         {
-            // No existing value is set, so no locking, right?
+            // key could be null
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
@@ -418,6 +414,7 @@ namespace System.Collections.Concurrent
 
         void IDictionary.Remove(object key)
         {
+            // key could be null
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
@@ -432,6 +429,7 @@ namespace System.Collections.Concurrent
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
         {
+            // key could be null
             if (ReferenceEquals(item.Key, null))
             {
                 // ConcurrentDictionary hates null
@@ -460,6 +458,7 @@ namespace System.Collections.Concurrent
 
         public bool TryAdd(TKey key, TValue value)
         {
+            // key could be null
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
@@ -470,6 +469,7 @@ namespace System.Collections.Concurrent
 
         public bool TryGetValue(TKey key, out TValue value)
         {
+            // key could be null
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
@@ -480,6 +480,7 @@ namespace System.Collections.Concurrent
 
         public bool TryRemove(TKey key, out TValue value)
         {
+            // key could be null
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
@@ -490,6 +491,7 @@ namespace System.Collections.Concurrent
 
         public bool TryUpdate(TKey key, TValue newValue, TValue comparisonValue)
         {
+            // key could be null
             if (ReferenceEquals(key, null))
             {
                 // ConcurrentDictionary hates null
