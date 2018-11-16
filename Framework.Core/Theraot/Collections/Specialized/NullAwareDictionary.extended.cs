@@ -19,7 +19,7 @@ namespace Theraot.Collections.Specialized
 
         IReadOnlyCollection<KeyValuePair<TKey, TValue>> IExtendedCollection<KeyValuePair<TKey, TValue>>.AsReadOnly
         {
-            get { return _readOnly; }
+            get { return AsReadOnly; }
         }
 
         IReadOnlyCollection<TKey> IExtendedReadOnlyDictionary<TKey, TValue>.Keys
