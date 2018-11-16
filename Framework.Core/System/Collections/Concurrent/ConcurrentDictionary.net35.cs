@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35
+#if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
 using Theraot.Collections;
@@ -517,17 +517,7 @@ namespace System.Collections.Concurrent
 
         private ValueCollection<TKey, TValue> GetValues()
         {
-            if (_valueCollection == null)
-            {
-                lock (_wrapped)
-                {
-                    if (_valueCollection == null)
-                    {
-                        _valueCollection = new ValueCollection<TKey, TValue>(this);
-                    }
-                }
-            }
-            return _valueCollection;
+            return TypeHelper.LazyCreate(ref _valueCollection, () => new ValueCollection<TKey, TValue>(this), _wrapped);
         }
 
         private sealed class DictionaryEnumerator : IDictionaryEnumerator

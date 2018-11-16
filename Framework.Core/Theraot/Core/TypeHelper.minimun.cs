@@ -3,6 +3,7 @@
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Core
@@ -423,6 +424,124 @@ namespace Theraot.Core
                 }
             }
             return false;
+        }
+
+        public static T LazyCreate<T>(ref T target)
+                                                                                                                                                                            where T : class
+        {
+            var found = target;
+            if (found == null)
+            {
+                found = Volatile.Read(ref target);
+                if (found == null)
+                {
+                    T created;
+                    try
+                    {
+                        created = Activator.CreateInstance<T>();
+                    }
+                    catch
+                    {
+                        throw new MissingMemberException("The type being lazily initialized does not have a public, parameterless constructor.");
+                    }
+                    found = Interlocked.CompareExchange(ref target, created, null);
+                    if (found == null)
+                    {
+                        return created;
+                    }
+                }
+            }
+            return found;
+        }
+
+        public static T LazyCreate<T>(ref T target, object synclock)
+            where T : class
+        {
+            var found = target;
+            if (found == null)
+            {
+                found = Volatile.Read(ref target);
+                if (found == null)
+                {
+                    lock (synclock)
+                    {
+                        found = Volatile.Read(ref target);
+                        if (found == null)
+                        {
+                            T created;
+                            try
+                            {
+                                created = Activator.CreateInstance<T>();
+                            }
+                            catch
+                            {
+                                throw new MissingMemberException("The type being lazily initialized does not have a public, parameterless constructor.");
+                            }
+                            found = Interlocked.CompareExchange(ref target, created, null);
+                            if (found == null)
+                            {
+                                return created;
+                            }
+                        }
+                    }
+                }
+            }
+            return found;
+        }
+
+        public static T LazyCreate<T>(ref T target, Func<T> valueFactory)
+            where T : class
+        {
+            var found = target;
+            if (found == null)
+            {
+                found = Volatile.Read(ref target);
+                if (found == null)
+                {
+                    var created = valueFactory();
+                    if (created == null)
+                    {
+                        throw new InvalidOperationException("valueFactory returned null");
+                    }
+                    found = Interlocked.CompareExchange(ref target, created, null);
+                    if (found == null)
+                    {
+                        return created;
+                    }
+                }
+            }
+            return found;
+        }
+
+        public static T LazyCreate<T>(ref T target, Func<T> valueFactory, object synclock)
+            where T : class
+        {
+            var found = target;
+            if (found == null)
+            {
+                found = Volatile.Read(ref target);
+                if (found == null)
+                {
+                    lock (synclock)
+                    {
+                        found = Volatile.Read(ref target);
+                        if (found == null)
+                        {
+                            var created = valueFactory();
+                            if (created == null)
+                            {
+                                throw new InvalidOperationException("valueFactory returned null");
+                            }
+                            found = Interlocked.CompareExchange(ref target, created, null);
+                            if (found == null)
+                            {
+                                return created;
+                            }
+                        }
+                    }
+                }
+            }
+            return found;
         }
 
         public static Type MakeNullableType(this Type self)
