@@ -6,7 +6,7 @@ using System.Threading;
 namespace Theraot.Collections.ThreadSafe
 {
     /// <summary>
-    /// Represent a fixed size thread-safe wait-free queue.
+    /// Represent a fixed size thread-safe lock-free (read may loop) queue.
     /// </summary>
     /// <typeparam name="T">The type of items stored in the queue.</typeparam>
 #if !NETCOREAPP1_0 && NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
@@ -52,7 +52,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="item">The item.</param>
         public void Add(T item)
         {
-            loop:
+        loop:
             if (_tail.Queue.Add(item))
             {
                 Interlocked.Increment(ref _count);
