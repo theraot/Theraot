@@ -9,49 +9,49 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <TargetFramework>netcoreapp1.0</TargetFramework>
         <DefineConstants>TRACE;DEBUG;NETCOREAPP1_0</DefineConstants>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <OutputPath>..\bin</OutputPath>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp1.0_Debug|AnyCPU'">
         <TargetFramework>netcoreapp1.0</TargetFramework>
         <DefineConstants>TRACE;NETCOREAPP1_0</DefineConstants>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <OutputPath>..\bin</OutputPath>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp1.1_Debug|AnyCPU'">
         <TargetFramework>netcoreapp1.1</TargetFramework>
         <DefineConstants>TRACE;NETCOREAPP1_1</DefineConstants>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <OutputPath>..\bin</OutputPath>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp2.0_Debug|AnyCPU'">
         <TargetFramework>netcoreapp2.0</TargetFramework>
         <DefineConstants>TRACE;NETCOREAPP2_0</DefineConstants>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <OutputPath>..\bin</OutputPath>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp2.1_Debug|AnyCPU'">
         <TargetFramework>netcoreapp2.1</TargetFramework>
         <DefineConstants>TRACE;NETCOREAPP2_1</DefineConstants>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <OutputPath>..\bin</OutputPath>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
         <TargetFramework>netcoreapp1.0</TargetFramework>
         <DefineConstants>TRACE;NETCOREAPP1_0</DefineConstants>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <OutputPath>..\bin\</OutputPath>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp1.0|AnyCPU'">
         <TargetFramework>netcoreapp1.0</TargetFramework>
         <DefineConstants>TRACE;NETCOREAPP1_0</DefineConstants>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <OutputPath>..\bin</OutputPath>
         <Optimize>true</Optimize>
     </PropertyGroup>
@@ -59,7 +59,7 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp1.1|AnyCPU'">
         <TargetFramework>netcoreapp1.1</TargetFramework>
         <DefineConstants>TRACE;NETCOREAPP1_1</DefineConstants>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <OutputPath>..\bin</OutputPath>
         <Optimize>true</Optimize>
     </PropertyGroup>
@@ -67,7 +67,7 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp2.0|AnyCPU'">
         <TargetFramework>netcoreapp2.0</TargetFramework>
         <DefineConstants>TRACE;NETCOREAPP2_0</DefineConstants>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <OutputPath>..\bin</OutputPath>
         <Optimize>true</Optimize>
     </PropertyGroup>
@@ -75,7 +75,7 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='netcoreapp2.1|AnyCPU'">
         <TargetFramework>netcoreapp2.1</TargetFramework>
         <DefineConstants>TRACE;NETCOREAPP2_1</DefineConstants>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <OutputPath>..\bin</OutputPath>
         <Optimize>true</Optimize>
     </PropertyGroup>

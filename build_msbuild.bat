@@ -32,21 +32,25 @@ if defined FOUND_A (
 	SET build="%FOUND_A%"
 ) ELSE (
 	echo MSBuild.exe is in not in PATH
-	if EXIST "%SystemRoot%\Microsoft.NET\Framework64\" (
-		echo Looking for MSBuild in "%SystemRoot%\Microsoft.NET\Framework64\"
-		for /D %%V in ("%SystemRoot%\Microsoft.NET\Framework64\v*") do (
-			if EXIST %%V\MSBuild.exe (
-				SET build=%%V\MSBuild.exe
-			)
-		)
-	) ELSE (
-		echo Looking for MSBuild in "%SystemRoot%\Microsoft.NET\Framework\"
-		for /D %%V in ("%SystemRoot%\Microsoft.NET\Framework\v*") do (
-			if EXIST %%V\MSBuild.exe (
-				SET build=%%V\MSBuild.exe
-			)
-		)
-	)
+    if EXIST "%mypath:~0,-1%\JetMSBuild\MSBuild\15.0\Bin\MsBuild.exe" (
+        SET build="%mypath:~0,-1%\JetMSBuild\MSBuild\15.0\Bin\MsBuild.exe"
+    ) ELSE (
+        if EXIST "%SystemRoot%\Microsoft.NET\Framework64\" (
+		    echo Looking for MSBuild in "%SystemRoot%\Microsoft.NET\Framework64\"
+		    for /D %%V in ("%SystemRoot%\Microsoft.NET\Framework64\v*") do (
+			    if EXIST %%V\MSBuild.exe (
+				    SET build=%%V\MSBuild.exe
+			    )
+		    )
+	    ) ELSE (
+		    echo Looking for MSBuild in "%SystemRoot%\Microsoft.NET\Framework\"
+		    for /D %%V in ("%SystemRoot%\Microsoft.NET\Framework\v*") do (
+			    if EXIST %%V\MSBuild.exe (
+				    SET build=%%V\MSBuild.exe
+			    )
+		    )
+	    )
+    )
 )
 
 if NOT EXIST %build% (

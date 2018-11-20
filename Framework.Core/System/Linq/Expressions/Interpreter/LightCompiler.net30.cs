@@ -14,7 +14,7 @@ using AstUtils = System.Linq.Expressions.Interpreter.Utils;
 
 namespace System.Linq.Expressions.Interpreter
 {
-    internal readonly struct InterpretedFrameInfo
+    internal /*readonly*/ struct InterpretedFrameInfo
     {
         public readonly DebugInfo DebugInfo;
         public readonly string MethodName;

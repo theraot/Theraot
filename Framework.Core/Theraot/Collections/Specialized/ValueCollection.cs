@@ -13,16 +13,17 @@ namespace Theraot.Collections.Specialized
 
         internal ValueCollection(IDictionary<TKey, TValue> wrapped)
         {
-            if (wrapped == null)
-            {
-                throw new ArgumentNullException(nameof(wrapped));
-            }
-            _wrapped = wrapped;
+            _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
         }
 
         public int Count
         {
             get { return _wrapped.Count; }
+        }
+
+        bool ICollection<TValue>.IsReadOnly
+        {
+            get { return true; }
         }
 
         bool ICollection.IsSynchronized
@@ -33,27 +34,6 @@ namespace Theraot.Collections.Specialized
         object ICollection.SyncRoot
         {
             get { return ((ICollection)_wrapped).SyncRoot; }
-        }
-
-        bool ICollection<TValue>.IsReadOnly
-        {
-            get { return true; }
-        }
-
-        public void CopyTo(TValue[] array, int arrayIndex)
-        {
-            Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
-            Extensions.CopyTo(_wrapped.ConvertProgressive(pair => pair.Value), array, arrayIndex);
-        }
-
-        public IEnumerator<TValue> GetEnumerator()
-        {
-            return _wrapped.ConvertProgressive(pair => pair.Value).GetEnumerator();
-        }
-
-        void ICollection.CopyTo(Array array, int index)
-        {
-            ((ICollection)_wrapped).CopyTo(array, index);
         }
 
         void ICollection<TValue>.Add(TValue item)
@@ -71,14 +51,30 @@ namespace Theraot.Collections.Specialized
             return _wrapped.Where(pair => EqualityComparer<TValue>.Default.Equals(item, pair.Value)).HasAtLeast(1);
         }
 
-        bool ICollection<TValue>.Remove(TValue item)
+        public void CopyTo(TValue[] array, int arrayIndex)
         {
-            throw new NotSupportedException();
+            Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
+            Extensions.CopyTo(_wrapped.ConvertProgressive(pair => pair.Value), array, arrayIndex);
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            ((ICollection)_wrapped).CopyTo(array, index);
+        }
+
+        public IEnumerator<TValue> GetEnumerator()
+        {
+            return _wrapped.ConvertProgressive(pair => pair.Value).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        bool ICollection<TValue>.Remove(TValue item)
+        {
+            throw new NotSupportedException();
         }
     }
 }

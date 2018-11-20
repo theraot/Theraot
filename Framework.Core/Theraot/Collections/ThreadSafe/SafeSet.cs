@@ -14,7 +14,6 @@ namespace Theraot.Collections.ThreadSafe
     public class SafeSet<T> : IEnumerable<T>, ISet<T>
     {
         private const int _defaultProbing = 1;
-        private readonly IEqualityComparer<T> _comparer;
         private Bucket<T> _bucket;
         private int _probing;
 
@@ -54,15 +53,12 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="initialProbing">The number of steps in linear probing.</param>
         public SafeSet(IEqualityComparer<T> comparer, int initialProbing)
         {
-            _comparer = comparer ?? EqualityComparer<T>.Default;
+            Comparer = comparer ?? EqualityComparer<T>.Default;
             _bucket = new Bucket<T>();
             _probing = initialProbing;
         }
 
-        public IEqualityComparer<T> Comparer
-        {
-            get { return _comparer; }
-        }
+        public IEqualityComparer<T> Comparer { get; private set; }
 
         public int Count
         {
@@ -76,7 +72,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Add(T item)
         {
-            var hashCode = _comparer.GetHashCode(item);
+            var hashCode = Comparer.GetHashCode(item);
             var attempts = 0;
             while (true)
             {
@@ -85,7 +81,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return true;
                 }
-                if (_comparer.Equals(found, item))
+                if (Comparer.Equals(found, item))
                 {
                     return false;
                 }
@@ -105,7 +101,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentException">the value is already present</exception>
         public void AddNew(T value)
         {
-            var hashCode = _comparer.GetHashCode(value);
+            var hashCode = Comparer.GetHashCode(value);
             var attempts = 0;
             while (true)
             {
@@ -114,7 +110,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return;
                 }
-                if (_comparer.Equals(found, value))
+                if (Comparer.Equals(found, value))
                 {
                     throw new ArgumentException("the value is already present");
                 }
@@ -148,12 +144,12 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Contains(T value)
         {
-            var hashCode = _comparer.GetHashCode(value);
+            var hashCode = Comparer.GetHashCode(value);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 if (_bucket.TryGet(hashCode + attempts, out T found))
                 {
-                    if (_comparer.Equals(found, value))
+                    if (Comparer.Equals(found, value))
                     {
                         return true;
                     }
@@ -180,7 +176,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 if (_bucket.TryGet(hashCode + attempts, out T found))
                 {
-                    if (_comparer.GetHashCode(found) == hashCode && check(found))
+                    if (Comparer.GetHashCode(found) == hashCode && check(found))
                     {
                         return true;
                     }
@@ -276,7 +272,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(T value)
         {
-            var hashCode = _comparer.GetHashCode(value);
+            var hashCode = Comparer.GetHashCode(value);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
@@ -285,7 +281,7 @@ namespace Theraot.Collections.ThreadSafe
                         hashCode + attempts,
                         found =>
                         {
-                            if (_comparer.Equals(found, value))
+                            if (Comparer.Equals(found, value))
                             {
                                 done = true;
                                 return true;
@@ -311,7 +307,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(T value, out T previous)
         {
-            var hashCode = _comparer.GetHashCode(value);
+            var hashCode = Comparer.GetHashCode(value);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
@@ -322,7 +318,7 @@ namespace Theraot.Collections.ThreadSafe
                         found =>
                         {
                             tmp = found;
-                            if (_comparer.Equals(found, value))
+                            if (Comparer.Equals(found, value))
                             {
                                 done = true;
                                 return true;
@@ -366,7 +362,7 @@ namespace Theraot.Collections.ThreadSafe
                         found =>
                         {
                             previous = found;
-                            if (_comparer.GetHashCode(found) == hashCode && check(found))
+                            if (Comparer.GetHashCode(found) == hashCode && check(found))
                             {
                                 done = true;
                                 return true;
@@ -472,7 +468,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 if (_bucket.TryGet(hashCode + attempts, out T found))
                 {
-                    if (_comparer.GetHashCode(found) == hashCode && check(found))
+                    if (Comparer.GetHashCode(found) == hashCode && check(found))
                     {
                         value = found;
                         return true;
@@ -520,14 +516,14 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(valueOverwriteCheck));
             }
-            var hashCode = _comparer.GetHashCode(value);
+            var hashCode = Comparer.GetHashCode(value);
             var attempts = 0;
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
                 bool check(T found)
                 {
-                    if (_comparer.Equals(found, value))
+                    if (Comparer.Equals(found, value))
                     {
                         // This is the item that has been stored with the key
                         // Throw to abort overwrite
@@ -539,7 +535,7 @@ namespace Theraot.Collections.ThreadSafe
                 try
                 {
                     // TryGetCheckSet will add if no item is found, otherwise it calls check
-                    if (_bucket.InsertOrUpdate(hashCode + attempts, value, check, out bool isNew))
+                    if (_bucket.InsertOrUpdateChecked(hashCode + attempts, value, check, out bool isNew))
                     {
                         // It added a new item
                         return true;

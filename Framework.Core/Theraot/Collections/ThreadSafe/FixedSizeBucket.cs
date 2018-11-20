@@ -11,13 +11,12 @@ namespace Theraot.Collections.ThreadSafe
     /// Represent a thread-safe wait-free fixed size bucket.
     /// </summary>
     /// <typeparam name="T">The type of the item.</typeparam>
-#if !NETCOREAPP1_0 && NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
     [Serializable]
 #endif
 
     public sealed class FixedSizeBucket<T> : IEnumerable<T>, IBucket<T>
     {
-        private readonly int _capacity;
         private int _count;
         private object[] _entries;
 
@@ -29,7 +28,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             _count = 0;
             _entries = ArrayReservoir<object>.GetArray(capacity);
-            _capacity = _entries.Length;
+            Capacity = _entries.Length;
         }
 
         /// <summary>
@@ -43,19 +42,19 @@ namespace Theraot.Collections.ThreadSafe
             }
             var collection = source as ICollection<T>;
             _entries = ArrayReservoir<object>.GetArray(collection == null ? 64 : collection.Count);
-            _capacity = _entries.Length;
+            Capacity = _entries.Length;
             foreach (var item in source)
             {
-                if (_count == _capacity)
+                if (_count == Capacity)
                 {
                     var old = _entries;
-                    _entries = ArrayReservoir<object>.GetArray(_capacity << 1);
+                    _entries = ArrayReservoir<object>.GetArray(Capacity << 1);
                     if (old != null)
                     {
                         Array.Copy(old, 0, _entries, 0, _count);
                         ArrayReservoir<object>.DonateArray(old);
                     }
-                    _capacity = _entries.Length;
+                    Capacity = _entries.Length;
                 }
                 _entries[_count] = (object)item ?? BucketHelper.Null;
                 _count++;
@@ -72,7 +71,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException(nameof(source));
             }
             _entries = ArrayReservoir<object>.GetArray(source.Length);
-            _capacity = _entries.Length;
+            Capacity = _entries.Length;
             foreach (var item in source)
             {
                 _entries[_count] = (object)item ?? BucketHelper.Null;
@@ -97,10 +96,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Gets the capacity.
         /// </summary>
-        public int Capacity
-        {
-            get { return _capacity; }
-        }
+        public int Capacity { get; private set; }
 
         /// <summary>
         /// Gets the number of items actually contained.
@@ -168,7 +164,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool Exchange(int index, T item, out T previous)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
                 throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
@@ -219,7 +215,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public bool Insert(int index, T item)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
                 throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity.");
             }
@@ -242,7 +238,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public bool Insert(int index, T item, out T previous)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
                 throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
@@ -259,7 +255,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool RemoveAt(int index)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
                 throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
@@ -283,7 +279,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool RemoveAt(int index, out T previous)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
                 throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
@@ -301,7 +297,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool RemoveAt(int index, Predicate<T> check)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
                 throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
@@ -335,7 +331,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public void Set(int index, T item, out bool isNew)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
                 throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
@@ -353,7 +349,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool TryGet(int index, out T value)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
                 throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
@@ -377,7 +373,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public bool Update(int index, Func<T, T> itemUpdateFactory, Predicate<T> check, out bool isEmpty)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
                 throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity.");
             }

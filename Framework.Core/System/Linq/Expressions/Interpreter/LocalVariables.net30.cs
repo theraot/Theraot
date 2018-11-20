@@ -63,7 +63,7 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    internal readonly struct LocalDefinition
+    internal /*readonly*/ struct LocalDefinition
     {
         private readonly int _index;
         private readonly ParameterExpression _parameter;

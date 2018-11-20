@@ -14,7 +14,7 @@ using System.Runtime.CompilerServices;
 namespace System.Linq.Expressions.Interpreter
 {
     [DebuggerTypeProxy(typeof(DebugView))]
-    internal readonly struct InstructionArray
+    internal /*readonly*/ struct InstructionArray
     {
         // list of (instruction index, cookie) sorted by instruction index:
         internal readonly List<KeyValuePair<int, object>> DebugCookies;
@@ -147,7 +147,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             [DebuggerDisplay("{GetValue(),nq}", Name = "{GetName(),nq}", Type = "{GetDisplayType(), nq}")]
-            internal readonly struct InstructionView
+            internal /*readonly*/ struct InstructionView
             {
                 private readonly int _continuationsDepth;
                 private readonly int _index;

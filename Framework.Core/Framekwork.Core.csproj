@@ -23,7 +23,7 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -33,7 +33,7 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET20_Debug|AnyCPU' ">
@@ -44,7 +44,7 @@
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
         <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
     </PropertyGroup>
@@ -56,7 +56,7 @@
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
         <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
     </PropertyGroup>
@@ -68,7 +68,7 @@
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
         <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
     </PropertyGroup>
@@ -80,7 +80,7 @@
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
         <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
     </PropertyGroup>
@@ -92,7 +92,7 @@
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
         <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
     </PropertyGroup>
@@ -104,7 +104,7 @@
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
         <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30|AnyCPU' ">
         <Optimize>True</Optimize>
@@ -114,7 +114,7 @@
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
         <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35|AnyCPU' ">
         <Optimize>True</Optimize>
@@ -124,7 +124,7 @@
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
         <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40|AnyCPU' ">
         <Optimize>True</Optimize>
@@ -134,7 +134,7 @@
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
         <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45|AnyCPU' ">
         <Optimize>True</Optimize>
@@ -144,7 +144,7 @@
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
         <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET20_FAT|AnyCPU' ">
         <Optimize>True</Optimize>
@@ -154,7 +154,7 @@
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
         <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <Fat>true</Fat>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30_FAT|AnyCPU' ">
@@ -165,7 +165,7 @@
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
         <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <Fat>true</Fat>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35_FAT|AnyCPU' ">
@@ -176,7 +176,7 @@
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
         <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <Fat>true</Fat>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40_FAT|AnyCPU' ">
@@ -187,7 +187,7 @@
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
         <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <Fat>true</Fat>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45_FAT|AnyCPU' ">
@@ -198,7 +198,7 @@
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
         <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>7.1</LangVersion>
         <Fat>true</Fat>
     </PropertyGroup>
     <PropertyGroup>
