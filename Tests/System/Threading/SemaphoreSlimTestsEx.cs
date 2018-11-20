@@ -15,6 +15,7 @@ namespace Tests.System.Threading
     public static class SemaphoreSlimTestsEx
     {
         [Test]
+        [Category("Performance")]
         public static void WaitAsyncWaitCorrectly()
         {
             for (var count = 0; count < 10; count++)
@@ -25,8 +26,8 @@ namespace Tests.System.Threading
 
         private static void WaitAsyncWaitCorrectlyExtracted(int maxCount, int maxTasks)
         {
-            // Note: if WaitAsync takes to long, "x" can happen before the chunk of "a" has completed.
-            retry:
+        // Note: if WaitAsync takes to long, "x" can happen before the chunk of "a" has completed.
+        retry:
             var log = new CircularBucket<string>(maxTasks * 4 + 2);
             var logCount = new CircularBucket<int>(maxTasks * 2 + 2);
             using (var source = new CancellationTokenSource(TimeSpan.FromSeconds(100)))
