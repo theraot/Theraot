@@ -78,7 +78,7 @@ namespace Theraot.Collections.Specialized
         public void CopyTo(T[] array, int arrayIndex, int countLimit)
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            Instance.CopyTo(array, arrayIndex, countLimit);
+            Extensions.CopyTo(Instance, array, arrayIndex, countLimit);
         }
 
         public IEnumerator<T> GetEnumerator()

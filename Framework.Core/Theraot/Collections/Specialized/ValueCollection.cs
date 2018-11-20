@@ -43,7 +43,7 @@ namespace Theraot.Collections.Specialized
         public void CopyTo(TValue[] array, int arrayIndex)
         {
             Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
-            _wrapped.ConvertProgressive(pair => pair.Value).CopyTo(array, arrayIndex);
+            Extensions.CopyTo(_wrapped.ConvertProgressive(pair => pair.Value), array, arrayIndex);
         }
 
         public IEnumerator<TValue> GetEnumerator()

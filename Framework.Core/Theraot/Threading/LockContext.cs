@@ -56,7 +56,7 @@ namespace Theraot.Threading
 
         internal void Close(LockSlot<T> slot)
         {
-            _closedSlots.Add(slot);
+            _closedSlots.TryAdd(slot);
         }
 
         internal bool Read(FlagArray flags, ref int owner, out LockSlot<T> slot)

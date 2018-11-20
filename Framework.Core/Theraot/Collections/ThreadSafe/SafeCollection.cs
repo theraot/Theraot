@@ -120,7 +120,8 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
-            Enumerable(_wrapped).CopyTo(array, arrayIndex);
+            Extensions.CanCopyTo(Count, array, arrayIndex);
+            Extensions.CopyTo(Enumerable(_wrapped), array, arrayIndex);
         }
 
         /// <summary>

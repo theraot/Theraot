@@ -21,13 +21,9 @@ namespace Theraot.Collections.ThreadSafe
 
         public Pool(int capacity, Action<T> recycler)
         {
-            if (recycler == null)
-            {
-                throw new ArgumentNullException(nameof(recycler));
-            }
             _id = RuntimeUniqueIdProdiver.GetNextId();
             _entries = new FixedSizeQueue<T>(capacity);
-            _recycler = recycler;
+            _recycler = recycler ?? throw new ArgumentNullException(nameof(recycler));
         }
 
         internal bool Donate(T entry)
@@ -42,8 +38,7 @@ namespace Theraot.Collections.ThreadSafe
                     if (entries != null && recycler != null)
                     {
                         recycler.Invoke(entry);
-                        entries.Add(entry);
-                        return true;
+                        return entries.TryAdd(entry);
                     }
                     return false;
                 }

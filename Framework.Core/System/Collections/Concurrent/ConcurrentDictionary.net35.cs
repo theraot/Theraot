@@ -323,8 +323,8 @@ namespace System.Collections.Concurrent
         void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             // This should be an snaptshot operation
-            Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
-            this.CopyTo(array, arrayIndex);
+            Extensions.CanCopyTo(Count, array, arrayIndex);
+            Extensions.CopyTo(this, array, arrayIndex);
         }
 
         void ICollection.CopyTo(Array array, int index)

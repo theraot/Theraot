@@ -1,5 +1,8 @@
 // Needed for NET40
 
+using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -13,7 +16,7 @@ namespace Theraot.Collections.ThreadSafe
     [Serializable]
 #endif
 
-    public sealed class SafeQueue<T> : IEnumerable<T>
+    public sealed class SafeQueue<T> : IEnumerable<T>, IProducerConsumerCollection<T>
     {
         private int _count;
         private Node _root;
@@ -46,6 +49,16 @@ namespace Theraot.Collections.ThreadSafe
             get { return Volatile.Read(ref _count); }
         }
 
+        bool ICollection.IsSynchronized
+        {
+            get { return false; }
+        }
+
+        object ICollection.SyncRoot
+        {
+            get { throw new NotSupportedException(); }
+        }
+
         /// <summary>
         /// Attempts to Adds the specified item at the front.
         /// </summary>
@@ -53,7 +66,7 @@ namespace Theraot.Collections.ThreadSafe
         public void Add(T item)
         {
         loop:
-            if (_tail.Queue.Add(item))
+            if (_tail.Queue.TryAdd(item))
             {
                 Interlocked.Increment(ref _count);
             }
@@ -64,6 +77,18 @@ namespace Theraot.Collections.ThreadSafe
                 _tail = found ?? created;
                 goto loop;
             }
+        }
+
+        public void CopyTo(T[] array, int index)
+        {
+            Extensions.CanCopyTo(Count, array, index);
+            Extensions.DeprecatedCopyTo(this, array, index);
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            Extensions.CanCopyTo(Count, array, index);
+            Extensions.DeprecatedCopyTo(this, array, index);
         }
 
         /// <summary>
@@ -83,6 +108,22 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 root = root.Next;
             } while (root != null);
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public T[] ToArray()
+        {
+            return Extensions.ToArray(this, Count);
+        }
+
+        bool IProducerConsumerCollection<T>.TryAdd(T item)
+        {
+            Add(item);
+            return true;
         }
 
         /// <summary>
@@ -144,11 +185,6 @@ namespace Theraot.Collections.ThreadSafe
             }
             item = default;
             return false;
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
 #if !NETCOREAPP1_0 && NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6

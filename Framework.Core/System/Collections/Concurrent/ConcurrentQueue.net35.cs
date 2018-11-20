@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using Theraot.Collections;
@@ -54,6 +53,12 @@ namespace System.Collections.Concurrent
             Extensions.CopyTo(this, array, index);
         }
 
+        void ICollection.CopyTo(Array array, int index)
+        {
+            Extensions.CanCopyTo(Count, array, index);
+            Extensions.DeprecatedCopyTo(this, array, index);
+        }
+
         public void Enqueue(T item)
         {
             _wrapped.Add(item);
@@ -64,31 +69,20 @@ namespace System.Collections.Concurrent
             return _wrapped.GetEnumerator();
         }
 
-        void ICollection.CopyTo(Array array, int index)
-        {
-            Extensions.CanCopyTo(Count, array, index);
-            this.DeprecatedCopyTo(array, index);
-        }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public T[] ToArray()
+        {
+            return _wrapped.ToArray();
         }
 
         bool IProducerConsumerCollection<T>.TryAdd(T item)
         {
             _wrapped.Add(item);
             return true;
-        }
-
-        bool IProducerConsumerCollection<T>.TryTake(out T item)
-        {
-            return _wrapped.TryTake(out item);
-        }
-
-        public T[] ToArray()
-        {
-            return _wrapped.ToArray();
         }
 
         public bool TryDequeue(out T result)
@@ -99,6 +93,11 @@ namespace System.Collections.Concurrent
         public bool TryPeek(out T result)
         {
             return _wrapped.TryPeek(out result);
+        }
+
+        bool IProducerConsumerCollection<T>.TryTake(out T item)
+        {
+            return _wrapped.TryTake(out item);
         }
     }
 }

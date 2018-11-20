@@ -152,7 +152,7 @@ namespace Theraot.Collections
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
             _progressor.While(() => _cache.Count < countLimit).Consume();
-            _cache.CopyTo(array, arrayIndex, countLimit);
+            Extensions.CopyTo(_cache, array, arrayIndex, countLimit);
         }
 
         public IEnumerator<T> GetEnumerator()

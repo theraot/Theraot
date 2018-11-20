@@ -581,6 +581,11 @@ namespace Theraot.Collections
             CopyTo(source, array, 0);
         }
 
+        public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array)
+        {
+            CopyTo(source.SkipItems(sourceIndex), array, 0);
+        }
+
         public static void CopyTo<T>(this IEnumerable<T> source, T[] array, int arrayIndex)
         {
             if (source == null)
@@ -606,9 +611,19 @@ namespace Theraot.Collections
             }
         }
 
+        public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array, int arrayIndex)
+        {
+            CopyTo(source.SkipItems(sourceIndex), array, arrayIndex);
+        }
+
         public static void CopyTo<T>(this IEnumerable<T> source, T[] array, int arrayIndex, int countLimit)
         {
             CopyTo(source.TakeItems(countLimit), array, arrayIndex);
+        }
+
+        public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array, int arrayIndex, int countLimit)
+        {
+            CopyTo(source.SkipItems(sourceIndex).TakeItems(countLimit), array, arrayIndex);
         }
 
         public static int CountContiguousItems<T>(this IEnumerable<T> source, T item)
@@ -2412,6 +2427,28 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(source));
             }
             return new List<T>(source).ToArray();
+        }
+
+        public static T[] ToArray<T>(this IEnumerable<T> source, int count)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (count < 0)
+            {
+                throw new ArgumentNullException(nameof(count));
+            }
+            var result = new List<T>(count);
+            foreach (var item in source)
+            {
+                if (result.Count == count)
+                {
+                    break;
+                }
+                result.Add(item);
+            }
+            return result.ToArray();
         }
 
         public static ReadOnlyCollection<TSource> ToReadOnly<TSource>(this IEnumerable<TSource> source)

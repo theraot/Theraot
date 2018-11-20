@@ -4,7 +4,7 @@ namespace Theraot.Collections
 {
     public interface IDropPoint<T> : IReadOnlyDropPoint<T>
     {
-        bool Add(T item);
+        bool TryAdd(T item);
 
         void Clear();
 

@@ -128,7 +128,7 @@ namespace Theraot.Collections
         public void CopyTo(T[] array, int arrayIndex, int countLimit)
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            _wrapped.CopyTo(array, arrayIndex, countLimit);
+            Extensions.CopyTo(_wrapped, array, arrayIndex, countLimit);
         }
 
         public bool Equals(T x, T y)
@@ -152,6 +152,7 @@ namespace Theraot.Collections
         {
             return Clone();
         }
+
 #endif
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()

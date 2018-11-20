@@ -51,6 +51,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public void CopyTo(T[] array, int arrayIndex)
         {
+            Extensions.CanCopyTo(Count, array, arrayIndex);
             Extensions.CopyTo(this, array, arrayIndex);
         }
 

@@ -49,14 +49,19 @@ namespace Theraot.Collections.Specialized
         public void CopyTo(TValue[] array, int arrayIndex)
         {
             Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
-            _wrapped.ConvertProgressive
+            Extensions.CopyTo
+            (
+                _wrapped.ConvertProgressive
                 (
                     pair =>
                     {
                         var converter = _converter;
                         return converter(pair.Value);
                     }
-                ).CopyTo(array, arrayIndex);
+                ),
+                array,
+                arrayIndex
+            );
         }
 
         public IEnumerator<TValue> GetEnumerator()

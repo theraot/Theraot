@@ -175,7 +175,7 @@ namespace Theraot.Collections
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
             _progressor.While(() => _cache.Count < countLimit).Consume();
-            _cache.CopyTo(array, arrayIndex, countLimit);
+            Extensions.CopyTo(_cache, array, arrayIndex, countLimit);
         }
 
         public void CopyTo(IGrouping<TKey, T>[] array, int arrayIndex)
@@ -194,7 +194,7 @@ namespace Theraot.Collections
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
             _progressor.While(() => _cache.Count < countLimit).Consume();
-            _cache.Values.CopyTo(array, arrayIndex, countLimit);
+            Extensions.CopyTo(_cache.Values, array, arrayIndex, countLimit);
         }
 
         public IEnumerator<IGrouping<TKey, T>> GetEnumerator()

@@ -1,6 +1,8 @@
 // Needed for NET40
 
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using Theraot.Core;
@@ -15,9 +17,8 @@ namespace Theraot.Collections.ThreadSafe
     [Serializable]
 #endif
 
-    public sealed class FixedSizeQueue<T> : IEnumerable<T>
+    public sealed class FixedSizeQueue<T> : IEnumerable<T>, IProducerConsumerCollection<T>
     {
-        private readonly int _capacity;
         private readonly FixedSizeBucket<T> _entries;
         private int _indexDequeue;
         private int _indexEnqueue;
@@ -29,11 +30,11 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="capacity">The capacity.</param>
         public FixedSizeQueue(int capacity)
         {
-            _capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
+            Capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
             _preCount = 0;
             _indexEnqueue = 0;
             _indexDequeue = 0;
-            _entries = new FixedSizeBucket<T>(_capacity);
+            _entries = new FixedSizeBucket<T>(Capacity);
         }
 
         /// <summary>
@@ -43,7 +44,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             _indexDequeue = 0;
             _entries = new FixedSizeBucket<T>(source);
-            _capacity = _entries.Capacity;
+            Capacity = _entries.Capacity;
             _indexEnqueue = _entries.Count;
             _preCount = _indexEnqueue;
         }
@@ -51,10 +52,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Gets the capacity.
         /// </summary>
-        public int Capacity
-        {
-            get { return _capacity; }
-        }
+        public int Capacity { get; }
 
         /// <summary>
         /// Gets the number of items actually contained.
@@ -64,29 +62,25 @@ namespace Theraot.Collections.ThreadSafe
             get { return _entries.Count; }
         }
 
-        /// <summary>
-        /// Attempts to Adds the specified item at the front.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns>
-        ///   <c>true</c> if the item was added; otherwise, <c>false</c>.
-        /// </returns>
-        public bool Add(T item)
+        bool ICollection.IsSynchronized
         {
-            if (_entries.Count < _capacity)
-            {
-                var preCount = Interlocked.Increment(ref _preCount);
-                if (preCount <= _capacity)
-                {
-                    var index = (Interlocked.Increment(ref _indexEnqueue) - 1) & (_capacity - 1);
-                    if (_entries.InsertInternal(index, item))
-                    {
-                        return true;
-                    }
-                }
-                Interlocked.Decrement(ref _preCount);
-            }
-            return false;
+            get { return false; }
+        }
+
+        object ICollection.SyncRoot
+        {
+            get { throw new NotSupportedException(); }
+        }
+
+        public void CopyTo(T[] array, int index)
+        {
+            _entries.CopyTo(array, index);
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            Extensions.CanCopyTo(Count, array, index);
+            Extensions.DeprecatedCopyTo(this, array, index);
         }
 
         /// <summary>
@@ -100,6 +94,11 @@ namespace Theraot.Collections.ThreadSafe
             return _entries.GetEnumerator();
         }
 
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         /// <summary>
         /// Returns the next item to be taken from the back without removing it.
         /// </summary>
@@ -108,11 +107,41 @@ namespace Theraot.Collections.ThreadSafe
         public T Peek()
         {
             var index = Interlocked.Add(ref _indexEnqueue, 0);
-            if (index < _capacity && index > 0 && _entries.TryGet(index, out T item))
+            if (index < Capacity && index > 0 && _entries.TryGet(index, out T item))
             {
                 return item;
             }
             throw new InvalidOperationException("Empty");
+        }
+
+        public T[] ToArray()
+        {
+            return Extensions.ToArray(this, Count);
+        }
+
+        /// <summary>
+        /// Attempts to Adds the specified item at the front.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns>
+        ///   <c>true</c> if the item was added; otherwise, <c>false</c>.
+        /// </returns>
+        public bool TryAdd(T item)
+        {
+            if (_entries.Count < Capacity)
+            {
+                var preCount = Interlocked.Increment(ref _preCount);
+                if (preCount <= Capacity)
+                {
+                    var index = (Interlocked.Increment(ref _indexEnqueue) - 1) & (Capacity - 1);
+                    if (_entries.InsertInternal(index, item))
+                    {
+                        return true;
+                    }
+                }
+                Interlocked.Decrement(ref _preCount);
+            }
+            return false;
         }
 
         /// <summary>
@@ -142,7 +171,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             item = default;
             var index = Interlocked.Add(ref _indexDequeue, 0);
-            return index < _capacity && index > 0 && _entries.TryGetInternal(index, out item);
+            return index < Capacity && index > 0 && _entries.TryGetInternal(index, out item);
         }
 
         /// <summary>
@@ -159,7 +188,7 @@ namespace Theraot.Collections.ThreadSafe
                 var preCount = Interlocked.Decrement(ref _preCount);
                 if (preCount >= 0)
                 {
-                    var index = (Interlocked.Increment(ref _indexDequeue) - 1) & (_capacity - 1);
+                    var index = (Interlocked.Increment(ref _indexDequeue) - 1) & (Capacity - 1);
                     if (_entries.RemoveAtInternal(index, out item))
                     {
                         return true;
@@ -169,11 +198,6 @@ namespace Theraot.Collections.ThreadSafe
             }
             item = default;
             return false;
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

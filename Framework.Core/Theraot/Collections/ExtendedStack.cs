@@ -1,36 +1,37 @@
 ﻿#if FAT
 
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 using Theraot.Core;
 
 namespace Theraot.Collections
 {
+#if !NETCOREAPP1_0 && NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
     [Serializable]
+#endif
+
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public sealed class ExtendedStack<T> : IDropPoint<T>, IEnumerable<T>, ICollection<T>, ICloneable<ExtendedStack<T>>
+    public sealed class ExtendedStack<T> : IDropPoint<T>, IEnumerable<T>, ICollection<T>, ICloneable<ExtendedStack<T>>, IProducerConsumerCollection<T>
     {
-        private readonly IReadOnlyCollection<T> _readOnly;
         private readonly Stack<T> _wrapped;
 
         public ExtendedStack()
         {
             _wrapped = new Stack<T>();
-            _readOnly = new ExtendedReadOnlyCollection<T>(this);
+            AsReadOnly = new ExtendedReadOnlyCollection<T>(this);
         }
 
         public ExtendedStack(IEnumerable<T> collection)
         {
             _wrapped = new Stack<T>(collection);
-            _readOnly = new ExtendedReadOnlyCollection<T>(this);
+            AsReadOnly = new ExtendedReadOnlyCollection<T>(this);
         }
 
-        public IReadOnlyCollection<T> AsReadOnly
-        {
-            get { return _readOnly; }
-        }
+        public IReadOnlyCollection<T> AsReadOnly { get; }
 
         public int Count
         {
@@ -42,15 +43,24 @@ namespace Theraot.Collections
             get { return false; }
         }
 
+        bool ICollection.IsSynchronized
+        {
+            get { return false; }
+        }
+
         public T Item
         {
             get { return _wrapped.Peek(); }
         }
 
-        public bool Add(T item)
+        object ICollection.SyncRoot
+        {
+            get { throw new NotSupportedException(); }
+        }
+
+        void ICollection<T>.Add(T item)
         {
             _wrapped.Push(item);
-            return true;
         }
 
         public void Clear()
@@ -61,6 +71,11 @@ namespace Theraot.Collections
         public ExtendedStack<T> Clone()
         {
             return new ExtendedStack<T>(this);
+        }
+
+        object ICloneable.Clone()
+        {
+            return Clone();
         }
 
         public bool Contains(T item)
@@ -89,23 +104,20 @@ namespace Theraot.Collections
             Extensions.CopyTo(this, array, arrayIndex, countLimit);
         }
 
+        void ICollection.CopyTo(Array array, int index)
+        {
+            Extensions.CanCopyTo(Count, array, index);
+            Extensions.DeprecatedCopyTo(_wrapped, array, index);
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             return _wrapped.GetEnumerator();
         }
 
-#if !NETCOREAPP1_0 && !NETCOREAPP1_1
-
-        object ICloneable.Clone()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            return Clone();
-        }
-
-#endif
-
-        void ICollection<T>.Add(T item)
-        {
-            _wrapped.Push(item);
+            return GetEnumerator();
         }
 
         bool ICollection<T>.Remove(T item)
@@ -113,9 +125,15 @@ namespace Theraot.Collections
             return Remove(item);
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        public T[] ToArray()
         {
-            return GetEnumerator();
+            return Extensions.ToArray(this, Count);
+        }
+
+        public bool TryAdd(T item)
+        {
+            _wrapped.Push(item);
+            return true;
         }
 
         public bool TryTake(out T item)

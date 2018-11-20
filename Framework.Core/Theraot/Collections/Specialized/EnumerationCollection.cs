@@ -121,12 +121,14 @@ namespace Theraot.Collections.Specialized
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            _wrapped.CopyTo(array, arrayIndex);
+            Extensions.CanCopyTo(Count, array, arrayIndex);
+            Extensions.CopyTo(this, array, arrayIndex);
         }
 
         public void CopyTo(T[] array)
         {
-            _wrapped.CopyTo(array, 0);
+            Extensions.CanCopyTo(Count, array);
+            Extensions.CopyTo(this, array);
         }
 
         public void CopyTo(T[] array, int arrayIndex, int countLimit)
