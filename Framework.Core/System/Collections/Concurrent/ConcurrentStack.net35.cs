@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
+using System.Threading;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
 
@@ -15,7 +16,7 @@ namespace System.Collections.Concurrent
     [HostProtection(SecurityAction.LinkDemand, Synchronization = true, ExternalThreading = true)]
     public class ConcurrentStack<T> : IProducerConsumerCollection<T>, IEnumerable<T>, IEnumerable, ICollection, IReadOnlyCollection<T>
     {
-        private readonly SafeStack<T> _wrapped;
+        private SafeStack<T> _wrapped;
 
         public ConcurrentStack()
         {
@@ -45,6 +46,11 @@ namespace System.Collections.Concurrent
         object ICollection.SyncRoot
         {
             get { throw new NotSupportedException(); }
+        }
+
+        public void Clear()
+        {
+            Volatile.Write(ref _wrapped, new SafeStack<T>());
         }
 
         public void CopyTo(T[] array, int index)
