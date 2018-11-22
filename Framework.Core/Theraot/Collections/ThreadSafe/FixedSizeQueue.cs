@@ -14,6 +14,7 @@ namespace Theraot.Collections.ThreadSafe
     /// </summary>
     /// <typeparam name="T">The type of items stored in the queue.</typeparam>
 #if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+
     [Serializable]
 #endif
 
@@ -94,15 +95,15 @@ namespace Theraot.Collections.ThreadSafe
             return _entries.GetEnumerator();
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
         /// <summary>
-        /// Returns the next item to be taken from the back without removing it.
+        /// Returns the next item to be taken without removing it.
         /// </summary>
-        /// <returns>The next item to be taken from the back.</returns>
+        /// <returns>The next item to be taken.</returns>
         /// <exception cref="System.InvalidOperationException">No more items to be taken.</exception>
         public T Peek()
         {
@@ -120,7 +121,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Attempts to Adds the specified item at the front.
+        /// Attempts to Adds the specified item.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns>
@@ -145,23 +146,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Attempts to retrieve the item at an specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="item">The item.</param>
-        /// <returns>
-        ///   <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
-        /// </returns>
-        /// <remarks>
-        /// Although items are ordered, they are not guaranteed to start at index 0.
-        /// </remarks>
-        public bool TryGet(int index, out T item)
-        {
-            return _entries.TryGet(index, out item);
-        }
-
-        /// <summary>
-        /// Attempts to retrieve the next item to be taken from the back without removing it.
+        /// Attempts to retrieve the next item to be taken without removing it.
         /// </summary>
         /// <param name="item">The item retrieved.</param>
         /// <returns>
@@ -175,7 +160,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Attempts to retrieve and remove the next item from the back.
+        /// Attempts to retrieve and remove the next item.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns>
