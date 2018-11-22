@@ -8,10 +8,8 @@ namespace System.Threading
     [DebuggerDisplay("Initial Count={InitialCount}, Current Count={CurrentCount}")]
     public class CountdownEvent : IDisposable
     {
-        private readonly ManualResetEventSlim _event;
         private int _currentCount;
-        private volatile bool _disposed;
-        private int _initialCount;
+        private ManualResetEventSlim _event;
 
         public CountdownEvent(int initialCount)
         {
@@ -19,7 +17,7 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(initialCount));
             }
-            _initialCount = initialCount;
+            InitialCount = initialCount;
             _currentCount = initialCount;
             _event = new ManualResetEventSlim();
             if (initialCount == 0)
@@ -37,10 +35,7 @@ namespace System.Threading
             }
         }
 
-        public int InitialCount
-        {
-            get { return _initialCount; }
-        }
+        public int InitialCount { get; private set; }
 
         public bool IsSet
         {
@@ -51,8 +46,7 @@ namespace System.Threading
         {
             get
             {
-                CheckDisposed();
-                return _event.WaitHandle;
+                return GetEvent().WaitHandle;
             }
         }
 
@@ -84,31 +78,31 @@ namespace System.Threading
 
         public void Reset()
         {
-            Reset(_initialCount);
+            Reset(InitialCount);
         }
 
         public void Reset(int count)
         {
-            CheckDisposed();
+            var e = GetEvent();
             if (count < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(count));
             }
             Thread.VolatileWrite(ref _currentCount, count);
-            _initialCount = count;
+            InitialCount = count;
             if (count == 0)
             {
-                _event.Set();
+                e.Set();
             }
             else
             {
-                _event.Reset();
+                e.Reset();
             }
         }
 
         public bool Signal()
         {
-            CheckDisposed();
+            var e = GetEvent();
             if (Thread.VolatileRead(ref _currentCount) <= 0)
             {
                 throw new InvalidOperationException("Below Zero");
@@ -116,7 +110,7 @@ namespace System.Threading
             var currentCount = Interlocked.Decrement(ref _currentCount);
             if (currentCount == 0)
             {
-                _event.Set();
+                e.Set();
                 return true;
             }
             if (currentCount < 0)
@@ -132,13 +126,13 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(signalCount));
             }
-            CheckDisposed();
+            var e = GetEvent();
             if (ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _currentCount, -signalCount, out int lastValue))
             {
                 var result = lastValue - signalCount;
                 if (result == 0)
                 {
-                    _event.Set();
+                    e.Set();
                     return true;
                 }
                 return false;
@@ -157,7 +151,7 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(signalCount));
             }
-            CheckDisposed();
+            GC.KeepAlive(GetEvent());
             if (ThreadingHelper.SpinWaitRelativeExchangeBounded(ref _currentCount, signalCount, 1, int.MaxValue, out int lastValue))
             {
                 return true;
@@ -196,12 +190,12 @@ namespace System.Threading
 
         public bool Wait(TimeSpan timeout, CancellationToken cancellationToken)
         {
-            CheckDisposed();
+            var e = GetEvent();
             cancellationToken.ThrowIfCancellationRequested();
             var isSet = IsSet;
             if (!isSet)
             {
-                isSet = _event.Wait(timeout, cancellationToken);
+                isSet = e.Wait(timeout, cancellationToken);
             }
             return isSet;
         }
@@ -220,17 +214,22 @@ namespace System.Threading
         {
             if (disposing)
             {
-                _event.Dispose();
-                _disposed = true;
+                var e = Interlocked.Exchange(ref _event, null);
+                if (e != null)
+                {
+                    e.Dispose();
+                }
             }
         }
 
-        private void CheckDisposed()
+        private ManualResetEventSlim GetEvent()
         {
-            if (_disposed)
+            var e = Volatile.Read(ref _event);
+            if (e == null)
             {
                 throw new ObjectDisposedException(nameof(CountdownEvent));
             }
+            return e;
         }
     }
 }
