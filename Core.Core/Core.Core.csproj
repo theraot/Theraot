@@ -182,12 +182,14 @@
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\IBucket.cs" Link="Theraot\Collections\ThreadSafe\IBucket.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\NeedleBucket.cs" Link="Theraot\Collections\ThreadSafe\NeedleBucket.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\NeedleReservoir.cs" Link="Theraot\Collections\ThreadSafe\NeedleReservoir.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\Node.cs" Link="Theraot\Collections\ThreadSafe\Node.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\Pool.cs" Link="Theraot\Collections\ThreadSafe\Pool.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\ReentryGuardHelper.cs" Link="Theraot\Collections\ThreadSafe\ReentryGuardHelper.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\SafeCollection.cs" Link="Theraot\Collections\ThreadSafe\SafeCollection.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\SafeDictionary.cs" Link="Theraot\Collections\ThreadSafe\SafeDictionary.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\SafeQueue.cs" Link="Theraot\Collections\ThreadSafe\SafeQueue.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\SafeSet.cs" Link="Theraot\Collections\ThreadSafe\SafeSet.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\SafeStack.cs" Link="Theraot\Collections\ThreadSafe\SafeStack.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" Link="Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\WeakCollection.cs" Link="Theraot\Collections\ThreadSafe\WeakCollection.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\WeakDelegateCollection.cs" Link="Theraot\Collections\ThreadSafe\WeakDelegateCollection.cs" />
@@ -407,7 +409,6 @@
 
     <ItemGroup>
         <Folder Include="Security.Permissions\" />
-        <Folder Include="Theraot\Collections\ThreadSafe\" />
         <Folder Include="Theraot\Collections\Specialized\" />
         <Folder Include="Theraot\Threading\Needles\" />
     </ItemGroup>
