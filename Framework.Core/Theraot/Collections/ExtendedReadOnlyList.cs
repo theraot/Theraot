@@ -1,5 +1,3 @@
-#if FAT
-
 using System;
 using System.Collections.Generic;
 
@@ -7,17 +5,13 @@ namespace Theraot.Collections
 {
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
-    public sealed class ExtendedReadOnlyList<T> : IReadOnlyList<T>, IReadOnlyCollection<T>, IEnumerable<T>, IExtendedCollection<T>, IExtendedList<T>
+    public sealed class ExtendedReadOnlyList<T> : IReadOnlyList<T>, IList<T>, IReadOnlyCollection<T>, ICollection<T>, IEnumerable<T>
     {
         private readonly IList<T> _wrapped;
 
         public ExtendedReadOnlyList(IList<T> wrapped)
         {
-            if (wrapped == null)
-            {
-                throw new ArgumentNullException(nameof(wrapped));
-            }
-            _wrapped = wrapped;
+            _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
         }
 
         public int Count
@@ -28,23 +22,6 @@ namespace Theraot.Collections
         bool ICollection<T>.IsReadOnly
         {
             get { return true; }
-        }
-
-        IReadOnlyCollection<T> IExtendedCollection<T>.AsReadOnly
-        {
-            get { return this; }
-        }
-
-        IReadOnlyList<T> IExtendedList<T>.AsReadOnly
-        {
-            get { return this; }
-        }
-
-        T IExtendedList<T>.this[int index]
-        {
-            get { return this[index]; }
-
-            set { throw new NotSupportedException(); }
         }
 
         T IList<T>.this[int index]
@@ -105,36 +82,6 @@ namespace Theraot.Collections
             throw new NotSupportedException();
         }
 
-        bool IExtendedCollection<T>.Remove(T item, IEqualityComparer<T> comparer)
-        {
-            throw new NotSupportedException();
-        }
-
-        void IExtendedList<T>.RemoveRange(int index, int count)
-        {
-            throw new NotSupportedException();
-        }
-
-        void IExtendedList<T>.Reverse()
-        {
-            throw new NotSupportedException();
-        }
-
-        void IExtendedList<T>.Reverse(int index, int count)
-        {
-            throw new NotSupportedException();
-        }
-
-        void IExtendedList<T>.Sort(IComparer<T> comparer)
-        {
-            throw new NotSupportedException();
-        }
-
-        void IExtendedList<T>.Sort(int index, int count, IComparer<T> comparer)
-        {
-            throw new NotSupportedException();
-        }
-
         void IList<T>.Insert(int index, T item)
         {
             throw new NotSupportedException();
@@ -173,5 +120,3 @@ namespace Theraot.Collections
         }
     }
 }
-
-#endif

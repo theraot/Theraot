@@ -23,21 +23,18 @@ namespace Theraot.Collections
 
         public static ICollection<T> AsDistinctCollection<T>(IEnumerable<T> source)
         {
-            // Workaround for .NET 3.5 when all you want is Contains and no duplicates
 #if NET35
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
+            // Workaround for .NET 3.5 when all you want is Contains and no duplicates
             var resultHashSet = source as HashSet<T>;
             if (resultHashSet == null)
             {
+                // Remember that On .NET 3.5 HashSet is not an ISet
                 var resultISet = source as ISet<T>;
-                if (resultISet == null)
-                {
-                    return new ProgressiveSet<T>(source);
-                }
-                return resultISet;
+                return resultISet ?? new ProgressiveSet<T>(source);
             }
             return resultHashSet;
 #else

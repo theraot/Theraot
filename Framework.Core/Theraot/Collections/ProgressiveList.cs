@@ -21,7 +21,7 @@ namespace Theraot.Collections
             // Empty
         }
 
-        public ProgressiveList(Progressor<T> wrapped)
+        public ProgressiveList(IObservable<T> wrapped)
             : this(wrapped, new List<T>(), null)
         {
             // Empty
@@ -33,7 +33,7 @@ namespace Theraot.Collections
             // Empty
         }
 
-        public ProgressiveList(Progressor<T> wrapped, IEqualityComparer<T> comparer)
+        public ProgressiveList(IObservable<T> wrapped, IEqualityComparer<T> comparer)
             : this(wrapped, new List<T>(), comparer)
         {
             // Empty
@@ -42,22 +42,18 @@ namespace Theraot.Collections
         protected ProgressiveList(IEnumerable<T> wrapped, IList<T> cache, IEqualityComparer<T> comparer)
             : base(wrapped, cache, comparer)
         {
-            if (cache == null)
-            {
-                throw new ArgumentNullException(nameof(cache));
-            }
-            _cache = cache;
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            Cache = new ExtendedReadOnlyList<T>(_cache);
         }
 
-        protected ProgressiveList(Progressor<T> wrapped, IList<T> cache, IEqualityComparer<T> comparer)
+        protected ProgressiveList(IObservable<T> wrapped, IList<T> cache, IEqualityComparer<T> comparer)
             : base(wrapped, cache, comparer)
         {
-            if (cache == null)
-            {
-                throw new ArgumentNullException(nameof(cache));
-            }
-            _cache = cache;
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            Cache = new ExtendedReadOnlyList<T>(_cache);
         }
+
+        public new IReadOnlyList<T> Cache { get; private set; }
 
         public T this[int index]
         {

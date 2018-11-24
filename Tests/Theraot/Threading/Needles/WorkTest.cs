@@ -2,11 +2,9 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Theraot.Collections;
-using Theraot.Threading.Needles;
 
 namespace Tests.Theraot.Threading.Needles
 {
@@ -130,7 +128,7 @@ namespace Tests.Theraot.Threading.Needles
                 7,
                 8,
                 9
-            }).AsEnumerable();
+            });
             using (var handle = new ManualResetEvent(false))
             {
                 int[] count = { 0, 0, 0 };

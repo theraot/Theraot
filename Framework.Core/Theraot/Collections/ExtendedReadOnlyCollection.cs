@@ -16,11 +16,7 @@ namespace Theraot.Collections
 
         public ExtendedReadOnlyCollection(ICollection<T> wrapped)
         {
-            if (wrapped == null)
-            {
-                throw new ArgumentNullException(nameof(wrapped));
-            }
-            _wrapped = wrapped;
+            _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
         }
 
         public IReadOnlyCollection<T> AsReadOnly

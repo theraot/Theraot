@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using Theraot.Core;
 
 namespace Theraot.Collections
 {
@@ -20,7 +19,7 @@ namespace Theraot.Collections
             // Empty
         }
 
-        public ProgressiveSet(Progressor<T> wrapped)
+        public ProgressiveSet(IObservable<T> wrapped)
             : this(wrapped, new ExtendedSet<T>(), null)
         {
             // Empty
@@ -32,63 +31,20 @@ namespace Theraot.Collections
             // Empty
         }
 
-        public ProgressiveSet(Progressor<T> wrapped, IEqualityComparer<T> comparer)
+        public ProgressiveSet(IObservable<T> wrapped, IEqualityComparer<T> comparer)
            : this(wrapped, new ExtendedSet<T>(comparer), null)
         {
             // Empty
         }
 
         protected ProgressiveSet(IEnumerable<T> wrapped, ISet<T> cache, IEqualityComparer<T> comparer)
-            : this(Check.NotNullArgument(wrapped, "wrapped").GetEnumerator(), cache, comparer)
+            : base(wrapped ?? throw new ArgumentNullException(nameof(wrapped)), cache, comparer)
         {
             // Empty
         }
 
-        protected ProgressiveSet(Progressor<T> wrapped, ISet<T> cache, IEqualityComparer<T> comparer)
-            : base
-            (
-                (out T value) =>
-                {
-                    again:
-                    if (wrapped.TryTake(out value))
-                    {
-                        if (cache.Contains(value))
-                        {
-                            goto again;
-                        }
-                        return true;
-                    }
-                    return false;
-                },
-                cache,
-                comparer
-            )
-        {
-            // Empty
-        }
-
-        private ProgressiveSet(IEnumerator<T> enumerator, ISet<T> cache, IEqualityComparer<T> comparer)
-            : base
-            (
-                (out T value) =>
-                {
-                    again:
-                    if (enumerator.MoveNext())
-                    {
-                        value = enumerator.Current;
-                        if (cache.Contains(value))
-                        {
-                            goto again;
-                        }
-                        return true;
-                    }
-                    enumerator.Dispose();
-                    value = default;
-                    return false;
-                },
-                cache,
-                comparer
-            )
+        protected ProgressiveSet(IObservable<T> wrapped, ISet<T> cache, IEqualityComparer<T> comparer)
+            : base(wrapped ?? throw new ArgumentNullException(nameof(wrapped)), cache, comparer)
         {
             // Empty
         }
@@ -96,36 +52,6 @@ namespace Theraot.Collections
         bool ICollection<T>.IsReadOnly
         {
             get { return true; }
-        }
-
-        public bool IsProperSubsetOf(IEnumerable<T> other)
-        {
-            return Extensions.IsProperSubsetOf(this, other);
-        }
-
-        public bool IsProperSupersetOf(IEnumerable<T> other)
-        {
-            return Extensions.IsProperSupersetOf(this, other);
-        }
-
-        public bool IsSubsetOf(IEnumerable<T> other)
-        {
-            return Extensions.IsSubsetOf(this, other);
-        }
-
-        public bool IsSupersetOf(IEnumerable<T> other)
-        {
-            return Extensions.IsSupersetOf(this, other);
-        }
-
-        public bool Overlaps(IEnumerable<T> other)
-        {
-            return Extensions.Overlaps(this, other);
-        }
-
-        public bool SetEquals(IEnumerable<T> other)
-        {
-            return Extensions.SetEquals(this, other);
         }
 
         void ICollection<T>.Add(T item)
@@ -158,9 +84,39 @@ namespace Theraot.Collections
             throw new NotSupportedException();
         }
 
+        public bool IsProperSubsetOf(IEnumerable<T> other)
+        {
+            return Extensions.IsProperSubsetOf(this, other);
+        }
+
+        public bool IsProperSupersetOf(IEnumerable<T> other)
+        {
+            return Extensions.IsProperSupersetOf(this, other);
+        }
+
+        public bool IsSubsetOf(IEnumerable<T> other)
+        {
+            return Extensions.IsSubsetOf(this, other);
+        }
+
+        public bool IsSupersetOf(IEnumerable<T> other)
+        {
+            return Extensions.IsSupersetOf(this, other);
+        }
+
+        public bool Overlaps(IEnumerable<T> other)
+        {
+            return Extensions.Overlaps(this, other);
+        }
+
         bool ICollection<T>.Remove(T item)
         {
             throw new NotSupportedException();
+        }
+
+        public bool SetEquals(IEnumerable<T> other)
+        {
+            return Extensions.SetEquals(this, other);
         }
 
         void ISet<T>.SymmetricExceptWith(IEnumerable<T> other)
