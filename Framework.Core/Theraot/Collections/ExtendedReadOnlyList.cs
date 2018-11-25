@@ -3,7 +3,10 @@ using System.Collections.Generic;
 
 namespace Theraot.Collections
 {
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+
     [Serializable]
+#endif
     [System.Diagnostics.DebuggerNonUserCode]
     public sealed class ExtendedReadOnlyList<T> : IReadOnlyList<T>, IList<T>, IReadOnlyCollection<T>, ICollection<T>, IEnumerable<T>
     {
