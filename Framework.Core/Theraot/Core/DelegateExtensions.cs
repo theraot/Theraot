@@ -64,10 +64,7 @@ namespace Theraot.Core
 
         public static void SafeInvoke(this ThreadStart method)
         {
-            if (method != null)
-            {
-                method.Invoke();
-            }
+            method?.Invoke();
         }
 
         public static void SafeInvoke(this ThreadStart method, Action alternative)
@@ -84,10 +81,7 @@ namespace Theraot.Core
 
         public static void SafeInvoke(this ParameterizedThreadStart method, object obj)
         {
-            if (method != null)
-            {
-                method.Invoke(obj);
-            }
+            method?.Invoke(obj);
         }
 
         public static void SafeInvoke(this ParameterizedThreadStart method, object obj, Action alternative)
@@ -104,10 +98,7 @@ namespace Theraot.Core
 
         public static void SafeInvoke(this EventHandler method, object sender, EventArgs e)
         {
-            if (method != null)
-            {
-                method.Invoke(sender, e);
-            }
+            method?.Invoke(sender, e);
         }
 
         public static void SafeInvoke(this EventHandler method, object sender, EventArgs e, Action alternative)
@@ -125,10 +116,7 @@ namespace Theraot.Core
         public static void SafeInvoke<TEventArgs>(this EventHandler<TEventArgs> method, object sender, TEventArgs e)
             where TEventArgs : EventArgs
         {
-            if (method != null)
-            {
-                method.Invoke(sender, e);
-            }
+            method?.Invoke(sender, e);
         }
 
         public static void SafeInvoke<TEventArgs>(this EventHandler<TEventArgs> method, object sender, TEventArgs e, Action alternative)
@@ -146,10 +134,7 @@ namespace Theraot.Core
 
         public static void SafeInvoke(this Action method)
         {
-            if (method != null)
-            {
-                method.Invoke();
-            }
+            method?.Invoke();
         }
 
         public static void SafeInvoke(this Action method, Action alternative)
@@ -166,10 +151,7 @@ namespace Theraot.Core
 
         public static void SafeInvoke<T>(this Action<T> method, T obj)
         {
-            if (method != null)
-            {
-                method.Invoke(obj);
-            }
+            method?.Invoke(obj);
         }
 
         public static void SafeInvoke<T>(this Action<T> method, T obj, Action alternative)
@@ -186,10 +168,7 @@ namespace Theraot.Core
 
         public static void SafeInvoke<T1, T2>(this Action<T1, T2> method, T1 arg1, T2 arg2)
         {
-            if (method != null)
-            {
-                method.Invoke(arg1, arg2);
-            }
+            method?.Invoke(arg1, arg2);
         }
 
         public static void SafeInvoke<T1, T2>(this Action<T1, T2> method, T1 arg1, T2 arg2, Action alternative)
@@ -206,10 +185,7 @@ namespace Theraot.Core
 
         public static void SafeInvoke<T1, T2, T3>(this Action<T1, T2, T3> method, T1 arg1, T2 arg2, T3 arg3)
         {
-            if (method != null)
-            {
-                method.Invoke(arg1, arg2, arg3);
-            }
+            method?.Invoke(arg1, arg2, arg3);
         }
 
         public static void SafeInvoke<T1, T2, T3>(this Action<T1, T2, T3> method, T1 arg1, T2 arg2, T3 arg3, Action alternative)
@@ -226,10 +202,7 @@ namespace Theraot.Core
 
         public static void SafeInvoke<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> method, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
-            if (method != null)
-            {
-                method.Invoke(arg1, arg2, arg3, arg4);
-            }
+            method?.Invoke(arg1, arg2, arg3, arg4);
         }
 
         public static void SafeInvoke<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> method, T1 arg1, T2 arg2, T3 arg3, T4 arg4, Action alternative)

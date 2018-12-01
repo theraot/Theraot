@@ -173,21 +173,15 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(second));
             }
             return ConcatExtracted();
-
             IEnumerable<TSource> ConcatExtracted()
             {
                 foreach (var item in first)
                 {
                     yield return item;
                 }
-                var enumerator = second.GetEnumerator();
-                using (enumerator)
+                foreach (var item in second)
                 {
-                    while (enumerator.MoveNext())
-                    {
-                        var current = enumerator.Current;
-                        yield return current;
-                    }
+                    yield return item;
                 }
             }
         }
@@ -301,6 +295,7 @@ namespace System.Linq
                 var foundNull = false;
                 foreach (var item in source)
                 {
+                    // item might be null
                     if (ReferenceEquals(item, null))
                     {
                         if (foundNull)
@@ -663,9 +658,9 @@ namespace System.Linq
             {
                 foreach (var item in source)
                 {
-                    if (item is TResult)
+                    if (item is TResult result)
                     {
-                        yield return (TResult)item;
+                        yield return result;
                     }
                 }
             }
@@ -678,8 +673,15 @@ namespace System.Linq
 
         public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
         {
-            LinqCheck.SourceAndKeySelector(source, keySelector);
-            return new OrderedSequence<TSource, TKey>(source, keySelector, comparer, SortDirection.Ascending);
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (keySelector == null)
+            {
+                throw new ArgumentNullException(nameof(keySelector));
+            }
+            return new OrderedEnumerable<TSource, TKey>(source, keySelector, comparer, false);
         }
 
         public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
@@ -689,8 +691,15 @@ namespace System.Linq
 
         public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
         {
-            LinqCheck.SourceAndKeySelector(source, keySelector);
-            return new OrderedSequence<TSource, TKey>(source, keySelector, comparer, SortDirection.Descending);
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (keySelector == null)
+            {
+                throw new ArgumentNullException(nameof(keySelector));
+            }
+            return new OrderedEnumerable<TSource, TKey>(source, keySelector, comparer, true);
         }
 
         public static IEnumerable<TResult> Repeat<TResult>(TResult element, int count)
@@ -753,7 +762,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(selector));
             }
-            return SelectExtracted<TSource, TResult>(source, selector);
+            return SelectExtracted(source, selector);
         }
 
         public static IEnumerable<TResult> SelectMany<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
@@ -1126,8 +1135,15 @@ namespace System.Linq
 
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
         {
-            LinqCheck.SourceAndKeySelector(source, keySelector);
-            if (source is OrderedEnumerable<TSource> oe)
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (keySelector == null)
+            {
+                throw new ArgumentNullException(nameof(keySelector));
+            }
+            if (source is IOrderedEnumerable<TSource> oe)
             {
                 return oe.CreateOrderedEnumerable(keySelector, comparer, false);
             }
@@ -1141,17 +1157,34 @@ namespace System.Linq
 
         public static IOrderedEnumerable<TSource> ThenByDescending<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
         {
-            LinqCheck.SourceAndKeySelector(source, keySelector);
-            if (source is OrderedEnumerable<TSource> oe)
+            if (source == null)
             {
-                return oe.CreateOrderedEnumerable(keySelector, comparer, true);
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (keySelector == null)
+            {
+                throw new ArgumentNullException(nameof(keySelector));
             }
             return source.CreateOrderedEnumerable(keySelector, comparer, true);
         }
 
         public static TSource[] ToArray<TSource>(this IEnumerable<TSource> source)
         {
-            return ToList(source).ToArray();
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (source is ICollection<TSource> collection)
+            {
+                var result = new TSource[collection.Count];
+                collection.CopyTo(result, 0);
+                return result;
+            }
+            if (source is string str)
+            {
+                return (TSource[])(object)str.ToCharArray();
+            }
+            return new List<TSource>(source).ToArray();
         }
 
         public static Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
@@ -1197,6 +1230,13 @@ namespace System.Linq
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
+            }
+            if (source is string str)
+            {
+                var array = (TSource[])(object)str.ToCharArray();
+                var result = new List<TSource>(array.Length);
+                result.AddRange(array);
+                return result;
             }
             return new List<TSource>(source);
         }

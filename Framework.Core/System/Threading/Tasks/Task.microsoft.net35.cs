@@ -20,7 +20,7 @@ namespace System.Threading.Tasks
         private List<Task> _exceptionalChildren;
         private int _exceptionObservedByParent;
         private TaskExceptionHolder _exceptionsHolder;
-        private int _threadAbortedmanaged;
+        private int _threadAbortedManaged;
 
         /// <summary>
         /// The property formerly known as IsFaulted.
@@ -34,38 +34,19 @@ namespace System.Threading.Tasks
             }
         }
 
-        internal bool IsCancellationAcknowledged
-        {
-            get { return Thread.VolatileRead(ref _cancellationAcknowledged) == 1; }
-        }
+        internal bool IsCancellationAcknowledged => Volatile.Read(ref _cancellationAcknowledged) == 1;
 
-        internal bool IsCancellationRequested
-        {
-            get { return Thread.VolatileRead(ref _cancellationRequested) == 1; }
-        }
+        internal bool IsCancellationRequested => Volatile.Read(ref _cancellationRequested) == 1;
 
-        internal bool IsChildReplica
-        {
-            get { return (_internalOptions & InternalTaskOptions.ChildReplica) != 0; }
-        }
+        internal bool IsChildReplica => (_internalOptions & InternalTaskOptions.ChildReplica) != 0;
 
         /// <summary>
         /// Checks whether the TASK_STATE_EXCEPTIONOBSERVEDBYPARENT status flag is set,
         /// This will only be used by the implicit wait to prevent double throws
         /// </summary>
-        internal bool IsExceptionObservedByParent
-        {
-            get { return Thread.VolatileRead(ref _exceptionObservedByParent) == 1; }
-        }
+        internal bool IsExceptionObservedByParent => Volatile.Read(ref _exceptionObservedByParent) == 1;
 
-        internal bool IsSelfReplicatingRoot
-        {
-            get
-            {
-                // Return true if self-replicating bit is set and child replica bit is not set
-                return (_internalOptions & (InternalTaskOptions.SelfReplicating | InternalTaskOptions.ChildReplica)) == InternalTaskOptions.SelfReplicating;
-            }
-        }
+        internal bool IsSelfReplicatingRoot => (_internalOptions & (InternalTaskOptions.SelfReplicating | InternalTaskOptions.ChildReplica)) == InternalTaskOptions.SelfReplicating;
 
         /// <summary>
         /// This is to be called just before the task does its final state transition.
@@ -73,7 +54,7 @@ namespace System.Threading.Tasks
         /// </summary>
         internal void AddExceptionsFromChildren()
         {
-            // In rare occurences during AppDomainUnload() processing, it is possible for this method to be called
+            // In rare occurrences during AppDomainUnload() processing, it is possible for this method to be called
             // simultaneously on the same task from two different contexts.  This can result in m_exceptionalChildren
             // being nulled out while it is being processed, which could lead to a NullReferenceException.  To
             // protect ourselves, we'll cache m_exceptionalChildren in a local variable.
@@ -143,7 +124,7 @@ namespace System.Threading.Tasks
         internal void DisregardChild()
         {
             Contract.Assert(InternalCurrent == this, "Task.DisregardChild(): Called from an external context");
-            Contract.Assert(Thread.VolatileRead(ref _completionCountdown) >= 2, "Task.DisregardChild(): Expected parent count to be >= 2");
+            Contract.Assert(Volatile.Read(ref _completionCountdown) >= 2, "Task.DisregardChild(): Expected parent count to be >= 2");
             Interlocked.Decrement(ref _completionCountdown);
         }
 
@@ -195,7 +176,7 @@ namespace System.Threading.Tasks
         {
             Action = null;
             // Notify parent if this was an attached task
-            if (_parent != null && ((_parent._creationOptions & TaskCreationOptions.DenyChildAttach) == 0) && (_creationOptions & TaskCreationOptions.AttachedToParent) != 0)
+            if (_parent != null && ((_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0) && (CreationOptions & TaskCreationOptions.AttachedToParent) != 0)
             {
                 _parent.ProcessChildCompletion(this);
             }
@@ -225,7 +206,7 @@ namespace System.Threading.Tasks
                 // and the user delegate acknowledged the cancellation request by throwing an OCE,
                 // and the task hasn't otherwise transitioned into faulted state. (TASK_STATE_FAULTED trumps TASK_STATE_CANCELED)
                 //
-                // If the task threw an OCE without cancellation being requestsed (while the CT not being in signaled state),
+                // If the task threw an OCE without cancellation being requested (while the CT not being in signaled state),
                 // then we regard it as a regular exception
 
                 completionState = TaskStatus.Canceled;
@@ -250,7 +231,7 @@ namespace System.Threading.Tasks
 
         internal void FinishThreadAbortedTask(bool exceptionAdded, bool delegateRan)
         {
-            if (Interlocked.CompareExchange(ref _threadAbortedmanaged, 1, 0) == 0)
+            if (Interlocked.CompareExchange(ref _threadAbortedManaged, 1, 0) == 0)
             {
                 var exceptionsHolder = Volatile.Read(ref _exceptionsHolder);
                 if (exceptionsHolder == null)
@@ -272,17 +253,20 @@ namespace System.Threading.Tasks
         {
             // Invoke the delegate
             Contract.Assert(Action != null, "Null action in InnerInvoke()");
-            if (Action is Action action)
+            switch (Action)
             {
-                action();
-                return;
+                case Action action:
+                    action();
+                    return;
+
+                case Action<object> actionWithState:
+                    actionWithState(State);
+                    return;
+
+                default:
+                    Contract.Assert(false, "Invalid Action in Task");
+                    break;
             }
-            if (Action is Action<object> actionWithState)
-            {
-                actionWithState(State);
-                return;
-            }
-            Contract.Assert(false, "Invalid Action in Task");
         }
 
         internal void ProcessChildCompletion(Task childTask)
@@ -326,12 +310,12 @@ namespace System.Threading.Tasks
 
         internal void RecordInternalCancellationRequest()
         {
-            Thread.VolatileWrite(ref _cancellationRequested, 1);
+            Volatile.Write(ref _cancellationRequested, 1);
         }
 
         internal void SetCancellationAcknowledged()
         {
-            Thread.VolatileWrite(ref _cancellationAcknowledged, 1);
+            Volatile.Write(ref _cancellationAcknowledged, 1);
         }
 
         internal void ThrowIfExceptional(bool includeTaskCanceledExceptions)
@@ -358,9 +342,9 @@ namespace System.Threading.Tasks
         /// </summary>
         internal void UpdateExceptionObservedStatus()
         {
-            if ((_parent != null) && ((_creationOptions & TaskCreationOptions.AttachedToParent) != 0) && ((_parent._creationOptions & TaskCreationOptions.DenyChildAttach) == 0) && InternalCurrent == _parent)
+            if ((_parent != null) && ((CreationOptions & TaskCreationOptions.AttachedToParent) != 0) && ((_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0) && InternalCurrent == _parent)
             {
-                Thread.VolatileWrite(ref _exceptionObservedByParent, 1);
+                Volatile.Write(ref _exceptionObservedByParent, 1);
             }
         }
 
@@ -388,7 +372,7 @@ namespace System.Threading.Tasks
         ///
         /// Since a child task can only be created from the thread executing the action delegate
         /// of this task, reentrancy is neither required nor supported. This should not be called from
-        /// anywhere other than the task construction/initialization codepaths.
+        /// anywhere other than the task construction/initialization code paths.
         /// </summary>
         private void AddNewChild()
         {
@@ -452,8 +436,8 @@ namespace System.Threading.Tasks
                 // If we have an exception related to our CancellationToken, then we need to subtract ourselves
                 // from our parent before throwing it.
                 if ((_parent != null)
-                    && ((_creationOptions & TaskCreationOptions.AttachedToParent) != 0)
-                    && ((_parent._creationOptions & TaskCreationOptions.DenyChildAttach) == 0)
+                    && ((CreationOptions & TaskCreationOptions.AttachedToParent) != 0)
+                    && ((_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0)
                 )
                 {
                     _parent.DisregardChild();
@@ -463,7 +447,7 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Executes the task. This method will only be called once, and handles bookeeping associated with
+        /// Executes the task. This method will only be called once, and handles bookkeeping associated with
         /// self-replicating tasks, in addition to performing necessary exception marshaling.
         /// </summary>
         private void Execute()
@@ -478,7 +462,7 @@ namespace System.Threading.Tasks
                 HandleException(tae);
 
                 // This is a ThreadAbortException and it will be rethrown from this catch clause, causing us to
-                // skip the regular Finish codepath. In order not to leave the task unfinished, we now call
+                // skip the regular Finish code path. In order not to leave the task unfinished, we now call
                 // FinishThreadAbortedTask here.
                 FinishThreadAbortedTask(true, true);
             }
@@ -597,7 +581,7 @@ namespace System.Threading.Tasks
             }
             if (canceledException != null)
             {
-                // No exceptions, but there was a cancelation. Aggregate and return it.
+                // No exceptions, but there was a cancellation. Aggregate and return it.
                 return new AggregateException(canceledException);
             }
 

@@ -1,3 +1,5 @@
+#if NET20 || NET30 || NET35
+
 // QueryableTransformer.cs
 //
 // Authors:
@@ -32,7 +34,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-
 using Theraot.Core;
 
 namespace System.Linq
@@ -79,7 +80,7 @@ namespace System.Linq
             }
             else if (type.IsGenericInstanceOf(typeof(Expression<>)))
             {
-                type = type.GetFirstGenericArgument();
+                type = type.GetGenericArguments()[0];
             }
             else if (type == typeof(IQueryable))
             {
@@ -213,3 +214,5 @@ namespace System.Linq
         }
     }
 }
+
+#endif

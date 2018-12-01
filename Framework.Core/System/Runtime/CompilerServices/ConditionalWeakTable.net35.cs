@@ -45,10 +45,7 @@ namespace System.Runtime.CompilerServices
         /// <returns>An instance of a reference type that represents the value to attach to the specified key.</returns>
         public delegate TValue CreateValueCallback(TKey key);
 
-        internal ICollection<TKey> Keys
-        {
-            get { return _wrapped.Keys; }
-        }
+        internal ICollection<TKey> Keys => _wrapped.Keys;
 
         /// <summary>
         /// Adds a key to the table.
@@ -97,11 +94,6 @@ namespace System.Runtime.CompilerServices
             return _wrapped.GetOrAdd(key, input => createValueCallback(input));
         }
 
-        private TValue PrivateGetValue(TKey key, Func<TKey, TValue> createValueCallback)
-        {
-            return _wrapped.GetOrAdd(key, createValueCallback);
-        }
-
         /// <summary>
         /// Removes a key and its value from the table.
         /// </summary>
@@ -133,6 +125,11 @@ namespace System.Runtime.CompilerServices
                 throw new ArgumentNullException(nameof(key));
             }
             return _wrapped.TryGetValue(key, out value);
+        }
+
+        private TValue PrivateGetValue(TKey key, Func<TKey, TValue> createValueCallback)
+        {
+            return _wrapped.GetOrAdd(key, createValueCallback);
         }
     }
 }

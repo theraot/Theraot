@@ -4,15 +4,20 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
-
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
-using Theraot.Core;
+
+#if NET20 || NET30 || NET35 || NET40
+
+using System.Runtime.CompilerServices;
+
+#endif
 
 namespace Theraot.Collections
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public static partial class Extensions
     {
         public static void Add<T>(this Stack<T> stack, T item)
@@ -33,18 +38,74 @@ namespace Theraot.Collections
             queue.Enqueue(item);
         }
 
-        public static T[] AddFirst<T>(this IList<T> list, T item)
+        public static T[] AddFirst<T>(this T[] array, T item)
         {
-            if (list == null)
+            if (array == null)
             {
-                throw new ArgumentNullException(nameof(list));
+                throw new ArgumentNullException(nameof(array));
             }
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
-            var res = new T[list.Count + 1];
+            var res = new T[array.Length + 1];
             res[0] = item;
-            list.CopyTo(res, 1);
+            array.CopyTo(res, 1);
             return res;
+        }
+
+        public static T[] AddLast<T>(this T[] array, T item)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+            var res = new T[array.Length + 1];
+            array.CopyTo(res, 0);
+            res[array.Length] = item;
+            return res;
+        }
+
+        public static T[] AsArray<T>(IEnumerable<T> source)
+        {
+            if (source == null)
+            {
+                return ArrayReservoir<T>.EmptyArray;
+            }
+            if (source is T[] array)
+            {
+                return array;
+            }
+#if NET20 || NET30 || NET35 || NET40
+            if (source is TrueReadOnlyCollection<T> trueReadOnlyCollection)
+            {
+                return trueReadOnlyCollection.Wrapped;
+            }
+#endif
+            if (source is ICollection<T> collection)
+            {
+                if (collection.Count == 0)
+                {
+                    return ArrayReservoir<T>.EmptyArray;
+                }
+                var result = new T[collection.Count];
+                collection.CopyTo(result, 0);
+                return result;
+            }
+            return (new List<T>(source)).ToArray();
+        }
+
+        public static List<T> AsList<T>(IEnumerable<T> source)
+        {
+            if (source == null)
+            {
+                return new List<T>();
+            }
+            if (source is List<T> list)
+            {
+                return list;
+            }
+            return new List<T>(source);
         }
 
         public static void CanCopyTo(int count, Array array)
@@ -151,7 +212,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(items));
             }
             IEqualityComparer<T> comparer = EqualityComparer<T>.Default;
-            var localCollection = AsCollection(source);
+            var localCollection = AsICollection(source);
             foreach (var item in items)
             {
                 if (localCollection.Contains(item, comparer))
@@ -173,7 +234,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(items));
             }
             comparer = comparer ?? EqualityComparer<T>.Default;
-            var localCollection = AsCollection(source);
+            var localCollection = AsICollection(source);
             foreach (var item in items)
             {
                 if (localCollection.Contains(item, comparer))
@@ -500,7 +561,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(filter));
             }
-            return ConvertProgressiveFiltered<T, TOutput>(source, converter, filter);
+            return ConvertProgressiveFiltered(source, converter, filter);
         }
 
         public static IEnumerable<KeyValuePair<int, TOutput>> ConvertProgressiveIndexed<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)
@@ -970,7 +1031,7 @@ namespace Theraot.Collections
                     }
                     currentIndex++;
                 }
-                return default;
+                return default(T);
             }
         }
 
@@ -1003,7 +1064,7 @@ namespace Theraot.Collections
                     }
                     currentIndex++;
                 }
-                return default;
+                return default(T);
             }
         }
 
@@ -1026,7 +1087,7 @@ namespace Theraot.Collections
                         return enumerator.Current;
                     }
                 }
-                return default;
+                return default(T);
             }
         }
 
@@ -1498,7 +1559,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(dictionary));
             }
-            if (dictionary.TryGetValue(key, out TValue value))
+            if (dictionary.TryGetValue(key, out var value))
             {
                 return value;
             }
@@ -1512,11 +1573,11 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(dictionary));
             }
-            if (dictionary.TryGetValue(key, out TValue value))
+            if (dictionary.TryGetValue(key, out var value))
             {
                 return value;
             }
-            var newValue = create == null ? default : create();
+            var newValue = create == null ? default(TValue) : create();
             dictionary.Add(key, newValue);
             return newValue;
         }
@@ -1701,8 +1762,29 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            var enumerators = source.Select(x => x.GetEnumerator()).ToArray();
-            return InterleaveMany<T>(enumerators);
+            var enumerators = source.Select(x => x.GetEnumerator()).ToList();
+            return InterleaveManyExtracted();
+
+            IEnumerable<T> InterleaveManyExtracted()
+            {
+                try
+                {
+                    while (enumerators.All(enumerator => enumerator.MoveNext()))
+                    {
+                        foreach (var enumerator in enumerators)
+                        {
+                            yield return enumerator.Current;
+                        }
+                    }
+                }
+                finally
+                {
+                    foreach (var enumerator in enumerators)
+                    {
+                        enumerator.Dispose();
+                    }
+                }
+            }
         }
 
         public static int IntersectWith<T>(this ICollection<T> source, IEnumerable<T> other)
@@ -1715,7 +1797,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(other));
             }
-            var otherAsCollection = AsCollection(other);
+            var otherAsCollection = AsICollection(other);
             return source.RemoveWhere(input => !otherAsCollection.Contains(input));
         }
 
@@ -1730,7 +1812,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(other));
             }
             comparer = comparer ?? EqualityComparer<T>.Default;
-            var otherAsCollection = AsCollection(other);
+            var otherAsCollection = AsICollection(other);
             return source.RemoveWhere(input => !otherAsCollection.Contains(input, comparer));
         }
 
@@ -1744,7 +1826,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(other));
             }
-            var otherAsCollection = AsCollection(other);
+            var otherAsCollection = AsICollection(other);
             return source.RemoveWhereEnumerable(input => !otherAsCollection.Contains(input));
         }
 
@@ -1759,7 +1841,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(other));
             }
             comparer = comparer ?? EqualityComparer<T>.Default;
-            var otherAsCollection = AsCollection(other);
+            var otherAsCollection = AsICollection(other);
             return source.RemoveWhereEnumerable(input => !otherAsCollection.Contains(input, comparer));
         }
 
@@ -2348,7 +2430,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(other));
             }
-            var thatAsCollection = AsCollection(other);
+            var thatAsCollection = AsICollection(other);
             foreach (var item in thatAsCollection.Where(input => !source.Contains(input)))
             {
                 GC.KeepAlive(item);
@@ -2420,15 +2502,6 @@ namespace Theraot.Collections
             return source.AddRangeEnumerable(Where(other.Distinct(), input => !source.Remove(input)));
         }
 
-        public static T[] ToArray<T>(this ICollection<T> source)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            return new List<T>(source).ToArray();
-        }
-
         public static T[] ToArray<T>(this IEnumerable<T> source, int count)
         {
             if (source == null)
@@ -2438,6 +2511,18 @@ namespace Theraot.Collections
             if (count < 0)
             {
                 throw new ArgumentNullException(nameof(count));
+            }
+            if (source is ICollection<T> collection && count >= collection.Count)
+            {
+                var array = new T[collection.Count];
+                collection.CopyTo(array, 0);
+                return array;
+            }
+            if (source is string str && count >= str.Length)
+            {
+                var array = new char[str.Length];
+                str.CopyTo(array, 0);
+                return (T[])(object)array;
             }
             var result = new List<T>(count);
             foreach (var item in source)
@@ -2461,7 +2546,7 @@ namespace Theraot.Collections
             {
                 return sourceAsReadOnlyCollection;
             }
-            return new ReadOnlyCollection<TSource>(source.ToArray());
+            return new ReadOnlyCollection<TSource>(AsIList(source));
         }
 
         public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
@@ -2482,7 +2567,7 @@ namespace Theraot.Collections
             }
         }
 
-        public static bool TryFind<T>(this IEnumerable<T> source, int index, int count, Predicate<T> predicate, out T founT)
+        public static bool TryFind<T>(this IEnumerable<T> source, int index, int count, Predicate<T> predicate, out T found)
         {
             if (predicate == null)
             {
@@ -2512,17 +2597,17 @@ namespace Theraot.Collections
                     }
                     if (predicate(enumerator.Current))
                     {
-                        founT = enumerator.Current;
+                        found = enumerator.Current;
                         return true;
                     }
                     currentIndex++;
                 }
-                founT = default;
+                found = default(T);
                 return false;
             }
         }
 
-        public static bool TryFind<T>(this IEnumerable<T> source, int index, Predicate<T> predicate, out T founT)
+        public static bool TryFind<T>(this IEnumerable<T> source, int index, Predicate<T> predicate, out T found)
         {
             if (predicate == null)
             {
@@ -2547,17 +2632,17 @@ namespace Theraot.Collections
                 {
                     if (predicate(enumerator.Current))
                     {
-                        founT = enumerator.Current;
+                        found = enumerator.Current;
                         return true;
                     }
                     currentIndex++;
                 }
-                founT = default;
+                found = default(T);
                 return false;
             }
         }
 
-        public static bool TryFind<T>(this IEnumerable<T> source, Predicate<T> predicate, out T founT)
+        public static bool TryFind<T>(this IEnumerable<T> source, Predicate<T> predicate, out T found)
         {
             if (predicate == null)
             {
@@ -2573,11 +2658,11 @@ namespace Theraot.Collections
                 {
                     if (predicate(enumerator.Current))
                     {
-                        founT = enumerator.Current;
+                        found = enumerator.Current;
                         return true;
                     }
                 }
-                founT = default;
+                found = default(T);
                 return false;
             }
         }
@@ -2594,7 +2679,7 @@ namespace Theraot.Collections
             }
             var currentIndex = 0;
             var limit = index + count;
-            foundItem = default;
+            foundItem = default(T);
             var found = false;
             using (var enumerator = source.GetEnumerator())
             {
@@ -2634,7 +2719,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
-            foundItem = default;
+            foundItem = default(T);
             var found = false;
             using (var enumerator = source.GetEnumerator())
             {
@@ -2669,7 +2754,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            foundItem = default;
+            foundItem = default(T);
             var found = false;
             using (var enumerator = source.GetEnumerator())
             {
@@ -2698,7 +2783,7 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default;
+                item = default(T);
                 return false;
             }
         }
@@ -2716,7 +2801,7 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default;
+                item = default(T);
                 return false;
             }
         }
@@ -2855,7 +2940,7 @@ namespace Theraot.Collections
 
             IEnumerable<TResult> ZipManyExtracted()
             {
-                var enumerators = source.Select(x => x.GetEnumerator()).ToArray();
+                var enumerators = source.Select(x => x.GetEnumerator()).ToList();
                 try
                 {
                     while (enumerators.All(enumerator => enumerator.MoveNext()))
@@ -2873,31 +2958,10 @@ namespace Theraot.Collections
             }
         }
 
-        private static IEnumerable<T> InterleaveMany<T>(IEnumerator<T>[] enumerators)
-        {
-            try
-            {
-                while (enumerators.All(enumerator => enumerator.MoveNext()))
-                {
-                    foreach (var enumerator in enumerators)
-                    {
-                        yield return enumerator.Current;
-                    }
-                }
-            }
-            finally
-            {
-                foreach (var enumerator in enumerators)
-                {
-                    enumerator.Dispose();
-                }
-            }
-        }
-
         private static bool IsSubsetOf<T>(this IEnumerable<T> source, IEnumerable<T> other, bool proper)
         {
-            var @this = AsDistinctCollection(source);
-            var that = AsDistinctCollection(other);
+            var @this = AsDistinctICollection(source);
+            var that = AsDistinctICollection(other);
             var elementCount = 0;
             var matchCount = 0;
             foreach (var item in that)
@@ -2917,8 +2981,8 @@ namespace Theraot.Collections
 
         private static bool IsSupersetOf<T>(this IEnumerable<T> source, IEnumerable<T> other, bool proper)
         {
-            var @this = AsDistinctCollection(source);
-            var that = AsDistinctCollection(other);
+            var @this = AsDistinctICollection(source);
+            var that = AsDistinctICollection(other);
             var elementCount = 0;
             foreach (var item in that)
             {
@@ -3135,7 +3199,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("items");
             }
             var localComparer = EqualityComparer<T>.Default;
-            var localCollection = AsCollection(source);
+            var localCollection = AsICollection(source);
             foreach (var item in items)
             {
                 if (!localCollection.Contains(item, localComparer))
@@ -3157,7 +3221,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("items");
             }
             var localComparer = comparer ?? EqualityComparer<T>.Default;
-            var localCollection = AsCollection(source);
+            var localCollection = AsICollection(source);
             foreach (var item in items)
             {
                 if (!localCollection.Contains(item, localComparer))

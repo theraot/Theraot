@@ -8,17 +8,12 @@ namespace Theraot.Core
 {
     public sealed class DelegateEqualityComparer : IEqualityComparer<Delegate>
     {
-        private static readonly DelegateEqualityComparer _default = new DelegateEqualityComparer();
-
         private DelegateEqualityComparer()
         {
             // Empty
         }
 
-        public static DelegateEqualityComparer Default
-        {
-            get { return _default; }
-        }
+        public static DelegateEqualityComparer Default { get; } = new DelegateEqualityComparer();
 
         public bool Equals(Delegate x, Delegate y)
         {

@@ -74,12 +74,7 @@ namespace System.Threading.Tasks
         /// <param name="task">The task.</param>
         public ValueTask(Task<TResult> task)
         {
-            if (task == null)
-            {
-                throw new ArgumentNullException(nameof(task));
-            }
-
-            _task = task;
+            _task = task ?? throw new ArgumentNullException(nameof(task));
             _result = default;
         }
 
@@ -95,8 +90,8 @@ namespace System.Threading.Tasks
         public override bool Equals(object obj)
         {
             return
-                obj is ValueTask<TResult> &&
-                Equals((ValueTask<TResult>)obj);
+                obj is ValueTask<TResult> task &&
+                Equals(task);
         }
 
         public bool Equals(ValueTask<TResult> other)
@@ -132,19 +127,19 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> represents a completed operation.</summary>
-        public bool IsCompleted { get { return _task == null || _task.IsCompleted; } }
+        public bool IsCompleted => _task == null || _task.IsCompleted;
 
         /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> represents a successfully completed operation.</summary>
-        public bool IsCompletedSuccessfully { get { return _task == null || _task.Status == TaskStatus.RanToCompletion; } }
+        public bool IsCompletedSuccessfully => _task == null || _task.Status == TaskStatus.RanToCompletion;
 
         /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> represents a failed operation.</summary>
-        public bool IsFaulted { get { return _task != null && _task.IsFaulted; } }
+        public bool IsFaulted => _task != null && _task.IsFaulted;
 
         /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> represents a canceled operation.</summary>
-        public bool IsCanceled { get { return _task != null && _task.IsCanceled; } }
+        public bool IsCanceled => _task != null && _task.IsCanceled;
 
         /// <summary>Gets the result.</summary>
-        public TResult Result { get { return _task == null ? _result : _task.GetAwaiter().GetResult(); } }
+        public TResult Result => _task == null ? _result : _task.GetAwaiter().GetResult();
 
         /// <summary>Gets an awaiter for this value.</summary>
         public ValueTaskAwaiter<TResult> GetAwaiter()

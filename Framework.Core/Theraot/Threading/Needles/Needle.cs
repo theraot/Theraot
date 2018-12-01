@@ -1,10 +1,11 @@
 // Needed for NET40
 
 using System;
+using System.Diagnostics;
 
 namespace Theraot.Threading.Needles
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public class Needle<T> : IEquatable<Needle<T>>, IRecyclableNeedle<T>, IPromise<T>
     {
         private readonly int _hashCode;
@@ -35,22 +36,12 @@ namespace Theraot.Threading.Needles
             get
             {
                 var target = _target;
-                if (target is ExceptionStructNeedle<T>)
+                if (target is ExceptionStructNeedle<T> needle)
                 {
-                    return ((ExceptionStructNeedle<T>)target).Exception;
+                    return needle.Exception;
                 }
                 return null;
             }
-        }
-
-        bool IPromise.IsCanceled
-        {
-            get { return false; }
-        }
-
-        bool IPromise.IsCompleted
-        {
-            get { return IsAlive; }
         }
 
         public bool IsAlive
@@ -62,16 +53,16 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public bool IsFaulted
-        {
-            get { return _target is ExceptionStructNeedle<T>; }
-        }
+        bool IPromise.IsCanceled => false;
+
+        bool IPromise.IsCompleted => IsAlive;
+        public bool IsFaulted => _target is ExceptionStructNeedle<T>;
 
         public virtual T Value
         {
-            get { return _target.Value; }
+            get => _target.Value;
 
-            set { SetTargetValue(value); }
+            set => SetTargetValue(value);
         }
 
         public static explicit operator T(Needle<T> needle)
@@ -155,6 +146,10 @@ namespace Theraot.Threading.Needles
 
         public bool Equals(Needle<T> other)
         {
+            if (other == null)
+            {
+                return false;
+            }
             var target = _target;
             if (target == null)
             {

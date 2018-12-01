@@ -92,18 +92,15 @@ namespace System.Threading
         public long CurrentPhaseNumber
         {
             // use the new Volatile.Read/Write method because it is cheaper than Interlocked.Read on AMD64 architecture
-            get { return Volatile.Read(ref _currentPhase); }
+            get => Volatile.Read(ref _currentPhase);
 
-            internal set { Volatile.Write(ref _currentPhase, value); }
+            internal set => Volatile.Write(ref _currentPhase, value);
         }
 
         /// <summary>
         /// Gets the total number of participants in the barrier.
         /// </summary>
-        public int ParticipantCount
-        {
-            get { return Volatile.Read(ref _currentTotalCount) & _totalMask; }
-        }
+        public int ParticipantCount => Volatile.Read(ref _currentTotalCount) & _totalMask;
 
         /// <summary>
         /// Gets the number of participants in the barrier that haven't yet signaled
@@ -243,7 +240,7 @@ namespace System.Threading
             while (true)
             {
                 var currentTotal = Volatile.Read(ref _currentTotalCount);
-                GetCurrentTotal(currentTotal, out int current, out int total, out bool sense);
+                GetCurrentTotal(currentTotal, out var current, out var total, out var sense);
                 if (participantCount + total > _maxParticipants) //overflow
                 {
                     throw new ArgumentOutOfRangeException(nameof(participantCount),
@@ -255,14 +252,14 @@ namespace System.Threading
                     // Calculating the first phase for that participant, if the current phase already finished return the next phase else return the current phase
                     // To know that the current phase is  the sense doesn't match the
                     // phase odd even, so that means it didn't yet change the phase count, so currentPhase +1 is returned, otherwise currentPhase is returned
-                    var currPhase = CurrentPhaseNumber;
-                    newPhase = (sense != (currPhase % 2 == 0)) ? currPhase + 1 : currPhase;
+                    var currentPhaseNumber = CurrentPhaseNumber;
+                    newPhase = (sense != (currentPhaseNumber % 2 == 0)) ? currentPhaseNumber + 1 : currentPhaseNumber;
 
                     // If this participant is going to join the next phase, which means the postPhaseAction is being running, this participants must wait until this done
                     // and its event is reset.
                     // Without that, if the postPhaseAction takes long time, this means the event that the current participant is going to wait on is still set
                     // (FinishPhase didn't reset it yet) so it should wait until it reset
-                    if (newPhase != currPhase)
+                    if (newPhase != currentPhaseNumber)
                     {
                         // Wait on the opposite event
                         if (sense)
@@ -312,14 +309,8 @@ namespace System.Threading
             {
                 throw new InvalidOperationException("This method may not be called from within the postPhaseAction.");
             }
-            try
-            {
-                Dispose(true);
-            }
-            finally
-            {
-                GC.SuppressFinalize(this);
-            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -371,7 +362,7 @@ namespace System.Threading
             while (true)
             {
                 var currentTotal = Volatile.Read(ref _currentTotalCount);
-                GetCurrentTotal(currentTotal, out int current, out int total, out bool sense);
+                GetCurrentTotal(currentTotal, out var current, out var total, out var sense);
 
                 if (total < participantCount)
                 {
@@ -383,8 +374,8 @@ namespace System.Threading
                     throw new InvalidOperationException("The participantCount argument is greater than the number of participants that haven't yet arrived at the barrier in this phase.");
                 }
                 // If the remaining participants = current participants, then finish the current phase
-                var remaingParticipants = total - participantCount;
-                if (remaingParticipants > 0 && current == remaingParticipants)
+                var remainingParticipants = total - participantCount;
+                if (remainingParticipants > 0 && current == remainingParticipants)
                 {
                     if (SetCurrentTotal(currentTotal, 0, total - participantCount, !sense))
                     {
@@ -631,7 +622,7 @@ namespace System.Threading
                 while (true)
                 {
                     currentTotal = Volatile.Read(ref _currentTotalCount);
-                    GetCurrentTotal(currentTotal, out current, out total, out bool newSense);
+                    GetCurrentTotal(currentTotal, out current, out total, out var newSense);
                     // If the timeout expired and the phase has just finished, return true and this is considered as succeeded SignalAndWait
                     //otherwise the timeout expired and the current phase has not been finished yet, return false
                     //The phase is finished if the phase member variable is changed (incremented) or the sense has been changed
@@ -744,7 +735,7 @@ namespace System.Threading
                     }
                 }
 
-                //if the maxwait exceeded 10 seconds then we will stop increasing the maxWait time and keep it 10 seconds, otherwise keep doubling it
+                //if the maxWait exceeded 10 seconds then we will stop increasing the maxWait time and keep it 10 seconds, otherwise keep doubling it
                 maxWait = maxWait >= WaitTimeCeiling ? WaitTimeCeiling : Math.Min(maxWait << 1, WaitTimeCeiling);
             }
 

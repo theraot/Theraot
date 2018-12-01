@@ -237,14 +237,11 @@ namespace MonoTests.System.Collections.Generic
             var one = new SortedSet<int> { 1 };
             var two = new SortedSet<int> { 2 };
             var bit = new SortedSet<int> { 0, 1 };
-            var trit = new SortedSet<int> { 0, 1, 2 };
+            var trio = new SortedSet<int> { 0, 1, 2 };
             var odds = new SortedSet<int> { 1, 3, 5, 7, 9 };
             var evens = new SortedSet<int> { 2, 4, 6, 8 };
             var digits = new SortedSet<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             var squares = new SortedSet<int> { 0, 1, 4, 9 };
-
-            var nonPrimeOddDigit = odds.GetViewBetween(8, 42);
-            var nonTrit = digits.GetViewBetween(3, 42);
 
             DoTest(empty, empty, false, /*se:*/ true, false, false);
             DoTest(empty, zero, false, false, /*psb:*/ true, false);
@@ -252,26 +249,52 @@ namespace MonoTests.System.Collections.Generic
             DoTest(zero, zero, false, /*se:*/ true, false, false);
             DoTest(zero, one, false, false, false, false);
             DoTest(zero, bit, false, false, /*psb:*/ true, false);
-            DoTest(zero, trit, false, false, /*psb:*/ true, false);
+            DoTest(zero, trio, false, false, /*psb:*/ true, false);
             DoTest(one, bit, false, false, /*psb:*/ true, false);
-            DoTest(one, trit, false, false, /*psb:*/ true, false);
+            DoTest(one, trio, false, false, /*psb:*/ true, false);
             DoTest(two, bit, false, false, false, false);
-            DoTest(two, trit, false, false, /*psb:*/ true, false);
+            DoTest(two, trio, false, false, /*psb:*/ true, false);
             DoTest(odds, squares, /*o:*/ true, false, false, false);
             DoTest(evens, squares, /*o:*/ true, false, false, false);
             DoTest(odds, digits, false, false, /*psb:*/ true, false);
             DoTest(evens, digits, false, false, /*psb:*/ true, false);
             DoTest(squares, digits, false, false, /*psb:*/ true, false);
             DoTest(digits, digits, false, /*se:*/ true, false, false);
+        }
+
+        [Test]
+        public void TestSetComparesB()
+        {
+            var trio = new SortedSet<int> { 0, 1, 2 };
+            var odds = new SortedSet<int> { 1, 3, 5, 7, 9 };
+            var evens = new SortedSet<int> { 2, 4, 6, 8 };
+            var digits = new SortedSet<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            var squares = new SortedSet<int> { 0, 1, 4, 9 };
+
+            var nonPrimeOddDigit = odds.GetViewBetween(8, 42);
+            var nonTrio = digits.GetViewBetween(3, 42);
+
             DoTestE(digits, squares.Concat(evens.Concat(odds)), /*o:*/ true, /*se:*/ true, false, false);
             DoTest(nonPrimeOddDigit, digits, false, false, /*psb:*/ true, false);
             DoTestE(nonPrimeOddDigit, new[] { 9 }, /*o:*/ true, /*se:*/ true, false, false);
-            DoTest(nonTrit, digits, false, false, /*psb:*/ true, false);
-            // DoTest(trit, nonTrit, false, false, false, false); // <- This line fails against Microsoft .NET 4.0 and 4.5
-            DoTestE(digits, trit.Concat(nonTrit), /*o:*/ true, /*se:*/ true, false, false);
-            DoTestE(nonTrit, new[] { 3, 4, 5, 6, 7, 8, 9 }, /*o:*/ true, /*se:*/ true, false, false);
-            DoTest(digits.GetViewBetween(0, 2), trit, false, /*se:*/ true, false, false);
+            DoTest(nonTrio, digits, false, false, /*psb:*/ true, false);
+            DoTestE(digits, trio.Concat(nonTrio), /*o:*/ true, /*se:*/ true, false, false);
+            DoTestE(nonTrio, new[] { 3, 4, 5, 6, 7, 8, 9 }, /*o:*/ true, /*se:*/ true, false, false);
+            DoTest(digits.GetViewBetween(0, 2), trio, false, /*se:*/ true, false, false);
         }
+
+#if NET20 || NET30 || NET35
+        [Test]
+        public void TestSetComparesC()
+        {
+            var trio = new SortedSet<int> { 0, 1, 2 };
+            var digits = new SortedSet<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            var nonTrio = digits.GetViewBetween(3, 42);
+
+            DoTest(trio, nonTrio, false, false, false, false); // <- This line fails against Microsoft .NET 4.0 and 4.5
+        }
+#endif
 
         [Test]
         public void UnionWith()
@@ -522,11 +545,17 @@ namespace MonoTests.System.Collections.Generic
             Assert.IsTrue(!sb || !psu);
 
             // actual tests // TODO: Review
+            // ReSharper disable once PossibleMultipleEnumeration
             Assert.AreEqual(o, s1.Overlaps(s2));
+            // ReSharper disable once PossibleMultipleEnumeration
             Assert.AreEqual(se, s1.SetEquals(s2));
+            // ReSharper disable once PossibleMultipleEnumeration
             Assert.AreEqual(sb, s1.IsSubsetOf(s2));
+            // ReSharper disable once PossibleMultipleEnumeration
             Assert.AreEqual(su, s1.IsSupersetOf(s2));
+            // ReSharper disable once PossibleMultipleEnumeration
             Assert.AreEqual(psb, s1.IsProperSubsetOf(s2));
+            // ReSharper disable once PossibleMultipleEnumeration
             Assert.AreEqual(psu, s1.IsProperSupersetOf(s2));
         }
     }

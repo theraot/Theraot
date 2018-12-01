@@ -1,6 +1,7 @@
 ﻿// Needed for NET40
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Theraot.Threading;
@@ -12,10 +13,11 @@ namespace Theraot.Collections.ThreadSafe
     /// </summary>
     /// <typeparam name="T">The type of the item.</typeparam>
 #if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+
     [Serializable]
 #endif
 
-    public sealed class FixedSizeBucket<T> : IEnumerable<T>, IBucket<T>
+    public sealed class FixedSizeBucket<T> : IBucket<T>
     {
         private int _count;
         private object[] _entries;
@@ -41,7 +43,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException(nameof(source));
             }
             var collection = source as ICollection<T>;
-            _entries = ArrayReservoir<object>.GetArray(collection == null ? 64 : collection.Count);
+            _entries = ArrayReservoir<object>.GetArray(collection?.Count ?? 64);
             Capacity = _entries.Length;
             foreach (var item in source)
             {
@@ -96,24 +98,21 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Gets the capacity.
         /// </summary>
-        public int Capacity { get; private set; }
+        public int Capacity { get; }
 
         /// <summary>
         /// Gets the number of items actually contained.
         /// </summary>
-        public int Count
-        {
-            get { return _count; }
-        }
+        public int Count => _count;
 
         /// <summary>
         /// Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="System.ArgumentNullException">array</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
+        /// <exception cref="ArgumentNullException">array</exception>
+        /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
             if (array == null)
@@ -161,7 +160,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was new; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool Exchange(int index, T item, out T previous)
         {
             if (index < 0 || index >= Capacity)
@@ -195,7 +194,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
@@ -208,7 +207,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
         /// <remarks>
         /// The insertion can fail if the index is already used or is being written by another thread.
         /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
@@ -231,7 +230,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         /// <remarks>
         /// The insertion can fail if the index is already used or is being written by another thread.
         /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
@@ -252,7 +251,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was removed; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool RemoveAt(int index)
         {
             if (index < 0 || index >= Capacity)
@@ -276,7 +275,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was removed; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool RemoveAt(int index, out T previous)
         {
             if (index < 0 || index >= Capacity)
@@ -294,7 +293,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was removed; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool RemoveAt(int index, Predicate<T> check)
         {
             if (index < 0 || index >= Capacity)
@@ -328,7 +327,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="index">The index.</param>
         /// <param name="item">The item.</param>
         /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public void Set(int index, T item, out bool isNew)
         {
             if (index < 0 || index >= Capacity)
@@ -346,7 +345,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was retrieved; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool TryGet(int index, out T value)
         {
             if (index < 0 || index >= Capacity)
@@ -366,7 +365,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
         /// <remarks>
         /// The insertion can fail if the index is already used or is being written by another thread.
         /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.

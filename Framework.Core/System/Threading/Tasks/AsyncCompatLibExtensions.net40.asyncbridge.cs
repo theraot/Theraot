@@ -34,7 +34,9 @@ namespace System.Threading.Tasks
             bool continueOnCapturedContext)
         {
             if (task == null)
+            {
                 throw new ArgumentNullException("task");
+            }
 
             return new ConfiguredTaskAwaitable<TResult>(task, continueOnCapturedContext);
         }
@@ -51,7 +53,9 @@ namespace System.Threading.Tasks
         public static ConfiguredTaskAwaitable ConfigureAwait(this Task task, bool continueOnCapturedContext)
         {
             if (task == null)
+            {
                 throw new ArgumentNullException("task");
+            }
 
             return new ConfiguredTaskAwaitable(task, continueOnCapturedContext);
         }
@@ -66,7 +70,9 @@ namespace System.Threading.Tasks
         public static TaskAwaiter GetAwaiter(this Task task)
         {
             if (task == null)
+            {
                 throw new ArgumentNullException("task");
+            }
 
             return new TaskAwaiter(task);
         }
@@ -82,7 +88,9 @@ namespace System.Threading.Tasks
         public static TaskAwaiter<TResult> GetAwaiter<TResult>(this Task<TResult> task)
         {
             if (task == null)
+            {
                 throw new ArgumentNullException("task");
+            }
 
             return new TaskAwaiter<TResult>(task);
         }

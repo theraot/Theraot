@@ -9,41 +9,16 @@ namespace System
     [Serializable]
     public class Tuple<T1> : IStructuralEquatable, IStructuralComparable, IComparable
     {
-        private readonly T1 _item1;
-
         public Tuple(T1 item1)
         {
-            _item1 = item1;
+            Item1 = item1;
         }
 
-        public T1 Item1
-        {
-            get { return _item1; }
-        }
-
-        public override bool Equals(object obj)
-        {
-            return ((IStructuralEquatable)this).Equals(obj, EqualityComparer<object>.Default);
-        }
-
-        public override int GetHashCode()
-        {
-            return ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
-        }
+        public T1 Item1 { get; }
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
             return CompareTo(other, comparer);
-        }
-
-        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
-        {
-            return other is Tuple<T1> tuple && comparer.Equals(_item1, tuple._item1);
-        }
-
-        int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
-        {
-            return comparer.GetHashCode(_item1);
         }
 
         int IComparable.CompareTo(object obj)
@@ -51,9 +26,29 @@ namespace System
             return CompareTo(obj, Comparer<object>.Default);
         }
 
+        public override bool Equals(object obj)
+        {
+            return ((IStructuralEquatable)this).Equals(obj, EqualityComparer<object>.Default);
+        }
+
+        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
+        {
+            return other is Tuple<T1> tuple && comparer.Equals(Item1, tuple.Item1);
+        }
+
+        public override int GetHashCode()
+        {
+            return ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
+        }
+
+        int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
+        {
+            return comparer.GetHashCode(Item1);
+        }
+
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "({0})", _item1);
+            return string.Format(CultureInfo.InvariantCulture, "({0})", Item1);
         }
 
         private int CompareTo(object other, IComparer comparer)
@@ -66,7 +61,7 @@ namespace System
             {
                 throw new ArgumentException(nameof(other));
             }
-            return comparer.Compare(_item1, tuple._item1);
+            return comparer.Compare(Item1, tuple.Item1);
         }
     }
 }

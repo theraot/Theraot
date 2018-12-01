@@ -58,17 +58,11 @@ namespace Theraot.Collections.ThreadSafe
             _probing = initialProbing;
         }
 
-        public IEqualityComparer<T> Comparer { get; private set; }
+        public IEqualityComparer<T> Comparer { get; }
 
-        public int Count
-        {
-            get { return _bucket.Count; }
-        }
+        public int Count => _bucket.Count;
 
-        bool ICollection<T>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection<T>.IsReadOnly => false;
 
         public bool Add(T item)
         {
@@ -77,7 +71,7 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                if (_bucket.Insert(hashCode + attempts, item, out T found))
+                if (_bucket.Insert(hashCode + attempts, item, out var found))
                 {
                     return true;
                 }
@@ -98,7 +92,7 @@ namespace Theraot.Collections.ThreadSafe
         /// Adds the specified value.
         /// </summary>
         /// <param name="value">The value.</param>
-        /// <exception cref="System.ArgumentException">the value is already present</exception>
+        /// <exception cref="ArgumentException">the value is already present</exception>
         public void AddNew(T value)
         {
             var hashCode = Comparer.GetHashCode(value);
@@ -106,7 +100,7 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                if (_bucket.Insert(hashCode + attempts, value, out T found))
+                if (_bucket.Insert(hashCode + attempts, value, out var found))
                 {
                     return;
                 }
@@ -144,10 +138,11 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Contains(T value)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             var hashCode = Comparer.GetHashCode(value);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (_bucket.TryGet(hashCode + attempts, out T found))
+                if (_bucket.TryGet(hashCode + attempts, out var found))
                 {
                     if (Comparer.Equals(found, value))
                     {
@@ -174,7 +169,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (_bucket.TryGet(hashCode + attempts, out T found))
+                if (_bucket.TryGet(hashCode + attempts, out var found))
                 {
                     if (Comparer.GetHashCode(found) == hashCode && check(found))
                     {
@@ -190,9 +185,9 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="System.ArgumentNullException">array</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
+        /// <exception cref="ArgumentNullException">array</exception>
+        /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
             _bucket.CopyTo(array, arrayIndex);
@@ -272,6 +267,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(T value)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             var hashCode = Comparer.GetHashCode(value);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
@@ -466,7 +462,7 @@ namespace Theraot.Collections.ThreadSafe
             value = default;
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (_bucket.TryGet(hashCode + attempts, out T found))
+                if (_bucket.TryGet(hashCode + attempts, out var found))
                 {
                     if (Comparer.GetHashCode(found) == hashCode && check(found))
                     {
@@ -521,7 +517,7 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                bool check(T found)
+                bool Check(T found)
                 {
                     if (Comparer.Equals(found, value))
                     {
@@ -535,7 +531,7 @@ namespace Theraot.Collections.ThreadSafe
                 try
                 {
                     // TryGetCheckSet will add if no item is found, otherwise it calls check
-                    if (_bucket.InsertOrUpdateChecked(hashCode + attempts, value, check, out bool isNew))
+                    if (_bucket.InsertOrUpdateChecked(hashCode + attempts, value, Check, out _))
                     {
                         // It added a new item
                         return true;

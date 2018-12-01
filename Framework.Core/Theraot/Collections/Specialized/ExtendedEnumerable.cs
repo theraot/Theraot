@@ -1,11 +1,12 @@
 // Needed for NET35 (BigInteger)
 
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Theraot.Collections.Specialized
 {
-    [System.Diagnostics.DebuggerNonUserCode]
-    public sealed class ExtendedEnumerable<T> : ExtendedEnumerableBase<T>, IEnumerable<T>
+    [DebuggerNonUserCode]
+    public sealed class ExtendedEnumerable<T> : ExtendedEnumerableBase<T>
     {
         public ExtendedEnumerable(IEnumerable<T> target, IEnumerable<T> append)
             : base(target, append)

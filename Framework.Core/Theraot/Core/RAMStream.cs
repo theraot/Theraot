@@ -33,20 +33,11 @@ namespace Theraot.Core
             _bytes = new Bucket<KeyValuePair<long, byte[]>>();
         }
 
-        public override bool CanRead
-        {
-            get { return _position != -1; }
-        }
+        public override bool CanRead => _position != -1;
 
-        public override bool CanSeek
-        {
-            get { return _position != -1; }
-        }
+        public override bool CanSeek => _position != -1;
 
-        public override bool CanWrite
-        {
-            get { return _position != -1; }
-        }
+        public override bool CanWrite => _position != -1;
 
         public override long Length
         {
@@ -62,7 +53,7 @@ namespace Theraot.Core
 
         public override long Position
         {
-            get { return _position; }
+            get => _position;
 
             set
             {
@@ -229,7 +220,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentException("The sum of offset and count is greater than the buffer length.");
             }
-            again:
+        again:
             foreach (var node in bytes.EnumerateRange((int)(_position >> _sectorBits), int.MaxValue))
             {
                 var pair = node;
@@ -292,7 +283,7 @@ namespace Theraot.Core
                 var contribution = diff > count ? count : diff;
                 var intContribution = (int)contribution;
                 Array.Copy(buffer, offset, left, (int)index, intContribution);
-                if (!Add(bytes, left, out KeyValuePair<long, byte[]> pair))
+                if (!Add(bytes, left, out _))
                 {
                     goto again;
                 }

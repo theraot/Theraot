@@ -2,13 +2,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Theraot.Core
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public static partial class StringHelper
     {
         public static string Append(this string text, string value)
@@ -823,27 +823,6 @@ namespace Theraot.Core
 
     public static partial class StringHelper
     {
-        public static bool IsNullOrWhiteSpace(string value)
-        {
-#if NET20 || NET30 || NET35
-            //Added in .NET 4.0
-            if (string.IsNullOrEmpty(value))
-            {
-                return true;
-            }
-            foreach (var character in value)
-            {
-                if (!char.IsWhiteSpace(character))
-                {
-                    return false;
-                }
-            }
-            return true;
-#else
-            return string.IsNullOrWhiteSpace(value);
-#endif
-        }
-
         public static string Concat(IEnumerable<string> values)
         {
 #if NET20 || NET30 || NET35
@@ -882,6 +861,27 @@ namespace Theraot.Core
             return ConcatExtractedExtracted(stringList.ToArray(), 0, stringList.Count, length);
 #else
             return string.Concat(values);
+#endif
+        }
+
+        public static bool IsNullOrWhiteSpace(string value)
+        {
+#if NET20 || NET30 || NET35
+            //Added in .NET 4.0
+            if (string.IsNullOrEmpty(value))
+            {
+                return true;
+            }
+            foreach (var character in value)
+            {
+                if (!char.IsWhiteSpace(character))
+                {
+                    return false;
+                }
+            }
+            return true;
+#else
+            return string.IsNullOrWhiteSpace(value);
 #endif
         }
     }
@@ -989,14 +989,14 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(text));
             }
-            if (!text.EndsWith(end, false, CultureInfo.CurrentCulture))
+            if (!text.EndsWith(end, false, System.Globalization.CultureInfo.CurrentCulture))
             {
                 return text.Append(end);
             }
             return text;
         }
 
-        public static string EnsureEnd(this string text, string end, bool ignoreCase, CultureInfo culture)
+        public static string EnsureEnd(this string text, string end, bool ignoreCase, System.Globalization.CultureInfo culture)
         {
             if (text == null)
             {
@@ -1009,7 +1009,7 @@ namespace Theraot.Core
             return text;
         }
 
-        public static string EnsureStart(this string text, string start, bool ignoreCase, CultureInfo culture)
+        public static string EnsureStart(this string text, string start, bool ignoreCase, System.Globalization.CultureInfo culture)
         {
             if (text == null)
             {
@@ -1032,14 +1032,14 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(end));
             }
-            if (text.EndsWith(end, false, CultureInfo.CurrentCulture))
+            if (text.EndsWith(end, false, System.Globalization.CultureInfo.CurrentCulture))
             {
                 return text.ExceptEnd(end.Length);
             }
             return text;
         }
 
-        public static string NeglectEnd(this string text, string end, bool ignoreCase, CultureInfo culture)
+        public static string NeglectEnd(this string text, string end, bool ignoreCase, System.Globalization.CultureInfo culture)
         {
             if (text == null)
             {
@@ -1056,7 +1056,7 @@ namespace Theraot.Core
             return text;
         }
 
-        public static string NeglectStart(this string text, string start, bool ignoreCase, CultureInfo culture)
+        public static string NeglectStart(this string text, string start, bool ignoreCase, System.Globalization.CultureInfo culture)
         {
             if (text == null)
             {

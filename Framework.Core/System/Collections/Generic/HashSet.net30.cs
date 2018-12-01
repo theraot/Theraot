@@ -59,20 +59,11 @@ namespace System.Collections.Generic
             _wrapped = new NullAwareDictionary<T, object>(info.GetValue("dictionary", typeof(KeyValuePair<T, object>[])) as KeyValuePair<T, object>[]);
         }
 
-        public IEqualityComparer<T> Comparer
-        {
-            get { return _wrapped.Comparer; }
-        }
+        public IEqualityComparer<T> Comparer => _wrapped.Comparer;
 
-        public int Count
-        {
-            get { return _wrapped.Count; }
-        }
+        public int Count => _wrapped.Count;
 
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         public static IEqualityComparer<HashSet<T>> CreateSetComparer()
         {
@@ -89,6 +80,11 @@ namespace System.Collections.Generic
             return true;
         }
 
+        void ICollection<T>.Add(T item)
+        {
+            Add(item);
+        }
+
         public void Clear()
         {
             _wrapped.Clear();
@@ -97,6 +93,7 @@ namespace System.Collections.Generic
         public bool Contains(T item)
         {
             // item can be null
+            // ReSharper disable once AssignNullToNotNullAttribute
             return _wrapped.ContainsKey(item);
         }
 
@@ -180,6 +177,11 @@ namespace System.Collections.Generic
             return new Enumerator(this);
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.SerializationFormatter)]
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
@@ -187,18 +189,8 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException(nameof(info));
             }
-            _wrapped.Deconstruct(out KeyValuePair<T, object>[] dictionary);
+            _wrapped.Deconstruct(out var dictionary);
             info.AddValue(nameof(dictionary), dictionary);
-        }
-
-        void ICollection<T>.Add(T item)
-        {
-            Add(item);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         public void IntersectWith(IEnumerable<T> other)
@@ -249,6 +241,7 @@ namespace System.Collections.Generic
         public bool Remove(T item)
         {
             // item can be null
+            // ReSharper disable once AssignNullToNotNullAttribute
             if (_wrapped.ContainsKey(item))
             {
                 return _wrapped.Remove(item);
@@ -379,19 +372,15 @@ namespace System.Collections.Generic
         {
             private readonly IEnumerator<KeyValuePair<T, object>> _enumerator;
             private bool _valid;
-            private T _current;
 
             public Enumerator(HashSet<T> hashSet)
             {
                 _enumerator = hashSet._wrapped.GetEnumerator();
                 _valid = false;
-                _current = default;
+                Current = default;
             }
 
-            public T Current
-            {
-                get { return _current; }
-            }
+            public T Current { get; private set; }
 
             object IEnumerator.Current
             {
@@ -399,7 +388,7 @@ namespace System.Collections.Generic
                 {
                     if (_valid)
                     {
-                        return _current;
+                        return Current;
                     }
                     throw new InvalidOperationException("Call MoveNext first or use IEnumerator<T>");
                 }
@@ -408,20 +397,10 @@ namespace System.Collections.Generic
             public void Dispose()
             {
                 var enumerator = _enumerator;
+                // ReSharper disable once UseNullPropagation
                 if (enumerator != null)
                 {
                     enumerator.Dispose();
-                }
-            }
-
-            void IEnumerator.Reset()
-            {
-                _valid = false;
-                var enumerator = _enumerator;
-                if (enumerator != null)
-                {
-                    _current = _enumerator.Current.Key;
-                    _enumerator.Reset();
                 }
             }
 
@@ -431,10 +410,21 @@ namespace System.Collections.Generic
                 if (enumerator != null)
                 {
                     _valid = _enumerator.MoveNext();
-                    _current = _enumerator.Current.Key;
+                    Current = _enumerator.Current.Key;
                     return _valid;
                 }
                 return false;
+            }
+
+            void IEnumerator.Reset()
+            {
+                _valid = false;
+                var enumerator = _enumerator;
+                if (enumerator != null)
+                {
+                    Current = _enumerator.Current.Key;
+                    _enumerator.Reset();
+                }
             }
         }
 

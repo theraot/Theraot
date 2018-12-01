@@ -30,10 +30,7 @@ namespace System.Runtime.CompilerServices
 
             /// <summary>Gets whether a yield is not required.</summary>
             /// <remarks>This property is intended for compiler user rather than use directly in code.</remarks>
-            public bool IsCompleted
-            {
-                get { return false; }
-            }
+            public bool IsCompleted => false;
 
             /// <summary>Ends the await operation.</summary>
             public void GetResult()
@@ -44,7 +41,7 @@ namespace System.Runtime.CompilerServices
 
             /// <summary>Posts the <paramref name="continuation"/> back to the current context.</summary>
             /// <param name="continuation">The action to invoke asynchronously.</param>
-            /// <exception cref="System.ArgumentNullException">The <paramref name="continuation"/> argument is null (Nothing in Visual Basic).</exception>
+            /// <exception cref="ArgumentNullException">The <paramref name="continuation"/> argument is null (Nothing in Visual Basic).</exception>
             [SecuritySafeCritical]
             public void OnCompleted(Action continuation)
             {
@@ -64,7 +61,7 @@ namespace System.Runtime.CompilerServices
 
             /// <summary>Posts the <paramref name="continuation"/> back to the current context.</summary>
             /// <param name="continuation">The action to invoke asynchronously.</param>
-            /// <exception cref="System.ArgumentNullException">The <paramref name="continuation"/> argument is null (Nothing in Visual Basic).</exception>
+            /// <exception cref="ArgumentNullException">The <paramref name="continuation"/> argument is null (Nothing in Visual Basic).</exception>
             [SecurityCritical]
             public void UnsafeOnCompleted(Action continuation)
             {

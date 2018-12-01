@@ -1,17 +1,15 @@
 ﻿// Needed for NET40
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Theraot.Collections
 {
-    [System.Diagnostics.DebuggerNonUserCode]
-    public
-#if FAT
-        partial
-#endif
-        class ProgressiveCollection<T> : IReadOnlyCollection<T>, ICollection<T>
+    [DebuggerNonUserCode]
+    public class ProgressiveCollection<T> : IReadOnlyCollection<T>, ICollection<T>
     {
         private readonly ICollection<T> _cache;
 
@@ -42,7 +40,7 @@ namespace Theraot.Collections
         protected ProgressiveCollection(IEnumerable<T> wrapped, ICollection<T> cache, IEqualityComparer<T> comparer)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            Cache = new ExtendedReadOnlyCollection<T>(_cache);
+            Cache = Extensions.WrapAsIReadOnlyList(_cache);
             Progressor = new Progressor<T>(wrapped);
             Progressor.SubscribeAction(obj => _cache.Add(obj));
             Comparer = comparer ?? EqualityComparer<T>.Default;
@@ -51,22 +49,13 @@ namespace Theraot.Collections
         protected ProgressiveCollection(IObservable<T> wrapped, ICollection<T> cache, IEqualityComparer<T> comparer)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            Cache = new ExtendedReadOnlyCollection<T>(_cache);
+            Cache = Extensions.WrapAsIReadOnlyCollection(_cache);
             Progressor = new Progressor<T>(wrapped);
             Progressor.SubscribeAction(obj => _cache.Add(obj));
             Comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
-        protected ProgressiveCollection(TryTake<T> tryTake, Func<bool> isDone, ICollection<T> cache, IEqualityComparer<T> comparer)
-        {
-            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            Cache = new ExtendedReadOnlyCollection<T>(_cache);
-            Progressor = new Progressor<T>(tryTake, isDone);
-            Progressor.SubscribeAction(obj => _cache.Add(obj));
-            Comparer = comparer ?? EqualityComparer<T>.Default;
-        }
-
-        public IReadOnlyCollection<T> Cache { get; private set; }
+        public IReadOnlyCollection<T> Cache { get; }
 
         public int Count
         {
@@ -77,19 +66,13 @@ namespace Theraot.Collections
             }
         }
 
-        public bool EndOfEnumeration
-        {
-            get { return Progressor.IsClosed; }
-        }
+        public bool EndOfEnumeration => Progressor.IsClosed;
 
-        bool ICollection<T>.IsReadOnly
-        {
-            get { return true; }
-        }
+        bool ICollection<T>.IsReadOnly => true;
 
-        protected IEqualityComparer<T> Comparer { get; private set; }
+        protected IEqualityComparer<T> Comparer { get; }
 
-        protected Progressor<T> Progressor { get; private set; }
+        protected Progressor<T> Progressor { get; }
 
         void ICollection<T>.Add(T item)
         {
@@ -112,7 +95,7 @@ namespace Theraot.Collections
             {
                 return true;
             }
-            while (Progressor.TryTake(out T found))
+            while (Progressor.TryTake(out var found))
             {
                 if (Comparer.Equals(item, found))
                 {
@@ -143,7 +126,7 @@ namespace Theraot.Collections
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
             Progressor.While(() => _cache.Count < countLimit).Consume();
-            Extensions.CopyTo(_cache, array, arrayIndex, countLimit);
+            _cache.CopyTo(array, arrayIndex, countLimit);
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -152,15 +135,20 @@ namespace Theraot.Collections
             {
                 yield return item;
             }
+            var knownCount = _cache.Count;
             {
-                while (Progressor.TryTake(out T item))
+                while (Progressor.TryTake(out var item))
                 {
-                    yield return item;
+                    if (_cache.Count > knownCount)
+                    {
+                        yield return item;
+                        knownCount = _cache.Count;
+                    }
                 }
             }
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }

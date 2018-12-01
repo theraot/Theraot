@@ -18,11 +18,7 @@ namespace Theraot.Threading
 
         internal NeedleLock(LockContext<T> context)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
             _hashCode = base.GetHashCode();
             _capture = new FlagArray(_context.Capacity);
             _owner = -1;
@@ -30,11 +26,7 @@ namespace Theraot.Threading
 
         internal NeedleLock(LockContext<T> context, T target)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
             if (ReferenceEquals(target, null))
             {
                 _hashCode = base.GetHashCode();
@@ -48,16 +40,13 @@ namespace Theraot.Threading
             _owner = -1;
         }
 
-        bool IReadOnlyNeedle<T>.IsAlive
-        {
-            get { return !ReferenceEquals(_target, null); }
-        }
+        bool IReadOnlyNeedle<T>.IsAlive => !ReferenceEquals(_target, null);
 
         public T Value
         {
             get
             {
-                if (_context.Read(_capture, ref _owner, out LockSlot<T> slot))
+                if (_context.Read(_capture, ref _owner, out var slot))
                 {
                     _target = slot.Value;
                 }
@@ -76,12 +65,12 @@ namespace Theraot.Threading
 
         public static bool operator !=(NeedleLock<T> left, NeedleLock<T> right)
         {
-            if (left == null)
+            if (ReferenceEquals(left, null))
             {
-                if (right == null)
-                {
-                    return false;
-                }
+                return !ReferenceEquals(right, null);
+            }
+            if (ReferenceEquals(right, null))
+            {
                 return true;
             }
             return !left._target.Equals(right._target);
@@ -89,9 +78,13 @@ namespace Theraot.Threading
 
         public static bool operator ==(NeedleLock<T> left, NeedleLock<T> right)
         {
-            if (left == null)
+            if (ReferenceEquals(left, null))
             {
-                return right == null;
+                return ReferenceEquals(right, null);
+            }
+            if (ReferenceEquals(right, null))
+            {
+                return false;
             }
             return left._target.Equals(right._target);
         }
@@ -139,7 +132,7 @@ namespace Theraot.Threading
             }
         }
 
-        internal void Uncapture(LockSlot<T> slot)
+        internal void Release(LockSlot<T> slot)
         {
             Interlocked.CompareExchange(ref _owner, -1, slot.Id);
             _capture[slot.Id] = false;

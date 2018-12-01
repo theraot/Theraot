@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
@@ -14,6 +15,7 @@ namespace Theraot.Collections
     {
         private ProxyObservable<T> _proxy;
         private TryTake<T> _tryTake;
+        private IDisposable _disposable;
 
         public Progressor(T[] wrapped)
         {
@@ -21,32 +23,21 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(wrapped));
             }
-
-            var guard = 0;
             var index = -1;
-
             _proxy = new ProxyObservable<T>();
-
-            _tryTake = (out T value) =>
+            _tryTake = Take;
+            bool Take(out T value)
             {
-                value = default;
-                if (Volatile.Read(ref guard) == 0)
+                value = default(T);
+                var currentIndex = Interlocked.Increment(ref index);
+                if (currentIndex >= wrapped.Length)
                 {
-                    var currentIndex = Interlocked.Increment(ref index);
-                    if (currentIndex < wrapped.Length)
-                    {
-                        value = wrapped[currentIndex];
-                        _proxy.OnNext(value);
-                        return true;
-                    }
-                    Interlocked.CompareExchange(ref guard, 1, 0);
+                    return false;
                 }
-                if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
-                {
-                    Close();
-                }
-                return false;
-            };
+
+                value = wrapped[currentIndex];
+                return true;
+            }
         }
 
         public Progressor(IEnumerable<T> wrapped)
@@ -56,80 +47,28 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(wrapped));
             }
             var enumerator = wrapped.GetEnumerator();
-            if (enumerator == null)
-            {
-                throw new ArgumentException("wrapped.GetEnumerator()");
-            }
-
-            var guard = 0;
-
+            _disposable = enumerator;
             _proxy = new ProxyObservable<T>();
-
-            _tryTake = (out T value) =>
+            _tryTake = Take;
+            bool Take(out T value)
             {
-                value = default;
-                if (Volatile.Read(ref guard) == 0)
+                // We need a lock, there is no way around it. IEnumerator is just awful. Use another overload if possible.
+                var enumeratorCopy = enumerator;
+                if (enumeratorCopy != null)
                 {
-                    bool result;
-                    // We need a lock, there is no way around it. IEnumerator is just awful. Use another overload if possible.
-                    lock (enumerator)
+                    lock (enumeratorCopy)
                     {
-                        if (Volatile.Read(ref guard) == 0)
+                        if (enumeratorCopy.MoveNext())
                         {
-                            result = enumerator.MoveNext();
-                            if (result)
-                            {
-                                value = enumerator.Current;
-                            }
-                            else
-                            {
-                                Volatile.Write(ref guard, 1);
-                            }
-                        }
-                        else
-                        {
-                            result = false;
+                            value = enumeratorCopy.Current;
+                            return true;
                         }
                     }
-                    if (result)
-                    {
-                        _proxy.OnNext(value);
-                        return true;
-                    }
+                    Interlocked.Exchange(ref enumerator, null)?.Dispose();
                 }
-                if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
-                {
-                    enumerator.Dispose();
-                    Close();
-                }
+                value = default(T);
                 return false;
-            };
-        }
-
-        public Progressor(TryTake<T> tryTake, Func<bool> isDone)
-        {
-            if (tryTake == null)
-            {
-                throw new ArgumentNullException(nameof(tryTake));
             }
-            if (isDone == null)
-            {
-                throw new ArgumentNullException(nameof(isDone));
-            }
-            _proxy = new ProxyObservable<T>();
-            _tryTake = (out T value) =>
-            {
-                if (tryTake(out value))
-                {
-                    _proxy.OnNext(value);
-                    return true;
-                }
-                if (isDone())
-                {
-                    Close();
-                }
-                return false;
-            };
         }
 
         public Progressor(IObservable<T> wrapped)
@@ -137,75 +76,79 @@ namespace Theraot.Collections
             var buffer = new SafeQueue<T>();
             var semaphore = new SemaphoreSlim(0);
             var source = new CancellationTokenSource();
-            wrapped.Subscribe
+            var subscription = wrapped.Subscribe
                 (
-                    new CustomObserver<T>
-                    (
-                        onCompleted: Done,
-                        onError: exception => Done(),
-                        onNext: item =>
-                        {
-                            semaphore.Release();
-                            buffer.Add(item);
-                        }
+                    new CustomObserver<T>(
+                        onCompleted: source.Cancel,
+                        onError: exception => source.Cancel(),
+                        onNext: OnNext
                     )
                 );
             _proxy = new ProxyObservable<T>();
-
-            _tryTake = (out T value) =>
+            var tryTake = new TryTake<T>[] { null };
+            tryTake[0] = Take;
+            _tryTake = tryTake[0];
+            void OnNext(T item)
             {
-                if (!source.IsCancellationRequested)
+                buffer.Add(item);
+                semaphore.Release();
+            }
+            bool Take(out T value)
+            {
+                if (source.IsCancellationRequested)
+                {
+                    if (Interlocked.CompareExchange(ref _tryTake, Replacement, tryTake[0]) == tryTake[0])
+                    {
+                        Interlocked.Exchange(ref subscription, null)?.Dispose();
+                    }
+                }
+                else
                 {
                     try
                     {
                         semaphore.Wait(source.Token);
-                        if (buffer.TryTake(out value))
-                        {
-                            _proxy.OnNext(value);
-                            return true;
-                        }
                     }
                     catch (OperationCanceledException exception)
                     {
                         GC.KeepAlive(exception);
                     }
                 }
-                value = default;
-                return false;
-            };
-
-            void Done()
+                return Replacement(out value);
+            }
+            bool Replacement(out T value)
             {
-                source.Cancel();
+                if (buffer.TryTake(out value))
+                {
+                    return true;
+                }
+                value = default(T);
+                return false;
             }
         }
 
-        private Progressor(TryTake<T> tryTake, ProxyObservable<T> proxy)
-        {
-            _proxy = proxy;
-            _tryTake = tryTake;
-        }
-
-        public bool IsClosed
-        {
-            get { return Volatile.Read(ref _tryTake) == null; }
-        }
+        public bool IsClosed => Volatile.Read(ref _tryTake) == null;
 
         public void Close()
         {
             Volatile.Write(ref _tryTake, null);
+            var subscription = Interlocked.Exchange(ref _disposable, null);
+            subscription?.Dispose();
             var proxy = Interlocked.Exchange(ref _proxy, null);
-            if (proxy != null)
-            {
-                proxy.OnCompleted();
-            }
+            proxy?.OnCompleted();
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            while (Volatile.Read(ref _tryTake)(out T item))
+            while (true)
             {
-                yield return item;
+                if (TryTake(out var item))
+                {
+                    yield return item;
+                }
+                else
+                {
+                    break;
+                }
             }
         }
 
@@ -228,11 +171,24 @@ namespace Theraot.Collections
         public bool TryTake(out T item)
         {
             var tryTake = Volatile.Read(ref _tryTake);
+            var proxy = Volatile.Read(ref _proxy);
             if (tryTake != null)
             {
-                return tryTake.Invoke(out item);
+                if (tryTake.Invoke(out item))
+                {
+                    if (proxy != null)
+                    {
+                        proxy.OnNext(item);
+                    }
+                    else
+                    {
+                        Debugger.Break();
+                    }
+                    return true;
+                }
+                Close();
             }
-            item = default;
+            item = default(T);
             return false;
         }
 
@@ -243,13 +199,12 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(condition));
             }
             return WhileExtracted();
-
             IEnumerable<T> WhileExtracted()
             {
                 while (true)
                 {
                     var tryTake = Volatile.Read(ref _tryTake);
-                    if (tryTake != null && tryTake(out T item) && condition(item))
+                    if (tryTake != null && tryTake(out var item) && condition(item))
                     {
                         yield return item;
                     }
@@ -268,13 +223,12 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(condition));
             }
             return WhileExtracted();
-
             IEnumerable<T> WhileExtracted()
             {
                 while (true)
                 {
                     var tryTake = Volatile.Read(ref _tryTake);
-                    if (tryTake != null && tryTake(out T item) && condition())
+                    if (tryTake != null && tryTake(out var item) && condition())
                     {
                         yield return item;
                     }

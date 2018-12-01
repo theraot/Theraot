@@ -95,6 +95,7 @@ namespace Theraot.Core
         }
 
 #else
+
         public static bool HasFlag(Enum value, Enum flag)
         {
             // Added in .NET 4.0
@@ -105,15 +106,16 @@ namespace Theraot.Core
             where TEnum : struct
         {
             // Added in .NET 4.0
-            return Enum.TryParse<TEnum>(value, out result);
+            return Enum.TryParse(value, out result);
         }
 
         public static bool TryParse<TEnum>(string value, bool ignoreCase, out TEnum result)
             where TEnum : struct
         {
             // Added in .NET 4.0
-            return Enum.TryParse<TEnum>(value, ignoreCase, out result);
+            return Enum.TryParse(value, ignoreCase, out result);
         }
+
 #endif
     }
 }

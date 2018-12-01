@@ -9,15 +9,9 @@ namespace System.Collections
     {
         private static readonly InternalComparer _comparer = new InternalComparer();
 
-        public static IComparer StructuralComparer
-        {
-            get { return _comparer; }
-        }
+        public static IComparer StructuralComparer => _comparer;
 
-        public static IEqualityComparer StructuralEqualityComparer
-        {
-            get { return _comparer; }
-        }
+        public static IEqualityComparer StructuralEqualityComparer => _comparer;
 
         private sealed class InternalComparer : IComparer, IEqualityComparer
         {
@@ -32,7 +26,7 @@ namespace System.Collections
 
             bool IEqualityComparer.Equals(object x, object y)
             {
-                if (NullComparison(x, y, out bool result))
+                if (NullComparison(x, y, out var result))
                 {
                     return result;
                 }
@@ -66,7 +60,9 @@ namespace System.Collections
                         try
                         {
                             // If there comes the day when an array has no enumerator, let this code fail
+                            // ReSharper disable once PossibleNullReferenceException
                             firstEnumerator = (IEnumerator)xEnumeratorInfo.Invoke(x, TypeHelper.EmptyObjects);
+                            // ReSharper disable once PossibleNullReferenceException
                             secondEnumerator = (IEnumerator)yEnumeratorInfo.Invoke(y, TypeHelper.EmptyObjects);
                             while (firstEnumerator.MoveNext())
                             {

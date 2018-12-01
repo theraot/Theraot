@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Threading;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
@@ -9,7 +11,7 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
-    [System.Diagnostics.DebuggerDisplay("IsValueCreated={IsValueCreated}")]
+    [DebuggerDisplay("IsValueCreated={IsValueCreated}")]
     public sealed class TrackingThreadLocal<T> : IThreadLocal<T>, IWaitablePromise<T>, ICacheNeedle<T>, IObserver<T>
     {
         private const int _maxProbingHint = 4;
@@ -20,13 +22,19 @@ namespace Theraot.Threading
 
         public TrackingThreadLocal(Func<T> valueFactory)
         {
-            if (valueFactory == null)
-            {
-                throw new ArgumentNullException(nameof(valueFactory));
-            }
-            _valueFactory = valueFactory;
+            _valueFactory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
             _slots = new SafeDictionary<Thread, INeedle<T>>(_maxProbingHint);
         }
+
+        Exception IPromise.Exception => null;
+
+        bool IReadOnlyNeedle<T>.IsAlive => IsValueCreated;
+
+        bool IPromise.IsCanceled => false;
+
+        bool IPromise.IsCompleted => IsValueCreated;
+
+        bool IPromise.IsFaulted => false;
 
         public bool IsValueCreated
         {
@@ -36,7 +44,7 @@ namespace Theraot.Threading
                 {
                     throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
                 }
-                if (_slots.TryGetValue(Thread.CurrentThread, out INeedle<T> needle))
+                if (_slots.TryGetValue(Thread.CurrentThread, out var needle))
                 {
                     return needle is ReadOnlyStructNeedle<T>;
                 }
@@ -46,42 +54,19 @@ namespace Theraot.Threading
 
         public T Value
         {
-            get { return GetValue(Thread.CurrentThread); }
+            get => GetValue(Thread.CurrentThread);
 
-            set { SetValue(Thread.CurrentThread, value); }
+            set => SetValue(Thread.CurrentThread, value);
         }
+
+        T IThreadLocal<T>.ValueForDebugDisplay => TryGetValue(Thread.CurrentThread, out var target) ? target : default;
 
         public IList<T> Values
         {
             get { return _slots.ConvertFiltered(input => input.Value.Value, input => input.Value is ReadOnlyStructNeedle<T>); }
         }
 
-        Exception IPromise.Exception
-        {
-            get { return null; }
-        }
-
-        bool IReadOnlyNeedle<T>.IsAlive
-        {
-            get { return IsValueCreated; }
-        }
-
-        bool IPromise.IsCanceled
-        {
-            get { return false; }
-        }
-
-        bool IPromise.IsCompleted
-        {
-            get { return IsValueCreated; }
-        }
-
-        bool IPromise.IsFaulted
-        {
-            get { return false; }
-        }
-
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public void Dispose()
         {
             if (Interlocked.CompareExchange(ref _disposing, 1, 0) == 0)
@@ -94,31 +79,6 @@ namespace Theraot.Threading
         public void EraseValue()
         {
             EraseValue(Thread.CurrentThread);
-        }
-
-        public override string ToString()
-        {
-            return string.Format(System.Globalization.CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
-        }
-
-        public bool TryGetValue(Thread thread, out T target)
-        {
-            if (Volatile.Read(ref _disposing) == 1)
-            {
-                throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
-            }
-            if (_slots.TryGetValue(thread, out INeedle<T> tmp))
-            {
-                target = tmp.Value;
-                return true;
-            }
-            target = default;
-            return false;
-        }
-
-        public bool TryGetValue(out T value)
-        {
-            return TryGetValue(Thread.CurrentThread, out value);
         }
 
         void IObserver<T>.OnCompleted()
@@ -134,6 +94,31 @@ namespace Theraot.Threading
         void IObserver<T>.OnNext(T value)
         {
             Value = value;
+        }
+
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
+        }
+
+        public bool TryGetValue(Thread thread, out T target)
+        {
+            if (Volatile.Read(ref _disposing) == 1)
+            {
+                throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
+            }
+            if (_slots.TryGetValue(thread, out var tmp))
+            {
+                target = tmp.Value;
+                return true;
+            }
+            target = default;
+            return false;
+        }
+
+        public bool TryGetValue(out T value)
+        {
+            return TryGetValue(Thread.CurrentThread, out value);
         }
 
         void IWaitablePromise.Wait()
@@ -156,7 +141,7 @@ namespace Theraot.Threading
             {
                 throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
             }
-            if (_slots.TryGetOrAdd(thread, ThreadLocalHelper<T>.RecursionGuardNeedle, out INeedle<T> needle))
+            if (_slots.TryGetOrAdd(thread, ThreadLocalHelper<T>.RecursionGuardNeedle, out var needle))
             {
                 try
                 {
@@ -190,14 +175,6 @@ namespace Theraot.Threading
                 throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
             }
             _slots.Set(thread, new ReadOnlyStructNeedle<T>(value));
-        }
-
-        T IThreadLocal<T>.ValueForDebugDisplay
-        {
-            get
-            {
-                return TryGetValue(Thread.CurrentThread, out T target) ? target : default;
-            }
         }
     }
 }

@@ -10,6 +10,7 @@ namespace Theraot.Collections.ThreadSafe
     /// </summary>
     /// <typeparam name="T">The type of the item.</typeparam>
 #if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+
     [Serializable]
 #endif
 
@@ -44,10 +45,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public int Count
-        {
-            get { return _count; }
-        }
+        public int Count => _count;
 
         public void CopyTo(T[] array, int arrayIndex)
         {
@@ -303,10 +301,10 @@ namespace Theraot.Collections.ThreadSafe
             {
                 foreach (var value in _bucketCore)
                 {
-                    var castedValue = value == BucketHelper.Null ? default : (T)value;
-                    if (check(castedValue))
+                    var castValue = value == BucketHelper.Null ? default : (T)value;
+                    if (check(castValue))
                     {
-                        yield return castedValue;
+                        yield return castValue;
                     }
                 }
             }

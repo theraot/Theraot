@@ -49,38 +49,15 @@ namespace System.Threading
             _source = source;
         }
 
-        public static CancellationToken None
-        {
-            get
-            {
-                // simply return new struct value, it's the fastest option
-                // and we don't have to bother with resetting source
-                return new CancellationToken();
-            }
-        }
+        public static CancellationToken None => new CancellationToken();
 
-        public bool CanBeCanceled
-        {
-            get { return _source != null; }
-        }
+        public bool CanBeCanceled => _source != null;
 
-        public bool IsCancellationRequested
-        {
-            get
-            {
-                return _source != null && Source.IsCancellationRequested;
-            }
-        }
+        public bool IsCancellationRequested => _source != null && Source.IsCancellationRequested;
 
-        public WaitHandle WaitHandle
-        {
-            get { return Source.WaitHandle; }
-        }
+        public WaitHandle WaitHandle => Source.WaitHandle;
 
-        private CancellationTokenSource Source
-        {
-            get { return _source ?? CancellationTokenSource.NoneSource; }
-        }
+        private CancellationTokenSource Source => _source ?? CancellationTokenSource.NoneSource;
 
         public static bool operator !=(CancellationToken left, CancellationToken right)
         {
@@ -99,7 +76,7 @@ namespace System.Threading
 
         public override bool Equals(object obj)
         {
-            return (obj is CancellationToken) && Equals((CancellationToken)obj);
+            return (obj is CancellationToken token) && Equals(token);
         }
 
         public override int GetHashCode()

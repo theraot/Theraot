@@ -34,10 +34,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public T Value
-        {
-            get { return (T)_target; }
-        }
+        public T Value => (T)_target;
 
         public static explicit operator T(ReadOnlyNeedle<T> needle)
         {
@@ -55,18 +52,26 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(ReadOnlyNeedle<T> left, ReadOnlyNeedle<T> right)
         {
-            if (left == null)
+            if (ReferenceEquals(left, null))
             {
-                return right != null;
+                return !ReferenceEquals(right, null);
+            }
+            if (ReferenceEquals(right, null))
+            {
+                return true;
             }
             return !left._target.Equals(right._target);
         }
 
         public static bool operator ==(ReadOnlyNeedle<T> left, ReadOnlyNeedle<T> right)
         {
-            if (left == null)
+            if (ReferenceEquals(left, null))
             {
-                return right == null;
+                return ReferenceEquals(right, null);
+            }
+            if (ReferenceEquals(right, null))
+            {
+                return false;
             }
             return left._target.Equals(right._target);
         }

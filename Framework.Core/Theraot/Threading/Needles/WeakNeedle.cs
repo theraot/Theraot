@@ -2,13 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public partial class WeakNeedle<T> : IEquatable<WeakNeedle<T>>, IRecyclableNeedle<T>, ICacheNeedle<T>
         where T : class
     {
@@ -56,7 +57,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                if (ReadTarget(out object target))
+                if (ReadTarget(out var target))
                 {
                     if (target is Exception exception && _faultExpected)
                     {
@@ -67,21 +68,11 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        bool IPromise.IsCanceled
-        {
-            get { return false; }
-        }
-
-        bool IPromise.IsCompleted
-        {
-            get { return true; }
-        }
-
         public bool IsAlive
         {
             get
             {
-                if (ReadTarget(out object target))
+                if (ReadTarget(out var target))
                 {
                     if (target is T && !_faultExpected)
                     {
@@ -92,11 +83,15 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        bool IPromise.IsCanceled => false;
+
+        bool IPromise.IsCompleted => true;
+
         public bool IsFaulted
         {
             get
             {
-                if (ReadTarget(out object target))
+                if (ReadTarget(out var target))
                 {
                     if (target is Exception && _faultExpected)
                     {
@@ -107,17 +102,14 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public virtual bool TrackResurrection
-        {
-            get { return _trackResurrection; }
-        }
+        public virtual bool TrackResurrection => _trackResurrection;
 
         public virtual T Value
         {
             [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
             get
             {
-                if (ReadTarget(out object target))
+                if (ReadTarget(out var target))
                 {
                     if (target is T inner && !_faultExpected)
                     {
@@ -128,7 +120,7 @@ namespace Theraot.Threading.Needles
             }
 
             [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-            set { SetTargetValue(value); }
+            set => SetTargetValue(value);
         }
 
         public static explicit operator T(WeakNeedle<T> needle)
@@ -207,7 +199,7 @@ namespace Theraot.Threading.Needles
         public virtual bool TryGetValue(out T value)
         {
             value = null;
-            if (ReadTarget(out object target))
+            if (ReadTarget(out var target))
             {
                 if (target is T inner)
                 {

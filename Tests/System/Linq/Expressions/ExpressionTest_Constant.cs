@@ -166,39 +166,39 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void ConstantCodeGen()
         {
-            Assert.AreEqual(Check<int>(0), 0, "int");
-            Assert.AreEqual(Check<int>(128), 128, "int2");
-            Assert.AreEqual(Check<int>(-128), -128, "int3");
-            Assert.AreEqual(Check<int>(int.MinValue), int.MinValue, "int4");
-            Assert.AreEqual(Check<int>(int.MaxValue), int.MaxValue, "int5");
+            Assert.AreEqual(Check(0), 0, "int");
+            Assert.AreEqual(Check(128), 128, "int2");
+            Assert.AreEqual(Check(-128), -128, "int3");
+            Assert.AreEqual(Check(int.MinValue), int.MinValue, "int4");
+            Assert.AreEqual(Check(int.MaxValue), int.MaxValue, "int5");
             Assert.AreEqual(Check<uint>(128), 128, "uint");
             Assert.AreEqual(Check<uint>(0), 0, "uint2");
-            Assert.AreEqual(Check<uint>(uint.MinValue), uint.MinValue, "uint3");
-            Assert.AreEqual(Check<uint>(uint.MaxValue), uint.MaxValue, "uint4");
+            Assert.AreEqual(Check(uint.MinValue), uint.MinValue, "uint3");
+            Assert.AreEqual(Check(uint.MaxValue), uint.MaxValue, "uint4");
             Assert.AreEqual(Check<byte>(10), 10, "byte");
-            Assert.AreEqual(Check<byte>(byte.MinValue), byte.MinValue, "byte2");
-            Assert.AreEqual(Check<byte>(byte.MaxValue), byte.MaxValue, "byte3");
+            Assert.AreEqual(Check(byte.MinValue), byte.MinValue, "byte2");
+            Assert.AreEqual(Check(byte.MaxValue), byte.MaxValue, "byte3");
             Assert.AreEqual(Check<short>(128), 128, "short");
             Assert.AreEqual(Check<short>(-128), -128, "short");
-            Assert.AreEqual(Check<short>(short.MinValue), short.MinValue, "short2");
-            Assert.AreEqual(Check<short>(short.MaxValue), short.MaxValue, "short3");
+            Assert.AreEqual(Check(short.MinValue), short.MinValue, "short2");
+            Assert.AreEqual(Check(short.MaxValue), short.MaxValue, "short3");
             Assert.AreEqual(Check<ushort>(128), 128, "ushort");
-            Assert.AreEqual(Check<ushort>(ushort.MinValue), ushort.MinValue, "short2");
-            Assert.AreEqual(Check<ushort>(ushort.MaxValue), ushort.MaxValue, "short3");
-            Assert.AreEqual(Check<bool>(true), true, "bool1");
-            Assert.AreEqual(Check<bool>(false), false, "bool2");
-            Assert.AreEqual(Check<long>(long.MaxValue), long.MaxValue, "long");
-            Assert.AreEqual(Check<long>(long.MinValue), long.MinValue, "long2");
-            Assert.AreEqual(Check<ulong>(ulong.MaxValue), ulong.MaxValue, "ulong");
-            Assert.AreEqual(Check<ulong>(ulong.MinValue), ulong.MinValue, "ulong2");
+            Assert.AreEqual(Check(ushort.MinValue), ushort.MinValue, "short2");
+            Assert.AreEqual(Check(ushort.MaxValue), ushort.MaxValue, "short3");
+            Assert.AreEqual(Check(true), true, "bool1");
+            Assert.AreEqual(Check(false), false, "bool2");
+            Assert.AreEqual(Check(long.MaxValue), long.MaxValue, "long");
+            Assert.AreEqual(Check(long.MinValue), long.MinValue, "long2");
+            Assert.AreEqual(Check(ulong.MaxValue), ulong.MaxValue, "ulong");
+            Assert.AreEqual(Check(ulong.MinValue), ulong.MinValue, "ulong2");
             Assert.AreEqual(Check<ushort>(200), 200, "ushort");
-            Assert.AreEqual(Check<float>(2.0f), 2.0f, "float");
-            Assert.AreEqual(Check<double>(2.312), 2.312, "double");
-            Assert.AreEqual(Check<string>("dingus"), "dingus", "string");
-            Assert.AreEqual(Check<decimal>(1.3m), 1.3m, "");
+            Assert.AreEqual(Check(2.0f), 2.0f, "float");
+            Assert.AreEqual(Check(2.312), 2.312, "double");
+            Assert.AreEqual(Check("dingus"), "dingus", "string");
+            Assert.AreEqual(Check(1.3m), 1.3m, "");
 
             // this forces the other code path for decimal.
-            Assert.AreEqual(Check<decimal>(3147483647m), 3147483647m, "decimal");
+            Assert.AreEqual(Check(3147483647m), 3147483647m, "decimal");
         }
 
         private delegate void Foo();

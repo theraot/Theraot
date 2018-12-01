@@ -39,11 +39,11 @@ namespace System.Diagnostics.Contracts
         {
             [SecurityCritical]
             [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-            add { ContractHelper.InternalContractFailed += value; }
+            add => ContractHelper.InternalContractFailed += value;
 
             [SecurityCritical]
             [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-            remove { ContractHelper.InternalContractFailed -= value; }
+            remove => ContractHelper.InternalContractFailed -= value;
         }
 
         [SecuritySafeCritical]

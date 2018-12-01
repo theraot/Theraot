@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Theraot.Core
 {
     public static partial class PrimeHelper
     {
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public static bool IsPrime(int number)
         {
             if (number < 0)
@@ -49,7 +50,7 @@ namespace Theraot.Core
             return true;
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public static int NextPrime(int fromNumber)
         {
             if (fromNumber < 2)
@@ -64,7 +65,7 @@ namespace Theraot.Core
             return ToPrimeInternal(fromNumber);
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public static int ToPrime(int fromNumber)
         {
             if (fromNumber <= 2)
@@ -78,7 +79,7 @@ namespace Theraot.Core
             return ToPrimeInternal(fromNumber);
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         internal static int ToPrimeInternal(int fromNumber)
         {
             if (fromNumber < _smallPrimes[_smallPrimes.Length - 1])

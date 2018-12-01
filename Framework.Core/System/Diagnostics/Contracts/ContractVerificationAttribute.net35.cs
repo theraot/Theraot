@@ -21,17 +21,12 @@ namespace System.Diagnostics.Contracts
     [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Property)]
     public sealed class ContractVerificationAttribute : Attribute
     {
-        private readonly bool _value;
-
         public ContractVerificationAttribute(bool value)
         {
-            _value = value;
+            Value = value;
         }
 
-        public bool Value
-        {
-            get { return _value; }
-        }
+        public bool Value { get; }
     }
 }
 

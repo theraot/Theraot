@@ -7,26 +7,14 @@ namespace Theraot.Collections
     public sealed class FilteredConvertedObserver<TInput, TOutput> : IObserver<TInput>
     {
         private readonly Func<TInput, TOutput> _converter;
-        private readonly IObserver<TOutput> _observer;
         private readonly Predicate<TInput> _filter;
+        private readonly IObserver<TOutput> _observer;
 
         public FilteredConvertedObserver(IObserver<TOutput> observer, Predicate<TInput> filter, Func<TInput, TOutput> converter)
         {
-            if (observer == null)
-            {
-                throw new ArgumentNullException(nameof(observer));
-            }
-            if (converter == null)
-            {
-                throw new ArgumentNullException(nameof(converter));
-            }
-            if (filter == null)
-            {
-                throw new ArgumentNullException(nameof(filter));
-            }
-            _observer = observer;
-            _converter = converter;
-            _filter = filter;
+            _observer = observer ?? throw new ArgumentNullException(nameof(observer));
+            _converter = converter ?? throw new ArgumentNullException(nameof(converter));
+            _filter = filter ?? throw new ArgumentNullException(nameof(filter));
         }
 
         public void OnCompleted()

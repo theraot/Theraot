@@ -9,27 +9,23 @@ namespace System.Threading
     [DebuggerDisplay("IsHeld = {IsHeld}")]
     public struct SpinLock
     {
-        private readonly bool _disableThreadTracking;
         private int _isHeld;
         private Thread _ownerThread;
 
         public SpinLock(bool enableThreadOwnerTracking)
         {
-            _disableThreadTracking = !enableThreadOwnerTracking;
+            IsThreadOwnerTrackingEnabled = !enableThreadOwnerTracking;
             _ownerThread = null;
             _isHeld = 0;
         }
 
-        public bool IsHeld
-        {
-            get { return Thread.VolatileRead(ref _isHeld) == 1; }
-        }
+        public bool IsHeld => Volatile.Read(ref _isHeld) == 1;
 
         public bool IsHeldByCurrentThread
         {
             get
             {
-                if (_disableThreadTracking)
+                if (IsThreadOwnerTrackingEnabled)
                 {
                     throw new InvalidOperationException("Thread ownership tracking is disabled");
                 }
@@ -37,10 +33,7 @@ namespace System.Threading
             }
         }
 
-        public bool IsThreadOwnerTrackingEnabled
-        {
-            get { return _disableThreadTracking; }
-        }
+        public bool IsThreadOwnerTrackingEnabled { get; }
 
         public void Enter(ref bool lockTaken)
         {
@@ -49,7 +42,7 @@ namespace System.Threading
                 lockTaken = false;
                 throw new ArgumentException();
             }
-            if (_disableThreadTracking)
+            if (IsThreadOwnerTrackingEnabled)
             {
                 var check = Interlocked.CompareExchange(ref _isHeld, 1, 0);
                 if (check == 0)
@@ -89,7 +82,7 @@ namespace System.Threading
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void Exit(bool useMemoryBarrier)
         {
-            if (_disableThreadTracking)
+            if (IsThreadOwnerTrackingEnabled)
             {
                 //Allow corruption: There is no check for what thread this is being called from
                 ExitExtracted(useMemoryBarrier);
@@ -124,7 +117,7 @@ namespace System.Threading
 
         public void TryEnter(int millisecondsTimeout, ref bool lockTaken)
         {
-            if (_disableThreadTracking)
+            if (IsThreadOwnerTrackingEnabled)
             {
                 lockTaken |= ThreadingHelper.SpinWaitSet(ref _isHeld, 1, 0, millisecondsTimeout);
             }
@@ -143,7 +136,7 @@ namespace System.Threading
         {
             if (useMemoryBarrier)
             {
-                Thread.VolatileWrite(ref _isHeld, 0);
+                Volatile.Write(ref _isHeld, 0);
                 Volatile.Write(ref _ownerThread, null);
             }
             else

@@ -24,11 +24,11 @@ namespace Theraot.Threading.Needles
 
         public override T Value
         {
-            get { return base.Value; }
+            get => base.Value;
 
             set
             {
-                if (_context.TryGetSlot(out LockableSlot slot))
+                if (_context.TryGetSlot(out var slot))
                 {
                     CaptureAndWait(slot);
                     ThreadingHelper.MemoryBarrier();
@@ -44,7 +44,7 @@ namespace Theraot.Threading.Needles
 
         public void CaptureAndWait()
         {
-            if (!_context.TryGetSlot(out LockableSlot slot))
+            if (!_context.TryGetSlot(out var slot))
             {
                 throw new InvalidOperationException("The current thread has not entered the LockableContext of this LockableNeedle.");
             }
@@ -92,12 +92,12 @@ namespace Theraot.Threading.Needles
 
         private void Capture(LockableSlot slot)
         {
-            var lockslot = slot.LockSlot;
-            if (ReferenceEquals(lockslot, null))
+            var lockSlot = slot.LockSlot;
+            if (ReferenceEquals(lockSlot, null))
             {
                 throw new InvalidOperationException("The current thread has not entered the LockableContext of this LockableNeedle.");
             }
-            _needleLock.Capture(lockslot);
+            _needleLock.Capture(lockSlot);
             slot.Add(_needleLock);
         }
 

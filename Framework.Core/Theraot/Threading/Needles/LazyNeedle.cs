@@ -30,21 +30,13 @@ namespace Theraot.Threading.Needles
         public LazyNeedle(Func<T> valueFactory)
             : base(false)
         {
-            if (valueFactory == null)
-            {
-                throw new ArgumentNullException(nameof(valueFactory));
-            }
-            _valueFactory = valueFactory;
+            _valueFactory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
         }
 
         public LazyNeedle(Func<T> valueFactory, bool cacheExceptions)
             : base(false)
         {
-            if (valueFactory == null)
-            {
-                throw new ArgumentNullException(nameof(valueFactory));
-            }
-            _valueFactory = valueFactory;
+            _valueFactory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
             if (cacheExceptions)
             {
                 _valueFactory = () =>
@@ -76,10 +68,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        protected Thread RunnerThread
-        {
-            get { return _runnerThread; }
-        }
+        protected Thread RunnerThread => _runnerThread;
 
         public override bool Equals(object obj)
         {

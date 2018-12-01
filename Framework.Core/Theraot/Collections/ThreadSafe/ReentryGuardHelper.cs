@@ -41,10 +41,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
             var guard = _guard;
-            if (guard != null)
-            {
-                guard.Remove(id);
-            }
+            guard?.Remove(id);
         }
     }
 }

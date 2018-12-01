@@ -13,7 +13,7 @@ namespace System.Diagnostics.Contracts
         PostconditionOnException,
         Invariant,
         Assert,
-        Assume,
+        Assume
     }
 }
 

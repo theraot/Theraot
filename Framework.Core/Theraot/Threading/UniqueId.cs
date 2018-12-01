@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Globalization;
-using System.Threading;
 
 namespace Theraot.Threading
 {
-
     public struct UniqueId : IEquatable<UniqueId>
     {
         private readonly int _id;
@@ -26,14 +23,14 @@ namespace Theraot.Threading
 
         public bool Equals(UniqueId other)
         {
-            return other._id.Equals(_id);
+            return other._id == _id;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj is UniqueId)
+            if (obj is UniqueId id)
             {
-                return Equals((UniqueId)obj);
+                return Equals(id);
             }
             return false;
         }
@@ -45,7 +42,7 @@ namespace Theraot.Threading
 
         public override string ToString()
         {
-            return _id.ToString(CultureInfo.InvariantCulture);
+            return $"{_id}";
         }
     }
 }

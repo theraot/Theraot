@@ -2,6 +2,17 @@
 
 namespace System.Threading
 {
+    [Flags]
+    internal enum LockState
+    {
+        None = 0,
+        Upgradable = 1,
+        Read = 2,
+        Write = 4,
+        UpgradedRead = Upgradable | Read,
+        UpgradedWrite = Upgradable | Write
+    }
+
     internal static class ReaderWriterLockSlimExtensions
     {
         internal static bool Has(this LockState state, LockState value)
@@ -13,17 +24,6 @@ namespace System.Threading
         {
             return self.IsSet;
         }
-    }
-
-    [Flags]
-    internal enum LockState
-    {
-        None = 0,
-        Upgradable = 1,
-        Read = 2,
-        Write = 4,
-        UpgradedRead = Upgradable | Read,
-        UpgradedWrite = Upgradable | Write
     }
 
     internal class ThreadLockState

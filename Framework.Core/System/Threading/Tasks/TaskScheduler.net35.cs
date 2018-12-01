@@ -7,13 +7,11 @@ namespace System.Threading.Tasks
 {
     public abstract partial class TaskScheduler
     {
-        private static readonly TaskScheduler _default = new ThreadPoolTaskScheduler();
         private static int _lastId;
-        private readonly int _id;
 
         protected TaskScheduler()
         {
-            _id = Interlocked.Increment(ref _lastId) - 1;
+            Id = Interlocked.Increment(ref _lastId) - 1;
         }
 
         public static TaskScheduler Current
@@ -29,25 +27,11 @@ namespace System.Threading.Tasks
             }
         }
 
-        public static TaskScheduler Default
-        {
-            get { return _default; }
-        }
+        public static TaskScheduler Default { get; } = new ThreadPoolTaskScheduler();
 
-        public int Id
-        {
-            get { return _id; }
-        }
+        public int Id { get; }
 
-        public int MaximunConcurrencyLevel
-        {
-            get { return int.MaxValue; }
-        }
-
-        internal virtual bool RequiresAtomicStartTransition
-        {
-            get { return true; }
-        }
+        internal virtual bool RequiresAtomicStartTransition => true;
 
         public static TaskScheduler FromCurrentSynchronizationContext()
         {
@@ -55,7 +39,7 @@ namespace System.Threading.Tasks
             throw new NotImplementedException();
         }
 
-        internal bool InernalTryDequeue(Task task, ref bool special)
+        internal bool InternalTryDequeue(Task task, ref bool special)
         {
             try
             {
@@ -77,7 +61,7 @@ namespace System.Threading.Tasks
             }
         }
 
-        internal bool InernalTryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
+        internal bool InternalTryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
         {
             return TryExecuteTaskInline(task, taskWasPreviouslyQueued);
         }

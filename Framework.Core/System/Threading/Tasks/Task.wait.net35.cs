@@ -10,6 +10,11 @@ namespace System.Threading.Tasks
     {
         private int _waitNotificationEnabled;
 
+        /// <summary>Gets whether the task's debugger notification for wait completion bit is set.</summary>
+        /// <returns>true if the bit is set; false if it's not set.</returns>
+        internal bool IsWaitNotificationEnabled // internal only to enable unit tests; would otherwise be private
+            => Volatile.Read(ref _waitNotificationEnabled) == 1;
+
         /// <summary>
         /// Determines whether we should inform the debugger that we're ending a join with a task.
         /// This should only be called if the debugger notification bit is set, as it is has some cost,
@@ -28,60 +33,6 @@ namespace System.Threading.Tasks
                 Contract.Assert(isWaitNotificationEnabled, "Should only be called if the wait completion bit is set.");
                 return isWaitNotificationEnabled;
             }
-        }
-
-        /// <summary>
-        /// Calls the debugger notification method if the right bit is set and if
-        /// the task itself allows for the notification to proceed.
-        /// </summary>
-        /// <returns>true if the debugger was notified; otherwise, false.</returns>
-        internal bool NotifyDebuggerOfWaitCompletionIfNecessary()
-        {
-            // Notify the debugger if of any of the tasks we've waited on requires notification
-            if (IsWaitNotificationEnabled && ShouldNotifyDebuggerOfWaitCompletion)
-            {
-                NotifyDebuggerOfWaitCompletion();
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>Placeholder method used as a breakpoint target by the debugger.  Must not be inlined or optimized.</summary>
-        /// <remarks>All joins with a task should end up calling this if their debugger notification bit is set.</remarks>
-        [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
-        private void NotifyDebuggerOfWaitCompletion()
-        {
-            // It's theoretically possible but extremely rare that this assert could fire because the
-            // bit was unset between the time that it was checked and this method was called.
-            // It's so remote a chance that it's worth having the assert to protect against misuse.
-            Contract.Assert(IsWaitNotificationEnabled, "Should only be called if the wait completion bit is set.");
-
-            // Now that we're notifying the debugger, clear the bit.  The debugger should do this anyway,
-            // but this adds a bit of protection in case it fails to, and given that the debugger is involved,
-            // the overhead here for the interlocked is negligable.  We do still rely on the debugger
-            // to clear bits, as this doesn't recursively clear bits in the case of, for example, WhenAny.
-            SetNotificationForWaitCompletion(/*enabled:*/ false);
-        }
-
-        /// <summary>
-        /// Sets or clears the TASK_STATE_WAIT_COMPLETION_NOTIFICATION state bit.
-        /// The debugger sets this bit to aid it in "stepping out" of an async method body.
-        /// If enabled is true, this must only be called on a task that has not yet been completed.
-        /// If enabled is false, this may be called on completed tasks.
-        /// Either way, it should only be used for promise-style tasks.
-        /// </summary>
-        /// <param name="enabled">true to set the bit; false to unset the bit.</param>
-        internal void SetNotificationForWaitCompletion(bool enabled)
-        {
-            Contract.Assert(IsPromiseTask, "Should only be used for promise-style tasks"); // hasn't been vetted on other kinds as there hasn't been a need
-            Thread.VolatileWrite(ref _waitNotificationEnabled, enabled ? 1 : 0);
-        }
-
-        /// <summary>Gets whether the task's debugger notification for wait completion bit is set.</summary>
-        /// <returns>true if the bit is set; false if it's not set.</returns>
-        internal bool IsWaitNotificationEnabled // internal only to enable unit tests; would otherwise be private
-        {
-            get { return Thread.VolatileRead(ref _waitNotificationEnabled) == 1; }
         }
 
         /// <summary>
@@ -124,7 +75,7 @@ namespace System.Threading.Tasks
         /// An array of <see cref="Task"/> instances on which to wait.
         /// </param>
         /// <param name="timeout">
-        /// A <see cref="System.TimeSpan"/> that represents the number of milliseconds to wait, or a <see cref="System.TimeSpan"/> that represents -1 milliseconds to wait indefinitely.
+        /// A <see cref="TimeSpan"/> that represents the number of milliseconds to wait, or a <see cref="TimeSpan"/> that represents -1 milliseconds to wait indefinitely.
         /// </param>
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="tasks"/> argument is null.
@@ -161,7 +112,7 @@ namespace System.Threading.Tasks
         /// otherwise, false.
         /// </returns>
         /// <param name="millisecondsTimeout">
-        /// The number of milliseconds to wait, or <see cref="System.Threading.Timeout.Infinite"/> (-1) to
+        /// The number of milliseconds to wait, or <see cref="Timeout.Infinite"/> (-1) to
         /// wait indefinitely.</param>
         /// <param name="tasks">An array of <see cref="Task"/> instances on which to wait.
         /// </param>
@@ -228,7 +179,7 @@ namespace System.Threading.Tasks
         /// An array of <see cref="Task"/> instances on which to wait.
         /// </param>
         /// <param name="millisecondsTimeout">
-        /// The number of milliseconds to wait, or <see cref="System.Threading.Timeout.Infinite"/> (-1) to
+        /// The number of milliseconds to wait, or <see cref="Timeout.Infinite"/> (-1) to
         /// wait indefinitely.
         /// </param>
         /// <param name="cancellationToken">
@@ -266,8 +217,8 @@ namespace System.Threading.Tasks
             cancellationToken.ThrowIfCancellationRequested(); // early check before we make any allocations
             //
             // In this WaitAll() implementation we have 2 alternate code paths for a task to be handled:
-            // CODEPATH1: skip an already completed task, CODEPATH2: actually wait on tasks
-            // We make sure that the exception behavior of Task.Wait() is replicated the same for tasks handled in either of these codepaths
+            // CODE PATH 1: skip an already completed task, CODE PATH 2: actually wait on tasks
+            // We make sure that the exception behavior of Task.Wait() is replicated the same for tasks handled in either of these code paths
             //
             List<Exception> exceptions = null;
             List<Task> waitedOnTaskList = null;
@@ -348,7 +299,7 @@ namespace System.Threading.Tasks
                         }
                     }
                 }
-                // We need to prevent the tasks array from being GC'ed until we come out of the wait.
+                // We need to prevent the tasks array from being garbage collected until we come out of the wait.
                 // This is necessary so that the Parallel Debugger can traverse it during the long wait and
                 // deduce waiter/waitee relationships
                 GC.KeepAlive(tasks);
@@ -375,7 +326,7 @@ namespace System.Threading.Tasks
                 // If the WaitAll was canceled and tasks were canceled but not faulted,
                 // prioritize throwing an OCE for canceling the WaitAll over throwing an
                 // AggregateException for all of the canceled Tasks.  This helps
-                // to bring determinism to an otherwise non-determistic case of using
+                // to bring determinism to an otherwise non-deterministic case of using
                 // the same token to cancel both the WaitAll and the Tasks.
                 if (!exceptionSeen)
                 {
@@ -390,119 +341,6 @@ namespace System.Threading.Tasks
                 throw new AggregateException(exceptions);
             }
             return allCompleted;
-        }
-
-        /// <summary>Adds an element to the list, initializing the list if it's null.</summary>
-        /// <typeparam name="T">Specifies the type of data stored in the list.</typeparam>
-        /// <param name="item">The item to add.</param>
-        /// <param name="list">The list.</param>
-        /// <param name="initSize">The size to which to initialize the list if the list is null.</param>
-        private static void AddToList<T>(T item, ref List<T> list, int initSize)
-        {
-            if (list == null)
-            {
-                list = new List<T>(initSize);
-            }
-
-            list.Add(item);
-        }
-
-        /// <summary>Performs a blocking WaitAll on the vetted list of tasks.</summary>
-        /// <param name="tasks">The tasks, which have already been checked and filtered for completion.</param>
-        /// <param name="millisecondsTimeout">The timeout.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>true if all of the tasks completed; otherwise, false.</returns>
-        private static bool WaitAllBlockingCore(List<Task> tasks, int millisecondsTimeout, CancellationToken cancellationToken)
-        {
-            if (tasks == null)
-            {
-                Contract.Assert(false, "Expected a non-null list of tasks");
-                throw new ArgumentNullException(nameof(tasks));
-            }
-            Contract.Assert(tasks.Count > 0, "Expected at least one task");
-            bool waitCompleted;
-            ManualResetEventSlim mres = null;
-            WhenAllCore core = null;
-            try
-            {
-                mres = new ManualResetEventSlim(false);
-                core = new WhenAllCore(tasks, mres.Set);
-                if (core.IsDone)
-                {
-                    waitCompleted = true;
-                }
-                else
-                {
-                    waitCompleted = mres.Wait(millisecondsTimeout, cancellationToken);
-                }
-            }
-            finally
-            {
-                if (core != null)
-                {
-                    core.Dispose();
-                    waitCompleted = core.IsDone;
-                }
-                if (mres != null)
-                {
-                    mres.Dispose();
-                }
-            }
-            return waitCompleted;
-        }
-
-        internal static void FastWaitAll(Task[] tasks)
-        {
-            Contract.Requires(tasks != null);
-            List<Exception> exceptions = null;
-            // Collects incomplete tasks in "waitedOnTaskList" and their cooperative events in "cooperativeEventList"
-            for (var taskIndex = tasks.Length - 1; taskIndex >= 0; taskIndex--)
-            {
-                ref var current = ref tasks[taskIndex];
-                if (!current.IsCompleted)
-                {
-                    // Just attempting to inline here... result doesn't matter.
-                    // We'll do a second pass to do actual wait on each task, and to aggregate their exceptions.
-                    // If the task is inlined here, it will register as IsCompleted in the second pass
-                    // and will just give us the exception.
-                    current.TryStart(current.ExecutingTaskScheduler, true);
-                }
-            }
-            // Wait on the tasks.
-            for (var taskIndex = tasks.Length - 1; taskIndex >= 0; taskIndex--)
-            {
-                ref var current = ref tasks[taskIndex];
-                current.Wait();
-                AddExceptionsForCompletedTask(ref exceptions, current);
-                // Note that unlike other wait code paths, we do not check
-                // task.NotifyDebuggerOfWaitCompletionIfNecessary() here, because this method is currently
-                // only used from contexts where the tasks couldn't have that bit set, namely
-                // Parallel.Invoke.  If that ever changes, such checks should be added here.
-            }
-            // If one or more threw exceptions, aggregate them.
-            if (exceptions != null)
-            {
-                throw new AggregateException(exceptions);
-            }
-        }
-
-        internal static void AddExceptionsForCompletedTask(ref List<Exception> exceptions, Task t)
-        {
-            var ex = t.GetExceptions(true);
-            if (ex != null)
-            {
-                // make sure the task's exception observed status is set appropriately
-                // it's possible that WaitAll was called by the parent of an attached child,
-                // this will make sure it won't throw again in the implicit wait
-                t.UpdateExceptionObservedStatus();
-
-                if (exceptions == null)
-                {
-                    exceptions = new List<Exception>(ex.InnerExceptions.Count);
-                }
-
-                exceptions.AddRange(ex.InnerExceptions);
-            }
         }
 
         /// <summary>
@@ -533,7 +371,7 @@ namespace System.Threading.Tasks
         /// An array of <see cref="Task"/> instances on which to wait.
         /// </param>
         /// <param name="timeout">
-        /// A <see cref="System.TimeSpan"/> that represents the number of milliseconds to wait, or a <see cref="System.TimeSpan"/> that represents -1 milliseconds to wait indefinitely.
+        /// A <see cref="TimeSpan"/> that represents the number of milliseconds to wait, or a <see cref="TimeSpan"/> that represents -1 milliseconds to wait indefinitely.
         /// </param>
         /// <returns>
         /// The index of the completed task in the <paramref name="tasks"/> array argument, or -1 if the
@@ -596,7 +434,7 @@ namespace System.Threading.Tasks
         /// An array of <see cref="Task"/> instances on which to wait.
         /// </param>
         /// <param name="millisecondsTimeout">
-        /// The number of milliseconds to wait, or <see cref="System.Threading.Timeout.Infinite"/> (-1) to
+        /// The number of milliseconds to wait, or <see cref="Timeout.Infinite"/> (-1) to
         /// wait indefinitely.
         /// </param>
         /// <returns>
@@ -626,7 +464,7 @@ namespace System.Threading.Tasks
         /// An array of <see cref="Task"/> instances on which to wait.
         /// </param>
         /// <param name="millisecondsTimeout">
-        /// The number of milliseconds to wait, or <see cref="System.Threading.Timeout.Infinite"/> (-1) to
+        /// The number of milliseconds to wait, or <see cref="Timeout.Infinite"/> (-1) to
         /// wait indefinitely.
         /// </param>
         /// <param name="cancellationToken">
@@ -683,12 +521,111 @@ namespace System.Threading.Tasks
             {
                 PrivateWaitAny(tasks, millisecondsTimeout, cancellationToken, ref signaledTaskIndex);
             }
-            // We need to prevent the tasks array from being GC'ed until we come out of the wait.
+            // We need to prevent the tasks array from being garbage collected until we come out of the wait.
             // This is necessary so that the Parallel Debugger can traverse it during the long wait
             // and deduce waiter/waitee relationships
             GC.KeepAlive(tasks);
             // Return the index
             return signaledTaskIndex;
+        }
+
+        internal static void AddExceptionsForCompletedTask(ref List<Exception> exceptions, Task t)
+        {
+            var ex = t.GetExceptions(true);
+            if (ex != null)
+            {
+                // make sure the task's exception observed status is set appropriately
+                // it's possible that WaitAll was called by the parent of an attached child,
+                // this will make sure it won't throw again in the implicit wait
+                t.UpdateExceptionObservedStatus();
+
+                if (exceptions == null)
+                {
+                    exceptions = new List<Exception>(ex.InnerExceptions.Count);
+                }
+
+                exceptions.AddRange(ex.InnerExceptions);
+            }
+        }
+
+        internal static void FastWaitAll(Task[] tasks)
+        {
+            Contract.Requires(tasks != null);
+            List<Exception> exceptions = null;
+            // Collects incomplete tasks in "waitedOnTaskList" and their cooperative events in "cooperativeEventList"
+            for (var taskIndex = tasks.Length - 1; taskIndex >= 0; taskIndex--)
+            {
+                ref var current = ref tasks[taskIndex];
+                if (!current.IsCompleted)
+                {
+                    // Just attempting to inline here... result doesn't matter.
+                    // We'll do a second pass to do actual wait on each task, and to aggregate their exceptions.
+                    // If the task is inlined here, it will register as IsCompleted in the second pass
+                    // and will just give us the exception.
+                    current.TryStart(current.ExecutingTaskScheduler, true);
+                }
+            }
+            // Wait on the tasks.
+            for (var taskIndex = tasks.Length - 1; taskIndex >= 0; taskIndex--)
+            {
+                ref var current = ref tasks[taskIndex];
+                current.Wait();
+                AddExceptionsForCompletedTask(ref exceptions, current);
+                // Note that unlike other wait code paths, we do not check
+                // task.NotifyDebuggerOfWaitCompletionIfNecessary() here, because this method is currently
+                // only used from contexts where the tasks couldn't have that bit set, namely
+                // Parallel.Invoke.  If that ever changes, such checks should be added here.
+            }
+            // If one or more threw exceptions, aggregate them.
+            if (exceptions != null)
+            {
+                throw new AggregateException(exceptions);
+            }
+        }
+
+        /// <summary>
+        /// Calls the debugger notification method if the right bit is set and if
+        /// the task itself allows for the notification to proceed.
+        /// </summary>
+        /// <returns>true if the debugger was notified; otherwise, false.</returns>
+        internal bool NotifyDebuggerOfWaitCompletionIfNecessary()
+        {
+            // Notify the debugger if of any of the tasks we've waited on requires notification
+            if (IsWaitNotificationEnabled && ShouldNotifyDebuggerOfWaitCompletion)
+            {
+                NotifyDebuggerOfWaitCompletion();
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Sets or clears the TASK_STATE_WAIT_COMPLETION_NOTIFICATION state bit.
+        /// The debugger sets this bit to aid it in "stepping out" of an async method body.
+        /// If enabled is true, this must only be called on a task that has not yet been completed.
+        /// If enabled is false, this may be called on completed tasks.
+        /// Either way, it should only be used for promise-style tasks.
+        /// </summary>
+        /// <param name="enabled">true to set the bit; false to unset the bit.</param>
+        internal void SetNotificationForWaitCompletion(bool enabled)
+        {
+            Contract.Assert(IsPromiseTask, "Should only be used for promise-style tasks"); // hasn't been vetted on other kinds as there hasn't been a need
+            Volatile.Write(ref _waitNotificationEnabled, enabled ? 1 : 0);
+        }
+
+        /// <summary>Adds an element to the list, initializing the list if it's null.</summary>
+        /// <typeparam name="T">Specifies the type of data stored in the list.</typeparam>
+        /// <param name="item">The item to add.</param>
+        /// <param name="list">The list.</param>
+        /// <param name="initSize">The size to which to initialize the list if the list is null.</param>
+        private static void AddToList<T>(T item, ref List<T> list, int initSize)
+        {
+            if (list == null)
+            {
+                list = new List<T>(initSize);
+            }
+
+            list.Add(item);
         }
 
         private static void PrivateWaitAny(Task[] tasks, int millisecondsTimeout, CancellationToken cancellationToken, ref int signaledTaskIndex)
@@ -722,6 +659,64 @@ namespace System.Threading.Tasks
             }
             //--
             return firstCompleted;
+        }
+
+        /// <summary>Performs a blocking WaitAll on the vetted list of tasks.</summary>
+        /// <param name="tasks">The tasks, which have already been checked and filtered for completion.</param>
+        /// <param name="millisecondsTimeout">The timeout.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>true if all of the tasks completed; otherwise, false.</returns>
+        private static bool WaitAllBlockingCore(List<Task> tasks, int millisecondsTimeout, CancellationToken cancellationToken)
+        {
+            if (tasks == null)
+            {
+                Contract.Assert(false, "Expected a non-null list of tasks");
+                throw new ArgumentNullException(nameof(tasks));
+            }
+            Contract.Assert(tasks.Count > 0, "Expected at least one task");
+            bool waitCompleted;
+            ManualResetEventSlim manualResetEventSlim = null;
+            WhenAllCore core = null;
+            try
+            {
+                manualResetEventSlim = new ManualResetEventSlim(false);
+                core = new WhenAllCore(tasks, manualResetEventSlim.Set);
+                if (core.IsDone)
+                {
+                    waitCompleted = true;
+                }
+                else
+                {
+                    waitCompleted = manualResetEventSlim.Wait(millisecondsTimeout, cancellationToken);
+                }
+            }
+            finally
+            {
+                if (core != null)
+                {
+                    core.Dispose();
+                    waitCompleted = core.IsDone;
+                }
+                manualResetEventSlim?.Dispose();
+            }
+            return waitCompleted;
+        }
+
+        /// <summary>Placeholder method used as a breakpoint target by the debugger.  Must not be inlined or optimized.</summary>
+        /// <remarks>All joins with a task should end up calling this if their debugger notification bit is set.</remarks>
+        [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
+        private void NotifyDebuggerOfWaitCompletion()
+        {
+            // It's theoretically possible but extremely rare that this assert could fire because the
+            // bit was unset between the time that it was checked and this method was called.
+            // It's so remote a chance that it's worth having the assert to protect against misuse.
+            Contract.Assert(IsWaitNotificationEnabled, "Should only be called if the wait completion bit is set.");
+
+            // Now that we're notifying the debugger, clear the bit.  The debugger should do this anyway,
+            // but this adds a bit of protection in case it fails to, and given that the debugger is involved,
+            // the overhead here for the interlocked is negligible.  We do still rely on the debugger
+            // to clear bits, as this doesn't recursively clear bits in the case of, for example, WhenAny.
+            SetNotificationForWaitCompletion(/*enabled:*/ false);
         }
     }
 }

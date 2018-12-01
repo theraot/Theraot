@@ -10,10 +10,7 @@ namespace Theraot.Collections.ThreadSafe
         [ThreadStatic]
         internal static int InternalRecycling;
 
-        public static bool Recycling
-        {
-            get { return InternalRecycling > 0; }
-        }
+        public static bool Recycling => InternalRecycling > 0;
     }
 
     public class NeedleReservoir<T, TNeedle>
@@ -24,11 +21,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public NeedleReservoir(Func<T, TNeedle> needleFactory)
         {
-            if (needleFactory == null)
-            {
-                throw new ArgumentNullException(nameof(needleFactory));
-            }
-            _needleFactory = needleFactory;
+            _needleFactory = needleFactory ?? throw new ArgumentNullException(nameof(needleFactory));
             _pool = new Pool<TNeedle>(64, Recycle);
 
             void Recycle(TNeedle obj)
@@ -49,16 +42,15 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (!_pool.Donate(donation))
             {
-                if (donation is IDisposable disposable)
-                {
-                    disposable.Dispose();
-                }
+                // ReSharper disable once SuspiciousTypeConversion.Global
+                var disposable = donation as IDisposable;
+                disposable?.Dispose();
             }
         }
 
         internal TNeedle GetNeedle(T value)
         {
-            if (_pool.TryGet(out TNeedle result))
+            if (_pool.TryGet(out var result))
             {
                 NeedleReservoir.InternalRecycling++;
                 result.Value = value;

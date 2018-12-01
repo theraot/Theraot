@@ -29,10 +29,13 @@
 #if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using Theraot.Collections.ThreadSafe;
+using Theraot.Threading;
 
 namespace System.Threading
 {
+    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class CancellationTokenSource : IDisposable
     {
         internal static readonly CancellationTokenSource CanceledSource = new CancellationTokenSource(); // Leaked
@@ -44,7 +47,7 @@ namespace System.Threading
         private int _currentId = int.MaxValue;
         private int _disposeRequested;
         private CancellationTokenRegistration[] _linkedTokens;
-        private Theraot.Threading.Timeout<CancellationTokenSource> _timeout;
+        private Timeout<CancellationTokenSource> _timeout;
 
         static CancellationTokenSource()
         {
@@ -74,7 +77,7 @@ namespace System.Threading
             }
             if (millisecondsDelay != Timeout.Infinite)
             {
-                _timeout = new Theraot.Threading.Timeout<CancellationTokenSource>(_timerCallback, millisecondsDelay, this);
+                _timeout = new Timeout<CancellationTokenSource>(_timerCallback, millisecondsDelay, this);
             }
         }
 
@@ -84,10 +87,7 @@ namespace System.Threading
             //Empty
         }
 
-        public bool IsCancellationRequested
-        {
-            get { return _cancelRequested == 1; }
-        }
+        public bool IsCancellationRequested => _cancelRequested == 1;
 
         public CancellationToken Token
         {
@@ -160,12 +160,12 @@ namespace System.Threading
                 throw new ArgumentOutOfRangeException(nameof(millisecondsDelay));
             }
             CheckDisposed();
-            if (Thread.VolatileRead(ref _cancelRequested) == 0 && millisecondsDelay != Timeout.Infinite)
+            if (Volatile.Read(ref _cancelRequested) == 0 && millisecondsDelay != Timeout.Infinite)
             {
                 if (_timeout == null)
                 {
                     // Have to be careful not to create secondary background timer
-                    var newTimer = new Theraot.Threading.Timeout<CancellationTokenSource>(_timerCallback, Timeout.Infinite, this);
+                    var newTimer = new Timeout<CancellationTokenSource>(_timerCallback, Timeout.Infinite, this);
                     var oldTimer = Interlocked.CompareExchange(ref _timeout, newTimer, null);
                     if (!ReferenceEquals(oldTimer, null))
                     {
@@ -176,7 +176,7 @@ namespace System.Threading
             }
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public void Dispose()
         {
             try
@@ -191,7 +191,7 @@ namespace System.Threading
 
         internal void CheckDisposed()
         {
-            if (Thread.VolatileRead(ref _disposeRequested) == 1)
+            if (Volatile.Read(ref _disposeRequested) == 1)
             {
                 throw new ObjectDisposedException(nameof(CancellationTokenSource));
             }
@@ -200,7 +200,7 @@ namespace System.Threading
         internal SafeDictionary<CancellationTokenRegistration, Action> CheckDisposedGetCallbacks()
         {
             var result = _callbacks;
-            if (result == null || Thread.VolatileRead(ref _disposeRequested) == 1)
+            if (result == null || Volatile.Read(ref _disposeRequested) == 1)
             {
                 throw new ObjectDisposedException(nameof(CancellationTokenSource));
             }
@@ -215,7 +215,7 @@ namespace System.Threading
             // If the source is already canceled run the callback inline.
             // if not, we try to add it to the queue and if it is currently being processed.
             // we try to execute it back ourselves to be sure the callback is ran.
-            if (Thread.VolatileRead(ref _cancelRequested) == 1)
+            if (Volatile.Read(ref _cancelRequested) == 1)
             {
                 callback();
             }
@@ -231,7 +231,7 @@ namespace System.Threading
                 callbacks.TryAdd(tokenReg, callback);
                 // Check if the source was just canceled and if so, it may be that it executed the callbacks except the one just added...
                 // So try to inline the callback
-                if (Thread.VolatileRead(ref _cancelRequested) == 1 && callbacks.Remove(tokenReg, out callback))
+                if (Volatile.Read(ref _cancelRequested) == 1 && callbacks.Remove(tokenReg, out callback))
                 {
                     callback();
                 }
@@ -242,12 +242,12 @@ namespace System.Threading
         internal bool RemoveCallback(CancellationTokenRegistration reg)
         {
             // Ignore call if the source has been disposed
-            if (Thread.VolatileRead(ref _disposeRequested) == 0)
+            if (Volatile.Read(ref _disposeRequested) == 0)
             {
                 var callbacks = _callbacks;
                 if (callbacks != null)
                 {
-                    return callbacks.Remove(reg, out Action dummy);
+                    return callbacks.Remove(reg, out var dummy);
                 }
             }
             return true;
@@ -257,16 +257,13 @@ namespace System.Threading
         {
             if (disposing && Interlocked.CompareExchange(ref _disposeRequested, 1, 0) == 0)
             {
-                if (Thread.VolatileRead(ref _cancelRequested) == 0)
+                if (Volatile.Read(ref _cancelRequested) == 0)
                 {
                     UnregisterLinkedTokens();
                     _callbacks = null;
                 }
                 var timer = Interlocked.Exchange(ref _timeout, null);
-                if (timer != null)
-                {
-                    timer.Cancel();
-                }
+                timer?.Cancel();
                 _handle.Close();
             }
         }
@@ -313,7 +310,7 @@ namespace System.Threading
             {
                 try
                 {
-                    // The CancellationTokenSource may have been disposed jusst before this call
+                    // The CancellationTokenSource may have been disposed just before this call
                     _handle.Set();
                 }
                 catch (ObjectDisposedException)
@@ -331,7 +328,7 @@ namespace System.Threading
                     do
                     {
                         var checkId = id;
-                        if (callbacks.Remove(id, registration => registration.Equals(checkId, this), out Action callback) && callback != null)
+                        if (callbacks.Remove(id, registration => registration.Equals(checkId, this), out var callback) && callback != null)
                         {
                             RunCallback(throwOnFirstException, callback, ref exceptions);
                         }
@@ -357,7 +354,7 @@ namespace System.Threading
         private void SafeLinkedCancel()
         {
             var callbacks = _callbacks;
-            if (callbacks == null || Thread.VolatileRead(ref _disposeRequested) == 1)
+            if (callbacks == null || Volatile.Read(ref _disposeRequested) == 1)
             {
                 return;
             }

@@ -1,53 +1,60 @@
 // Needed for NET30
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
 {
-    [System.Diagnostics.DebuggerNonUserCode]
-    [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public sealed
-#if FAT
-        partial
-#endif
-        class NullAwareDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+    [DebuggerNonUserCode]
+    [DebuggerDisplay("Count={Count}")]
+    public sealed class NullAwareDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
-        private readonly Dictionary<TKey, TValue> _dictionary;
-
+        private readonly Dictionary<TKey, TValue> _wrapped;
+        private readonly IEqualityComparer<TValue> _valueComparer;
         private bool _hasNull;
-        private ExtendedReadOnlyCollection<TKey> _keys;
-        private IEqualityComparer<TValue> _valueComparer;
         private TValue[] _valueForNull;
-        private ExtendedReadOnlyCollection<TValue> _values;
 
         public NullAwareDictionary()
         {
-            _dictionary = new Dictionary<TKey, TValue>();
+            _wrapped = new Dictionary<TKey, TValue>();
+            _hasNull = false;
+            _valueForNull = new[] { default(TValue) };
+            _valueComparer = EqualityComparer<TValue>.Default;
             if (typeof(TKey).CanBeNull())
             {
-                InitializeNullable();
+                Keys = new ConditionalExtendedList<TKey>(new[] { default(TKey) }, _wrapped.Keys, () => _hasNull, null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
             }
             else
             {
-                InitializeNotNullable();
+                Keys = new ProxyCollection<TKey>(() => _wrapped.Keys).AsReadOnlyICollection;
+                Values = new ProxyCollection<TValue>(() => _wrapped.Values).AsReadOnlyICollection;
             }
+            AsReadOnly = new ReadOnlyDictionary<TKey, TValue>(this);
         }
 
         public NullAwareDictionary(IEqualityComparer<TKey> comparer)
         {
-            _dictionary = new Dictionary<TKey, TValue>(comparer);
+            _wrapped = new Dictionary<TKey, TValue>(comparer);
+            _hasNull = false;
+            _valueForNull = new[] { default(TValue) };
+            _valueComparer = EqualityComparer<TValue>.Default;
             if (typeof(TKey).CanBeNull())
             {
-                InitializeNullable();
+                Keys = new ConditionalExtendedList<TKey>(new[] { default(TKey) }, _wrapped.Keys, () => _hasNull, null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
             }
             else
             {
-                InitializeNotNullable();
+                Keys = new ProxyCollection<TKey>(() => _wrapped.Keys).AsReadOnlyICollection;
+                Values = new ProxyCollection<TValue>(() => _wrapped.Values).AsReadOnlyICollection;
             }
+            AsReadOnly = new ReadOnlyDictionary<TKey, TValue>(this);
         }
 
         public NullAwareDictionary(IDictionary<TKey, TValue> dictionary)
@@ -56,16 +63,22 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(dictionary), "dictionary is null.");
             }
-            _dictionary = new Dictionary<TKey, TValue>(dictionary);
+            _wrapped = new Dictionary<TKey, TValue>(dictionary);
+            _hasNull = false;
+            _valueForNull = new[] { default(TValue) };
+            _valueComparer = EqualityComparer<TValue>.Default;
             if (typeof(TKey).CanBeNull())
             {
-                InitializeNullable();
+                Keys = new ConditionalExtendedList<TKey>(new[] { default(TKey) }, _wrapped.Keys, () => _hasNull, null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
                 TakeValueForNull(dictionary);
             }
             else
             {
-                InitializeNotNullable();
+                Keys = new ProxyCollection<TKey>(() => _wrapped.Keys).AsReadOnlyICollection;
+                Values = new ProxyCollection<TValue>(() => _wrapped.Values).AsReadOnlyICollection;
             }
+            AsReadOnly = new ReadOnlyDictionary<TKey, TValue>(this);
         }
 
         public NullAwareDictionary(KeyValuePair<TKey, TValue>[] dictionary)
@@ -74,14 +87,20 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(dictionary), "dictionary is null.");
             }
+            _hasNull = false;
+            _valueForNull = new[] { default(TValue) };
+            _valueComparer = EqualityComparer<TValue>.Default;
             if (typeof(TKey).CanBeNull())
             {
-                InitializeNullable();
+                Keys = new ConditionalExtendedList<TKey>(new[] { default(TKey) }, _wrapped.Keys, () => _hasNull, null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
             }
             else
             {
-                InitializeNotNullable();
+                Keys = new ProxyCollection<TKey>(() => _wrapped.Keys).AsReadOnlyICollection;
+                Values = new ProxyCollection<TValue>(() => _wrapped.Values).AsReadOnlyICollection;
             }
+            AsReadOnly = new ReadOnlyDictionary<TKey, TValue>(this);
             foreach (var pair in dictionary)
             {
                 Add(pair);
@@ -94,44 +113,35 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(dictionary), "dictionary is null.");
             }
-            _dictionary = new Dictionary<TKey, TValue>(dictionary, comparer);
+            _wrapped = new Dictionary<TKey, TValue>(dictionary, comparer);
+            _hasNull = false;
+            _valueForNull = new[] { default(TValue) };
+            _valueComparer = EqualityComparer<TValue>.Default;
             if (typeof(TKey).CanBeNull())
             {
-                InitializeNullable();
+                Keys = new ConditionalExtendedList<TKey>(new[] { default(TKey) }, _wrapped.Keys, () => _hasNull, null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
                 TakeValueForNull(dictionary);
             }
             else
             {
-                InitializeNotNullable();
+                Keys = new ProxyCollection<TKey>(() => _wrapped.Keys).AsReadOnlyICollection;
+                Values = new ProxyCollection<TValue>(() => _wrapped.Values).AsReadOnlyICollection;
             }
+            AsReadOnly = new ReadOnlyDictionary<TKey, TValue>(this);
         }
 
-        public IReadOnlyDictionary<TKey, TValue> AsReadOnly { get; private set; }
+        public IReadOnlyDictionary<TKey, TValue> AsReadOnly { get; }
 
-        public IEqualityComparer<TKey> Comparer
-        {
-            get { return _dictionary.Comparer; }
-        }
+        public IEqualityComparer<TKey> Comparer => _wrapped.Comparer;
 
-        public int Count
-        {
-            get { return _hasNull ? _dictionary.Count + 1 : _dictionary.Count; }
-        }
+        public int Count => _hasNull ? _wrapped.Count + 1 : _wrapped.Count;
 
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
 
-        public ICollection<TKey> Keys
-        {
-            get { return _keys; }
-        }
+        public ICollection<TKey> Keys { get; }
 
-        public ICollection<TValue> Values
-        {
-            get { return _values; }
-        }
+        public ICollection<TValue> Values { get; }
 
         public TValue this[TKey key]
         {
@@ -146,7 +156,7 @@ namespace Theraot.Collections.Specialized
                     }
                     throw new KeyNotFoundException();
                 }
-                return _dictionary[key];
+                return _wrapped[key];
             }
             set
             {
@@ -157,7 +167,7 @@ namespace Theraot.Collections.Specialized
                 }
                 else
                 {
-                    _dictionary[key] = value;
+                    _wrapped[key] = value;
                 }
             }
         }
@@ -175,7 +185,7 @@ namespace Theraot.Collections.Specialized
             }
             else
             {
-                _dictionary.Add(key, value);
+                _wrapped.Add(key, value);
             }
         }
 
@@ -189,7 +199,7 @@ namespace Theraot.Collections.Specialized
         public void Clear()
         {
             ClearForNull();
-            _dictionary.Clear();
+            _wrapped.Clear();
         }
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
@@ -206,7 +216,7 @@ namespace Theraot.Collections.Specialized
             }
             try
             {
-                return _valueComparer.Equals(_dictionary[key], value);
+                return _valueComparer.Equals(_wrapped[key], value);
             }
             catch (KeyNotFoundException)
             {
@@ -226,7 +236,7 @@ namespace Theraot.Collections.Specialized
             {
                 return _hasNull; // OK
             }
-            return _dictionary.ContainsKey(key);
+            return _wrapped.ContainsKey(key);
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -249,13 +259,13 @@ namespace Theraot.Collections.Specialized
 
         public void Deconstruct(out KeyValuePair<TKey, TValue>[] dictionary)
         {
-            var result = _dictionary as IEnumerable<KeyValuePair<TKey, TValue>>;
+            var result = _wrapped as IEnumerable<KeyValuePair<TKey, TValue>>;
             if (_hasNull)
             {
                 // if the dictionary has null, TKey can be null, if TKey can be null, the default of TKey is null
-                result = result.Prepend(new KeyValuePair<TKey, TValue>(default, _valueForNull[0]));
+                result = result.Prepend(new KeyValuePair<TKey, TValue>(default(TKey), _valueForNull[0]));
             }
-            dictionary = result.ToArray();
+            dictionary = Enumerable.ToArray(result);
         }
 
         public void ExceptWith(IEnumerable<KeyValuePair<TKey, TValue>> other)
@@ -268,15 +278,15 @@ namespace Theraot.Collections.Specialized
             if (_hasNull)
             {
                 // if the dictionary has null, TKey can be null, if TKey can be null, the default of TKey is null
-                yield return new KeyValuePair<TKey, TValue>(default, _valueForNull[0]);
+                yield return new KeyValuePair<TKey, TValue>(default(TKey), _valueForNull[0]);
             }
-            foreach (var item in _dictionary)
+            foreach (var item in _wrapped)
             {
                 yield return item;
             }
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
@@ -323,7 +333,7 @@ namespace Theraot.Collections.Specialized
                 }
                 return false;
             }
-            return _dictionary.Remove(key);
+            return _wrapped.Remove(key);
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
@@ -341,9 +351,9 @@ namespace Theraot.Collections.Specialized
             }
             try
             {
-                if (_valueComparer.Equals(_dictionary[key], value))
+                if (_valueComparer.Equals(_wrapped[key], value))
                 {
-                    return _dictionary.Remove(key);
+                    return _wrapped.Remove(key);
                 }
                 return false;
             }
@@ -364,7 +374,7 @@ namespace Theraot.Collections.Specialized
                 }
                 return false;
             }
-            return _dictionary.Remove(item, comparer);
+            return _wrapped.Remove(item, comparer);
         }
 
         public bool SetEquals(IEnumerable<KeyValuePair<TKey, TValue>> other)
@@ -387,10 +397,10 @@ namespace Theraot.Collections.Specialized
                     value = _valueForNull[0];
                     return true;
                 }
-                value = default;
+                value = default(TValue);
                 return false;
             }
-            return _dictionary.TryGetValue(key, out value);
+            return _wrapped.TryGetValue(key, out value);
         }
 
         public void UnionWith(IEnumerable<KeyValuePair<TKey, TValue>> other)
@@ -408,45 +418,6 @@ namespace Theraot.Collections.Specialized
             _valueForNull = new[] { default(TValue) };
         }
 
-        private void InitializeNotNullable()
-        {
-            _hasNull = false;
-            _valueForNull = new[] { default(TValue) };
-            _valueComparer = EqualityComparer<TValue>.Default;
-            _keys = new ExtendedReadOnlyCollection<TKey>(_dictionary.Keys);
-            _values = new ExtendedReadOnlyCollection<TValue>(_dictionary.Values);
-            AsReadOnly = new ReadOnlyDictionary<TKey, TValue>(this);
-        }
-
-        private void InitializeNullable()
-        {
-            _hasNull = false;
-            _valueForNull = new[] { default(TValue) };
-            _valueComparer = EqualityComparer<TValue>.Default;
-            // if the dictionary has null, TKey can be null, if TKey can be null, the default of TKey is null
-            _keys = new ExtendedReadOnlyCollection<TKey>(
-                new EnumerationCollection<TKey>(
-                    new ConditionalExtendedEnumerable<TKey>(
-                        new[] { default(TKey) },
-                        _dictionary.Keys,
-                        () => _hasNull,
-                        null
-                    )
-                )
-            );
-            _values = new ExtendedReadOnlyCollection<TValue>(
-                new EnumerationCollection<TValue>(
-                    new ConditionalExtendedEnumerable<TValue>(
-                        _valueForNull,
-                        _dictionary.Values,
-                        () => _hasNull,
-                        null
-                    )
-                )
-            );
-            AsReadOnly = new ReadOnlyDictionary<TKey, TValue>(this);
-        }
-
         private void SetForNull(TValue value)
         {
             _valueForNull[0] = value;
@@ -455,11 +426,12 @@ namespace Theraot.Collections.Specialized
 
         private void TakeValueForNull(IDictionary<TKey, TValue> dictionary)
         {
-            TValue valueForNull = default;
+            TValue valueForNull = default(TValue);
             try
             {
                 // if the dictionary has null, TKey can be null, if TKey can be null, the default of TKey is null
-                _hasNull = dictionary.TryGetValue(default, out valueForNull);
+                // ReSharper disable once AssignNullToNotNullAttribute
+                _hasNull = dictionary.TryGetValue(default(TKey), out valueForNull);
             }
             catch (ArgumentNullException exception)
             {

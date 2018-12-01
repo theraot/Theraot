@@ -1,16 +1,16 @@
-// Needed for Workadound
+// Needed for Workaround
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Core
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public static class FolderEnumeration
     {
         public static IEnumerable<string> GetFiles(string folder, string pattern)
@@ -42,7 +42,7 @@ namespace Theraot.Core
                 (
                     folder,
                     GetFolders,
-                    current => current.AsUnaryEnumerable().Concat(GetFiles(current, pattern))
+                    current => Extensions.AsUnaryIEnumerable(current).Concat(GetFiles(current, pattern))
                 );
             return GetFiles(folder, pattern).Concat(enumerable.Flatten());
         }
@@ -76,7 +76,7 @@ namespace Theraot.Core
             }
             catch
             {
-                // Catch'em all
+                // Catch them all
                 return ArrayReservoir<string>.EmptyArray;
             }
         }

@@ -12,7 +12,6 @@ namespace Theraot.Collections.ThreadSafe
     /// <typeparam name="T">The type of the value.</typeparam>
     public sealed class SafeCollection<T> : ICollection<T>
     {
-        private readonly IEqualityComparer<T> _comparer;
         private int _maxIndex;
         private SafeDictionary<int, T> _wrapped;
 
@@ -32,24 +31,15 @@ namespace Theraot.Collections.ThreadSafe
         public SafeCollection(IEqualityComparer<T> comparer)
         {
             _maxIndex = -1;
-            _comparer = comparer ?? EqualityComparer<T>.Default;
+            Comparer = comparer ?? EqualityComparer<T>.Default;
             _wrapped = new SafeDictionary<int, T>();
         }
 
-        public IEqualityComparer<T> Comparer
-        {
-            get { return _comparer; }
-        }
+        public IEqualityComparer<T> Comparer { get; }
 
-        public int Count
-        {
-            get { return _wrapped.Count; }
-        }
+        public int Count => _wrapped.Count;
 
-        bool ICollection<T>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection<T>.IsReadOnly => false;
 
         public void Add(T item)
         {
@@ -86,7 +76,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             foreach (var input in this)
             {
-                if (_comparer.Equals(input, item))
+                if (Comparer.Equals(input, item))
                 {
                     return true;
                 }
@@ -115,9 +105,9 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="System.ArgumentNullException">array</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
+        /// <exception cref="ArgumentNullException">array</exception>
+        /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
             Extensions.CanCopyTo(Count, array, arrayIndex);
@@ -152,8 +142,8 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(T item)
         {
-            bool check(T input) => _comparer.Equals(input, item);
-            return _wrapped.RemoveWhereValueEnumerable(check).Any();
+            return _wrapped.RemoveWhereValueEnumerable(Check).Any();
+            bool Check(T input) => Comparer.Equals(input, item);
         }
 
         /// <summary>

@@ -40,7 +40,7 @@ namespace System.Threading.Tasks
                 _parent = InternalCurrent;
             }
             State = state;
-            _creationOptions = creationOptions;
+            CreationOptions = creationOptions;
             _status = (int)TaskStatus.WaitingForActivation;
             _internalOptions = InternalTaskOptions.PromiseTask;
             ExecutingTaskScheduler = TaskScheduler.Default;
@@ -117,7 +117,7 @@ namespace System.Threading.Tasks
             var spinWait = new SpinWait();
             while (true)
             {
-                var lastValue = Thread.VolatileRead(ref _status);
+                var lastValue = Volatile.Read(ref _status);
                 if ((preventDoubleExecution && lastValue >= 3) || lastValue == 6)
                 {
                     return false;
@@ -169,8 +169,8 @@ namespace System.Threading.Tasks
                 if
                 (
                     (_parent != null)
-                    && ((_creationOptions & TaskCreationOptions.AttachedToParent) != 0)
-                    && ((_parent._creationOptions & TaskCreationOptions.DenyChildAttach) == 0)
+                    && ((CreationOptions & TaskCreationOptions.AttachedToParent) != 0)
+                    && ((_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0)
                 )
                 {
                     _parent.DisregardChild();

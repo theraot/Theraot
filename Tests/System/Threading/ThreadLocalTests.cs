@@ -32,7 +32,7 @@ using System.Threading;
 
 namespace MonoTests.System.Threading
 {
-    [TestFixtureAttribute]
+    [TestFixture]
     public sealed class ThreadLocalTests : IDisposable
     {
         private int _nTimes;

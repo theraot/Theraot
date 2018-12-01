@@ -1,9 +1,15 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+#if NET20 || NET30 || NET35 || NET40
+
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System.Linq.Expressions;
+using System.Reflection;
+using Theraot.Collections.ThreadSafe;
 
 #if !FEATURE_DYNAMIC_DELEGATE
 
-using System.Reflection;
 using System.Reflection.Emit;
 
 #endif
@@ -12,11 +18,14 @@ namespace System.Dynamic.Utils
 {
     internal static class DelegateHelpers
     {
+        private static readonly MethodInfo _arrayEmpty = typeof(ArrayReservoir<object>).GetMethod("get_" + nameof(ArrayReservoir<object>.EmptyArray));
+
         private static readonly MethodInfo _funcInvoke = typeof(Func<object[], object>).GetMethod("Invoke");
+
+        private static readonly CacheDict<Type, DynamicMethod> _thunks = new CacheDict<Type, DynamicMethod>(256);
 
         internal static Delegate CreateObjectArrayDelegate(Type delegateType, Func<object[], object> handler)
         {
-            // delegateType must be a delegate type, no check is done
 #if !FEATURE_DYNAMIC_DELEGATE
             return CreateObjectArrayDelegateRefEmit(delegateType, handler);
 #else
@@ -25,6 +34,11 @@ namespace System.Dynamic.Utils
         }
 
 #if !FEATURE_DYNAMIC_DELEGATE
+
+        private static Type ConvertToBoxableType(Type t)
+        {
+            return (t.IsPointer) ? typeof(IntPtr) : t;
+        }
 
         // We will generate the following code:
         //
@@ -39,122 +53,122 @@ namespace System.Dynamic.Utils
         //      param0 = (T0)args[0];   // only generated for each byref argument
         // }
         // return (TRet)ret;
-        private static Delegate CreateObjectArrayDelegateRefEmit(Type delegateType, Func<object[], object> handler) // TODO: Test coverage?
+        private static Delegate CreateObjectArrayDelegateRefEmit(Type delegateType, Func<object[], object> handler)
         {
-            // delegateType must be a delegate type, no check is done
-            var delegateInvokeMethod = delegateType.GetMethod("Invoke");
-
-            var returnType = delegateInvokeMethod.ReturnType;
-            var hasReturnValue = returnType != typeof(void);
-
-            var parameters = delegateInvokeMethod.GetParameters();
-            var paramTypes = new Type[parameters.Length + 1];
-            paramTypes[0] = typeof(Func<object[], object>);
-            for (var i = 0; i < parameters.Length; i++)
+            if (!_thunks.TryGetValue(delegateType, out var thunkMethod))
             {
-                paramTypes[i + 1] = parameters[i].ParameterType;
-            }
+                MethodInfo delegateInvokeMethod = delegateType.GetInvokeMethod();
 
-            var thunkMethod = new DynamicMethod("Thunk", returnType, paramTypes);
-            var ilgen = thunkMethod.GetILGenerator();
+                Type returnType = delegateInvokeMethod.ReturnType;
+                bool hasReturnValue = returnType != typeof(void);
 
-            var argArray = ilgen.DeclareLocal(typeof(object[]));
-            var retValue = ilgen.DeclareLocal(typeof(object));
-
-            // create the argument array
-            ilgen.Emit(OpCodes.Ldc_I4, parameters.Length);
-            ilgen.Emit(OpCodes.Newarr, typeof(object));
-            ilgen.Emit(OpCodes.Stloc, argArray);
-
-            // populate object array
-            var hasRefArgs = false;
-            for (var i = 0; i < parameters.Length; i++)
-            {
-                ref var current = ref parameters[i];
-                var paramIsByReference = current.ParameterType.IsByRef;
-                var paramType = current.ParameterType;
-                if (paramIsByReference)
+                ParameterInfo[] parameters = delegateInvokeMethod.GetParameters();
+                Type[] paramTypes = new Type[parameters.Length + 1];
+                paramTypes[0] = typeof(Func<object[], object>);
+                for (int i = 0; i < parameters.Length; i++)
                 {
-                    paramType = paramType.GetElementType();
+                    paramTypes[i + 1] = parameters[i].ParameterType;
                 }
-                if (paramType == null)
+
+                thunkMethod = new DynamicMethod("Thunk", returnType, paramTypes);
+                ILGenerator ilGenerator = thunkMethod.GetILGenerator();
+
+                LocalBuilder argArray = ilGenerator.DeclareLocal(typeof(object[]));
+                LocalBuilder retValue = ilGenerator.DeclareLocal(typeof(object));
+
+                // create the argument array
+                if (parameters.Length == 0)
                 {
-                    throw new ArgumentException("Valid parameter types required");
+                    ilGenerator.Emit(OpCodes.Call, _arrayEmpty);
                 }
-                hasRefArgs = hasRefArgs || paramIsByReference;
-
-                ilgen.Emit(OpCodes.Ldloc, argArray);
-                ilgen.Emit(OpCodes.Ldc_I4, i);
-                ilgen.Emit(OpCodes.Ldarg, i + 1);
-
-                if (paramIsByReference)
+                else
                 {
-                    ilgen.Emit(OpCodes.Ldobj, paramType);
+                    ilGenerator.Emit(OpCodes.Ldc_I4, parameters.Length);
+                    ilGenerator.Emit(OpCodes.Newarr, typeof(object));
                 }
-                var boxType = ConvertToBoxableType(paramType);
-                ilgen.Emit(OpCodes.Box, boxType);
-                ilgen.Emit(OpCodes.Stelem_Ref);
-            }
+                ilGenerator.Emit(OpCodes.Stloc, argArray);
 
-            if (hasRefArgs)
-            {
-                ilgen.BeginExceptionBlock();
-            }
-
-            // load delegate
-            ilgen.Emit(OpCodes.Ldarg_0);
-
-            // load array
-            ilgen.Emit(OpCodes.Ldloc, argArray);
-
-            // invoke Invoke
-            var invoke = _funcInvoke;
-            ilgen.Emit(OpCodes.Callvirt, invoke);
-            ilgen.Emit(OpCodes.Stloc, retValue);
-
-            if (hasRefArgs)
-            {
-                // copy back ref/out args
-                ilgen.BeginFinallyBlock();
-                for (var i = 0; i < parameters.Length; i++)
+                // populate object array
+                bool hasRefArgs = false;
+                for (int i = 0; i < parameters.Length; i++)
                 {
-                    ref var current = ref parameters[i];
-                    if (current.ParameterType.IsByRef)
+                    bool paramIsByReference = parameters[i].ParameterType.IsByRef;
+                    Type paramType = parameters[i].ParameterType;
+                    if (paramIsByReference)
                     {
-                        var byrefToType = current.ParameterType.GetElementType();
-                        if (byrefToType == null)
-                        {
-                            throw new ArgumentException("Valid parameter types required");
-                        }
-                        // update parameter
-                        ilgen.Emit(OpCodes.Ldarg, i + 1);
-                        ilgen.Emit(OpCodes.Ldloc, argArray);
-                        ilgen.Emit(OpCodes.Ldc_I4, i);
-                        ilgen.Emit(OpCodes.Ldelem_Ref);
-                        ilgen.Emit(OpCodes.Unbox_Any, byrefToType);
-                        ilgen.Emit(OpCodes.Stobj, byrefToType);
+                        paramType = paramType.GetElementType();
                     }
+
+                    hasRefArgs = hasRefArgs || paramIsByReference;
+
+                    ilGenerator.Emit(OpCodes.Ldloc, argArray);
+                    ilGenerator.Emit(OpCodes.Ldc_I4, i);
+                    ilGenerator.Emit(OpCodes.Ldarg, i + 1);
+
+                    if (paramIsByReference)
+                    {
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        ilGenerator.Emit(OpCodes.Ldobj, paramType);
+                    }
+                    Type boxType = ConvertToBoxableType(paramType);
+                    ilGenerator.Emit(OpCodes.Box, boxType);
+                    ilGenerator.Emit(OpCodes.Stelem_Ref);
                 }
-                ilgen.EndExceptionBlock();
+
+                if (hasRefArgs)
+                {
+                    ilGenerator.BeginExceptionBlock();
+                }
+
+                // load delegate
+                ilGenerator.Emit(OpCodes.Ldarg_0);
+
+                // load array
+                ilGenerator.Emit(OpCodes.Ldloc, argArray);
+
+                // invoke Invoke
+                ilGenerator.Emit(OpCodes.Callvirt, _funcInvoke);
+                ilGenerator.Emit(OpCodes.Stloc, retValue);
+
+                if (hasRefArgs)
+                {
+                    // copy back ref/out args
+                    ilGenerator.BeginFinallyBlock();
+                    for (int i = 0; i < parameters.Length; i++)
+                    {
+                        if (parameters[i].ParameterType.IsByRef)
+                        {
+                            Type byrefToType = parameters[i].ParameterType.GetElementType();
+
+                            // update parameter
+                            ilGenerator.Emit(OpCodes.Ldarg, i + 1);
+                            ilGenerator.Emit(OpCodes.Ldloc, argArray);
+                            ilGenerator.Emit(OpCodes.Ldc_I4, i);
+                            ilGenerator.Emit(OpCodes.Ldelem_Ref);
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            ilGenerator.Emit(OpCodes.Unbox_Any, byrefToType);
+                            ilGenerator.Emit(OpCodes.Stobj, byrefToType);
+                        }
+                    }
+                    ilGenerator.EndExceptionBlock();
+                }
+
+                if (hasReturnValue)
+                {
+                    ilGenerator.Emit(OpCodes.Ldloc, retValue);
+                    ilGenerator.Emit(OpCodes.Unbox_Any, ConvertToBoxableType(returnType));
+                }
+
+                ilGenerator.Emit(OpCodes.Ret);
+
+                _thunks[delegateType] = thunkMethod;
             }
 
-            if (hasReturnValue)
-            {
-                ilgen.Emit(OpCodes.Ldloc, retValue);
-                ilgen.Emit(OpCodes.Unbox_Any, ConvertToBoxableType(returnType));
-            }
-
-            ilgen.Emit(OpCodes.Ret);
-
-            // TODO: we need to cache these.
             return thunkMethod.CreateDelegate(delegateType, handler);
-        }
-
-        private static Type ConvertToBoxableType(Type t)
-        {
-            return t.IsPointer ? typeof(IntPtr) : t;
         }
 
 #endif
     }
 }
+
+#endif

@@ -28,15 +28,11 @@ namespace Theraot.Threading
 
         public Timeout(Action callback, long dueTime)
         {
-            if (callback == null)
-            {
-                throw new ArgumentNullException(nameof(callback));
-            }
             if (dueTime < -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
-            Callback = callback;
+            Callback = callback ?? throw new ArgumentNullException(nameof(callback));
             Start(dueTime);
             _hashcode = unchecked((int)DateTime.Now.Ticks);
         }
@@ -88,25 +84,13 @@ namespace Theraot.Threading
             Close();
         }
 
-        Exception IPromise.Exception
-        {
-            get { return null; }
-        }
+        Exception IPromise.Exception => null;
 
-        public bool IsCanceled
-        {
-            get { return Volatile.Read(ref _status) == _canceled; }
-        }
+        public bool IsCanceled => Volatile.Read(ref _status) == _canceled;
 
-        public bool IsCompleted
-        {
-            get { return Volatile.Read(ref _status) == _executed; }
-        }
+        public bool IsCompleted => Volatile.Read(ref _status) == _executed;
 
-        bool IPromise.IsFaulted
-        {
-            get { return false; }
-        }
+        bool IPromise.IsFaulted => false;
 
         public static void Launch(Action callback, long dueTime)
         {
@@ -283,10 +267,7 @@ namespace Theraot.Threading
         private void Close()
         {
             var wrapped = Interlocked.Exchange(ref _wrapped, null);
-            if (wrapped != null)
-            {
-                wrapped.Dispose();
-            }
+            wrapped?.Dispose();
             Volatile.Write(ref Callback, null);
             GC.SuppressFinalize(this);
         }

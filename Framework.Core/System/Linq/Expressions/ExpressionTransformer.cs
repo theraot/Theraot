@@ -1,3 +1,5 @@
+#if NET20 || NET30 || NET35
+
 // ExpressionTransformer.cs
 //
 // Authors:
@@ -271,10 +273,10 @@ namespace System.Linq.Expressions
 
         protected virtual Expression VisitNewArray(NewArrayExpression na)
         {
-            var exprs = VisitExpressionList(na.Expressions);
-            if (exprs != na.Expressions)
+            var expressionList = VisitExpressionList(na.Expressions);
+            if (expressionList != na.Expressions)
             {
-                return na.NodeType == ExpressionType.NewArrayInit ? Expression.NewArrayInit(na.Type.GetElementType(), exprs) : Expression.NewArrayBounds(na.Type.GetElementType(), exprs);
+                return na.NodeType == ExpressionType.NewArrayInit ? Expression.NewArrayInit(na.Type.GetElementType(), expressionList) : Expression.NewArrayBounds(na.Type.GetElementType(), expressionList);
             }
             return na;
         }
@@ -328,3 +330,5 @@ namespace System.Linq.Expressions
         }
     }
 }
+
+#endif

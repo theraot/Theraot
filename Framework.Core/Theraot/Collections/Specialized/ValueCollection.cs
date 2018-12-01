@@ -16,25 +16,13 @@ namespace Theraot.Collections.Specialized
             _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
         }
 
-        public int Count
-        {
-            get { return _wrapped.Count; }
-        }
+        public int Count => _wrapped.Count;
 
-        bool ICollection<TValue>.IsReadOnly
-        {
-            get { return true; }
-        }
+        bool ICollection<TValue>.IsReadOnly => true;
 
-        bool ICollection.IsSynchronized
-        {
-            get { return ((ICollection)_wrapped).IsSynchronized; }
-        }
+        bool ICollection.IsSynchronized => ((ICollection)_wrapped).IsSynchronized;
 
-        object ICollection.SyncRoot
-        {
-            get { return ((ICollection)_wrapped).SyncRoot; }
-        }
+        object ICollection.SyncRoot => ((ICollection)_wrapped).SyncRoot;
 
         void ICollection<TValue>.Add(TValue item)
         {

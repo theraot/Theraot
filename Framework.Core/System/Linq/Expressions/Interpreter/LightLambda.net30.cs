@@ -1,25 +1,21 @@
 #if NET20 || NET30
 
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
+using System.Collections.Generic;
+using System.Dynamic.Utils;
+using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace System.Linq.Expressions.Interpreter
 {
-    internal sealed class LightLambdaCompileEventArgs : EventArgs
-    {
-        public Delegate Compiled { get; private set; }
-
-        internal LightLambdaCompileEventArgs(Delegate compiled)
-        {
-            Compiled = compiled;
-        }
-    }
-
     public class LightLambda
     {
         private readonly IStrongBox[] _closure;
+
         private readonly Interpreter _interpreter;
 #if NO_FEATURE_STATIC_DELEGATE
         private static readonly CacheDict<Type, Func<LightLambda, Delegate>> _runCache = new CacheDict<Type, Func<LightLambda, Delegate>>(100);
@@ -29,6 +25,237 @@ namespace System.Linq.Expressions.Interpreter
         {
             _closure = closure;
             _interpreter = delegateCreator.Interpreter;
+        }
+
+        internal string DebugView => new DebugViewPrinter(_interpreter).ToString();
+
+        public object Run(params object[] arguments)
+        {
+            var frame = MakeFrame();
+            for (var i = 0; i < arguments.Length; i++)
+            {
+                frame.Data[i] = arguments[i];
+            }
+            var currentFrame = frame.Enter();
+            try
+            {
+                _interpreter.Run(frame);
+            }
+            finally
+            {
+                for (var i = 0; i < arguments.Length; i++)
+                {
+                    arguments[i] = frame.Data[i];
+                }
+
+                frame.Leave(currentFrame);
+            }
+            return frame.Pop();
+        }
+
+        public object RunVoid(params object[] arguments)
+        {
+            var frame = MakeFrame();
+            for (var i = 0; i < arguments.Length; i++)
+            {
+                frame.Data[i] = arguments[i];
+            }
+            var currentFrame = frame.Enter();
+            try
+            {
+                _interpreter.Run(frame);
+            }
+            finally
+            {
+                for (var i = 0; i < arguments.Length; i++)
+                {
+                    arguments[i] = frame.Data[i];
+                }
+
+                frame.Leave(currentFrame);
+            }
+            return null;
+        }
+
+        internal Delegate MakeDelegate(Type delegateType)
+        {
+#if !NO_FEATURE_STATIC_DELEGATE
+            var method = delegateType.GetInvokeMethod();
+            if (method.ReturnType == typeof(void))
+            {
+                return DelegateHelpers.CreateObjectArrayDelegate(delegateType, RunVoid);
+            }
+
+            return DelegateHelpers.CreateObjectArrayDelegate(delegateType, Run);
+#else
+            Func<LightLambda, Delegate> fastCtor = GetRunDelegateCtor(delegateType);
+            if (fastCtor != null)
+            {
+                return fastCtor(this);
+            }
+            else
+            {
+                return CreateCustomDelegate(delegateType);
+            }
+#endif
+        }
+
+        private InterpretedFrame MakeFrame()
+        {
+            return new InterpretedFrame(_interpreter, _closure);
+        }
+
+        private class DebugViewPrinter
+        {
+            private readonly Dictionary<int, string> _handlerEnter = new Dictionary<int, string>();
+            private readonly Dictionary<int, int> _handlerExit = new Dictionary<int, int>();
+            private readonly Interpreter _interpreter;
+            private readonly Dictionary<int, int> _tryStart = new Dictionary<int, int>();
+            private string _indent = "  ";
+
+            public DebugViewPrinter(Interpreter interpreter)
+            {
+                _interpreter = interpreter;
+
+                Analyze();
+            }
+
+            public override string ToString()
+            {
+                var sb = new StringBuilder();
+
+                var name = _interpreter.Name ?? "lambda_method";
+                sb.Append("object ").Append(name).AppendLine("(object[])");
+                sb.AppendLine("{");
+
+                sb.Append("  .locals ").Append(_interpreter.LocalCount).AppendLine();
+                sb.Append("  .maxstack ").Append(_interpreter.Instructions.MaxStackDepth).AppendLine();
+                sb.Append("  .maxcontinuation ").Append(_interpreter.Instructions.MaxContinuationDepth).AppendLine();
+                sb.AppendLine();
+
+                var instructions = _interpreter.Instructions.Instructions;
+                var debugView = new InstructionArray.DebugView(_interpreter.Instructions);
+                var instructionViews = debugView.GetInstructionViews();
+
+                for (var i = 0; i < instructions.Length; i++)
+                {
+                    EmitExits(sb, i);
+
+                    if (_tryStart.TryGetValue(i, out var startCount))
+                    {
+                        for (var j = 0; j < startCount; j++)
+                        {
+                            sb.Append(_indent).AppendLine(".try");
+                            sb.Append(_indent).AppendLine("{");
+                            Indent();
+                        }
+                    }
+
+                    if (_handlerEnter.TryGetValue(i, out var handler))
+                    {
+                        sb.Append(_indent).AppendLine(handler);
+                        sb.Append(_indent).AppendLine("{");
+                        Indent();
+                    }
+
+                    var instructionView = instructionViews[i];
+
+                    sb.AppendFormat(CultureInfo.InvariantCulture, "{0}IP_{1}: {2}", _indent, i.ToString().PadLeft(4, '0'), instructionView.GetValue()).AppendLine();
+                }
+
+                EmitExits(sb, instructions.Length);
+
+                sb.AppendLine("}");
+
+                return sb.ToString();
+            }
+
+            private void AddHandlerExit(int index)
+            {
+                _handlerExit[index] = _handlerExit.TryGetValue(index, out var count) ? count + 1 : 1;
+            }
+
+            private void AddTryStart(int index)
+            {
+                if (!_tryStart.TryGetValue(index, out var count))
+                {
+                    _tryStart.Add(index, 1);
+                    return;
+                }
+
+                _tryStart[index] = count + 1;
+            }
+
+            private void Analyze()
+            {
+                var instructions = _interpreter.Instructions.Instructions;
+
+                foreach (var instruction in instructions)
+                {
+                    if (instruction is EnterTryCatchFinallyInstruction enterTryCatchFinally)
+                    {
+                        var handler = enterTryCatchFinally.Handler;
+
+                        AddTryStart(handler.TryStartIndex);
+                        AddHandlerExit(handler.TryEndIndex + 1 /* include Goto instruction that acts as a "leave" */);
+
+                        if (handler.IsFinallyBlockExist)
+                        {
+                            _handlerEnter.Add(handler.FinallyStartIndex, "finally");
+                            AddHandlerExit(handler.FinallyEndIndex);
+                        }
+
+                        if (handler.IsCatchBlockExist)
+                        {
+                            foreach (var catchHandler in handler.Handlers)
+                            {
+                                _handlerEnter.Add(catchHandler.HandlerStartIndex - 1 /* include EnterExceptionHandler instruction */, catchHandler.ToString());
+                                AddHandlerExit(catchHandler.HandlerEndIndex);
+
+                                var filter = catchHandler.Filter;
+                                if (filter != null)
+                                {
+                                    _handlerEnter.Add(filter.StartIndex - 1 /* include EnterExceptionFilter instruction */, "filter");
+                                    AddHandlerExit(filter.EndIndex);
+                                }
+                            }
+                        }
+                    }
+
+                    if (instruction is EnterTryFaultInstruction enterTryFault)
+                    {
+                        var handler = enterTryFault.Handler;
+
+                        AddTryStart(handler.TryStartIndex);
+                        AddHandlerExit(handler.TryEndIndex + 1 /* include Goto instruction that acts as a "leave" */);
+
+                        _handlerEnter.Add(handler.FinallyStartIndex, "fault");
+                        AddHandlerExit(handler.FinallyEndIndex);
+                    }
+                }
+            }
+
+            private void Dedent()
+            {
+                _indent = new string(' ', _indent.Length - 2);
+            }
+
+            private void EmitExits(StringBuilder sb, int index)
+            {
+                if (_handlerExit.TryGetValue(index, out var exitCount))
+                {
+                    for (var j = 0; j < exitCount; j++)
+                    {
+                        Dedent();
+                        sb.Append(_indent).AppendLine("}");
+                    }
+                }
+            }
+
+            private void Indent()
+            {
+                _indent = new string(' ', _indent.Length + 2);
+            }
         }
 
 #if NO_FEATURE_STATIC_DELEGATE
@@ -47,8 +274,8 @@ namespace System.Linq.Expressions.Interpreter
 
         private static Func<LightLambda, Delegate> MakeRunDelegateCtor(Type delegateType)
         {
-            var method = delegateType.GetMethod("Invoke");
-            var paramInfos = method.GetParameters();
+            MethodInfo method = delegateType.GetInvokeMethod();
+            ParameterInfo[] paramInfos = method.GetParameters();
             Type[] paramTypes;
             string name = "Run";
 
@@ -108,11 +335,11 @@ namespace System.Linq.Expressions.Interpreter
             /*
             try {
                 DynamicMethod dm = new DynamicMethod("FastCtor", typeof(Delegate), new[] { typeof(LightLambda) }, typeof(LightLambda), true);
-                var ilgen = dm.GetILGenerator();
-                ilgen.Emit(OpCodes.Ldarg_0);
-                ilgen.Emit(OpCodes.Ldftn, runMethod.IsGenericMethodDefinition ? runMethod.MakeGenericMethod(paramTypes) : runMethod);
-                ilgen.Emit(OpCodes.Newobj, delegateType.GetConstructor(new[] { typeof(object), typeof(IntPtr) }));
-                ilgen.Emit(OpCodes.Ret);
+                var ilGenerator = dm.GetILGenerator();
+                ilGenerator.Emit(OpCodes.Ldarg_0);
+                ilGenerator.Emit(OpCodes.Ldftn, runMethod.IsGenericMethodDefinition ? runMethod.MakeGenericMethod(paramTypes) : runMethod);
+                ilGenerator.Emit(OpCodes.Newobj, delegateType.GetConstructor(new[] { typeof(object), typeof(IntPtr) }));
+                ilGenerator.Emit(OpCodes.Ret);
                 return _runCache[delegateType] = (Func<LightLambda, Delegate>)dm.CreateDelegate(typeof(Func<LightLambda, Delegate>));
             } catch (SecurityException) {
             }*/
@@ -127,8 +354,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             //PerfTrack.NoteEvent(PerfTrack.Categories.Compiler, "Synchronously compiling a custom delegate");
 
-            var method = delegateType.GetMethod("Invoke");
-            var paramInfos = method.GetParameters();
+            MethodInfo method = delegateType.GetInvokeMethod();
+            ParameterInfo[] paramInfos = method.GetParameters();
             var parameters = new ParameterExpression[paramInfos.Length];
             var parametersAsObject = new Expression[paramInfos.Length];
             bool hasByRef = false;
@@ -140,12 +367,12 @@ namespace System.Linq.Expressions.Interpreter
                 parametersAsObject[i] = Expression.Convert(parameter, typeof(object));
             }
 
-            var data = Expression.NewArrayInit(typeof(object), parametersAsObject);
+            NewArrayExpression data = Expression.NewArrayInit(typeof(object), parametersAsObject);
             var dlg = new Func<object[], object>(Run);
 
-            var dlgExpr = AstUtils.Constant(dlg);
+            ConstantExpression dlgExpr = Expression.Constant(dlg);
 
-            var argsParam = Expression.Parameter(typeof(object[]), "$args");
+            ParameterExpression argsParam = Expression.Parameter(typeof(object[]), "$args");
 
             Expression body;
             if (method.ReturnType == typeof(void))
@@ -191,37 +418,7 @@ namespace System.Linq.Expressions.Interpreter
             throw new NotImplementedException("byref delegate");
         }
 #endif
-
-        internal Delegate MakeDelegate(Type delegateType)
-        {
-            // delegateType must be a delegate type, no check is done
-#if !NO_FEATURE_STATIC_DELEGATE
-            var method = delegateType.GetMethod("Invoke");
-            if (method.ReturnType == typeof(void))
-            {
-                return Dynamic.Utils.DelegateHelpers.CreateObjectArrayDelegate(delegateType, RunVoid);
-            }
-            return Dynamic.Utils.DelegateHelpers.CreateObjectArrayDelegate(delegateType, Run);
-#else
-            Func<LightLambda, Delegate> fastCtor = GetRunDelegateCtor(delegateType);
-            if (fastCtor != null)
-            {
-                return fastCtor(this);
-            }
-            else
-            {
-                return CreateCustomDelegate(delegateType);
-            }
-#endif
-        }
-
-        private InterpretedFrame MakeFrame()
-        {
-            return new InterpretedFrame(_interpreter, _closure);
-        }
-
 #if NO_FEATURE_STATIC_DELEGATE
-        [EnableInvokeTesting]
         internal void RunVoidRef2<T0, T1>(ref T0 arg0, ref T1 arg1)
         {
             // copy in and copy out for today...
@@ -241,52 +438,6 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 #endif
-
-        public object Run(params object[] arguments)
-        {
-            var frame = MakeFrame();
-            for (var i = 0; i < arguments.Length; i++)
-            {
-                frame.Data[i] = arguments[i];
-            }
-            var currentFrame = frame.Enter();
-            try
-            {
-                _interpreter.Run(frame);
-            }
-            finally
-            {
-                for (var i = 0; i < arguments.Length; i++)
-                {
-                    arguments[i] = frame.Data[i];
-                }
-                InterpretedFrame.Leave(currentFrame);
-            }
-            return frame.Pop();
-        }
-
-        public object RunVoid(params object[] arguments)
-        {
-            var frame = MakeFrame();
-            for (var i = 0; i < arguments.Length; i++)
-            {
-                frame.Data[i] = arguments[i];
-            }
-            var currentFrame = frame.Enter();
-            try
-            {
-                _interpreter.Run(frame);
-            }
-            finally
-            {
-                for (var i = 0; i < arguments.Length; i++)
-                {
-                    arguments[i] = frame.Data[i];
-                }
-                InterpretedFrame.Leave(currentFrame);
-            }
-            return null;
-        }
     }
 }
 

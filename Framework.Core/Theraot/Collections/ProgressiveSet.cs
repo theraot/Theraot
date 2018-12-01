@@ -1,16 +1,14 @@
 // Needed for NET40
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Theraot.Collections
 {
-    [System.Diagnostics.DebuggerNonUserCode]
-    public
-#if FAT
-        partial
-# endif
-        class ProgressiveSet<T> : ProgressiveCollection<T>, ISet<T>
+    [DebuggerNonUserCode]
+    public class ProgressiveSet<T> : ProgressiveCollection<T>, ISet<T>
     {
         // Note: these constructors uses ExtendedSet because HashSet is not an ISet<T> in .NET 3.5 and base class needs an ISet<T>
         public ProgressiveSet(IEnumerable<T> wrapped)
@@ -49,10 +47,7 @@ namespace Theraot.Collections
             // Empty
         }
 
-        bool ICollection<T>.IsReadOnly
-        {
-            get { return true; }
-        }
+        bool ICollection<T>.IsReadOnly => true;
 
         void ICollection<T>.Add(T item)
         {
@@ -74,7 +69,7 @@ namespace Theraot.Collections
             throw new NotSupportedException();
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }

@@ -1,15 +1,17 @@
 ﻿// Needed for NET35 (ThreadLocal)
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Threading;
-
 using Theraot.Core;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
-    [System.Diagnostics.DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
+    [DebuggerNonUserCode]
     public sealed class NoTrackingThreadLocal<T> : IThreadLocal<T>, IWaitablePromise<T>, ICacheNeedle<T>, IObserver<T>
     {
         private int _disposing;
@@ -24,19 +26,25 @@ namespace Theraot.Threading
 
         public NoTrackingThreadLocal(Func<T> valueFactory)
         {
-            if (valueFactory == null)
-            {
-                throw new ArgumentNullException(nameof(valueFactory));
-            }
-            _valueFactory = valueFactory;
+            _valueFactory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
             _slot = Thread.AllocateDataSlot();
         }
+
+        Exception IPromise.Exception => null;
+
+        bool IReadOnlyNeedle<T>.IsAlive => IsValueCreated;
+
+        bool IPromise.IsCanceled => false;
+
+        bool IPromise.IsCompleted => IsValueCreated;
+
+        bool IPromise.IsFaulted => false;
 
         public bool IsValueCreated
         {
             get
             {
-                if (Thread.VolatileRead(ref _disposing) == 1)
+                if (Volatile.Read(ref _disposing) == 1)
                 {
                     throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
                 }
@@ -48,7 +56,7 @@ namespace Theraot.Threading
         {
             get
             {
-                if (Thread.VolatileRead(ref _disposing) == 1)
+                if (Volatile.Read(ref _disposing) == 1)
                 {
                     throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
                 }
@@ -75,7 +83,7 @@ namespace Theraot.Threading
             }
             set
             {
-                if (Thread.VolatileRead(ref _disposing) == 1)
+                if (Volatile.Read(ref _disposing) == 1)
                 {
                     throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
                 }
@@ -83,42 +91,13 @@ namespace Theraot.Threading
             }
         }
 
-        Exception IPromise.Exception
-        {
-            get { return null; }
-        }
+        T IThreadLocal<T>.ValueForDebugDisplay => ValueForDebugDisplay;
 
-        bool IReadOnlyNeedle<T>.IsAlive
-        {
-            get { return IsValueCreated; }
-        }
+        IList<T> IThreadLocal<T>.Values => throw new InvalidOperationException();
 
-        bool IPromise.IsCanceled
-        {
-            get { return false; }
-        }
+        internal T ValueForDebugDisplay => TryGetValue(out var target) ? target : default;
 
-        bool IPromise.IsCompleted
-        {
-            get { return IsValueCreated; }
-        }
-
-        bool IPromise.IsFaulted
-        {
-            get { return false; }
-        }
-
-        T IThreadLocal<T>.ValueForDebugDisplay
-        {
-            get { return ValueForDebugDisplay; }
-        }
-
-        System.Collections.Generic.IList<T> IThreadLocal<T>.Values
-        {
-            get { throw new InvalidOperationException(); }
-        }
-
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public void Dispose()
         {
             if (Interlocked.CompareExchange(ref _disposing, 1, 0) == 0)
@@ -130,16 +109,35 @@ namespace Theraot.Threading
 
         public void EraseValue()
         {
-            if (Thread.VolatileRead(ref _disposing) == 1)
+            if (Volatile.Read(ref _disposing) == 1)
             {
                 throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
             }
             Thread.SetData(_slot, null);
         }
 
+        void IObserver<T>.OnCompleted()
+        {
+            GC.KeepAlive(Value);
+        }
+
+        void IObserver<T>.OnError(Exception error)
+        {
+            if (Volatile.Read(ref _disposing) == 1)
+            {
+                throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
+            }
+            Thread.SetData(_slot, new ExceptionStructNeedle<T>(error));
+        }
+
+        void IObserver<T>.OnNext(T value)
+        {
+            Value = value;
+        }
+
         public override string ToString()
         {
-            return string.Format(System.Globalization.CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
+            return string.Format(CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
         }
 
         public bool TryGetValue(out T value)
@@ -154,36 +152,9 @@ namespace Theraot.Threading
             return true;
         }
 
-        void IObserver<T>.OnCompleted()
-        {
-            GC.KeepAlive(Value);
-        }
-
-        void IObserver<T>.OnError(Exception error)
-        {
-            if (Thread.VolatileRead(ref _disposing) == 1)
-            {
-                throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
-            }
-            Thread.SetData(_slot, new ExceptionStructNeedle<T>(error));
-        }
-
-        void IObserver<T>.OnNext(T value)
-        {
-            Value = value;
-        }
-
         void IWaitablePromise.Wait()
         {
             GC.KeepAlive(Value);
-        }
-
-        internal T ValueForDebugDisplay
-        {
-            get
-            {
-                return TryGetValue(out T target) ? target : default;
-            }
         }
     }
 }

@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using Theraot.Threading;
 using Theraot.Threading.Needles;
 
@@ -53,7 +54,7 @@ namespace System.Collections.ObjectModel
 
         protected void CheckReentrancy()
         {
-            if (_entryCheck.Value.TryGetValue(out int value) && value > 0)
+            if (_entryCheck.Value.TryGetValue(out var value) && value > 0)
             {
                 throw new InvalidOperationException("Reentry");
             }
@@ -146,50 +147,19 @@ namespace System.Collections.ObjectModel
             }
         }
 
-        [Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public sealed class ReentryBlockage : IDisposable
         {
             private readonly Action _release;
 
             public ReentryBlockage(Action release)
             {
-                if (release == null)
-                {
-                    throw new ArgumentNullException(nameof(release));
-                }
-                _release = release;
+                _release = release ?? throw new ArgumentNullException(nameof(release));
             }
 
-            public bool Dispose(Func<bool> condition)
-            {
-                if (condition == null)
-                {
-                    throw new ArgumentNullException(nameof(condition));
-                }
-                if (condition.Invoke())
-                {
-                    _release.Invoke();
-                    return true;
-                }
-                return false;
-            }
-
-            [System.Diagnostics.DebuggerNonUserCode]
+            [DebuggerNonUserCode]
             public void Dispose()
             {
-                try
-                {
-                    Dispose(true);
-                }
-                finally
-                {
-                    GC.SuppressFinalize(this);
-                }
-            }
-
-            private void Dispose(bool disposeManagedResources)
-            {
-                GC.KeepAlive(disposeManagedResources);
                 _release.Invoke();
             }
         }

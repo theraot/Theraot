@@ -128,7 +128,7 @@ namespace Tests.Theraot.Threading.Needles
                 Trace.WriteLine(item);
             }
 
-            Trace.WriteLine("Count = " + Thread.VolatileRead(ref count[0]).ToString());
+            Trace.WriteLine("Count = " + Volatile.Read(ref count[0]).ToString());
             Trace.WriteLine("Found = " + needle.Value.ToString());
 
             Assert.IsTrue(needle.Value == 7 || needle.Value == 8 || needle.Value == 10);
@@ -205,7 +205,7 @@ namespace Tests.Theraot.Threading.Needles
                 Trace.WriteLine(item);
             }
 
-            Trace.WriteLine("Count = " + Thread.VolatileRead(ref count[0]).ToString());
+            Trace.WriteLine("Count = " + Volatile.Read(ref count[0]).ToString());
             Trace.WriteLine("Found = " + needle.Value.ToString());
 
             Assert.IsTrue(needle.Value == 10);

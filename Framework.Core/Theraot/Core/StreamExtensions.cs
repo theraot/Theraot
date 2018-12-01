@@ -7,9 +7,8 @@ namespace Theraot.Core
 {
     public static class StreamExtensions
     {
-        private const int _defaultBufferSize = 4096;
-
 #if NET20 || NET30 || NET35
+        private const int _defaultBufferSize = 4096;
 
         public static void CopyTo(this Stream input, Stream output)
         {
@@ -33,11 +32,13 @@ namespace Theraot.Core
         }
 
 #else
+
         public static void CopyTo(Stream input, Stream output)
         {
             // Added in .NET 4.0
             input.CopyTo(output);
         }
+
 #endif
 
 #if NET20 || NET30 || NET35
@@ -64,11 +65,13 @@ namespace Theraot.Core
         }
 
 #else
+
         public static void CopyTo(Stream input, Stream output, int bufferSize)
         {
             // Added in .NET 4.0
             input.CopyTo(output, bufferSize);
         }
+
 #endif
 
         public static bool IsDisposed(this Stream stream)

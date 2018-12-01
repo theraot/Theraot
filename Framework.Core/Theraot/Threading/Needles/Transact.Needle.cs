@@ -29,20 +29,16 @@ namespace Theraot.Threading.Needles
                 }
                 _comparer = EqualityComparer<T>.Default;
                 _needleLock = new NeedleLock<Thread>(Context);
-                _id = RuntimeUniqueIdProdiver.GetNextId();
+                _id = RuntimeUniqueIdProvider.GetNextId();
             }
 
             public Needle(T value, ICloner<T> cloner)
                 : base(value)
             {
-                if (ReferenceEquals(cloner, null))
-                {
-                    throw new ArgumentNullException(nameof(cloner));
-                }
-                _cloner = cloner;
+                _cloner = cloner ?? throw new ArgumentNullException(nameof(cloner));
                 _comparer = EqualityComparer<T>.Default;
                 _needleLock = new NeedleLock<Thread>(Context);
-                _id = RuntimeUniqueIdProdiver.GetNextId();
+                _id = RuntimeUniqueIdProvider.GetNextId();
             }
 
             public Needle(T value, IEqualityComparer<T> comparer)
@@ -55,20 +51,16 @@ namespace Theraot.Threading.Needles
                 }
                 _comparer = comparer ?? EqualityComparer<T>.Default;
                 _needleLock = new NeedleLock<Thread>(Context);
-                _id = RuntimeUniqueIdProdiver.GetNextId();
+                _id = RuntimeUniqueIdProvider.GetNextId();
             }
 
             public Needle(T value, ICloner<T> cloner, IEqualityComparer<T> comparer)
                 : base(value)
             {
-                if (ReferenceEquals(cloner, null))
-                {
-                    throw new ArgumentNullException(nameof(cloner));
-                }
-                _cloner = cloner;
+                _cloner = cloner ?? throw new ArgumentNullException(nameof(cloner));
                 _comparer = comparer ?? EqualityComparer<T>.Default;
                 _needleLock = new NeedleLock<Thread>(Context);
-                _id = RuntimeUniqueIdProdiver.GetNextId();
+                _id = RuntimeUniqueIdProvider.GetNextId();
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
@@ -172,7 +164,7 @@ namespace Theraot.Threading.Needles
             {
                 Volatile.Write(ref _inUse, 1);
                 var transaction = CurrentTransaction;
-                if (transaction._readLog.TryGetValue(this, out object value))
+                if (transaction._readLog.TryGetValue(this, out var value))
                 {
                     var original = RetrieveValue(transaction._parentTransaction);
                     var found = (T)value;
@@ -187,7 +179,7 @@ namespace Theraot.Threading.Needles
                 if (_needleLock.Value == Thread.CurrentThread)
                 {
                     Volatile.Write(ref _inUse, 1);
-                    if (transaction._writeLog.TryGetValue(this, out object value))
+                    if (transaction._writeLog.TryGetValue(this, out var value))
                     {
                         StoreValue(transaction._parentTransaction, (T)value);
                     }
@@ -215,7 +207,7 @@ namespace Theraot.Threading.Needles
                 {
                     if (!ReferenceEquals(transaction._lockSlot, null))
                     {
-                        _needleLock.Uncapture(transaction._lockSlot);
+                        _needleLock.Release(transaction._lockSlot);
                     }
                     _needleLock.Release();
                     transaction._readLog.Remove(this);
@@ -236,7 +228,7 @@ namespace Theraot.Threading.Needles
                     return base.Value;
                 }
                 Volatile.Write(ref _inUse, 1);
-                if (transaction._writeLog.TryGetValue(this, out object value))
+                if (transaction._writeLog.TryGetValue(this, out var value))
                 {
                     return (T)value;
                 }
@@ -263,7 +255,7 @@ namespace Theraot.Threading.Needles
                     return base.Value;
                 }
                 Volatile.Write(ref _inUse, 1);
-                if (transaction._writeLog.TryGetValue(this, out object value))
+                if (transaction._writeLog.TryGetValue(this, out var value))
                 {
                     return (T)value;
                 }

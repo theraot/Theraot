@@ -1,6 +1,7 @@
 ﻿// Needed for Workaround
 
 using System;
+using System.Diagnostics;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading.Needles;
 
@@ -9,7 +10,7 @@ namespace Theraot.Threading
     /// <summary>
     /// Represents a context to execute operation without reentry.
     /// </summary>
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public sealed class ReentryGuard
     {
         private readonly UniqueId _id;
@@ -21,16 +22,13 @@ namespace Theraot.Threading
         public ReentryGuard()
         {
             _workQueue = new SafeQueue<Action>();
-            _id = RuntimeUniqueIdProdiver.GetNextId();
+            _id = RuntimeUniqueIdProvider.GetNextId();
         }
 
         /// <summary>
         /// Gets a value indicating whether or not the current thread did enter.
         /// </summary>
-        public bool IsTaken
-        {
-            get { return ReentryGuardHelper.IsTaken(_id); }
-        }
+        public bool IsTaken => ReentryGuardHelper.IsTaken(_id);
 
         /// <summary>
         /// Executes an operation-
@@ -111,7 +109,7 @@ namespace Theraot.Threading
                     // called from inside this method - skip
                     return;
                 }
-                while (queue.TryTake(out Action action))
+                while (queue.TryTake(out var action))
                 {
                     action.Invoke();
                 }

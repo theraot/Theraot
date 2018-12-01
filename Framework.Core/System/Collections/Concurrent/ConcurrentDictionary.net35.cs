@@ -8,7 +8,7 @@ using Theraot.Core;
 
 namespace System.Collections.Concurrent
 {
-    [SerializableAttribute]
+    [Serializable]
     public class ConcurrentDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary
     {
         private readonly SafeDictionary<TKey, TValue> _wrapped;
@@ -65,70 +65,27 @@ namespace System.Collections.Concurrent
             _wrapped = new SafeDictionary<TKey, TValue>(comparer ?? throw new ArgumentNullException(nameof(comparer)));
         }
 
-        public int Count
-        {
-            get
-            {
-                // This should be an snaptshot operation
-                return _wrapped.Count;
-            }
-        }
+        public int Count => _wrapped.Count;
 
-        public bool IsEmpty
-        {
-            get { return Count == 0; }
-        }
+        public bool IsEmpty => Count == 0;
 
-        bool IDictionary.IsFixedSize
-        {
-            get { return false; }
-        }
+        bool IDictionary.IsFixedSize => false;
 
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
 
-        bool IDictionary.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool IDictionary.IsReadOnly => false;
 
-        bool ICollection.IsSynchronized
-        {
-            get { return false; }
-        }
+        bool ICollection.IsSynchronized => false;
 
-        public ICollection<TKey> Keys
-        {
-            get { return _wrapped.Keys; }
-        }
+        public ICollection<TKey> Keys => _wrapped.Keys;
 
-        ICollection IDictionary.Keys
-        {
-            get { return (ICollection)_wrapped.Keys; }
-        }
+        ICollection IDictionary.Keys => (ICollection)_wrapped.Keys;
 
-        object ICollection.SyncRoot
-        {
-            get { return this; }
-        }
+        object ICollection.SyncRoot => this;
 
-        public ICollection<TValue> Values
-        {
-            get
-            {
-                return GetValues();
-            }
-        }
+        public ICollection<TValue> Values => GetValues();
 
-        ICollection IDictionary.Values
-        {
-            get
-            {
-                return GetValues();
-            }
-        }
+        ICollection IDictionary.Values => GetValues();
 
         public TValue this[TKey key]
         {
@@ -164,9 +121,9 @@ namespace System.Collections.Concurrent
                     throw new ArgumentNullException(nameof(key));
                 }
                 // keep the is operator
-                if (key is TKey)
+                if (key is TKey keyAsTKey)
                 {
-                    if (_wrapped.TryGetValue((TKey)key, out TValue result))
+                    if (_wrapped.TryGetValue(keyAsTKey, out var result))
                     {
                         return result;
                     }
@@ -182,9 +139,9 @@ namespace System.Collections.Concurrent
                     throw new ArgumentNullException(nameof(key));
                 }
                 // keep the is operator
-                if (key is TKey && value is TValue)
+                if (key is TKey keyAsTKey && value is TValue valueAsTValue)
                 {
-                    this[(TKey)key] = (TValue)value;
+                    this[keyAsTKey] = valueAsTValue;
                 }
                 throw new ArgumentException();
             }
@@ -210,9 +167,9 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(key));
             }
             // keep the is operator
-            if (key is TKey && value is TValue)
+            if (key is TKey keyAsTKey && value is TValue valueAsTValue)
             {
-                _wrapped.AddNew((TKey)key, (TValue)value);
+                _wrapped.AddNew(keyAsTKey, valueAsTValue);
             }
             throw new ArgumentException();
         }
@@ -268,7 +225,7 @@ namespace System.Collections.Concurrent
 
         public void Clear()
         {
-            // This should be an snaptshot operation
+            // This should be an snapshot operation
             _wrapped.Clear();
         }
 
@@ -281,9 +238,9 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(key));
             }
             // keep the is operator
-            if (key is TKey)
+            if (key is TKey keyAsTKey)
             {
-                return ContainsKey((TKey)key);
+                return ContainsKey(keyAsTKey);
             }
             return false;
         }
@@ -298,7 +255,7 @@ namespace System.Collections.Concurrent
                 // This is what happens when you do the call on Microsoft's implementation
                 throw CreateArgumentNullExceptionKey(item.Key);
             }
-            if (_wrapped.TryGetValue(item.Key, out TValue found))
+            if (_wrapped.TryGetValue(item.Key, out var found))
             {
                 if (EqualityComparer<TValue>.Default.Equals(found, item.Value))
                 {
@@ -322,9 +279,9 @@ namespace System.Collections.Concurrent
 
         void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            // This should be an snaptshot operation
+            // This should be an snapshot operation
             Extensions.CanCopyTo(Count, array, arrayIndex);
-            Extensions.CopyTo(this, array, arrayIndex);
+            this.CopyTo(array, arrayIndex);
         }
 
         void ICollection.CopyTo(Array array, int index)
@@ -421,9 +378,9 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(key));
             }
             // keep the is operator
-            if (key is TKey)
+            if (key is TKey keyAsTKey)
             {
-                _wrapped.Remove((TKey)key);
+                _wrapped.Remove(keyAsTKey);
             }
         }
 
@@ -437,17 +394,17 @@ namespace System.Collections.Concurrent
                 // This is what happens when you do the call on Microsoft's implementation
                 throw CreateArgumentNullExceptionKey(item.Key);
             }
-            return _wrapped.Remove(item.Key, input => EqualityComparer<TValue>.Default.Equals(item.Value, item.Value), out TValue found);
+            return _wrapped.Remove(item.Key, input => EqualityComparer<TValue>.Default.Equals(item.Value, item.Value), out _);
         }
 
         bool IDictionary<TKey, TValue>.Remove(TKey key)
         {
-            return TryRemove(key, out TValue bundle);
+            return TryRemove(key, out _);
         }
 
         public KeyValuePair<TKey, TValue>[] ToArray()
         {
-            // This should be an snaptshot operation
+            // This should be an snapshot operation
             var result = new List<KeyValuePair<TKey, TValue>>(_wrapped.Count);
             foreach (var pair in _wrapped)
             {
@@ -531,10 +488,7 @@ namespace System.Collections.Concurrent
                 _wrapped = wrapped.GetEnumerator();
             }
 
-            public object Current
-            {
-                get { return Entry; }
-            }
+            public object Current => Entry;
 
             public DictionaryEntry Entry
             {
@@ -570,7 +524,7 @@ namespace System.Collections.Concurrent
                     return true;
                 }
                 // The DictionaryEnumerator of ConcurrentDictionary is not IDisposable...
-                // Which means this method takes the responsability of disposing
+                // Which means this method takes the responsibility of disposing
                 _wrapped.Dispose();
                 return false;
             }

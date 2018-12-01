@@ -48,12 +48,7 @@ namespace System.Threading.Tasks
                 taskArray = new Task[taskCollection.Count];
                 foreach (var task in tasks)
                 {
-                    if (task == null)
-                    {
-                        throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
-                    }
-
-                    taskArray[index++] = task;
+                    taskArray[index++] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
                 }
                 return InternalWhenAll(taskArray);
             }
@@ -123,12 +118,8 @@ namespace System.Threading.Tasks
             for (var i = 0; i < taskCount; i++)
             {
                 var task = tasks[i];
-                if (task == null)
-                {
-                    throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
-                }
 
-                tasksCopy[i] = task;
+                tasksCopy[i] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
             }
             // The rest can be delegated to InternalWhenAll()
             return InternalWhenAll(tasksCopy);
@@ -178,12 +169,7 @@ namespace System.Threading.Tasks
                 taskArray = new Task<TResult>[taskCollection.Count];
                 foreach (var task in tasks)
                 {
-                    if (task == null)
-                    {
-                        throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
-                    }
-
-                    taskArray[index++] = task;
+                    taskArray[index++] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
                 }
                 return InternalWhenAll(taskArray);
             }
@@ -256,65 +242,11 @@ namespace System.Threading.Tasks
             for (var i = 0; i < taskCount; i++)
             {
                 var task = tasks[i];
-                if (task == null)
-                {
-                    throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
-                }
 
-                tasksCopy[i] = task;
+                tasksCopy[i] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
             }
             // Delegate the rest to InternalWhenAll<TResult>()
             return InternalWhenAll(tasksCopy);
-        }
-
-        /// <summary>Returns true if any of the supplied tasks require wait notification.</summary>
-        /// <param name="tasks">The tasks to check.</param>
-        /// <returns>true if any of the tasks require notification; otherwise, false.</returns>
-        internal static bool AnyTaskRequiresNotifyDebuggerOfWaitCompletion(IEnumerable<Task> tasks)
-        {
-            if (tasks == null)
-            {
-                Contract.Assert(false, "Expected non-null array of tasks");
-                throw new ArgumentNullException(nameof(tasks));
-            }
-            foreach (var task in tasks)
-            {
-                if
-                (
-                    task != null &&
-                    task.IsWaitNotificationEnabled &&
-                    task.ShouldNotifyDebuggerOfWaitCompletion
-                ) // potential recursion
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        // Some common logic to support WhenAll() methods
-        // tasks should be a defensive copy.
-        private static Task InternalWhenAll(Task[] tasks)
-        {
-            Contract.Requires(tasks != null, "Expected a non-null tasks array");
-            // take shortcut if there are no tasks upon which to wait
-            if (tasks.Length == 0)
-            {
-                return CompletedTask;
-            }
-            return new WhenAllPromise(tasks);
-        }
-
-        // Some common logic to support WhenAll<TResult> methods
-        private static Task<TResult[]> InternalWhenAll<TResult>(Task<TResult>[] tasks)
-        {
-            Contract.Requires(tasks != null, "Expected a non-null tasks array");
-            // take shortcut if there are no tasks upon which to wait
-            if (tasks.Length == 0)
-            {
-                return FromResult(new TResult[0]);
-            }
-            return new WhenAllPromise<TResult>(tasks);
         }
 
         /// <summary>
@@ -350,11 +282,7 @@ namespace System.Threading.Tasks
             for (var index = 0; index < taskCount; index++)
             {
                 var task = tasks[index];
-                if (task == null)
-                {
-                    throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
-                }
-                tasksCopy[index] = task;
+                tasksCopy[index] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
             }
             var signaledTaskIndex = -1;
             return PrivateWhenAny(tasksCopy, ref signaledTaskIndex);
@@ -422,9 +350,10 @@ namespace System.Threading.Tasks
             //    return (Task<Task<TResult>>) WhenAny( (Task[]) tasks);
             // but classes are not covariant to enable casting Task<TResult> to Task<Task<TResult>>.
             // Call WhenAny(Task[]) for basic functionality
+            // ReSharper disable once CoVariantArrayConversion
             var intermediate = WhenAny((Task[])tasks);
             // Return a continuation task with the correct result type
-            return intermediate.ContinueWith(Task<TResult>.ContinuationConvertion, default, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
+            return intermediate.ContinueWith(Task<TResult>.ContinuationConversion, default, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
         }
 
         /// <summary>
@@ -450,7 +379,57 @@ namespace System.Threading.Tasks
             // Call WhenAny(IEnumerable<Task>) for basic functionality
             var intermediate = WhenAny((IEnumerable<Task>)tasks);
             // Return a continuation task with the correct result type
-            return intermediate.ContinueWith(Task<TResult>.ContinuationConvertion, default, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
+            return intermediate.ContinueWith(Task<TResult>.ContinuationConversion, default, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
+        }
+
+        /// <summary>Returns true if any of the supplied tasks require wait notification.</summary>
+        /// <param name="tasks">The tasks to check.</param>
+        /// <returns>true if any of the tasks require notification; otherwise, false.</returns>
+        internal static bool AnyTaskRequiresNotifyDebuggerOfWaitCompletion(IEnumerable<Task> tasks)
+        {
+            if (tasks == null)
+            {
+                Contract.Assert(false, "Expected non-null array of tasks");
+                throw new ArgumentNullException(nameof(tasks));
+            }
+            foreach (var task in tasks)
+            {
+                if
+                (
+                    task != null &&
+                    task.IsWaitNotificationEnabled &&
+                    task.ShouldNotifyDebuggerOfWaitCompletion
+                ) // potential recursion
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Some common logic to support WhenAll() methods
+        // tasks should be a defensive copy.
+        private static Task InternalWhenAll(Task[] tasks)
+        {
+            Contract.Requires(tasks != null, "Expected a non-null tasks array");
+            // take shortcut if there are no tasks upon which to wait
+            if (tasks.Length == 0)
+            {
+                return CompletedTask;
+            }
+            return new WhenAllPromise(tasks);
+        }
+
+        // Some common logic to support WhenAll<TResult> methods
+        private static Task<TResult[]> InternalWhenAll<TResult>(Task<TResult>[] tasks)
+        {
+            Contract.Requires(tasks != null, "Expected a non-null tasks array");
+            // take shortcut if there are no tasks upon which to wait
+            if (tasks.Length == 0)
+            {
+                return FromResult(new TResult[0]);
+            }
+            return new WhenAllPromise<TResult>(tasks);
         }
     }
 }

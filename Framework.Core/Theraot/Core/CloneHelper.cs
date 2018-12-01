@@ -121,6 +121,7 @@ namespace Theraot.Core
             {
                 // Only called with ICloneable target
                 // No need to check for null - let it throw
+                // ReSharper disable once PossibleNullReferenceException
                 return (T)(target as ICloneable).Clone();
             }
         }
@@ -193,6 +194,7 @@ namespace Theraot.Core
             {
                 // Only called with ICloneable<T> target
                 // No need to check for null - let it throw
+                // ReSharper disable once PossibleNullReferenceException
                 return (target as ICloneable<T>).Clone();
             }
         }

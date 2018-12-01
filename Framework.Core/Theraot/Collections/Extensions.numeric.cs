@@ -673,8 +673,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(selector));
             }
-            TResult selectorWrapper(TSource item, int i) => selector(item);
-            return Max(source.Select(selectorWrapper), comparer);
+            return Max(source.Select(SelectorWrapper), comparer);
+            TResult SelectorWrapper(TSource item, int i) => selector(item);
         }
 
         public static int Min(this IEnumerable<int> source, IComparer<int> comparer)
@@ -1340,8 +1340,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(selector));
             }
-            TResult selectorWrapper(TSource item, int i) => selector(item);
-            return Min(source.Select(selectorWrapper), comparer);
+            return Min(source.Select(SelectorWrapper), comparer);
+            TResult SelectorWrapper(TSource item, int i) => selector(item);
         }
     }
 }

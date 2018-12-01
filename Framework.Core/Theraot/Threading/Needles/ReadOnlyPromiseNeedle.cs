@@ -1,10 +1,11 @@
 // Needed for Workaround
 
 using System;
+using System.Diagnostics;
 
 namespace Theraot.Threading.Needles
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public class ReadOnlyPromiseNeedle<T> : ReadOnlyPromise, IWaitablePromise<T>, ICacheNeedle<T>, IEquatable<ReadOnlyPromiseNeedle<T>>
     {
         private readonly ICacheNeedle<T> _promised;
@@ -15,40 +16,16 @@ namespace Theraot.Threading.Needles
             _promised = promised;
         }
 
+        public bool IsAlive => _promised.IsAlive;
+
         T INeedle<T>.Value
         {
-            get { return _promised.Value; }
+            get => _promised.Value;
 
-            set { throw new NotSupportedException(); }
+            set => throw new NotSupportedException();
         }
 
-        public bool IsAlive
-        {
-            get { return _promised.IsAlive; }
-        }
-
-        public T Value
-        {
-            get { return _promised.Value; }
-        }
-
-        public static bool operator !=(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
-        {
-            if (left == null)
-            {
-                return right != null;
-            }
-            return !left._promised.Equals(right._promised);
-        }
-
-        public static bool operator ==(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
-        {
-            if (left == null)
-            {
-                return right == null;
-            }
-            return left._promised.Equals(right._promised);
-        }
+        public T Value => _promised.Value;
 
         public static explicit operator T(ReadOnlyPromiseNeedle<T> needle)
         {
@@ -57,6 +34,32 @@ namespace Theraot.Threading.Needles
                 throw new ArgumentNullException(nameof(needle));
             }
             return needle.Value;
+        }
+
+        public static bool operator !=(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
+        {
+            if (ReferenceEquals(left, null))
+            {
+                return !ReferenceEquals(right, null);
+            }
+            if (ReferenceEquals(right, null))
+            {
+                return true;
+            }
+            return !left._promised.Equals(right._promised);
+        }
+
+        public static bool operator ==(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
+        {
+            if (ReferenceEquals(left, null))
+            {
+                return ReferenceEquals(right, null);
+            }
+            if (ReferenceEquals(right, null))
+            {
+                return false;
+            }
+            return left._promised.Equals(right._promised);
         }
 
         public override bool Equals(object obj)
@@ -81,7 +84,7 @@ namespace Theraot.Threading.Needles
 
         public override string ToString()
         {
-            return string.Format("{{Promise: {0}}}", _promised);
+            return $"{{Promise: {_promised}}}";
         }
 
         public bool TryGetValue(out T value)

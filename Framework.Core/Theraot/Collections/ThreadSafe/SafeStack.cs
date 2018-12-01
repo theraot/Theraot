@@ -17,7 +17,7 @@ namespace Theraot.Collections.ThreadSafe
     [Serializable]
 #endif
 
-    public sealed class SafeStack<T> : IEnumerable<T>, IProducerConsumerCollection<T>
+    public sealed class SafeStack<T> : IProducerConsumerCollection<T>
     {
         private int _count;
         private Node<T> _root;
@@ -25,7 +25,6 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Initializes a new instance of the <see cref="SafeStack{T}" /> class.
         /// </summary>
-        /// <param name="capacity">The capacity.</param>
         public SafeStack()
         {
             _root = null;
@@ -46,23 +45,11 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Gets the number of items actually contained.
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return Volatile.Read(ref _count);
-            }
-        }
+        public int Count => Volatile.Read(ref _count);
 
-        bool ICollection.IsSynchronized
-        {
-            get { return false; }
-        }
+        bool ICollection.IsSynchronized => false;
 
-        object ICollection.SyncRoot
-        {
-            get { throw new NotSupportedException(); }
-        }
+        object ICollection.SyncRoot => throw new NotSupportedException();
 
         /// <summary>
         /// Attempts to Adds the specified item at the front.
@@ -127,7 +114,7 @@ namespace Theraot.Collections.ThreadSafe
         /// Returns the next item to be taken from the back without removing it.
         /// </summary>
         /// <returns>The next item to be taken from the back.</returns>
-        /// <exception cref="System.InvalidOperationException">No more items to be taken.</exception>
+        /// <exception cref="InvalidOperationException">No more items to be taken.</exception>
         public T Peek()
         {
             var root = Volatile.Read(ref _root);

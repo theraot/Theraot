@@ -15,7 +15,7 @@ namespace System.Diagnostics.Contracts
     /// "ObjectInvariant".
     /// </summary>
     [Conditional("CONTRACTS_FULL")]
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public sealed class ContractInvariantMethodAttribute : Attribute
     {
         // Empty

@@ -43,7 +43,7 @@ namespace System
             {
                 throw new ArgumentNullException(nameof(info));
             }
-            TryGetTarget(out T value);
+            TryGetTarget(out var value);
             info.AddValue("TrackedObject", value, typeof(T));
             info.AddValue("TrackResurrection", _trackResurrection);
         }

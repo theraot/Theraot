@@ -2,39 +2,32 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Theraot.Threading.Needles
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public struct ReadOnlyStructNeedle<T> : INeedle<T>, IEquatable<ReadOnlyStructNeedle<T>>
     {
-        private readonly T _value;
-
         public ReadOnlyStructNeedle(T target)
         {
-            _value = target;
+            Value = target;
         }
+
+        public bool IsAlive => !ReferenceEquals(Value, null);
 
         T INeedle<T>.Value
         {
-            get { return _value; }
+            get => Value;
 
-            set { throw new NotSupportedException(); }
+            set => throw new NotSupportedException();
         }
 
-        public bool IsAlive
-        {
-            get { return !ReferenceEquals(_value, null); }
-        }
-
-        public T Value
-        {
-            get { return _value; }
-        }
+        public T Value { get; }
 
         public static explicit operator T(ReadOnlyStructNeedle<T> needle)
         {
-            return needle._value;
+            return needle.Value;
         }
 
         public static implicit operator ReadOnlyStructNeedle<T>(T field)
@@ -44,10 +37,10 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(ReadOnlyStructNeedle<T> left, ReadOnlyStructNeedle<T> right)
         {
-            var leftValue = left._value;
+            var leftValue = left.Value;
             if (left.IsAlive)
             {
-                var rightValue = right._value;
+                var rightValue = right.Value;
                 return !right.IsAlive || !EqualityComparer<T>.Default.Equals(leftValue, rightValue);
             }
             return right.IsAlive;
@@ -55,10 +48,10 @@ namespace Theraot.Threading.Needles
 
         public static bool operator ==(ReadOnlyStructNeedle<T> left, ReadOnlyStructNeedle<T> right)
         {
-            var leftValue = left._value;
+            var leftValue = left.Value;
             if (left.IsAlive)
             {
-                var rightValue = right._value;
+                var rightValue = right.Value;
                 return right.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
             }
             return !right.IsAlive;
@@ -66,15 +59,15 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            if (obj is ReadOnlyStructNeedle<T>)
+            if (obj is ReadOnlyStructNeedle<T> needle)
             {
-                return this == (ReadOnlyStructNeedle<T>)obj;
+                return this == needle;
             }
             // Keep the "is" operator
-            if (obj is T)
+            if (obj is T variable)
             {
-                var target = _value;
-                return IsAlive && EqualityComparer<T>.Default.Equals(target, (T)obj);
+                var target = Value;
+                return IsAlive && EqualityComparer<T>.Default.Equals(target, variable);
             }
             return false;
         }
@@ -93,7 +86,7 @@ namespace Theraot.Threading.Needles
         {
             if (IsAlive)
             {
-                return _value.ToString();
+                return Value.ToString();
             }
             return "<Dead Needle>";
         }

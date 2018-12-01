@@ -26,8 +26,18 @@ namespace System.Linq
 
         public static IEnumerable<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
         {
-            LinqCheck.SourceAndKeyElementSelectors(source, keySelector, elementSelector);
-
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (keySelector == null)
+            {
+                throw new ArgumentNullException(nameof(keySelector));
+            }
+            if (elementSelector == null)
+            {
+                throw new ArgumentNullException(nameof(elementSelector));
+            }
             return CreateGroupByIterator(source, keySelector, elementSelector, comparer);
         }
 
@@ -38,8 +48,18 @@ namespace System.Linq
 
         public static IEnumerable<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
         {
-            LinqCheck.GroupBySelectors(source, keySelector, elementSelector, resultSelector);
-
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (keySelector == null)
+            {
+                throw new ArgumentNullException(nameof(keySelector));
+            }
+            if (elementSelector == null)
+            {
+                throw new ArgumentNullException(nameof(elementSelector));
+            }
             return CreateGroupByIterator(source, keySelector, elementSelector, resultSelector, comparer);
         }
 
@@ -73,26 +93,10 @@ namespace System.Linq
 
             public GroupedEnumerable(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
             {
-                if (source == null)
-                {
-                    throw new ArgumentNullException(nameof(source));
-                }
-                if (keySelector == null)
-                {
-                    throw new ArgumentNullException(nameof(keySelector));
-                }
-                if (elementSelector == null)
-                {
-                    throw new ArgumentNullException(nameof(elementSelector));
-                }
-                if (resultSelector == null)
-                {
-                    throw new ArgumentNullException(nameof(resultSelector));
-                }
-                _source = source;
-                _keySelector = keySelector;
-                _elementSelector = elementSelector;
-                _resultSelector = resultSelector;
+                _source = source ?? throw new ArgumentNullException(nameof(source));
+                _keySelector = keySelector ?? throw new ArgumentNullException(nameof(keySelector));
+                _elementSelector = elementSelector ?? throw new ArgumentNullException(nameof(elementSelector));
+                _resultSelector = resultSelector ?? throw new ArgumentNullException(nameof(resultSelector));
                 _comparer = comparer;
             }
 
@@ -135,21 +139,9 @@ namespace System.Linq
 
             public GroupedEnumerable(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
             {
-                if (source == null)
-                {
-                    throw new ArgumentNullException(nameof(source));
-                }
-                if (keySelector == null)
-                {
-                    throw new ArgumentNullException(nameof(keySelector));
-                }
-                if (elementSelector == null)
-                {
-                    throw new ArgumentNullException(nameof(elementSelector));
-                }
-                _source = source;
-                _keySelector = keySelector;
-                _elementSelector = elementSelector;
+                _source = source ?? throw new ArgumentNullException(nameof(source));
+                _keySelector = keySelector ?? throw new ArgumentNullException(nameof(keySelector));
+                _elementSelector = elementSelector ?? throw new ArgumentNullException(nameof(elementSelector));
                 _comparer = comparer;
             }
 

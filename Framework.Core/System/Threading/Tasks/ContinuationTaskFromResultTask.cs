@@ -16,10 +16,7 @@ namespace System.Threading.Tasks
             CapturedContext = ExecutionContext.Capture();
         }
 
-        public Task Antecedent
-        {
-            get { return _antecedent; }
-        }
+        public Task Antecedent => _antecedent;
 
         /// <summary>
         /// Evaluates the value selector of the Task which is passed in as an object and stores the result.
@@ -34,17 +31,20 @@ namespace System.Threading.Tasks
 
             // Invoke the delegate
             Contract.Assert(Action != null);
-            if (Action is Action<Task<TAntecedentResult>> action)
+            switch (Action)
             {
-                action(antecedent);
-                return;
+                case Action<Task<TAntecedentResult>> action:
+                    action(antecedent);
+                    return;
+
+                case Action<Task<TAntecedentResult>, object> actionWithState:
+                    actionWithState(antecedent, State);
+                    return;
+
+                default:
+                    Contract.Assert(false, "Invalid Action in ContinuationTaskFromResultTask");
+                    break;
             }
-            if (Action is Action<Task<TAntecedentResult>, object> actionWithState)
-            {
-                actionWithState(antecedent, State);
-                return;
-            }
-            Contract.Assert(false, "Invalid Action in ContinuationTaskFromResultTask");
         }
     }
 }

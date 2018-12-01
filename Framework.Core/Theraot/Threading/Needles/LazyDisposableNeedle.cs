@@ -36,10 +36,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public bool IsDisposed
-        {
-            get { return _status == -1; }
-        }
+        public bool IsDisposed => _status == -1;
 
         [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
@@ -59,10 +56,7 @@ namespace Theraot.Threading.Needles
         {
             if (_status == -1)
             {
-                if (whenDisposed != null)
-                {
-                    whenDisposed.Invoke();
-                }
+                whenDisposed?.Invoke();
             }
             else
             {
@@ -81,10 +75,7 @@ namespace Theraot.Threading.Needles
                     }
                     else
                     {
-                        if (whenDisposed != null)
-                        {
-                            whenDisposed.Invoke();
-                        }
+                        whenDisposed?.Invoke();
                     }
                 }
             }
@@ -153,7 +144,7 @@ namespace Theraot.Threading.Needles
 
         protected override void Initialize(Action beforeInitialize)
         {
-            void beforeInitializeReplacement()
+            void BeforeInitializeReplacement()
             {
                 try
                 {
@@ -163,17 +154,14 @@ namespace Theraot.Threading.Needles
                         WaitHandle.Value = new System.Threading.ManualResetEventSlim(false);
                         GC.KeepAlive(waitHandle);
                     }
-                    if (beforeInitialize != null)
-                    {
-                        beforeInitialize.Invoke();
-                    }
+                    beforeInitialize?.Invoke();
                 }
                 finally
                 {
                     UnDispose();
                 }
             }
-            base.Initialize(beforeInitializeReplacement);
+            base.Initialize(BeforeInitializeReplacement);
         }
 
         private void OnDispose()

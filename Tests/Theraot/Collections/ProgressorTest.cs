@@ -83,16 +83,16 @@ namespace Tests.Theraot.Collections
                     );
                 ThreadPool.QueueUserWorkItem(work);
                 ThreadPool.QueueUserWorkItem(work);
-                while (Thread.VolatileRead(ref count[0]) != 2)
+                while (Volatile.Read(ref count[0]) != 2)
                 {
-                    Thread.Sleep(0);
+                    Thread.Sleep(1);
                 }
                 handle.Set();
-                while (Thread.VolatileRead(ref count[1]) != 2)
+                while (Volatile.Read(ref count[1]) != 2)
                 {
-                    Thread.Sleep(0);
+                    Thread.Sleep(1);
                 }
-                Assert.AreEqual(10, Thread.VolatileRead(ref count[2]));
+                Assert.AreEqual(10, Volatile.Read(ref count[2]));
             }
         }
 
@@ -119,64 +119,37 @@ namespace Tests.Theraot.Collections
                     );
                 ThreadPool.QueueUserWorkItem(work);
                 ThreadPool.QueueUserWorkItem(work);
-                while (Thread.VolatileRead(ref count[0]) != 2)
+                while (Volatile.Read(ref count[0]) != 2)
                 {
-                    Thread.Sleep(0);
+                    Thread.Sleep(1);
                 }
                 handle.Set();
-                while (Thread.VolatileRead(ref count[1]) != 2)
+                while (Volatile.Read(ref count[1]) != 2)
                 {
-                    Thread.Sleep(0);
+                    Thread.Sleep(1);
                 }
-                Assert.AreEqual(10, Thread.VolatileRead(ref count[2]));
+                Assert.AreEqual(10, Volatile.Read(ref count[2]));
             }
         }
 
         [Test]
-        public void TryTakeProgressor()
+        [Category("Performance")]
+        public void ThreadedUseArrayLoop()
         {
-            var source = new Queue<int>();
-            source.Enqueue(0);
-            source.Enqueue(1);
-            source.Enqueue(2);
-            source.Enqueue(3);
-            source.Enqueue(4);
-            source.Enqueue(5);
-            var progresor = new Progressor<int>
-            (
-                (out int value) =>
-                {
-                    try
-                    {
-                        value = source.Dequeue();
-                        return true;
-                    }
-                    catch (Exception)
-                    {
-                        value = 0;
-                        return false;
-                    }
-                },
-                () => false
-            );
-            var indexA = 0;
-            var indexB = 0;
-            progresor.SubscribeAction
-            (
-                value =>
-                {
-                    Assert.AreEqual(value, indexB);
-                    indexB++;
-                }
-            );
-            int item;
-            while (progresor.TryTake(out item))
+            for (int i = 0; i < 100000; i++)
             {
-                Assert.AreEqual(item, indexA);
-                indexA++;
+                ThreadedUseArray();
             }
-            Assert.AreEqual(6, indexA);
-            Assert.AreEqual(indexA, indexB);
+        }
+
+        [Test]
+        [Category("Performance")]
+        public void ThreadedUseLoop()
+        {
+            for (int i = 0; i < 100000; i++)
+            {
+                ThreadedUse();
+            }
         }
     }
 }

@@ -7,11 +7,11 @@ namespace System.Threading.Tasks
     /// <summary>Provides the standard implementation of a task continuation.</summary>
     internal class StandardTaskContinuation : TaskContinuation
     {
-        /// <summary>The unstarted continuation task.</summary>
-        internal readonly Task Task;
-
         /// <summary>The options to use with the continuation task.</summary>
         internal readonly TaskContinuationOptions Options;
+
+        /// <summary>The unstarted continuation task.</summary>
+        internal readonly Task Task;
 
         /// <summary>The task scheduler with which to run the continuation task.</summary>
         private readonly TaskScheduler _scheduler;

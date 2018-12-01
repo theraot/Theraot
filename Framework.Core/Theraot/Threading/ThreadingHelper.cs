@@ -1,11 +1,12 @@
 ﻿// Needed for NET40
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace Theraot.Threading
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public static partial class ThreadingHelper
     {
         internal const int SleepCountHint = 10;

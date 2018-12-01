@@ -18,9 +18,9 @@ namespace System.Runtime.CompilerServices
 
         object IStrongBox.Value
         {
-            get { return Value; }
+            get => Value;
 
-            set { Value = (T)value; }
+            set => Value = (T)value;
         }
     }
 }

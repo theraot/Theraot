@@ -5,6 +5,7 @@ using System;
 namespace Theraot.Threading.Needles
 {
     [System.Diagnostics.DebuggerNonUserCode]
+    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class PromiseNeedle<T> : Promise, IWaitablePromise<T>, IRecyclableNeedle<T>, ICacheNeedle<T>
     {
         private readonly int _hashCode;
@@ -31,10 +32,7 @@ namespace Theraot.Threading.Needles
             _hashCode = ReferenceEquals(target, null) ? base.GetHashCode() : target.GetHashCode();
         }
 
-        public bool IsAlive
-        {
-            get { return !ReferenceEquals(_target, null); }
-        }
+        public bool IsAlive => !ReferenceEquals(_target, null);
 
         public virtual T Value
         {
@@ -59,11 +57,24 @@ namespace Theraot.Threading.Needles
             return new PromiseNeedle<T>(target);
         }
 
+        public static explicit operator T(PromiseNeedle<T> needle)
+        {
+            if (needle == null)
+            {
+                throw new ArgumentNullException(nameof(needle));
+            }
+            return needle.Value;
+        }
+
         public static bool operator !=(PromiseNeedle<T> left, PromiseNeedle<T> right)
         {
             if (ReferenceEquals(left, null))
             {
                 return !ReferenceEquals(right, null);
+            }
+            if (ReferenceEquals(right, null))
+            {
+                return true;
             }
             return !left._target.Equals(right._target);
         }
@@ -74,16 +85,11 @@ namespace Theraot.Threading.Needles
             {
                 return ReferenceEquals(right, null);
             }
-            return left._target.Equals(right._target);
-        }
-
-        public static explicit operator T(PromiseNeedle<T> needle)
-        {
-            if (needle == null)
+            if (ReferenceEquals(right, null))
             {
-                throw new ArgumentNullException(nameof(needle));
+                return false;
             }
-            return needle.Value;
+            return left._target.Equals(right._target);
         }
 
         public override bool Equals(object obj)

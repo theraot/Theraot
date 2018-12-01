@@ -16,11 +16,7 @@ namespace Theraot.Threading
 
         private CriticalDisposable(Action release)
         {
-            if (release == null)
-            {
-                throw new ArgumentNullException(nameof(release));
-            }
-            _release = release;
+            _release = release ?? throw new ArgumentNullException(nameof(release));
         }
 
         public static CriticalDisposable Create(Action release)

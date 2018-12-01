@@ -19,7 +19,7 @@ namespace System.Runtime.CompilerServices
         internal ValueTaskAwaiter(ValueTask<TResult> value) { _value = value; }
 
         /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> has completed.</summary>
-        public bool IsCompleted { get { return _value.IsCompleted; } }
+        public bool IsCompleted => _value.IsCompleted;
 
         /// <summary>Gets the result of the ValueTask.</summary>
         public TResult GetResult()

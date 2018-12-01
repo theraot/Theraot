@@ -9,12 +9,11 @@ namespace Theraot.Threading.Needles
     public class Promise : IWaitablePromise
     {
         private readonly int _hashCode;
-        private Exception _exception;
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
         public Promise(bool done)
         {
-            _exception = null;
+            Exception = null;
             _hashCode = base.GetHashCode();
             if (!done)
             {
@@ -24,7 +23,7 @@ namespace Theraot.Threading.Needles
 
         public Promise(Exception exception)
         {
-            _exception = exception;
+            Exception = exception;
             _hashCode = exception.GetHashCode();
             _waitHandle = new ManualResetEventSlim(true);
         }
@@ -34,15 +33,9 @@ namespace Theraot.Threading.Needles
             ReleaseWaitHandle(false);
         }
 
-        public Exception Exception
-        {
-            get { return _exception; }
-        }
+        public Exception Exception { get; private set; }
 
-        bool IPromise.IsCanceled
-        {
-            get { return false; }
-        }
+        bool IPromise.IsCanceled => false;
 
         public bool IsCompleted
         {
@@ -53,15 +46,9 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public bool IsFaulted
-        {
-            get { return _exception != null; }
-        }
+        public bool IsFaulted => Exception != null;
 
-        protected IRecyclableNeedle<ManualResetEventSlim> WaitHandle
-        {
-            get { return _waitHandle; }
-        }
+        protected IRecyclableNeedle<ManualResetEventSlim> WaitHandle => _waitHandle;
 
         public virtual void Free()
         {
@@ -74,7 +61,7 @@ namespace Theraot.Threading.Needles
             {
                 waitHandle.Reset();
             }
-            _exception = null;
+            Exception = null;
         }
 
         public virtual void Free(Action beforeFree)
@@ -100,13 +87,13 @@ namespace Theraot.Threading.Needles
                     {
                         waitHandle.Reset();
                     }
-                    _exception = null;
+                    Exception = null;
                 }
             }
             else
             {
                 waitHandle.Reset();
-                _exception = null;
+                Exception = null;
             }
         }
 
@@ -117,22 +104,22 @@ namespace Theraot.Threading.Needles
 
         public void SetCompleted()
         {
-            _exception = null;
+            Exception = null;
             ReleaseWaitHandle(true);
         }
 
         public void SetError(Exception error)
         {
-            _exception = error;
+            Exception = error;
             ReleaseWaitHandle(true);
         }
 
         public override string ToString()
         {
             return IsCompleted
-                ? (_exception == null
+                ? (Exception == null
                     ? "[Done]"
-                    : _exception.ToString())
+                    : Exception.ToString())
                 : "[Not Created]";
         }
 

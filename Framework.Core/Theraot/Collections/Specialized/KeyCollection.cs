@@ -15,25 +15,13 @@ namespace Theraot.Collections.Specialized
             _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
         }
 
-        public int Count
-        {
-            get { return _wrapped.Count; }
-        }
+        public int Count => _wrapped.Count;
 
-        bool ICollection<TKey>.IsReadOnly
-        {
-            get { return true; }
-        }
+        bool ICollection<TKey>.IsReadOnly => true;
 
-        bool ICollection.IsSynchronized
-        {
-            get { return ((ICollection)_wrapped).IsSynchronized; }
-        }
+        bool ICollection.IsSynchronized => ((ICollection)_wrapped).IsSynchronized;
 
-        object ICollection.SyncRoot
-        {
-            get { return ((ICollection)_wrapped).SyncRoot; }
-        }
+        object ICollection.SyncRoot => ((ICollection)_wrapped).SyncRoot;
 
         void ICollection<TKey>.Add(TKey item)
         {
@@ -47,6 +35,7 @@ namespace Theraot.Collections.Specialized
 
         bool ICollection<TKey>.Contains(TKey item)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             return _wrapped.ContainsKey(item);
         }
 

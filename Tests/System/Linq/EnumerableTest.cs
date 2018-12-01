@@ -32,6 +32,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Theraot.Collections;
 
 namespace MonoTests.System.Linq
 {
@@ -118,7 +119,9 @@ namespace MonoTests.System.Linq
             var bingo = new Bingo();
 
             // Note: we are testing Cast
+            // ReSharper disable once RedundantEnumerableCastCall
             AssertAreSame(ints, bingo.Cast<int>());
+            // ReSharper disable once RedundantEnumerableCastCall
             AssertAreSame(strs, bingo.Cast<string>());
         }
 
@@ -462,10 +465,7 @@ namespace MonoTests.System.Linq
                 }
             }
 
-            public int Age
-            {
-                get { return _age + 1; }
-            }
+            public int Age => _age + 1;
 
             public Baz(string name, int age)
             {
@@ -565,29 +565,29 @@ namespace MonoTests.System.Linq
         public void TestOrderByDescendingStability()
         {
             var data = new[] {
-                new { Key = true, Value = 1 },
-                new { Key = false, Value = 2},
+                new { Key = true, Value = 1},
+                                                new { Key = false, Value = 2},
                 new { Key = true, Value = 3},
-                new { Key = false, Value = 4},
+                                                new { Key = false, Value = 4},
                 new { Key = true, Value = 5},
-                new { Key = false, Value = 6},
+                                                new { Key = false, Value = 6},
                 new { Key = true, Value = 7},
-                new { Key = false, Value = 8},
+                                                new { Key = false, Value = 8},
                 new { Key = true, Value = 9},
-                new { Key = false, Value = 10},
+                                                new { Key = false, Value = 10},
             };
 
             var expected = new[] {
-                new { Key = true, Value = 1 },
+                new { Key = true, Value = 1},
                 new { Key = true, Value = 3},
                 new { Key = true, Value = 5},
                 new { Key = true, Value = 7},
                 new { Key = true, Value = 9},
-                new { Key = false, Value = 2},
-                new { Key = false, Value = 4},
-                new { Key = false, Value = 6},
-                new { Key = false, Value = 8},
-                new { Key = false, Value = 10},
+                                                new { Key = false, Value = 2},
+                                                new { Key = false, Value = 4},
+                                                new { Key = false, Value = 6},
+                                                new { Key = false, Value = 8},
+                                                new { Key = false, Value = 10},
             };
 
             AssertAreSame(expected, data.OrderByDescending(x => x.Key));
@@ -613,18 +613,17 @@ namespace MonoTests.System.Linq
 
             Assert.IsNotNull(actual);
 
-            var ee = expected.GetEnumerator(); // TODO: Review
-            var ea = actual.GetEnumerator();
+            var ee = Extensions.AsArray(expected);
+            var ea = Extensions.AsArray(actual);
 
-            while (ee.MoveNext())
+            if (ee.Length != ea.Length)
             {
-                Assert.IsTrue(ea.MoveNext(), "'" + ee.Current + "' expected.");
-                Assert.AreEqual(ee.Current, ea.Current);
+                Assert.Fail("Wrong length");
             }
 
-            if (ea.MoveNext())
+            for (int index = 0; index < ee.Length; index++)
             {
-                Assert.Fail("Unexpected element: " + ea.Current);
+                Assert.AreEqual(ee[index], ea[index]);
             }
         }
     }

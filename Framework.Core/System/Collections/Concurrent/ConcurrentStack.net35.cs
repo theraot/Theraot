@@ -10,11 +10,11 @@ using Theraot.Collections.ThreadSafe;
 
 namespace System.Collections.Concurrent
 {
-    [SerializableAttribute]
+    [Serializable]
     [ComVisible(false)]
-    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     [HostProtection(SecurityAction.LinkDemand, Synchronization = true, ExternalThreading = true)]
-    public class ConcurrentStack<T> : IProducerConsumerCollection<T>, IEnumerable<T>, IEnumerable, ICollection, IReadOnlyCollection<T>
+    public class ConcurrentStack<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>
     {
         private SafeStack<T> _wrapped;
 
@@ -28,25 +28,13 @@ namespace System.Collections.Concurrent
             _wrapped = new SafeStack<T>(collection);
         }
 
-        public int Count
-        {
-            get { return _wrapped.Count; }
-        }
+        public int Count => _wrapped.Count;
 
-        public bool IsEmpty
-        {
-            get { return _wrapped.Count == 0; }
-        }
+        public bool IsEmpty => _wrapped.Count == 0;
 
-        bool ICollection.IsSynchronized
-        {
-            get { return false; }
-        }
+        bool ICollection.IsSynchronized => false;
 
-        object ICollection.SyncRoot
-        {
-            get { throw new NotSupportedException(); }
-        }
+        object ICollection.SyncRoot => throw new NotSupportedException();
 
         public void Clear()
         {
@@ -110,7 +98,7 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentException();
             }
-            for (int index = 0; index < count; index++)
+            for (var index = 0; index < count; index++)
             {
                 _wrapped.Add(items[index + startIndex]);
             }
@@ -143,7 +131,7 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentNullException(nameof(items));
             }
-            int index = 0;
+            var index = 0;
             for (; index < items.Length; index++)
             {
                 if (!TryPop(out items[index]))
@@ -172,7 +160,7 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentException();
             }
-            int index = 0;
+            var index = 0;
             for (; index < count; index++)
             {
                 if (!TryPop(out items[index + startIndex]))

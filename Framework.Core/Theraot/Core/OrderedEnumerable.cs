@@ -1,33 +1,36 @@
-﻿#if FAT
+﻿//Needed for NET20 (Linq)
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
 using Theraot.Collections;
+using Theraot.Collections.Specialized;
 
 namespace Theraot.Core
 {
     public class OrderedEnumerable<TElement, TKey> : IOrderedEnumerable<TElement>
     {
         private readonly IComparer<TKey> _comparer;
-        private readonly Func<TElement, TKey> _selector;
+        private readonly Func<TElement, TKey> _keySelector;
         private readonly IEnumerable<TElement> _source;
 
         public OrderedEnumerable(IEnumerable<TElement> source, Func<TElement, TKey> keySelector, IComparer<TKey> comparer)
         {
             _comparer = comparer ?? Comparer<TKey>.Default;
-            if (source == null)
+            _source = source ?? throw new ArgumentNullException(nameof(source));
+            _keySelector = keySelector ?? throw new ArgumentNullException(nameof(keySelector));
+        }
+
+        public OrderedEnumerable(IEnumerable<TElement> source, Func<TElement, TKey> keySelector, IComparer<TKey> comparer, bool descending)
+        {
+            _comparer = comparer ?? Comparer<TKey>.Default;
+            if (descending)
             {
-                throw new ArgumentNullException(nameof(source));
+                _comparer = _comparer.Reverse();
             }
-            _source = source;
-            if (keySelector == null)
-            {
-                throw new ArgumentNullException(nameof(keySelector));
-            }
-            _selector = keySelector;
+            _source = source ?? throw new ArgumentNullException(nameof(source));
+            _keySelector = keySelector ?? throw new ArgumentNullException(nameof(keySelector));
         }
 
         public IOrderedEnumerable<TElement> CreateOrderedEnumerable<TNewKey>(Func<TElement, TNewKey> keySelector, IComparer<TNewKey> comparer, bool descending)
@@ -37,7 +40,21 @@ namespace Theraot.Core
             {
                 comparer = comparer.Reverse();
             }
-            return new OrderedEnumerable<TElement, TNewKey>(_source, keySelector, comparer);
+            var compoundComparer = new CustomComparer<(TKey, TNewKey)>(Compare);
+            return new OrderedEnumerable<TElement, (TKey, TNewKey)>(_source, CompoundKeySelector, compoundComparer);
+            (TKey, TNewKey) CompoundKeySelector(TElement item)
+            {
+                return (_keySelector(item), keySelector(item));
+            }
+            int Compare((TKey key, TNewKey newKey) x, (TKey key, TNewKey newKey) y)
+            {
+                var check = _comparer.Compare(x.key, y.key);
+                if (check == 0)
+                {
+                    return comparer.Compare(x.newKey, y.newKey);
+                }
+                return check;
+            }
         }
 
         public IEnumerator<TElement> GetEnumerator()
@@ -52,14 +69,30 @@ namespace Theraot.Core
 
         private IEnumerable<TElement> Sort(IEnumerable<TElement> source)
         {
-            var list = new SortedList<TKey, TElement>(_comparer);
-            foreach (var item in source)
+            var array = Extensions.AsArray(source);
+            var keys = new (TKey key, int index)[array.Length];
+            for (int index = 0; index < array.Length; index++)
             {
-                list.Add(_selector.Invoke(item), item);
+                keys[index] = (_keySelector.Invoke(array[index]), index);
             }
-            return list.ConvertProgressive(input => input.Value);
+            Array.Sort(keys, Compare);
+            return Enumerable();
+            int Compare((TKey key, int index) x, (TKey key, int index) y)
+            {
+                var check = _comparer.Compare(x.key, y.key);
+                if (check == 0)
+                {
+                    return x.index - y.index;
+                }
+                return check;
+            }
+            IEnumerable<TElement> Enumerable()
+            {
+                foreach (var (_, index) in keys)
+                {
+                    yield return array[index];
+                }
+            }
         }
     }
 }
-
-#endif

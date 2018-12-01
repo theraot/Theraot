@@ -1,4 +1,6 @@
-﻿namespace System.Collections.Generic
+﻿#if NET20 || NET30 || NET35 || NET40
+
+namespace System.Collections.Generic
 {
 #if NET40
 
@@ -19,3 +21,5 @@
 
 #endif
 }
+
+#endif

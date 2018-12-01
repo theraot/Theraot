@@ -279,12 +279,12 @@ namespace Tests.Theraot.Threading.Needles
                         Interlocked.Increment(ref count[1]);
                     }
                 );
-                while (Thread.VolatileRead(ref count[0]) != 2)
+                while (Volatile.Read(ref count[0]) != 2)
                 {
                     Thread.Sleep(0);
                 }
                 handle.Set();
-                while (Thread.VolatileRead(ref count[1]) != 2)
+                while (Volatile.Read(ref count[1]) != 2)
                 {
                     Thread.Sleep(0);
                 }
@@ -338,12 +338,12 @@ namespace Tests.Theraot.Threading.Needles
                         }
                     }
                 );
-                while (Thread.VolatileRead(ref count[0]) != 2)
+                while (Volatile.Read(ref count[0]) != 2)
                 {
                     Thread.Sleep(0);
                 }
                 handle.Set();
-                while (Thread.VolatileRead(ref count[1]) != 2)
+                while (Volatile.Read(ref count[1]) != 2)
                 {
                     Thread.Sleep(0);
                 }
@@ -390,12 +390,12 @@ namespace Tests.Theraot.Threading.Needles
                         }
                     }
                 );
-                while (Thread.VolatileRead(ref count[0]) != 2)
+                while (Volatile.Read(ref count[0]) != 2)
                 {
                     Thread.Sleep(0);
                 }
                 handle.Set();
-                while (Thread.VolatileRead(ref count[1]) != 2)
+                while (Volatile.Read(ref count[1]) != 2)
                 {
                     Thread.Sleep(0);
                 }

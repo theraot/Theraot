@@ -14,11 +14,10 @@ namespace Theraot.Threading
         private readonly NeedleBucket<LockSlot<T>, LazyNeedle<LockSlot<T>>> _slots;
         private readonly VersionProvider _version = new VersionProvider();
         private int _index;
-        private readonly int _capacity;
 
         public LockContext(int capacity)
         {
-            _capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
+            Capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
             _slots = new NeedleBucket<LockSlot<T>, LazyNeedle<LockSlot<T>>>
                 (
                     index => new LockSlot<T>
@@ -28,15 +27,12 @@ namespace Theraot.Threading
                         _version.AdvanceNewToken()
                     ),
                     key => new LazyNeedle<LockSlot<T>>(key),
-                    _capacity
+                    Capacity
                 );
-            _closedSlots = new FixedSizeQueue<LockSlot<T>>(_capacity);
+            _closedSlots = new FixedSizeQueue<LockSlot<T>>(Capacity);
         }
 
-        internal int Capacity
-        {
-            get { return _capacity; }
-        }
+        internal int Capacity { get; }
 
         internal bool ClaimSlot(out LockSlot<T> slot)
         {
@@ -46,7 +42,7 @@ namespace Theraot.Threading
             }
             if (_slots.Count < _slots.Capacity)
             {
-                var index = Interlocked.Increment(ref _index) & (_capacity - 1);
+                var index = Interlocked.Increment(ref _index) & (Capacity - 1);
                 slot = _slots.Get(index);
                 return true;
             }
@@ -68,7 +64,7 @@ namespace Theraot.Threading
             var resultLock = -1;
             foreach (var flag in flags.Flags)
             {
-                if (!_slots.TryGet(flag, out LockSlot<T> testSlot))
+                if (!_slots.TryGet(flag, out var testSlot))
                 {
                     continue;
                 }
@@ -97,7 +93,7 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            if (_slots.TryGet(got, out LockSlot<T> found) && found.IsOpen)
+            if (_slots.TryGet(got, out var found) && found.IsOpen)
             {
                 slot = found;
                 return true;

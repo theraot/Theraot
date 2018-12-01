@@ -33,7 +33,7 @@ namespace Theraot.Collections
                 var counter = 0;
                 var nullCounter = -1;
 
-                foreach (TSource element in source)
+                foreach (var element in source)
                 {
                     var key = keySelector(element);
                     if (ReferenceEquals(key, null))
@@ -47,7 +47,7 @@ namespace Theraot.Collections
                     }
                     else
                     {
-                        if (!groups.TryGetValue(key, out List<TSource> group))
+                        if (!groups.TryGetValue(key, out var group))
                         {
                             group = new List<TSource>();
                             groups.Add(key, group);
@@ -106,7 +106,7 @@ namespace Theraot.Collections
                 var counter = 0;
                 var nullCounter = -1;
 
-                foreach (TSource item in source)
+                foreach (var item in source)
                 {
                     var key = keySelector(item);
                     var element = resultSelector(item);
@@ -121,7 +121,7 @@ namespace Theraot.Collections
                     }
                     else
                     {
-                        if (!groups.TryGetValue(key, out List<TElement> group))
+                        if (!groups.TryGetValue(key, out var group))
                         {
                             group = new List<TElement>();
                             groups.Add(key, group);
@@ -181,7 +181,7 @@ namespace Theraot.Collections
             {
                 var groups = GroupProgressiveBy(source, keySelector, elementSelector, comparer);
 
-                foreach (IGrouping<TKey, TElement> group in groups)
+                foreach (var group in groups)
                 {
                     yield return resultSelector(group.Key, group);
                 }
@@ -213,7 +213,7 @@ namespace Theraot.Collections
             {
                 var groups = GroupProgressiveBy(source, keySelector, comparer);
 
-                foreach (IGrouping<TKey, TSource> group in groups)
+                foreach (var group in groups)
                 {
                     yield return resultSelector(group.Key, group);
                 }

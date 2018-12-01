@@ -8,20 +8,20 @@ namespace Theraot.Collections.ThreadSafe
     internal class Pool<T>
         where T : class
     {
-        private readonly UniqueId _id;
         private readonly FixedSizeQueue<T> _entries;
+        private readonly UniqueId _id;
         private readonly Action<T> _recycler;
 
         public Pool(int capacity)
         {
-            _id = RuntimeUniqueIdProdiver.GetNextId();
+            _id = RuntimeUniqueIdProvider.GetNextId();
             _entries = new FixedSizeQueue<T>(capacity);
             _recycler = GC.KeepAlive;
         }
 
         public Pool(int capacity, Action<T> recycler)
         {
-            _id = RuntimeUniqueIdProdiver.GetNextId();
+            _id = RuntimeUniqueIdProvider.GetNextId();
             _entries = new FixedSizeQueue<T>(capacity);
             _recycler = recycler ?? throw new ArgumentNullException(nameof(recycler));
         }

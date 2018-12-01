@@ -5,7 +5,7 @@ namespace System.Runtime.CompilerServices
     /// <summary>
     /// Identities the async state machine type for this method.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     [Serializable]
     public sealed class AsyncStateMachineAttribute : StateMachineAttribute
     {

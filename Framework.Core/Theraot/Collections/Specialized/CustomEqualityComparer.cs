@@ -2,10 +2,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Theraot.Collections.Specialized
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public class CustomEqualityComparer<T> : IEqualityComparer<T>
     {
         private readonly Func<T, T, bool> _comparison;
@@ -13,16 +14,8 @@ namespace Theraot.Collections.Specialized
 
         public CustomEqualityComparer(Func<T, T, bool> comparison, Func<T, int> getHashCode)
         {
-            if (comparison == null)
-            {
-                throw new ArgumentNullException(nameof(comparison));
-            }
-            if (getHashCode == null)
-            {
-                throw new ArgumentNullException(nameof(getHashCode));
-            }
-            _comparison = comparison;
-            _getHashCode = getHashCode;
+            _comparison = comparison ?? throw new ArgumentNullException(nameof(comparison));
+            _getHashCode = getHashCode ?? throw new ArgumentNullException(nameof(getHashCode));
         }
 
         public CustomEqualityComparer(IComparer<T> comparer, Func<T, int> getHashCode)
@@ -31,12 +24,8 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(comparer));
             }
-            if (getHashCode == null)
-            {
-                throw new ArgumentNullException(nameof(getHashCode));
-            }
             _comparison = (x, y) => comparer.Compare(x, y) == 0;
-            _getHashCode = getHashCode;
+            _getHashCode = getHashCode ?? throw new ArgumentNullException(nameof(getHashCode));
         }
 
         public CustomEqualityComparer(Func<T, T, int> comparison, Func<T, int> getHashCode)
@@ -45,12 +34,8 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(comparison));
             }
-            if (getHashCode == null)
-            {
-                throw new ArgumentNullException(nameof(getHashCode));
-            }
             _comparison = (x, y) => comparison.Invoke(x, y) == 0;
-            _getHashCode = getHashCode;
+            _getHashCode = getHashCode ?? throw new ArgumentNullException(nameof(getHashCode));
         }
 
         public CustomEqualityComparer(Comparison<T> comparison, Func<T, int> getHashCode)
@@ -59,12 +44,8 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(comparison));
             }
-            if (getHashCode == null)
-            {
-                throw new ArgumentNullException(nameof(getHashCode));
-            }
             _comparison = (x, y) => comparison.Invoke(x, y) == 0;
-            _getHashCode = getHashCode;
+            _getHashCode = getHashCode ?? throw new ArgumentNullException(nameof(getHashCode));
         }
 
         public bool Equals(T x, T y)

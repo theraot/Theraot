@@ -1,6 +1,7 @@
 ﻿#if NET20 || NET30 || NET35 || NET40
 
 using System.Reflection;
+using System.Text;
 
 namespace System.Runtime.ExceptionServices
 {
@@ -10,14 +11,12 @@ namespace System.Runtime.ExceptionServices
     public sealed class ExceptionDispatchInfo
     {
         private static FieldInfo _remoteStackTraceString;
-
-        private readonly Exception _exception;
         private readonly object _stackTrace;
 
         private ExceptionDispatchInfo(Exception exception)
         {
-            _exception = exception;
-            _stackTrace = _exception.StackTrace;
+            SourceException = exception;
+            _stackTrace = SourceException.StackTrace;
             if (_stackTrace != null)
             {
                 _stackTrace += Environment.NewLine + "---End of stack trace from previous location where exception was thrown ---" + Environment.NewLine;
@@ -27,6 +26,11 @@ namespace System.Runtime.ExceptionServices
                 _stackTrace = string.Empty;
             }
         }
+
+        /// <summary>
+        /// Gets the exception that is represented by the current instance.
+        /// </summary>
+        public Exception SourceException { get; }
 
         /// <summary>
         /// Creates an ExceptionDispatchInfo object that represents the specified exception at the current point in code.
@@ -43,57 +47,26 @@ namespace System.Runtime.ExceptionServices
         }
 
         /// <summary>
-        /// Gets the exception that is represented by the current instance.
-        /// </summary>
-        public Exception SourceException
-        {
-            get { return _exception; }
-        }
-
-        private static FieldInfo GetFieldInfo()
-        {
-            if (_remoteStackTraceString == null)
-            {
-                // ---
-                // Code by Miguel de Icaza
-
-                var remoteStackTraceString = typeof(Exception).GetField("_remoteStackTraceString",
-                    BindingFlags.Instance | BindingFlags.NonPublic) ?? typeof(Exception).GetField("remote_stack_trace",
-                        BindingFlags.Instance | BindingFlags.NonPublic); // MS.Net
-
-                // ---
-                _remoteStackTraceString = remoteStackTraceString;
-            }
-            return _remoteStackTraceString;
-        }
-
-        private static void SetStackTrace(Exception exception, object value)
-        {
-            var remoteStackTraceString = GetFieldInfo();
-            remoteStackTraceString.SetValue(exception, value);
-        }
-
-        /// <summary>
         /// Throws the exception that is represented by the current ExceptionDispatchInfo object, after restoring the state that was saved when the exception was captured.
         /// </summary>
         public void Throw()
         {
             try
             {
-                throw _exception;
+                throw SourceException;
             }
             catch (Exception exception)
             {
                 GC.KeepAlive(exception);
                 var newStackTrace = _stackTrace + BuildStackTrace(Environment.StackTrace);
-                SetStackTrace(_exception, newStackTrace);
+                SetStackTrace(SourceException, newStackTrace);
                 throw;
             }
 
             string BuildStackTrace(string trace)
             {
                 var items = trace.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-                var newStackTrace = new Text.StringBuilder();
+                var newStackTrace = new StringBuilder();
                 var found = false;
                 foreach (var item in items)
                 {
@@ -120,6 +93,29 @@ namespace System.Runtime.ExceptionServices
                 var result = newStackTrace.ToString();
                 return result;
             }
+        }
+
+        private static FieldInfo GetFieldInfo()
+        {
+            if (_remoteStackTraceString == null)
+            {
+                // ---
+                // Code by Miguel de Icaza
+
+                var remoteStackTraceString = typeof(Exception).GetField("_remoteStackTraceString",
+                    BindingFlags.Instance | BindingFlags.NonPublic) ?? typeof(Exception).GetField("remote_stack_trace",
+                        BindingFlags.Instance | BindingFlags.NonPublic); // MS.Net
+
+                // ---
+                _remoteStackTraceString = remoteStackTraceString;
+            }
+            return _remoteStackTraceString;
+        }
+
+        private static void SetStackTrace(Exception exception, object value)
+        {
+            var remoteStackTraceString = GetFieldInfo();
+            remoteStackTraceString.SetValue(exception, value);
         }
     }
 }

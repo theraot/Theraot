@@ -7,17 +7,12 @@ namespace Theraot.Threading
 {
     internal static class ThreadLocalHelper
     {
-        private static readonly Exception _recursionGuardException;
-
         static ThreadLocalHelper()
         {
-            _recursionGuardException = GetInvalidOperationException();
+            RecursionGuardException = GetInvalidOperationException();
         }
 
-        public static Exception RecursionGuardException
-        {
-            get { return _recursionGuardException; }
-        }
+        public static Exception RecursionGuardException { get; }
 
         private static InvalidOperationException GetInvalidOperationException()
         {
@@ -27,11 +22,6 @@ namespace Theraot.Threading
 
     internal static class ThreadLocalHelper<T>
     {
-        private static readonly INeedle<T> _recursionGuardNeedle = new ExceptionStructNeedle<T>(ThreadLocalHelper.RecursionGuardException);
-
-        public static INeedle<T> RecursionGuardNeedle
-        {
-            get { return _recursionGuardNeedle; }
-        }
+        public static INeedle<T> RecursionGuardNeedle { get; } = new ExceptionStructNeedle<T>(ThreadLocalHelper.RecursionGuardException);
     }
 }

@@ -22,10 +22,7 @@ namespace Theraot.Threading
             }
         }
 
-        public bool IsDisposed
-        {
-            get { return _disposeStatus == -1; }
-        }
+        public bool IsDisposed => _disposeStatus == -1;
 
         [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
@@ -45,10 +42,7 @@ namespace Theraot.Threading
         {
             if (_disposeStatus == -1)
             {
-                if (whenDisposed != null)
-                {
-                    whenDisposed.Invoke();
-                }
+                whenDisposed?.Invoke();
             }
             else
             {
@@ -67,10 +61,7 @@ namespace Theraot.Threading
                     }
                     else
                     {
-                        if (whenDisposed != null)
-                        {
-                            whenDisposed.Invoke();
-                        }
+                        whenDisposed?.Invoke();
                     }
                 }
             }

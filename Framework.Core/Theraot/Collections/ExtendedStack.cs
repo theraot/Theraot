@@ -10,53 +10,35 @@ using Theraot.Core;
 namespace Theraot.Collections
 {
 #if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+
     [Serializable]
 #endif
 
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public sealed class ExtendedStack<T> : IDropPoint<T>, IEnumerable<T>, ICollection<T>, ICloneable<ExtendedStack<T>>, IProducerConsumerCollection<T>
+    public sealed class ExtendedStack<T> : ICollection<T>, ICloneable<ExtendedStack<T>>, IProducerConsumerCollection<T>
     {
         private readonly Stack<T> _wrapped;
 
         public ExtendedStack()
         {
             _wrapped = new Stack<T>();
-            AsReadOnly = new ExtendedReadOnlyCollection<T>(this);
         }
 
         public ExtendedStack(IEnumerable<T> collection)
         {
             _wrapped = new Stack<T>(collection);
-            AsReadOnly = new ExtendedReadOnlyCollection<T>(this);
         }
 
-        public IReadOnlyCollection<T> AsReadOnly { get; }
+        public int Count => _wrapped.Count;
 
-        public int Count
-        {
-            get { return _wrapped.Count; }
-        }
+        bool ICollection<T>.IsReadOnly => false;
 
-        bool ICollection<T>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection.IsSynchronized => false;
 
-        bool ICollection.IsSynchronized
-        {
-            get { return false; }
-        }
+        public T Item => _wrapped.Peek();
 
-        public T Item
-        {
-            get { return _wrapped.Peek(); }
-        }
-
-        object ICollection.SyncRoot
-        {
-            get { throw new NotSupportedException(); }
-        }
+        object ICollection.SyncRoot => throw new NotSupportedException();
 
         void ICollection<T>.Add(T item)
         {

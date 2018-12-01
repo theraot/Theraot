@@ -11,24 +11,21 @@ namespace Theraot.Collections
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public sealed class ExtendedList<T> : IExtendedList<T>, IList<T>, ICollection<T>, IEnumerable<T>, ICloneable<ExtendedList<T>>, IEqualityComparer<T>
+    public sealed class ExtendedList<T> : IList<T>, ICloneable<ExtendedList<T>>, IEqualityComparer<T>
     {
         private readonly IEqualityComparer<T> _comparer;
-        private readonly IExtendedReadOnlyList<T> _readOnly;
         private readonly List<T> _wrapped;
 
         public ExtendedList()
         {
             _comparer = EqualityComparer<T>.Default;
             _wrapped = new List<T>();
-            _readOnly = CreateReadOnly();
         }
 
         public ExtendedList(IEnumerable<T> prototype)
         {
             _comparer = EqualityComparer<T>.Default;
             _wrapped = new List<T>();
-            _readOnly = CreateReadOnly();
             if (prototype == null)
             {
                 throw new ArgumentNullException(nameof(prototype));
@@ -38,13 +35,8 @@ namespace Theraot.Collections
 
         public ExtendedList(IEnumerable<T> prototype, IEqualityComparer<T> comparer)
         {
-            if (comparer == null)
-            {
-                throw new ArgumentNullException(nameof(comparer));
-            }
-            _comparer = comparer;
+            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
             _wrapped = new List<T>();
-            _readOnly = CreateReadOnly();
             if (prototype == null)
             {
                 throw new ArgumentNullException(nameof(prototype));
@@ -54,40 +46,19 @@ namespace Theraot.Collections
 
         public ExtendedList(IEqualityComparer<T> comparer)
         {
-            if (comparer == null)
-            {
-                throw new ArgumentNullException(nameof(comparer));
-            }
-            _comparer = comparer;
+            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
             _wrapped = new List<T>();
-            _readOnly = CreateReadOnly();
         }
 
-        public IReadOnlyList<T> AsReadOnly
-        {
-            get { return _readOnly; }
-        }
+        public int Count => _wrapped.Count;
 
-        public int Count
-        {
-            get { return _wrapped.Count; }
-        }
-
-        IReadOnlyCollection<T> IExtendedCollection<T>.AsReadOnly
-        {
-            get { return _readOnly; }
-        }
-
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         public T this[int index]
         {
-            get { return _wrapped[index]; }
+            get => _wrapped[index];
 
-            set { _wrapped[index] = value; }
+            set => _wrapped[index] = value;
         }
 
         public void Add(T item)
@@ -185,7 +156,7 @@ namespace Theraot.Collections
             {
                 return false;
             }
-            foreach (T item in other)
+            foreach (var item in other)
             {
                 if (Contains(item))
                 {
@@ -248,7 +219,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(other));
             }
-            var that = Extensions.AsDistinctCollection(other);
+            var that = Extensions.AsDistinctICollection(other);
             foreach (var item in that.Where(input => !Contains(input)))
             {
                 GC.KeepAlive(item);
@@ -280,11 +251,6 @@ namespace Theraot.Collections
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        private ExtendedReadOnlyList<T> CreateReadOnly()
-        {
-            return new ExtendedReadOnlyList<T>(this);
         }
     }
 }

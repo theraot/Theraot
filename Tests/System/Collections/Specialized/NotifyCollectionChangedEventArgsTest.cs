@@ -135,6 +135,7 @@ namespace MonoTests.System.Collections.Specialized
             try
             {
                 args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, changedItems);
+                GC.KeepAlive(args);
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset.");
             }
             catch (ArgumentException ex)

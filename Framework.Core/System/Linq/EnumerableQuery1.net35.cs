@@ -20,30 +20,11 @@ namespace System.Linq
             _queryable = new QueryableEnumerable<T>(enumerable);
         }
 
-        Type IQueryable.ElementType
-        {
-            get { return _queryable.ElementType; }
-        }
+        Type IQueryable.ElementType => _queryable.ElementType;
 
-        Expression IQueryable.Expression
-        {
-            get { return _queryable.Expression; }
-        }
+        Expression IQueryable.Expression => _queryable.Expression;
 
-        IQueryProvider IQueryable.Provider
-        {
-            get { return _queryable; }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _queryable.GetEnumerator();
-        }
-
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        {
-            return _queryable.GetEnumerator();
-        }
+        IQueryProvider IQueryable.Provider => _queryable;
 
         IQueryable IQueryProvider.CreateQuery(Expression expression)
         {
@@ -63,6 +44,16 @@ namespace System.Linq
         TResult IQueryProvider.Execute<TResult>(Expression expression)
         {
             return _queryable.Execute<TResult>(expression);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _queryable.GetEnumerator();
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return _queryable.GetEnumerator();
         }
 
         public override string ToString()

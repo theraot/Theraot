@@ -325,7 +325,7 @@ namespace System.Numerics
                     reader.SkipWhile(CharHelper.IsClassicWhitespace);
                 }
                 // Percent intentionally not supported
-                // After testig with .NET the patterns are ignored... all patterns are welcome
+                // After testing with .NET the patterns are ignored... all patterns are welcome
 
                 var currencySymbol = info.CurrencySymbol;
                 // [$][sign][digits,]digits[E[sign]exponential_digits][ws]
@@ -447,7 +447,7 @@ namespace System.Numerics
                 // ---
                 if (!isCurrency && allowCurrencySymbol && reader.Read(currencySymbol)) // If the currency symbol is after the negative sign
                 {
-                    isCurrency = true; // For completeness sake
+                    /*isCurrency = true; // For completeness sake*/
                 }
                 // [ws]
                 if (allowTrailingWhite)
@@ -532,7 +532,7 @@ namespace System.Numerics
                 for (var convertedIndex = 0; convertedIndex < convertedLength; convertedIndex++)
                 {
                     ref var current = ref converted[convertedIndex];
-                    var cipherBlock = NumericsHelpers.MakeUlong(current, carry);
+                    var cipherBlock = NumericHelper.BuildUInt64(current, carry);
                     current = (uint)(cipherBlock % NumericBase);
                     carry = (uint)(cipherBlock / NumericBase);
                 }

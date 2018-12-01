@@ -101,32 +101,136 @@ namespace System.Threading.Tasks
         /// </summary>
         /// <remarks>
         /// This property enables a consumer access to the <see cref="T:System.Threading.Tasks.Task{TResult}"/> that is controlled by this instance.
-        /// The <see cref="SetResult"/>, <see cref="SetException(System.Exception)"/>,
+        /// The <see cref="SetResult"/>, <see cref="SetException(Exception)"/>,
         /// <see cref="SetException(System.Collections.Generic.IEnumerable{System.Exception})"/>, and <see cref="SetCanceled"/>
         /// methods (and their "Try" variants) on this instance all result in the relevant state
         /// transitions on this underlying Task.
         /// </remarks>
-        public Task<TResult> Task
+        public Task<TResult> Task => _task.Value;
+
+        /// <summary>
+        /// Transitions the underlying
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> into the
+        /// <see cref="TaskStatus.Canceled">Canceled</see>
+        /// state.
+        /// </summary>
+        /// <exception cref="T:System.InvalidOperationException">
+        /// The underlying <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
+        /// of the three final states:
+        /// <see cref="TaskStatus.RanToCompletion">RanToCompletion</see>,
+        /// <see cref="TaskStatus.Faulted">Faulted</see>, or
+        /// <see cref="TaskStatus.Canceled">Canceled</see>.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The <see cref="Task"/> was disposed.</exception>
+        public void SetCanceled()
         {
-            get { return _task.Value; }
+            if (!TrySetCanceled())
+            {
+                throw new InvalidOperationException("An attempt was made to transition a task to a final state when it had already completed.");
+            }
         }
 
-        /// <summary>Spins until the underlying task is completed.</summary>
-        /// <remarks>This should only be called if the task is in the process of being completed by another thread.</remarks>
-        private void SpinUntilCompleted()
+        /// <summary>
+        /// Transitions the underlying
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> into the
+        /// <see cref="TaskStatus.Faulted">Faulted</see>
+        /// state.
+        /// </summary>
+        /// <param name="exception">The exception to bind to this <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="exception"/> argument is null.</exception>
+        /// <exception cref="T:System.InvalidOperationException">
+        /// The underlying <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
+        /// of the three final states:
+        /// <see cref="TaskStatus.RanToCompletion">RanToCompletion</see>,
+        /// <see cref="TaskStatus.Faulted">Faulted</see>, or
+        /// <see cref="TaskStatus.Canceled">Canceled</see>.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The <see cref="Task"/> was disposed.</exception>
+        public void SetException(Exception exception)
         {
-            // Spin wait until the completion is finalized by another thread.
-            var sw = new SpinWait();
-            while (!_task.Value.IsCompleted)
+            if (exception == null)
             {
-                sw.SpinOnce();
+                throw new ArgumentNullException(nameof(exception));
+            }
+
+            if (!TrySetException(exception))
+            {
+                throw new InvalidOperationException("An attempt was made to transition a task to a final state when it had already completed.");
+            }
+        }
+
+        /// <summary>
+        /// Transitions the underlying
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> into the
+        /// <see cref="TaskStatus.Faulted">Faulted</see>
+        /// state.
+        /// </summary>
+        /// <param name="exceptions">The collection of exceptions to bind to this <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="exceptions"/> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentException">There are one or more null elements in <paramref name="exceptions"/>.</exception>
+        /// <exception cref="T:System.InvalidOperationException">
+        /// The underlying <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
+        /// of the three final states:
+        /// <see cref="TaskStatus.RanToCompletion">RanToCompletion</see>,
+        /// <see cref="TaskStatus.Faulted">Faulted</see>, or
+        /// <see cref="TaskStatus.Canceled">Canceled</see>.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The <see cref="Task"/> was disposed.</exception>
+        public void SetException(IEnumerable<Exception> exceptions)
+        {
+            if (!TrySetException(exceptions))
+            {
+                throw new InvalidOperationException("An attempt was made to transition a task to a final state when it had already completed.");
+            }
+        }
+
+        /// <summary>
+        /// Transitions the underlying
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> into the
+        /// <see cref="TaskStatus.RanToCompletion">RanToCompletion</see>
+        /// state.
+        /// </summary>
+        /// <param name="result">The result value to bind to this <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <exception cref="T:System.InvalidOperationException">
+        /// The underlying <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
+        /// of the three final states:
+        /// <see cref="TaskStatus.RanToCompletion">RanToCompletion</see>,
+        /// <see cref="TaskStatus.Faulted">Faulted</see>, or
+        /// <see cref="TaskStatus.Canceled">Canceled</see>.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The <see cref="Task"/> was disposed.</exception>
+        public void SetResult(TResult result)
+        {
+            if (!TrySetResult(result))
+            {
+                throw new InvalidOperationException("An attempt was made to transition a task to a final state when it had already completed.");
             }
         }
 
         /// <summary>
         /// Attempts to transition the underlying
         /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> into the
-        /// <see cref="System.Threading.Tasks.TaskStatus.Faulted">Faulted</see>
+        /// <see cref="TaskStatus.Canceled">Canceled</see>
+        /// state.
+        /// </summary>
+        /// <returns>True if the operation was successful; otherwise, false.</returns>
+        /// <remarks>This operation will return false if the
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
+        /// of the three final states:
+        /// <see cref="TaskStatus.RanToCompletion">RanToCompletion</see>,
+        /// <see cref="TaskStatus.Faulted">Faulted</see>, or
+        /// <see cref="TaskStatus.Canceled">Canceled</see>.
+        /// </remarks>
+        /// <exception cref="T:System.ObjectDisposedException">The <see cref="Task"/> was disposed.</exception>
+        public bool TrySetCanceled()
+        {
+            return TrySetCanceled(CancellationTokenSource.CanceledSource.Token);
+        }
+
+        /// <summary>
+        /// Attempts to transition the underlying
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> into the
+        /// <see cref="TaskStatus.Faulted">Faulted</see>
         /// state.
         /// </summary>
         /// <param name="exception">The exception to bind to this <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
@@ -134,9 +238,9 @@ namespace System.Threading.Tasks
         /// <remarks>This operation will return false if the
         /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
         /// of the three final states:
-        /// <see cref="System.Threading.Tasks.TaskStatus.RanToCompletion">RanToCompletion</see>,
-        /// <see cref="System.Threading.Tasks.TaskStatus.Faulted">Faulted</see>, or
-        /// <see cref="System.Threading.Tasks.TaskStatus.Canceled">Canceled</see>.
+        /// <see cref="TaskStatus.RanToCompletion">RanToCompletion</see>,
+        /// <see cref="TaskStatus.Faulted">Faulted</see>, or
+        /// <see cref="TaskStatus.Canceled">Canceled</see>.
         /// </remarks>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="exception"/> argument is null.</exception>
         /// <exception cref="T:System.ObjectDisposedException">The <see cref="Task"/> was disposed.</exception>
@@ -146,19 +250,19 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(exception));
             }
-            var rval = _task.Value.TrySetException(exception);
-            if (!rval && !_task.Value.IsCompleted)
+            var value = _task.Value.TrySetException(exception);
+            if (!value && !_task.Value.IsCompleted)
             {
                 SpinUntilCompleted();
             }
 
-            return rval;
+            return value;
         }
 
         /// <summary>
         /// Attempts to transition the underlying
         /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> into the
-        /// <see cref="System.Threading.Tasks.TaskStatus.Faulted">Faulted</see>
+        /// <see cref="TaskStatus.Faulted">Faulted</see>
         /// state.
         /// </summary>
         /// <param name="exceptions">The collection of exceptions to bind to this <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
@@ -166,9 +270,9 @@ namespace System.Threading.Tasks
         /// <remarks>This operation will return false if the
         /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
         /// of the three final states:
-        /// <see cref="System.Threading.Tasks.TaskStatus.RanToCompletion">RanToCompletion</see>,
-        /// <see cref="System.Threading.Tasks.TaskStatus.Faulted">Faulted</see>, or
-        /// <see cref="System.Threading.Tasks.TaskStatus.Canceled">Canceled</see>.
+        /// <see cref="TaskStatus.RanToCompletion">RanToCompletion</see>,
+        /// <see cref="TaskStatus.Faulted">Faulted</see>, or
+        /// <see cref="TaskStatus.Canceled">Canceled</see>.
         /// </remarks>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="exceptions"/> argument is null.</exception>
         /// <exception cref="T:System.ArgumentException">There are one or more null elements in <paramref name="exceptions"/>.</exception>
@@ -195,73 +299,19 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentException("The exceptions collection was empty.", nameof(exceptions));
             }
-            var rval = _task.Value.TrySetException(defensiveCopy);
-            if (!rval && !_task.Value.IsCompleted)
+            var value = _task.Value.TrySetException(defensiveCopy);
+            if (!value && !_task.Value.IsCompleted)
             {
                 SpinUntilCompleted();
             }
 
-            return rval;
-        }
-
-        /// <summary>
-        /// Transitions the underlying
-        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> into the
-        /// <see cref="System.Threading.Tasks.TaskStatus.Faulted">Faulted</see>
-        /// state.
-        /// </summary>
-        /// <param name="exception">The exception to bind to this <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="exception"/> argument is null.</exception>
-        /// <exception cref="T:System.InvalidOperationException">
-        /// The underlying <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
-        /// of the three final states:
-        /// <see cref="System.Threading.Tasks.TaskStatus.RanToCompletion">RanToCompletion</see>,
-        /// <see cref="System.Threading.Tasks.TaskStatus.Faulted">Faulted</see>, or
-        /// <see cref="System.Threading.Tasks.TaskStatus.Canceled">Canceled</see>.
-        /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The <see cref="Task"/> was disposed.</exception>
-        public void SetException(Exception exception)
-        {
-            if (exception == null)
-            {
-                throw new ArgumentNullException(nameof(exception));
-            }
-
-            if (!TrySetException(exception))
-            {
-                throw new InvalidOperationException("An attempt was made to transition a task to a final state when it had already completed.");
-            }
-        }
-
-        /// <summary>
-        /// Transitions the underlying
-        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> into the
-        /// <see cref="System.Threading.Tasks.TaskStatus.Faulted">Faulted</see>
-        /// state.
-        /// </summary>
-        /// <param name="exceptions">The collection of exceptions to bind to this <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="exceptions"/> argument is null.</exception>
-        /// <exception cref="T:System.ArgumentException">There are one or more null elements in <paramref name="exceptions"/>.</exception>
-        /// <exception cref="T:System.InvalidOperationException">
-        /// The underlying <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
-        /// of the three final states:
-        /// <see cref="System.Threading.Tasks.TaskStatus.RanToCompletion">RanToCompletion</see>,
-        /// <see cref="System.Threading.Tasks.TaskStatus.Faulted">Faulted</see>, or
-        /// <see cref="System.Threading.Tasks.TaskStatus.Canceled">Canceled</see>.
-        /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The <see cref="Task"/> was disposed.</exception>
-        public void SetException(IEnumerable<Exception> exceptions)
-        {
-            if (!TrySetException(exceptions))
-            {
-                throw new InvalidOperationException("An attempt was made to transition a task to a final state when it had already completed.");
-            }
+            return value;
         }
 
         /// <summary>
         /// Attempts to transition the underlying
         /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> into the
-        /// <see cref="System.Threading.Tasks.TaskStatus.RanToCompletion">RanToCompletion</see>
+        /// <see cref="TaskStatus.RanToCompletion">RanToCompletion</see>
         /// state.
         /// </summary>
         /// <param name="result">The result value to bind to this <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
@@ -269,95 +319,42 @@ namespace System.Threading.Tasks
         /// <remarks>This operation will return false if the
         /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
         /// of the three final states:
-        /// <see cref="System.Threading.Tasks.TaskStatus.RanToCompletion">RanToCompletion</see>,
-        /// <see cref="System.Threading.Tasks.TaskStatus.Faulted">Faulted</see>, or
-        /// <see cref="System.Threading.Tasks.TaskStatus.Canceled">Canceled</see>.
+        /// <see cref="TaskStatus.RanToCompletion">RanToCompletion</see>,
+        /// <see cref="TaskStatus.Faulted">Faulted</see>, or
+        /// <see cref="TaskStatus.Canceled">Canceled</see>.
         /// </remarks>
         /// <exception cref="T:System.ObjectDisposedException">The <see cref="Task"/> was disposed.</exception>
         public bool TrySetResult(TResult result)
         {
-            var rval = _task.Value.TrySetResult(result);
-            if (!rval && !_task.Value.IsCompleted)
+            var value = _task.Value.TrySetResult(result);
+            if (!value && !_task.Value.IsCompleted)
             {
                 SpinUntilCompleted();
             }
 
-            return rval;
-        }
-
-        /// <summary>
-        /// Transitions the underlying
-        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> into the
-        /// <see cref="System.Threading.Tasks.TaskStatus.RanToCompletion">RanToCompletion</see>
-        /// state.
-        /// </summary>
-        /// <param name="result">The result value to bind to this <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
-        /// <exception cref="T:System.InvalidOperationException">
-        /// The underlying <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
-        /// of the three final states:
-        /// <see cref="System.Threading.Tasks.TaskStatus.RanToCompletion">RanToCompletion</see>,
-        /// <see cref="System.Threading.Tasks.TaskStatus.Faulted">Faulted</see>, or
-        /// <see cref="System.Threading.Tasks.TaskStatus.Canceled">Canceled</see>.
-        /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The <see cref="Task"/> was disposed.</exception>
-        public void SetResult(TResult result)
-        {
-            if (!TrySetResult(result))
-            {
-                throw new InvalidOperationException("An attempt was made to transition a task to a final state when it had already completed.");
-            }
-        }
-
-        /// <summary>
-        /// Attempts to transition the underlying
-        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> into the
-        /// <see cref="System.Threading.Tasks.TaskStatus.Canceled">Canceled</see>
-        /// state.
-        /// </summary>
-        /// <returns>True if the operation was successful; otherwise, false.</returns>
-        /// <remarks>This operation will return false if the
-        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
-        /// of the three final states:
-        /// <see cref="System.Threading.Tasks.TaskStatus.RanToCompletion">RanToCompletion</see>,
-        /// <see cref="System.Threading.Tasks.TaskStatus.Faulted">Faulted</see>, or
-        /// <see cref="System.Threading.Tasks.TaskStatus.Canceled">Canceled</see>.
-        /// </remarks>
-        /// <exception cref="T:System.ObjectDisposedException">The <see cref="Task"/> was disposed.</exception>
-        public bool TrySetCanceled()
-        {
-            return TrySetCanceled(CancellationTokenSource.CanceledSource.Token);
+            return value;
         }
 
         // Enables a token to be stored into the canceled task
         internal bool TrySetCanceled(CancellationToken tokenToRecord)
         {
-            var rval = _task.Value.TrySetCanceled(tokenToRecord);
-            if (!rval && !_task.Value.IsCompleted)
+            var value = _task.Value.TrySetCanceled(tokenToRecord);
+            if (!value && !_task.Value.IsCompleted)
             {
                 SpinUntilCompleted();
             }
-            return rval;
+            return value;
         }
 
-        /// <summary>
-        /// Transitions the underlying
-        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> into the
-        /// <see cref="System.Threading.Tasks.TaskStatus.Canceled">Canceled</see>
-        /// state.
-        /// </summary>
-        /// <exception cref="T:System.InvalidOperationException">
-        /// The underlying <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
-        /// of the three final states:
-        /// <see cref="System.Threading.Tasks.TaskStatus.RanToCompletion">RanToCompletion</see>,
-        /// <see cref="System.Threading.Tasks.TaskStatus.Faulted">Faulted</see>, or
-        /// <see cref="System.Threading.Tasks.TaskStatus.Canceled">Canceled</see>.
-        /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The <see cref="Task"/> was disposed.</exception>
-        public void SetCanceled()
+        /// <summary>Spins until the underlying task is completed.</summary>
+        /// <remarks>This should only be called if the task is in the process of being completed by another thread.</remarks>
+        private void SpinUntilCompleted()
         {
-            if (!TrySetCanceled())
+            // Spin wait until the completion is finalized by another thread.
+            var sw = new SpinWait();
+            while (!_task.Value.IsCompleted)
             {
-                throw new InvalidOperationException("An attempt was made to transition a task to a final state when it had already completed.");
+                sw.SpinOnce();
             }
         }
     }

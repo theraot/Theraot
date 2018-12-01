@@ -10,7 +10,7 @@ namespace System.Runtime.CompilerServices
     /// You must specify an explicit default value for the optional parameter.
     /// You can't apply this attribute to parameters that aren't specified as optional.
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class CallerLineNumberAttribute : Attribute
     {
         [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]

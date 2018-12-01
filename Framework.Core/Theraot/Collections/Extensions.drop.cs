@@ -1,46 +1,47 @@
 ﻿#if FAT
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Theraot.Collections
 {
     public static partial class Extensions
     {
-        public static T TakeAndReturn<T>(this IDropPoint<T> dropPoint)
+        public static T TakeAndReturn<T>(this IProducerConsumerCollection<T> producerConsumerCollection)
         {
-            if (dropPoint == null)
+            if (producerConsumerCollection == null)
             {
-                throw new ArgumentNullException(nameof(dropPoint));
+                throw new ArgumentNullException(nameof(producerConsumerCollection));
             }
-            if (dropPoint.TryTake(out T item))
+            if (producerConsumerCollection.TryTake(out var item))
             {
                 return item;
             }
             throw new InvalidOperationException();
         }
 
-        public static bool TryTakeAndIgnore<T>(this IDropPoint<T> dropPoint)
+        public static bool TryTakeAndIgnore<T>(this IProducerConsumerCollection<T> producerConsumerCollection)
         {
-            if (dropPoint == null)
+            if (producerConsumerCollection == null)
             {
-                throw new ArgumentNullException(nameof(dropPoint));
+                throw new ArgumentNullException(nameof(producerConsumerCollection));
             }
-            return dropPoint.TryTake(out T item);
+            return producerConsumerCollection.TryTake(out _);
         }
 
-        public static bool TryTakeUntil<T>(this IDropPoint<T> dropPoint, Predicate<T> check, out T item)
+        public static bool TryTakeUntil<T>(this IProducerConsumerCollection<T> producerConsumerCollection, Predicate<T> check, out T item)
         {
             if (check == null)
             {
                 throw new ArgumentNullException(nameof(check));
             }
-            if (dropPoint == null)
+            if (producerConsumerCollection == null)
             {
-                throw new ArgumentNullException(nameof(dropPoint));
+                throw new ArgumentNullException(nameof(producerConsumerCollection));
             }
-            back:
-            if (dropPoint.TryTake(out item))
+        back:
+            if (producerConsumerCollection.TryTake(out item))
             {
                 if (check(item))
                 {
@@ -51,22 +52,22 @@ namespace Theraot.Collections
             return false;
         }
 
-        public static bool TryTakeUntil<T>(this IDropPoint<T> dropPoint, Predicate<T> check, ICollection<T> trail)
+        public static bool TryTakeUntil<T>(this IProducerConsumerCollection<T> producerConsumerCollection, Predicate<T> check, ICollection<T> trail)
         {
             if (check == null)
             {
                 throw new ArgumentNullException(nameof(check));
             }
-            if (dropPoint == null)
+            if (producerConsumerCollection == null)
             {
-                throw new ArgumentNullException(nameof(dropPoint));
+                throw new ArgumentNullException(nameof(producerConsumerCollection));
             }
             if (trail == null)
             {
                 throw new ArgumentNullException(nameof(trail));
             }
-            back:
-            if (dropPoint.TryTake(out T item))
+        back:
+            if (producerConsumerCollection.TryTake(out var item))
             {
                 if (check(item))
                 {

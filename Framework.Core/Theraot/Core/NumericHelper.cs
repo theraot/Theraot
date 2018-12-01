@@ -7,6 +7,13 @@ namespace Theraot.Core
     [System.Diagnostics.DebuggerStepThrough]
     public static partial class NumericHelper
     {
+        [CLSCompliant(false)]
+        public static uint Abs(int a)
+        {
+            var mask = (uint)(a >> 31);
+            return ((uint)a ^ mask) - mask;
+        }
+
         public static int GCD(int left, int right)
         {
             if (left < 0)
@@ -243,7 +250,7 @@ namespace Theraot.Core
         [System.Diagnostics.DebuggerNonUserCode]
         public static int Sqrt(int number)
         {
-            // Newton's  method  aproximation  for  positive  integers
+            // Newton's  method  approximation  for  positive  integers
             // if  (number  ==  0)  return  0;
             var x = number >> 1;
             while (true)

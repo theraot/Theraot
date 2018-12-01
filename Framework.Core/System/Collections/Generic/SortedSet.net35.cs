@@ -5,7 +5,6 @@ using System.Runtime.Serialization;
 using System.Security.Permissions;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
-using Theraot.Core;
 
 namespace System.Collections.Generic
 {
@@ -13,26 +12,25 @@ namespace System.Collections.Generic
     public class SortedSet<T> : ISet<T>, ICollection, ISerializable, IDeserializationCallback
     {
         private readonly AVLTree<T, T> _wrapped;
-        private IComparer<T> _comparer;
         private SerializationInfo _serializationInfo;
 
         public SortedSet()
         {
-            _comparer = Comparer<T>.Default;
+            Comparer = Comparer<T>.Default;
             _wrapped = new AVLTree<T, T>();
         }
 
         public SortedSet(IComparer<T> comparer)
         {
-            _comparer = comparer ?? Comparer<T>.Default;
-            _wrapped = new AVLTree<T, T>(_comparer);
+            Comparer = comparer ?? Comparer<T>.Default;
+            _wrapped = new AVLTree<T, T>(Comparer);
         }
 
         public SortedSet(IEnumerable<T> collection)
         {
-            _comparer = Comparer<T>.Default;
+            Comparer = Comparer<T>.Default;
             _wrapped = new AVLTree<T, T>();
-            foreach (var item in Check.NotNullArgument(collection, nameof(collection)))
+            foreach (var item in collection ?? throw new ArgumentNullException(nameof(collection)))
             {
                 _wrapped.AddNonDuplicate(item, item);
             }
@@ -40,9 +38,9 @@ namespace System.Collections.Generic
 
         public SortedSet(IEnumerable<T> collection, IComparer<T> comparer)
         {
-            _comparer = comparer ?? Comparer<T>.Default;
+            Comparer = comparer ?? Comparer<T>.Default;
             _wrapped = new AVLTree<T, T>();
-            foreach (var item in Check.NotNullArgument(collection, nameof(collection)))
+            foreach (var item in collection ?? throw new ArgumentNullException(nameof(collection)))
             {
                 _wrapped.AddNonDuplicate(item, item);
             }
@@ -51,7 +49,7 @@ namespace System.Collections.Generic
         protected SortedSet(AVLTree<T, T> wrapped, IComparer<T> comparer)
         {
             _wrapped = wrapped ?? new AVLTree<T, T>();
-            _comparer = comparer ?? Comparer<T>.Default;
+            Comparer = comparer ?? Comparer<T>.Default;
         }
 
         protected SortedSet(SerializationInfo info, StreamingContext context)
@@ -60,44 +58,25 @@ namespace System.Collections.Generic
             _serializationInfo = info;
         }
 
-        public IComparer<T> Comparer
-        {
-            get { return _comparer; }
-        }
+        public IComparer<T> Comparer { get; private set; }
 
-        public int Count
-        {
-            get { return GetCount(); }
-        }
+        public int Count => GetCount();
 
-        bool ICollection.IsSynchronized
-        {
-            get { return false; }
-        }
+        bool ICollection<T>.IsReadOnly => false;
+        bool ICollection.IsSynchronized => false;
 
-        object ICollection.SyncRoot
-        {
-            get { return this; }
-        }
-
-        bool ICollection<T>.IsReadOnly
-        {
-            get { return false; }
-        }
-
-        public T Max
-        {
-            get { return GetMax(); }
-        }
-
-        public T Min
-        {
-            get { return GetMin(); }
-        }
+        public T Max => GetMax();
+        public T Min => GetMin();
+        object ICollection.SyncRoot => this;
 
         public bool Add(T item)
         {
             return AddExtracted(item);
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            AddExtracted(item);
         }
 
         public virtual void Clear()
@@ -144,6 +123,17 @@ namespace System.Collections.Generic
             return GetEnumeratorExtracted();
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            GetObjectData(info, context);
+        }
+
         public virtual SortedSet<T> GetViewBetween(T lowerValue, T upperValue)
         {
             if (Comparer.Compare(lowerValue, upperValue) <= 0)
@@ -153,30 +143,9 @@ namespace System.Collections.Generic
             throw new ArgumentException("lowerBound is greater than upperBound.");
         }
 
-        void ICollection<T>.Add(T item)
-        {
-            AddExtracted(item);
-        }
-
-        void IDeserializationCallback.OnDeserialization(object sender)
-        {
-            OnDeserialization(sender);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public virtual void IntersectWith(IEnumerable<T> other)
         {
             Extensions.IntersectWith(this, other);
-        }
-
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            GetObjectData(info, context);
         }
 
         public bool IsProperSubsetOf(IEnumerable<T> other)
@@ -197,6 +166,11 @@ namespace System.Collections.Generic
         public bool IsSupersetOf(IEnumerable<T> other)
         {
             return Extensions.IsSupersetOf(this, other);
+        }
+
+        void IDeserializationCallback.OnDeserialization(object sender)
+        {
+            OnDeserialization(sender);
         }
 
         public bool Overlaps(IEnumerable<T> other)
@@ -279,28 +253,30 @@ namespace System.Collections.Generic
 
         protected virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
+            GC.KeepAlive(context);
             if (info == null)
             {
                 throw new ArgumentNullException();
             }
-            info.AddValue(nameof(Comparer), _comparer, typeof(IComparer<T>));
+            info.AddValue(nameof(Comparer), Comparer, typeof(IComparer<T>));
             info.AddValue(nameof(Count), Count);
             if (Count > 0)
             {
-                info.AddValue("Items", this.ToArray(), typeof(T[]));
+                info.AddValue("Items", Enumerable.ToArray(this), typeof(T[]));
             }
             info.AddValue("Version", 0);
         }
 
         protected virtual void OnDeserialization(object sender)
         {
-            if (_comparer == null)
+            GC.KeepAlive(sender);
+            if (Comparer == null)
             {
                 if (_serializationInfo == null)
                 {
                     throw new SerializationException();
                 }
-                _comparer = (IComparer<T>)_serializationInfo.GetValue(nameof(Comparer), typeof(IComparer<T>));
+                Comparer = (IComparer<T>)_serializationInfo.GetValue(nameof(Comparer), typeof(IComparer<T>));
                 var count = _serializationInfo.GetInt32(nameof(Count));
                 if (count != 0)
                 {

@@ -55,8 +55,7 @@ namespace MonoTests
                 var num = Interlocked.Increment(ref t);
                 if (num < times)
                 {
-                    int value;
-                    c.TryTake(out value);
+                    c.TryTake(out _);
                 }
             }, numThread);
         }

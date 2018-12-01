@@ -29,7 +29,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return new Action(Invoke);
+            return Invoke;
         }
 
         public void Invoke()
@@ -44,7 +44,7 @@ namespace Theraot.Core
 
         public Func<TReturn> InvokeFunc()
         {
-            return new Func<TReturn>(InvokeReturn);
+            return InvokeReturn;
         }
     }
 
@@ -72,7 +72,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return new Action(Invoke);
+            return Invoke;
         }
 
         public void Invoke()
@@ -87,7 +87,7 @@ namespace Theraot.Core
 
         public Func<TReturn> InvokeFunc()
         {
-            return new Func<TReturn>(InvokeReturn);
+            return InvokeReturn;
         }
     }
 
@@ -117,7 +117,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return new Action(Invoke);
+            return Invoke;
         }
 
         public void Invoke()
@@ -132,7 +132,7 @@ namespace Theraot.Core
 
         public Func<TReturn> InvokeFunc()
         {
-            return new Func<TReturn>(InvokeReturn);
+            return InvokeReturn;
         }
     }
 
@@ -164,7 +164,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return new Action(Invoke);
+            return Invoke;
         }
 
         public void Invoke()
@@ -179,7 +179,7 @@ namespace Theraot.Core
 
         public Func<TReturn> InvokeFunc()
         {
-            return new Func<TReturn>(InvokeReturn);
+            return InvokeReturn;
         }
     }
 
@@ -213,7 +213,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return new Action(Invoke);
+            return Invoke;
         }
 
         public void Invoke()
@@ -228,7 +228,7 @@ namespace Theraot.Core
 
         public Func<TReturn> InvokeFunc()
         {
-            return new Func<TReturn>(InvokeReturn);
+            return InvokeReturn;
         }
     }
 
@@ -264,7 +264,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return new Action(Invoke);
+            return Invoke;
         }
 
         public void Invoke()
@@ -279,7 +279,7 @@ namespace Theraot.Core
 
         public Func<TReturn> InvokeFunc()
         {
-            return new Func<TReturn>(InvokeReturn);
+            return InvokeReturn;
         }
     }
 
@@ -317,7 +317,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return new Action(Invoke);
+            return Invoke;
         }
 
         public void Invoke()
@@ -332,7 +332,7 @@ namespace Theraot.Core
 
         public Func<TReturn> InvokeFunc()
         {
-            return new Func<TReturn>(InvokeReturn);
+            return InvokeReturn;
         }
     }
 
@@ -372,7 +372,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return new Action(Invoke);
+            return Invoke;
         }
 
         public void Invoke()
@@ -387,7 +387,7 @@ namespace Theraot.Core
 
         public Func<TReturn> InvokeFunc()
         {
-            return new Func<TReturn>(InvokeReturn);
+            return InvokeReturn;
         }
     }
 
@@ -429,7 +429,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return new Action(Invoke);
+            return Invoke;
         }
 
         public void Invoke()
@@ -444,7 +444,7 @@ namespace Theraot.Core
 
         public Func<TReturn> InvokeFunc()
         {
-            return new Func<TReturn>(InvokeReturn);
+            return InvokeReturn;
         }
     }
 
@@ -488,7 +488,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return new Action(Invoke);
+            return Invoke;
         }
 
         public void Invoke()
@@ -503,7 +503,7 @@ namespace Theraot.Core
 
         public Func<TReturn> InvokeFunc()
         {
-            return new Func<TReturn>(InvokeReturn);
+            return InvokeReturn;
         }
     }
 
@@ -549,7 +549,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return new Action(Invoke);
+            return Invoke;
         }
 
         public void Invoke()
@@ -564,7 +564,7 @@ namespace Theraot.Core
 
         public Func<TReturn> InvokeFunc()
         {
-            return new Func<TReturn>(InvokeReturn);
+            return InvokeReturn;
         }
     }
 
@@ -612,7 +612,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return new Action(Invoke);
+            return Invoke;
         }
 
         public void Invoke()
@@ -627,7 +627,7 @@ namespace Theraot.Core
 
         public Func<TReturn> InvokeFunc()
         {
-            return new Func<TReturn>(InvokeReturn);
+            return InvokeReturn;
         }
     }
 
@@ -677,7 +677,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return new Action(Invoke);
+            return Invoke;
         }
 
         public void Invoke()
@@ -692,7 +692,7 @@ namespace Theraot.Core
 
         public Func<TReturn> InvokeFunc()
         {
-            return new Func<TReturn>(InvokeReturn);
+            return InvokeReturn;
         }
     }
 
@@ -744,7 +744,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return new Action(Invoke);
+            return Invoke;
         }
 
         public void Invoke()
@@ -759,7 +759,7 @@ namespace Theraot.Core
 
         public Func<TReturn> InvokeFunc()
         {
-            return new Func<TReturn>(InvokeReturn);
+            return InvokeReturn;
         }
     }
 
@@ -813,7 +813,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return new Action(Invoke);
+            return Invoke;
         }
 
         public void Invoke()
@@ -828,7 +828,7 @@ namespace Theraot.Core
 
         public Func<TReturn> InvokeFunc()
         {
-            return new Func<TReturn>(InvokeReturn);
+            return InvokeReturn;
         }
     }
 
@@ -884,7 +884,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return new Action(Invoke);
+            return Invoke;
         }
 
         public void Invoke()
@@ -899,7 +899,7 @@ namespace Theraot.Core
 
         public Func<TReturn> InvokeFunc()
         {
-            return new Func<TReturn>(InvokeReturn);
+            return InvokeReturn;
         }
     }
 
@@ -957,7 +957,7 @@ namespace Theraot.Core
 
         public Action InvokeAction()
         {
-            return new Action(Invoke);
+            return Invoke;
         }
 
         public void Invoke()
@@ -972,7 +972,7 @@ namespace Theraot.Core
 
         public Func<TReturn> InvokeFunc()
         {
-            return new Func<TReturn>(InvokeReturn);
+            return InvokeReturn;
         }
     }
 }

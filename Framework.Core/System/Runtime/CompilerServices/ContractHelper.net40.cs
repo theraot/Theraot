@@ -22,6 +22,26 @@ namespace System.Runtime.CompilerServices
 {
     public static class ContractHelper
     {
+        internal const int Cor_E_CodeContractFailed = unchecked((int)0x80131542);
+
+        private static readonly IEvent<ContractFailedEventArgs> _contractFailedEvent = new StrongEvent<ContractFailedEventArgs>();
+
+        /// <summary>
+        /// Allows a managed application environment such as an interactive interpreter (IronPython) or a
+        /// web browser host (Jolt hosting Silverlight in IE) to be notified of contract failures and
+        /// potentially "handle" them, either by throwing a particular exception type, etc.  If any of the
+        /// event handlers sets the Cancel flag in the ContractFailedEventArgs, then the Contract class will
+        /// not pop up an assert dialog box or trigger escalation policy.  Hooking this event requires
+        /// full trust.
+        /// </summary>
+        internal static event EventHandler<ContractFailedEventArgs> InternalContractFailed
+        {
+            [SecurityCritical]
+            add => _contractFailedEvent.Add(value);
+            [SecurityCritical]
+            remove => _contractFailedEvent.Remove(value);
+        }
+
         [DebuggerNonUserCode]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static string RaiseContractFailedEvent(ContractFailureKind failureKind, string userMessage, string conditionText, Exception innerException)
@@ -36,39 +56,6 @@ namespace System.Runtime.CompilerServices
         public static void TriggerFailure(ContractFailureKind kind, string displayMessage, string userMessage, string conditionText, Exception innerException)
         {
             TriggerFailureImplementation(kind, displayMessage, userMessage, conditionText, innerException);
-        }
-
-        internal const int Cor_E_Codecontractfailed = unchecked((int)0x80131542);
-        private static readonly SafeCollection<EventHandler<ContractFailedEventArgs>> _contractFailedEvent = new SafeCollection<EventHandler<ContractFailedEventArgs>>();
-
-        /// <summary>
-        /// Allows a managed application environment such as an interactive interpreter (IronPython) or a
-        /// web browser host (Jolt hosting Silverlight in IE) to be notified of contract failures and
-        /// potentially "handle" them, either by throwing a particular exception type, etc.  If any of the
-        /// event handlers sets the Cancel flag in the ContractFailedEventArgs, then the Contract class will
-        /// not pop up an assert dialog box or trigger escalation policy.  Hooking this event requires
-        /// full trust.
-        /// </summary>
-        internal static event EventHandler<ContractFailedEventArgs> InternalContractFailed
-        {
-            [SecurityCritical]
-            add
-            {
-                // Eagerly prepare each event handler _marked with a reliability contract_, to
-                // attempt to reduce out of memory exceptions while reporting contract violations.
-                // This only works if the new handler obeys the constraints placed on
-                // constrained execution regions.  Eagerly preparing non-reliable event handlers
-                // would be a perf hit and wouldn't significantly improve reliability.
-                // UE: Please mention reliable event handlers should also be marked with the
-                // PrePrepareMethodAttribute to avoid CER eager preparation work when ngen'ed.
-                // System.Runtime.CompilerServices.RuntimeHelpers.PrepareContractedDelegate(value); // TODO? I'm afraid I can't do that.
-                _contractFailedEvent.Add(value);
-            }
-            [SecurityCritical]
-            remove
-            {
-                _contractFailedEvent.Remove(value);
-            }
         }
 
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
@@ -98,7 +85,7 @@ namespace System.Runtime.CompilerServices
         {
             if (failureKind < ContractFailureKind.Precondition || failureKind > ContractFailureKind.Assume)
             {
-                throw new ArgumentException(string.Format("Invalid enum value: {0}", failureKind), nameof(failureKind));
+                throw new ArgumentException($"Invalid enum value: {failureKind}", nameof(failureKind));
             }
 
             Contract.EndContractBlock();
@@ -110,38 +97,31 @@ namespace System.Runtime.CompilerServices
             try
             {
                 displayMessage = GetDisplayMessage(failureKind, userMessage, conditionText);
-                var contractFailedEventLocal = _contractFailedEvent;
-                if (contractFailedEventLocal != null)
-                {
-                    eventArgs = new ContractFailedEventArgs(failureKind, displayMessage, conditionText, innerException);
-                    foreach (var @delegate in contractFailedEventLocal)
+                eventArgs = new ContractFailedEventArgs(failureKind, displayMessage, conditionText, innerException);
+                _contractFailedEvent.InvokeWithException
+                (
+                    exception =>
                     {
-                        var handler = @delegate;
-                        try
-                        {
-                            handler(null, eventArgs);
-                        }
-                        catch (Exception e)
-                        {
 #if NET20 || NET30 || NET35
-                            eventArgs.ThrownDuringHandler = e;
+                        eventArgs.ThrownDuringHandler = exception;
 #else
-                            GC.KeepAlive(e);
+                        GC.KeepAlive(exception);
 #endif
-                            eventArgs.SetUnwind();
-                        }
-                    }
-                    if (eventArgs.Unwind)
-                    {
+                        eventArgs.SetUnwind();
+                    },
+                    null,
+                    eventArgs
+                );
+                if (eventArgs.Unwind)
+                {
 #if NET20 || NET30 || NET35
-                        // unwind
-                        if (innerException == null)
-                        {
-                            innerException = eventArgs.ThrownDuringHandler;
-                        }
-#endif
-                        throw new ContractException(failureKind, displayMessage, userMessage, conditionText, innerException);
+                    // unwind
+                    if (innerException == null)
+                    {
+                        innerException = eventArgs.ThrownDuringHandler;
                     }
+#endif
+                    throw new ContractException(failureKind, displayMessage, userMessage, conditionText, innerException);
                 }
             }
             finally

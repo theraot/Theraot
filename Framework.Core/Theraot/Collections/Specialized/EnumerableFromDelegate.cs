@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
 using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
@@ -15,7 +14,7 @@ namespace Theraot.Collections.Specialized
         public EnumerableFromDelegate(Func<IEnumerator> getEnumerator)
         {
             // Specify the type arguments explicitly
-            _getEnumerator = getEnumerator.ChainConversion<IEnumerator, IEnumerator<T>>(ConvertEnumerator);
+            _getEnumerator = getEnumerator.ChainConversion(ConvertEnumerator);
 
             IEnumerator<T> ConvertEnumerator(IEnumerator enumerator)
             {
@@ -37,9 +36,9 @@ namespace Theraot.Collections.Specialized
                     while (enumerator.MoveNext())
                     {
                         var element = enumerator.Current;
-                        if (element is T)
+                        if (element is T variable)
                         {
-                            yield return (T)element;
+                            yield return variable;
                         }
                     }
                 }

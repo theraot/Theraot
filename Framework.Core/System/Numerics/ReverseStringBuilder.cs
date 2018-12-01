@@ -7,50 +7,24 @@ namespace System.Numerics
 {
     internal class ReverseStringBuilder : IEnumerable<char>
     {
-        private readonly char[] _buffer;
         private int _start;
 
         public ReverseStringBuilder(int capacity)
         {
-            _buffer = new char[capacity];
-            _start = _buffer.Length;
+            Buffer = new char[capacity];
+            _start = Buffer.Length;
         }
 
-        public char[] Buffer
-        {
-            get { return _buffer; }
-        }
+        public char[] Buffer { get; }
 
-        public int Length
-        {
-            get { return _buffer.Length - _start; }
-        }
-
-        public void Prepend(char character)
-        {
-            _buffer[--_start] = character;
-        }
-
-        public void Prepend(string str)
-        {
-            for (var index = str.Length - 1; index > -1; index--)
-            {
-                _buffer[--_start] = str[index];
-            }
-        }
+        public int Length => Buffer.Length - _start;
 
         public IEnumerator<char> GetEnumerator()
         {
-            for (var position = _buffer.Length - 1; position >= 0; position--)
+            for (var position = Buffer.Length - 1; position >= 0; position--)
             {
-                yield return _buffer[position];
+                yield return Buffer[position];
             }
-        }
-
-        public override
-            string ToString()
-        {
-            return new string(_buffer, _start, _buffer.Length - _start);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -58,19 +32,38 @@ namespace System.Numerics
             return GetEnumerator();
         }
 
+        public void Prepend(char character)
+        {
+            Buffer[--_start] = character;
+        }
+
+        public void Prepend(string str)
+        {
+            for (var index = str.Length - 1; index > -1; index--)
+            {
+                Buffer[--_start] = str[index];
+            }
+        }
+
+        public override
+            string ToString()
+        {
+            return new string(Buffer, _start, Buffer.Length - _start);
+        }
+
         public string ToString(int maxLength)
         {
-            var length = _buffer.Length - _start;
+            var length = Buffer.Length - _start;
             if (length > maxLength)
             {
                 length = maxLength;
             }
-            return new string(_buffer, _buffer.Length - length, length);
+            return new string(Buffer, Buffer.Length - length, length);
         }
 
         public string ToString(int backIndex, int maxLength)
         {
-            var length = _buffer.Length - _start;
+            var length = Buffer.Length - _start;
             if (length > maxLength)
             {
                 length = maxLength;
@@ -83,7 +76,7 @@ namespace System.Numerics
             {
                 throw new ArgumentOutOfRangeException("maxLength", "Too large");
             }*/
-            return new string(_buffer, _buffer.Length - backIndex, length);
+            return new string(Buffer, Buffer.Length - backIndex, length);
         }
     }
 }

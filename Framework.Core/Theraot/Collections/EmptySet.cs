@@ -5,20 +5,15 @@ using System.Collections.Generic;
 namespace Theraot.Collections
 {
     [System.Diagnostics.DebuggerNonUserCode]
-    public sealed class EmptySet<T> : ProgressiveSet<T>, IEnumerable<T>
+    public sealed class EmptySet<T> : ProgressiveSet<T>
     {
-        private static readonly EmptySet<T> _instance = new EmptySet<T>();
-
         private EmptySet()
             : base(BuildEmptyEnumerable())
         {
-            Progressor.AsEnumerable().Consume();
+            Progressor.Consume();
         }
 
-        public static EmptySet<T> Instance
-        {
-            get { return _instance; }
-        }
+        public static EmptySet<T> Instance { get; } = new EmptySet<T>();
 
         private static IEnumerable<T> BuildEmptyEnumerable()
         {

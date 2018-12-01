@@ -13,66 +13,42 @@ namespace System.Diagnostics.Contracts
     public sealed class ContractFailedEventArgs : EventArgs
     {
         internal Exception ThrownDuringHandler;
-        private readonly string _condition;
-        private readonly ContractFailureKind _failureKind;
-        private readonly string _message;
-        private readonly Exception _originalException;
-        private bool _handled;
-        private bool _unwind;
 
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public ContractFailedEventArgs(ContractFailureKind failureKind, string message, string condition, Exception originalException)
         {
             Contract.Requires(originalException == null || failureKind == ContractFailureKind.PostconditionOnException);
-            _failureKind = failureKind;
-            _message = message;
-            _condition = condition;
-            _originalException = originalException;
+            FailureKind = failureKind;
+            Message = message;
+            Condition = condition;
+            OriginalException = originalException;
         }
 
-        public string Condition
-        {
-            get { return _condition; }
-        }
+        public string Condition { get; }
 
-        public ContractFailureKind FailureKind
-        {
-            get { return _failureKind; }
-        }
+        public ContractFailureKind FailureKind { get; }
 
         // Whether the event handler "handles" this contract failure, or to fail via escalation policy.
-        public bool Handled
-        {
-            get { return _handled; }
-        }
+        public bool Handled { get; private set; }
 
-        public string Message
-        {
-            get { return _message; }
-        }
+        public string Message { get; }
 
-        public Exception OriginalException
-        {
-            get { return _originalException; }
-        }
+        public Exception OriginalException { get; }
 
-        public bool Unwind
-        {
-            get { return _unwind; }
-        }
+        public bool Unwind { get; private set; }
 
         [SecurityCritical]
         [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         public void SetHandled()
         {
-            _handled = true;
+            Handled = true;
         }
 
         [SecurityCritical]
         [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         public void SetUnwind()
         {
-            _unwind = true;
+            Unwind = true;
         }
     }
 }

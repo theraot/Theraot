@@ -2,11 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace Theraot.Core
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public static partial class TypeHelper
     {
         public static bool CanBe<T>(this Type type, T value)
@@ -254,7 +255,7 @@ namespace Theraot.Core
         {
             var info = type.GetTypeInfo();
             var assembly = info.Assembly;
-            if (Array.IndexOf(_knownAssembies, assembly) == -1)
+            if (Array.IndexOf(_knownAssemblies, assembly) == -1)
             {
                 return false;
             }
@@ -290,6 +291,7 @@ namespace Theraot.Core
                         return false;
                     }
                 }
+                // ReSharper disable once PossibleNullReferenceException
                 return !info.IsAutoLayout && info.StructLayoutAttribute.Pack > 0;
             }
             return false;
@@ -355,6 +357,7 @@ namespace Theraot.Core
             if (CanCache(type))
             {
                 var property = typeof(BinaryPortableInfo<>).MakeGenericType(type).GetProperty("Result", BindingFlags.Public | BindingFlags.Static);
+                // ReSharper disable once PossibleNullReferenceException
                 return (bool)property.GetValue(null, null);
             }
             return GetBinaryPortableResult(type);
@@ -370,6 +373,7 @@ namespace Theraot.Core
             if (CanCache(type))
             {
                 var property = typeof(BlittableInfo<>).MakeGenericType(type).GetProperty("Result", BindingFlags.Public | BindingFlags.Static);
+                // ReSharper disable once PossibleNullReferenceException
                 return (bool)property.GetValue(null, null);
             }
             return GetBlittableResult(type);
@@ -385,6 +389,7 @@ namespace Theraot.Core
             if (CanCache(type))
             {
                 var property = typeof(ValueTypeRecursiveInfo<>).MakeGenericType(type).GetProperty("Result", BindingFlags.Public | BindingFlags.Static);
+                // ReSharper disable once PossibleNullReferenceException
                 return (bool)property.GetValue(null, null);
             }
             return GetValueTypeRecursiveResult(type);
@@ -392,50 +397,44 @@ namespace Theraot.Core
 
         private static class BinaryPortableInfo<T>
         {
-            private static readonly bool _result;
-
             static BinaryPortableInfo()
             {
-                _result = GetBinaryPortableResult(typeof(T));
+                Result = GetBinaryPortableResult(typeof(T));
             }
 
             // Used via reflection
-            public static bool Result
-            {
-                get { return _result; }
-            }
+            // ReSharper disable once StaticMemberInGenericType
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
+            // ReSharper disable once MemberCanBePrivate.Local
+            public static bool Result { get; }
         }
 
         private static class BlittableInfo<T>
         {
-            private static readonly bool _result;
-
             static BlittableInfo()
             {
-                _result = GetBlittableResult(typeof(T));
+                Result = GetBlittableResult(typeof(T));
             }
 
             // Used via reflection
-            public static bool Result
-            {
-                get { return _result; }
-            }
+            // ReSharper disable once StaticMemberInGenericType
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
+            // ReSharper disable once MemberCanBePrivate.Local
+            public static bool Result { get; }
         }
 
         private static class ValueTypeRecursiveInfo<T>
         {
-            private static readonly bool _result;
-
             static ValueTypeRecursiveInfo()
             {
-                _result = GetValueTypeRecursiveResult(typeof(T));
+                Result = GetValueTypeRecursiveResult(typeof(T));
             }
 
             // Used via reflection
-            public static bool Result
-            {
-                get { return _result; }
-            }
+            // ReSharper disable once StaticMemberInGenericType
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
+            // ReSharper disable once MemberCanBePrivate.Local
+            public static bool Result { get; }
         }
     }
 

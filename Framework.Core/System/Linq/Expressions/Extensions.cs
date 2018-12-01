@@ -1,4 +1,6 @@
-﻿// Extensions.cs
+﻿#if NET20 || NET30 || NET35 || NET40
+
+// Extensions.cs
 //
 // Author:
 //   Jb Evain (jbevain@novell.com)
@@ -34,11 +36,6 @@ namespace System.Linq.Expressions
 {
     internal static class Extensions
     {
-        public static Type GetFirstGenericArgument(this Type self)
-        {
-            return self.GetGenericArguments()[0];
-        }
-
         public static MethodInfo GetInvokeMethod(this Type self)
         {
             return self.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance);
@@ -80,27 +77,27 @@ namespace System.Linq.Expressions
             return typeof(StrongBox<>).MakeGenericType(self);
         }
 
-        public static void OnFieldOrProperty(this MemberInfo self, Action<FieldInfo> onfield, Action<PropertyInfo> onprop)
+        public static void OnFieldOrProperty(this MemberInfo self, Action<FieldInfo> onField, Action<PropertyInfo> onProperty)
         {
 #if FAT
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (onfield == null)
+            if (onField == null)
             {
-                throw new ArgumentNullException(nameof(onfield));
+                throw new ArgumentNullException(nameof(onField));
             }
-            if (onprop == null)
+            if (onProperty == null)
             {
-                throw new ArgumentNullException(nameof(onprop));
+                throw new ArgumentNullException(nameof(onProperty));
             }
 #endif
             switch (self.MemberType)
             {
                 case MemberTypes.Field:
-                    onfield((FieldInfo)self);
+                    onField((FieldInfo)self);
                     return;
 
                 case MemberTypes.Property:
-                    onprop((PropertyInfo)self);
+                    onProperty((PropertyInfo)self);
                     return;
 
                 default:
@@ -108,26 +105,26 @@ namespace System.Linq.Expressions
             }
         }
 
-        public static T OnFieldOrProperty<T>(this MemberInfo self, Func<FieldInfo, T> onfield, Func<PropertyInfo, T> onprop)
+        public static T OnFieldOrProperty<T>(this MemberInfo self, Func<FieldInfo, T> onField, Func<PropertyInfo, T> onProperty)
         {
 #if FAT
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (onfield == null)
+            if (onField == null)
             {
-                throw new ArgumentNullException(nameof(onfield));
+                throw new ArgumentNullException(nameof(onField));
             }
-            if (onprop == null)
+            if (onProperty == null)
             {
-                throw new ArgumentNullException(nameof(onprop));
+                throw new ArgumentNullException(nameof(onProperty));
             }
 #endif
             switch (self.MemberType)
             {
                 case MemberTypes.Field:
-                    return onfield((FieldInfo)self);
+                    return onField((FieldInfo)self);
 
                 case MemberTypes.Property:
-                    return onprop((PropertyInfo)self);
+                    return onProperty((PropertyInfo)self);
 
                 default:
                     throw new ArgumentException();
@@ -135,3 +132,5 @@ namespace System.Linq.Expressions
         }
     }
 }
+
+#endif

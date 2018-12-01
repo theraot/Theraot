@@ -11,23 +11,26 @@ namespace Theraot.Collections.ThreadSafe
     public sealed class WeakDelegateCollection : WeakCollection<Delegate, WeakDelegateNeedle>
     {
         private readonly Action<object[]> _invoke;
+        private readonly Action<Action<Exception>, object[]> _invokeWithException;
 
         public WeakDelegateCollection()
         {
             _invoke = InvokeExtracted;
         }
 
-        public WeakDelegateCollection(bool autoRemoveDeadItems, bool reentryGuard)
+        public WeakDelegateCollection(bool autoRemoveDeadItems, bool freeReentry)
             : base(autoRemoveDeadItems)
         {
-            if (reentryGuard)
+            if (freeReentry)
             {
                 _invoke = InvokeExtracted;
+                _invokeWithException = InvokeExtracted;
             }
             else
             {
                 var guard = new ReentryGuard();
                 _invoke = input => guard.Execute(() => InvokeExtracted(input));
+                _invokeWithException = (onException, input) => guard.Execute(() => InvokeExtracted(onException, input));
             }
         }
 
@@ -37,7 +40,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(method));
             }
-            Add(new WeakDelegateNeedle(method, target)); // Since it is a new object, it should not fail
+            Add(new WeakDelegateNeedle(method, target));
         }
 
         public bool Contains(MethodInfo method, object target)
@@ -52,6 +55,11 @@ namespace Theraot.Collections.ThreadSafe
         public void Invoke(params object[] args)
         {
             _invoke(args);
+        }
+
+        public void InvokeWithException(Action<Exception> onException, params object[] args)
+        {
+            _invokeWithException(onException, args);
         }
 
         public bool Remove(MethodInfo method, object target)
@@ -72,13 +80,21 @@ namespace Theraot.Collections.ThreadSafe
         {
             foreach (var handler in GetNeedleEnumerable())
             {
+                handler.TryInvoke(args);
+            }
+        }
+
+        private void InvokeExtracted(Action<Exception> onException, object[] args)
+        {
+            foreach (var handler in GetNeedleEnumerable())
+            {
                 try
                 {
                     handler.TryInvoke(args);
                 }
-                catch (NullReferenceException)
+                catch (Exception exception)
                 {
-                    // Empty
+                    onException(exception);
                 }
             }
         }

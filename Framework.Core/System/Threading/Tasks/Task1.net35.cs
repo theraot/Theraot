@@ -10,7 +10,7 @@ namespace System.Threading.Tasks
 
         static Task()
         {
-            ContinuationConvertion = done => (Task<TResult>)done.Result;
+            ContinuationConversion = done => (Task<TResult>)done.Result;
         }
 
         public Task(Func<TResult> function)
@@ -72,21 +72,24 @@ namespace System.Threading.Tasks
             }
         }
 
-        internal static Func<Task<Task>, Task<TResult>> ContinuationConvertion { get; private set; }
+        internal static Func<Task<Task>, Task<TResult>> ContinuationConversion { get; }
 
         internal override void InnerInvoke()
         {
-            if (Action is Func<TResult> action)
+            switch (Action)
             {
-                InternalResult = action();
-                return;
+                case Func<TResult> action:
+                    InternalResult = action();
+                    return;
+
+                case Func<object, TResult> withState:
+                    InternalResult = withState(State);
+                    return;
+
+                default:
+                    Contract.Assert(false, "Invalid Action in Task");
+                    break;
             }
-            if (Action is Func<object, TResult> withState)
-            {
-                InternalResult = withState(State);
-                return;
-            }
-            Contract.Assert(false, "Invalid Action in Task");
         }
     }
 }

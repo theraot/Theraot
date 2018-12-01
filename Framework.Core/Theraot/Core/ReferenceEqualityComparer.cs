@@ -6,36 +6,26 @@ namespace Theraot.Core
 {
     public static class ReferenceEqualityComparer
     {
-        private static readonly ReferenceEqualityComparer<object> _default = ReferenceEqualityComparer<object>.Instance;
-
-        public static ReferenceEqualityComparer<object> Default
-        {
-            get { return _default; }
-        }
+        public static ReferenceEqualityComparer<object> Default { get; } = ReferenceEqualityComparer<object>.Instance;
     }
 
     public class ReferenceEqualityComparer<T> : IEqualityComparer<T>
     {
-        private static readonly ReferenceEqualityComparer<T> _instance = new ReferenceEqualityComparer<T>();
-
         private ReferenceEqualityComparer()
         {
             // Empty
         }
 
-        public static ReferenceEqualityComparer<T> Instance
+        public static ReferenceEqualityComparer<T> Instance { get; } = new ReferenceEqualityComparer<T>();
+
+        bool IEqualityComparer<T>.Equals(T x, T y)
         {
-            get { return _instance; }
+            return ReferenceEquals(x, y);
         }
 
         public int GetHashCode(T obj)
         {
             return obj.GetHashCode();
-        }
-
-        bool IEqualityComparer<T>.Equals(T x, T y)
-        {
-            return ReferenceEquals(x, y);
         }
     }
 }

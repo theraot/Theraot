@@ -1,12 +1,13 @@
 // Needed for Workaround
 
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public sealed class WeakDelegateNeedle : WeakNeedle<Delegate>, IEquatable<Delegate>, IEquatable<WeakDelegateNeedle>
     {
         public WeakDelegateNeedle()
@@ -21,7 +22,7 @@ namespace Theraot.Threading.Needles
         }
 
         public WeakDelegateNeedle(MethodInfo methodInfo, object target)
-            : base(BuildDelegate(methodInfo, target))
+            : base(TypeHelper.BuildDelegate(methodInfo, target))
         {
             // Empty
         }
@@ -48,11 +49,7 @@ namespace Theraot.Threading.Needles
         public bool Equals(MethodInfo method, object target)
         {
             var value = Value;
-            if (IsAlive)
-            {
-                return value.GetMethodInfo().Equals(method) && ReferenceEquals(value.Target, target);
-            }
-            return false;
+            return IsAlive && value.DelegateEquals(method, target);
         }
 
         public bool Equals(WeakDelegateNeedle other)
@@ -111,30 +108,8 @@ namespace Theraot.Threading.Needles
                 result = (TResult)value.DynamicInvoke(args);
                 return true;
             }
-            result = default;
+            result = default(TResult);
             return false;
-        }
-
-        private static Delegate BuildDelegate(MethodInfo methodInfo, object target)
-        {
-            if (ReferenceEquals(methodInfo, null))
-            {
-                throw new ArgumentNullException(nameof(methodInfo));
-            }
-            if (methodInfo.IsStatic != ReferenceEquals(null, target))
-            {
-                if (ReferenceEquals(target, null))
-                {
-                    throw new ArgumentNullException(nameof(target), "target is null and the method is not static.");
-                }
-                throw new ArgumentException("target is not null and the method is static", nameof(target));
-            }
-            var type = methodInfo.DeclaringType;
-            if (ReferenceEquals(type, null))
-            {
-                throw new ArgumentException("methodInfo.DeclaringType is null", nameof(methodInfo));
-            }
-            return methodInfo.CreateDelegate(type, target);
         }
     }
 }

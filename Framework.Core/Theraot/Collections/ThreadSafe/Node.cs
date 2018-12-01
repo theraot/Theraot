@@ -1,19 +1,18 @@
 ﻿// Needed for NET40
 
-using System;
-
 namespace Theraot.Collections.ThreadSafe
 {
 #if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
 
-    [Serializable]
+    [System.Serializable]
 #endif
+
     internal class Node<T>
     {
         public Node<T> Link;
         public T Value;
 
-        private static Pool<Node<T>> _pool;
+        private static readonly Pool<Node<T>> _pool;
 
         static Node()
         {
@@ -44,7 +43,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal static Node<T> GetNode(Node<T> link, T item)
         {
-            if (!_pool.TryGet(out Node<T> node))
+            if (!_pool.TryGet(out var node))
             {
                 node = new Node<T>();
             }

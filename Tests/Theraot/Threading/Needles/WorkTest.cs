@@ -2,9 +2,11 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Theraot.Collections;
+using Theraot.Threading.Needles;
 
 namespace Tests.Theraot.Threading.Needles
 {
@@ -145,16 +147,16 @@ namespace Tests.Theraot.Threading.Needles
                 };
                 Task.Factory.StartNew(work);
                 Task.Factory.StartNew(work);
-                while (Thread.VolatileRead(ref count[0]) != 2)
+                while (Volatile.Read(ref count[0]) != 2)
                 {
                     Thread.Sleep(0);
                 }
                 handle.Set();
-                while (Thread.VolatileRead(ref count[1]) != 2)
+                while (Volatile.Read(ref count[1]) != 2)
                 {
                     Thread.Sleep(0);
                 }
-                Assert.AreEqual(10, Thread.VolatileRead(ref count[2]));
+                Assert.AreEqual(10, Volatile.Read(ref count[2]));
                 handle.Close();
             }
         }
@@ -205,12 +207,12 @@ namespace Tests.Theraot.Threading.Needles
                         }
                     }
                 );
-                while (Thread.VolatileRead(ref count[0]) != 2)
+                while (Volatile.Read(ref count[0]) != 2)
                 {
                     Thread.Sleep(0);
                 }
                 handle.Set();
-                while (Thread.VolatileRead(ref count[1]) != 2)
+                while (Volatile.Read(ref count[1]) != 2)
                 {
                     Thread.Sleep(0);
                 }

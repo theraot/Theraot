@@ -1,127 +1,19 @@
 #if NET20 || NET30
 
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
-using Theraot.Collections;
+using System.Runtime.CompilerServices;
 using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
-    /// <summary>
-    /// Represents a control expression that handles multiple selections by passing control to a <see cref="SwitchCase"/>.
-    /// </summary>
-    [DebuggerTypeProxy(typeof(SwitchExpressionProxy))]
-    public sealed class SwitchExpression : Expression
-    {
-        private readonly Type _type;
-        private readonly Expression _switchValue;
-        private readonly ReadOnlyCollection<SwitchCase> _cases;
-        private readonly Expression _defaultBody;
-        private readonly MethodInfo _comparison;
-
-        internal SwitchExpression(Type type, Expression switchValue, Expression defaultBody, MethodInfo comparison, ReadOnlyCollection<SwitchCase> cases)
-        {
-            _type = type;
-            _switchValue = switchValue;
-            _defaultBody = defaultBody;
-            _comparison = comparison;
-            _cases = cases;
-        }
-
-        /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression" /> represents.
-        /// </summary>
-        /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
-        public override Type Type
-        {
-            get { return _type; }
-        }
-
-        /// <summary>
-        /// Returns the node type of this Expression. Extension nodes should return
-        /// ExpressionType.Extension when overriding this method.
-        /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
-        public override ExpressionType NodeType
-        {
-            get { return ExpressionType.Switch; }
-        }
-
-        /// <summary>
-        /// Gets the test for the switch.
-        /// </summary>
-        public Expression SwitchValue
-        {
-            get { return _switchValue; }
-        }
-
-        /// <summary>
-        /// Gets the collection of <see cref="SwitchCase"/> objects for the switch.
-        /// </summary>
-        public ReadOnlyCollection<SwitchCase> Cases
-        {
-            get { return _cases; }
-        }
-
-        /// <summary>
-        /// Gets the test for the switch.
-        /// </summary>
-        public Expression DefaultBody
-        {
-            get { return _defaultBody; }
-        }
-
-        /// <summary>
-        /// Gets the equality comparison method, if any.
-        /// </summary>
-        public MethodInfo Comparison
-        {
-            get { return _comparison; }
-        }
-
-        protected internal override Expression Accept(ExpressionVisitor visitor)
-        {
-            return visitor.VisitSwitch(this);
-        }
-
-        internal bool IsLifted
-        {
-            get
-            {
-                if (_switchValue.Type.IsNullable())
-                {
-                    return (_comparison == null) ||
-                        _switchValue.Type != _comparison.GetParameters()[0].ParameterType.GetNonRefType();
-                }
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Creates a new expression that is like this one, but using the
-        /// supplied children. If all of the children are the same, it will
-        /// return this expression.
-        /// </summary>
-        /// <param name="switchValue">The <see cref="SwitchValue" /> property of the result.</param>
-        /// <param name="cases">The <see cref="Cases" /> property of the result.</param>
-        /// <param name="defaultBody">The <see cref="DefaultBody" /> property of the result.</param>
-        /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
-        public SwitchExpression Update(Expression switchValue, IEnumerable<SwitchCase> cases, Expression defaultBody)
-        {
-            if (switchValue == SwitchValue && cases == Cases && defaultBody == DefaultBody)
-            {
-                return this;
-            }
-            return Switch(Type, switchValue, defaultBody, Comparison, cases);
-        }
-    }
-
     public partial class Expression
     {
         /// <summary>
@@ -198,31 +90,48 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="SwitchExpression"/>.</returns>
         public static SwitchExpression Switch(Type type, Expression switchValue, Expression defaultBody, MethodInfo comparison, IEnumerable<SwitchCase> cases)
         {
-            RequiresCanRead(switchValue, nameof(switchValue));
+            ExpressionUtils.RequiresCanRead(switchValue, nameof(switchValue));
             if (switchValue.Type == typeof(void))
             {
-                throw Error.ArgumentCannotBeOfTypeVoid();
+                throw Error.ArgumentCannotBeOfTypeVoid(nameof(switchValue));
             }
 
-            var caseList = cases.ToReadOnly();
-            ContractUtils.RequiresNotEmpty(caseList, nameof(cases));
+            var caseList = Theraot.Collections.Extensions.AsArray(cases);
             ContractUtils.RequiresNotNullItems(caseList, nameof(cases));
 
             // Type of the result. Either provided, or it is type of the branches.
-            var resultType = type ?? caseList[0].Body.Type;
-            var customType = type != null;
+            Type resultType;
+            if (type != null)
+            {
+                resultType = type;
+            }
+            else if (caseList.Length != 0)
+            {
+                resultType = caseList[0].Body.Type;
+            }
+            else if (defaultBody != null)
+            {
+                resultType = defaultBody.Type;
+            }
+            else
+            {
+                resultType = typeof(void);
+            }
+
+            bool customType = type != null;
 
             if (comparison != null)
             {
-                var pms = comparison.GetParameters();
+                ValidateMethodInfo(comparison, nameof(comparison));
+                ParameterInfo[] pms = comparison.GetParameters();
                 if (pms.Length != 2)
                 {
-                    throw Error.IncorrectNumberOfMethodCallArguments(comparison);
+                    throw Error.IncorrectNumberOfMethodCallArguments(comparison, nameof(comparison));
                 }
                 // Validate that the switch value's type matches the comparison method's
                 // left hand side parameter type.
-                var leftParam = pms[0];
-                var liftedCall = false;
+                ParameterInfo leftParam = pms[0];
+                bool liftedCall = false;
                 if (!ParameterIsAssignable(leftParam, switchValue.Type))
                 {
                     liftedCall = ParameterIsAssignable(leftParam, switchValue.Type.GetNonNullableType());
@@ -232,19 +141,19 @@ namespace System.Linq.Expressions
                     }
                 }
 
-                var rightParam = pms[1];
-                foreach (var c in caseList)
+                ParameterInfo rightParam = pms[1];
+                foreach (SwitchCase c in caseList)
                 {
                     ContractUtils.RequiresNotNull(c, nameof(cases));
                     ValidateSwitchCaseType(c.Body, customType, resultType, nameof(cases));
-                    for (var i = 0; i < c.TestValues.Count; i++)
+                    for (int i = 0, n = c.TestValues.Count; i < n; i++)
                     {
                         // When a comparison method is provided, test values can have different type but have to
                         // be reference assignable to the right hand side parameter of the method.
-                        var rightOperandType = c.TestValues[i].Type;
+                        Type rightOperandType = c.TestValues[i].Type;
                         if (liftedCall)
                         {
-                            if (!rightOperandType.IsNullable())
+                            if (!rightOperandType.IsNullableType())
                             {
                                 throw Error.TestValueTypeDoesNotMatchComparisonMethodParameter(rightOperandType, rightParam.ParameterType);
                             }
@@ -256,22 +165,28 @@ namespace System.Linq.Expressions
                         }
                     }
                 }
+
+                // if we have a non-boolean user-defined equals, we don't want it.
+                if (comparison.ReturnType != typeof(bool))
+                {
+                    throw Error.EqualityMustReturnBoolean(comparison, nameof(comparison));
+                }
             }
-            else
+            else if (caseList.Length != 0)
             {
                 // When comparison method is not present, all the test values must have
                 // the same type. Use the first test value's type as the baseline.
-                var firstTestValue = caseList[0].TestValues[0];
-                foreach (var c in caseList)
+                Expression firstTestValue = caseList[0].TestValues[0];
+                foreach (SwitchCase c in caseList)
                 {
                     ContractUtils.RequiresNotNull(c, nameof(cases));
                     ValidateSwitchCaseType(c.Body, customType, resultType, nameof(cases));
                     // When no comparison method is provided, require all test values to have the same type.
-                    for (var i = 0; i < c.TestValues.Count; i++)
+                    for (int i = 0, n = c.TestValues.Count; i < n; i++)
                     {
-                        if (firstTestValue.Type != c.TestValues[i].Type)
+                        if (!TypeUtils.AreEquivalent(firstTestValue.Type, c.TestValues[i].Type))
                         {
-                            throw new ArgumentException(Strings.AllTestValuesMustHaveSameType, nameof(cases));
+                            throw Error.AllTestValuesMustHaveSameType(nameof(cases));
                         }
                     }
                 }
@@ -279,7 +194,7 @@ namespace System.Linq.Expressions
                 // Now we need to validate that switchValue.Type and testValueType
                 // make sense in an Equal node. Fortunately, Equal throws a
                 // reasonable error, so just call it.
-                var equal = Equal(switchValue, firstTestValue, false, null);
+                BinaryExpression equal = Equal(switchValue, firstTestValue, false, null);
 
                 // Get the comparison function from equals node.
                 comparison = equal.Method;
@@ -289,7 +204,7 @@ namespace System.Linq.Expressions
             {
                 if (resultType != typeof(void))
                 {
-                    throw Error.DefaultBodyMustBeSupplied();
+                    throw Error.DefaultBodyMustBeSupplied(nameof(defaultBody));
                 }
             }
             else
@@ -297,34 +212,127 @@ namespace System.Linq.Expressions
                 ValidateSwitchCaseType(defaultBody, customType, resultType, nameof(defaultBody));
             }
 
-            // if we have a non-boolean userdefined equals, we don't want it.
-            if (comparison != null && comparison.ReturnType != typeof(bool))
-            {
-                throw Error.EqualityMustReturnBoolean(comparison);
-            }
-
             return new SwitchExpression(resultType, switchValue, defaultBody, comparison, caseList);
         }
 
+        /// <summary>
+        /// If custom type is provided, all branches must be reference assignable to the result type.
+        /// If no custom type is provided, all branches must have the same type - resultType.
+        /// </summary>
         private static void ValidateSwitchCaseType(Expression @case, bool customType, Type resultType, string parameterName)
         {
             if (customType)
             {
                 if (resultType != typeof(void))
                 {
-                    if (!TypeHelper.AreReferenceAssignable(resultType, @case.Type))
+                    if (!TypeUtils.AreReferenceAssignable(resultType, @case.Type))
                     {
-                        throw new ArgumentException(Strings.ArgumentTypesMustMatch, parameterName);
+                        throw Error.ArgumentTypesMustMatch(parameterName);
                     }
                 }
             }
             else
             {
-                if (resultType != @case.Type)
+                if (!TypeUtils.AreEquivalent(resultType, @case.Type))
                 {
-                    throw new ArgumentException(Strings.AllCaseBodiesMustHaveSameType, parameterName);
+                    throw Error.AllCaseBodiesMustHaveSameType(parameterName);
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// Represents a control expression that handles multiple selections by passing control to a <see cref="SwitchCase"/>.
+    /// </summary>
+    [DebuggerTypeProxy(typeof(SwitchExpressionProxy))]
+    public sealed class SwitchExpression : Expression
+    {
+        private readonly SwitchCase[] _cases;
+        private readonly TrueReadOnlyCollection<SwitchCase> _casesAsReadOnlyCollection;
+
+        internal SwitchExpression(Type type, Expression switchValue, Expression defaultBody, MethodInfo comparison, SwitchCase[] cases)
+        {
+            Type = type;
+            SwitchValue = switchValue;
+            DefaultBody = defaultBody;
+            Comparison = comparison;
+            _cases = cases;
+            _casesAsReadOnlyCollection = new TrueReadOnlyCollection<SwitchCase>(_cases);
+        }
+
+        /// <summary>
+        /// Gets the collection of <see cref="SwitchCase"/> objects for the switch.
+        /// </summary>
+        public ReadOnlyCollection<SwitchCase> Cases => _casesAsReadOnlyCollection;
+
+        /// <summary>
+        /// Gets the equality comparison method, if any.
+        /// </summary>
+        public MethodInfo Comparison { get; }
+
+        /// <summary>
+        /// Gets the test for the switch.
+        /// </summary>
+        public Expression DefaultBody { get; }
+
+        /// <summary>
+        /// Returns the node type of this Expression. Extension nodes should return
+        /// ExpressionType.Extension when overriding this method.
+        /// </summary>
+        /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
+        public override ExpressionType NodeType => ExpressionType.Switch;
+
+        /// <summary>
+        /// Gets the test for the switch.
+        /// </summary>
+        public Expression SwitchValue { get; }
+
+        /// <summary>
+        /// Gets the static type of the expression that this <see cref="Expression"/> represents.
+        /// </summary>
+        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        public override Type Type { get; }
+
+        internal bool IsLifted
+        {
+            get
+            {
+                if (SwitchValue.Type.IsNullableType())
+                {
+                    return (Comparison == null) ||
+                        !TypeUtils.AreEquivalent(SwitchValue.Type, Comparison.GetParameters()[0].ParameterType.GetNonRefType());
+                }
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Creates a new expression that is like this one, but using the
+        /// supplied children. If all of the children are the same, it will
+        /// return this expression.
+        /// </summary>
+        /// <param name="switchValue">The <see cref="SwitchValue"/> property of the result.</param>
+        /// <param name="cases">The <see cref="Cases"/> property of the result.</param>
+        /// <param name="defaultBody">The <see cref="DefaultBody"/> property of the result.</param>
+        /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
+        public SwitchExpression Update(Expression switchValue, IEnumerable<SwitchCase> cases, Expression defaultBody)
+        {
+            if (switchValue == SwitchValue & defaultBody == DefaultBody & cases != null)
+            {
+                if (ExpressionUtils.SameElements(ref cases, _cases))
+                {
+                    return this;
+                }
+            }
+            return Switch(Type, switchValue, defaultBody, Comparison, cases);
+        }
+
+        /// <summary>
+        /// Dispatches to the specific visit method for this node type.
+        /// </summary>
+        protected internal override Expression Accept(ExpressionVisitor visitor)
+        {
+            return visitor.VisitSwitch(this);
         }
     }
 }

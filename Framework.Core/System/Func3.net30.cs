@@ -9,15 +9,7 @@ namespace System
     /// <param name="arg1">The first parameter of the method that this delegate encapsulates.</param>
     /// <param name="arg2">The second parameter of the method that this delegate encapsulates.</param>
     /// <returns>The return value of the method that this delegate encapsulates.</returns>
-#if NETCF
-
-    public delegate TResult Func<T1, T2, TResult>(T1 arg1, T2 arg2);
-
-#else
-
     public delegate TResult Func<in T1, in T2, out TResult>(T1 arg1, T2 arg2);
-
-#endif
 }
 
 #endif

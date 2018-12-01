@@ -24,21 +24,13 @@ namespace Theraot.Threading.Needles
         public LazyAction(Action action)
             : base(false)
         {
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
-            _action = action;
+            _action = action ?? throw new ArgumentNullException(nameof(action));
         }
 
         public LazyAction(Action action, bool cacheExceptions)
            : base(false)
         {
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
-            _action = action;
+            _action = action ?? throw new ArgumentNullException(nameof(action));
             if (cacheExceptions)
             {
                 _action = () =>
@@ -56,10 +48,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        protected Thread RunnerThread
-        {
-            get { return _runnerThread; }
-        }
+        protected Thread RunnerThread => _runnerThread;
 
         public virtual void Execute()
         {

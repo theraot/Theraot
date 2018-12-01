@@ -22,7 +22,7 @@ namespace Theraot.Core
 #if NET20 || NET30 || NET35
 
         [NonSerialized]
-        private CancellationToken? _token;
+        private readonly CancellationToken? _token;
 
         public NewOperationCanceledException(CancellationToken token)
         {
@@ -39,6 +39,18 @@ namespace Theraot.Core
             : base(message, innerException)
         {
             _token = token;
+        }
+
+        public NewOperationCanceledException(string message)
+            : base(message)
+        {
+            //Empty
+        }
+
+        public NewOperationCanceledException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+            //Empty
         }
 
         public CancellationToken CancellationToken
@@ -66,18 +78,6 @@ namespace Theraot.Core
         public void Deconstruct(out CancellationToken token)
         {
             token = CancellationToken;
-        }
-
-        public NewOperationCanceledException(string message)
-            : base(message)
-        {
-            //Empty
-        }
-
-        public NewOperationCanceledException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-            //Empty
         }
     }
 }

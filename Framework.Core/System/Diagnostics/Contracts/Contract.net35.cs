@@ -72,7 +72,7 @@ namespace System.Diagnostics.Contracts
         /// </summary>
         /// <param name="condition">Expression to assume will always be true.</param>
         /// <remarks>
-        /// At runtime this is equivalent to an <seealso cref="System.Diagnostics.Contracts.Contract.Assert(bool)"/>.
+        /// At runtime this is equivalent to an <seealso cref="Assert(bool)"/>.
         /// </remarks>
         [Conditional("DEBUG")]
         [Conditional("CONTRACTS_FULL")]
@@ -91,7 +91,7 @@ namespace System.Diagnostics.Contracts
         /// <param name="condition">Expression to assume will always be true.</param>
         /// <param name="userMessage">If it is not a constant string literal, then the contract may not be understood by tools.</param>
         /// <remarks>
-        /// At runtime this is equivalent to an <seealso cref="System.Diagnostics.Contracts.Contract.Assert(bool)"/>.
+        /// At runtime this is equivalent to an <seealso cref="Assert(bool)"/>.
         /// </remarks>
         [Conditional("DEBUG")]
         [Conditional("CONTRACTS_FULL")]
@@ -201,7 +201,7 @@ namespace System.Diagnostics.Contracts
         /// <param name="predicate">Function that is evaluated from <paramref name="fromInclusive"/> to <paramref name="toExclusive"/> - 1.</param>
         /// <returns><c>true</c> if <paramref name="predicate"/> returns <c>true</c> for any integer
         /// starting from <paramref name="fromInclusive"/> to <paramref name="toExclusive"/> - 1.</returns>
-        /// <seealso cref="System.Collections.Generic.List&lt;T&gt;.Exists"/>
+        /// <seealso cref="List{T}.Exists"/>
         [Pure]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]  // Assumes predicate obeys CER rules.
         public static bool Exists(int fromInclusive, int toExclusive, Predicate<int> predicate)
@@ -235,7 +235,7 @@ namespace System.Diagnostics.Contracts
         /// <param name="predicate">Function that is evaluated on elements from <paramref name="collection"/>.</param>
         /// <returns><c>true</c> if and only if <paramref name="predicate"/> returns <c>true</c> for an element in
         /// <paramref name="collection"/>.</returns>
-        /// <seealso cref="System.Collections.Generic.List&lt;T&gt;.Exists"/>
+        /// <seealso cref="List&lt;T&gt;.Exists"/>
         [Pure]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]  // Assumes predicate & collection enumerator obey CER rules.
         public static bool Exists<T>(IEnumerable<T> collection, Predicate<T> predicate)
@@ -269,7 +269,7 @@ namespace System.Diagnostics.Contracts
         /// <param name="predicate">Function that is evaluated from <paramref name="fromInclusive"/> to <paramref name="toExclusive"/> - 1.</param>
         /// <returns><c>true</c> if <paramref name="predicate"/> returns <c>true</c> for all integers
         /// starting from <paramref name="fromInclusive"/> to <paramref name="toExclusive"/> - 1.</returns>
-        /// <seealso cref="System.Collections.Generic.List&lt;T&gt;.TrueForAll"/>
+        /// <seealso cref="List&lt;T&gt;.TrueForAll"/>
         [Pure]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]  // Assumes predicate obeys CER rules.
         public static bool ForAll(int fromInclusive, int toExclusive, Predicate<int> predicate)
@@ -303,7 +303,7 @@ namespace System.Diagnostics.Contracts
         /// <param name="predicate">Function that is evaluated on elements from <paramref name="collection"/>.</param>
         /// <returns><c>true</c> if and only if <paramref name="predicate"/> returns <c>true</c> for all elements in
         /// <paramref name="collection"/>.</returns>
-        /// <seealso cref="System.Collections.Generic.List&lt;T&gt;.TrueForAll"/>
+        /// <seealso cref="List&lt;T&gt;.TrueForAll"/>
         [Pure]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]  // Assumes predicate & collection enumerator obey CER rules.
         public static bool ForAll<T>(IEnumerable<T> collection, Predicate<T> predicate)

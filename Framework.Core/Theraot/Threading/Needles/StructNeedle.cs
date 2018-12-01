@@ -2,37 +2,21 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Theraot.Threading.Needles
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public struct StructNeedle<T> : IEquatable<StructNeedle<T>>, IRecyclableNeedle<T>
     {
-        private T _value;
-
         public StructNeedle(T target)
         {
-            _value = target;
+            Value = target;
         }
 
-        public bool IsAlive
-        {
-            get { return !ReferenceEquals(Value, null); }
-        }
+        public bool IsAlive => !ReferenceEquals(Value, null);
 
-        public T Value
-        {
-            get
-            {
-                // Keep backing field
-                return _value;
-            }
-            set
-            {
-                // Keep backing field
-                _value = value;
-            }
-        }
+        public T Value { get; set; }
 
         public static explicit operator T(StructNeedle<T> needle)
         {
@@ -68,15 +52,15 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            if (obj is StructNeedle<T>)
+            if (obj is StructNeedle<T> needle)
             {
-                return this == (StructNeedle<T>)obj;
+                return this == needle;
             }
             // Keep the "is" operator
-            if (obj is T)
+            if (obj is T variable)
             {
                 var target = Value;
-                return IsAlive && EqualityComparer<T>.Default.Equals(target, (T)obj);
+                return IsAlive && EqualityComparer<T>.Default.Equals(target, variable);
             }
             return false;
         }
@@ -86,14 +70,14 @@ namespace Theraot.Threading.Needles
             return this == other;
         }
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
         void IRecyclableNeedle<T>.Free()
         {
             Value = default;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public override string ToString()

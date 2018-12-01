@@ -68,7 +68,7 @@ namespace System.Threading
 
         public override bool Equals(object obj)
         {
-            return (obj is CancellationTokenRegistration) && Equals((CancellationTokenRegistration)obj);
+            return (obj is CancellationTokenRegistration registration) && Equals(registration);
         }
 
         public override int GetHashCode()

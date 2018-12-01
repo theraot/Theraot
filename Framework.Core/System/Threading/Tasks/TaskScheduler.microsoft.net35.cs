@@ -6,6 +6,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security;
 using Theraot.Collections.ThreadSafe;
 
 namespace System.Threading.Tasks
@@ -15,8 +16,8 @@ namespace System.Threading.Tasks
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <see cref="System.Threading.Tasks.TaskScheduler">TaskScheduler</see> acts as the extension point for all
-    /// pluggable scheduling logic.  This includes mechanisms such as how to schedule a task for execution, and
+    /// <see cref="TaskScheduler">TaskScheduler</see> acts as the extension point for all
+    /// plug-gable scheduling logic.  This includes mechanisms such as how to schedule a task for execution, and
     /// how scheduled tasks should be exposed to debuggers.
     /// </para>
     /// <para>
@@ -28,24 +29,46 @@ namespace System.Threading.Tasks
     [DebuggerTypeProxy(typeof(SystemThreadingTasksTaskSchedulerDebugView))]
     public abstract partial class TaskScheduler
     {
+        private static readonly IEvent<UnobservedTaskExceptionEventArgs> _unobservedTaskException = new StrongEvent<UnobservedTaskExceptionEventArgs>();
+
+        /// <summary>
+        /// Occurs when a faulted <see cref="Task"/>'s unobserved exception is about to trigger exception escalation
+        /// policy, which, by default, would terminate the process.
+        /// </summary>
+        /// <remarks>
+        /// This AppDomain-wide event provides a mechanism to prevent exception
+        /// escalation policy (which, by default, terminates the process) from triggering.
+        /// Each handler is passed a <see cref="T:System.Threading.Tasks.UnobservedTaskExceptionEventArgs"/>
+        /// instance, which may be used to examine the exception and to mark it as observed.
+        /// </remarks>
+        public static event EventHandler<UnobservedTaskExceptionEventArgs> UnobservedTaskException
+        {
+            [SecurityCritical]
+            add
+            {
+                if (value != null)
+                {
+                    _unobservedTaskException.Add(value);
+                }
+            }
+            [SecurityCritical]
+            remove
+            {
+                if (value != null)
+                {
+                    _unobservedTaskException.Remove(value);
+                }
+            }
+        }
+
         /// <summary>
         /// Indicates the maximum concurrency level this
         /// <see cref="TaskScheduler"/>  is able to support.
         /// </summary>
-        public virtual int MaximumConcurrencyLevel
-        {
-            get { return int.MaxValue; }
-        }
+        public virtual int MaximumConcurrencyLevel => int.MaxValue;
 
         /// <summary>
-        /// Notifies the scheduler that a work item has made progress.
-        /// </summary>
-        internal virtual void NotifyWorkItemProgress()
-        {
-        }
-
-        /// <summary>
-        /// Gets the <see cref="System.Threading.Tasks.TaskScheduler">TaskScheduler</see>
+        /// Gets the <see cref="TaskScheduler">TaskScheduler</see>
         /// associated with the currently executing task.
         /// </summary>
         /// <remarks>
@@ -62,56 +85,21 @@ namespace System.Threading.Tasks
             }
         }
 
-        private static readonly SafeCollection<EventHandler<UnobservedTaskExceptionEventArgs>> _unobservedTaskException = new SafeCollection<EventHandler<UnobservedTaskExceptionEventArgs>>();
-
-        /// <summary>
-        /// Occurs when a faulted <see cref="System.Threading.Tasks.Task"/>'s unobserved exception is about to trigger exception escalation
-        /// policy, which, by default, would terminate the process.
-        /// </summary>
-        /// <remarks>
-        /// This AppDomain-wide event provides a mechanism to prevent exception
-        /// escalation policy (which, by default, terminates the process) from triggering.
-        /// Each handler is passed a <see cref="T:System.Threading.Tasks.UnobservedTaskExceptionEventArgs"/>
-        /// instance, which may be used to examine the exception and to mark it as observed.
-        /// </remarks>
-        public static event EventHandler<UnobservedTaskExceptionEventArgs> UnobservedTaskException
+        internal static void PublishUnobservedTaskException(Task sender, UnobservedTaskExceptionEventArgs unobservedTaskExceptionEventArgs)
         {
-            [Security.SecurityCritical]
-            add
-            {
-                if (value != null)
-                {
-                    _unobservedTaskException.Add(value);
-                }
-            }
-            [Security.SecurityCritical]
-            remove
-            {
-                if (value != null)
-                {
-                    _unobservedTaskException.Remove(value);
-                }
-            }
-        }
-
-        internal static void PublishUnobservedTaskException(Task sender, UnobservedTaskExceptionEventArgs ueea)
-        {
-            foreach (var handler in _unobservedTaskException)
-            {
-                handler(sender, ueea);
-            }
+            _unobservedTaskException.Invoke(sender, unobservedTaskExceptionEventArgs);
         }
 
         /// <summary>
-        /// Provides an array of all queued <see cref="System.Threading.Tasks.Task">Task</see> instances
+        /// Provides an array of all queued <see cref="Task">Task</see> instances
         /// for the debugger.
         /// </summary>
         /// <remarks>
         /// The returned array is populated through a call to <see cref="GetScheduledTasks"/>.
         /// Note that this function is only meant to be invoked by a debugger remotely.
-        /// It should not be called by any other codepaths.
+        /// It should not be called by any other code paths.
         /// </remarks>
-        /// <returns>An array of <see cref="System.Threading.Tasks.Task">Task</see> instances.</returns>
+        /// <returns>An array of <see cref="Task">Task</see> instances.</returns>
         /// <exception cref="T:System.NotSupportedException">
         /// This scheduler is unable to generate a list of queued tasks at this time.
         /// </exception>
@@ -139,6 +127,13 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
+        /// Notifies the scheduler that a work item has made progress.
+        /// </summary>
+        internal virtual void NotifyWorkItemProgress()
+        {
+        }
+
+        /// <summary>
         /// Nested class that provides debugger view for TaskScheduler
         /// </summary>
         internal sealed class SystemThreadingTasksTaskSchedulerDebugView
@@ -151,16 +146,10 @@ namespace System.Threading.Tasks
             }
 
             // returns the scheduler's Id
-            public int Id
-            {
-                get { return _taskScheduler.Id; }
-            }
+            public int Id => _taskScheduler.Id;
 
             // returns the scheduler's GetScheduledTasks
-            public IEnumerable<Task> ScheduledTasks
-            {
-                get { return _taskScheduler.GetScheduledTasks(); }
-            }
+            public IEnumerable<Task> ScheduledTasks => _taskScheduler.GetScheduledTasks();
         }
     }
 }

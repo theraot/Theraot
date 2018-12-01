@@ -1,20 +1,22 @@
 #if NET20 || NET30 || NET35
 
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
 
 namespace System.Threading
 {
-    [Diagnostics.DebuggerDisplayAttribute("Current Count = {CurrentCount}")]
+    [DebuggerDisplay("Current Count = {CurrentCount}")]
+    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class SemaphoreSlim : IDisposable
     {
         private readonly int? _maxCount;
         private SafeQueue<TaskCompletionSource<bool>> _asyncWaiters;
         private ManualResetEventSlim _canEnter;
-        private int _syncroot;
         private int _count;
         private bool _disposed;
+        private int _syncRoot;
 
         public SemaphoreSlim(int initialCount)
             : this(initialCount, null)
@@ -53,12 +55,9 @@ namespace System.Threading
             }
         }
 
-        public int CurrentCount
-        {
-            get { return Thread.VolatileRead(ref _count); }
-        }
+        public int CurrentCount => Volatile.Read(ref _count);
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public void Dispose()
         {
             try
@@ -86,7 +85,7 @@ namespace System.Threading
             var spinWait = new SpinWait();
             while (true)
             {
-                if (TryOffset(releaseCount, out int expected))
+                if (TryOffset(releaseCount, out var expected))
                 {
                     return expected;
                 }
@@ -131,14 +130,22 @@ namespace System.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             var spinWait = new SpinWait();
-            int dummy;
+            if (TryOffset(-1, out _))
+            {
+                return true;
+            }
             if (millisecondsTimeout == -1)
             {
-                while (!TryOffset(-1, out dummy))
+                while (true)
                 {
+                    _canEnter.Wait(-1, cancellationToken);
+                    // The thread is not allowed here unless there is room in the semaphore
+                    if (TryOffset(-1, out _))
+                    {
+                        return true;
+                    }
                     spinWait.SpinOnce();
                 }
-                return true;
             }
             var start = ThreadingHelper.TicksNow();
             var remaining = millisecondsTimeout;
@@ -149,7 +156,7 @@ namespace System.Threading
                     break;
                 }
                 // The thread is not allowed here unless there is room in the semaphore
-                if (TryOffset(-1, out dummy))
+                if (TryOffset(-1, out _))
                 {
                     return true;
                 }
@@ -205,7 +212,7 @@ namespace System.Threading
             var source = new TaskCompletionSource<bool>();
             if (_canEnter.Wait(0, cancellationToken))
             {
-                if (TryOffset(-1, out int dummy))
+                if (TryOffset(-1, out var dummy))
                 {
                     source.SetResult(true);
                     return source.Task;
@@ -250,6 +257,7 @@ namespace System.Threading
         protected virtual void Dispose(bool disposing)
         {
             // This is a protected method, the parameter should be kept
+            GC.KeepAlive(disposing);
             _disposed = true;
             _canEnter.Dispose();
             _asyncWaiters = null;
@@ -261,17 +269,17 @@ namespace System.Threading
             _asyncWaiters.Add(source);
         }
 
-        private void Awake()
+        private void Awake(SafeQueue<TaskCompletionSource<bool>> asyncWaiters)
         {
             var spinWait = new SpinWait();
-            while (_asyncWaiters.TryTake(out TaskCompletionSource<bool> waiter))
+            while (asyncWaiters.TryTake(out var waiter))
             {
                 if (waiter.Task.IsCompleted)
                 {
                     // Skip - either canceled or timed out
                     continue;
                 }
-                if (TryOffset(-1, out int dummy))
+                if (TryOffset(-1, out var dummy))
                 {
                     waiter.SetResult(true);
                 }
@@ -296,7 +304,7 @@ namespace System.Threading
         private void SyncWaitHandle()
         {
             var awake = false;
-            if (Volatile.Read(ref _count) == 0 == _canEnter.IsSet && Interlocked.CompareExchange(ref _syncroot, 1, 0) == 0)
+            if (Volatile.Read(ref _count) == 0 == _canEnter.IsSet && Interlocked.CompareExchange(ref _syncRoot, 1, 0) == 0)
             {
                 try
                 {
@@ -304,12 +312,13 @@ namespace System.Threading
                 }
                 finally
                 {
-                    Volatile.Write(ref _syncroot, 0);
+                    Volatile.Write(ref _syncRoot, 0);
                 }
             }
             if (awake)
             {
-                ThreadPool.QueueUserWorkItem(_ => Awake());
+                var asyncWaiters = _asyncWaiters;
+                ThreadPool.QueueUserWorkItem(_ => Awake(asyncWaiters));
             }
 
             bool SyncWaitHandleExtracted()
@@ -320,7 +329,7 @@ namespace System.Threading
                 {
                     return false;
                 }
-                if ((found = Thread.VolatileRead(ref _count)) == 0 == canEnter.IsSet)
+                if ((found = Volatile.Read(ref _count)) == 0 == canEnter.IsSet)
                 {
                     if (found == 0)
                     {
@@ -338,7 +347,7 @@ namespace System.Threading
 
         private bool TryOffset(int releaseCount, out int previous)
         {
-            var expected = Thread.VolatileRead(ref _count);
+            var expected = Volatile.Read(ref _count);
             previous = expected;
             // Note: checking this way to avoid overflow
             if (_maxCount.HasValue && _maxCount - releaseCount < expected)

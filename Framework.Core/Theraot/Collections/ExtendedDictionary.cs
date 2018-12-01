@@ -3,36 +3,32 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Theraot.Collections.Specialized;
 
 namespace Theraot.Collections
 {
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public sealed class ExtendedDictionary<TKey, TValue> : IExtendedDictionary<TKey, TValue>, IDictionary<TKey, TValue>, ICollection<KeyValuePair<TKey, TValue>>
+    public sealed class ExtendedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
-        private readonly IReadOnlyCollection<TKey> _keysReadonly;
-        private readonly IExtendedReadOnlyDictionary<TKey, TValue> _readOnly;
         private readonly IEqualityComparer<TValue> _valueComparer;
-        private readonly IReadOnlyCollection<TValue> _valuesReadonly;
         private readonly Dictionary<TKey, TValue> _wrapped;
 
         public ExtendedDictionary()
         {
             _valueComparer = EqualityComparer<TValue>.Default;
             _wrapped = new Dictionary<TKey, TValue>();
-            _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
-            _keysReadonly = new Specialized.DelegatedCollection<TKey>(() => _wrapped.Keys).AsReadOnly;
-            _valuesReadonly = new Specialized.DelegatedCollection<TValue>(() => _wrapped.Values).AsReadOnly;
+            Keys = new ProxyCollection<TKey>(() => _wrapped.Keys).AsIReadOnlyCollection;
+            Values = new ProxyCollection<TValue>(() => _wrapped.Values).AsIReadOnlyCollection;
         }
 
         public ExtendedDictionary(IEnumerable<KeyValuePair<TKey, TValue>> prototype)
         {
             _valueComparer = EqualityComparer<TValue>.Default;
             _wrapped = new Dictionary<TKey, TValue>();
-            _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
-            _keysReadonly = new ExtendedReadOnlyCollection<TKey>(_wrapped.Keys);
-            _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
+            Keys = new ProxyCollection<TKey>(() => _wrapped.Keys).AsIReadOnlyCollection;
+            Values = new ProxyCollection<TValue>(() => _wrapped.Values).AsIReadOnlyCollection;
             if (prototype == null)
             {
                 throw new ArgumentNullException(nameof(prototype));
@@ -48,9 +44,8 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(keyComparer));
             }
             _wrapped = new Dictionary<TKey, TValue>(keyComparer);
-            _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
-            _keysReadonly = new ExtendedReadOnlyCollection<TKey>(_wrapped.Keys);
-            _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
+            Keys = Extensions.WrapAsIReadOnlyCollection(_wrapped.Keys);
+            Values = Extensions.WrapAsIReadOnlyCollection(_wrapped.Values);
             if (prototype == null)
             {
                 throw new ArgumentNullException(nameof(prototype));
@@ -66,26 +61,20 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(keyComparer));
             }
             _wrapped = new Dictionary<TKey, TValue>(keyComparer);
-            _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
-            _keysReadonly = new ExtendedReadOnlyCollection<TKey>(_wrapped.Keys);
-            _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
+            Keys = Extensions.WrapAsIReadOnlyCollection(_wrapped.Keys);
+            Values = Extensions.WrapAsIReadOnlyCollection(_wrapped.Values);
         }
 
         public ExtendedDictionary(IEnumerable<KeyValuePair<TKey, TValue>> prototype, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
         {
-            if (valueComparer == null)
-            {
-                throw new ArgumentNullException(nameof(valueComparer));
-            }
-            _valueComparer = valueComparer;
+            _valueComparer = valueComparer ?? throw new ArgumentNullException(nameof(valueComparer));
             if (keyComparer == null)
             {
                 throw new ArgumentNullException(nameof(keyComparer));
             }
             _wrapped = new Dictionary<TKey, TValue>(keyComparer);
-            _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
-            _keysReadonly = new ExtendedReadOnlyCollection<TKey>(_wrapped.Keys);
-            _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
+            Keys = Extensions.WrapAsIReadOnlyCollection(_wrapped.Keys);
+            Values = Extensions.WrapAsIReadOnlyCollection(_wrapped.Values);
             if (prototype == null)
             {
                 throw new ArgumentNullException(nameof(prototype));
@@ -95,76 +84,33 @@ namespace Theraot.Collections
 
         public ExtendedDictionary(IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
         {
-            if (valueComparer == null)
-            {
-                throw new ArgumentNullException(nameof(valueComparer));
-            }
-            _valueComparer = valueComparer;
+            _valueComparer = valueComparer ?? throw new ArgumentNullException(nameof(valueComparer));
             if (keyComparer == null)
             {
                 throw new ArgumentNullException(nameof(keyComparer));
             }
             _wrapped = new Dictionary<TKey, TValue>(keyComparer);
-            _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
-            _keysReadonly = new ExtendedReadOnlyCollection<TKey>(_wrapped.Keys);
-            _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
+            Keys = Extensions.WrapAsIReadOnlyCollection(_wrapped.Keys);
+            Values = Extensions.WrapAsIReadOnlyCollection(_wrapped.Values);
         }
 
-        public IReadOnlyDictionary<TKey, TValue> AsReadOnly
-        {
-            get { return _readOnly; }
-        }
+        public int Count => _wrapped.Count;
 
-        public int Count
-        {
-            get { return _wrapped.Count; }
-        }
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
 
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
-        {
-            get { return false; }
-        }
+        ICollection<TKey> IDictionary<TKey, TValue>.Keys => _wrapped.Keys;
 
-        ICollection<TKey> IDictionary<TKey, TValue>.Keys
-        {
-            get { return _wrapped.Keys; }
-        }
+        ICollection<TValue> IDictionary<TKey, TValue>.Values => _wrapped.Values;
 
-        ICollection<TValue> IDictionary<TKey, TValue>.Values
-        {
-            get { return _wrapped.Values; }
-        }
+        public IReadOnlyCollection<TKey> Keys { get; }
 
-        IReadOnlyCollection<KeyValuePair<TKey, TValue>> IExtendedCollection<KeyValuePair<TKey, TValue>>.AsReadOnly
-        {
-            get { return _readOnly; }
-        }
-
-        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
-        {
-            get { return _keysReadonly; }
-        }
-
-        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values
-        {
-            get { return _valuesReadonly; }
-        }
-
-        public IReadOnlyCollection<TKey> Keys
-        {
-            get { return _keysReadonly; }
-        }
-
-        public IReadOnlyCollection<TValue> Values
-        {
-            get { return _valuesReadonly; }
-        }
+        public IReadOnlyCollection<TValue> Values { get; }
 
         public TValue this[TKey key]
         {
-            get { return _wrapped[key]; }
+            get => _wrapped[key];
 
-            set { _wrapped[key] = value; }
+            set => _wrapped[key] = value;
         }
 
         public void Add(KeyValuePair<TKey, TValue> item)
@@ -240,7 +186,7 @@ namespace Theraot.Collections
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
-            TKey key = item.Key;
+            var key = item.Key;
             try
             {
                 if (_valueComparer.Equals(_wrapped[key], item.Value))

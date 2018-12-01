@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Security.Permissions;
 using NUnit.Framework;
+using System.Security.Permissions;
 
 namespace System.Diagnostics.Contracts.Tests
 {
@@ -42,7 +42,7 @@ namespace System.Diagnostics.Contracts.Tests
 #if DEBUG
                 Assert.True(eventRaised, "ContractFailed event not raised");
 #else
-                NUnit.Framework.Assert.False(eventRaised, "ContractFailed event not raised");
+                Assert.False(eventRaised, "ContractFailed event not raised");
 #endif
             }
         }
@@ -64,7 +64,7 @@ namespace System.Diagnostics.Contracts.Tests
                 Assert.True(eventRaised, "ContractFailed was not raised");
 #else
                 Contract.Assert(false, "Some kind of user message");
-                NUnit.Framework.Assert.False(eventRaised, "ContractFailed event was raised");
+                Assert.False(eventRaised, "ContractFailed event was raised");
 #endif
             }
         }

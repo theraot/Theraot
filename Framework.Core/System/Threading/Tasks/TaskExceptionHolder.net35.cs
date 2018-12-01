@@ -18,7 +18,7 @@ namespace System.Threading.Tasks
     /// An exception holder manages a list of exceptions for one particular task.
     /// It offers the ability to aggregate, but more importantly, also offers intrinsic
     /// support for propagating unhandled exceptions that are never observed. It does
-    /// this by aggregating and throwing if the holder is ever GC'd without the holder's
+    /// this by aggregating and throwing if the holder is ever garbage collected without the holder's
     /// contents ever having been requested (e.g. by a Task.Wait, Task.get_Exception, etc).
     /// This behavior is prominent in .NET 4 but is suppressed by default beyond that release.
     /// </summary>
@@ -66,7 +66,7 @@ namespace System.Threading.Tasks
         {
             // Raise unhandled exceptions only when we know that neither the process or nor the appdomain is being torn down.
             // We need to do this filtering because all TaskExceptionHolders will be finalized during shutdown or unload
-            // regardles of reachability of the task (i.e. even if the user code was about to observe the task's exception),
+            // regardless of reachability of the task (i.e. even if the user code was about to observe the task's exception),
             // which can otherwise lead to spurious crashes during shutdown.
             if (_faultExceptions != null && !_isHandled &&
                 !Environment.HasShutdownStarted && !GCMonitor.FinalizingForUnload && !_domainUnloadStarted)
@@ -94,13 +94,13 @@ namespace System.Threading.Tasks
                     }
                 }
                 var exceptionToThrow = CreateAggregateException();
-                var ueea = new UnobservedTaskExceptionEventArgs(exceptionToThrow);
-                TaskScheduler.PublishUnobservedTaskException(_task, ueea);
+                var unobservedTaskExceptionEventArgs = new UnobservedTaskExceptionEventArgs(exceptionToThrow);
+                TaskScheduler.PublishUnobservedTaskException(_task, unobservedTaskExceptionEventArgs);
 
                 // Now, if we are still unobserved and we're configured to crash on unobserved, throw the exception.
                 // We need to publish the event above even if we're not going to crash, hence
                 // why this check doesn't come at the beginning of the method.
-                if (_failFastOnUnobservedException && !ueea.Observed)
+                if (_failFastOnUnobservedException && !unobservedTaskExceptionEventArgs.Observed)
                 {
                     throw exceptionToThrow;
                 }
@@ -108,10 +108,7 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>Gets whether the exception holder is currently storing any exceptions for faults.</summary>
-        internal bool ContainsFaultList
-        {
-            get { return _faultExceptions != null; }
-        }
+        internal bool ContainsFaultList => _faultExceptions != null;
 
         /// <summary>
         /// Add an exception to the holder.  This will ensure the holder is
@@ -404,7 +401,7 @@ namespace System.Threading.Tasks
             else
             {
                 var edi = exceptionObject as ExceptionDispatchInfo;
-                Debug.Assert(edi != null && edi.SourceException is OperationCanceledException,
+                Debug.Assert(edi?.SourceException is OperationCanceledException,
                     "Expected an OCE or an EDI that contained an OCE");
                 _cancellationException = edi;
             }

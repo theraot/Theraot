@@ -115,7 +115,7 @@ namespace Theraot.Core
 
             IEnumerable<T> CreateExtracted()
             {
-                while (tryTake.Invoke(out T item))
+                while (tryTake.Invoke(out var item))
                 {
                     yield return item;
                 }
@@ -136,7 +136,7 @@ namespace Theraot.Core
 
             IEnumerable<TResult> CreateExtracted()
             {
-                while (tryTake.Invoke(out TState item))
+                while (tryTake.Invoke(out var item))
                 {
                     yield return converter.Invoke(item);
                 }
@@ -160,6 +160,7 @@ namespace Theraot.Core
                     yield return currentState;
                 }
                 // Infinite Loop - This method creates an endless IEnumerable<T>
+                // ReSharper disable once IteratorNeverReturns
             }
         }
 
@@ -184,6 +185,7 @@ namespace Theraot.Core
                     yield return resultSelector.Invoke(currentState);
                 }
                 // Infinite Loop - This method creates an endless IEnumerable<T>
+                // ReSharper disable once IteratorNeverReturns
             }
         }
 
@@ -202,6 +204,7 @@ namespace Theraot.Core
                     yield return iterate.Invoke();
                 }
                 // Infinite Loop - This method creates an endless IEnumerable<T>
+                // ReSharper disable once IteratorNeverReturns
             }
         }
 
@@ -224,6 +227,7 @@ namespace Theraot.Core
                     yield return resultSelector(iterate.Invoke());
                 }
                 // Infinite Loop - This method creates an endless IEnumerable<T>
+                // ReSharper disable once IteratorNeverReturns
             }
         }
     }

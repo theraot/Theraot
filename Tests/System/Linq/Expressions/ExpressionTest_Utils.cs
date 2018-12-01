@@ -187,10 +187,7 @@ namespace MonoTests.System.Linq.Expressions
         public int TestField1; // Used by Reflection
         public readonly int TestField2 = 1; // Used by Reflection
 
-        public int TestProperty1
-        {
-            get { return TestField1; }
-        }
+        public int TestProperty1 => TestField1;
 
         public int TestProperty2
         {
@@ -332,39 +329,31 @@ namespace MonoTests.System.Linq.Expressions
 
     internal class Item<T>
     {
-        private bool _leftCalled;
         private readonly T _left;
 
         public T Left
         {
             get
             {
-                _leftCalled = true;
+                LeftCalled = true;
                 return _left;
             }
         }
 
-        public bool LeftCalled
-        {
-            get { return _leftCalled; }
-        }
+        public bool LeftCalled { get; private set; }
 
-        private bool _rightCalled;
         private readonly T _right;
 
         public T Right
         {
             get
             {
-                _rightCalled = true;
+                RightCalled = true;
                 return _right;
             }
         }
 
-        public bool RightCalled
-        {
-            get { return _rightCalled; }
-        }
+        public bool RightCalled { get; private set; }
 
         public Item(T left, T right)
         {

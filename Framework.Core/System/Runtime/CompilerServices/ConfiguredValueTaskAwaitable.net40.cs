@@ -57,7 +57,7 @@ namespace System.Runtime.CompilerServices
             }
 
             /// <summary>Gets whether the <see cref="ConfiguredValueTaskAwaitable{TResult}"/> has completed.</summary>
-            public bool IsCompleted { get { return _value.IsCompleted; } }
+            public bool IsCompleted => _value.IsCompleted;
 
             /// <summary>Gets the result of the ValueTask.</summary>
             public TResult GetResult()

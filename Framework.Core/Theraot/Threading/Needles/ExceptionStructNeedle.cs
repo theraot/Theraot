@@ -1,44 +1,34 @@
 // Needed for NET40
 
 using System;
+using System.Diagnostics;
 
 namespace Theraot.Threading.Needles
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public struct ExceptionStructNeedle<T> : INeedle<T>, IEquatable<ExceptionStructNeedle<T>>
     {
-        private readonly Exception _exception;
-
         public ExceptionStructNeedle(Exception exception)
         {
-            _exception = exception;
+            Exception = exception;
         }
 
-        public Exception Exception
-        {
-            get { return _exception; }
-        }
+        public Exception Exception { get; }
+
+        public bool IsAlive => false;
 
         T INeedle<T>.Value
         {
-            get { throw _exception; }
+            get => throw Exception;
 
-            set { throw new NotSupportedException(); }
+            set => throw new NotSupportedException();
         }
 
-        public bool IsAlive
-        {
-            get { return false; }
-        }
-
-        public T Value
-        {
-            get { throw _exception; }
-        }
+        public T Value => throw Exception;
 
         public static explicit operator Exception(ExceptionStructNeedle<T> needle)
         {
-            return needle._exception;
+            return needle.Exception;
         }
 
         public static implicit operator ExceptionStructNeedle<T>(Exception exception)
@@ -48,8 +38,8 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(ExceptionStructNeedle<T> left, ExceptionStructNeedle<T> right)
         {
-            var leftException = left._exception;
-            var rightException = right._exception;
+            var leftException = left.Exception;
+            var rightException = right.Exception;
             if (leftException == null)
             {
                 return rightException != null;
@@ -59,8 +49,8 @@ namespace Theraot.Threading.Needles
 
         public static bool operator ==(ExceptionStructNeedle<T> left, ExceptionStructNeedle<T> right)
         {
-            var leftException = left._exception;
-            var rightException = right._exception;
+            var leftException = left.Exception;
+            var rightException = right.Exception;
             if (leftException == null)
             {
                 return rightException == null;
@@ -70,11 +60,11 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            if (obj is ExceptionStructNeedle<T>)
+            if (obj is ExceptionStructNeedle<T> needle)
             {
-                return this == (ExceptionStructNeedle<T>)obj;
+                return this == needle;
             }
-            return obj is Exception && obj.Equals(_exception);
+            return obj is Exception && obj.Equals(Exception);
         }
 
         public bool Equals(ExceptionStructNeedle<T> other)
@@ -91,7 +81,7 @@ namespace Theraot.Threading.Needles
         {
             if (IsAlive)
             {
-                return string.Format("<Exception: {0}>", _exception);
+                return $"<Exception: {Exception}>";
             }
             return "<Dead Needle>";
         }

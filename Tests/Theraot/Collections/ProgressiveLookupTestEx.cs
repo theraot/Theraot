@@ -109,23 +109,19 @@ namespace Tests.Theraot.Collections
         public class IterateAndCount : IEnumerable<int>
         {
             private readonly int _count;
-            private int _total;
 
             public IterateAndCount(int count)
             {
                 _count = count;
             }
 
-            public int Total
-            {
-                get { return _total; }
-            }
+            public int Total { get; private set; }
 
             public IEnumerator<int> GetEnumerator()
             {
                 for (var index = 0; index < _count; index++)
                 {
-                    _total = Total + 1;
+                    Total = Total + 1;
                     yield return Total;
                 }
             }

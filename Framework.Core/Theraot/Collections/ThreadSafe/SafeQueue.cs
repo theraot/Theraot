@@ -17,7 +17,7 @@ namespace Theraot.Collections.ThreadSafe
     [Serializable]
 #endif
 
-    public sealed class SafeQueue<T> : IEnumerable<T>, IProducerConsumerCollection<T>
+    public sealed class SafeQueue<T> : IProducerConsumerCollection<T>
     {
         private int _count;
         private Node<FixedSizeQueue<T>> _root;
@@ -45,20 +45,11 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Gets the number of items actually contained.
         /// </summary>
-        public int Count
-        {
-            get { return Volatile.Read(ref _count); }
-        }
+        public int Count => Volatile.Read(ref _count);
 
-        bool ICollection.IsSynchronized
-        {
-            get { return false; }
-        }
+        bool ICollection.IsSynchronized => false;
 
-        object ICollection.SyncRoot
-        {
-            get { throw new NotSupportedException(); }
-        }
+        object ICollection.SyncRoot => throw new NotSupportedException();
 
         /// <summary>
         /// Attempts to Adds the specified item.

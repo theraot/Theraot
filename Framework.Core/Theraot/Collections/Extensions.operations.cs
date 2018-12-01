@@ -2,26 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using Theraot.Collections.Specialized;
 
 namespace Theraot.Collections
 {
     public static partial class Extensions
     {
-        public static ICollection<T> AsCollection<T>(IEnumerable<T> source)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (source is string && typeof(T) == typeof(char))
-            {
-                return (ICollection<T>)(object)(source as string).ToCharArray();
-            }
-            var result = source as ICollection<T>;
-            return result ?? new ProgressiveCollection<T>(source);
-        }
-
-        public static ICollection<T> AsDistinctCollection<T>(IEnumerable<T> source)
+        public static ICollection<T> AsDistinctICollection<T>(IEnumerable<T> source)
         {
 #if NET35
             if (source == null)
@@ -29,29 +16,52 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(source));
             }
             // Workaround for .NET 3.5 when all you want is Contains and no duplicates
-            var resultHashSet = source as HashSet<T>;
-            if (resultHashSet == null)
+            // Remember that On .NET 3.5 HashSet is not an ISet
+            if (source is HashSet<T> resultHashSet)
             {
-                // Remember that On .NET 3.5 HashSet is not an ISet
-                var resultISet = source as ISet<T>;
-                return resultISet ?? new ProgressiveSet<T>(source);
+                return resultHashSet;
             }
-            return resultHashSet;
+            var resultISet = source as ISet<T>;
+            return resultISet ?? new ProgressiveSet<T>(source);
 #else
-            return AsSet(source);
+            return AsISet(source);
 #endif
         }
 
-        public static IList<T> AsList<T>(IEnumerable<T> source)
+        public static ICollection<T> AsICollection<T>(IEnumerable<T> source)
         {
-            if (!(source is IList<T> result))
+            if (source == null)
             {
-                return new ProgressiveList<T>(source);
+                throw new ArgumentNullException(nameof(source));
             }
-            return result;
+            var result = source as ICollection<T>;
+            return result ?? new ProgressiveCollection<T>(source);
         }
 
-        public static ISet<T> AsSet<T>(IEnumerable<T> source)
+        public static IList<T> AsIList<T>(IEnumerable<T> source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (source is IList<T> list)
+            {
+                return list;
+            }
+            if (source is ICollection<T> collection)
+            {
+                if (collection.Count == 0)
+                {
+                    return EmptyCollection<T>.Instance;
+                }
+                var result = new T[collection.Count];
+                collection.CopyTo(result, 0);
+                return result;
+            }
+            return new ProgressiveList<T>(source);
+        }
+
+        public static ISet<T> AsISet<T>(IEnumerable<T> source)
         {
             if (source == null)
             {
@@ -62,25 +72,20 @@ namespace Theraot.Collections
             return resultISet ?? new ProgressiveSet<T>(source);
         }
 
-        public static IEnumerable<T> AsUnaryEnumerable<T>(this T source)
+        public static IEnumerable<T> AsUnaryIEnumerable<T>(T source)
         {
             yield return source;
         }
 
-        public static IList<T> AsUnaryList<T>(this T source)
+        public static IList<T> AsUnaryIList<T>(T source)
         {
-            return new ProgressiveList<T>
-                   (
-                       AsUnaryEnumerable(source)
-                   );
+            return new[] { source };
         }
 
-        public static ISet<T> AsUnarySet<T>(this T source)
+        public static ISet<T> AsUnaryISet<T>(T source)
         {
-            return new ProgressiveSet<T>
-                   (
-                       AsUnaryEnumerable(source)
-                   );
+            var result = new ExtendedSet<T> { source };
+            return result;
         }
 
         public static bool HasAtLeast<TSource>(this IEnumerable<TSource> source, int count)
@@ -92,10 +97,6 @@ namespace Theraot.Collections
             if (count == 0)
             {
                 return true;
-            }
-            if (source is string && typeof(TSource) == typeof(char))
-            {
-                return (source as string).Length >= count;
             }
             if (source is ICollection<TSource> sourceAsCollection)
             {
@@ -179,6 +180,46 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(source));
             }
             return predicateCount == null ? TakeItemsExtracted(source, takeCount) : TakeItemsExtracted(source, predicateCount, takeCount);
+        }
+
+        public static ICollection<T> WrapAsICollection<T>(IEnumerable<T> source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            var result = source as ICollection<T>;
+            return result ?? new EnumerationList<T>(source);
+        }
+
+        public static IList<T> WrapAsIList<T>(IEnumerable<T> source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            var result = source as IList<T>;
+            return result ?? new EnumerationList<T>(source);
+        }
+
+        public static IReadOnlyCollection<T> WrapAsIReadOnlyCollection<T>(IEnumerable<T> source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            var result = source as IReadOnlyCollection<T>;
+            return result ?? new EnumerationList<T>(source);
+        }
+
+        public static IReadOnlyList<T> WrapAsIReadOnlyList<T>(IEnumerable<T> source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            var result = source as IReadOnlyList<T>;
+            return result ?? new EnumerationList<T>(source);
         }
 
         private static IEnumerable<T> SkipItemsExtracted<T>(IEnumerable<T> source, int skipCount)

@@ -6,21 +6,13 @@ namespace Theraot.Collections
 {
     public sealed class FilteredObserver<T> : IObserver<T>
     {
-        private readonly IObserver<T> _observer;
         private readonly Predicate<T> _filter;
+        private readonly IObserver<T> _observer;
 
         public FilteredObserver(IObserver<T> observer, Predicate<T> filter)
         {
-            if (observer == null)
-            {
-                throw new ArgumentNullException(nameof(observer));
-            }
-            if (filter == null)
-            {
-                throw new ArgumentNullException(nameof(filter));
-            }
-            _observer = observer;
-            _filter = filter;
+            _observer = observer ?? throw new ArgumentNullException(nameof(observer));
+            _filter = filter ?? throw new ArgumentNullException(nameof(filter));
         }
 
         public void OnCompleted()

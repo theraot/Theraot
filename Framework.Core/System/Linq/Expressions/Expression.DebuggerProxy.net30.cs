@@ -1,1115 +1,496 @@
 #if NET20 || NET30
 
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using System.Collections.ObjectModel;
+using System.Dynamic.Utils;
 using System.Reflection;
 
 namespace System.Linq.Expressions
 {
-    internal class BinaryExpressionProxy
+    public partial class Expression
     {
-        private readonly BinaryExpression _node;
-
-        public BinaryExpressionProxy(BinaryExpression node)
-        {
-            _node = node;
-        }
-
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
-
-        public LambdaExpression Conversion
-        {
-            get { return _node.Conversion; }
-        }
-
-        public string DebugView
-        {
-            get { return _node.DebugView; }
-        }
-
-        public bool IsLifted
-        {
-            get { return _node.IsLifted; }
-        }
-
-        public bool IsLiftedToNull
-        {
-            get { return _node.IsLiftedToNull; }
-        }
-
-        public Expression Left
-        {
-            get { return _node.Left; }
-        }
-
-        public MethodInfo Method
-        {
-            get { return _node.Method; }
-        }
-
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
-
-        public Expression Right
-        {
-            get { return _node.Right; }
-        }
-
-        public Type Type
-        {
-            get { return _node.Type; }
-        }
-    }
-
-    internal class BlockExpressionProxy
-    {
-        private readonly BlockExpression _node;
-
-        public BlockExpressionProxy(BlockExpression node)
-        {
-            _node = node;
-        }
-
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
-
-        public string DebugView
-        {
-            get { return _node.DebugView; }
-        }
-
-        public ReadOnlyCollection<Expression> Expressions
-        {
-            get { return _node.Expressions; }
-        }
-
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
-
-        public Expression Result
-        {
-            get { return _node.Result; }
-        }
-
-        public Type Type
-        {
-            get { return _node.Type; }
-        }
-
-        public ReadOnlyCollection<ParameterExpression> Variables
-        {
-            get { return _node.Variables; }
-        }
-    }
-
-    internal class CatchBlockProxy
-    {
-        private readonly CatchBlock _node;
-
-        public CatchBlockProxy(CatchBlock node)
-        {
-            _node = node;
-        }
-
-        public Expression Body
-        {
-            get { return _node.Body; }
-        }
-
-        public Expression Filter
-        {
-            get { return _node.Filter; }
-        }
-
-        public Type Test
-        {
-            get { return _node.Test; }
-        }
-
-        public ParameterExpression Variable
-        {
-            get { return _node.Variable; }
-        }
-    }
-
-    internal class ConditionalExpressionProxy
-    {
-        private readonly ConditionalExpression _node;
-
-        public ConditionalExpressionProxy(ConditionalExpression node)
-        {
-            _node = node;
-        }
-
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
-
-        public string DebugView
-        {
-            get { return _node.DebugView; }
-        }
-
-        public Expression IfFalse
-        {
-            get { return _node.IfFalse; }
-        }
-
-        public Expression IfTrue
-        {
-            get { return _node.IfTrue; }
-        }
-
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
-
-        public Expression Test
-        {
-            get { return _node.Test; }
-        }
-
-        public Type Type
-        {
-            get { return _node.Type; }
-        }
-    }
-
-    internal class ConstantExpressionProxy
-    {
-        private readonly ConstantExpression _node;
-
-        public ConstantExpressionProxy(ConstantExpression node)
-        {
-            _node = node;
-        }
-
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
-
-        public string DebugView
-        {
-            get { return _node.DebugView; }
-        }
-
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
-
-        public Type Type
-        {
-            get { return _node.Type; }
-        }
-
-        public object Value
-        {
-            get { return _node.Value; }
-        }
-    }
-
-    internal class DebugInfoExpressionProxy
-    {
-        private readonly DebugInfoExpression _node;
-
-        public DebugInfoExpressionProxy(DebugInfoExpression node)
-        {
-            _node = node;
-        }
-
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
-
-        public string DebugView
-        {
-            get { return _node.DebugView; }
-        }
-
-        public SymbolDocumentInfo Document
-        {
-            get { return _node.Document; }
-        }
-
-        public int EndColumn
-        {
-            get { return _node.EndColumn; }
-        }
-
-        public int EndLine
-        {
-            get { return _node.EndLine; }
-        }
-
-        public bool IsClear
-        {
-            get { return _node.IsClear; }
-        }
-
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
-
-        public int StartColumn
-        {
-            get { return _node.StartColumn; }
-        }
-
-        public int StartLine
-        {
-            get { return _node.StartLine; }
-        }
-
-        public Type Type
-        {
-            get { return _node.Type; }
-        }
-    }
-
-    internal class DefaultExpressionProxy
-    {
-        private readonly DefaultExpression _node;
-
-        public DefaultExpressionProxy(DefaultExpression node)
-        {
-            _node = node;
-        }
-
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
-
-        public string DebugView
-        {
-            get { return _node.DebugView; }
-        }
-
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
-
-        public Type Type
-        {
-            get { return _node.Type; }
-        }
-    }
-
-    internal class GotoExpressionProxy
-    {
-        private readonly GotoExpression _node;
-
-        public GotoExpressionProxy(GotoExpression node)
-        {
-            _node = node;
-        }
-
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
-
-        public string DebugView
-        {
-            get { return _node.DebugView; }
-        }
-
-        public GotoExpressionKind Kind
-        {
-            get { return _node.Kind; }
-        }
-
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
-
-        public LabelTarget Target
-        {
-            get { return _node.Target; }
-        }
-
-        public Type Type
-        {
-            get { return _node.Type; }
-        }
-
-        public Expression Value
-        {
-            get { return _node.Value; }
-        }
-    }
-
-    internal class IndexExpressionProxy
-    {
-        private readonly IndexExpression _node;
-
-        public IndexExpressionProxy(IndexExpression node)
-        {
-            _node = node;
-        }
-
-        public ReadOnlyCollection<Expression> Arguments
-        {
-            get { return _node.Arguments; }
-        }
-
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
-
-        public string DebugView
-        {
-            get { return _node.DebugView; }
-        }
-
-        public PropertyInfo Indexer
-        {
-            get { return _node.Indexer; }
-        }
-
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
-
-        public Expression Object
-        {
-            get { return _node.Object; }
-        }
-
-        public Type Type
-        {
-            get { return _node.Type; }
-        }
-    }
-
-    internal class InvocationExpressionProxy
-    {
-        private readonly InvocationExpression _node;
-
-        public InvocationExpressionProxy(InvocationExpression node)
-        {
-            _node = node;
-        }
-
-        public ReadOnlyCollection<Expression> Arguments
-        {
-            get { return _node.Arguments; }
-        }
-
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
-
-        public string DebugView
-        {
-            get { return _node.DebugView; }
-        }
-
-        public Expression Expression
-        {
-            get { return _node.Expression; }
-        }
-
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
-
-        public Type Type
-        {
-            get { return _node.Type; }
-        }
-    }
-
-    internal class LabelExpressionProxy
-    {
-        private readonly LabelExpression _node;
-
-        public LabelExpressionProxy(LabelExpression node)
-        {
-            _node = node;
-        }
-
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
-
-        public string DebugView
-        {
-            get { return _node.DebugView; }
-        }
-
-        public Expression DefaultValue
-        {
-            get { return _node.DefaultValue; }
-        }
-
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
-
-        public LabelTarget Target
-        {
-            get { return _node.Target; }
-        }
-
-        public Type Type
-        {
-            get { return _node.Type; }
-        }
-    }
-
-    internal class LambdaExpressionProxy
-    {
-        private readonly LambdaExpression _node;
-
-        public LambdaExpressionProxy(LambdaExpression node)
-        {
-            _node = node;
-        }
-
-        public Expression Body
-        {
-            get { return _node.Body; }
-        }
-
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
-
-        public string DebugView
-        {
-            get { return _node.DebugView; }
-        }
-
-        public string Name
-        {
-            get { return _node.Name; }
-        }
-
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
-
-        public ReadOnlyCollection<ParameterExpression> Parameters
-        {
-            get { return _node.Parameters; }
-        }
-
-        public Type ReturnType
-        {
-            get { return _node.ReturnType; }
-        }
-
-        public bool TailCall
-        {
-            get { return _node.TailCall; }
-        }
-
-        public Type Type
-        {
-            get { return _node.Type; }
-        }
-    }
-
-    internal class ListInitExpressionProxy
-    {
-        private readonly ListInitExpression _node;
-
-        public ListInitExpressionProxy(ListInitExpression node)
-        {
-            _node = node;
-        }
-
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
-
-        public string DebugView
-        {
-            get { return _node.DebugView; }
-        }
-
-        public ReadOnlyCollection<ElementInit> Initializers
-        {
-            get { return _node.Initializers; }
-        }
-
-        public NewExpression NewExpression
-        {
-            get { return _node.NewExpression; }
-        }
-
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
-
-        public Type Type
-        {
-            get { return _node.Type; }
-        }
-    }
-
-    internal class LoopExpressionProxy
-    {
-        private readonly LoopExpression _node;
-
-        public LoopExpressionProxy(LoopExpression node)
-        {
-            _node = node;
-        }
-
-        public Expression Body
-        {
-            get { return _node.Body; }
-        }
-
-        public LabelTarget BreakLabel
-        {
-            get { return _node.BreakLabel; }
-        }
-
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
-
-        public LabelTarget ContinueLabel
-        {
-            get { return _node.ContinueLabel; }
-        }
-
-        public string DebugView
-        {
-            get { return _node.DebugView; }
-        }
-
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
-
-        public Type Type
-        {
-            get { return _node.Type; }
-        }
-    }
-
-    internal class MemberExpressionProxy
-    {
-        private readonly MemberExpression _node;
-
-        public MemberExpressionProxy(MemberExpression node)
-        {
-            _node = node;
-        }
-
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
-
-        public string DebugView
-        {
-            get { return _node.DebugView; }
-        }
-
-        public Expression Expression
-        {
-            get { return _node.Expression; }
-        }
-
-        public MemberInfo Member
-        {
-            get { return _node.Member; }
-        }
-
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
-
-        public Type Type
+        internal class BinaryExpressionProxy
         {
-            get { return _node.Type; }
-        }
-    }
-
-    internal class MemberInitExpressionProxy
-    {
-        private readonly MemberInitExpression _node;
-
-        public MemberInitExpressionProxy(MemberInitExpression node)
-        {
-            _node = node;
-        }
-
-        public ReadOnlyCollection<MemberBinding> Bindings
-        {
-            get { return _node.Bindings; }
-        }
-
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
+            private readonly BinaryExpression _node;
 
-        public string DebugView
-        {
-            get { return _node.DebugView; }
-        }
-
-        public NewExpression NewExpression
-        {
-            get { return _node.NewExpression; }
-        }
+            public BinaryExpressionProxy(BinaryExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
+            public bool CanReduce => _node.CanReduce;
+            public LambdaExpression Conversion => _node.Conversion;
+            public string DebugView => _node.DebugView;
+            public bool IsLifted => _node.IsLifted;
+            public bool IsLiftedToNull => _node.IsLiftedToNull;
+            public Expression Left => _node.Left;
+            public MethodInfo Method => _node.Method;
+            public ExpressionType NodeType => _node.NodeType;
+            public Expression Right => _node.Right;
+            public Type Type => _node.Type;
         }
 
-        public Type Type
+        internal class BlockExpressionProxy
         {
-            get { return _node.Type; }
-        }
-    }
+            private readonly BlockExpression _node;
 
-    internal class MethodCallExpressionProxy
-    {
-        private readonly MethodCallExpression _node;
+            public BlockExpressionProxy(BlockExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public MethodCallExpressionProxy(MethodCallExpression node)
-        {
-            _node = node;
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public ReadOnlyCollection<Expression> Expressions => _node.Expressions;
+            public ExpressionType NodeType => _node.NodeType;
+            public Expression Result => _node.Result;
+            public Type Type => _node.Type;
+            public ReadOnlyCollection<ParameterExpression> Variables => _node.Variables;
         }
 
-        public ReadOnlyCollection<Expression> Arguments
+        internal class CatchBlockProxy
         {
-            get { return _node.Arguments; }
-        }
+            private readonly CatchBlock _node;
 
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
+            public CatchBlockProxy(CatchBlock node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public string DebugView
-        {
-            get { return _node.DebugView; }
+            public Expression Body => _node.Body;
+            public Expression Filter => _node.Filter;
+            public Type Test => _node.Test;
+            public ParameterExpression Variable => _node.Variable;
         }
 
-        public MethodInfo Method
+        internal class ConditionalExpressionProxy
         {
-            get { return _node.Method; }
-        }
+            private readonly ConditionalExpression _node;
 
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
+            public ConditionalExpressionProxy(ConditionalExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public Expression Object
-        {
-            get { return _node.Object; }
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public Expression IfFalse => _node.IfFalse;
+            public Expression IfTrue => _node.IfTrue;
+            public ExpressionType NodeType => _node.NodeType;
+            public Expression Test => _node.Test;
+            public Type Type => _node.Type;
         }
 
-        public Type Type
+        internal class ConstantExpressionProxy
         {
-            get { return _node.Type; }
-        }
-    }
+            private readonly ConstantExpression _node;
 
-    internal class NewArrayExpressionProxy
-    {
-        private readonly NewArrayExpression _node;
-
-        public NewArrayExpressionProxy(NewArrayExpression node)
-        {
-            _node = node;
-        }
+            public ConstantExpressionProxy(ConstantExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public ExpressionType NodeType => _node.NodeType;
+            public Type Type => _node.Type;
+            public object Value => _node.Value;
         }
 
-        public string DebugView
+        internal class DebugInfoExpressionProxy
         {
-            get { return _node.DebugView; }
-        }
+            private readonly DebugInfoExpression _node;
 
-        public ReadOnlyCollection<Expression> Expressions
-        {
-            get { return _node.Expressions; }
-        }
+            public DebugInfoExpressionProxy(DebugInfoExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public SymbolDocumentInfo Document => _node.Document;
+            public int EndColumn => _node.EndColumn;
+            public int EndLine => _node.EndLine;
+            public bool IsClear => _node.IsClear;
+            public ExpressionType NodeType => _node.NodeType;
+            public int StartColumn => _node.StartColumn;
+            public int StartLine => _node.StartLine;
+            public Type Type => _node.Type;
         }
 
-        public Type Type
+        internal class DefaultExpressionProxy
         {
-            get { return _node.Type; }
-        }
-    }
+            private readonly DefaultExpression _node;
 
-    internal class NewExpressionProxy
-    {
-        private readonly NewExpression _node;
+            public DefaultExpressionProxy(DefaultExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public NewExpressionProxy(NewExpression node)
-        {
-            _node = node;
-        }
-
-        public ReadOnlyCollection<Expression> Arguments
-        {
-            get { return _node.Arguments; }
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public ExpressionType NodeType => _node.NodeType;
+            public Type Type => _node.Type;
         }
 
-        public bool CanReduce
+        internal class GotoExpressionProxy
         {
-            get { return _node.CanReduce; }
-        }
+            private readonly GotoExpression _node;
 
-        public ConstructorInfo Constructor
-        {
-            get { return _node.Constructor; }
-        }
+            public GotoExpressionProxy(GotoExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public string DebugView
-        {
-            get { return _node.DebugView; }
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public GotoExpressionKind Kind => _node.Kind;
+            public ExpressionType NodeType => _node.NodeType;
+            public LabelTarget Target => _node.Target;
+            public Type Type => _node.Type;
+            public Expression Value => _node.Value;
         }
 
-        public ReadOnlyCollection<MemberInfo> Members
+        internal class IndexExpressionProxy
         {
-            get { return _node.Members; }
-        }
+            private readonly IndexExpression _node;
 
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
+            public IndexExpressionProxy(IndexExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public Type Type
-        {
-            get { return _node.Type; }
+            public ReadOnlyCollection<Expression> Arguments => _node.Arguments;
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public PropertyInfo Indexer => _node.Indexer;
+            public ExpressionType NodeType => _node.NodeType;
+            public Expression Object => _node.Object;
+            public Type Type => _node.Type;
         }
-    }
-
-    internal class ParameterExpressionProxy
-    {
-        private readonly ParameterExpression _node;
 
-        public ParameterExpressionProxy(ParameterExpression node)
+        internal class InvocationExpressionProxy
         {
-            _node = node;
-        }
+            private readonly InvocationExpression _node;
 
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
+            public InvocationExpressionProxy(InvocationExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public string DebugView
-        {
-            get { return _node.DebugView; }
+            public ReadOnlyCollection<Expression> Arguments => _node.Arguments;
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public Expression Expression => _node.Expression;
+            public ExpressionType NodeType => _node.NodeType;
+            public Type Type => _node.Type;
         }
 
-        public bool IsByRef
+        internal class LabelExpressionProxy
         {
-            get { return _node.IsByRef; }
-        }
+            private readonly LabelExpression _node;
 
-        public string Name
-        {
-            get { return _node.Name; }
-        }
+            public LabelExpressionProxy(LabelExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public Expression DefaultValue => _node.DefaultValue;
+            public ExpressionType NodeType => _node.NodeType;
+            public LabelTarget Target => _node.Target;
+            public Type Type => _node.Type;
         }
 
-        public Type Type
+        internal class LambdaExpressionProxy
         {
-            get { return _node.Type; }
-        }
-    }
-
-    internal class RuntimeVariablesExpressionProxy
-    {
-        private readonly RuntimeVariablesExpression _node;
+            private readonly LambdaExpression _node;
 
-        public RuntimeVariablesExpressionProxy(RuntimeVariablesExpression node)
-        {
-            _node = node;
-        }
+            public LambdaExpressionProxy(LambdaExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
+            public Expression Body => _node.Body;
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public string Name => _node.Name;
+            public ExpressionType NodeType => _node.NodeType;
+            public ReadOnlyCollection<ParameterExpression> Parameters => _node.Parameters;
+            public Type ReturnType => _node.ReturnType;
+            public bool TailCall => _node.TailCall;
+            public Type Type => _node.Type;
         }
 
-        public string DebugView
+        internal class ListInitExpressionProxy
         {
-            get { return _node.DebugView; }
-        }
+            private readonly ListInitExpression _node;
 
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
+            public ListInitExpressionProxy(ListInitExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public Type Type
-        {
-            get { return _node.Type; }
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public ReadOnlyCollection<ElementInit> Initializers => _node.Initializers;
+            public NewExpression NewExpression => _node.NewExpression;
+            public ExpressionType NodeType => _node.NodeType;
+            public Type Type => _node.Type;
         }
 
-        public ReadOnlyCollection<ParameterExpression> Variables
+        internal class LoopExpressionProxy
         {
-            get { return _node.Variables; }
-        }
-    }
-
-    internal class SwitchCaseProxy
-    {
-        private readonly SwitchCase _node;
+            private readonly LoopExpression _node;
 
-        public SwitchCaseProxy(SwitchCase node)
-        {
-            _node = node;
-        }
+            public LoopExpressionProxy(LoopExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public Expression Body
-        {
-            get { return _node.Body; }
+            public Expression Body => _node.Body;
+            public LabelTarget BreakLabel => _node.BreakLabel;
+            public bool CanReduce => _node.CanReduce;
+            public LabelTarget ContinueLabel => _node.ContinueLabel;
+            public string DebugView => _node.DebugView;
+            public ExpressionType NodeType => _node.NodeType;
+            public Type Type => _node.Type;
         }
 
-        public ReadOnlyCollection<Expression> TestValues
+        internal class MemberExpressionProxy
         {
-            get { return _node.TestValues; }
-        }
-    }
+            private readonly MemberExpression _node;
 
-    internal class SwitchExpressionProxy
-    {
-        private readonly SwitchExpression _node;
-
-        public SwitchExpressionProxy(SwitchExpression node)
-        {
-            _node = node;
-        }
+            public MemberExpressionProxy(MemberExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public Expression Expression => _node.Expression;
+            public MemberInfo Member => _node.Member;
+            public ExpressionType NodeType => _node.NodeType;
+            public Type Type => _node.Type;
         }
 
-        public ReadOnlyCollection<SwitchCase> Cases
+        internal class MemberInitExpressionProxy
         {
-            get { return _node.Cases; }
-        }
+            private readonly MemberInitExpression _node;
 
-        public MethodInfo Comparison
-        {
-            get { return _node.Comparison; }
-        }
+            public MemberInitExpressionProxy(MemberInitExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public string DebugView
-        {
-            get { return _node.DebugView; }
+            public ReadOnlyCollection<MemberBinding> Bindings => _node.Bindings;
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public NewExpression NewExpression => _node.NewExpression;
+            public ExpressionType NodeType => _node.NodeType;
+            public Type Type => _node.Type;
         }
 
-        public Expression DefaultBody
+        internal class MethodCallExpressionProxy
         {
-            get { return _node.DefaultBody; }
-        }
+            private readonly MethodCallExpression _node;
 
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
-        }
+            public MethodCallExpressionProxy(MethodCallExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public Expression SwitchValue
-        {
-            get { return _node.SwitchValue; }
+            public ReadOnlyCollection<Expression> Arguments => _node.Arguments;
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public MethodInfo Method => _node.Method;
+            public ExpressionType NodeType => _node.NodeType;
+            public Expression Object => _node.Object;
+            public Type Type => _node.Type;
         }
 
-        public Type Type
+        internal class NewArrayExpressionProxy
         {
-            get { return _node.Type; }
-        }
-    }
+            private readonly NewArrayExpression _node;
 
-    internal class TryExpressionProxy
-    {
-        private readonly TryExpression _node;
+            public NewArrayExpressionProxy(NewArrayExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public TryExpressionProxy(TryExpression node)
-        {
-            _node = node;
-        }
-
-        public Expression Body
-        {
-            get { return _node.Body; }
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public ReadOnlyCollection<Expression> Expressions => _node.Expressions;
+            public ExpressionType NodeType => _node.NodeType;
+            public Type Type => _node.Type;
         }
 
-        public bool CanReduce
+        internal class NewExpressionProxy
         {
-            get { return _node.CanReduce; }
-        }
+            private readonly NewExpression _node;
 
-        public string DebugView
-        {
-            get { return _node.DebugView; }
-        }
+            public NewExpressionProxy(NewExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public Expression Fault
-        {
-            get { return _node.Fault; }
+            public ReadOnlyCollection<Expression> Arguments => _node.Arguments;
+            public bool CanReduce => _node.CanReduce;
+            public ConstructorInfo Constructor => _node.Constructor;
+            public string DebugView => _node.DebugView;
+            public ReadOnlyCollection<MemberInfo> Members => _node.Members;
+            public ExpressionType NodeType => _node.NodeType;
+            public Type Type => _node.Type;
         }
 
-        public Expression Finally
+        internal class ParameterExpressionProxy
         {
-            get { return _node.Finally; }
-        }
+            private readonly ParameterExpression _node;
 
-        public ReadOnlyCollection<CatchBlock> Handlers
-        {
-            get { return _node.Handlers; }
-        }
+            public ParameterExpressionProxy(ParameterExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public ExpressionType NodeType
-        {
-            get { return _node.NodeType; }
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public bool IsByRef => _node.IsByRef;
+            public string Name => _node.Name;
+            public ExpressionType NodeType => _node.NodeType;
+            public Type Type => _node.Type;
         }
 
-        public Type Type
+        internal class RuntimeVariablesExpressionProxy
         {
-            get { return _node.Type; }
-        }
-    }
+            private readonly RuntimeVariablesExpression _node;
 
-    internal class TypeBinaryExpressionProxy
-    {
-        private readonly TypeBinaryExpression _node;
+            public RuntimeVariablesExpressionProxy(RuntimeVariablesExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public TypeBinaryExpressionProxy(TypeBinaryExpression node)
-        {
-            _node = node;
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public ExpressionType NodeType => _node.NodeType;
+            public Type Type => _node.Type;
+            public ReadOnlyCollection<ParameterExpression> Variables => _node.Variables;
         }
 
-        public bool CanReduce
+        internal class SwitchCaseProxy
         {
-            get { return _node.CanReduce; }
-        }
+            private readonly SwitchCase _node;
 
-        public string DebugView
-        {
-            get { return _node.DebugView; }
-        }
+            public SwitchCaseProxy(SwitchCase node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public Expression Expression
-        {
-            get { return _node.Expression; }
+            public Expression Body => _node.Body;
+            public ReadOnlyCollection<Expression> TestValues => _node.TestValues;
         }
 
-        public ExpressionType NodeType
+        internal class SwitchExpressionProxy
         {
-            get { return _node.NodeType; }
-        }
+            private readonly SwitchExpression _node;
 
-        public Type Type
-        {
-            get { return _node.Type; }
-        }
+            public SwitchExpressionProxy(SwitchExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public Type TypeOperand
-        {
-            get { return _node.TypeOperand; }
+            public bool CanReduce => _node.CanReduce;
+            public ReadOnlyCollection<SwitchCase> Cases => _node.Cases;
+            public MethodInfo Comparison => _node.Comparison;
+            public string DebugView => _node.DebugView;
+            public Expression DefaultBody => _node.DefaultBody;
+            public ExpressionType NodeType => _node.NodeType;
+            public Expression SwitchValue => _node.SwitchValue;
+            public Type Type => _node.Type;
         }
-    }
-
-    internal class UnaryExpressionProxy
-    {
-        private readonly UnaryExpression _node;
 
-        public UnaryExpressionProxy(UnaryExpression node)
+        internal class TryExpressionProxy
         {
-            _node = node;
-        }
+            private readonly TryExpression _node;
 
-        public bool CanReduce
-        {
-            get { return _node.CanReduce; }
-        }
+            public TryExpressionProxy(TryExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public string DebugView
-        {
-            get { return _node.DebugView; }
+            public Expression Body => _node.Body;
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public Expression Fault => _node.Fault;
+            public Expression Finally => _node.Finally;
+            public ReadOnlyCollection<CatchBlock> Handlers => _node.Handlers;
+            public ExpressionType NodeType => _node.NodeType;
+            public Type Type => _node.Type;
         }
 
-        public bool IsLifted
+        internal class TypeBinaryExpressionProxy
         {
-            get { return _node.IsLifted; }
-        }
+            private readonly TypeBinaryExpression _node;
 
-        public bool IsLiftedToNull
-        {
-            get { return _node.IsLiftedToNull; }
-        }
+            public TypeBinaryExpressionProxy(TypeBinaryExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public MethodInfo Method
-        {
-            get { return _node.Method; }
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public Expression Expression => _node.Expression;
+            public ExpressionType NodeType => _node.NodeType;
+            public Type Type => _node.Type;
+            public Type TypeOperand => _node.TypeOperand;
         }
 
-        public ExpressionType NodeType
+        internal class UnaryExpressionProxy
         {
-            get { return _node.NodeType; }
-        }
+            private readonly UnaryExpression _node;
 
-        public Expression Operand
-        {
-            get { return _node.Operand; }
-        }
+            public UnaryExpressionProxy(UnaryExpression node)
+            {
+                ContractUtils.RequiresNotNull(node, nameof(node));
+                _node = node;
+            }
 
-        public Type Type
-        {
-            get { return _node.Type; }
+            public bool CanReduce => _node.CanReduce;
+            public string DebugView => _node.DebugView;
+            public bool IsLifted => _node.IsLifted;
+            public bool IsLiftedToNull => _node.IsLiftedToNull;
+            public MethodInfo Method => _node.Method;
+            public ExpressionType NodeType => _node.NodeType;
+            public Expression Operand => _node.Operand;
+            public Type Type => _node.Type;
         }
     }
 }

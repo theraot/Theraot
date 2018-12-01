@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>..\bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET20;FAT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET20</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -39,7 +39,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET20_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
     <OutputPath>..\bin\NET20_Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;FAT;NET20</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET20</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -51,7 +51,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
     <OutputPath>..\bin\NET30_Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;FAT;NET30</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET30</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -63,7 +63,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
     <OutputPath>..\bin\NET35_Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;FAT;NET35</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -75,7 +75,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
     <OutputPath>..\bin\NET40_Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;FAT;NET40</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -87,7 +87,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45_Debug|AnyCPU' ">
     <Optimize>False</Optimize>
     <OutputPath>..\bin\NET45_Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;FAT;NET45</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -213,7 +213,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CLSCompliant.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="System\Action.net30.cs" />
     <Compile Include="System\Action10.net35.cs" />
     <Compile Include="System\Action11.net35.cs" />
@@ -230,6 +229,7 @@
     <Compile Include="System\Action7.net35.cs" />
     <Compile Include="System\Action8.net35.cs" />
     <Compile Include="System\Action9.net35.cs" />
+    <Compile Include="System\Collections\ArrayBuilder.cs" />
     <Compile Include="System\Collections\Concurrent\ConcurrentDictionary.net35.cs" />
     <Compile Include="System\Collections\Concurrent\ConcurrentQueue.net35.cs" />
     <Compile Include="System\Collections\Concurrent\ConcurrentStack.net35.cs" />
@@ -257,107 +257,154 @@
     <Compile Include="System\Diagnostics\Contracts\ContractReferenceAssemblyAttribute.net40.cs" />
     <Compile Include="System\Diagnostics\Contracts\ContractRuntimeIgnoredAttribute.net35.cs" />
     <Compile Include="System\Diagnostics\Contracts\ContractVerificationAttribute.net35.cs" />
+    <Compile Include="System\Dynamic\BinaryOperationBinder.net30.cs" />
+    <Compile Include="System\Dynamic\BindingRestrictions.net30.cs" />
+    <Compile Include="System\Dynamic\CallInfo.net30.cs" />
+    <Compile Include="System\Dynamic\ConvertBinder.net30.cs" />
+    <Compile Include="System\Dynamic\CreateInstanceBinder.net30.cs" />
+    <Compile Include="System\Dynamic\DeleteIndexBinder.net30.cs" />
+    <Compile Include="System\Dynamic\DeleteMemberBinder.net30.cs" />
+    <Compile Include="System\Dynamic\DynamicMetaObject.net30.cs" />
+    <Compile Include="System\Dynamic\DynamicMetaObjectBinder.net30.cs" />
+    <Compile Include="System\Dynamic\DynamicObject.net30.cs" />
+    <Compile Include="System\Dynamic\ExpandoClass.cs" />
+    <Compile Include="System\Dynamic\ExpandoObject.net30.cs" />
+    <Compile Include="System\Dynamic\GetIndexBinder.net30.cs" />
+    <Compile Include="System\Dynamic\GetMemberBinder.net30.cs" />
+    <Compile Include="System\Dynamic\IDynamicMetaObjectProvider.net30.cs" />
+    <Compile Include="System\Dynamic\IInvokeOnGetBinder.net30.cs" />
+    <Compile Include="System\Dynamic\InvokeBinder.net30.cs" />
+    <Compile Include="System\Dynamic\InvokeMemberBinder.net30.cs" />
+    <Compile Include="System\Dynamic\SetIndexBinder.net30.cs" />
+    <Compile Include="System\Dynamic\SetMemberBinder.net30.cs" />
+    <Compile Include="System\Dynamic\UnaryOperationBinder.net30.cs" />
     <Compile Include="System\Dynamic\Utils\CacheDict.cs" />
-    <Compile Include="System\Dynamic\Utils\ContractsUtil.cs" />
+    <Compile Include="System\Dynamic\Utils\CachedReflectionInfo.cs" />
+    <Compile Include="System\Dynamic\Utils\CollectionExtensions.cs" />
+    <Compile Include="System\Dynamic\Utils\ContractUtils.cs" />
     <Compile Include="System\Dynamic\Utils\DelegateHelpers.cs" />
-    <Compile Include="System\Dynamic\Utils\Error.cs" />
+    <Compile Include="System\Dynamic\Utils\EmptyReadOnlyCollection.cs" />
     <Compile Include="System\Dynamic\Utils\ExpressionUtils.cs" />
     <Compile Include="System\Dynamic\Utils\ExpressionVisitorUtils.cs" />
     <Compile Include="System\Dynamic\Utils\Helpers.cs" />
     <Compile Include="System\Dynamic\Utils\ListArgumentProvider.cs" />
-    <Compile Include="System\Dynamic\Utils\RuntimeOps.ExpressionQuoter.cs" />
-    <Compile Include="System\Dynamic\Utils\RuntimeOps.RuntimeVariableList.cs" />
-    <Compile Include="System\Dynamic\Utils\Strings.cs" />
+    <Compile Include="System\Dynamic\Utils\ListParameterProvider.cs" />
     <Compile Include="System\Dynamic\Utils\TrueReadOnlyCollection.cs" />
+    <Compile Include="System\Dynamic\Utils\TypeUtils.cs" />
     <Compile Include="System\Linq\Enumerable.join.net30.cs" />
     <Compile Include="System\Linq\Enumerable.groupjoin.net30.cs" />
     <Compile Include="System\Linq\Enumerable.groupby.net30.cs" />
+    <Compile Include="System\Linq\EnumerableQuery.cs" />
     <Compile Include="System\Linq\Expressions\BlockExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\CatchBlock.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\AnalyzedTree.net30.cs" />
+    <Compile Include="System\Linq\Expressions\Common\ArrayBuilderExtensions.cs" />
+    <Compile Include="System\Linq\Expressions\Common\CachedReflectionInfo.cs" />
+    <Compile Include="System\Linq\Expressions\Common\ConstantCheck.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\AnalyzedTree.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\AssemblyGen.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\BoundConstants.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\CompilerScope.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\CompilerScope.Storage.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\ConstantCheck.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\BoundConstants.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\CompilerScope.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\CompilerScope.Storage.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\DelegateHelpers.Generated.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\DelegateHelpers.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\HoistedLocals.net30.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\HoistedLocals.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\ILGen.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\KeyedQueue.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\LabelInfo.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Address.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Binary.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.ControlFlow.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Expressions.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Generated.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Lambda.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Logical.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Statements.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Unary.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.Bindings.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.Generated.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.Temps.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\VariableBinder.net30.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Address.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Binary.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.ControlFlow.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Expressions.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Generated.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Lambda.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Logical.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Statements.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Unary.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.Bindings.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.ChildRewriter.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.Generated.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.SpilledExpressionBlock.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.Temps.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\TypeInfoExtensions.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\VariableBinder.cs" />
     <Compile Include="System\Linq\Expressions\ConstantExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\DebugInfoExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\DebugViewWriter.net30.cs" />
     <Compile Include="System\Linq\Expressions\DefaultExpression.net30.cs" />
+    <Compile Include="System\Linq\Expressions\DynamicExpression.net30.cs" />
+    <Compile Include="System\Linq\Expressions\DynamicExpressionVisitor.net30.cs" />
     <Compile Include="System\Linq\Expressions\Error.cs" />
     <Compile Include="System\Linq\Expressions\Expression.DebuggerProxy.net30.cs" />
     <Compile Include="System\Linq\Expressions\Expression.net30.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionStringBuilder.net30.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTransformer.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionVisitor.net30.cs" />
+    <Compile Include="System\Linq\Expressions\Extensions.cs" />
     <Compile Include="System\Linq\Expressions\GotoExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\IArgumentProvider.net35.cs" />
     <Compile Include="System\Linq\Expressions\IDynamicExpression.net35.cs" />
     <Compile Include="System\Linq\Expressions\IndexExpression.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\AddInstruction.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\ArrayOperations.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\BranchLabel.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\CallInstruction.Generated.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\CallInstruction.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\ConstantCheck.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\ControlFlowInstructions.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\DivInstruction.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\EqualInstruction.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\FieldOperations.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\GreaterThanInstruction.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\ILightCallSiteBinder.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\Instruction.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\InstructionList.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\InterpretedFrame.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\Interpreter.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\LabelInfo.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\LessThanInstruction.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\LightCompiler.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\LightDelegateCreator.net30.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\AddInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\AndInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\ArrayOperations.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\BranchLabel.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\CallInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\ControlFlowInstructions.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\DecrementInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\DefaultValueInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\DivInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\EqualInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\ExclusiveOrInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\FieldOperations.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\GreaterThanInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\GreaterThanOrEqualInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\IncrementInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\Instruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\InstructionList.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\InterpretedFrame.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\Interpreter.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\LabelInfo.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\LeftShiftInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\LessThanInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\LessThanOrEqualInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\LightCompiler.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\LightDelegateCreator.cs" />
     <Compile Include="System\Linq\Expressions\Interpreter\LightLambda.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\LocalAccess.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\LocalVariables.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\MulInstruction.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\NotEqualInstruction.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\NumericConvertInstruction.net30.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\LocalAccess.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\LocalVariables.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\ModuloInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\MulInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\NegateInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\NewInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\NotEqualInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\NotInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\NullCheckInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\NumericConvertInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\OrInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\RightShiftInstruction.cs" />
     <Compile Include="System\Linq\Expressions\Interpreter\RuntimeVariables.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\StackOperations.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\SubInstruction.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\TypeOperations.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Interpreter\Utilities.net30.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\StackOperations.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\SubInstruction.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\TypeOperations.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\Utilities.cs" />
+    <Compile Include="System\Linq\Expressions\IParameterProvider.cs" />
+    <Compile Include="System\Linq\Expressions\LabelTarget.net30.cs" />
+    <Compile Include="System\Linq\Expressions\StackGuard.cs" />
+    <Compile Include="System\Linq\Expressions\SwitchCase.net30.cs" />
+    <Compile Include="System\Linq\Expressions\SymbolDocumentInfo.net30.cs" />
+    <Compile Include="System\Linq\Expressions\UnaryExpression.net30.cs" />
+    <Compile Include="System\Linq\Expressions\Utils.cs" />
     <Compile Include="System\Linq\Expressions\LabelExpression.net30.cs" />
-    <Compile Include="System\Linq\Expressions\LabelTarget.net35.cs" />
     <Compile Include="System\Linq\Expressions\LoopExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\NewExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\RuntimeVariablesExpression.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Set.net30.cs" />
     <Compile Include="System\Linq\Expressions\Strings.cs" />
-    <Compile Include="System\Linq\Expressions\SwitchCase.net30.cs" />
     <Compile Include="System\Linq\Expressions\SwitchExpression.net30.cs" />
-    <Compile Include="System\Linq\Expressions\SymbolDocumentInfo.net35.cs" />
     <Compile Include="System\Linq\Expressions\TryExpression.net30.cs" />
-    <Compile Include="System\Linq\Expressions\UnaryExpression.net30.cs" />
     <Compile Include="System\Linq\IQueryable.net30.cs" />
+    <Compile Include="System\Linq\QueryableEnumerable.cs" />
+    <Compile Include="System\Linq\QueryableTransformer.cs" />
     <Compile Include="System\Numerics\BigInteger.net35.cs" />
     <Compile Include="System\Numerics\BigIntegerBuilder.cs" />
     <Compile Include="System\Numerics\BigInteger.string.cs" />
@@ -376,11 +423,17 @@
     <Compile Include="System\Runtime\CompilerServices\CallerFilePathAttribute.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\CallerLineNumberAttribute.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\CallerMemberNameAttribute.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\CallSite.cs" />
+    <Compile Include="System\Runtime\CompilerServices\CallSiteBinder.cs" />
+    <Compile Include="System\Runtime\CompilerServices\CallSiteHelpers.cs" />
+    <Compile Include="System\Runtime\CompilerServices\CallSiteOps.cs" />
     <Compile Include="System\Runtime\CompilerServices\Closure.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ConditionalWeakTable.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ConfiguredTaskAwaitable.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\ConfiguredValueTaskAwaitable.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\ContractHelperEx.cs" />
+    <Compile Include="System\Runtime\CompilerServices\DebugInfoGenerator.cs" />
+    <Compile Include="System\Runtime\CompilerServices\DynamicAttribute.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\IAsyncMethodBuilder.cs" />
     <Compile Include="System\Runtime\CompilerServices\IAsyncStateMachine.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\ICriticalNotifyCompletion.net40.cs" />
@@ -388,11 +441,16 @@
     <Compile Include="System\Runtime\CompilerServices\IRuntimeVariables.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\IStrongBox.net30.cs" />
     <Compile Include="System\Runtime\CompilerServices\IteratorStateMachineAttribute.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ReadOnlyCollectionBuilder.cs" />
+    <Compile Include="System\Runtime\CompilerServices\RuleCache.cs" />
+    <Compile Include="System\Runtime\CompilerServices\RuntimeOps.ExpressionQuoter.cs" />
+    <Compile Include="System\Runtime\CompilerServices\RuntimeOps.MergedRuntimeVariables.cs" />
+    <Compile Include="System\Runtime\CompilerServices\RuntimeOps.RuntimeVariableList.cs" />
+    <Compile Include="System\Runtime\CompilerServices\RuntimeOps.RuntimeVariables.cs" />
     <Compile Include="System\Runtime\CompilerServices\StateMachineAttribute.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\TaskAwaiter.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\TupleElementNamesAttribute.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\ValueTaskAwaiter.net40.cs" />
-    <Compile Include="System\Runtime\CompilerServices\VoidTaskResult.cs" />
     <Compile Include="System\Runtime\CompilerServices\YieldAwaitable.net40.cs" />
     <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfo.net40.cs" />
     <Compile Include="System\Runtime\TargetedPatchingOptOutAttribute.net35.cs" />
@@ -445,7 +503,7 @@
     <Compile Include="System\Threading\Tasks\UnobservedTaskExceptionEventArgs.net35.cs" />
     <Compile Include="System\Threading\Tasks\ValueTask.net40.cs" />
     <Compile Include="System\ValueTuple.net40.cs" />
-    <Compile Include="System\TupleExtensions.net40.cs" />
+    <Compile Include="System\TupleExtensions.net45.cs" />
     <Compile Include="Theraot\Collections\ConversionSet.cs" />
     <Compile Include="Theraot\Collections\ConvertedObserver.cs" />
     <Compile Include="Theraot\Collections\CustomObserver.cs" />
@@ -455,11 +513,7 @@
     <Compile Include="Theraot\Collections\ExtendedDictionary.cs" />
     <Compile Include="Theraot\Collections\ExtendedList.cs" />
     <Compile Include="Theraot\Collections\ExtendedQueue.cs" />
-    <Compile Include="Theraot\Collections\ExtendedReadOnlyCollection.cs" />
-    <Compile Include="Theraot\Collections\ExtendedReadOnlyCollection.extended.cs" />
-    <Compile Include="Theraot\Collections\ExtendedReadOnlyDictionary.cs" />
     <Compile Include="Theraot\Collections\ExtendedReadOnlyList.cs" />
-    <Compile Include="Theraot\Collections\ExtendedReadOnlySet.cs" />
     <Compile Include="Theraot\Collections\ExtendedSet.cs" />
     <Compile Include="Theraot\Collections\ExtendedStack.cs" />
     <Compile Include="Theraot\Collections\Extensions.partition.cs" />
@@ -484,17 +538,7 @@
     <Compile Include="Theraot\Collections\Extensions._.cs" />
     <Compile Include="Theraot\Collections\FilteredConvertedObserver.cs" />
     <Compile Include="Theraot\Collections\FilteredObserver.cs" />
-    <Compile Include="Theraot\Collections\IDropPoint.cs" />
-    <Compile Include="Theraot\Collections\IExtendedCollection.cs" />
-    <Compile Include="Theraot\Collections\IExtendedDictionary.cs" />
-    <Compile Include="Theraot\Collections\IExtendedList.cs" />
-    <Compile Include="Theraot\Collections\IExtendedReadOnlyCollection.cs" />
-    <Compile Include="Theraot\Collections\IExtendedReadOnlyDictionary.cs" />
-    <Compile Include="Theraot\Collections\IExtendedReadOnlyList.cs" />
-    <Compile Include="Theraot\Collections\IExtendedReadOnlySet.cs" />
-    <Compile Include="Theraot\Collections\IExtendedSet.cs" />
     <Compile Include="Theraot\Collections\IProxyObservable.cs" />
-    <Compile Include="Theraot\Collections\IReadOnlyDropPoint.cs" />
     <Compile Include="Theraot\Collections\IReadOnlySet.cs" />
     <Compile Include="Theraot\Collections\KeyValuePairComparer.cs" />
     <Compile Include="Theraot\Collections\KeyValuePairEqualityComparer.cs" />
@@ -502,42 +546,38 @@
     <Compile Include="Theraot\Collections\ProgressiveCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Theraot\Collections\ProgressiveCollection.extended.cs" />
     <Compile Include="Theraot\Collections\ProgressiveDictionary.cs" />
     <Compile Include="Theraot\Collections\ProgressiveList.cs" />
-    <Compile Include="Theraot\Collections\ProgressiveList.extended.cs" />
     <Compile Include="Theraot\Collections\ProgressiveLookup.cs" />
     <Compile Include="Theraot\Collections\ProgressiveSet.cs" />
-    <Compile Include="Theraot\Collections\ProgressiveSet.extended.cs" />
     <Compile Include="Theraot\Collections\Progressor.cs" />
     <Compile Include="Theraot\Collections\ProxyObservable.cs" />
-    <Compile Include="Theraot\Collections\Specialized\AVLTree.AVLNode.cs" />
     <Compile Include="Theraot\Collections\Specialized\AVLTree.cs" />
-    <Compile Include="Theraot\Collections\Specialized\ConditionalExtendedEnumerable.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ConditionalExtendedList.cs" />
     <Compile Include="Theraot\Collections\Specialized\ConversionComparer.cs" />
     <Compile Include="Theraot\Collections\Specialized\ConversionEqualityComparer.cs" />
     <Compile Include="Theraot\Collections\Specialized\ConvertedValueCollection.cs" />
     <Compile Include="Theraot\Collections\Specialized\CustomComparer.cs" />
     <Compile Include="Theraot\Collections\Specialized\CustomEqualityComparer.cs" />
-    <Compile Include="Theraot\Collections\Specialized\DelegatedCollection.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ProxyCollection.cs" />
     <Compile Include="Theraot\Collections\Specialized\EnumCollection.cs" />
     <Compile Include="Theraot\Collections\Specialized\EnumerableFromDelegate.cs" />
-    <Compile Include="Theraot\Collections\Specialized\EnumerationCollection.cs" />
-    <Compile Include="Theraot\Collections\Specialized\EnumerationCollection.extended.cs" />
+    <Compile Include="Theraot\Collections\Specialized\EnumerationList.cs" />
     <Compile Include="Theraot\Collections\Specialized\EnumerationSet.cs" />
-    <Compile Include="Theraot\Collections\Specialized\ExtendedEnumerable.cs" />
     <Compile Include="Theraot\Collections\Specialized\ExtendedEnumerableBase.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ExtendedEnumerable.cs" />
     <Compile Include="Theraot\Collections\Specialized\FlagArray.cs" />
     <Compile Include="Theraot\Collections\Specialized\NeedleConversionEqualityComparer.cs" />
     <Compile Include="Theraot\Collections\Specialized\NullAwareDictionary.cs" />
-    <Compile Include="Theraot\Collections\Specialized\NullAwareDictionary.extended.cs" />
     <Compile Include="Theraot\Collections\Specialized\OrderedCollection.cs" />
+    <Compile Include="Theraot\Collections\Specialized\KeyedStack.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\ArrayReservoir.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\Bucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\DoAction.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\BucketHelper.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\CircularBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\IEvent.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\Node.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\SafeStack.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeQueue.cs" />
@@ -553,6 +593,8 @@
     <Compile Include="Theraot\Collections\ThreadSafe\SafeSet.cs" />
     <Compile Include="Theraot\Collections\Specialized\ValueCollection.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\BucketCore.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\StrongDelegateCollection.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\StrongEvent.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakDelegateCollection.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakEvent.cs" />
@@ -713,8 +755,8 @@
     <Compile Include="Theraot\Threading\ReentrantReadWriteLock.disposable.cs" />
     <Compile Include="Theraot\Threading\ReentrantReadWriteLock.cs" />
     <Compile Include="Theraot\Threading\ReentryGuard.cs" />
+    <Compile Include="Theraot\Threading\RuntimeUniqueIdProvider.cs" />
     <Compile Include="Theraot\Threading\Timeout.cs" />
-    <Compile Include="Theraot\Threading\RuntimeUniqueIdProdiver.cs" />
     <Compile Include="Theraot\Threading\Needles\LockableNeedle.cs" />
     <Compile Include="Theraot\Threading\ThreadingHelper.cs" />
     <Compile Include="Theraot\Threading\ThreadingHelper.extra.cs" />
@@ -758,16 +800,12 @@
     <Compile Include="System\Lazy2.net35.cs" />
     <Compile Include="System\LazyThreadSafetyMode.net35.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionType.net30.cs" />
-    <Compile Include="System\Linq\LinqCheck.cs" />
     <Compile Include="System\Linq\EnumerableExecutor.net35.cs" />
     <Compile Include="System\Linq\EnumerableExecutor1.net35.cs" />
-    <Compile Include="System\Linq\EnumerableQuery.cs" />
     <Compile Include="System\Linq\EnumerableQuery1.net35.cs" />
     <Compile Include="System\Linq\Expressions\BinaryExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\ConditionalExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\ElementInit.net30.cs" />
-    <Compile Include="System\Linq\Expressions\ExpressionTransformer.cs" />
-    <Compile Include="System\Linq\Expressions\Extensions.cs" />
     <Compile Include="System\Linq\Expressions\InvocationExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\LambdaExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\ListInitExpression.net30.cs" />
@@ -782,24 +820,14 @@
     <Compile Include="System\Linq\Expressions\ParameterExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\TypeBinaryExpression.net30.cs" />
     <Compile Include="Theraot\Collections\Specialized\Grouping.cs" />
-    <Compile Include="System\Linq\IOrderedQueryable.cs" />
     <Compile Include="System\Linq\IOrderedQueryable1.net30.cs" />
     <Compile Include="System\Linq\IQueryable1.net30.cs" />
     <Compile Include="System\Linq\IQueryProvider.net30.cs" />
-    <Compile Include="System\Linq\OrderedEnumerable.cs" />
-    <Compile Include="System\Linq\OrderedSequence.cs" />
     <Compile Include="System\Linq\ParallelExecutionMode.net35.cs" />
     <Compile Include="System\Linq\ParallelMergeOptions.net35.cs" />
     <Compile Include="System\Linq\Queryable.net30.cs" />
-    <Compile Include="System\Linq\QueryableEnumerable.cs" />
-    <Compile Include="System\Linq\QueryableTransformer.cs" />
-    <Compile Include="System\Linq\QuickSort.cs" />
-    <Compile Include="System\Linq\SortContext.cs" />
-    <Compile Include="System\Linq\SortDirection.cs" />
-    <Compile Include="System\Linq\SortSequenceContext.cs" />
     <Compile Include="System\Numerics\Complex.net35.cs" />
     <Compile Include="System\Progress.net40.cs" />
-    <Compile Include="System\Runtime\CompilerServices\DynamicAttribute.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ExecutionScope.net30.cs" />
     <Compile Include="System\Runtime\CompilerServices\ExtensionAttribute.net30.cs" />
     <Compile Include="System\Runtime\CompilerServices\StrongBox.net30.cs" />

@@ -26,17 +26,12 @@ namespace System.Runtime.CompilerServices
         /// <param name="stateMachine">The heap-allocated state machine object.</param><exception cref="T:System.ArgumentNullException">The <paramref name="stateMachine"/> argument was null (Nothing in Visual Basic).</exception><exception cref="T:System.InvalidOperationException">The builder is incorrectly initialized.</exception>
         public void SetStateMachine(IAsyncStateMachine stateMachine)
         {
-            if (stateMachine == null)
-            {
-                throw new ArgumentNullException(nameof(stateMachine));
-            }
-
             if (StateMachine != null)
             {
                 throw new InvalidOperationException("The builder was not properly initialized.");
             }
 
-            StateMachine = stateMachine;
+            StateMachine = stateMachine ?? throw new ArgumentNullException(nameof(stateMachine));
         }
 
         /// <summary>
@@ -64,10 +59,7 @@ namespace System.Runtime.CompilerServices
             {
                 try
                 {
-                    targetContext.Post(state =>
-                    {
-                        throw TaskAwaiter.PrepareExceptionForRethrow((Exception)state);
-                    }, exception);
+                    targetContext.Post(state => throw TaskAwaiter.PrepareExceptionForRethrow((Exception)state), exception);
                     return;
                 }
                 catch (Exception ex)
@@ -75,10 +67,7 @@ namespace System.Runtime.CompilerServices
                     exception = new AggregateException(exception, ex);
                 }
             }
-            ThreadPool.QueueUserWorkItem(state =>
-            {
-                throw TaskAwaiter.PrepareExceptionForRethrow((Exception)state);
-            }, exception);
+            ThreadPool.QueueUserWorkItem(state => throw TaskAwaiter.PrepareExceptionForRethrow((Exception)state), exception);
         }
 
         /// <summary>

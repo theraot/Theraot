@@ -98,13 +98,11 @@ namespace MonoTests.System.Collections.Concurrent
                 ParallelTestHelper.ParallelStressTest(coll, (q) =>
                 {
                     var s = true;
-                    int t;
-
                     for (var i = 0; i < Count; i++)
                     {
-                        s &= coll.TryTake(out t);
+                        s &= coll.TryTake(out _);
                         // try again in case it was a transient failure
-                        if (!s && coll.TryTake(out t))
+                        if (!s && coll.TryTake(out _))
                         {
                             s = true;
                         }

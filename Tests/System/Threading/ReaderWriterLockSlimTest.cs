@@ -511,7 +511,6 @@ namespace MonoTests.System.Threading
             {
                 var local = new[] { 10 };
                 var readyCount = 0;
-                var enteredCount = 0;
                 const int Thread_Count = 10;
 
                 var r = from i in Enumerable.Range(1, Thread_Count)
@@ -519,8 +518,7 @@ namespace MonoTests.System.Threading
                         {
                             Interlocked.Increment(ref readyCount);
                             v.EnterReadLock();
-                            Interlocked.Increment(ref enteredCount);
-
+                            v.ExitReadLock();
                             Assert.AreEqual(11, local[0]);
                         });
 

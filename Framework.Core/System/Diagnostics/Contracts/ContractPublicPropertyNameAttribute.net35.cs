@@ -14,17 +14,12 @@ namespace System.Diagnostics.Contracts
     [AttributeUsage(AttributeTargets.Field)]
     public sealed class ContractPublicPropertyNameAttribute : Attribute
     {
-        private readonly string _publicName;
-
         public ContractPublicPropertyNameAttribute(string name)
         {
-            _publicName = name;
+            Name = name;
         }
 
-        public string Name
-        {
-            get { return _publicName; }
-        }
+        public string Name { get; }
     }
 }
 

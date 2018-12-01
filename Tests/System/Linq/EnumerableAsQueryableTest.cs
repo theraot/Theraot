@@ -46,7 +46,7 @@ namespace MonoTests.System.Linq
         public void MyTestCleanup()
         {
             _array = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            _src = _array.AsQueryable<int>();
+            _src = _array.AsQueryable();
         }
 
         [Test]
@@ -65,32 +65,32 @@ namespace MonoTests.System.Linq
         [Test]
         public void Aggregate()
         {
-            Assert.AreEqual(_src.Aggregate<int>((n, m) => n + m), _array.Aggregate<int>((n, m) => n + m));
+            Assert.AreEqual(_src.Aggregate((n, m) => n + m), _array.Aggregate((n, m) => n + m));
         }
 
         [Test]
         public void All()
         {
-            Assert.AreEqual(_src.All<int>((n) => n < 11), _array.All<int>((n) => n < 11));
-            Assert.AreEqual(_src.All<int>((n) => n < 10), _array.All<int>((n) => n < 10));
+            Assert.AreEqual(_src.All((n) => n < 11), _array.All((n) => n < 11));
+            Assert.AreEqual(_src.All((n) => n < 10), _array.All((n) => n < 10));
         }
 
         [Test]
         public void Any()
         {
-            Assert.AreEqual(_src.Any<int>(i => i > 5), _array.Any<int>(i => i > 5));
+            Assert.AreEqual(_src.Any(i => i > 5), _array.Any(i => i > 5));
         }
 
         [Test]
         public void Average()
         {
-            Assert.AreEqual(_src.Average<int>((n) => 11), _array.Average<int>((n) => 11));
+            Assert.AreEqual(_src.Average((n) => 11), _array.Average((n) => 11));
         }
 
         [Test]
         public void Concat()
         {
-            Assert.AreEqual(_src.Concat<int>(_src).Count(), _array.Concat<int>(_src).Count());
+            Assert.AreEqual(_src.Concat(_src).Count(), _array.Concat(_src).Count());
         }
 
         [Test]
@@ -98,21 +98,22 @@ namespace MonoTests.System.Linq
         {
             for (var i = 1; i < 20; ++i)
             {
-                Assert.AreEqual(_src.Contains<int>(i), _array.Contains<int>(i));
+                Assert.AreEqual(_src.Contains(i), _array.Contains(i));
             }
         }
 
         [Test]
         public void Count()
         {
-            Assert.AreEqual(_src.Count<int>(), _array.Count<int>());
+            // ReSharper disable once UseCollectionCountProperty
+            Assert.AreEqual(_src.Count(), _array.Count());
         }
 
         [Test]
         public void Distinct()
         {
-            Assert.AreEqual(_src.Distinct<int>().Count(), _array.Distinct<int>().Count());
-            Assert.AreEqual(_src.Distinct<int>(new CustomEqualityComparer()).Count(), _array.Distinct<int>(new CustomEqualityComparer()).Count());
+            Assert.AreEqual(_src.Distinct().Count(), _array.Distinct().Count());
+            Assert.AreEqual(_src.Distinct(new CustomEqualityComparer()).Count(), _array.Distinct(new CustomEqualityComparer()).Count());
         }
 
         [Test]
@@ -120,7 +121,7 @@ namespace MonoTests.System.Linq
         {
             for (var i = 0; i < 10; ++i)
             {
-                Assert.AreEqual(_src.ElementAt<int>(i), _array.ElementAt<int>(i));
+                Assert.AreEqual(_src.ElementAt(i), _array.ElementAt(i));
             }
         }
 
@@ -129,36 +130,36 @@ namespace MonoTests.System.Linq
         {
             for (var i = 0; i < 10; ++i)
             {
-                Assert.AreEqual(_src.ElementAtOrDefault<int>(i), _array.ElementAtOrDefault<int>(i));
+                Assert.AreEqual(_src.ElementAtOrDefault(i), _array.ElementAtOrDefault(i));
             }
 
-            Assert.AreEqual(_src.ElementAtOrDefault<int>(100), _array.ElementAtOrDefault<int>(100));
+            Assert.AreEqual(_src.ElementAtOrDefault(100), _array.ElementAtOrDefault(100));
         }
 
         [Test]
         public void Except()
         {
             int[] except = { 1, 2, 3 };
-            Assert.AreEqual(_src.Except<int>(except.AsQueryable()).Count(), _array.Except<int>(except).Count());
+            Assert.AreEqual(_src.Except(except.AsQueryable()).Count(), _array.Except(except).Count());
         }
 
         [Test]
         public void First()
         {
-            Assert.AreEqual(_src.First<int>(), _array.First<int>());
+            Assert.AreEqual(_src.First(), _array.First());
         }
 
         [Test]
         public void FirstOrDefault()
         {
-            Assert.AreEqual(_src.FirstOrDefault<int>((n) => n > 5), _array.FirstOrDefault<int>((n) => n > 5));
-            Assert.AreEqual(_src.FirstOrDefault<int>((n) => n > 10), _array.FirstOrDefault<int>((n) => n > 10));
+            Assert.AreEqual(_src.FirstOrDefault((n) => n > 5), _array.FirstOrDefault((n) => n > 5));
+            Assert.AreEqual(_src.FirstOrDefault((n) => n > 10), _array.FirstOrDefault((n) => n > 10));
         }
 
         [Test]
         public void GroupBy()
         {
-            var grouping = _src.GroupBy<int, bool>((n) => n > 5);
+            var grouping = _src.GroupBy((n) => n > 5);
             Assert.AreEqual(grouping.Count(), 2);
             foreach (var group in grouping)
             {
@@ -170,90 +171,91 @@ namespace MonoTests.System.Linq
         public void Intersect()
         {
             int[] subset = { 1, 2, 3 };
-            var intersection = _src.Intersect<int>(subset.AsQueryable()).ToArray();
+            var intersection = _src.Intersect(subset.AsQueryable()).ToArray();
             Assert.AreEqual(subset, intersection);
         }
 
         [Test]
         public void Last()
         {
-            Assert.AreEqual(_src.Last<int>((n) => n > 1), _array.Last<int>((n) => n > 1));
+            Assert.AreEqual(_src.Last((n) => n > 1), _array.Last((n) => n > 1));
         }
 
         [Test]
         public void LastOrDefault()
         {
-            Assert.AreEqual(_src.LastOrDefault<int>(), _array.LastOrDefault<int>());
+            Assert.AreEqual(_src.LastOrDefault(), _array.LastOrDefault());
         }
 
         [Test]
         public void LongCount()
         {
-            Assert.AreEqual(_src.LongCount<int>(), _array.LongCount<int>());
+            Assert.AreEqual(_src.LongCount(), _array.LongCount());
         }
 
         [Test]
         public void Max()
         {
-            Assert.AreEqual(_src.Max<int>(), _array.Max<int>());
+            Assert.AreEqual(_src.Max(), _array.Max<int>());
         }
 
         [Test]
         public void Min()
         {
-            Assert.AreEqual(_src.Min<int>(), _array.Min<int>());
+            Assert.AreEqual(_src.Min(), _array.Min<int>());
         }
 
         [Test]
         public void OfType()
         {
+            // ReSharper disable once UseCollectionCountProperty
             Assert.AreEqual(_src.OfType<int>().Count(), _array.Count());
         }
 
         [Test]
         public void OrderBy()
         {
-            var arr1 = _array.OrderBy<int, int>((n) => n * -1).ToArray();
-            var arr2 = _src.OrderBy<int, int>((n) => n * -1).ToArray();
+            var arr1 = _array.OrderBy((n) => n * -1).ToArray();
+            var arr2 = _src.OrderBy((n) => n * -1).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
         [Test]
         public void OrderByDescending()
         {
-            var arr1 = _array.OrderBy<int, int>((n) => n).ToArray();
-            var arr2 = _src.OrderBy<int, int>((n) => n).ToArray();
+            var arr1 = _array.OrderBy((n) => n).ToArray();
+            var arr2 = _src.OrderBy((n) => n).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
         [Test]
         public void Reverse()
         {
-            var arr1 = _array.Reverse<int>().Reverse().ToArray();
-            var arr2 = _src.Reverse<int>().Reverse().ToArray();
+            var arr1 = _array.Reverse().Reverse().ToArray();
+            var arr2 = _src.Reverse().Reverse().ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
         [Test]
         public void Select()
         {
-            var arr1 = _array.Select<int, int>((n) => n - 1).ToArray();
-            var arr2 = _src.Select<int, int>((n) => n - 1).ToArray();
+            var arr1 = _array.Select((n) => n - 1).ToArray();
+            var arr2 = _src.Select((n) => n - 1).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
         [Test]
         public void SelectMany()
         {
-            var arr1 = _array.SelectMany<int, int>((n) => new[] { n, n, n }).ToArray();
-            var arr2 = _src.SelectMany<int, int>((n) => new[] { n, n, n }).ToArray();
+            var arr1 = _array.SelectMany((n) => new[] { n, n, n }).ToArray();
+            var arr2 = _src.SelectMany((n) => new[] { n, n, n }).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
         [Test]
         public void SequenceEqual()
         {
-            Assert.IsTrue(_src.SequenceEqual<int>(_src));
+            Assert.IsTrue(_src.SequenceEqual(_src));
         }
 
         [Test]
@@ -272,39 +274,39 @@ namespace MonoTests.System.Linq
         [Test]
         public void Skip()
         {
-            var arr1 = _array.Skip<int>(5).ToArray();
-            var arr2 = _src.Skip<int>(5).ToArray();
+            var arr1 = _array.Skip(5).ToArray();
+            var arr2 = _src.Skip(5).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
         [Test]
         public void SkipWhile()
         {
-            var arr1 = _src.SkipWhile<int>((n) => n < 6).ToArray();
-            var arr2 = _src.Skip<int>(5).ToArray();
+            var arr1 = _src.SkipWhile((n) => n < 6).ToArray();
+            var arr2 = _src.Skip(5).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
         [Test]
         public void Sum()
         {
-            Assert.AreEqual(_src.Sum<int>((n) => n), _array.Sum<int>((n) => n));
-            Assert.AreEqual(_src.Sum<int>((n) => n + 1), _array.Sum<int>((n) => n + 1));
+            Assert.AreEqual(_src.Sum((n) => n), _array.Sum((n) => n));
+            Assert.AreEqual(_src.Sum((n) => n + 1), _array.Sum((n) => n + 1));
         }
 
         [Test]
         public void Take()
         {
-            var arr1 = _array.Take<int>(3).ToArray();
-            var arr2 = _src.Take<int>(3).ToArray();
+            var arr1 = _array.Take(3).ToArray();
+            var arr2 = _src.Take(3).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
         [Test]
         public void TakeWhile()
         {
-            var arr1 = _array.TakeWhile<int>(n => n < 6).ToArray();
-            var arr2 = _src.TakeWhile<int>(n => n < 6).ToArray();
+            var arr1 = _array.TakeWhile(n => n < 6).ToArray();
+            var arr2 = _src.TakeWhile(n => n < 6).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
@@ -322,8 +324,8 @@ namespace MonoTests.System.Linq
         [Test]
         public void Where()
         {
-            var oddArray1 = _array.Where<int>((n) => (n % 2) == 1).ToArray();
-            var oddArray2 = _src.Where<int>((n) => (n % 2) == 1).ToArray();
+            var oddArray1 = _array.Where((n) => (n % 2) == 1).ToArray();
+            var oddArray2 = _src.Where((n) => (n % 2) == 1).ToArray();
             Assert.AreEqual(oddArray1, oddArray2);
         }
 
@@ -409,6 +411,7 @@ namespace MonoTests.System.Linq
             Assert.IsTrue(nonGen.AsQueryable() != null);
         }
 
+        // ReSharper disable once UnusedTypeParameter
         private class Bar<T1, T2> : IEnumerable<T2>
         {
             public IEnumerator<T2> GetEnumerator()

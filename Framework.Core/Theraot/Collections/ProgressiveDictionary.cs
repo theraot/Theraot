@@ -7,7 +7,7 @@ namespace Theraot.Collections
 {
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ProgressiveDictionary<TKey, TValue> : ProgressiveCollection<KeyValuePair<TKey, TValue>>, IReadOnlyDictionary<TKey, TValue>, IExtendedDictionary<TKey, TValue>, IDictionary<TKey, TValue>
+    public class ProgressiveDictionary<TKey, TValue> : ProgressiveCollection<KeyValuePair<TKey, TValue>>, IDictionary<TKey, TValue>
     {
         private readonly IDictionary<TKey, TValue> _cache;
         private readonly IEqualityComparer<TKey> _keyComparer;
@@ -27,110 +27,32 @@ namespace Theraot.Collections
         }
 
         protected ProgressiveDictionary(IEnumerable<KeyValuePair<TKey, TValue>> wrapped, IDictionary<TKey, TValue> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
-            : this(wrapped.GetEnumerator(), cache, new KeyValuePairEqualityComparer<TKey, TValue>(keyComparer, valueComparer))
+            : base(wrapped, cache ?? throw new ArgumentNullException(nameof(cache)), new KeyValuePairEqualityComparer<TKey, TValue>(keyComparer, valueComparer))
         {
-            if (cache == null)
-            {
-                throw new ArgumentNullException(nameof(cache));
-            }
-            _cache = cache;
+            _cache = (IDictionary<TKey, TValue>)Cache;
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
-            _valuesReadonly = new ProgressiveSet<TValue>(Progressor<TValue>.CreateConverted(Progressor, input => input.Value), valueComparer);
-            _keysReadonly = new ProgressiveSet<TKey>(Progressor<TKey>.CreateConverted(Progressor, input => input.Key), keyComparer);
+            _valuesReadonly = new ProgressiveSet<TValue>(Progressor.ConvertProgressive(input => input.Value), valueComparer);
+            _keysReadonly = new ProgressiveSet<TKey>(Progressor.ConvertProgressive(input => input.Key), keyComparer);
         }
 
-        protected ProgressiveDictionary(Progressor<KeyValuePair<TKey, TValue>> wrapped, IDictionary<TKey, TValue> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
-            : base
-            ((out KeyValuePair<TKey, TValue> pair) =>
-            {
-                again:
-                if (wrapped.TryTake(out pair))
-                {
-                    if (cache.ContainsKey(pair.Key))
-                    {
-                        goto again;
-                    }
-                    return true;
-                }
-                return false;
-            }, cache, new KeyValuePairEqualityComparer<TKey, TValue>(keyComparer, valueComparer))
+        protected ProgressiveDictionary(IObservable<KeyValuePair<TKey, TValue>> wrapped, IDictionary<TKey, TValue> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
+            : base(wrapped, cache ?? throw new ArgumentNullException(nameof(cache)), new KeyValuePairEqualityComparer<TKey, TValue>(keyComparer, valueComparer))
         {
-            if (cache == null)
-            {
-                throw new ArgumentNullException(nameof(cache));
-            }
-            _cache = cache;
+            _cache = (IDictionary<TKey, TValue>)Cache;
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
-            _keyComparer = EqualityComparer<TKey>.Default;
-            _valuesReadonly = new ProgressiveSet<TValue>(Progressor<TValue>.CreateConverted(Progressor, input => input.Value), valueComparer);
-            _keysReadonly = new ProgressiveSet<TKey>(Progressor<TKey>.CreateConverted(Progressor, input => input.Key), keyComparer);
+            _valuesReadonly = new ProgressiveSet<TValue>(Progressor.ConvertProgressive(input => input.Value), valueComparer);
+            _keysReadonly = new ProgressiveSet<TKey>(Progressor.ConvertProgressive(input => input.Key), keyComparer);
         }
 
-        private ProgressiveDictionary(IEnumerator<KeyValuePair<TKey, TValue>> enumerator, IDictionary<TKey, TValue> cache, KeyValuePairEqualityComparer<TKey, TValue> comparer)
-            : base((out KeyValuePair<TKey, TValue> pair) =>
-            {
-                again:
-                if (enumerator.MoveNext())
-                {
-                    pair = enumerator.Current;
-                    if (cache.ContainsKey(pair.Key))
-                    {
-                        goto again;
-                    }
-                    return true;
-                }
-                enumerator.Dispose();
-                pair = default;
-                return false;
-            }, cache, comparer)
-        {
-            //Empty
-        }
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => true;
 
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
-        {
-            get { return true; }
-        }
+        ICollection<TKey> IDictionary<TKey, TValue>.Keys => _keysReadonly;
 
-        ICollection<TKey> IDictionary<TKey, TValue>.Keys
-        {
-            get { return _keysReadonly; }
-        }
+        ICollection<TValue> IDictionary<TKey, TValue>.Values => _valuesReadonly;
 
-        ICollection<TValue> IDictionary<TKey, TValue>.Values
-        {
-            get { return _valuesReadonly; }
-        }
+        public IReadOnlyCollection<TKey> Keys => _keysReadonly;
 
-        IReadOnlyCollection<KeyValuePair<TKey, TValue>> IExtendedCollection<KeyValuePair<TKey, TValue>>.AsReadOnly
-        {
-            get { return this; }
-        }
-
-        IReadOnlyDictionary<TKey, TValue> IExtendedDictionary<TKey, TValue>.AsReadOnly
-        {
-            get { return this; }
-        }
-
-        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
-        {
-            get { return _keysReadonly; }
-        }
-
-        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values
-        {
-            get { return _valuesReadonly; }
-        }
-
-        public IReadOnlyCollection<TKey> Keys
-        {
-            get { return _keysReadonly; }
-        }
-
-        public IReadOnlyCollection<TValue> Values
-        {
-            get { return _valuesReadonly; }
-        }
+        public IReadOnlyCollection<TValue> Values => _valuesReadonly;
 
         TValue IDictionary<TKey, TValue>.this[TKey key]
         {
@@ -142,7 +64,7 @@ namespace Theraot.Collections
                 }
                 catch (KeyNotFoundException)
                 {
-                    while (Progressor.TryTake(out KeyValuePair<TKey, TValue> item))
+                    while (Progressor.TryTake(out var item))
                     {
                         if (_keyComparer.Equals(key, item.Key))
                         {
@@ -153,7 +75,7 @@ namespace Theraot.Collections
                 }
             }
 
-            set { throw new NotSupportedException(); }
+            set => throw new NotSupportedException();
         }
 
         public TValue this[TKey key]
@@ -166,7 +88,7 @@ namespace Theraot.Collections
                 }
                 catch (KeyNotFoundException)
                 {
-                    while (Progressor.TryTake(out KeyValuePair<TKey, TValue> item))
+                    while (Progressor.TryTake(out var item))
                     {
                         if (_keyComparer.Equals(key, item.Key))
                         {
@@ -184,7 +106,7 @@ namespace Theraot.Collections
             {
                 return true;
             }
-            while (Progressor.TryTake(out KeyValuePair<TKey, TValue> item))
+            while (Progressor.TryTake(out var item))
             {
                 if (_keyComparer.Equals(key, item.Key))
                 {
@@ -215,11 +137,6 @@ namespace Theraot.Collections
         }
 
         bool IDictionary<TKey, TValue>.Remove(TKey key)
-        {
-            throw new NotSupportedException();
-        }
-
-        bool IExtendedCollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item, IEqualityComparer<KeyValuePair<TKey, TValue>> comparer)
         {
             throw new NotSupportedException();
         }

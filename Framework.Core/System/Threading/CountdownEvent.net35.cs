@@ -30,25 +30,16 @@ namespace System.Threading
         {
             get
             {
-                var currentCount = Thread.VolatileRead(ref _currentCount);
+                var currentCount = Volatile.Read(ref _currentCount);
                 return currentCount >= 0 ? currentCount : 0;
             }
         }
 
         public int InitialCount { get; private set; }
 
-        public bool IsSet
-        {
-            get { return Thread.VolatileRead(ref _currentCount) <= 0; }
-        }
+        public bool IsSet => Volatile.Read(ref _currentCount) <= 0;
 
-        public WaitHandle WaitHandle
-        {
-            get
-            {
-                return GetEvent().WaitHandle;
-            }
-        }
+        public WaitHandle WaitHandle => GetEvent().WaitHandle;
 
         public void AddCount()
         {
@@ -63,7 +54,7 @@ namespace System.Threading
             }
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public void Dispose()
         {
             try
@@ -88,7 +79,7 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(count));
             }
-            Thread.VolatileWrite(ref _currentCount, count);
+            Volatile.Write(ref _currentCount, count);
             InitialCount = count;
             if (count == 0)
             {
@@ -103,7 +94,7 @@ namespace System.Threading
         public bool Signal()
         {
             var e = GetEvent();
-            if (Thread.VolatileRead(ref _currentCount) <= 0)
+            if (Volatile.Read(ref _currentCount) <= 0)
             {
                 throw new InvalidOperationException("Below Zero");
             }
@@ -127,7 +118,7 @@ namespace System.Threading
                 throw new ArgumentOutOfRangeException(nameof(signalCount));
             }
             var e = GetEvent();
-            if (ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _currentCount, -signalCount, out int lastValue))
+            if (ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _currentCount, -signalCount, out var lastValue))
             {
                 var result = lastValue - signalCount;
                 if (result == 0)
@@ -152,7 +143,7 @@ namespace System.Threading
                 throw new ArgumentOutOfRangeException(nameof(signalCount));
             }
             GC.KeepAlive(GetEvent());
-            if (ThreadingHelper.SpinWaitRelativeExchangeBounded(ref _currentCount, signalCount, 1, int.MaxValue, out int lastValue))
+            if (ThreadingHelper.SpinWaitRelativeExchangeBounded(ref _currentCount, signalCount, 1, int.MaxValue, out var lastValue))
             {
                 return true;
             }
@@ -215,10 +206,7 @@ namespace System.Threading
             if (disposing)
             {
                 var e = Interlocked.Exchange(ref _event, null);
-                if (e != null)
-                {
-                    e.Dispose();
-                }
+                e?.Dispose();
             }
         }
 

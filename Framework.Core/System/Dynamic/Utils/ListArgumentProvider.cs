@@ -1,8 +1,14 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+#if NET20 || NET30 || NET35
 
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq.Expressions;
+using LinqError = System.Linq.Expressions.Error;
 
 namespace System.Dynamic.Utils
 {
@@ -16,29 +22,57 @@ namespace System.Dynamic.Utils
     /// optimization.  See IArgumentProvider for more general information on the Expression
     /// tree optimizations being used here.
     /// </summary>
-    internal class ListArgumentProvider : IList<Expression>
+    internal sealed class ListArgumentProvider : ListProvider<Expression>
     {
         private readonly IArgumentProvider _provider;
-        private readonly Expression _arg0;
 
         internal ListArgumentProvider(IArgumentProvider provider, Expression arg0)
         {
             _provider = provider;
-            _arg0 = arg0;
+            First = arg0;
         }
 
-        #region IList<Expression> Members
+        protected override int ElementCount => _provider.ArgumentCount;
 
-        public int IndexOf(Expression item)
+        protected override Expression First { get; }
+
+        protected override Expression GetElement(int index) => _provider.GetArgument(index);
+    }
+
+    internal abstract class ListProvider<T> : IList<T>
+            where T : class
+    {
+        protected abstract int ElementCount { get; }
+        protected abstract T First { get; }
+
+        protected abstract T GetElement(int index);
+
+        #region IList<T> Members
+
+        public T this[int index]
         {
-            if (_arg0 == item)
+            get
+            {
+                if (index == 0)
+                {
+                    return First;
+                }
+
+                return GetElement(index);
+            }
+            set => throw ContractUtils.Unreachable;
+        }
+
+        public int IndexOf(T item)
+        {
+            if (First == item)
             {
                 return 0;
             }
 
-            for (var i = 1; i < _provider.ArgumentCount; i++)
+            for (int i = 1, n = ElementCount; i < n; i++)
             {
-                if (_provider.GetArgument(i) == item)
+                if (GetElement(i) == item)
                 {
                     return i;
                 }
@@ -47,7 +81,7 @@ namespace System.Dynamic.Utils
             return -1;
         }
 
-        public void Insert(int index, Expression item)
+        public void Insert(int index, T item)
         {
             throw ContractUtils.Unreachable;
         }
@@ -57,26 +91,15 @@ namespace System.Dynamic.Utils
             throw ContractUtils.Unreachable;
         }
 
-        public Expression this[int index]
-        {
-            get
-            {
-                if (index == 0)
-                {
-                    return _arg0;
-                }
+        #endregion IList<T> Members
 
-                return _provider.GetArgument(index);
-            }
+        #region ICollection<T> Members
 
-            set { throw ContractUtils.Unreachable; }
-        }
+        public int Count => ElementCount;
 
-        #endregion IList<Expression> Members
+        public bool IsReadOnly => true;
 
-        #region ICollection<Expression> Members
-
-        public void Add(Expression item)
+        public void Add(T item)
         {
             throw ContractUtils.Unreachable;
         }
@@ -86,63 +109,57 @@ namespace System.Dynamic.Utils
             throw ContractUtils.Unreachable;
         }
 
-        public bool Contains(Expression item)
-        {
-            return IndexOf(item) != -1;
-        }
+        public bool Contains(T item) => IndexOf(item) != -1;
 
-        public void CopyTo(Expression[] array, int arrayIndex)
+        public void CopyTo(T[] array, int index)
         {
-            array[arrayIndex++] = _arg0;
-            for (var i = 1; i < _provider.ArgumentCount; i++)
+            ContractUtils.RequiresNotNull(array, nameof(array));
+            if (index < 0)
             {
-                array[arrayIndex++] = _provider.GetArgument(i);
+                throw LinqError.ArgumentOutOfRange(nameof(index));
+            }
+
+            int n = ElementCount;
+            Debug.Assert(n > 0);
+            if (index + n > array.Length)
+            {
+                throw new ArgumentException();
+            }
+
+            array[index++] = First;
+            for (int i = 1; i < n; i++)
+            {
+                array[index++] = GetElement(i);
             }
         }
 
-        public int Count
-        {
-            get { return _provider.ArgumentCount; }
-        }
-
-        public bool IsReadOnly
-        {
-            get { return true; }
-        }
-
-        public bool Remove(Expression item)
+        public bool Remove(T item)
         {
             throw ContractUtils.Unreachable;
         }
 
-        #endregion ICollection<Expression> Members
+        #endregion ICollection<T> Members
 
-        #region IEnumerable<Expression> Members
+        #region IEnumerable<T> Members
 
-        public IEnumerator<Expression> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
-            yield return _arg0;
+            yield return First;
 
-            for (var i = 1; i < _provider.ArgumentCount; i++)
+            for (int i = 1, n = ElementCount; i < n; i++)
             {
-                yield return _provider.GetArgument(i);
+                yield return GetElement(i);
             }
         }
 
-        #endregion IEnumerable<Expression> Members
+        #endregion IEnumerable<T> Members
 
         #region IEnumerable Members
 
-        Collections.IEnumerator Collections.IEnumerable.GetEnumerator()
-        {
-            yield return _arg0;
-
-            for (var i = 1; i < _provider.ArgumentCount; i++)
-            {
-                yield return _provider.GetArgument(i);
-            }
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         #endregion IEnumerable Members
     }
 }
+
+#endif

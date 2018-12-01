@@ -18,7 +18,7 @@ namespace Theraot.Collections.ThreadSafe
     [Serializable]
 #endif
 
-    public sealed class FixedSizeQueue<T> : IEnumerable<T>, IProducerConsumerCollection<T>
+    public sealed class FixedSizeQueue<T> : IProducerConsumerCollection<T>
     {
         private readonly FixedSizeBucket<T> _entries;
         private int _indexDequeue;
@@ -58,20 +58,11 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Gets the number of items actually contained.
         /// </summary>
-        public int Count
-        {
-            get { return _entries.Count; }
-        }
+        public int Count => _entries.Count;
 
-        bool ICollection.IsSynchronized
-        {
-            get { return false; }
-        }
+        bool ICollection.IsSynchronized => false;
 
-        object ICollection.SyncRoot
-        {
-            get { throw new NotSupportedException(); }
-        }
+        object ICollection.SyncRoot => throw new NotSupportedException();
 
         public void CopyTo(T[] array, int index)
         {
@@ -104,11 +95,11 @@ namespace Theraot.Collections.ThreadSafe
         /// Returns the next item to be taken without removing it.
         /// </summary>
         /// <returns>The next item to be taken.</returns>
-        /// <exception cref="System.InvalidOperationException">No more items to be taken.</exception>
+        /// <exception cref="InvalidOperationException">No more items to be taken.</exception>
         public T Peek()
         {
             var index = Interlocked.Add(ref _indexEnqueue, 0);
-            if (index < Capacity && index > 0 && _entries.TryGet(index, out T item))
+            if (index < Capacity && index > 0 && _entries.TryGet(index, out var item))
             {
                 return item;
             }

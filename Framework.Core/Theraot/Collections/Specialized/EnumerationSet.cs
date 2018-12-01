@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Theraot.Collections.Specialized
 {
-    public class EnumerationSet<T> : EnumerationCollection<T>, ISet<T>, IReadOnlySet<T>, IExtendedReadOnlySet<T>, IExtendedSet<T>
+    public class EnumerationSet<T> : EnumerationList<T>, ISet<T>
     {
         public EnumerationSet(IEnumerable<T> wrapped)
             : base(wrapped)
@@ -41,21 +41,6 @@ namespace Theraot.Collections.Specialized
             : base(wrapped, count, contains)
         {
             //Empty
-        }
-
-        IReadOnlySet<T> IExtendedSet<T>.AsReadOnly
-        {
-            get { return this; }
-        }
-
-        bool IExtendedSet<T>.Add(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        bool IExtendedSet<T>.Remove(T item, IEqualityComparer<T> comparer)
-        {
-            throw new NotSupportedException();
         }
 
         bool ISet<T>.Add(T item)

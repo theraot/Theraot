@@ -8,7 +8,7 @@ namespace Theraot.Threading
     public sealed partial class VersionProvider
     {
         private Target _target;
-        private Advancer _tryAdvance;
+        private TryAdvance _tryAdvance;
 
         /// <summary>
         /// Creates a new VersionProvider
@@ -18,14 +18,14 @@ namespace Theraot.Threading
             _target = new Target(out _tryAdvance);
         }
 
-        internal delegate bool Advancer(out long number);
+        internal delegate bool TryAdvance(out long number);
 
         /// <summary>
         /// Advances the current up to date version
         /// </summary>
         public void Advance()
         {
-            if (!_tryAdvance.Invoke(out long number))
+            if (!_tryAdvance.Invoke(out _))
             {
                 _target = new Target(out _tryAdvance);
             }
@@ -37,7 +37,7 @@ namespace Theraot.Threading
         /// <returns>A VersionToken representing the advanced version</returns>
         public VersionToken AdvanceNewToken()
         {
-            if (!_tryAdvance.Invoke(out long number))
+            if (!_tryAdvance.Invoke(out var number))
             {
                 _target = new Target(out _tryAdvance);
             }

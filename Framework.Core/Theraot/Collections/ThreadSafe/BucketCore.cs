@@ -8,6 +8,7 @@ using Theraot.Threading;
 namespace Theraot.Collections.ThreadSafe
 {
 #if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+
     [Serializable]
 #endif
 
@@ -21,10 +22,10 @@ namespace Theraot.Collections.ThreadSafe
         private const long _lvl5 = _lvl4 * _capacity;
         private const long _lvl6 = _lvl5 * _capacity;
         private const long _lvl7 = _lvl6 * _capacity;
+        private readonly int _level;
         private object[] _arrayFirst;
         private object[] _arraySecond;
         private int[] _arrayUse;
-        private readonly int _level;
 
         public BucketCore(int level)
         {
@@ -222,56 +223,18 @@ namespace Theraot.Collections.ThreadSafe
             return PrivateEnumerableRange(indexFrom, indexTo, startSubIndex, endSubIndex);
         }
 
-        private IEnumerable<object> PrivateEnumerableRange(int indexFrom, int indexTo, int startSubIndex, int endSubIndex)
-        {
-            var step = endSubIndex - startSubIndex >= 0 ? 1 : -1;
-            for (var subindex = startSubIndex; subindex < endSubIndex + 1; subindex += step)
-            {
-                try
-                {
-                    Interlocked.Increment(ref _arrayUse[subindex]);
-                    var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subindex], null, null);
-                    if (_level == 1)
-                    {
-                        if (foundFirst == null)
-                        {
-                            continue;
-                        }
-                        yield return foundFirst;
-                    }
-                    else
-                    {
-                        if (!(foundFirst is BucketCore core))
-                        {
-                            continue;
-                        }
-                        var subIndexFrom = subindex == startSubIndex ? core.SubIndex(indexFrom) : 0;
-                        var subIndexTo = subindex == endSubIndex ? core.SubIndex(indexTo) : _capacity - 1;
-                        foreach (var item in core.PrivateEnumerableRange(indexFrom, indexTo, subIndexFrom, subIndexTo))
-                        {
-                            yield return item;
-                        }
-                    }
-                }
-                finally
-                {
-                    DoLeave(ref _arrayUse[subindex], ref _arrayFirst[subindex], ref _arraySecond[subindex]);
-                }
-            }
-        }
-
         public IEnumerator<object> GetEnumerator()
         {
-            for (var subindex = 0; subindex < _capacity; subindex++)
+            for (var subIndex = 0; subIndex < _capacity; subIndex++)
             {
-                var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subindex], null, null);
+                var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subIndex], null, null);
                 if (foundFirst == null)
                 {
                     continue;
                 }
                 try
                 {
-                    Interlocked.Increment(ref _arrayUse[subindex]);
+                    Interlocked.Increment(ref _arrayUse[subIndex]);
                     if (_level == 1)
                     {
                         yield return foundFirst;
@@ -286,7 +249,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 finally
                 {
-                    DoLeave(ref _arrayUse[subindex], ref _arrayFirst[subindex], ref _arraySecond[subindex]);
+                    DoLeave(ref _arrayUse[subIndex], ref _arrayFirst[subIndex], ref _arraySecond[subIndex]);
                 }
             }
         }
@@ -349,7 +312,7 @@ namespace Theraot.Collections.ThreadSafe
                         foundFirst = Interlocked.CompareExchange(ref first, result, null);
                         if (foundFirst == null)
                         {
-                            // _firstt was set to result
+                            // first was set to result
                             if (result != null)
                             {
                                 Interlocked.Increment(ref use);
@@ -434,6 +397,44 @@ namespace Theraot.Collections.ThreadSafe
             finally
             {
                 DoLeave(ref use, ref first, ref second);
+            }
+        }
+
+        private IEnumerable<object> PrivateEnumerableRange(int indexFrom, int indexTo, int startSubIndex, int endSubIndex)
+        {
+            var step = endSubIndex - startSubIndex >= 0 ? 1 : -1;
+            for (var subIndex = startSubIndex; subIndex < endSubIndex + 1; subIndex += step)
+            {
+                try
+                {
+                    Interlocked.Increment(ref _arrayUse[subIndex]);
+                    var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subIndex], null, null);
+                    if (_level == 1)
+                    {
+                        if (foundFirst == null)
+                        {
+                            continue;
+                        }
+                        yield return foundFirst;
+                    }
+                    else
+                    {
+                        if (!(foundFirst is BucketCore core))
+                        {
+                            continue;
+                        }
+                        var subIndexFrom = subIndex == startSubIndex ? core.SubIndex(indexFrom) : 0;
+                        var subIndexTo = subIndex == endSubIndex ? core.SubIndex(indexTo) : _capacity - 1;
+                        foreach (var item in core.PrivateEnumerableRange(indexFrom, indexTo, subIndexFrom, subIndexTo))
+                        {
+                            yield return item;
+                        }
+                    }
+                }
+                finally
+                {
+                    DoLeave(ref _arrayUse[subIndex], ref _arrayFirst[subIndex], ref _arraySecond[subIndex]);
+                }
             }
         }
 

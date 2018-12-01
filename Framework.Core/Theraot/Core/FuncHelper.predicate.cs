@@ -59,17 +59,12 @@ namespace Theraot.Core
 
         private static class HelperFallacyPredicate<T>
         {
-            private static readonly Predicate<T> _instance;
-
             static HelperFallacyPredicate()
             {
-                _instance = FallacyFunc;
+                Instance = FallacyFunc;
             }
 
-            public static Predicate<T> Instance
-            {
-                get { return _instance; }
-            }
+            public static Predicate<T> Instance { get; }
 
             private static bool FallacyFunc(T obj)
             {
@@ -80,17 +75,12 @@ namespace Theraot.Core
 
         private static class HelperTautologyPredicate<T>
         {
-            private static readonly Predicate<T> _instance;
-
             static HelperTautologyPredicate()
             {
-                _instance = TautologyFunc;
+                Instance = TautologyFunc;
             }
 
-            public static Predicate<T> Instance
-            {
-                get { return _instance; }
-            }
+            public static Predicate<T> Instance { get; }
 
             private static bool TautologyFunc(T obj)
             {
@@ -101,49 +91,31 @@ namespace Theraot.Core
 
         private class FuncWrapper<T>
         {
-            private readonly Func<T, bool> _func;
-
             public FuncWrapper(Func<T, bool> func)
             {
-                if (func == null)
-                {
-                    throw new ArgumentNullException(nameof(func));
-                }
-                _func = func;
+                Func = func ?? throw new ArgumentNullException(nameof(func));
             }
 
-            public Func<T, bool> Func
-            {
-                get { return _func; }
-            }
+            public Func<T, bool> Func { get; }
 
             public bool Invoke(T input)
             {
-                return _func.Invoke(input);
+                return Func.Invoke(input);
             }
         }
 
         private class PredicateWrapper<T>
         {
-            private readonly Predicate<T> _predicate;
-
             public PredicateWrapper(Predicate<T> predicate)
             {
-                if (predicate == null)
-                {
-                    throw new ArgumentNullException(nameof(predicate));
-                }
-                _predicate = predicate;
+                Predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
             }
 
-            public Predicate<T> Predicate
-            {
-                get { return _predicate; }
-            }
+            public Predicate<T> Predicate { get; }
 
             public bool Invoke(T input)
             {
-                return _predicate.Invoke(input);
+                return Predicate.Invoke(input);
             }
         }
     }

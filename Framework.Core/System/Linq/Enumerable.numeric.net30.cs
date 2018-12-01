@@ -822,13 +822,13 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(selector));
             }
-            TResult closureSelector(TSource item, int i) => selector(item);
+            TResult ClosureSelector(TSource item, int i) => selector(item);
             return Max
             (
                 SelectExtracted
                 (
                     source,
-                    closureSelector
+                    ClosureSelector
                 )
             );
         }
@@ -1399,13 +1399,13 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(selector));
             }
-            TResult closureSelector(TSource item, int i) => selector(item);
+            TResult ClosureSelector(TSource item, int i) => selector(item);
             return Min
             (
                 SelectExtracted
                 (
                     source,
-                    closureSelector
+                    ClosureSelector
                 )
             );
         }

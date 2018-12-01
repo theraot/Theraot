@@ -22,7 +22,7 @@ namespace Theraot.Core
         public InternalSpecialCancelException(string message, Exception inner)
             : base(message, inner)
         {
-            // EMpty
+            // Empty
         }
 
         protected InternalSpecialCancelException(SerializationInfo info, StreamingContext context)

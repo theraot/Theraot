@@ -12,15 +12,12 @@ namespace Theraot.Threading
             private readonly long _time = ThreadingHelper.TicksNow();
             private long _number = long.MinValue;
 
-            internal Target(out Advancer tryAdvance)
+            internal Target(out TryAdvance tryAdvance)
             {
                 tryAdvance = TryAdvance;
             }
 
-            public long Number
-            {
-                get { return _number; }
-            }
+            public long Number => _number;
 
             public static bool operator !=(Target left, Target right)
             {
@@ -78,7 +75,7 @@ namespace Theraot.Threading
 
             public override bool Equals(object obj)
             {
-                return obj is VersionProvider && Equals((VersionToken)obj); // TODO: Test coverage?
+                return obj is Target target && Equals(target);
             }
 
             public override int GetHashCode()

@@ -25,10 +25,7 @@ namespace System.Linq
             }
         }
 
-        public int Count
-        {
-            get { return _groupings.Count; }
-        }
+        public int Count => _groupings.Count;
 
         public IEnumerable<TElement> this[TKey key]
         {
@@ -44,7 +41,7 @@ namespace System.Linq
 
         public IEnumerable<TResult> ApplyResultSelector<TResult>(Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
         {
-            // MICROSFT doens't do a null check for resultSelector
+            // MICROSFT does not null check resultSelector
             foreach (var group in _groupings.Values)
             {
                 yield return resultSelector(group.Key, group);
@@ -111,12 +108,9 @@ namespace System.Linq
                 Key = key;
             }
 
-            public Collection<TElement> Items
-            {
-                get { return _items; }
-            }
+            public Collection<TElement> Items => _items;
 
-            public TKey Key { get; set; }
+            public TKey Key { get; }
 
             public IEnumerator<TElement> GetEnumerator()
             {

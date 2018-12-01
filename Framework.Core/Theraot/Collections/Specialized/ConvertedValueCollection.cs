@@ -14,37 +14,17 @@ namespace Theraot.Collections.Specialized
 
         internal ConvertedValueCollection(IDictionary<TKey, TInput> wrapped, Func<TInput, TValue> converter)
         {
-            if (wrapped == null)
-            {
-                throw new ArgumentNullException(nameof(wrapped));
-            }
-            if (converter == null)
-            {
-                throw new ArgumentNullException(nameof(converter));
-            }
-            _wrapped = wrapped;
-            _converter = converter;
+            _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
+            _converter = converter ?? throw new ArgumentNullException(nameof(converter));
         }
 
-        public int Count
-        {
-            get { return _wrapped.Count; }
-        }
+        public int Count => _wrapped.Count;
 
-        bool ICollection.IsSynchronized
-        {
-            get { return ((ICollection)_wrapped).IsSynchronized; }
-        }
+        bool ICollection.IsSynchronized => ((ICollection)_wrapped).IsSynchronized;
 
-        object ICollection.SyncRoot
-        {
-            get { return ((ICollection)_wrapped).SyncRoot; }
-        }
+        object ICollection.SyncRoot => ((ICollection)_wrapped).SyncRoot;
 
-        bool ICollection<TValue>.IsReadOnly
-        {
-            get { return true; }
-        }
+        bool ICollection<TValue>.IsReadOnly => true;
 
         public void CopyTo(TValue[] array, int arrayIndex)
         {

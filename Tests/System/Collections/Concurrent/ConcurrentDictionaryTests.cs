@@ -139,8 +139,7 @@ namespace MonoTests.System.Collections.Concurrent
         [Test, ExpectedException(typeof(KeyNotFoundException))]
         public void GetValueUnknownTest()
         {
-            int val;
-            Assert.IsFalse(_map.TryGetValue("barfoo", out val));
+            Assert.IsFalse(_map.TryGetValue("barfoo", out _));
             GC.KeepAlive(_map["barfoo"]);
         }
 
@@ -206,9 +205,8 @@ namespace MonoTests.System.Collections.Concurrent
             AssertThrowsArgumentNullException(() => _map.AddOrUpdate("", 0, null));
             AssertThrowsArgumentNullException(() => GC.KeepAlive(_map.ContainsKey(null)));
             AssertThrowsArgumentNullException(() => _map.GetOrAdd(null, 0));
-            int value;
-            AssertThrowsArgumentNullException(() => _map.TryGetValue(null, out value));
-            AssertThrowsArgumentNullException(() => _map.TryRemove(null, out value));
+            AssertThrowsArgumentNullException(() => _map.TryGetValue(null, out _));
+            AssertThrowsArgumentNullException(() => _map.TryRemove(null, out _));
             AssertThrowsArgumentNullException(() => _map.TryUpdate(null, 0, 0));
         }
 
@@ -268,7 +266,6 @@ namespace MonoTests.System.Collections.Concurrent
                 var r1 = false;
                 var r2 = false;
                 var r3 = false;
-                int val;
 
                 ParallelTestHelper.ParallelStressTest
                 (
@@ -279,15 +276,15 @@ namespace MonoTests.System.Collections.Concurrent
                         switch (own)
                         {
                             case 1:
-                                r1 = _map.TryRemove("foo", out val);
+                                r1 = _map.TryRemove("foo", out _);
                                 break;
 
                             case 2:
-                                r2 = _map.TryRemove("bar", out val);
+                                r2 = _map.TryRemove("bar", out _);
                                 break;
 
                             case 3:
-                                r3 = _map.TryRemove("foobar", out val);
+                                r3 = _map.TryRemove("foobar", out _);
                                 break;
 
                             default:
@@ -377,8 +374,7 @@ namespace MonoTests.System.Collections.Concurrent
 
             public override bool Equals(object obj)
             {
-                var temp = obj as DumbClass;
-                return temp != null && Equals(temp);
+                return obj is DumbClass temp && Equals(temp);
             }
 
             public bool Equals(DumbClass other)

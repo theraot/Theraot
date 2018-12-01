@@ -3,6 +3,7 @@
 using System.Diagnostics;
 using System.Security;
 using System.Threading.Tasks;
+using Theraot;
 
 namespace System.Runtime.CompilerServices
 {
@@ -21,17 +22,19 @@ namespace System.Runtime.CompilerServices
     public struct AsyncTaskMethodBuilder : IAsyncMethodBuilder
     {
         /// <summary>
-        /// A cached VoidTaskResult task used for builders that complete synchronously.
+        /// A cached VoidStruct task used for builders that complete synchronously.
         /// </summary>
-        private static readonly TaskCompletionSource<VoidTaskResult> _cachedCompleted = AsyncTaskMethodBuilder<VoidTaskResult>.DefaultResultTask;
+        private static readonly TaskCompletionSource<VoidStruct> _cachedCompleted = AsyncTaskMethodBuilder<VoidStruct>.DefaultResultTask;
 
         /// <summary>
         /// The generic builder object to which this non-generic instance delegates.
         /// </summary>
         // Note: this is a mutable struct, it has starts at the fault value and then it is mutated
-        // There is no need to asign it
+        // There is no need to assign it
         // It should not be readonly
-        private AsyncTaskMethodBuilder<VoidTaskResult> _builder;
+#pragma warning disable 649
+        private AsyncTaskMethodBuilder<VoidStruct> _builder;
+#pragma warning restore 649
 
         /// <summary>
         /// Gets the <see cref="T:System.Threading.Tasks.Task"/> for this builder.
@@ -41,10 +44,7 @@ namespace System.Runtime.CompilerServices
         /// The <see cref="T:System.Threading.Tasks.Task"/> representing the builder's asynchronous operation.
         /// </returns>
         /// <exception cref="T:System.InvalidOperationException">The builder is not initialized.</exception>
-        public Task Task
-        {
-            get { return _builder.Task; }
-        }
+        public Task Task => _builder.Task;
 
         /// <summary>
         /// Initializes a new <see cref="T:System.Runtime.CompilerServices.AsyncTaskMethodBuilder"/>.
@@ -164,9 +164,11 @@ namespace System.Runtime.CompilerServices
         /// State related to the IAsyncStateMachine.
         /// </summary>
         // Note: this is a mutable struct, it has starts at the fault value and then it is mutated
-        // There is no need to asign it
+        // There is no need to assign it
         // It should not be readonly
+#pragma warning disable 649
         private AsyncMethodBuilderCore _coreState;
+#pragma warning restore 649
 
         /// <summary>
         /// The lazily-initialized task completion source.
@@ -196,10 +198,7 @@ namespace System.Runtime.CompilerServices
         /// <returns>
         /// The <see cref="T:System.Threading.Tasks.Task`1"/> representing the builder's asynchronous operation.
         /// </returns>
-        public Task<TResult> Task
-        {
-            get { return CompletionSource.Task; }
-        }
+        public Task<TResult> Task => CompletionSource.Task;
 
         /// <summary>
         /// Gets the lazily-initialized TaskCompletionSource.
