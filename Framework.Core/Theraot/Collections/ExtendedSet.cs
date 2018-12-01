@@ -3,52 +3,42 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
-using Theraot.Core;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Theraot.Collections
 {
-    [System.Diagnostics.DebuggerNonUserCode]
-    [System.Diagnostics.DebuggerDisplay("Count={Count}")]
+    [DebuggerNonUserCode]
+    [DebuggerDisplay("Count={Count}")]
 #if FAT
-    public sealed class ExtendedSet<T> : IExtendedSet<T>, ICollection<T>, ISet<T>, ICloneable<ExtendedSet<T>>
+    public sealed class ExtendedSet<T> : ISet<T>, Core.ICloneable<ExtendedSet<T>>
     {
-        private readonly IReadOnlySet<T> _readOnly;
         private readonly HashSet<T> _wrapped;
 
         public ExtendedSet()
         {
             _wrapped = new HashSet<T>();
-            _readOnly = new ExtendedReadOnlySet<T>(this);
         }
 
         public ExtendedSet(IEnumerable<T> prototype)
         {
             _wrapped = new HashSet<T>();
-            _readOnly = new ExtendedReadOnlySet<T>(this);
             this.AddRange(prototype);
         }
 
         public ExtendedSet(IEnumerable<T> prototype, IEqualityComparer<T> comparer)
         {
             _wrapped = new HashSet<T>(comparer);
-            _readOnly = new ExtendedReadOnlySet<T>(this);
             this.AddRange(prototype);
         }
 
         public ExtendedSet(IEqualityComparer<T> comparer)
         {
-            _readOnly = new ExtendedReadOnlySet<T>(this);
             _wrapped = new HashSet<T>(comparer);
         }
 
-        public IReadOnlySet<T> AsReadOnly
-        {
-            get { return _readOnly; }
-        }
-
 #else
-    public sealed class ExtendedSet<T> : ICollection<T>, ISet<T>
+    public sealed class ExtendedSet<T> : ISet<T>
 #if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
         , ICloneable
 #endif
@@ -79,19 +69,19 @@ namespace Theraot.Collections
 
 #endif
 
-        public int Count
-        {
-            get { return _wrapped.Count; }
-        }
+        public int Count => _wrapped.Count;
 
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         public bool Add(T item)
         {
             return _wrapped.Add(item);
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            Add(item);
         }
 
         public void Clear()
@@ -104,6 +94,15 @@ namespace Theraot.Collections
             return new ExtendedSet<T>(this);
         }
 
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
+
+#endif
+
         public bool Contains(T item)
         {
             return _wrapped.Contains(item);
@@ -111,7 +110,7 @@ namespace Theraot.Collections
 
         public bool Contains(T item, IEqualityComparer<T> comparer)
         {
-            return System.Linq.Enumerable.Contains(_wrapped, item, comparer);
+            return Enumerable.Contains(_wrapped, item, comparer);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
@@ -140,18 +139,7 @@ namespace Theraot.Collections
         }
 
 #if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
-
-        object ICloneable.Clone()
-        {
-            return Clone();
-        }
-
 #endif
-
-        void ICollection<T>.Add(T item)
-        {
-            Add(item);
-        }
 
         IEnumerator IEnumerable.GetEnumerator()
         {

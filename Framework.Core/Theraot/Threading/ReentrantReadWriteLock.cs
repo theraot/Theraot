@@ -16,25 +16,13 @@ namespace Theraot.Threading
         private int _readCount;
         private int _writeCount;
 
-        public bool HasReader
-        {
-            get { return _readCount > 0; }
-        }
+        public bool HasReader => _readCount > 0;
 
-        public bool HasWriter
-        {
-            get { return _ownerThread != null; }
-        }
+        public bool HasWriter => _ownerThread != null;
 
-        public bool IsCurrentThreadReader
-        {
-            get { return _currentReadingCount.IsValueCreated && _currentReadingCount.Value > 0; }
-        }
+        public bool IsCurrentThreadReader => _currentReadingCount.IsValueCreated && _currentReadingCount.Value > 0;
 
-        public bool IsCurrentThreadWriter
-        {
-            get { return Thread.CurrentThread == _ownerThread; }
-        }
+        public bool IsCurrentThreadWriter => Thread.CurrentThread == _ownerThread;
 
         public IDisposable EnterRead()
         {

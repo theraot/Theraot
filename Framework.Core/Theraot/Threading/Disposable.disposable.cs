@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Threading;
 
 namespace Theraot.Threading
 {
@@ -6,7 +8,7 @@ namespace Theraot.Threading
     {
         private int _disposeStatus;
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         ~Disposable()
         {
             try
@@ -29,11 +31,11 @@ namespace Theraot.Threading
 
         public bool IsDisposed
         {
-            [System.Diagnostics.DebuggerNonUserCode]
-            get { return _disposeStatus == -1; }
+            [DebuggerNonUserCode]
+            get => _disposeStatus == -1;
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public void Dispose()
         {
             try
@@ -46,7 +48,7 @@ namespace Theraot.Threading
             }
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public void DisposedConditional(Action whenDisposed, Action whenNotDisposed)
         {
             if (_disposeStatus == -1)
@@ -68,7 +70,7 @@ namespace Theraot.Threading
                         }
                         finally
                         {
-                            System.Threading.Interlocked.Decrement(ref _disposeStatus);
+                            Interlocked.Decrement(ref _disposeStatus);
                         }
                     }
                     else
@@ -82,20 +84,20 @@ namespace Theraot.Threading
             }
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public TReturn DisposedConditional<TReturn>(Func<TReturn> whenDisposed, Func<TReturn> whenNotDisposed)
         {
             if (_disposeStatus == -1)
             {
                 if (ReferenceEquals(whenDisposed, null))
                 {
-                    return default(TReturn);
+                    return default;
                 }
                 return whenDisposed.Invoke();
             }
             if (ReferenceEquals(whenNotDisposed, null))
             {
-                return default(TReturn);
+                return default;
             }
             if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
             {
@@ -105,17 +107,17 @@ namespace Theraot.Threading
                 }
                 finally
                 {
-                    System.Threading.Interlocked.Decrement(ref _disposeStatus);
+                    Interlocked.Decrement(ref _disposeStatus);
                 }
             }
             if (ReferenceEquals(whenDisposed, null))
             {
-                return default(TReturn);
+                return default;
             }
             return whenDisposed.Invoke();
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         private void Dispose(bool disposeManagedResources)
         {
             GC.KeepAlive(disposeManagedResources);

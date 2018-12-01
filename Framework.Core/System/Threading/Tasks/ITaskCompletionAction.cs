@@ -30,6 +30,7 @@ namespace System.Threading.Tasks
             {
                 if (Interlocked.CompareExchange(ref _firstTaskAlreadyCompleted, 1, 0) == 0)
                 {
+                    // ReSharper disable once RedundantAssignment
                     var success = TrySetResult(completingTask);
                     Contract.Assert(success, "Only one task should have gotten to this point, and thus this must be successful.");
 
@@ -72,14 +73,11 @@ namespace System.Threading.Tasks
                     AddTask(task);
                 }
                 // Report we finished adding all tasks
-                Thread.VolatileWrite(ref _ready, 1);
+                Volatile.Write(ref _ready, 1);
                 CheckCount();
             }
 
-            public bool IsDone
-            {
-                get { return Interlocked.CompareExchange(ref _done, null, null) == null; }
-            }
+            public bool IsDone => Interlocked.CompareExchange(ref _done, null, null) == null;
 
             public void Dispose()
             {
@@ -124,13 +122,14 @@ namespace System.Threading.Tasks
                     return;
                 }
                 // Find the completing task and set it to null
-                // If we do not find it, it measn the continuation executed before the task was added
+                // If we do not find it, it means the continuation executed before the task was added
                 // Do not use IndexOf
                 for (var index = 0; index < tasks.Length; index++)
                 {
-                    if (tasks[index] == completingTask)
+                    ref var current = ref tasks[index];
+                    if (current == completingTask)
                     {
-                        tasks[index] = null;
+                        current = null;
                         break;
                     }
                 }
@@ -139,19 +138,9 @@ namespace System.Threading.Tasks
                 CheckCount();
             }
 
-            private void CheckCount()
-            {
-                var count = Thread.VolatileRead(ref _count);
-                // If count reached zero and we have finished adding all tasks, call done
-                if (count == 0 && Thread.VolatileRead(ref _ready) == 1)
-                {
-                    Done();
-                }
-            }
-
             private void AddTask(Task awaitedTask)
             {
-                Contract.Requires(Thread.VolatileRead(ref _ready) == 0);
+                Contract.Requires(Volatile.Read(ref _ready) == 0);
                 // Get the tasks
                 var tasks = Interlocked.CompareExchange(ref _tasks, null, null);
                 // If there are no tasks (Disposed) there is nothing to do
@@ -159,7 +148,7 @@ namespace System.Threading.Tasks
                 {
                     return;
                 }
-                // Only add tasks taht has not completed
+                // Only add tasks that has not completed
                 if (awaitedTask.Status == TaskStatus.RanToCompletion)
                 {
                     return;
@@ -198,22 +187,29 @@ namespace System.Threading.Tasks
                 }
             }
 
+            private void CheckCount()
+            {
+                var count = Volatile.Read(ref _count);
+                // If count reached zero and we have finished adding all tasks, call done
+                if (count == 0 && Volatile.Read(ref _ready) == 1)
+                {
+                    Done();
+                }
+            }
+
             private void Done()
             {
                 // Get and erase done
                 var done = Interlocked.Exchange(ref _done, null);
                 // If if was there, call it
-                if (done != null)
-                {
-                    done();
-                }
+                done?.Invoke();
             }
         }
 
-        // A Task<VoidTaskResult> that gets completed when all of its constituent tasks complete.
+        // A Task<VoidStruct> that gets completed when all of its constituent tasks complete.
         // Completion logic will analyze the antecedents in order to choose completion status.
         // This type allows us to replace this logic:
-        //      Task<VoidTaskResult> promise = new Task<VoidTaskResult>(...);
+        //      Task<VoidStruct> promise = new Task<VoidStruct>(...);
         //      Action<Task> completionAction = delegate { <completion logic>};
         //      TaskFactory.CommonCWAllLogic(tasksCopy).AddCompletionAction(completionAction);
         //      return promise;
@@ -245,17 +241,14 @@ namespace System.Threading.Tasks
             /// Returns whether we should notify the debugger of a wait completion.  This returns
             /// true iff at least one constituent task has its bit set.
             /// </summary>
-            internal override bool ShouldNotifyDebuggerOfWaitCompletion
-            {
-                get { return base.ShouldNotifyDebuggerOfWaitCompletion && AnyTaskRequiresNotifyDebuggerOfWaitCompletion(_tasks); }
-            }
+            internal override bool ShouldNotifyDebuggerOfWaitCompletion => base.ShouldNotifyDebuggerOfWaitCompletion && AnyTaskRequiresNotifyDebuggerOfWaitCompletion(_tasks);
 
             public void Invoke(Task completingTask)
             {
                 var count = Interlocked.Decrement(ref _count);
                 if (count == 0)
                 {
-                    if (Thread.VolatileRead(ref _ready) == 1)
+                    if (Volatile.Read(ref _ready) == 1)
                     {
                         Done();
                     }
@@ -264,7 +257,7 @@ namespace System.Threading.Tasks
 
             private void AddTask(Task awaitedTask)
             {
-                Contract.Requires(Thread.VolatileRead(ref _ready) == 0);
+                Contract.Requires(Volatile.Read(ref _ready) == 0);
                 Interlocked.Increment(ref _count);
                 if (!awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ true))
                 {
@@ -336,14 +329,14 @@ namespace System.Threading.Tasks
                 }
                 else
                 {
-                    TrySetResult(default(VoidStruct));
+                    TrySetResult(default);
                 }
             }
 
             private void Ready()
             {
-                Thread.VolatileWrite(ref _ready, 1);
-                if (Thread.VolatileRead(ref _count) == 0)
+                Volatile.Write(ref _ready, 1);
+                if (Volatile.Read(ref _count) == 0)
                 {
                     Done();
                 }
@@ -378,17 +371,14 @@ namespace System.Threading.Tasks
             /// Returns whether we should notify the debugger of a wait completion.  This returns
             /// true iff at least one constituent task has its bit set.
             /// </summary>
-            internal override bool ShouldNotifyDebuggerOfWaitCompletion
-            {
-                get { return base.ShouldNotifyDebuggerOfWaitCompletion && AnyTaskRequiresNotifyDebuggerOfWaitCompletion(_tasks); }
-            }
+            internal override bool ShouldNotifyDebuggerOfWaitCompletion => base.ShouldNotifyDebuggerOfWaitCompletion && AnyTaskRequiresNotifyDebuggerOfWaitCompletion(_tasks);
 
             public void Invoke(Task completingTask)
             {
                 var count = Interlocked.Decrement(ref _count);
                 if (count == 0)
                 {
-                    if (Thread.VolatileRead(ref _ready) == 1)
+                    if (Volatile.Read(ref _ready) == 1)
                     {
                         Done();
                     }
@@ -397,7 +387,7 @@ namespace System.Threading.Tasks
 
             private void AddTask(Task awaitedTask)
             {
-                Contract.Requires(Thread.VolatileRead(ref _ready) == 0);
+                Contract.Requires(Volatile.Read(ref _ready) == 0);
                 Interlocked.Increment(ref _count);
                 if (!awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ true))
                 {
@@ -483,8 +473,8 @@ namespace System.Threading.Tasks
 
             private void Ready()
             {
-                Thread.VolatileWrite(ref _ready, 1);
-                if (Thread.VolatileRead(ref _count) == 0)
+                Volatile.Write(ref _ready, 1);
+                if (Volatile.Read(ref _count) == 0)
                 {
                     Done();
                 }

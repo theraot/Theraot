@@ -8,26 +8,22 @@ namespace Theraot.Collections.ThreadSafe
     internal class Pool<T>
         where T : class
     {
-        private readonly UniqueId _id;
         private readonly FixedSizeQueue<T> _entries;
+        private readonly UniqueId _id;
         private readonly Action<T> _recycler;
 
         public Pool(int capacity)
         {
-            _id = RuntimeUniqueIdProdiver.GetNextId();
+            _id = RuntimeUniqueIdProvider.GetNextId();
             _entries = new FixedSizeQueue<T>(capacity);
             _recycler = GC.KeepAlive;
         }
 
         public Pool(int capacity, Action<T> recycler)
         {
-            if (recycler == null)
-            {
-                throw new ArgumentNullException("recycler");
-            }
-            _id = RuntimeUniqueIdProdiver.GetNextId();
+            _id = RuntimeUniqueIdProvider.GetNextId();
             _entries = new FixedSizeQueue<T>(capacity);
-            _recycler = recycler;
+            _recycler = recycler ?? throw new ArgumentNullException(nameof(recycler));
         }
 
         internal bool Donate(T entry)
@@ -42,8 +38,7 @@ namespace Theraot.Collections.ThreadSafe
                     if (entries != null && recycler != null)
                     {
                         recycler.Invoke(entry);
-                        entries.Add(entry);
-                        return true;
+                        return entries.TryAdd(entry);
                     }
                     return false;
                 }

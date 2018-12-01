@@ -37,7 +37,7 @@ namespace System.Threading.Tasks
         /// </remarks>
         public static Task Delay(TimeSpan delay)
         {
-            return Delay(delay, default(CancellationToken));
+            return Delay(delay, default);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace System.Threading.Tasks
             var milliseconds = (long)delay.TotalMilliseconds;
             if (milliseconds < -1 || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("delay", "The value needs to translate in milliseconds to - 1(signifying an infinite timeout), 0 or a positive integer less than or equal to Int32.MaxValue");
+                throw new ArgumentOutOfRangeException(nameof(delay), "The value needs to translate in milliseconds to - 1(signifying an infinite timeout), 0 or a positive integer less than or equal to Int32.MaxValue");
             }
 
             return Delay((int)milliseconds, cancellationToken);
@@ -81,7 +81,7 @@ namespace System.Threading.Tasks
         /// </remarks>
         public static Task Delay(int millisecondsDelay)
         {
-            return Delay(millisecondsDelay, default(CancellationToken));
+            return Delay(millisecondsDelay, default);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace System.Threading.Tasks
             // Throw on non-sensical time
             if (millisecondsDelay < -1)
             {
-                throw new ArgumentOutOfRangeException("millisecondsDelay", "The value needs to be either -1 (signifying an infinite timeout), 0 or a positive integer.");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsDelay), "The value needs to be either -1 (signifying an infinite timeout), 0 or a positive integer.");
             }
             Contract.EndContractBlock();
             // some short-cuts in case quick completion is in order

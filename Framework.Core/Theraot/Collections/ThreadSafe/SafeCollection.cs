@@ -12,9 +12,8 @@ namespace Theraot.Collections.ThreadSafe
     /// <typeparam name="T">The type of the value.</typeparam>
     public sealed class SafeCollection<T> : ICollection<T>
     {
-        private readonly IEqualityComparer<T> _comparer;
-        private SafeDictionary<int, T> _wrapped;
         private int _maxIndex;
+        private SafeDictionary<int, T> _wrapped;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SafeCollection{T}" /> class.
@@ -32,24 +31,15 @@ namespace Theraot.Collections.ThreadSafe
         public SafeCollection(IEqualityComparer<T> comparer)
         {
             _maxIndex = -1;
-            _comparer = comparer ?? EqualityComparer<T>.Default;
+            Comparer = comparer ?? EqualityComparer<T>.Default;
             _wrapped = new SafeDictionary<int, T>();
         }
 
-        public IEqualityComparer<T> Comparer
-        {
-            get { return _comparer; }
-        }
+        public IEqualityComparer<T> Comparer { get; }
 
-        public int Count
-        {
-            get { return _wrapped.Count; }
-        }
+        public int Count => _wrapped.Count;
 
-        bool ICollection<T>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection<T>.IsReadOnly => false;
 
         public void Add(T item)
         {
@@ -86,7 +76,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             foreach (var input in this)
             {
-                if (_comparer.Equals(input, item))
+                if (Comparer.Equals(input, item))
                 {
                     return true;
                 }
@@ -98,7 +88,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (itemCheck == null)
             {
-                throw new ArgumentNullException("itemCheck");
+                throw new ArgumentNullException(nameof(itemCheck));
             }
             foreach (var input in this)
             {
@@ -115,12 +105,13 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="System.ArgumentNullException">array</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
+        /// <exception cref="ArgumentNullException">array</exception>
+        /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
-            Enumerable(_wrapped).CopyTo(array, arrayIndex);
+            Extensions.CanCopyTo(Count, array, arrayIndex);
+            Extensions.CopyTo(Enumerable(_wrapped), array, arrayIndex);
         }
 
         /// <summary>
@@ -137,12 +128,9 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        private static IEnumerable<T> Enumerable(SafeDictionary<int, T> wrapped)
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            foreach (var pair in wrapped)
-            {
-                yield return pair.Value;
-            }
+            return GetEnumerator();
         }
 
         /// <summary>
@@ -154,8 +142,8 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(T item)
         {
-            Predicate<T> check = input => _comparer.Equals(input, item);
-            return _wrapped.RemoveWhereValueEnumerable(check).Any();
+            return _wrapped.RemoveWhereValueEnumerable(Check).Any();
+            bool Check(T input) => Comparer.Equals(input, item);
         }
 
         /// <summary>
@@ -172,7 +160,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             var matches = _wrapped.WhereValue(check);
             var count = 0;
@@ -200,14 +188,19 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
-            var matches = _wrapped.WhereValue(check);
-            foreach (var value in matches)
+            return RemoveWhereEnumerableExtracted();
+
+            IEnumerable<T> RemoveWhereEnumerableExtracted()
             {
-                if (Remove(value))
+                var matches = _wrapped.WhereValue(check);
+                foreach (var value in matches)
                 {
-                    yield return value;
+                    if (Remove(value))
+                    {
+                        yield return value;
+                    }
                 }
             }
         }
@@ -226,14 +219,17 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             return _wrapped.WhereValue(check);
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        private static IEnumerable<T> Enumerable(SafeDictionary<int, T> wrapped)
         {
-            return GetEnumerator();
+            foreach (var pair in wrapped)
+            {
+                yield return pair.Value;
+            }
         }
     }
 }

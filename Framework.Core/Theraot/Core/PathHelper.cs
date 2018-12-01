@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using Theraot.Collections;
 
-#if NET20 || NET30 || NET35 || NET40
+#if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
 
@@ -14,52 +14,38 @@ namespace Theraot.Core
 {
     public static class PathHelper
     {
-        private static readonly string _directorySeparatorString = Path.DirectorySeparatorChar.ToString();
-        private static readonly string _altDirectorySeparatorString = Path.AltDirectorySeparatorChar.ToString();
-        private static readonly string _volumeSeparatorString = Path.VolumeSeparatorChar.ToString();
-
-        public static string DirectorySeparatorString
-        {
-            get { return _directorySeparatorString; }
-        }
-
-        public static string AltDirectorySeparatorString
-        {
-            get { return _altDirectorySeparatorString; }
-        }
-
-        public static string VolumeSeparatorString
-        {
-            get { return _volumeSeparatorString; }
-        }
+        public static string AltDirectorySeparatorString { get; } = Path.AltDirectorySeparatorChar.ToString();
+        public static string DirectorySeparatorString { get; } = Path.DirectorySeparatorChar.ToString();
+        public static string VolumeSeparatorString { get; } = Path.VolumeSeparatorChar.ToString();
 
         public static string Combine(params string[] paths)
         {
 #if NET20 || NET30 || NET35
             if (paths == null)
             {
-                throw new ArgumentNullException("paths");
+                throw new ArgumentNullException(nameof(paths));
             }
             var combine = new List<string>();
             for (var index = paths.Length - 1; index >= 0; index--)
             {
-                if (HasInvalidPathChars(paths[index]))
+                ref var current = ref paths[index];
+                if (HasInvalidPathChars(current))
                 {
                     throw new ArgumentException("invalid characters in path");
                 }
-                if (string.Empty != paths[index])
+                if (current.Length != 0)
                 {
                     if (combine.Count > 0)
                     {
-                        if (!paths[index].EndsWith(_directorySeparatorString, StringComparison.Ordinal)
-                            && !paths[index].EndsWith(_altDirectorySeparatorString, StringComparison.Ordinal)
-                            && !paths[index].EndsWith(_volumeSeparatorString, StringComparison.Ordinal))
+                        if (!current.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
+                            && !current.EndsWith(AltDirectorySeparatorString, StringComparison.Ordinal)
+                            && !current.EndsWith(VolumeSeparatorString, StringComparison.Ordinal))
                         {
-                            paths[index] += _directorySeparatorString;
+                            current += DirectorySeparatorString;
                         }
                     }
-                    combine.Insert(0, paths[index]);
-                    if (Path.IsPathRooted(paths[index]))
+                    combine.Insert(0, current);
+                    if (Path.IsPathRooted(current))
                     {
                         break;
                     }
@@ -79,20 +65,20 @@ namespace Theraot.Core
             {
                 throw new ArgumentException("invalid characters in path");
             }
-            if (string.Empty != path2)
+            if (path2.Length != 0)
             {
                 if (Path.IsPathRooted(path2))
                 {
                     return path2;
                 }
             }
-            if (string.Empty != path1)
+            if (path1.Length != 0)
             {
-                if (!path1.EndsWith(_directorySeparatorString, StringComparison.Ordinal)
-                    && !path1.EndsWith(_altDirectorySeparatorString, StringComparison.Ordinal)
-                    && !path1.EndsWith(_volumeSeparatorString, StringComparison.Ordinal))
+                if (!path1.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
+                    && !path1.EndsWith(AltDirectorySeparatorString, StringComparison.Ordinal)
+                    && !path1.EndsWith(VolumeSeparatorString, StringComparison.Ordinal))
                 {
-                    path1 += _directorySeparatorString;
+                    path1 += DirectorySeparatorString;
                 }
             }
             return string.Concat(path1, path2);
@@ -108,33 +94,33 @@ namespace Theraot.Core
             {
                 throw new ArgumentException("invalid characters in path");
             }
-            if (string.Empty != path3)
+            if (path3.Length != 0)
             {
                 if (Path.IsPathRooted(path3))
                 {
                     return path3;
                 }
             }
-            if (string.Empty != path2)
+            if (path2.Length != 0)
             {
-                if (!path2.EndsWith(_directorySeparatorString, StringComparison.Ordinal)
-                    && !path2.EndsWith(_altDirectorySeparatorString, StringComparison.Ordinal)
-                    && !path2.EndsWith(_volumeSeparatorString, StringComparison.Ordinal))
+                if (!path2.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
+                    && !path2.EndsWith(AltDirectorySeparatorString, StringComparison.Ordinal)
+                    && !path2.EndsWith(VolumeSeparatorString, StringComparison.Ordinal))
                 {
-                    path2 += _directorySeparatorString;
+                    path2 += DirectorySeparatorString;
                 }
                 if (Path.IsPathRooted(path2))
                 {
                     return string.Concat(path2, path3);
                 }
             }
-            if (string.Empty != path1)
+            if (path1.Length != 0)
             {
-                if (!path1.EndsWith(_directorySeparatorString, StringComparison.Ordinal)
-                    && !path1.EndsWith(_altDirectorySeparatorString, StringComparison.Ordinal)
-                    && !path1.EndsWith(_volumeSeparatorString, StringComparison.Ordinal))
+                if (!path1.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
+                    && !path1.EndsWith(AltDirectorySeparatorString, StringComparison.Ordinal)
+                    && !path1.EndsWith(VolumeSeparatorString, StringComparison.Ordinal))
                 {
-                    path1 += _directorySeparatorString;
+                    path1 += DirectorySeparatorString;
                 }
             }
             return string.Concat(path1, path2, path3);
@@ -150,46 +136,46 @@ namespace Theraot.Core
             {
                 throw new ArgumentException("invalid characters in path");
             }
-            if (string.Empty != path4)
+            if (path4.Length != 0)
             {
                 if (Path.IsPathRooted(path4))
                 {
                     return path4;
                 }
             }
-            if (string.Empty != path3)
+            if (path3.Length != 0)
             {
-                if (!path3.EndsWith(_directorySeparatorString, StringComparison.Ordinal)
-                    && !path3.EndsWith(_altDirectorySeparatorString, StringComparison.Ordinal)
-                    && !path3.EndsWith(_volumeSeparatorString, StringComparison.Ordinal))
+                if (!path3.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
+                    && !path3.EndsWith(AltDirectorySeparatorString, StringComparison.Ordinal)
+                    && !path3.EndsWith(VolumeSeparatorString, StringComparison.Ordinal))
                 {
-                    path3 += _directorySeparatorString;
+                    path3 += DirectorySeparatorString;
                 }
                 if (Path.IsPathRooted(path3))
                 {
                     return string.Concat(path3, path4);
                 }
             }
-            if (string.Empty != path2)
+            if (path2.Length != 0)
             {
-                if (!path2.EndsWith(_directorySeparatorString, StringComparison.Ordinal)
-                    && !path2.EndsWith(_altDirectorySeparatorString, StringComparison.Ordinal)
-                    && !path2.EndsWith(_volumeSeparatorString, StringComparison.Ordinal))
+                if (!path2.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
+                    && !path2.EndsWith(AltDirectorySeparatorString, StringComparison.Ordinal)
+                    && !path2.EndsWith(VolumeSeparatorString, StringComparison.Ordinal))
                 {
-                    path2 += _directorySeparatorString;
+                    path2 += DirectorySeparatorString;
                 }
                 if (Path.IsPathRooted(path2))
                 {
                     return string.Concat(path2, path3, path4);
                 }
             }
-            if (string.Empty != path1)
+            if (path1.Length != 0)
             {
-                if (!path1.EndsWith(_directorySeparatorString, StringComparison.Ordinal)
-                    && !path1.EndsWith(_altDirectorySeparatorString, StringComparison.Ordinal)
-                    && !path1.EndsWith(_volumeSeparatorString, StringComparison.Ordinal))
+                if (!path1.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
+                    && !path1.EndsWith(AltDirectorySeparatorString, StringComparison.Ordinal)
+                    && !path1.EndsWith(VolumeSeparatorString, StringComparison.Ordinal))
                 {
-                    path1 += _directorySeparatorString;
+                    path1 += DirectorySeparatorString;
                 }
             }
             return string.Concat(path1, path2, path3, path4);
@@ -198,26 +184,26 @@ namespace Theraot.Core
 #endif
         }
 
-        public static bool HasInvalidPathChars(string path)
-        {
-            if (path == null)
-            {
-                throw new ArgumentNullException("path");
-            }
-            if (path == string.Empty)
-            {
-                return false;
-            }
-            return path.ContainsAny(Path.GetInvalidPathChars());
-        }
-
         public static bool HasInvalidFileNameChars(string fileName)
         {
             if (fileName == null)
             {
-                throw new ArgumentNullException("fileName");
+                throw new ArgumentNullException(nameof(fileName));
             }
             return fileName.ContainsAny(Path.GetInvalidFileNameChars());
+        }
+
+        public static bool HasInvalidPathChars(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+            if (path.Length == 0)
+            {
+                return false;
+            }
+            return path.ContainsAny(Path.GetInvalidPathChars());
         }
     }
 }

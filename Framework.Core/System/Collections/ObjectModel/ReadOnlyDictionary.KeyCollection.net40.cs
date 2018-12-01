@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace System.Collections.ObjectModel
 {
+    // ReSharper disable once UnusedTypeParameter
     public partial class ReadOnlyDictionary<TKey, TValue> // TValue is used in another file, this is a partial class
     {
         [Serializable]
@@ -13,47 +14,15 @@ namespace System.Collections.ObjectModel
 
             internal KeyCollection(ICollection<TKey> wrapped)
             {
-                if (wrapped == null)
-                {
-                    throw new ArgumentNullException("wrapped");
-                }
-                _wrapped = wrapped;
+                _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
             }
 
-            public int Count
-            {
-                get { return _wrapped.Count; }
-            }
+            public int Count => _wrapped.Count;
 
-            bool ICollection.IsSynchronized
-            {
-                get { return ((ICollection)_wrapped).IsSynchronized; }
-            }
+            bool ICollection<TKey>.IsReadOnly => true;
+            bool ICollection.IsSynchronized => ((ICollection)_wrapped).IsSynchronized;
 
-            object ICollection.SyncRoot
-            {
-                get { return ((ICollection)_wrapped).SyncRoot; }
-            }
-
-            bool ICollection<TKey>.IsReadOnly
-            {
-                get { return true; }
-            }
-
-            public void CopyTo(TKey[] array, int arrayIndex)
-            {
-                _wrapped.CopyTo(array, arrayIndex);
-            }
-
-            public IEnumerator<TKey> GetEnumerator()
-            {
-                return _wrapped.GetEnumerator();
-            }
-
-            void ICollection.CopyTo(Array array, int index)
-            {
-                ((ICollection)_wrapped).CopyTo(array, index);
-            }
+            object ICollection.SyncRoot => ((ICollection)_wrapped).SyncRoot;
 
             void ICollection<TKey>.Add(TKey item)
             {
@@ -70,14 +39,29 @@ namespace System.Collections.ObjectModel
                 return _wrapped.Contains(item);
             }
 
-            bool ICollection<TKey>.Remove(TKey item)
+            public void CopyTo(TKey[] array, int arrayIndex)
             {
-                throw new NotSupportedException();
+                _wrapped.CopyTo(array, arrayIndex);
+            }
+
+            void ICollection.CopyTo(Array array, int index)
+            {
+                ((ICollection)_wrapped).CopyTo(array, index);
+            }
+
+            public IEnumerator<TKey> GetEnumerator()
+            {
+                return _wrapped.GetEnumerator();
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
+            }
+
+            bool ICollection<TKey>.Remove(TKey item)
+            {
+                throw new NotSupportedException();
             }
         }
     }

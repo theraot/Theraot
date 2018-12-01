@@ -8,6 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		build.bat = build.bat
 		build_dotnet.bat = build_dotnet.bat
 		build_final.bat = build_final.bat
+		build_msbuild.bat = build_msbuild.bat
 		clear_package.bat = clear_package.bat
 		LICENSE.txt = LICENSE.txt
 		package.bat = package.bat

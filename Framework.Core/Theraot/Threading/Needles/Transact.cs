@@ -8,8 +8,6 @@ namespace Theraot.Threading.Needles
 {
     public sealed partial class Transact
     {
-        private static readonly LockContext<Thread> _context = new LockContext<Thread>(512);
-
         [ThreadStatic]
         private static Transact _currentTransaction;
 
@@ -28,20 +26,11 @@ namespace Theraot.Threading.Needles
             _thread = Thread.CurrentThread;
         }
 
-        public static Transact CurrentTransaction
-        {
-            get { return _currentTransaction; }
-        }
+        public static Transact CurrentTransaction => _currentTransaction;
 
-        public bool IsRoot
-        {
-            get { return _parentTransaction == null; }
-        }
+        public bool IsRoot => _parentTransaction == null;
 
-        private static LockContext<Thread> Context
-        {
-            get { return _context; }
-        }
+        private static LockContext<Thread> Context { get; } = new LockContext<Thread>(512);
 
         public static Needle<T> CreateNeedle<T>(T value)
         {
@@ -62,7 +51,7 @@ namespace Theraot.Threading.Needles
                     }
                     try
                     {
-                        ThreadingHelper.SpinWaitUntil(() => _context.ClaimSlot(out _lockSlot));
+                        ThreadingHelper.SpinWaitUntil(() => Context.ClaimSlot(out _lockSlot));
                         _lockSlot.Value = Thread.CurrentThread;
                         if (!Capture())
                         {
@@ -178,17 +167,17 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    currentTransaction.Uncapture();
+                    currentTransaction.Release();
                 }
             }
-            Uncapture();
+            Release();
             if (dispose)
             {
                 _currentTransaction = _parentTransaction;
             }
         }
 
-        private void Uncapture()
+        private void Release()
         {
             foreach (var resource in _readLog)
             {

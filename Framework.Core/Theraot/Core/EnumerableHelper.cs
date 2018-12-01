@@ -13,55 +13,70 @@ namespace Theraot.Core
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition));
             }
             if (iterate == null)
             {
-                throw new ArgumentNullException("iterate");
+                throw new ArgumentNullException(nameof(iterate));
             }
             var currentState = initialState;
-            do
+            return CreateExtracted();
+
+            IEnumerable<T> CreateExtracted()
             {
-                currentState = iterate.Invoke(currentState);
-                yield return currentState;
-            } while (condition.Invoke(currentState));
+                do
+                {
+                    currentState = iterate.Invoke(currentState);
+                    yield return currentState;
+                } while (condition.Invoke(currentState));
+            }
         }
 
         public static IEnumerable<TResult> Create<TState, TResult>(TState initialState, Func<TState, bool> condition, Func<TState, TState> iterate, Func<TState, TResult> resultSelector)
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition));
             }
             if (iterate == null)
             {
-                throw new ArgumentNullException("iterate");
+                throw new ArgumentNullException(nameof(iterate));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             var currentState = initialState;
-            do
+            return CreateExtracted();
+
+            IEnumerable<TResult> CreateExtracted()
             {
-                currentState = iterate.Invoke(currentState);
-                yield return resultSelector.Invoke(currentState);
-            } while (condition.Invoke(currentState));
+                do
+                {
+                    currentState = iterate.Invoke(currentState);
+                    yield return resultSelector.Invoke(currentState);
+                } while (condition.Invoke(currentState));
+            }
         }
 
         public static IEnumerable<T> Create<T>(Func<bool> condition, Func<T> iterate)
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition));
             }
             if (iterate == null)
             {
-                throw new ArgumentNullException("iterate");
+                throw new ArgumentNullException(nameof(iterate));
             }
-            while (condition.Invoke())
+            return CreateExtracted();
+
+            IEnumerable<T> CreateExtracted()
             {
-                yield return iterate.Invoke();
+                while (condition.Invoke())
+                {
+                    yield return iterate.Invoke();
+                }
             }
         }
 
@@ -69,19 +84,24 @@ namespace Theraot.Core
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition));
             }
             if (iterate == null)
             {
-                throw new ArgumentNullException("iterate");
+                throw new ArgumentNullException(nameof(iterate));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
-            while (condition.Invoke())
+            return CreateExtracted();
+
+            IEnumerable<TResult> CreateExtracted()
             {
-                yield return resultSelector(iterate.Invoke());
+                while (condition.Invoke())
+                {
+                    yield return resultSelector(iterate.Invoke());
+                }
             }
         }
 
@@ -89,12 +109,16 @@ namespace Theraot.Core
         {
             if (tryTake == null)
             {
-                throw new ArgumentNullException("tryTake");
+                throw new ArgumentNullException(nameof(tryTake));
             }
-            T item;
-            while (tryTake.Invoke(out item))
+            return CreateExtracted();
+
+            IEnumerable<T> CreateExtracted()
             {
-                yield return item;
+                while (tryTake.Invoke(out var item))
+                {
+                    yield return item;
+                }
             }
         }
 
@@ -102,16 +126,20 @@ namespace Theraot.Core
         {
             if (tryTake == null)
             {
-                throw new ArgumentNullException("tryTake");
+                throw new ArgumentNullException(nameof(tryTake));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
-            TState item;
-            while (tryTake.Invoke(out item))
+            return CreateExtracted();
+
+            IEnumerable<TResult> CreateExtracted()
             {
-                yield return converter.Invoke(item);
+                while (tryTake.Invoke(out var item))
+                {
+                    yield return converter.Invoke(item);
+                }
             }
         }
 
@@ -119,64 +147,88 @@ namespace Theraot.Core
         {
             if (iterate == null)
             {
-                throw new ArgumentNullException("iterate");
+                throw new ArgumentNullException(nameof(iterate));
             }
             var currentState = initialState;
-            while (true)
+            return CreateInfiniteExtracted();
+
+            IEnumerable<T> CreateInfiniteExtracted()
             {
-                currentState = iterate.Invoke(currentState);
-                yield return currentState;
+                while (true)
+                {
+                    currentState = iterate.Invoke(currentState);
+                    yield return currentState;
+                }
+                // Infinite Loop - This method creates an endless IEnumerable<T>
+                // ReSharper disable once IteratorNeverReturns
             }
-            // Infinite Loop - This method creates an endless IEnumerable<T>
         }
 
         public static IEnumerable<TResult> CreateInfinite<TState, TResult>(TState initialState, Func<TState, TState> iterate, Func<TState, TResult> resultSelector)
         {
             if (iterate == null)
             {
-                throw new ArgumentNullException("iterate");
+                throw new ArgumentNullException(nameof(iterate));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
             var currentState = initialState;
-            while (true)
+            return CreateInfiniteExtracted();
+
+            IEnumerable<TResult> CreateInfiniteExtracted()
             {
-                currentState = iterate.Invoke(currentState);
-                yield return resultSelector.Invoke(currentState);
+                while (true)
+                {
+                    currentState = iterate.Invoke(currentState);
+                    yield return resultSelector.Invoke(currentState);
+                }
+                // Infinite Loop - This method creates an endless IEnumerable<T>
+                // ReSharper disable once IteratorNeverReturns
             }
-            // Infinite Loop - This method creates an endless IEnumerable<T>
         }
 
         public static IEnumerable<T> CreateInfinite<T>(Func<T> iterate)
         {
             if (iterate == null)
             {
-                throw new ArgumentNullException("iterate");
+                throw new ArgumentNullException(nameof(iterate));
             }
-            while (true)
+            return CreateInfiniteExtracted();
+
+            IEnumerable<T> CreateInfiniteExtracted()
             {
-                yield return iterate.Invoke();
+                while (true)
+                {
+                    yield return iterate.Invoke();
+                }
+                // Infinite Loop - This method creates an endless IEnumerable<T>
+                // ReSharper disable once IteratorNeverReturns
             }
-            // Infinite Loop - This method creates an endless IEnumerable<T>
         }
 
         public static IEnumerable<TResult> CreateInfinite<TState, TResult>(Func<TState> iterate, Func<TState, TResult> resultSelector)
         {
             if (iterate == null)
             {
-                throw new ArgumentNullException("iterate");
+                throw new ArgumentNullException(nameof(iterate));
             }
             if (resultSelector == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException(nameof(resultSelector));
             }
-            while (true)
+            return CreateInfiniteExtracted();
+
+            IEnumerable<TResult> CreateInfiniteExtracted()
             {
-                yield return resultSelector(iterate.Invoke());
+                while (true)
+                {
+                    yield return resultSelector(iterate.Invoke());
+                }
+                // Infinite Loop - This method creates an endless IEnumerable<T>
+                // ReSharper disable once IteratorNeverReturns
             }
-            // Infinite Loop - This method creates an endless IEnumerable<T>
         }
     }
 }

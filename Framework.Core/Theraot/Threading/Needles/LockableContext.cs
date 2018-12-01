@@ -18,9 +18,9 @@ namespace Theraot.Threading.Needles
 
         internal LockableSlot Slot
         {
-            get { return _slots.Value.Value; }
+            get => _slots.Value.Value;
 
-            set { _slots.Value.Value = value; }
+            set => _slots.Value.Value = value;
         }
 
         public IDisposable Enter()

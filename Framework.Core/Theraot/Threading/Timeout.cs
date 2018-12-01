@@ -28,15 +28,11 @@ namespace Theraot.Threading
 
         public Timeout(Action callback, long dueTime)
         {
-            if (callback == null)
-            {
-                throw new ArgumentNullException("callback");
-            }
             if (dueTime < -1)
             {
-                throw new ArgumentOutOfRangeException("dueTime");
+                throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
-            Callback = callback;
+            Callback = callback ?? throw new ArgumentNullException(nameof(callback));
             Start(dueTime);
             _hashcode = unchecked((int)DateTime.Now.Ticks);
         }
@@ -45,11 +41,11 @@ namespace Theraot.Threading
         {
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
             if (dueTime < -1)
             {
-                throw new ArgumentOutOfRangeException("dueTime");
+                throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
             if (token.IsCancellationRequested)
             {
@@ -88,35 +84,23 @@ namespace Theraot.Threading
             Close();
         }
 
-        Exception IPromise.Exception
-        {
-            get { return null; }
-        }
+        Exception IPromise.Exception => null;
 
-        public bool IsCanceled
-        {
-            get { return Volatile.Read(ref _status) == _canceled; }
-        }
+        public bool IsCanceled => Volatile.Read(ref _status) == _canceled;
 
-        public bool IsCompleted
-        {
-            get { return Volatile.Read(ref _status) == _executed; }
-        }
+        public bool IsCompleted => Volatile.Read(ref _status) == _executed;
 
-        bool IPromise.IsFaulted
-        {
-            get { return false; }
-        }
+        bool IPromise.IsFaulted => false;
 
         public static void Launch(Action callback, long dueTime)
         {
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
             if (dueTime < -1)
             {
-                throw new ArgumentOutOfRangeException("dueTime");
+                throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
             var timeout = new Timeout();
             timeout.Callback = () =>
@@ -138,11 +122,11 @@ namespace Theraot.Threading
         {
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
             if (dueTime < -1)
             {
-                throw new ArgumentOutOfRangeException("dueTime");
+                throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
             if (token.IsCancellationRequested)
             {
@@ -188,7 +172,7 @@ namespace Theraot.Threading
         {
             if (dueTime < -1)
             {
-                throw new ArgumentOutOfRangeException("dueTime");
+                throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
             if (Interlocked.CompareExchange(ref _status, _changing, _created) == _created)
             {
@@ -266,7 +250,7 @@ namespace Theraot.Threading
         {
             if (dueTime < -1)
             {
-                throw new ArgumentOutOfRangeException("dueTime");
+                throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
             _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
             if (dueTime == -1)
@@ -283,10 +267,7 @@ namespace Theraot.Threading
         private void Close()
         {
             var wrapped = Interlocked.Exchange(ref _wrapped, null);
-            if (wrapped != null)
-            {
-                wrapped.Dispose();
-            }
+            wrapped?.Dispose();
             Volatile.Write(ref Callback, null);
             GC.SuppressFinalize(this);
         }
@@ -314,11 +295,11 @@ namespace Theraot.Threading
         {
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
             if (dueTime < -1)
             {
-                throw new ArgumentOutOfRangeException("dueTime");
+                throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
             Callback = new ValueActionClosure<T>(callback, target).Invoke;
             Start(dueTime);
@@ -328,11 +309,11 @@ namespace Theraot.Threading
         {
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
             if (dueTime < -1)
             {
-                throw new ArgumentOutOfRangeException("dueTime");
+                throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
             if (token.IsCancellationRequested)
             {
@@ -368,11 +349,11 @@ namespace Theraot.Threading
         {
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
             if (dueTime < -1)
             {
-                throw new ArgumentOutOfRangeException("dueTime");
+                throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
             var timeout = new Timeout<T>();
             timeout.Callback = () =>
@@ -394,11 +375,11 @@ namespace Theraot.Threading
         {
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
             if (dueTime < -1)
             {
-                throw new ArgumentOutOfRangeException("dueTime");
+                throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
             if (token.IsCancellationRequested)
             {

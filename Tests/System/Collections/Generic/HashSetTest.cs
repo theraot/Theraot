@@ -459,10 +459,12 @@ namespace MonoTests.System.Collections.Generic
 
         private static void AssertContainsOnly<T>(IEnumerable<T> result, IEnumerable<T> data)
         {
-            Assert.AreEqual(result.Count(), data.Count()); // TODO: Review
+            var resultAsArray = result.ToArray();
+            var dataAsArray = data.ToArray();
+            Assert.AreEqual(resultAsArray.Length, dataAsArray.Length);
 
-            var store = new List<T>(result);
-            foreach (var element in data)
+            var store = new List<T>(resultAsArray);
+            foreach (var element in dataAsArray)
             {
                 Assert.IsTrue(store.Contains(element));
                 store.Remove(element);
@@ -502,26 +504,33 @@ namespace MonoTests.System.Collections.Generic
         {
             using (var e1 = new HashSet<int>.Enumerator()) // TODO: Review
             {
+                // ReSharper disable once AccessToDisposedClosure
                 Assert.IsFalse(Throws(() => GC.KeepAlive(e1.Current)));
 
                 var d = new HashSet<int>();
                 var e2 = d.GetEnumerator();
+                // ReSharper disable once AccessToDisposedClosure
                 Assert.IsFalse(Throws(() => GC.KeepAlive(e2.Current)));
                 e2.MoveNext();
+                // ReSharper disable once AccessToDisposedClosure
                 Assert.IsFalse(Throws(() => GC.KeepAlive(e2.Current)));
                 e2.Dispose();
                 Assert.IsFalse(Throws(() => GC.KeepAlive(e2.Current)));
 
                 var e3 = ((IEnumerable<int>)d).GetEnumerator();
+                // ReSharper disable once AccessToDisposedClosure
                 Assert.IsFalse(Throws(() => GC.KeepAlive(e3.Current)));
                 e3.MoveNext();
+                // ReSharper disable once AccessToDisposedClosure
                 Assert.IsFalse(Throws(() => GC.KeepAlive(e3.Current)));
                 e3.Dispose();
                 Assert.IsFalse(Throws(() => GC.KeepAlive(e3.Current)));
 
                 var e4 = ((IEnumerable)d).GetEnumerator();
+                // ReSharper disable once AccessToDisposedClosure
                 Assert.IsTrue(Throws(() => GC.KeepAlive(e4.Current)));
                 e4.MoveNext();
+                // ReSharper disable once AccessToDisposedClosure
                 Assert.IsTrue(Throws(() => GC.KeepAlive(e4.Current)));
                 ((IDisposable)e4).Dispose();
                 Assert.IsTrue(Throws(() => GC.KeepAlive(e4.Current)));

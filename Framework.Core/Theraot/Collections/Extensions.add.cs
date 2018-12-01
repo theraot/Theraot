@@ -11,11 +11,11 @@ namespace Theraot.Collections
         {
             if (collection == null)
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
             }
             if (items == null)
             {
-                throw new ArgumentNullException("items");
+                throw new ArgumentNullException(nameof(items));
             }
             var count = 0;
             foreach (var item in items)
@@ -30,16 +30,21 @@ namespace Theraot.Collections
         {
             if (collection == null)
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
             }
             if (items == null)
             {
-                throw new ArgumentNullException("items");
+                throw new ArgumentNullException(nameof(items));
             }
-            foreach (var item in items)
+            return AddRangeEnumerableExtracted();
+
+            IEnumerable<T> AddRangeEnumerableExtracted()
             {
-                collection.Add(item);
-                yield return item;
+                foreach (var item in items)
+                {
+                    collection.Add(item);
+                    yield return item;
+                }
             }
         }
     }

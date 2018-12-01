@@ -3,16 +3,14 @@
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Core
 {
     public static partial class TypeHelper
     {
-        public static object[] EmptyObjects
-        {
-            get { return ArrayReservoir<object>.EmptyArray; }
-        }
+        public static object[] EmptyObjects => ArrayReservoir<object>.EmptyArray;
 
         public static TTarget As<TTarget>(object source)
             where TTarget : class
@@ -22,11 +20,7 @@ namespace Theraot.Core
                 source,
                 new Func<TTarget>
                 (
-                    () =>
-                    {
-                        throw new InvalidOperationException("Cannot convert to " + typeof(TTarget).Name);
-                    }
-                )
+                    () => throw new InvalidOperationException("Cannot convert to " + typeof(TTarget).Name))
             );
         }
 
@@ -41,21 +35,42 @@ namespace Theraot.Core
         {
             if (alternative == null)
             {
-                throw new ArgumentNullException("alternative");
+                throw new ArgumentNullException(nameof(alternative));
             }
-            var sourceAsTarget = source as TTarget;
-            if (sourceAsTarget == null)
+            if (!(source is TTarget sourceAsTarget))
             {
                 return alternative();
             }
             return sourceAsTarget;
         }
 
+        public static Delegate BuildDelegate(MethodInfo methodInfo, object target)
+        {
+            if (ReferenceEquals(methodInfo, null))
+            {
+                throw new ArgumentNullException(nameof(methodInfo));
+            }
+            if (methodInfo.IsStatic != ReferenceEquals(null, target))
+            {
+                if (ReferenceEquals(target, null))
+                {
+                    throw new ArgumentNullException(nameof(target), "target is null and the method is not static.");
+                }
+                throw new ArgumentException("target is not null and the method is static", nameof(target));
+            }
+            var type = methodInfo.DeclaringType;
+            if (ReferenceEquals(type, null))
+            {
+                throw new ArgumentException("methodInfo.DeclaringType is null", nameof(methodInfo));
+            }
+            return methodInfo.CreateDelegate(type, target);
+        }
+
         public static bool CanBeNull(this Type type)
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             var info = type.GetTypeInfo();
             return !info.IsValueType || !ReferenceEquals(Nullable.GetUnderlyingType(type), null);
@@ -68,11 +83,7 @@ namespace Theraot.Core
                 source,
                 new Func<TTarget>
                 (
-                    () =>
-                    {
-                        throw new InvalidOperationException("Cannot convert to " + typeof(TTarget).Name);
-                    }
-                )
+                    () => throw new InvalidOperationException("Cannot convert to " + typeof(TTarget).Name))
             );
         }
 
@@ -85,15 +96,16 @@ namespace Theraot.Core
         {
             if (alternative == null)
             {
-                throw new ArgumentNullException("alternative");
+                throw new ArgumentNullException(nameof(alternative));
             }
             try
             {
                 var sourceAsTarget = (TTarget)source;
                 return sourceAsTarget;
             }
-            catch
+            catch (Exception exception)
             {
+                GC.KeepAlive(exception);
                 return alternative();
             }
         }
@@ -106,6 +118,15 @@ namespace Theraot.Core
         public static TReturn Default<TReturn>()
         {
             return FuncHelper.GetDefaultFunc<TReturn>().Invoke();
+        }
+
+        public static bool DelegateEquals(this Delegate @delegate, MethodInfo method, object target)
+        {
+            if (@delegate == null)
+            {
+                throw new ArgumentNullException(nameof(@delegate));
+            }
+            return @delegate.GetMethodInfo().Equals(method) && ReferenceEquals(@delegate.Target, target);
         }
 
         public static MethodInfo FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly)
@@ -135,7 +156,7 @@ namespace Theraot.Core
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             var info = type.GetTypeInfo();
             return (TAttribute[])info.GetCustomAttributes(typeof(TAttribute), inherit);
@@ -165,7 +186,7 @@ namespace Theraot.Core
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             var info = type.GetTypeInfo();
             if (info.IsValueType && !IsNullable(type))
@@ -208,7 +229,7 @@ namespace Theraot.Core
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             return PrivateIsContravariant(type);
         }
@@ -217,7 +238,7 @@ namespace Theraot.Core
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             return PrivateIsCovariant(type);
         }
@@ -226,7 +247,7 @@ namespace Theraot.Core
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             return PrivateIsDelegate(type);
         }
@@ -378,7 +399,7 @@ namespace Theraot.Core
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             return PrivateIsInvariant(type);
         }
@@ -407,6 +428,27 @@ namespace Theraot.Core
             return false;
         }
 
+        public static bool IsSafeArray(this Type type)
+        {
+            try
+            {
+                // GetArrayRank could throw - should not, but could.
+                // We are not checking the lower bound of the array type, there is no API for that.
+                // However, the type of arrays that can have a different lower index other than zero...
+                // ... have two constructors, one taking only the size, and one taking the lower and upper bounds.
+                return type.IsArray
+                       && typeof(Array).IsAssignableFrom(type)
+                       && type.GetArrayRank() == 1
+                       && type.GetElementType() != null
+                       && type.GetConstructors().Length == 1;
+            }
+            catch (Exception exception)
+            {
+                GC.KeepAlive(exception);
+                return false;
+            }
+        }
+
         public static bool IsSameOrSubclassOf(this Type type, Type baseType)
         {
             if (type == baseType)
@@ -423,6 +465,124 @@ namespace Theraot.Core
                 }
             }
             return false;
+        }
+
+        public static T LazyCreate<T>(ref T target)
+                                                                                                                                                                            where T : class
+        {
+            var found = target;
+            if (found == null)
+            {
+                found = Volatile.Read(ref target);
+                if (found == null)
+                {
+                    T created;
+                    try
+                    {
+                        created = Activator.CreateInstance<T>();
+                    }
+                    catch
+                    {
+                        throw new MissingMemberException("The type being lazily initialized does not have a public, parameterless constructor.");
+                    }
+                    found = Interlocked.CompareExchange(ref target, created, null);
+                    if (found == null)
+                    {
+                        return created;
+                    }
+                }
+            }
+            return found;
+        }
+
+        public static T LazyCreate<T>(ref T target, object syncRoot)
+            where T : class
+        {
+            var found = target;
+            if (found == null)
+            {
+                found = Volatile.Read(ref target);
+                if (found == null)
+                {
+                    lock (syncRoot)
+                    {
+                        found = Volatile.Read(ref target);
+                        if (found == null)
+                        {
+                            T created;
+                            try
+                            {
+                                created = Activator.CreateInstance<T>();
+                            }
+                            catch
+                            {
+                                throw new MissingMemberException("The type being lazily initialized does not have a public, parameterless constructor.");
+                            }
+                            found = Interlocked.CompareExchange(ref target, created, null);
+                            if (found == null)
+                            {
+                                return created;
+                            }
+                        }
+                    }
+                }
+            }
+            return found;
+        }
+
+        public static T LazyCreate<T>(ref T target, Func<T> valueFactory)
+            where T : class
+        {
+            var found = target;
+            if (found == null)
+            {
+                found = Volatile.Read(ref target);
+                if (found == null)
+                {
+                    var created = valueFactory();
+                    if (created == null)
+                    {
+                        throw new InvalidOperationException("valueFactory returned null");
+                    }
+                    found = Interlocked.CompareExchange(ref target, created, null);
+                    if (found == null)
+                    {
+                        return created;
+                    }
+                }
+            }
+            return found;
+        }
+
+        public static T LazyCreate<T>(ref T target, Func<T> valueFactory, object syncRoot)
+            where T : class
+        {
+            var found = target;
+            if (found == null)
+            {
+                found = Volatile.Read(ref target);
+                if (found == null)
+                {
+                    lock (syncRoot)
+                    {
+                        found = Volatile.Read(ref target);
+                        if (found == null)
+                        {
+                            var created = valueFactory();
+                            if (created == null)
+                            {
+                                throw new InvalidOperationException("valueFactory returned null");
+                            }
+                            found = Interlocked.CompareExchange(ref target, created, null);
+                            if (found == null)
+                            {
+                                return created;
+                            }
+                        }
+                    }
+                }
+            }
+            return found;
         }
 
         public static Type MakeNullableType(this Type self)

@@ -18,25 +18,13 @@ namespace Theraot.Threading
             _wrapped = (IReadWriteLock)(reentrant ? (object)new ReentrantReadWriteLock() : new NoReentrantReadWriteLock());
         }
 
-        public bool HasReader
-        {
-            get { return _wrapped.HasReader; }
-        }
+        public bool HasReader => _wrapped.HasReader;
 
-        public bool HasWriter
-        {
-            get { return _wrapped.HasWriter; }
-        }
+        public bool HasWriter => _wrapped.HasWriter;
 
-        public bool IsCurrentThreadReader
-        {
-            get { return _wrapped.IsCurrentThreadReader; }
-        }
+        public bool IsCurrentThreadReader => _wrapped.IsCurrentThreadReader;
 
-        public bool IsCurrentThreadWriter
-        {
-            get { return _wrapped.IsCurrentThreadWriter; }
-        }
+        public bool IsCurrentThreadWriter => _wrapped.IsCurrentThreadWriter;
 
         public void Dispose()
         {

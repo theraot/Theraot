@@ -29,7 +29,7 @@ namespace System
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
             var value = (T)info.GetValue("TrackedObject", typeof(T));
             _trackResurrection = info.GetBoolean("TrackResurrection");
@@ -41,10 +41,9 @@ namespace System
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
-            T value;
-            TryGetTarget(out value);
+            TryGetTarget(out var value);
             info.AddValue("TrackedObject", value, typeof(T));
             info.AddValue("TrackResurrection", _trackResurrection);
         }
@@ -74,7 +73,7 @@ namespace System
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         public bool TryGetTarget(out T target)
         {
-            target = default(T);
+            target = default;
             if (!_handle.IsAllocated)
             {
                 return false;
@@ -96,7 +95,7 @@ namespace System
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        private GCHandle GetNewHandle(T value, bool trackResurrection)
+        private static GCHandle GetNewHandle(T value, bool trackResurrection)
         {
             return GCHandle.Alloc(value, trackResurrection ? GCHandleType.WeakTrackResurrection : GCHandleType.Weak);
         }

@@ -32,7 +32,7 @@ namespace System.Threading.Tasks
         {
             if ((creationOptions & ~(TaskCreationOptions.AttachedToParent | TaskCreationOptions.RunContinuationsAsynchronously)) != 0)
             {
-                throw new ArgumentOutOfRangeException("creationOptions");
+                throw new ArgumentOutOfRangeException(nameof(creationOptions));
             }
             // Only set a parent if AttachedToParent is specified.
             if ((creationOptions & TaskCreationOptions.AttachedToParent) != 0)
@@ -40,7 +40,7 @@ namespace System.Threading.Tasks
                 _parent = InternalCurrent;
             }
             State = state;
-            _creationOptions = creationOptions;
+            CreationOptions = creationOptions;
             _status = (int)TaskStatus.WaitingForActivation;
             _internalOptions = InternalTaskOptions.PromiseTask;
             ExecutingTaskScheduler = TaskScheduler.Default;
@@ -61,7 +61,7 @@ namespace System.Threading.Tasks
         {
             return new Task<TResult>(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose)
             {
-                CancellationToken = default(CancellationToken),
+                CancellationToken = default,
                 InternalResult = result
             };
         }
@@ -117,7 +117,7 @@ namespace System.Threading.Tasks
             var spinWait = new SpinWait();
             while (true)
             {
-                var lastValue = Thread.VolatileRead(ref _status);
+                var lastValue = Volatile.Read(ref _status);
                 if ((preventDoubleExecution && lastValue >= 3) || lastValue == 6)
                 {
                     return false;
@@ -169,8 +169,8 @@ namespace System.Threading.Tasks
                 if
                 (
                     (_parent != null)
-                    && ((_creationOptions & TaskCreationOptions.AttachedToParent) != 0)
-                    && ((_parent._creationOptions & TaskCreationOptions.DenyChildAttach) == 0)
+                    && ((CreationOptions & TaskCreationOptions.AttachedToParent) != 0)
+                    && ((_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0)
                 )
                 {
                     _parent.DisregardChild();
@@ -184,8 +184,8 @@ namespace System.Threading.Tasks
             Contract.Assert(Action == null);
             var returnValue = false;
             Contract.Assert(IsPromiseTask, "Task.RecordInternalCancellationRequest(CancellationToken) only valid for promise-style task");
-            Contract.Assert(CancellationToken == default(CancellationToken));
-            if (tokenToRecord != default(CancellationToken))
+            Contract.Assert(CancellationToken == default);
+            if (tokenToRecord != default)
             {
                 CancellationToken = tokenToRecord;
             }
@@ -242,7 +242,7 @@ namespace System.Threading.Tasks
         {
             return new Task(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose)
             {
-                CancellationToken = default(CancellationToken)
+                CancellationToken = default
             };
         }
 

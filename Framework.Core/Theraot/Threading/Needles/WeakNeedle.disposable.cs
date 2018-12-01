@@ -1,6 +1,8 @@
 ﻿// Needed for Workaround
 
 using System;
+using System.Diagnostics;
+using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
@@ -8,7 +10,7 @@ namespace Theraot.Threading.Needles
     {
         private int _disposeStatus;
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         ~WeakNeedle()
         {
             try
@@ -23,11 +25,11 @@ namespace Theraot.Threading.Needles
 
         public bool IsDisposed
         {
-            [System.Diagnostics.DebuggerNonUserCode]
-            get { return _disposeStatus == -1; }
+            [DebuggerNonUserCode]
+            get => _disposeStatus == -1;
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public void Dispose()
         {
             try
@@ -40,15 +42,12 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public void DisposedConditional(Action whenDisposed, Action whenNotDisposed)
         {
             if (_disposeStatus == -1)
             {
-                if (whenDisposed != null)
-                {
-                    whenDisposed.Invoke();
-                }
+                whenDisposed?.Invoke();
             }
             else
             {
@@ -62,34 +61,31 @@ namespace Theraot.Threading.Needles
                         }
                         finally
                         {
-                            System.Threading.Interlocked.Decrement(ref _disposeStatus);
+                            Interlocked.Decrement(ref _disposeStatus);
                         }
                     }
                     else
                     {
-                        if (whenDisposed != null)
-                        {
-                            whenDisposed.Invoke();
-                        }
+                        whenDisposed?.Invoke();
                     }
                 }
             }
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public TReturn DisposedConditional<TReturn>(Func<TReturn> whenDisposed, Func<TReturn> whenNotDisposed)
         {
             if (_disposeStatus == -1)
             {
                 if (whenDisposed == null)
                 {
-                    return default(TReturn);
+                    return default;
                 }
                 return whenDisposed.Invoke();
             }
             if (whenNotDisposed == null)
             {
-                return default(TReturn);
+                return default;
             }
             if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
             {
@@ -99,17 +95,17 @@ namespace Theraot.Threading.Needles
                 }
                 finally
                 {
-                    System.Threading.Interlocked.Decrement(ref _disposeStatus);
+                    Interlocked.Decrement(ref _disposeStatus);
                 }
             }
             if (whenDisposed == null)
             {
-                return default(TReturn);
+                return default;
             }
             return whenDisposed.Invoke();
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         protected virtual void Dispose(bool disposeManagedResources)
         {
             try
@@ -131,17 +127,17 @@ namespace Theraot.Threading.Needles
             }
             catch (Exception exception)
             {
-                // Catch'em all - fields may be partially collected.
+                // Catch them all - fields may be partially collected.
                 GC.KeepAlive(exception);
             }
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
-        protected void ProtectedCheckDisposed(string exceptionMessegeWhenDisposed)
+        [DebuggerNonUserCode]
+        protected void ProtectedCheckDisposed(string exceptionMessageWhenDisposed)
         {
             if (IsDisposed)
             {
-                throw new ObjectDisposedException(exceptionMessegeWhenDisposed);
+                throw new ObjectDisposedException(exceptionMessageWhenDisposed);
             }
         }
 
@@ -154,24 +150,24 @@ namespace Theraot.Threading.Needles
             return ThreadingHelper.SpinWaitSetUnless(ref _disposeStatus, -1, 0, -1);
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
-        protected void ThrowDisposedexception()
+        [DebuggerNonUserCode]
+        protected void ThrowDisposedException()
         {
-            throw new ObjectDisposedException(GetType().FullName);
+            throw new ObjectDisposedException(nameof(WeakNeedle<T>));
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
-        protected TReturn ThrowDisposedexception<TReturn>()
+        [DebuggerNonUserCode]
+        protected TReturn ThrowDisposedException<TReturn>()
         {
-            throw new ObjectDisposedException(GetType().FullName);
+            throw new ObjectDisposedException(nameof(WeakNeedle<T>));
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         protected bool UnDispose()
         {
-            if (System.Threading.Volatile.Read(ref _disposeStatus) == -1)
+            if (Volatile.Read(ref _disposeStatus) == -1)
             {
-                System.Threading.Volatile.Write(ref _disposeStatus, 0);
+                Volatile.Write(ref _disposeStatus, 0);
                 return true;
             }
             return false;

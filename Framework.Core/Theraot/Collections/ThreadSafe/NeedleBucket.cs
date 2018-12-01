@@ -18,7 +18,7 @@ namespace Theraot.Collections.ThreadSafe
     /// Consider wrapping this class to implement <see cref="ICollection{T}" /> or any other desired interface.
     /// </remarks>
     [Serializable]
-    public sealed class NeedleBucket<T, TNeedle> : IEnumerable<T>, IBucket<T>
+    public sealed class NeedleBucket<T, TNeedle> : IBucket<T>
         where TNeedle : class, IRecyclableNeedle<T>
     {
         private readonly FixedSizeBucket<TNeedle> _entries;
@@ -40,13 +40,9 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
-            if (needleFactory == null)
-            {
-                throw new ArgumentNullException("needleFactory");
-            }
-            _needleFactory = needleFactory;
+            _needleFactory = needleFactory ?? throw new ArgumentNullException(nameof(needleFactory));
             _reservoir = new NeedleReservoir<T, TNeedle>(_needleFactory);
             _needleIndexFactory = index => Reservoir.GetNeedle(new ValueFuncClosure<int, T>(valueFactory, index).InvokeReturn());
             _entries = new FixedSizeBucket<TNeedle>(capacity);
@@ -64,13 +60,9 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
-            if (needleFactory == null)
-            {
-                throw new ArgumentNullException("needleFactory");
-            }
-            _needleFactory = needleFactory;
+            _needleFactory = needleFactory ?? throw new ArgumentNullException(nameof(needleFactory));
             _reservoir = new NeedleReservoir<T, TNeedle>(_needleFactory);
             _needleIndexFactory = index => Reservoir.GetNeedle(new ValueFuncClosure<T>(valueFactory).InvokeReturn());
             _entries = new FixedSizeBucket<TNeedle>(capacity);
@@ -79,18 +71,12 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Gets the capacity.
         /// </summary>
-        public int Capacity
-        {
-            get { return _entries.Capacity; }
-        }
+        public int Capacity => _entries.Capacity;
 
         /// <summary>
         /// Gets the number of items actually contained.
         /// </summary>
-        public int Count
-        {
-            get { return _entries.Count; }
-        }
+        public int Count => _entries.Count;
 
         public NeedleReservoir<T, TNeedle> Reservoir
         {
@@ -112,9 +98,9 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="System.ArgumentNullException">array</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
+        /// <exception cref="ArgumentNullException">array</exception>
+        /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
             _entries.ToArray().CopyTo(array, arrayIndex);
@@ -129,13 +115,12 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was new; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool Exchange(int index, T item, out T previous)
         {
-            TNeedle found;
-            if (_entries.Exchange(index, Reservoir.GetNeedle(item), out found))
+            if (_entries.Exchange(index, Reservoir.GetNeedle(item), out var found))
             {
-                previous = default(T);
+                previous = default;
                 return true;
             }
             // TryGetValue is null resistant
@@ -154,7 +139,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was new; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool ExchangeNeedle(int index, TNeedle needle, out TNeedle previous)
         {
             // This may allow null to enter, this may also give null as previous if null was allowed to enter
@@ -167,20 +152,18 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns>The value.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public T Get(int index)
         {
             if (index < 0 || index >= _entries.Capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
             // Using TryGetValue first just avoid wasting a needle
-            TNeedle found;
-            if (_entries.TryGetInternal(index, out found))
+            if (_entries.TryGetInternal(index, out var found))
             {
                 // Null resistant
-                T previous;
-                found.TryGetValue(out previous);
+                found.TryGetValue(out var previous);
                 return previous;
                 // We don't donate because we didn't remove
             }
@@ -189,7 +172,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return newNeedle.Value;
             }
-            // we just failed to insert, meaning that we created a usless needle
+            // we just failed to insert, meaning that we created a useless needle
             // donate it
             Reservoir.DonateNeedle(newNeedle);
             return found.Value;
@@ -205,8 +188,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             foreach (var needle in _entries)
             {
-                T item;
-                if (needle.TryGetValue(out item))
+                if (needle.TryGetValue(out var item))
                 {
                     yield return item;
                 }
@@ -223,16 +205,15 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns>The needle.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public TNeedle GetNeedle(int index)
         {
             var newNeedle = _needleIndexFactory(index);
-            TNeedle found;
-            if (_entries.Insert(index, newNeedle, out found))
+            if (_entries.Insert(index, newNeedle, out var found))
             {
                 return newNeedle;
             }
-            // we just failed to insert, meaning that we created a usless needle
+            // we just failed to insert, meaning that we created a useless needle
             // donate it
             Reservoir.DonateNeedle(newNeedle);
             return found;
@@ -246,7 +227,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
         /// <remarks>
         /// The insertion can fail if the index is already used or is being written by another thread.
         /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
@@ -274,7 +255,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         /// <remarks>
         /// The insertion can fail if the index is already used or is being written by another thread.
         /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
@@ -285,10 +266,9 @@ namespace Theraot.Collections.ThreadSafe
             // meaning that if this succeeds it replaced nothing
             // If this fails whatever was there is still there
             var newNeedle = Reservoir.GetNeedle(item);
-            TNeedle found;
-            if (_entries.Insert(index, newNeedle, out found))
+            if (_entries.Insert(index, newNeedle, out var found))
             {
-                previous = default(T);
+                previous = default;
                 return true;
             }
             Reservoir.DonateNeedle(newNeedle);
@@ -305,7 +285,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the needle was inserted; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
         /// <remarks>
         /// The insertion can fail if the index is already used or is being written by another thread.
         /// If the index is being written it can be understood that the insert operation happened before but the needle was overwritten or removed.
@@ -325,7 +305,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the needle was inserted; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         /// <remarks>
         /// The insertion can fail if the index is already used or is being written by another thread.
         /// If the index is being written it can be understood that the insert operation happened before but the needle was overwritten or removed.
@@ -343,7 +323,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was removed; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool RemoveAt(int index)
         {
             return _entries.RemoveAt(index);
@@ -357,11 +337,10 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was removed; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool RemoveAt(int index, out T previous)
         {
-            TNeedle found;
-            if (_entries.RemoveAt(index, out found))
+            if (_entries.RemoveAt(index, out var found))
             {
                 // TryGetValue is null resistant
                 found.TryGetValue(out previous);
@@ -369,7 +348,7 @@ namespace Theraot.Collections.ThreadSafe
                 Reservoir.DonateNeedle(found);
                 return true;
             }
-            previous = default(T);
+            previous = default;
             return false;
         }
 
@@ -377,21 +356,21 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             TNeedle found = null;
-            Predicate<TNeedle> replacementCheck = needle =>
-            {
-                found = needle;
-                return check(needle.Value);
-            };
-            if (_entries.RemoveAt(index, replacementCheck))
+            if (_entries.RemoveAt(index, ReplacementCheck))
             {
                 // Donate it
                 Reservoir.DonateNeedle(found);
                 return true;
             }
             return false;
+            bool ReplacementCheck(TNeedle needle)
+            {
+                found = needle;
+                return check(needle.Value);
+            }
         }
 
         /// <summary>
@@ -402,7 +381,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the needle was removed; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool RemoveNeedleAt(int index, out TNeedle previous)
         {
             return _entries.RemoveAt(index, out previous);
@@ -414,7 +393,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="index">The index.</param>
         /// <param name="item">The item.</param>
         /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public void Set(int index, T item, out bool isNew)
         {
             // This may have replaced something
@@ -427,7 +406,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="index">The index.</param>
         /// <param name="needle">The needle.</param>
         /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public void SetNeedle(int index, TNeedle needle, out bool isNew)
         {
             // This may allow null to enter
@@ -442,18 +421,17 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was retrieved; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool TryGet(int index, out T value)
         {
-            TNeedle found;
-            if (_entries.TryGet(index, out found))
+            if (_entries.TryGet(index, out var found))
             {
                 // Null resistant
                 found.TryGetValue(out value);
                 // We don't donate because we didn't remove
                 return true;
             }
-            value = default(T);
+            value = default;
             return false;
         }
 
@@ -465,7 +443,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the needle was retrieved; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool TryGetNeedle(int index, out TNeedle value)
         {
             return _entries.TryGet(index, out value);
@@ -475,16 +453,14 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (itemUpdateFactory == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             TNeedle newNeedle = null;
-            Func<TNeedle, TNeedle> replacementFactory = needle => newNeedle = Reservoir.GetNeedle(itemUpdateFactory(needle.Value));
-            Predicate<TNeedle> replacementCheck = needle => check(needle.Value);
-            if (_entries.Update(index, replacementFactory, replacementCheck, out isEmpty))
+            if (_entries.Update(index, ReplacementFactory, ReplacementCheck, out isEmpty))
             {
                 return true;
             }
@@ -493,17 +469,24 @@ namespace Theraot.Collections.ThreadSafe
                 Reservoir.DonateNeedle(newNeedle);
             }
             return false;
+            TNeedle ReplacementFactory(TNeedle needle) => newNeedle = Reservoir.GetNeedle(itemUpdateFactory(needle.Value));
+            bool ReplacementCheck(TNeedle needle) => check(needle.Value);
         }
 
         public IEnumerable<T> Where(Predicate<T> check)
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
-            foreach (var needle in _entries.Where(needle => check(needle.Value)))
+            return WhereExtracted();
+
+            IEnumerable<T> WhereExtracted()
             {
-                yield return needle.Value;
+                foreach (var needle in _entries.Where(needle => check(needle.Value)))
+                {
+                    yield return needle.Value;
+                }
             }
         }
     }

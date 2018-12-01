@@ -37,7 +37,7 @@ namespace MonoTests.System.Collections.Concurrent
     {
         private ConcurrentQueue<int> _queue;
 
-        [SetUpAttribute]
+        [SetUp]
         public void Setup()
         {
             _queue = new ConcurrentQueue<int>();
@@ -150,10 +150,9 @@ namespace MonoTests.System.Collections.Concurrent
         public void CountTestCase()
         {
             Assert.AreEqual(10, _queue.Count, "#1");
-            int value;
-            _queue.TryPeek(out value);
-            _queue.TryDequeue(out value);
-            _queue.TryDequeue(out value);
+            _queue.TryPeek(out _);
+            _queue.TryDequeue(out _);
+            _queue.TryDequeue(out _);
             Assert.AreEqual(8, _queue.Count, "#2");
         }
 
@@ -175,24 +174,22 @@ namespace MonoTests.System.Collections.Concurrent
         [Test()]
         public void TryPeekTestCase()
         {
-            int value;
-            _queue.TryPeek(out value);
-            Assert.AreEqual(0, value, "#1 : " + value);
+            _queue.TryPeek(out var value);
+            Assert.AreEqual(0, value, $"#1 : {value}");
             _queue.TryDequeue(out value);
-            Assert.AreEqual(0, value, "#2 : " + value);
+            Assert.AreEqual(0, value, $"#2 : {value}");
             _queue.TryDequeue(out value);
-            Assert.AreEqual(1, value, "#3 : " + value);
+            Assert.AreEqual(1, value, $"#3 : {value}");
             _queue.TryPeek(out value);
-            Assert.AreEqual(2, value, "#4 : " + value);
+            Assert.AreEqual(2, value, $"#4 : {value}");
             _queue.TryPeek(out value);
-            Assert.AreEqual(2, value, "#5 : " + value);
+            Assert.AreEqual(2, value, $"#5 : {value}");
         }
 
         [Test()]
         public void TryDequeueTestCase()
         {
-            int value;
-            _queue.TryPeek(out value);
+            _queue.TryPeek(out var value);
             Assert.AreEqual(0, value, "#1");
             Assert.IsTrue(_queue.TryDequeue(out value), "#2");
             Assert.IsTrue(_queue.TryDequeue(out value), "#3");
@@ -202,11 +199,10 @@ namespace MonoTests.System.Collections.Concurrent
         [Test()]
         public void TryDequeueEmptyTestCase()
         {
-            int value;
             _queue = new ConcurrentQueue<int>();
             _queue.Enqueue(1);
-            Assert.IsTrue(_queue.TryDequeue(out value), "#1");
-            Assert.IsFalse(_queue.TryDequeue(out value), "#2");
+            Assert.IsTrue(_queue.TryDequeue(out _), "#1");
+            Assert.IsFalse(_queue.TryDequeue(out _), "#2");
             Assert.IsTrue(_queue.IsEmpty, "#3");
         }
 
@@ -273,6 +269,7 @@ namespace MonoTests.System.Collections.Concurrent
 
             queue.Enqueue(obj);
             queue.TryDequeue(out obj);
+            // ReSharper disable once RedundantAssignment
             obj = null; // Removing reference to object to allow garbage collection
 
             GC.Collect();

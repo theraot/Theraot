@@ -12,7 +12,6 @@ namespace System
     public class Lazy<T>
     {
         private int _isValueCreated;
-        private T _target;
         private Func<T> _valueFactory;
 
         public Lazy()
@@ -55,7 +54,7 @@ namespace System
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             switch (mode)
             {
@@ -65,13 +64,13 @@ namespace System
                         {
                             var threads = new HashSet<Thread>();
                             _valueFactory =
-                                () => CachingNoneMode(valueFactory, threads);
+                                () => CachingNoneMode(threads);
                         }
                         else
                         {
                             var threads = new HashSet<Thread>();
                             _valueFactory =
-                                () => NoneMode(valueFactory, threads);
+                                () => NoneMode(threads);
                         }
                     }
                     break;
@@ -79,7 +78,7 @@ namespace System
                 case LazyThreadSafetyMode.PublicationOnly:
                     {
                         _valueFactory =
-                            () => PublicationOnlyMode(valueFactory);
+                            () => PublicationOnlyMode();
                     }
                     break;
 
@@ -103,23 +102,96 @@ namespace System
                     }
                     break;
             }
+
+            T CachingNoneMode(HashSet<Thread> threads)
+            {
+                if (Volatile.Read(ref _isValueCreated) == 0)
+                {
+                    try
+                    {
+                        // lock (threads) // This is meant to not be thread-safe
+                        {
+                            var currentThread = Thread.CurrentThread;
+                            if (threads.Contains(currentThread))
+                            {
+                                throw new InvalidOperationException();
+                            }
+                            threads.Add(currentThread);
+                        }
+                        ValueForDebugDisplay = valueFactory();
+                        _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
+                        Volatile.Write(ref _isValueCreated, 1);
+                        return ValueForDebugDisplay;
+                    }
+                    catch (Exception exception)
+                    {
+                        _valueFactory = FuncHelper.GetThrowFunc<T>(exception);
+                        throw;
+                    }
+                    finally
+                    {
+                        // lock (threads) // This is meant to not be thread-safe
+                        {
+                            threads.Remove(Thread.CurrentThread);
+                        }
+                    }
+                }
+                return _valueFactory.Invoke();
+            }
+
+            T NoneMode(HashSet<Thread> threads)
+            {
+                if (Volatile.Read(ref _isValueCreated) == 0)
+                {
+                    try
+                    {
+                        // lock (threads) // This is meant to not be thread-safe
+                        {
+                            var currentThread = Thread.CurrentThread;
+                            if (threads.Contains(currentThread))
+                            {
+                                throw new InvalidOperationException();
+                            }
+                            threads.Add(currentThread);
+                        }
+                        ValueForDebugDisplay = valueFactory();
+                        _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
+                        Volatile.Write(ref _isValueCreated, 1);
+                        return ValueForDebugDisplay;
+                    }
+                    catch (Exception)
+                    {
+                        Volatile.Write(ref _isValueCreated, 0);
+                        throw;
+                    }
+                    finally
+                    {
+                        // lock (threads) // This is meant to not be thread-safe
+                        {
+                            threads.Remove(Thread.CurrentThread);
+                        }
+                    }
+                }
+                return _valueFactory.Invoke();
+            }
+
+            T PublicationOnlyMode()
+            {
+                ValueForDebugDisplay = valueFactory();
+                if (Interlocked.CompareExchange(ref _isValueCreated, 1, 0) == 0)
+                {
+                    _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
+                }
+                return ValueForDebugDisplay;
+            }
         }
 
-        public bool IsValueCreated
-        {
-            get { return _isValueCreated == 1; }
-        }
+        public bool IsValueCreated => _isValueCreated == 1;
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        public T Value
-        {
-            get { return _valueFactory.Invoke(); }
-        }
+        public T Value => _valueFactory.Invoke();
 
-        internal T ValueForDebugDisplay
-        {
-            get { return _target; }
-        }
+        internal T ValueForDebugDisplay { get; private set; }
 
         private T CachingFullMode(Func<T> valueFactory, ManualResetEvent waitHandle, ref Thread thread)
         {
@@ -129,9 +201,9 @@ namespace System
                 {
                     thread = Thread.CurrentThread;
                     GC.KeepAlive(thread);
-                    _target = valueFactory.Invoke();
-                    _valueFactory = FuncHelper.GetReturnFunc(_target);
-                    return _target;
+                    ValueForDebugDisplay = valueFactory.Invoke();
+                    _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
+                    return ValueForDebugDisplay;
                 }
                 catch (Exception exc)
                 {
@@ -152,43 +224,6 @@ namespace System
             return _valueFactory.Invoke();
         }
 
-        private T CachingNoneMode(Func<T> valueFactory, HashSet<Thread> threads)
-        {
-            // NOTICE this method has no null check
-            var currentThread = Thread.CurrentThread;
-            if (Thread.VolatileRead(ref _isValueCreated) == 0)
-            {
-                try
-                {
-                    // lock (threads) // This is meant to not be thread-safe
-                    {
-                        if (threads.Contains(currentThread))
-                        {
-                            throw new InvalidOperationException();
-                        }
-                        threads.Add(currentThread);
-                    }
-                    _target = valueFactory();
-                    _valueFactory = FuncHelper.GetReturnFunc(_target);
-                    Thread.VolatileWrite(ref _isValueCreated, 1);
-                    return _target;
-                }
-                catch (Exception exception)
-                {
-                    _valueFactory = FuncHelper.GetThrowFunc<T>(exception);
-                    throw;
-                }
-                finally
-                {
-                    // lock (threads) // This is meant to not be thread-safe
-                    {
-                        threads.Remove(Thread.CurrentThread);
-                    }
-                }
-            }
-            return _valueFactory.Invoke();
-        }
-
         private T FullMode(Func<T> valueFactory, ManualResetEvent waitHandle, ref Thread thread, ref int preIsValueCreated)
         {
             back:
@@ -198,14 +233,14 @@ namespace System
                 {
                     thread = Thread.CurrentThread;
                     GC.KeepAlive(thread);
-                    _target = valueFactory.Invoke();
-                    _valueFactory = FuncHelper.GetReturnFunc(_target);
-                    Thread.VolatileWrite(ref _isValueCreated, 1);
-                    return _target;
+                    ValueForDebugDisplay = valueFactory.Invoke();
+                    _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
+                    Volatile.Write(ref _isValueCreated, 1);
+                    return ValueForDebugDisplay;
                 }
                 catch (Exception)
                 {
-                    Thread.VolatileWrite(ref preIsValueCreated, 0);
+                    Volatile.Write(ref preIsValueCreated, 0);
                     throw;
                 }
                 finally
@@ -219,59 +254,11 @@ namespace System
                 throw new InvalidOperationException();
             }
             waitHandle.WaitOne();
-            if (Thread.VolatileRead(ref _isValueCreated) == 1)
+            if (Volatile.Read(ref _isValueCreated) == 1)
             {
                 return _valueFactory.Invoke();
             }
             goto back;
-        }
-
-        private T NoneMode(Func<T> valueFactory, HashSet<Thread> threads)
-        {
-            // NOTICE this method has no null check
-            var currentThread = Thread.CurrentThread;
-            if (Thread.VolatileRead(ref _isValueCreated) == 0)
-            {
-                try
-                {
-                    // lock (threads) // This is meant to not be thread-safe
-                    {
-                        if (threads.Contains(currentThread))
-                        {
-                            throw new InvalidOperationException();
-                        }
-                        threads.Add(currentThread);
-                    }
-                    _target = valueFactory();
-                    _valueFactory = FuncHelper.GetReturnFunc(_target);
-                    Thread.VolatileWrite(ref _isValueCreated, 1);
-                    return _target;
-                }
-                catch (Exception)
-                {
-                    Thread.VolatileWrite(ref _isValueCreated, 0);
-                    throw;
-                }
-                finally
-                {
-                    // lock (threads) // This is meant to not be thread-safe
-                    {
-                        threads.Remove(Thread.CurrentThread);
-                    }
-                }
-            }
-            return _valueFactory.Invoke();
-        }
-
-        private T PublicationOnlyMode(Func<T> valueFactory)
-        {
-            // NOTICE this method has no null check
-            _target = valueFactory();
-            if (Interlocked.CompareExchange(ref _isValueCreated, 1, 0) == 0)
-            {
-                _valueFactory = FuncHelper.GetReturnFunc(_target);
-            }
-            return _target;
         }
     }
 }

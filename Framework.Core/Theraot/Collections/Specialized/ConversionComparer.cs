@@ -13,16 +13,8 @@ namespace Theraot.Collections.Specialized
 
         public ConversionComparer(IComparer<TOutput> comparer, Func<TInput, TOutput> converter)
         {
-            if (comparer == null)
-            {
-                throw new ArgumentNullException("comparer");
-            }
-            _comparer = comparer;
-            if (converter == null)
-            {
-                throw new ArgumentNullException("converter");
-            }
-            _converter = converter;
+            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
+            _converter = converter ?? throw new ArgumentNullException(nameof(converter));
         }
 
         public int Compare(TInput x, TInput y)

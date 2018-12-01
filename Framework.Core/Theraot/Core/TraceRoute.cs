@@ -16,13 +16,13 @@ namespace Theraot.Core
 
             if (destination == null)
             {
-                throw new ArgumentNullException("destination");
+                throw new ArgumentNullException(nameof(destination));
             }
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
-            var syncroot = new object();
+            var syncRoot = new object();
             var buffer = new byte[BufferSize];
             var options = new PingOptions(1, true);
             var ping = new Ping();
@@ -30,16 +30,13 @@ namespace Theraot.Core
             {
                 var address = e.Reply.Address;
                 var status = e.Reply.Status;
-                back:
+            back:
                 var done = !callback.Invoke(destination, new TracertNode(address, status, e.Reply.Options.Ttl)) || address.Equals(destination);
                 if (done)
                 {
                     try
                     {
-                        if (ping != null)
-                        {
-                            ping.Dispose();
-                        }
+                        ping?.Dispose();
                     }
                     finally
                     {
@@ -48,7 +45,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    lock (syncroot)
+                    lock (syncRoot)
                     {
                         if (ping == null)
                         {

@@ -37,32 +37,25 @@ namespace System.Threading.Tasks
         public static Task WhenAll(IEnumerable<Task> tasks)
         {
             // Take a more efficient path if tasks is actually an array
-            var taskArray = tasks as Task[];
-            if (taskArray != null)
+            if (tasks is Task[] taskArray)
             {
                 return WhenAll(taskArray);
             }
             // Skip a List allocation/copy if tasks is a collection
-            var taskCollection = tasks as ICollection<Task>;
-            if (taskCollection != null)
+            if (tasks is ICollection<Task> taskCollection)
             {
                 var index = 0;
                 taskArray = new Task[taskCollection.Count];
                 foreach (var task in tasks)
                 {
-                    if (task == null)
-                    {
-                        throw new ArgumentException("The tasks argument included a null value.", "tasks");
-                    }
-
-                    taskArray[index++] = task;
+                    taskArray[index++] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
                 }
                 return InternalWhenAll(taskArray);
             }
             // Do some argument checking and convert tasks to a List (and later an array).
             if (tasks == null)
             {
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
 
             var taskList = new List<Task>();
@@ -70,7 +63,7 @@ namespace System.Threading.Tasks
             {
                 if (task == null)
                 {
-                    throw new ArgumentException("The tasks argument included a null value.", "tasks");
+                    throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
                 }
 
                 taskList.Add(task);
@@ -111,7 +104,7 @@ namespace System.Threading.Tasks
             // Do some argument checking and make a defensive copy of the tasks array
             if (tasks == null)
             {
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
 
             Contract.EndContractBlock();
@@ -125,12 +118,8 @@ namespace System.Threading.Tasks
             for (var i = 0; i < taskCount; i++)
             {
                 var task = tasks[i];
-                if (task == null)
-                {
-                    throw new ArgumentException("The tasks argument included a null value.", "tasks");
-                }
 
-                tasksCopy[i] = task;
+                tasksCopy[i] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
             }
             // The rest can be delegated to InternalWhenAll()
             return InternalWhenAll(tasksCopy);
@@ -169,32 +158,25 @@ namespace System.Threading.Tasks
         public static Task<TResult[]> WhenAll<TResult>(IEnumerable<Task<TResult>> tasks)
         {
             // Take a more efficient route if tasks is actually an array
-            var taskArray = tasks as Task<TResult>[];
-            if (taskArray != null)
+            if (tasks is Task<TResult>[] taskArray)
             {
                 return WhenAll(taskArray);
             }
             // Skip a List allocation/copy if tasks is a collection
-            var taskCollection = tasks as ICollection<Task<TResult>>;
-            if (taskCollection != null)
+            if (tasks is ICollection<Task<TResult>> taskCollection)
             {
                 var index = 0;
                 taskArray = new Task<TResult>[taskCollection.Count];
                 foreach (var task in tasks)
                 {
-                    if (task == null)
-                    {
-                        throw new ArgumentException("The tasks argument included a null value.", "tasks");
-                    }
-
-                    taskArray[index++] = task;
+                    taskArray[index++] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
                 }
                 return InternalWhenAll(taskArray);
             }
             // Do some argument checking and convert tasks into a List (later an array)
             if (tasks == null)
             {
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
 
             var taskList = new List<Task<TResult>>();
@@ -202,7 +184,7 @@ namespace System.Threading.Tasks
             {
                 if (task == null)
                 {
-                    throw new ArgumentException("Task_MultiTaskContinuation_NullTask", "tasks");
+                    throw new ArgumentException("Task_MultiTaskContinuation_NullTask", nameof(tasks));
                 }
 
                 taskList.Add(task);
@@ -246,7 +228,7 @@ namespace System.Threading.Tasks
             // Do some argument checking and make a defensive copy of the tasks array
             if (tasks == null)
             {
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
 
             Contract.EndContractBlock();
@@ -260,15 +242,144 @@ namespace System.Threading.Tasks
             for (var i = 0; i < taskCount; i++)
             {
                 var task = tasks[i];
-                if (task == null)
-                {
-                    throw new ArgumentException("The tasks argument included a null value.", "tasks");
-                }
 
-                tasksCopy[i] = task;
+                tasksCopy[i] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
             }
             // Delegate the rest to InternalWhenAll<TResult>()
             return InternalWhenAll(tasksCopy);
+        }
+
+        /// <summary>
+        /// Creates a task that will complete when any of the supplied tasks have completed.
+        /// </summary>
+        /// <param name="tasks">The tasks to wait on for completion.</param>
+        /// <returns>A task that represents the completion of one of the supplied tasks.  The return Task's Result is the task that completed.</returns>
+        /// <remarks>
+        /// The returned task will complete when any of the supplied tasks has completed.  The returned task will always end in the RanToCompletion state
+        /// with its Result set to the first task to complete.  This is true even if the first task to complete ended in the Canceled or Faulted state.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="tasks"/> argument was null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentException">
+        /// The <paramref name="tasks"/> array contained a null task, or was empty.
+        /// </exception>
+        public static Task<Task> WhenAny(params Task[] tasks)
+        {
+            if (tasks == null)
+            {
+                throw new ArgumentNullException(nameof(tasks));
+            }
+            if (tasks.Length == 0)
+            {
+                throw new ArgumentException("The tasks argument contains no tasks.", nameof(tasks));
+            }
+            Contract.EndContractBlock();
+            // Make a defensive copy, as the user may manipulate the tasks array
+            // after we return but before the WhenAny asynchronously completes.
+            var taskCount = tasks.Length;
+            var tasksCopy = new Task[taskCount];
+            for (var index = 0; index < taskCount; index++)
+            {
+                var task = tasks[index];
+                tasksCopy[index] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
+            }
+            var signaledTaskIndex = -1;
+            return PrivateWhenAny(tasksCopy, ref signaledTaskIndex);
+        }
+
+        /// <summary>
+        /// Creates a task that will complete when any of the supplied tasks have completed.
+        /// </summary>
+        /// <param name="tasks">The tasks to wait on for completion.</param>
+        /// <returns>A task that represents the completion of one of the supplied tasks.  The return Task's Result is the task that completed.</returns>
+        /// <remarks>
+        /// The returned task will complete when any of the supplied tasks has completed.  The returned task will always end in the RanToCompletion state
+        /// with its Result set to the first task to complete.  This is true even if the first task to complete ended in the Canceled or Faulted state.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="tasks"/> argument was null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentException">
+        /// The <paramref name="tasks"/> collection contained a null task, or was empty.
+        /// </exception>
+        public static Task<Task> WhenAny(IEnumerable<Task> tasks)
+        {
+            if (tasks == null)
+            {
+                throw new ArgumentNullException(nameof(tasks));
+            }
+            Contract.EndContractBlock();
+            // Make a defensive copy, as the user may manipulate the tasks collection
+            // after we return but before the WhenAny asynchronously completes.
+            var taskList = new List<Task>();
+            foreach (var task in tasks)
+            {
+                if (task == null)
+                {
+                    throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
+                }
+                taskList.Add(task);
+            }
+            if (taskList.Count == 0)
+            {
+                throw new ArgumentException("The tasks argument contains no tasks.", nameof(tasks));
+            }
+            var signaledTaskIndex = -1;
+            return PrivateWhenAny(taskList, ref signaledTaskIndex);
+        }
+
+        /// <summary>
+        /// Creates a task that will complete when any of the supplied tasks have completed.
+        /// </summary>
+        /// <param name="tasks">The tasks to wait on for completion.</param>
+        /// <returns>A task that represents the completion of one of the supplied tasks.  The return Task's Result is the task that completed.</returns>
+        /// <remarks>
+        /// The returned task will complete when any of the supplied tasks has completed.  The returned task will always end in the RanToCompletion state
+        /// with its Result set to the first task to complete.  This is true even if the first task to complete ended in the Canceled or Faulted state.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="tasks"/> argument was null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentException">
+        /// The <paramref name="tasks"/> array contained a null task, or was empty.
+        /// </exception>
+        public static Task<Task<TResult>> WhenAny<TResult>(params Task<TResult>[] tasks)
+        {
+            // We would just like to do this:
+            //    return (Task<Task<TResult>>) WhenAny( (Task[]) tasks);
+            // but classes are not covariant to enable casting Task<TResult> to Task<Task<TResult>>.
+            // Call WhenAny(Task[]) for basic functionality
+            // ReSharper disable once CoVariantArrayConversion
+            var intermediate = WhenAny((Task[])tasks);
+            // Return a continuation task with the correct result type
+            return intermediate.ContinueWith(Task<TResult>.ContinuationConversion, default, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
+        }
+
+        /// <summary>
+        /// Creates a task that will complete when any of the supplied tasks have completed.
+        /// </summary>
+        /// <param name="tasks">The tasks to wait on for completion.</param>
+        /// <returns>A task that represents the completion of one of the supplied tasks.  The return Task's Result is the task that completed.</returns>
+        /// <remarks>
+        /// The returned task will complete when any of the supplied tasks has completed.  The returned task will always end in the RanToCompletion state
+        /// with its Result set to the first task to complete.  This is true even if the first task to complete ended in the Canceled or Faulted state.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="tasks"/> argument was null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentException">
+        /// The <paramref name="tasks"/> collection contained a null task, or was empty.
+        /// </exception>
+        public static Task<Task<TResult>> WhenAny<TResult>(IEnumerable<Task<TResult>> tasks)
+        {
+            // We would just like to do this:
+            //    return (Task<Task<TResult>>) WhenAny( (IEnumerable<Task>) tasks);
+            // but classes are not covariant to enable casting Task<TResult> to Task<Task<TResult>>.
+            // Call WhenAny(IEnumerable<Task>) for basic functionality
+            var intermediate = WhenAny((IEnumerable<Task>)tasks);
+            // Return a continuation task with the correct result type
+            return intermediate.ContinueWith(Task<TResult>.ContinuationConversion, default, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
         }
 
         /// <summary>Returns true if any of the supplied tasks require wait notification.</summary>
@@ -279,7 +390,7 @@ namespace System.Threading.Tasks
             if (tasks == null)
             {
                 Contract.Assert(false, "Expected non-null array of tasks");
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
             foreach (var task in tasks)
             {
@@ -319,142 +430,6 @@ namespace System.Threading.Tasks
                 return FromResult(new TResult[0]);
             }
             return new WhenAllPromise<TResult>(tasks);
-        }
-
-        /// <summary>
-        /// Creates a task that will complete when any of the supplied tasks have completed.
-        /// </summary>
-        /// <param name="tasks">The tasks to wait on for completion.</param>
-        /// <returns>A task that represents the completion of one of the supplied tasks.  The return Task's Result is the task that completed.</returns>
-        /// <remarks>
-        /// The returned task will complete when any of the supplied tasks has completed.  The returned task will always end in the RanToCompletion state
-        /// with its Result set to the first task to complete.  This is true even if the first task to complete ended in the Canceled or Faulted state.
-        /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">
-        /// The <paramref name="tasks"/> argument was null.
-        /// </exception>
-        /// <exception cref="T:System.ArgumentException">
-        /// The <paramref name="tasks"/> array contained a null task, or was empty.
-        /// </exception>
-        public static Task<Task> WhenAny(params Task[] tasks)
-        {
-            if (tasks == null)
-            {
-                throw new ArgumentNullException("tasks");
-            }
-            if (tasks.Length == 0)
-            {
-                throw new ArgumentException("The tasks argument contains no tasks.", "tasks");
-            }
-            Contract.EndContractBlock();
-            // Make a defensive copy, as the user may manipulate the tasks array
-            // after we return but before the WhenAny asynchronously completes.
-            var taskCount = tasks.Length;
-            var tasksCopy = new Task[taskCount];
-            for (var index = 0; index < taskCount; index++)
-            {
-                var task = tasks[index];
-                if (task == null)
-                {
-                    throw new ArgumentException("The tasks argument included a null value.", "tasks");
-                }
-                tasksCopy[index] = task;
-            }
-            var signaledTaskIndex = -1;
-            return PrivateWhenAny(tasksCopy, ref signaledTaskIndex);
-        }
-
-        /// <summary>
-        /// Creates a task that will complete when any of the supplied tasks have completed.
-        /// </summary>
-        /// <param name="tasks">The tasks to wait on for completion.</param>
-        /// <returns>A task that represents the completion of one of the supplied tasks.  The return Task's Result is the task that completed.</returns>
-        /// <remarks>
-        /// The returned task will complete when any of the supplied tasks has completed.  The returned task will always end in the RanToCompletion state
-        /// with its Result set to the first task to complete.  This is true even if the first task to complete ended in the Canceled or Faulted state.
-        /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">
-        /// The <paramref name="tasks"/> argument was null.
-        /// </exception>
-        /// <exception cref="T:System.ArgumentException">
-        /// The <paramref name="tasks"/> collection contained a null task, or was empty.
-        /// </exception>
-        public static Task<Task> WhenAny(IEnumerable<Task> tasks)
-        {
-            if (tasks == null)
-            {
-                throw new ArgumentNullException("tasks");
-            }
-            Contract.EndContractBlock();
-            // Make a defensive copy, as the user may manipulate the tasks collection
-            // after we return but before the WhenAny asynchronously completes.
-            var taskList = new List<Task>();
-            foreach (var task in tasks)
-            {
-                if (task == null)
-                {
-                    throw new ArgumentException("The tasks argument included a null value.", "tasks");
-                }
-                taskList.Add(task);
-            }
-            if (taskList.Count == 0)
-            {
-                throw new ArgumentException("The tasks argument contains no tasks.", "tasks");
-            }
-            var signaledTaskIndex = -1;
-            return PrivateWhenAny(taskList, ref signaledTaskIndex);
-        }
-
-        /// <summary>
-        /// Creates a task that will complete when any of the supplied tasks have completed.
-        /// </summary>
-        /// <param name="tasks">The tasks to wait on for completion.</param>
-        /// <returns>A task that represents the completion of one of the supplied tasks.  The return Task's Result is the task that completed.</returns>
-        /// <remarks>
-        /// The returned task will complete when any of the supplied tasks has completed.  The returned task will always end in the RanToCompletion state
-        /// with its Result set to the first task to complete.  This is true even if the first task to complete ended in the Canceled or Faulted state.
-        /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">
-        /// The <paramref name="tasks"/> argument was null.
-        /// </exception>
-        /// <exception cref="T:System.ArgumentException">
-        /// The <paramref name="tasks"/> array contained a null task, or was empty.
-        /// </exception>
-        public static Task<Task<TResult>> WhenAny<TResult>(params Task<TResult>[] tasks)
-        {
-            // We would just like to do this:
-            //    return (Task<Task<TResult>>) WhenAny( (Task[]) tasks);
-            // but classes are not covariant to enable casting Task<TResult> to Task<Task<TResult>>.
-            // Call WhenAny(Task[]) for basic functionality
-            var intermediate = WhenAny((Task[])tasks);
-            // Return a continuation task with the correct result type
-            return intermediate.ContinueWith(Task<TResult>.ContinuationConvertion, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
-        }
-
-        /// <summary>
-        /// Creates a task that will complete when any of the supplied tasks have completed.
-        /// </summary>
-        /// <param name="tasks">The tasks to wait on for completion.</param>
-        /// <returns>A task that represents the completion of one of the supplied tasks.  The return Task's Result is the task that completed.</returns>
-        /// <remarks>
-        /// The returned task will complete when any of the supplied tasks has completed.  The returned task will always end in the RanToCompletion state
-        /// with its Result set to the first task to complete.  This is true even if the first task to complete ended in the Canceled or Faulted state.
-        /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">
-        /// The <paramref name="tasks"/> argument was null.
-        /// </exception>
-        /// <exception cref="T:System.ArgumentException">
-        /// The <paramref name="tasks"/> collection contained a null task, or was empty.
-        /// </exception>
-        public static Task<Task<TResult>> WhenAny<TResult>(IEnumerable<Task<TResult>> tasks)
-        {
-            // We would just like to do this:
-            //    return (Task<Task<TResult>>) WhenAny( (IEnumerable<Task>) tasks);
-            // but classes are not covariant to enable casting Task<TResult> to Task<Task<TResult>>.
-            // Call WhenAny(IEnumerable<Task>) for basic functionality
-            var intermediate = WhenAny((IEnumerable<Task>)tasks);
-            // Return a continuation task with the correct result type
-            return intermediate.ContinueWith(Task<TResult>.ContinuationConvertion, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
         }
     }
 }

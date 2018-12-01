@@ -46,15 +46,6 @@ namespace System.Threading.Tasks
             // Any exceptions will be handled by RunCallback.
         }
 
-        /// <summary>Calls InvokeOrPostAction(false) on the supplied SynchronizationContextAwaitTaskContinuation.</summary>
-        /// <param name="state">The SynchronizationContextAwaitTaskContinuation.</param>
-        [SecurityCritical]
-        private static void PostAction(object state)
-        {
-            var c = (SynchronizationContextAwaitTaskContinuation)state;
-            c._syncContext.Post(_postCallback, c.Action); // s_postCallback is manually cached, as the compiler won't in a SecurityCritical method
-        }
-
         /// <summary>Gets a cached delegate for the PostAction method.</summary>
         /// <returns>
         /// A delegate for PostAction, which expects a SynchronizationContextAwaitTaskContinuation
@@ -70,6 +61,15 @@ namespace System.Threading.Tasks
                 _postActionCallback = callback = PostAction;
             }
             return callback;
+        }
+
+        /// <summary>Calls InvokeOrPostAction(false) on the supplied SynchronizationContextAwaitTaskContinuation.</summary>
+        /// <param name="state">The SynchronizationContextAwaitTaskContinuation.</param>
+        [SecurityCritical]
+        private static void PostAction(object state)
+        {
+            var c = (SynchronizationContextAwaitTaskContinuation)state;
+            c._syncContext.Post(_postCallback, c.Action); // s_postCallback is manually cached, as the compiler won't in a SecurityCritical method
         }
     }
 }

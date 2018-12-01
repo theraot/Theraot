@@ -37,7 +37,7 @@ namespace MonoTests.System
     {
         private AggregateException _e;
 
-        [SetUpAttribute]
+        [SetUp]
         public void Setup()
         {
             _e = new AggregateException(new Exception("foo"), new AggregateException(new Exception("bar"), new Exception("foobar")));
@@ -60,7 +60,7 @@ namespace MonoTests.System
             Assert.AreEqual(inner, ex.GetBaseException());
         }
 
-        [TestAttribute]
+        [Test]
         public void FlattenTestCase()
         {
             var ex = _e.Flatten();

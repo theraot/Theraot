@@ -1,7 +1,8 @@
 #if NET20 || NET30
 
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
 using System.Dynamic.Utils;
@@ -10,60 +11,43 @@ namespace System.Linq.Expressions
 {
     /// <summary>
     /// Represents a catch statement in a try block.
-    /// This must have the same return type (i.e., the type of <see cref="P:CatchBlock.Body"/>) as the try block it is associated with.
+    /// This must have the same return type (i.e., the type of <see cref="Body"/>) as the try block it is associated with.
     /// </summary>
-    [DebuggerTypeProxy(typeof(CatchBlockProxy))]
+    [DebuggerTypeProxy(typeof(Expression.CatchBlockProxy))]
     public sealed class CatchBlock
     {
-        private readonly Type _test;
-        private readonly ParameterExpression _var;
-        private readonly Expression _body;
-        private readonly Expression _filter;
-
         internal CatchBlock(Type test, ParameterExpression variable, Expression body, Expression filter)
         {
-            _test = test;
-            _var = variable;
-            _body = body;
-            _filter = filter;
-        }
-
-        /// <summary>
-        /// Gets a reference to the <see cref="Exception"/> object caught by this handler.
-        /// </summary>
-        public ParameterExpression Variable
-        {
-            get { return _var; }
-        }
-
-        /// <summary>
-        /// Gets the type of <see cref="Exception"/> this handler catches.
-        /// </summary>
-        public Type Test
-        {
-            get { return _test; }
+            Test = test;
+            Variable = variable;
+            Body = body;
+            Filter = filter;
         }
 
         /// <summary>
         /// Gets the body of the catch block.
         /// </summary>
-        public Expression Body
-        {
-            get { return _body; }
-        }
+        public Expression Body { get; }
 
         /// <summary>
         /// Gets the body of the <see cref="CatchBlock"/>'s filter.
         /// </summary>
-        public Expression Filter
-        {
-            get { return _filter; }
-        }
+        public Expression Filter { get; }
+
+        /// <summary>
+        /// Gets the type of <see cref="Exception"/> this handler catches.
+        /// </summary>
+        public Type Test { get; }
+
+        /// <summary>
+        /// Gets a reference to the <see cref="Exception"/> object caught by this handler.
+        /// </summary>
+        public ParameterExpression Variable { get; }
 
         /// <summary>
         /// Returns a <see cref="string"/> that represents the current <see cref="object"/>.
         /// </summary>
-        /// <returns>A <see cref="string"/> that represents the current <see cref="object"/>. </returns>
+        /// <returns>A <see cref="string"/> that represents the current <see cref="object"/>.</returns>
         public override string ToString()
         {
             return ExpressionStringBuilder.CatchBlockToString(this);
@@ -74,9 +58,9 @@ namespace System.Linq.Expressions
         /// supplied children. If all of the children are the same, it will
         /// return this expression.
         /// </summary>
-        /// <param name="variable">The <see cref="Variable" /> property of the result.</param>
-        /// <param name="filter">The <see cref="Filter" /> property of the result.</param>
-        /// <param name="body">The <see cref="Body" /> property of the result.</param>
+        /// <param name="variable">The <see cref="Variable"/> property of the result.</param>
+        /// <param name="filter">The <see cref="Filter"/> property of the result.</param>
+        /// <param name="body">The <see cref="Body"/> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public CatchBlock Update(ParameterExpression variable, Expression filter, Expression body)
         {
@@ -100,7 +84,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="CatchBlock"/>.</returns>
         public static CatchBlock Catch(Type type, Expression body)
         {
-            return MakeCatchBlock(type, null, body, null);
+            return MakeCatchBlock(type, null, body, filter: null);
         }
 
         /// <summary>
@@ -111,8 +95,8 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="CatchBlock"/>.</returns>
         public static CatchBlock Catch(ParameterExpression variable, Expression body)
         {
-            ContractUtils.RequiresNotNull(variable, "variable");
-            return MakeCatchBlock(variable.Type, variable, body, null);
+            ContractUtils.RequiresNotNull(variable, nameof(variable));
+            return MakeCatchBlock(variable.Type, variable, body, filter: null);
         }
 
         /// <summary>
@@ -138,7 +122,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="CatchBlock"/>.</returns>
         public static CatchBlock Catch(ParameterExpression variable, Expression body, Expression filter)
         {
-            ContractUtils.RequiresNotNull(variable, "variable");
+            ContractUtils.RequiresNotNull(variable, nameof(variable));
             return MakeCatchBlock(variable.Type, variable, body, filter);
         }
 
@@ -153,19 +137,23 @@ namespace System.Linq.Expressions
         /// <remarks><paramref name="type"/> must be non-null and match the type of <paramref name="variable"/> (if it is supplied).</remarks>
         public static CatchBlock MakeCatchBlock(Type type, ParameterExpression variable, Expression body, Expression filter)
         {
-            ContractUtils.RequiresNotNull(type, "type");
-            ContractUtils.Requires(variable == null || variable.Type == type, "variable");
-            if (variable != null && variable.IsByRef)
+            ContractUtils.RequiresNotNull(type, nameof(type));
+            ContractUtils.Requires(variable == null || TypeUtils.AreEquivalent(variable.Type, type), nameof(variable));
+            if (variable == null)
             {
-                throw Error.VariableMustNotBeByRef(variable, variable.Type);
+                TypeUtils.ValidateType(type, nameof(type));
             }
-            RequiresCanRead(body, "body");
+            else if (variable.IsByRef)
+            {
+                throw Error.VariableMustNotBeByRef(variable, variable.Type, nameof(variable));
+            }
+            ExpressionUtils.RequiresCanRead(body, nameof(body));
             if (filter != null)
             {
-                RequiresCanRead(filter, "filter");
+                ExpressionUtils.RequiresCanRead(filter, nameof(filter));
                 if (filter.Type != typeof(bool))
                 {
-                    throw Error.ArgumentMustBeBoolean();
+                    throw Error.ArgumentMustBeBoolean(nameof(filter));
                 }
             }
 

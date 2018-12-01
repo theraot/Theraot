@@ -9,17 +9,14 @@ namespace System.Threading.Tasks
         private Task _antecedent;
 
         public ContinuationTaskFromTask(Task antecedent, Delegate action, object state, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions)
-            : base(action, state, InternalCurrentIfAttached(creationOptions), default(CancellationToken), creationOptions, internalOptions, antecedent.ExecutingTaskScheduler)
+            : base(action, state, InternalCurrentIfAttached(creationOptions), default, creationOptions, internalOptions, antecedent.ExecutingTaskScheduler)
         {
             Contract.Requires(action is Action<Task> || action is Action<Task, object>, "Invalid delegate type in ContinuationTaskFromTask");
             _antecedent = antecedent;
             CapturedContext = ExecutionContext.Capture();
         }
 
-        Task IContinuationTask.Antecedent
-        {
-            get { return _antecedent; }
-        }
+        Task IContinuationTask.Antecedent => _antecedent;
 
         /// <summary>
         /// Evaluates the value selector of the Task which is passed in as an object and stores the result.
@@ -33,19 +30,20 @@ namespace System.Threading.Tasks
             _antecedent = null;
             // Invoke the delegate
             Contract.Assert(Action != null);
-            var action = Action as Action<Task>;
-            if (action != null)
+            switch (Action)
             {
-                action(antecedent);
-                return;
+                case Action<Task> action:
+                    action(antecedent);
+                    return;
+
+                case Action<Task, object> actionWithState:
+                    actionWithState(antecedent, State);
+                    return;
+
+                default:
+                    Contract.Assert(false, "Invalid Action in ContinuationTaskFromTask");
+                    break;
             }
-            var actionWithState = Action as Action<Task, object>;
-            if (actionWithState != null)
-            {
-                actionWithState(antecedent, State);
-                return;
-            }
-            Contract.Assert(false, "Invalid Action in ContinuationTaskFromTask");
         }
     }
 }

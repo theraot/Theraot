@@ -98,7 +98,7 @@ namespace Theraot.Threading
             }
 
             /// <summary>
-            /// Set the version of this instance to that of an specefied VersionToken
+            /// Set the version of this instance to that of an specified VersionToken
             /// </summary>
             /// <param name="other">The VersionToken to copy the version from</param>
             /// <returns>Returns true if the version was changed; otherwise false.</returns>
@@ -128,7 +128,7 @@ namespace Theraot.Threading
             }
 
             /// <summary>
-            /// Updates the version of this instance to current up to that of an specefied VersionToken if it is newer
+            /// Updates the version of this instance to current up to that of an specified VersionToken if it is newer
             /// </summary>
             /// <param name="other">The VersionToken to copy the version from</param>
             /// <returns>Returns true if the version was changed; otherwise false.</returns>
@@ -144,7 +144,7 @@ namespace Theraot.Threading
 
             public override bool Equals(object obj)
             {
-                return obj is VersionProvider && Equals((VersionToken)obj); // TODO: Test ceverage?
+                return obj is VersionToken token && Equals(token);
             }
 
             public override int GetHashCode()

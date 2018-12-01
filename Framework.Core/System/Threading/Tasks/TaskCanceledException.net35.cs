@@ -4,12 +4,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Theraot.Core;
+
 namespace System.Threading.Tasks
 {
     /// <summary>
     /// Represents an exception used to communicate task cancellation.
     /// </summary>
-    public class TaskCanceledException : Theraot.Core.NewOperationCanceledException
+    public class TaskCanceledException : NewOperationCanceledException
     {
         [NonSerialized]
         private readonly Task _canceledTask; // The task which has been canceled.
@@ -49,7 +51,7 @@ namespace System.Threading.Tasks
         /// </summary>
         /// <param name="task">A task that has been canceled.</param>
         public TaskCanceledException(Task task) :
-            base("A task was canceled", task != null ? task.CancellationToken : new CancellationToken())
+            base("A task was canceled", task?.CancellationToken ?? new CancellationToken())
         {
             _canceledTask = task;
         }
@@ -62,10 +64,7 @@ namespace System.Threading.Tasks
         /// <see cref="T:System.Threading.Tasks.TaskCanceledException"/>, in which case
         /// this property will return null.
         /// </remarks>
-        public Task Task
-        {
-            get { return _canceledTask; }
-        }
+        public Task Task => _canceledTask;
     }
 }
 

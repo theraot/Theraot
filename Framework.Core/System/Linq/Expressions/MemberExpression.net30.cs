@@ -1,143 +1,18 @@
 #if NET20 || NET30
 
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Reflection;
-using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
-    /// <summary>
-    /// Represents accessing a field or property.
-    /// </summary>
-    [DebuggerTypeProxy(typeof(MemberExpressionProxy))]
-    public class MemberExpression : Expression
-    {
-        private readonly Expression _expression;
-
-        /// <summary>
-        /// Gets the field or property to be accessed.
-        /// </summary>
-        public MemberInfo Member
-        {
-            get { return GetMember(); }
-        }
-
-        /// <summary>
-        /// Gets the containing object of the field or property.
-        /// </summary>
-        public Expression Expression
-        {
-            get { return _expression; }
-        }
-
-        // param order: factories args in order, then other args
-        internal MemberExpression(Expression expression)
-        {
-            _expression = expression;
-        }
-
-        internal static MemberExpression Make(Expression expression, MemberInfo member)
-        {
-            var fi = member as FieldInfo;
-            if (fi != null)
-            {
-                return new FieldExpression(expression, fi);
-            }
-            var pi = (PropertyInfo)member;
-            return new PropertyExpression(expression, pi);
-        }
-
-        /// <summary>
-        /// Returns the node type of this <see cref="Expression" />. (Inherited from <see cref="Expression" />.)
-        /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
-        public sealed override ExpressionType NodeType
-        {
-            get { return ExpressionType.MemberAccess; }
-        }
-
-        internal virtual MemberInfo GetMember()
-        {
-            throw ContractUtils.Unreachable;
-        }
-
-        protected internal override Expression Accept(ExpressionVisitor visitor)
-        {
-            return visitor.VisitMember(this);
-        }
-
-        /// <summary>
-        /// Creates a new expression that is like this one, but using the
-        /// supplied children. If all of the children are the same, it will
-        /// return this expression.
-        /// </summary>
-        /// <param name="expression">The <see cref="Expression" /> property of the result.</param>
-        /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
-        public MemberExpression Update(Expression expression)
-        {
-            if (expression == Expression)
-            {
-                return this;
-            }
-            return MakeMemberAccess(expression, Member);
-        }
-    }
-
-    internal class FieldExpression : MemberExpression
-    {
-        private readonly FieldInfo _field;
-
-        public FieldExpression(Expression expression, FieldInfo member)
-            : base(expression)
-        {
-            _field = member;
-        }
-
-        internal override MemberInfo GetMember()
-        {
-            return _field;
-        }
-
-        public sealed override Type Type
-        {
-            get { return _field.FieldType; }
-        }
-    }
-
-    internal class PropertyExpression : MemberExpression
-    {
-        private readonly PropertyInfo _property;
-
-        public PropertyExpression(Expression expression, PropertyInfo member)
-            : base(expression)
-        {
-            _property = member;
-        }
-
-        internal override MemberInfo GetMember()
-        {
-            return _property;
-        }
-
-        public sealed override Type Type
-        {
-            get { return _property.PropertyType; }
-        }
-    }
-
     public partial class Expression
     {
-        private const BindingFlags _bindingFlags = BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy;
-        private const BindingFlags _staticFlags = BindingFlags.Static | _bindingFlags;
-        private const BindingFlags _publicFlags = BindingFlags.Public | _bindingFlags;
-        private const BindingFlags _nonPublicFlags = BindingFlags.NonPublic | _bindingFlags;
-        private const BindingFlags _publicStaticFlags = BindingFlags.Public | _staticFlags;
-        private const BindingFlags _nonPublicStaticFlags = BindingFlags.NonPublic | _staticFlags;
-
         #region Field
 
         /// <summary>
@@ -146,26 +21,27 @@ namespace System.Linq.Expressions
         /// <param name="expression">The containing object of the field.  This can be null for static fields.</param>
         /// <param name="field">The field to be accessed.</param>
         /// <returns>The created <see cref="MemberExpression"/>.</returns>
+        [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
         public static MemberExpression Field(Expression expression, FieldInfo field)
         {
-            ContractUtils.RequiresNotNull(field, "field");
+            ContractUtils.RequiresNotNull(field, nameof(field));
 
             if (field.IsStatic)
             {
                 if (expression != null)
                 {
-                    throw new ArgumentException(Strings.OnlyStaticFieldsHaveNullInstance, "expression");
+                    throw Error.OnlyStaticFieldsHaveNullInstance(nameof(expression));
                 }
             }
             else
             {
                 if (expression == null)
                 {
-                    throw new ArgumentException(Strings.OnlyStaticFieldsHaveNullInstance, "field");
+                    throw Error.OnlyStaticFieldsHaveNullInstance(nameof(field));
                 }
 
-                RequiresCanRead(expression, "expression");
-                if (!TypeHelper.AreReferenceAssignable(field.DeclaringType, expression.Type))
+                ExpressionUtils.RequiresCanRead(expression, nameof(expression));
+                if (!TypeUtils.AreReferenceAssignable(field.DeclaringType, expression.Type))
                 {
                     throw Error.FieldInfoNotDefinedForType(field.DeclaringType, field.Name, expression.Type);
                 }
@@ -181,10 +57,12 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="MemberExpression"/>.</returns>
         public static MemberExpression Field(Expression expression, string fieldName)
         {
-            RequiresCanRead(expression, "expression");
+            ExpressionUtils.RequiresCanRead(expression, nameof(expression));
+            ContractUtils.RequiresNotNull(fieldName, nameof(fieldName));
 
             // bind to public names first
-            var fi = expression.Type.GetField(fieldName, _publicFlags) ?? expression.Type.GetField(fieldName, _nonPublicFlags);
+            var fi = expression.Type.GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy)
+                           ?? expression.Type.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
             if (fi == null)
             {
                 throw Error.InstanceFieldNotDefinedForType(fieldName, expression.Type);
@@ -199,16 +77,14 @@ namespace System.Linq.Expressions
         /// <param name="type">The <see cref="Type"/> containing the field.</param>
         /// <param name="fieldName">The field to be accessed.</param>
         /// <returns>The created <see cref="MemberExpression"/>.</returns>
+        [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
         public static MemberExpression Field(Expression expression, Type type, string fieldName)
         {
-            ContractUtils.RequiresNotNull(type, "type");
+            ContractUtils.RequiresNotNull(type, nameof(type));
 
             // bind to public names first
-            var fi = type.GetField(fieldName, _publicStaticFlags);
-            if (fi == null)
-            {
-                fi = type.GetField(fieldName, _nonPublicStaticFlags);
-            }
+            var fi = type.GetField(fieldName, BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy)
+                           ?? type.GetField(fieldName, BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
 
             if (fi == null)
             {
@@ -229,17 +105,14 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="MemberExpression"/>.</returns>
         public static MemberExpression Property(Expression expression, string propertyName)
         {
-            RequiresCanRead(expression, "expression");
-            ContractUtils.RequiresNotNull(propertyName, "propertyName");
+            ExpressionUtils.RequiresCanRead(expression, nameof(expression));
+            ContractUtils.RequiresNotNull(propertyName, nameof(propertyName));
             // bind to public names first
-            var pi = expression.Type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+            var pi = expression.Type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy)
+                              ?? expression.Type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
             if (pi == null)
             {
-                pi = expression.Type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
-            }
-            if (pi == null)
-            {
-                throw Error.InstancePropertyNotDefinedForType(propertyName, expression.Type);
+                throw Error.InstancePropertyNotDefinedForType(propertyName, expression.Type, nameof(propertyName));
             }
             return Property(expression, pi);
         }
@@ -253,17 +126,14 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="MemberExpression"/>.</returns>
         public static MemberExpression Property(Expression expression, Type type, string propertyName)
         {
-            ContractUtils.RequiresNotNull(type, "type");
-            ContractUtils.RequiresNotNull(propertyName, "propertyName");
+            ContractUtils.RequiresNotNull(type, nameof(type));
+            ContractUtils.RequiresNotNull(propertyName, nameof(propertyName));
             // bind to public names first
-            var pi = type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+            var pi = type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy)
+                              ?? type.GetProperty(propertyName, BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
             if (pi == null)
             {
-                pi = type.GetProperty(propertyName, BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
-            }
-            if (pi == null)
-            {
-                throw Error.PropertyNotDefinedForType(propertyName, type);
+                throw Error.PropertyNotDefinedForType(propertyName, type, nameof(propertyName));
             }
             return Property(expression, pi);
         }
@@ -274,37 +144,55 @@ namespace System.Linq.Expressions
         /// <param name="expression">The containing object of the property.  This can be null for static properties.</param>
         /// <param name="property">The property to be accessed.</param>
         /// <returns>The created <see cref="MemberExpression"/>.</returns>
+        [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
         public static MemberExpression Property(Expression expression, PropertyInfo property)
         {
-            ContractUtils.RequiresNotNull(property, "property");
+            ContractUtils.RequiresNotNull(property, nameof(property));
 
-            var mi = property.GetGetMethod(true) ?? property.GetSetMethod(true);
+            var mi = property.GetGetMethod(nonPublic: true);
 
             if (mi == null)
             {
-                throw Error.PropertyDoesNotHaveAccessor(property);
+                mi = property.GetSetMethod(nonPublic: true);
+
+                if (mi == null)
+                {
+                    throw Error.PropertyDoesNotHaveAccessor(property, nameof(property));
+                }
+
+                if (mi.GetParameters().Length != 1)
+                {
+                    throw Error.IncorrectNumberOfMethodCallArguments(mi, nameof(property));
+                }
+            }
+            else if (mi.GetParameters().Length != 0)
+            {
+                throw Error.IncorrectNumberOfMethodCallArguments(mi, nameof(property));
             }
 
             if (mi.IsStatic)
             {
                 if (expression != null)
                 {
-                    throw new ArgumentException(Strings.OnlyStaticPropertiesHaveNullInstance, "expression");
+                    throw Error.OnlyStaticPropertiesHaveNullInstance(nameof(expression));
                 }
             }
             else
             {
                 if (expression == null)
                 {
-                    throw new ArgumentException(Strings.OnlyStaticPropertiesHaveNullInstance, "property");
+                    throw Error.OnlyStaticPropertiesHaveNullInstance(nameof(property));
                 }
 
-                RequiresCanRead(expression, "expression");
-                if (!TypeHelper.IsValidInstanceType(property, expression.Type))
+                ExpressionUtils.RequiresCanRead(expression, nameof(expression));
+                if (!TypeUtils.IsValidInstanceType(property, expression.Type))
                 {
-                    throw Error.PropertyNotDefinedForType(property, expression.Type);
+                    throw Error.PropertyNotDefinedForType(property, expression.Type, nameof(property));
                 }
             }
+
+            ValidateMethodInfo(mi, nameof(property));
+
             return MemberExpression.Make(expression, property);
         }
 
@@ -316,29 +204,9 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="MemberExpression"/>.</returns>
         public static MemberExpression Property(Expression expression, MethodInfo propertyAccessor)
         {
-            ContractUtils.RequiresNotNull(propertyAccessor, "propertyAccessor");
-            ValidateMethodInfo(propertyAccessor);
-            return Property(expression, GetProperty(propertyAccessor));
-        }
-
-        private static PropertyInfo GetProperty(MethodInfo mi)
-        {
-            var type = mi.DeclaringType;
-            var flags = BindingFlags.Public | BindingFlags.NonPublic;
-            flags |= (mi.IsStatic) ? BindingFlags.Static : BindingFlags.Instance;
-            var props = type.GetProperties(flags);
-            foreach (var pi in props)
-            {
-                if (pi.CanRead && CheckMethod(mi, pi.GetGetMethod(true)))
-                {
-                    return pi;
-                }
-                if (pi.CanWrite && CheckMethod(mi, pi.GetSetMethod(true)))
-                {
-                    return pi;
-                }
-            }
-            throw Error.MethodNotPropertyAccessor(mi.DeclaringType, mi.Name);
+            ContractUtils.RequiresNotNull(propertyAccessor, nameof(propertyAccessor));
+            ValidateMethodInfo(propertyAccessor, nameof(propertyAccessor));
+            return Property(expression, GetProperty(propertyAccessor, nameof(propertyAccessor)));
         }
 
         private static bool CheckMethod(MethodInfo method, MethodInfo propertyMethod)
@@ -351,6 +219,7 @@ namespace System.Linq.Expressions
             // same as that returned by reflection.
             // Check for this condition and try and get the method from reflection.
             var type = method.DeclaringType;
+            // ReSharper disable once PossibleNullReferenceException
             if (type.IsInterface && method.Name == propertyMethod.Name && type.GetMethod(method.Name) == propertyMethod)
             {
                 return true;
@@ -358,44 +227,31 @@ namespace System.Linq.Expressions
             return false;
         }
 
-        #endregion Property
-
-        /// <summary>
-        /// Creates a <see cref="MemberExpression"/> accessing a property or field.
-        /// </summary>
-        /// <param name="expression">The containing object of the member.  This can be null for static members.</param>
-        /// <param name="propertyOrFieldName">The member to be accessed.</param>
-        /// <returns>The created <see cref="MemberExpression"/>.</returns>
-        public static MemberExpression PropertyOrField(Expression expression, string propertyOrFieldName)
+        private static PropertyInfo GetProperty(MethodInfo mi, string paramName, int index = -1)
         {
-            RequiresCanRead(expression, "expression");
-            // bind to public names first
-            var pi = expression.Type.GetProperty(propertyOrFieldName, _publicFlags);
-            if (pi != null)
+            var type = mi.DeclaringType;
+            if (type != null)
             {
-                return Property(expression, pi);
+                var flags = BindingFlags.Public | BindingFlags.NonPublic;
+                flags |= (mi.IsStatic) ? BindingFlags.Static : BindingFlags.Instance;
+                var props = type.GetProperties(flags);
+                foreach (var pi in props)
+                {
+                    if (pi.CanRead && CheckMethod(mi, pi.GetGetMethod(nonPublic: true)))
+                    {
+                        return pi;
+                    }
+                    if (pi.CanWrite && CheckMethod(mi, pi.GetSetMethod(nonPublic: true)))
+                    {
+                        return pi;
+                    }
+                }
             }
 
-            var fi = expression.Type.GetField(propertyOrFieldName, _publicFlags);
-            if (fi != null)
-            {
-                return Field(expression, fi);
-            }
-
-            pi = expression.Type.GetProperty(propertyOrFieldName, _nonPublicFlags);
-            if (pi != null)
-            {
-                return Property(expression, pi);
-            }
-
-            fi = expression.Type.GetField(propertyOrFieldName, _nonPublicFlags);
-            if (fi != null)
-            {
-                return Field(expression, fi);
-            }
-
-            throw Error.NotAMemberOfType(propertyOrFieldName, expression.Type);
+            throw Error.MethodNotPropertyAccessor(mi.DeclaringType, mi.Name, paramName, index);
         }
+
+        #endregion Property
 
         /// <summary>
         /// Creates a <see cref="MemberExpression"/> accessing a property or field.
@@ -405,20 +261,159 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="MemberExpression"/>.</returns>
         public static MemberExpression MakeMemberAccess(Expression expression, MemberInfo member)
         {
-            ContractUtils.RequiresNotNull(member, "member");
-
-            var fi = member as FieldInfo;
-            if (fi != null)
+            ContractUtils.RequiresNotNull(member, nameof(member));
+            if (member is FieldInfo fi)
             {
                 return Field(expression, fi);
             }
-            var pi = member as PropertyInfo;
+            if (member is PropertyInfo pi)
+            {
+                return Property(expression, pi);
+            }
+            throw Error.MemberNotFieldOrProperty(member, nameof(member));
+        }
+
+        /// <summary>
+        /// Creates a <see cref="MemberExpression"/> accessing a property or field.
+        /// </summary>
+        /// <param name="expression">The containing object of the member.  This can be null for static members.</param>
+        /// <param name="propertyOrFieldName">The member to be accessed.</param>
+        /// <returns>The created <see cref="MemberExpression"/>.</returns>
+        public static MemberExpression PropertyOrField(Expression expression, string propertyOrFieldName)
+        {
+            ExpressionUtils.RequiresCanRead(expression, nameof(expression));
+            // bind to public names first
+            var pi = expression.Type.GetProperty(propertyOrFieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
             if (pi != null)
             {
                 return Property(expression, pi);
             }
-            throw Error.MemberNotFieldOrProperty(member);
+
+            var fi = expression.Type.GetField(propertyOrFieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+            if (fi != null)
+            {
+                return Field(expression, fi);
+            }
+
+            pi = expression.Type.GetProperty(propertyOrFieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+            if (pi != null)
+            {
+                return Property(expression, pi);
+            }
+
+            fi = expression.Type.GetField(propertyOrFieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+            if (fi != null)
+            {
+                return Field(expression, fi);
+            }
+
+            throw Error.NotAMemberOfType(propertyOrFieldName, expression.Type, nameof(propertyOrFieldName));
         }
+    }
+
+    /// <summary>
+    /// Represents accessing a field or property.
+    /// </summary>
+    [DebuggerTypeProxy(typeof(MemberExpressionProxy))]
+    public class MemberExpression : Expression
+    {
+        // param order: factories args in order, then other args
+        internal MemberExpression(Expression expression)
+        {
+            Expression = expression;
+        }
+
+        /// <summary>
+        /// Gets the containing object of the field or property.
+        /// </summary>
+        public Expression Expression { get; }
+
+        /// <summary>
+        /// Gets the field or property to be accessed.
+        /// </summary>
+        public MemberInfo Member => GetMember();
+
+        /// <summary>
+        /// Returns the node type of this <see cref="Expression"/>. (Inherited from <see cref="Expression"/>.)
+        /// </summary>
+        /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
+        public sealed override ExpressionType NodeType => ExpressionType.MemberAccess;
+
+        /// <summary>
+        /// Creates a new expression that is like this one, but using the
+        /// supplied children. If all of the children are the same, it will
+        /// return this expression.
+        /// </summary>
+        /// <param name="expression">The <see cref="Expression"/> property of the result.</param>
+        /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
+        public MemberExpression Update(Expression expression)
+        {
+            if (expression == Expression)
+            {
+                return this;
+            }
+            return MakeMemberAccess(expression, Member);
+        }
+
+        internal static PropertyExpression Make(Expression expression, PropertyInfo property)
+        {
+            Debug.Assert(property != null);
+            return new PropertyExpression(expression, property);
+        }
+
+        internal static FieldExpression Make(Expression expression, FieldInfo field)
+        {
+            Debug.Assert(field != null);
+            return new FieldExpression(expression, field);
+        }
+
+        internal static MemberExpression Make(Expression expression, MemberInfo member)
+        {
+            return !(member is FieldInfo fi) ? (MemberExpression)Make(expression, (PropertyInfo)member) : Make(expression, fi);
+        }
+
+        internal virtual MemberInfo GetMember()
+        {
+            throw ContractUtils.Unreachable;
+        }
+
+        /// <summary>
+        /// Dispatches to the specific visit method for this node type.
+        /// </summary>
+        protected internal override Expression Accept(ExpressionVisitor visitor)
+        {
+            return visitor.VisitMember(this);
+        }
+    }
+
+    internal sealed class FieldExpression : MemberExpression
+    {
+        private readonly FieldInfo _field;
+
+        public FieldExpression(Expression expression, FieldInfo member)
+            : base(expression)
+        {
+            _field = member;
+        }
+
+        public override Type Type => _field.FieldType;
+
+        internal override MemberInfo GetMember() => _field;
+    }
+
+    internal sealed class PropertyExpression : MemberExpression
+    {
+        private readonly PropertyInfo _property;
+
+        public PropertyExpression(Expression expression, PropertyInfo member)
+            : base(expression)
+        {
+            _property = member;
+        }
+
+        public override Type Type => _property.PropertyType;
+
+        internal override MemberInfo GetMember() => _property;
     }
 }
 

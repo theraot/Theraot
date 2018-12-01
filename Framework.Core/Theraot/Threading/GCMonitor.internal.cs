@@ -10,8 +10,6 @@ namespace Theraot.Threading
     {
         private static class Internal
         {
-            private static readonly WeakDelegateCollection _collectedEventHandlers;
-
 #if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
 
             private static readonly Action _work;
@@ -32,8 +30,10 @@ namespace Theraot.Threading
             static Internal()
             {
                 _work = _ => RaiseCollected();
-                _collectedEventHandlers = new WeakDelegateCollection(false, false);
+                CollectedEventHandlers = new WeakDelegateCollection(false, false);
             }
+
+            public static WeakDelegateCollection CollectedEventHandlers { get; }
 
             public static void Invoke()
             {
@@ -42,11 +42,6 @@ namespace Theraot.Threading
 
 #endif
 
-            public static WeakDelegateCollection CollectedEventHandlers
-            {
-                get { return _collectedEventHandlers; }
-            }
-
             private static void RaiseCollected()
             {
                 var check = Volatile.Read(ref _status);
@@ -54,12 +49,12 @@ namespace Theraot.Threading
                 {
                     try
                     {
-                        _collectedEventHandlers.RemoveDeadItems();
-                        _collectedEventHandlers.Invoke(null, new EventArgs());
+                        CollectedEventHandlers.RemoveDeadItems();
+                        CollectedEventHandlers.Invoke(null, new EventArgs());
                     }
                     catch (Exception exception)
                     {
-                        // Catch'em all
+                        // Catch them all
                         GC.KeepAlive(exception);
                     }
                     Volatile.Write(ref _status, _statusReady);

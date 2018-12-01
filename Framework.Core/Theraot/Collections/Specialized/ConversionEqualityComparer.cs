@@ -2,10 +2,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Theraot.Collections.Specialized
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public class ConversionEqualityComparer<TInput, TOutput> : IEqualityComparer<TInput>
     {
         private readonly IEqualityComparer<TOutput> _comparer;
@@ -14,11 +15,7 @@ namespace Theraot.Collections.Specialized
         public ConversionEqualityComparer(IEqualityComparer<TOutput> comparer, Func<TInput, TOutput> converter)
         {
             _comparer = comparer ?? EqualityComparer<TOutput>.Default;
-            if (converter == null)
-            {
-                throw new ArgumentNullException("converter");
-            }
-            _converter = converter;
+            _converter = converter ?? throw new ArgumentNullException(nameof(converter));
         }
 
         public bool Equals(TInput x, TInput y)

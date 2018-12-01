@@ -1,5 +1,5 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,7 +13,7 @@ namespace MonoTests.System.Linq
     public class EnumerableAsQueryableTestEx
     {
         [Test]
-        public void GroupByIsDefered()
+        public void GroupByIsDeferred()
         {
             var src = new IterateAndCount(10);
             var a = src.GroupBy(i => i > 5, null);
@@ -29,21 +29,23 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
-        public void GroupByIsDeferedToGetEnumerator() // TODO: Review
+        public void GroupByIsDeferredToGetEnumerator()
         {
             var src = new IterateAndCount(10);
             var a = src.GroupBy(i => i > 5, null);
             Assert.AreEqual(src.Total, 0);
+            // ReSharper disable once PossibleMultipleEnumeration
             using (var enumerator = a.GetEnumerator())
             {
-                // This is a shame, GroupBy is not really deffered
+                // This is a shame, GroupBy is not really deferred
                 GC.KeepAlive(enumerator);
                 Assert.AreEqual(src.Total, 10);
             }
             Assert.AreEqual(src.Total, 10);
+            // ReSharper disable once PossibleMultipleEnumeration
             using (var enumerator = a.GetEnumerator())
             {
-                // This is a shame, GroupBy is not really deffered
+                // This is a shame, GroupBy is not really deferred
                 GC.KeepAlive(enumerator);
                 Assert.AreEqual(src.Total, 20);
             }
@@ -168,23 +170,19 @@ namespace MonoTests.System.Linq
         public class IterateAndCount : IEnumerable<int>
         {
             private readonly int _count;
-            private int _total;
 
             public IterateAndCount(int count)
             {
                 _count = count;
             }
 
-            public int Total
-            {
-                get { return _total; }
-            }
+            public int Total { get; private set; }
 
             public IEnumerator<int> GetEnumerator()
             {
                 for (var index = 0; index < _count; index++)
                 {
-                    _total = Total + 1;
+                    Total = Total + 1;
                     yield return Total;
                 }
             }

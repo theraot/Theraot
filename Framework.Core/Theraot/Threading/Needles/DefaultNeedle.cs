@@ -8,33 +8,22 @@ namespace Theraot.Threading.Needles
     [System.Diagnostics.DebuggerNonUserCode]
     public sealed class DefaultNeedle<T> : IReadOnlyNeedle<T>
     {
-        private static readonly DefaultNeedle<T> _instance = new DefaultNeedle<T>();
-
         private DefaultNeedle()
         {
             //Empty
         }
 
-        public static DefaultNeedle<T> Instance
-        {
-            get { return _instance; }
-        }
+        public static DefaultNeedle<T> Instance { get; } = new DefaultNeedle<T>();
 
-        bool IReadOnlyNeedle<T>.IsAlive
-        {
-            get { return true; }
-        }
+        bool IReadOnlyNeedle<T>.IsAlive => true;
 
-        public T Value
-        {
-            get { return default(T); }
-        }
+        public T Value => default;
 
         public static explicit operator T(DefaultNeedle<T> needle)
         {
             if (needle == null)
             {
-                throw new ArgumentNullException("needle");
+                throw new ArgumentNullException(nameof(needle));
             }
             return needle.Value;
         }
@@ -56,7 +45,7 @@ namespace Theraot.Threading.Needles
 
         public override int GetHashCode()
         {
-            return EqualityComparer<T>.Default.GetHashCode(default(T));
+            return EqualityComparer<T>.Default.GetHashCode(default);
         }
 
         public override string ToString()

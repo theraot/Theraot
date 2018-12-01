@@ -5,6 +5,7 @@ using System;
 namespace Theraot.Threading.Needles
 {
     [System.Diagnostics.DebuggerNonUserCode]
+    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class PromiseNeedle<T> : Promise, IWaitablePromise<T>, IRecyclableNeedle<T>, ICacheNeedle<T>
     {
         private readonly int _hashCode;
@@ -13,14 +14,14 @@ namespace Theraot.Threading.Needles
         public PromiseNeedle(bool done)
             : base(done)
         {
-            _target = default(T);
+            _target = default;
             _hashCode = base.GetHashCode();
         }
 
         public PromiseNeedle(Exception exception)
             : base(exception)
         {
-            _target = default(T);
+            _target = default;
             _hashCode = exception.GetHashCode();
         }
 
@@ -31,10 +32,7 @@ namespace Theraot.Threading.Needles
             _hashCode = ReferenceEquals(target, null) ? base.GetHashCode() : target.GetHashCode();
         }
 
-        public bool IsAlive
-        {
-            get { return !ReferenceEquals(_target, null); }
-        }
+        public bool IsAlive => !ReferenceEquals(_target, null);
 
         public virtual T Value
         {
@@ -59,23 +57,39 @@ namespace Theraot.Threading.Needles
             return new PromiseNeedle<T>(target);
         }
 
-        public static bool operator !=(PromiseNeedle<T> left, PromiseNeedle<T> right)
-        {
-            return NotEqualsExtracted(left, right);
-        }
-
-        public static bool operator ==(PromiseNeedle<T> left, PromiseNeedle<T> right)
-        {
-            return EqualsExtracted(left, right);
-        }
-
         public static explicit operator T(PromiseNeedle<T> needle)
         {
             if (needle == null)
             {
-                throw new ArgumentNullException("needle");
+                throw new ArgumentNullException(nameof(needle));
             }
             return needle.Value;
+        }
+
+        public static bool operator !=(PromiseNeedle<T> left, PromiseNeedle<T> right)
+        {
+            if (ReferenceEquals(left, null))
+            {
+                return !ReferenceEquals(right, null);
+            }
+            if (ReferenceEquals(right, null))
+            {
+                return true;
+            }
+            return !left._target.Equals(right._target);
+        }
+
+        public static bool operator ==(PromiseNeedle<T> left, PromiseNeedle<T> right)
+        {
+            if (ReferenceEquals(left, null))
+            {
+                return ReferenceEquals(right, null);
+            }
+            if (ReferenceEquals(right, null))
+            {
+                return false;
+            }
+            return left._target.Equals(right._target);
         }
 
         public override bool Equals(object obj)
@@ -83,20 +97,20 @@ namespace Theraot.Threading.Needles
             var needle = obj as PromiseNeedle<T>;
             if (needle != null)
             {
-                return EqualsExtracted(this, needle);
+                return this == needle;
             }
             return IsCompleted && Value.Equals(obj);
         }
 
         public bool Equals(PromiseNeedle<T> other)
         {
-            return EqualsExtracted(this, other);
+            return this == other;
         }
 
         public override void Free()
         {
             base.Free();
-            _target = default(T);
+            _target = default;
         }
 
         public override int GetHashCode()
@@ -118,24 +132,6 @@ namespace Theraot.Threading.Needles
             var result = IsCompleted;
             value = _target;
             return result;
-        }
-
-        private static bool EqualsExtracted(PromiseNeedle<T> left, PromiseNeedle<T> right)
-        {
-            if (ReferenceEquals(left, null))
-            {
-                return ReferenceEquals(right, null);
-            }
-            return left.Equals(right);
-        }
-
-        private static bool NotEqualsExtracted(PromiseNeedle<T> left, PromiseNeedle<T> right)
-        {
-            if (ReferenceEquals(left, null))
-            {
-                return !ReferenceEquals(right, null);
-            }
-            return !left.Equals(right);
         }
     }
 }

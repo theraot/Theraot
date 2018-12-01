@@ -29,9 +29,7 @@
 
 using NUnit.Framework;
 using System;
-using System.Linq;
 using System.Threading;
-using Theraot.Collections.ThreadSafe;
 
 namespace MonoTests.System.Threading
 {
@@ -671,6 +669,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        [Category("Performance")]
         public void DisposeRace()
         {
             for (var i = 0; i < 1000; ++i)

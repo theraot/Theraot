@@ -10,26 +10,26 @@ namespace Theraot.Core
         public static RangeSituation CompareTo<T>(this Range<T> x, Range<T> y, IComparer<T> comparer)
             where T : IComparable<T>
         {
-            var ii = comparer.Compare(x.Minimun, y.Minimun);
+            var ii = comparer.Compare(x.Minimum, y.Minimum);
             if (ii == 0)
             {
-                if (x.ClosedMinimun && !y.ClosedMinimun)
+                if (x.ClosedMinimum && !y.ClosedMinimum)
                 {
                     ii = -1;
                 }
-                else if (!x.ClosedMinimun && y.ClosedMinimun)
+                else if (!x.ClosedMinimum && y.ClosedMinimum)
                 {
                     ii = 1;
                 }
             }
-            var aa = comparer.Compare(x.Maximun, y.Maximun);
+            var aa = comparer.Compare(x.Maximum, y.Maximum);
             if (aa == 0)
             {
-                if (x.ClosedMaximun && !y.ClosedMaximun)
+                if (x.ClosedMaximum && !y.ClosedMaximum)
                 {
                     aa = 1;
                 }
-                else if (!x.ClosedMaximun && y.ClosedMaximun)
+                else if (!x.ClosedMaximum && y.ClosedMaximum)
                 {
                     aa = -1;
                 }
@@ -48,14 +48,14 @@ namespace Theraot.Core
             }
             if (ii < 0)
             {
-                var ai = comparer.Compare(x.Maximun, y.Minimun);
+                var ai = comparer.Compare(x.Maximum, y.Minimum);
                 if (ai == 0)
                 {
-                    if (x.ClosedMaximun && y.ClosedMinimun)
+                    if (x.ClosedMaximum && y.ClosedMinimum)
                     {
                         ai = 1;
                     }
-                    else if (!x.ClosedMaximun && !y.ClosedMinimun)
+                    else if (!x.ClosedMaximum && !y.ClosedMinimum)
                     {
                         ai = -1;
                     }
@@ -70,14 +70,14 @@ namespace Theraot.Core
                 }
                 return RangeSituation.BeforeTouching;
             }
-            var ia = comparer.Compare(x.Minimun, y.Maximun);
+            var ia = comparer.Compare(x.Minimum, y.Maximum);
             if (ia == 0)
             {
-                if (x.ClosedMinimun && y.ClosedMaximun)
+                if (x.ClosedMinimum && y.ClosedMaximum)
                 {
                     ia = -1;
                 }
-                else if (!x.ClosedMinimun && !y.ClosedMaximun)
+                else if (!x.ClosedMinimum && !y.ClosedMaximum)
                 {
                     ia = 1;
                 }
@@ -96,19 +96,19 @@ namespace Theraot.Core
         public static int CompareTo<T>(this Range<T> x, T y, IComparer<T> comparer)
             where T : IComparable<T>
         {
-            var i = comparer.Compare(x.Minimun, y);
+            var i = comparer.Compare(x.Minimum, y);
             if (i == 0)
             {
-                i = x.ClosedMinimun ? -1 : 1;
+                i = x.ClosedMinimum ? -1 : 1;
             }
             if (i > 0)
             {
                 return -1;
             }
-            var a = comparer.Compare(x.Maximun, y);
+            var a = comparer.Compare(x.Maximum, y);
             if (a == 0)
             {
-                a = x.ClosedMaximun ? 1 : -1;
+                a = x.ClosedMaximum ? 1 : -1;
             }
             if (a < 0)
             {
@@ -120,7 +120,7 @@ namespace Theraot.Core
         public static bool IsEmpty<T>(this Range<T> x, IComparer<T> comparer)
             where T : IComparable<T>
         {
-            return comparer.Compare(x.Minimun, x.Maximun) == 0 && (!x.ClosedMinimun || !x.ClosedMaximun);
+            return comparer.Compare(x.Minimum, x.Maximum) == 0 && (!x.ClosedMinimum || !x.ClosedMaximum);
         }
     }
 }

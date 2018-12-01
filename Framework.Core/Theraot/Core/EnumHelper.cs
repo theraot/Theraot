@@ -14,11 +14,11 @@ namespace Theraot.Core
             var type = value.GetType();
             if (ReferenceEquals(value, null))
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
             if (ReferenceEquals(flag, null))
             {
-                throw new ArgumentNullException("flag");
+                throw new ArgumentNullException(nameof(flag));
             }
             if (flag.GetType() != type)
             {
@@ -70,7 +70,7 @@ namespace Theraot.Core
             catch (Exception ex)
             {
                 GC.KeepAlive(ex);
-                result = default(TEnum);
+                result = default;
                 return false;
             }
         }
@@ -89,12 +89,13 @@ namespace Theraot.Core
             catch (Exception ex)
             {
                 GC.KeepAlive(ex);
-                result = default(TEnum);
+                result = default;
                 return false;
             }
         }
 
 #else
+
         public static bool HasFlag(Enum value, Enum flag)
         {
             // Added in .NET 4.0
@@ -105,15 +106,16 @@ namespace Theraot.Core
             where TEnum : struct
         {
             // Added in .NET 4.0
-            return Enum.TryParse<TEnum>(value, out result);
+            return Enum.TryParse(value, out result);
         }
 
         public static bool TryParse<TEnum>(string value, bool ignoreCase, out TEnum result)
             where TEnum : struct
         {
             // Added in .NET 4.0
-            return Enum.TryParse<TEnum>(value, ignoreCase, out result);
+            return Enum.TryParse(value, ignoreCase, out result);
         }
+
 #endif
     }
 }

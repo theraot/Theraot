@@ -39,11 +39,11 @@ namespace System.Diagnostics.Contracts
         {
             [SecurityCritical]
             [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-            add { ContractHelper.InternalContractFailed += value; }
+            add => ContractHelper.InternalContractFailed += value;
 
             [SecurityCritical]
             [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-            remove { ContractHelper.InternalContractFailed -= value; }
+            remove => ContractHelper.InternalContractFailed -= value;
         }
 
         [SecuritySafeCritical]
@@ -82,7 +82,7 @@ namespace System.Diagnostics.Contracts
                 probablyNotRewritten = thisAssembly;
             }
             var simpleName = probablyNotRewritten.GetName().Name;
-            ContractHelper.TriggerFailure(kind, string.Format("The code has not been rewriten. ContractKind: {0} - Source: {1}", contractKind, simpleName), null, null, null);
+            ContractHelper.TriggerFailure(kind, $"The code has not been rewriten. ContractKind: {contractKind} - Source: {simpleName}", null, null, null);
 
             _assertingMustUseRewriter = false;
         }
@@ -93,7 +93,7 @@ namespace System.Diagnostics.Contracts
         {
             if (failureKind < ContractFailureKind.Precondition || failureKind > ContractFailureKind.Assume)
             {
-                throw new ArgumentException(string.Format("Invalid enum value: {0}", failureKind), "failureKind");
+                throw new ArgumentException(string.Format("Invalid enum value: {0}", failureKind), nameof(failureKind));
             }
 
             EndContractBlock();

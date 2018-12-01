@@ -11,19 +11,19 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(target, null))
             {
-                throw new ArgumentNullException("target", "NotNull cannot have a null value.");
+                throw new ArgumentNullException(nameof(target), "NotNull cannot have a null value.");
             }
         }
 
         public override T Value
         {
-            get { return base.Value; }
+            get => base.Value;
 
             set
             {
                 if (ReferenceEquals(value, null))
                 {
-                    throw new ArgumentNullException("value", "NotNull cannot have a null value.");
+                    throw new ArgumentNullException(nameof(value), "NotNull cannot have a null value.");
                 }
                 SetTargetValue(value);
             }

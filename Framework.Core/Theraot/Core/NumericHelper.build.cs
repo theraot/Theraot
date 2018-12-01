@@ -56,8 +56,7 @@ namespace Theraot.Core
             return (ulong)hi << 32 | lo;
         }
 
-        [CLSCompliant(false)]
-        public static double GetDoubleFromParts(int sign, int exp, ulong man)
+        internal static double GetDoubleFromParts(int sign, int exp, ulong man)
         {
             DoubleUlong du;
             du.Dbl = 0;
@@ -140,7 +139,7 @@ namespace Theraot.Core
             }
             else if (exp == 0x7FF)
             {
-                // NaN or Inifite.
+                // NaN or Infinite.
                 fFinite = false;
                 exp = int.MaxValue;
             }
@@ -216,7 +215,7 @@ namespace Theraot.Core
                     if (exponent == 0)
                     {
                         // Subnormal numbers; exponent is effectively one higher,
-                        // but there's no extra normalisation bit in the mantissa
+                        // but there's no extra normalization bit in the mantissa
                         exponent = 1;
                     }
                     else
@@ -243,8 +242,7 @@ namespace Theraot.Core
 
         public static void GetParts(double value, out int sign, out long mantissa, out int exponent, out bool finite)
         {
-            ulong tmpMantissa;
-            GetDoubleParts(value, out sign, out exponent, out tmpMantissa, out finite);
+            GetDoubleParts(value, out sign, out exponent, out var tmpMantissa, out finite);
             mantissa = (long)tmpMantissa;
         }
 

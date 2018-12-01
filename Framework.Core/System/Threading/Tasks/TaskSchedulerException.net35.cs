@@ -19,7 +19,7 @@ namespace System.Threading.Tasks
         /// Initializes a new instance of the <see cref="T:System.Threading.Tasks.TaskSchedulerException"/> class.
         /// </summary>
         public TaskSchedulerException()
-            : base("TaskSchedulerException")
+            : base(nameof(TaskSchedulerException))
         {
         }
 
@@ -40,7 +40,7 @@ namespace System.Threading.Tasks
         /// </summary>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
         public TaskSchedulerException(Exception innerException)
-            : base("TaskSchedulerException", innerException)
+            : base(nameof(TaskSchedulerException), innerException)
         {
         }
 

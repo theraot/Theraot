@@ -1,5 +1,6 @@
 #if NET20 || NET30 || NET35
 
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using Theraot.Core;
 using Theraot.Threading;
@@ -16,8 +17,6 @@ namespace System.Threading.Tasks
         protected readonly object State;
         protected object Action;
         private static int _lastId;
-        private readonly TaskCreationOptions _creationOptions;
-        private readonly int _id;
         private readonly InternalTaskOptions _internalOptions;
         private readonly Task _parent;
         private int _isDisposed;
@@ -25,7 +24,7 @@ namespace System.Threading.Tasks
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
         public Task(Action action)
-            : this(action, null, null, default(CancellationToken), TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
+            : this(action, null, null, default, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
@@ -37,7 +36,7 @@ namespace System.Threading.Tasks
         }
 
         public Task(Action action, TaskCreationOptions creationOptions)
-            : this(action, null, InternalCurrentIfAttached(creationOptions), default(CancellationToken), creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
+            : this(action, null, InternalCurrentIfAttached(creationOptions), default, creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
@@ -73,13 +72,9 @@ namespace System.Threading.Tasks
         /// <param name="internalOptions">Internal options to control its execution</param>
         internal Task(Delegate action, object state, Task parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
         {
-            if (action == null)
-            {
-                throw new ArgumentNullException("action");
-            }
             if (ReferenceEquals(scheduler, null))
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
             Contract.EndContractBlock();
             // This is readonly, and so must be set in the constructor
@@ -92,7 +87,7 @@ namespace System.Threading.Tasks
             {
                 _parent = parent;
             }
-            _id = Interlocked.Increment(ref _lastId) - 1;
+            Id = Interlocked.Increment(ref _lastId) - 1;
             _status = (int)TaskStatus.Created;
             if
             (
@@ -103,7 +98,7 @@ namespace System.Threading.Tasks
             {
                 _parent.AddNewChild();
             }
-            Action = action;
+            Action = action ?? throw new ArgumentNullException(nameof(action));
             State = state;
             ExecutingTaskScheduler = scheduler;
             _waitHandle = new ManualResetEventSlim(false);
@@ -115,7 +110,7 @@ namespace System.Threading.Tasks
                       TaskCreationOptions.PreferFairness |
                       TaskCreationOptions.RunContinuationsAsynchronously)) != 0)
             {
-                throw new ArgumentOutOfRangeException("creationOptions");
+                throw new ArgumentOutOfRangeException(nameof(creationOptions));
             }
             // Throw exception if the user specifies both LongRunning and SelfReplicating
             if (((creationOptions & TaskCreationOptions.LongRunning) != 0) &&
@@ -129,7 +124,7 @@ namespace System.Threading.Tasks
                 // WaitingForActivation state rather than the Created state.
                 _status = (int)TaskStatus.WaitingForActivation;
             }
-            _creationOptions = creationOptions;
+            CreationOptions = creationOptions;
             _internalOptions = internalOptions;
             // if we have a non-null cancellationToken, allocate the contingent properties to save it
             // we need to do this as the very last thing in the construction path, because the CT registration could modify m_stateFlags
@@ -149,28 +144,28 @@ namespace System.Threading.Tasks
             get
             {
                 var current = InternalCurrent;
-                if (current != null)
-                {
-                    return current.Id;
-                }
-                return null;
+                return current?.Id;
             }
         }
 
-        public static TaskFactory Factory
+        public static TaskFactory Factory => TaskFactory.DefaultInstance;
+
+        public object AsyncState => State;
+
+        WaitHandle IAsyncResult.AsyncWaitHandle
         {
-            get { return TaskFactory.DefaultInstance; }
+            get
+            {
+                if (Volatile.Read(ref _isDisposed) == 1)
+                {
+                    throw new ObjectDisposedException(nameof(Task));
+                }
+                return _waitHandle.Value.WaitHandle;
+            }
         }
 
-        public object AsyncState
-        {
-            get { return State; }
-        }
-
-        public TaskCreationOptions CreationOptions
-        {
-            get { return _creationOptions; }
-        }
+        bool IAsyncResult.CompletedSynchronously => false;
+        public TaskCreationOptions CreationOptions { get; }
 
         public AggregateException Exception
         {
@@ -193,33 +188,13 @@ namespace System.Threading.Tasks
             }
         }
 
-        WaitHandle IAsyncResult.AsyncWaitHandle
-        {
-            get
-            {
-                if (Thread.VolatileRead(ref _isDisposed) == 1)
-                {
-                    throw new ObjectDisposedException(GetType().FullName);
-                }
-                return _waitHandle.Value.WaitHandle;
-            }
-        }
-
-        bool IAsyncResult.CompletedSynchronously
-        {
-            get { return false; }
-        }
-
-        public int Id
-        {
-            get { return _id; }
-        }
+        public int Id { get; }
 
         public bool IsCanceled
         {
             get
             {
-                var status = Thread.VolatileRead(ref _status);
+                var status = Volatile.Read(ref _status);
                 return status == (int)TaskStatus.Canceled;
             }
         }
@@ -237,7 +212,7 @@ namespace System.Threading.Tasks
         {
             get
             {
-                var status = Thread.VolatileRead(ref _status);
+                var status = Volatile.Read(ref _status);
                 return status == (int)TaskStatus.Faulted;
             }
         }
@@ -247,7 +222,7 @@ namespace System.Threading.Tasks
             get
             {
                 PromiseCheck();
-                return (TaskStatus)Thread.VolatileRead(ref _status);
+                return (TaskStatus)Volatile.Read(ref _status);
             }
         }
 
@@ -255,26 +230,20 @@ namespace System.Threading.Tasks
 
         internal ExecutionContext CapturedContext { get; set; }
 
-        private bool IsContinuationTask
-        {
-            get { return (_internalOptions & InternalTaskOptions.ContinuationTask) != 0; }
-        }
+        private bool IsContinuationTask => (_internalOptions & InternalTaskOptions.ContinuationTask) != 0;
 
-        private bool IsPromiseTask
-        {
-            get { return (_internalOptions & InternalTaskOptions.PromiseTask) != 0; }
-        }
+        private bool IsPromiseTask => (_internalOptions & InternalTaskOptions.PromiseTask) != 0;
 
         private bool IsScheduled
         {
             get
             {
-                var status = Thread.VolatileRead(ref _status);
+                var status = Volatile.Read(ref _status);
                 return status == (int)TaskStatus.WaitingToRun || status == (int)TaskStatus.Running || status == (int)TaskStatus.WaitingForChildrenToComplete;
             }
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public void Dispose()
         {
             try
@@ -303,9 +272,9 @@ namespace System.Threading.Tasks
 
         public void RunSynchronously()
         {
-            if (Thread.VolatileRead(ref _isDisposed) == 1)
+            if (Volatile.Read(ref _isDisposed) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(Task));
             }
             PrivateRunSynchronously(ExecutingTaskScheduler);
         }
@@ -314,11 +283,11 @@ namespace System.Threading.Tasks
         {
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
-            if (Thread.VolatileRead(ref _isDisposed) == 1)
+            if (Volatile.Read(ref _isDisposed) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(Task));
             }
             PrivateRunSynchronously(scheduler);
         }
@@ -337,9 +306,9 @@ namespace System.Threading.Tasks
             {
                 throw new InvalidOperationException("Start may not be called on a promise-style task.");
             }
-            if (Thread.VolatileRead(ref _isDisposed) == 1)
+            if (Volatile.Read(ref _isDisposed) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(Task));
             }
             if (!InternalStart(ExecutingTaskScheduler, false, true))
             {
@@ -355,7 +324,7 @@ namespace System.Threading.Tasks
             }
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
             if ((_internalOptions & InternalTaskOptions.ContinuationTask) != 0)
             {
@@ -365,9 +334,9 @@ namespace System.Threading.Tasks
             {
                 throw new InvalidOperationException("Start may not be called on a promise-style task.");
             }
-            if (Thread.VolatileRead(ref _isDisposed) == 1)
+            if (Volatile.Read(ref _isDisposed) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(Task));
             }
             if (!InternalStart(scheduler, false, true))
             {
@@ -395,7 +364,7 @@ namespace System.Threading.Tasks
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
             if (milliseconds == -1)
             {
@@ -409,7 +378,7 @@ namespace System.Threading.Tasks
         {
             if (milliseconds < -1)
             {
-                throw new ArgumentOutOfRangeException("milliseconds");
+                throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
             if (milliseconds == -1)
             {
@@ -424,7 +393,7 @@ namespace System.Threading.Tasks
                 {
                     case TaskStatus.WaitingForActivation:
                         WaitAntecedent(cancellationToken, milliseconds, start);
-                        ExecutingTaskScheduler.InernalTryExecuteTaskInline(this, true);
+                        ExecutingTaskScheduler.InternalTryExecuteTaskInline(this, true);
                         break;
 
                     case TaskStatus.Created:
@@ -432,17 +401,14 @@ namespace System.Threading.Tasks
                     case TaskStatus.Running:
                     case TaskStatus.WaitingForChildrenToComplete:
                         var waitHandle = _waitHandle.Value;
-                        if (!ReferenceEquals(waitHandle, null))
-                        {
-                            waitHandle.Wait
-                                (
-                                    TimeSpan.FromMilliseconds
-                                    (
-                                        milliseconds - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start)
-                                    ),
-                                    cancellationToken
-                                );
-                        }
+                        waitHandle?.Wait
+                        (
+                            TimeSpan.FromMilliseconds
+                            (
+                                milliseconds - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start)
+                            ),
+                            cancellationToken
+                        );
                         break;
 
                     case TaskStatus.RanToCompletion:
@@ -499,7 +465,7 @@ namespace System.Threading.Tasks
             {
                 if (CancellationToken.IsCancellationRequested)
                 {
-                    Thread.VolatileWrite(ref _status, (int)TaskStatus.Canceled);
+                    Volatile.Write(ref _status, (int)TaskStatus.Canceled);
                     MarkCompleted();
                     FinishStageThree();
                 }
@@ -519,13 +485,13 @@ namespace System.Threading.Tasks
 
             RecordInternalCancellationRequest();
 
-            var status = Thread.VolatileRead(ref _status);
+            var status = Volatile.Read(ref _status);
             if (status <= (int)TaskStatus.WaitingToRun)
             {
                 // Note: status may advance to TaskStatus.Running or even TaskStatus.RanToCompletion during the execution of this method
                 var scheduler = ExecutingTaskScheduler;
                 var requiresAtomicStartTransition = scheduler.RequiresAtomicStartTransition;
-                var popSucceeded = scheduler.InernalTryDequeue(this, ref requiresAtomicStartTransition);
+                var popSucceeded = scheduler.InternalTryDequeue(this, ref requiresAtomicStartTransition);
                 if (!popSucceeded && requiresAtomicStartTransition)
                 {
                     status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.Created);
@@ -536,7 +502,7 @@ namespace System.Threading.Tasks
                     cancelSucceeded = cancelSucceeded || status == (int)TaskStatus.WaitingToRun;
                 }
             }
-            if (Thread.VolatileRead(ref _status) >= (int)TaskStatus.Running && !cancelNonExecutingOnly)
+            if (Volatile.Read(ref _status) >= (int)TaskStatus.Running && !cancelNonExecutingOnly)
             {
                 // We are going to pretend that the cancel call came after the task finished running, but we may still set to cancel on TaskStatus.WaitingForChildrenToComplete
                 status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.WaitingForChildrenToComplete);
@@ -565,7 +531,7 @@ namespace System.Threading.Tasks
                 {
                     // Should I worry about this task being a continuation?
                     // WaitAntecedent(CancellationToken);
-                    didInline = scheduler.InernalTryExecuteTaskInline(this, IsScheduled);
+                    didInline = scheduler.InternalTryExecuteTaskInline(this, IsScheduled);
                 }
                 if (!didInline)
                 {
@@ -600,33 +566,30 @@ namespace System.Threading.Tasks
         internal void MarkCompleted()
         {
             var waitHandle = _waitHandle.Value;
-            if (!ReferenceEquals(waitHandle, null))
-            {
-                waitHandle.Set();
-            }
+            waitHandle?.Set();
         }
 
         internal void Start(TaskScheduler scheduler, bool inline)
         {
-            if (Thread.VolatileRead(ref _isDisposed) == 1)
+            if (Volatile.Read(ref _isDisposed) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(Task));
             }
             InternalStart(scheduler, inline, true);
         }
 
         internal void Start(TaskScheduler scheduler, bool inline, bool throwSchedulerExceptions)
         {
-            if (Thread.VolatileRead(ref _isDisposed) == 1)
+            if (Volatile.Read(ref _isDisposed) == 1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                throw new ObjectDisposedException(nameof(Task));
             }
             InternalStart(scheduler, inline, throwSchedulerExceptions);
         }
 
         internal bool TryStart(TaskScheduler scheduler, bool inline)
         {
-            if (Thread.VolatileRead(ref _isDisposed) == 1)
+            if (Volatile.Read(ref _isDisposed) == 1)
             {
                 return false;
             }
@@ -652,7 +615,7 @@ namespace System.Threading.Tasks
                     _waitHandle.Value = null;
                 }
             }
-            Thread.VolatileWrite(ref _isDisposed, 1);
+            Volatile.Write(ref _isDisposed, 1);
         }
 
         private void CancellationCheck(CancellationToken cancellationToken)
@@ -704,7 +667,7 @@ namespace System.Threading.Tasks
                 {
                     case TaskStatus.WaitingToRun:
                         WaitAntecedent(CancellationToken);
-                        ExecutingTaskScheduler.InernalTryExecuteTaskInline(this, true);
+                        ExecutingTaskScheduler.InternalTryExecuteTaskInline(this, true);
                         break;
 
                     case TaskStatus.Created:
@@ -712,10 +675,7 @@ namespace System.Threading.Tasks
                     case TaskStatus.Running:
                     case TaskStatus.WaitingForChildrenToComplete:
                         var waitHandle = _waitHandle.Value;
-                        if (!ReferenceEquals(waitHandle, null))
-                        {
-                            waitHandle.Wait(cancellationToken);
-                        }
+                        waitHandle?.Wait(cancellationToken);
                         break;
 
                     case TaskStatus.RanToCompletion:
@@ -740,7 +700,7 @@ namespace System.Threading.Tasks
 #if DEBUG
             if (!IsCompleted)
             {
-                Diagnostics.Debugger.Break();
+                Debugger.Break();
             }
 #endif
         }
@@ -779,7 +739,7 @@ namespace System.Threading.Tasks
             var spinWait = new SpinWait();
             while (true)
             {
-                var lastValue = Thread.VolatileRead(ref _status);
+                var lastValue = Volatile.Read(ref _status);
                 if ((preventDoubleExecution && lastValue >= 3) || lastValue == 6)
                 {
                     return false;
@@ -798,10 +758,7 @@ namespace System.Threading.Tasks
             if (IsContinuationTask)
             {
                 var antecedent = ((IContinuationTask)this).Antecedent;
-                if (antecedent != null)
-                {
-                    antecedent.Wait(cancellationToken);
-                }
+                antecedent?.Wait(cancellationToken);
             }
         }
 
@@ -810,14 +767,11 @@ namespace System.Threading.Tasks
             if (IsContinuationTask)
             {
                 var antecedent = ((IContinuationTask)this).Antecedent;
-                if (antecedent != null)
-                {
-                    antecedent.Wait
-                    (
-                        milliseconds - (int)ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start),
-                        cancellationToken
-                    );
-                }
+                antecedent?.Wait
+                (
+                    milliseconds - (int)ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start),
+                    cancellationToken
+                );
             }
         }
     }

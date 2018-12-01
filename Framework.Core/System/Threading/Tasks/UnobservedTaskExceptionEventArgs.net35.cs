@@ -7,7 +7,7 @@
 namespace System.Threading.Tasks
 {
     /// <summary>
-    /// Provides data for the event that is raised when a faulted <see cref="System.Threading.Tasks.Task"/>'s
+    /// Provides data for the event that is raised when a faulted <see cref="Task"/>'s
     /// exception goes unobserved.
     /// </summary>
     /// <remarks>
@@ -18,9 +18,6 @@ namespace System.Threading.Tasks
     /// </remarks>
     public class UnobservedTaskExceptionEventArgs : EventArgs
     {
-        private readonly AggregateException _exception;
-        private bool _observed;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="UnobservedTaskExceptionEventArgs"/> class
         /// with the unobserved exception.
@@ -28,8 +25,18 @@ namespace System.Threading.Tasks
         /// <param name="exception">The Exception that has gone unobserved.</param>
         public UnobservedTaskExceptionEventArgs(AggregateException exception)
         {
-            _exception = exception;
+            Exception = exception;
         }
+
+        /// <summary>
+        /// The Exception that went unobserved.
+        /// </summary>
+        public AggregateException Exception { get; }
+
+        /// <summary>
+        /// Gets whether this exception has been marked as "observed."
+        /// </summary>
+        public bool Observed { get; set; }
 
         /// <summary>
         /// Marks the <see cref="Exception"/> as "observed," thus preventing it
@@ -37,24 +44,7 @@ namespace System.Threading.Tasks
         /// </summary>
         public void SetObserved()
         {
-            _observed = true;
-        }
-
-        /// <summary>
-        /// Gets whether this exception has been marked as "observed."
-        /// </summary>
-        public bool Observed
-        {
-            get { return _observed; }
-            internal set { _observed = value; }
-        }
-
-        /// <summary>
-        /// The Exception that went unobserved.
-        /// </summary>
-        public AggregateException Exception
-        {
-            get { return _exception; }
+            Observed = true;
         }
     }
 }

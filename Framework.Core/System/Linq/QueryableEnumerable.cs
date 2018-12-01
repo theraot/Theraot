@@ -1,3 +1,5 @@
+#if NET20 || NET30 || NET35
+
 // QueryableEnumerable<TElement>.cs
 //
 // Authors:
@@ -59,20 +61,11 @@ namespace System.Linq
             _expression = expression;
         }
 
-        public Type ElementType
-        {
-            get { return typeof(TElement); }
-        }
+        public Type ElementType => typeof(TElement);
 
-        public Expression Expression
-        {
-            get { return _expression; }
-        }
+        public Expression Expression => _expression;
 
-        public IQueryProvider Provider
-        {
-            get { return this; }
-        }
+        public IQueryProvider Provider => this;
 
         public IQueryable CreateQuery(Expression expression)
         {
@@ -80,7 +73,7 @@ namespace System.Linq
                     (
                         typeof(QueryableEnumerable<>).MakeGenericType
                         (
-                            expression.Type.GetFirstGenericArgument()
+                            expression.Type.GetGenericArguments()[0]
                         ),
                         expression
                     );
@@ -128,8 +121,7 @@ namespace System.Linq
             {
                 return base.ToString();
             }
-            var constant = _expression as ConstantExpression;
-            return constant != null && constant.Value == this ? base.ToString() : _expression.ToString();
+            return _expression is ConstantExpression constant && constant.Value == this ? base.ToString() : _expression.ToString();
         }
 
         private static Expression TransformQueryable(Expression expression)
@@ -138,3 +130,5 @@ namespace System.Linq
         }
     }
 }
+
+#endif

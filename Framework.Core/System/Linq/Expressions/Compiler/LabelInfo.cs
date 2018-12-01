@@ -1,5 +1,8 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+#if NET20 || NET30
+
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,19 +11,85 @@ using System.Reflection.Emit;
 
 namespace System.Linq.Expressions.Compiler
 {
+    internal enum LabelScopeKind
+    {
+        // any "statement like" node that can be jumped into
+        Statement,
+
+        // these correspond to the node of the same name
+        Block,
+
+        Switch,
+        Lambda,
+        Try,
+
+        // these correspond to the part of the try block we're in
+        Catch,
+
+        Finally,
+        Filter,
+
+        // the catch-all value for any other expression type
+        // (means we can't jump into it)
+        Expression
+    }
+
     /// <summary>
     /// Contains compiler state corresponding to a LabelTarget
     /// See also LabelScopeInfo.
     /// </summary>
     internal sealed class LabelInfo
     {
+        // True if this label is the last thing in this block
+        // (meaning we can emit a direct return)
+        private readonly bool _canReturn;
+
+        // The blocks where this label is defined. If it has more than one item,
+        // the blocks can't be jumped to except from a child block
+        private readonly HashSet<LabelScopeInfo> _definitions = new HashSet<LabelScopeInfo>();
+
+        private readonly ILGenerator _ilg;
+
         // The tree node representing this label
         private readonly LabelTarget _node;
+
+        // Blocks that jump to this block
+        private readonly List<LabelScopeInfo> _references = new List<LabelScopeInfo>();
+
+        // True if at least one jump is across blocks
+        // If we have any jump across blocks to this label, then the
+        // LabelTarget can only be defined in one place
+        private bool _acrossBlockJump;
 
         // The IL label, will be mutated if Node is redefined
         private Label _label;
 
         private bool _labelDefined;
+
+        // Until we have more information, default to a leave instruction,
+        // which always works. Note: leave spills the stack, so we need to
+        // ensure that StackSpiller has guaranteed us an empty stack at this
+        // point. Otherwise Leave and Branch are not equivalent
+        private OpCode _opCode = OpCodes.Leave;
+
+        // The local that carries the label's value, if any
+        private LocalBuilder _value;
+
+        internal LabelInfo(ILGenerator il, LabelTarget node, bool canReturn)
+        {
+            _ilg = il;
+            _node = node;
+            _canReturn = canReturn;
+        }
+
+        /// <summary>
+        /// Indicates if it is legal to emit a "branch" instruction based on
+        /// currently available information. Call the Reference method before
+        /// using this property.
+        /// </summary>
+        internal bool CanBranch => _opCode != OpCodes.Leave;
+
+        internal bool CanReturn => _canReturn;
 
         internal Label Label
         {
@@ -31,64 +100,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        // The local that carries the label's value, if any
-        private LocalBuilder _value;
-
-        // The blocks where this label is defined. If it has more than one item,
-        // the blocks can't be jumped to except from a child block
-        private readonly Set<LabelScopeInfo> _definitions = new Set<LabelScopeInfo>();
-
-        // Blocks that jump to this block
-        private readonly List<LabelScopeInfo> _references = new List<LabelScopeInfo>();
-
-        // True if this label is the last thing in this block
-        // (meaning we can emit a direct return)
-        private readonly bool _canReturn;
-
-        // True if at least one jump is across blocks
-        // If we have any jump across blocks to this label, then the
-        // LabelTarget can only be defined in one place
-        private bool _acrossBlockJump;
-
-        // Until we have more information, default to a leave instruction,
-        // which always works. Note: leave spills the stack, so we need to
-        // ensure that StackSpiller has guarenteed us an empty stack at this
-        // point. Otherwise Leave and Branch are not equivalent
-        private OpCode _opCode = OpCodes.Leave;
-
-        private readonly ILGenerator _ilg;
-
-        internal LabelInfo(ILGenerator il, LabelTarget node, bool canReturn)
-        {
-            _ilg = il;
-            _node = node;
-            _canReturn = canReturn;
-        }
-
-        internal bool CanReturn
-        {
-            get { return _canReturn; }
-        }
-
-        /// <summary>
-        /// Indicates if it is legal to emit a "branch" instruction based on
-        /// currently available information. Call the Reference method before
-        /// using this property.
-        /// </summary>
-        internal bool CanBranch
-        {
-            get { return _opCode != OpCodes.Leave; }
-        }
-
-        internal void Reference(LabelScopeInfo block)
-        {
-            _references.Add(block);
-            if (_definitions.Count > 0)
-            {
-                ValidateJump(block);
-            }
-        }
-
         // Returns true if the label was successfully defined
         // or false if the label is now ambiguous
         internal void Define(LabelScopeInfo block)
@@ -96,7 +107,7 @@ namespace System.Linq.Expressions.Compiler
             // Prevent the label from being shadowed, which enforces cleaner
             // trees. Also we depend on this for simplicity (keeping only one
             // active IL Label per LabelInfo)
-            for (var j = block; j != null; j = j.Parent)
+            for (LabelScopeInfo j = block; j != null; j = j.Parent)
             {
                 if (j.ContainsTarget(_node))
                 {
@@ -110,7 +121,7 @@ namespace System.Linq.Expressions.Compiler
             // Once defined, validate all jumps
             if (_definitions.Count == 1)
             {
-                foreach (var r in _references)
+                foreach (LabelScopeInfo r in _references)
                 {
                     ValidateJump(r);
                 }
@@ -131,90 +142,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void ValidateJump(LabelScopeInfo reference)
-        {
-            // Assume we can do a ret/branch
-            _opCode = _canReturn ? OpCodes.Ret : OpCodes.Br;
-
-            // look for a simple jump out
-            for (var j = reference; j != null; j = j.Parent)
-            {
-                if (_definitions.Contains(j))
-                {
-                    // found it, jump is valid!
-                    return;
-                }
-                if (j.Kind == LabelScopeKind.Finally ||
-                    j.Kind == LabelScopeKind.Filter)
-                {
-                    break;
-                }
-                if (j.Kind == LabelScopeKind.Try ||
-                    j.Kind == LabelScopeKind.Catch)
-                {
-                    _opCode = OpCodes.Leave;
-                }
-            }
-
-            _acrossBlockJump = true;
-            if (_node != null && _node.Type != typeof(void))
-            {
-                throw Error.NonLocalJumpWithValue(_node.Name);
-            }
-
-            if (_definitions.Count > 1)
-            {
-                throw Error.AmbiguousJump(_node.Name);
-            }
-
-            // We didn't find an outward jump. Look for a jump across blocks
-            var def = _definitions.First();
-            var common = Helpers.CommonNode(def, reference, b => b.Parent);
-
-            // Assume we can do a ret/branch
-            _opCode = _canReturn ? OpCodes.Ret : OpCodes.Br;
-
-            // Validate that we aren't jumping across a finally
-            for (var j = reference; j != common; j = j.Parent)
-            {
-                if (j.Kind == LabelScopeKind.Finally)
-                {
-                    throw Error.ControlCannotLeaveFinally();
-                }
-                if (j.Kind == LabelScopeKind.Filter)
-                {
-                    throw Error.ControlCannotLeaveFilterTest();
-                }
-                if (j.Kind == LabelScopeKind.Try ||
-                    j.Kind == LabelScopeKind.Catch)
-                {
-                    _opCode = OpCodes.Leave;
-                }
-            }
-
-            // Validate that we aren't jumping into a catch or an expression
-            for (var j = def; j != common; j = j.Parent)
-            {
-                if (!j.CanJumpInto)
-                {
-                    if (j.Kind == LabelScopeKind.Expression)
-                    {
-                        throw Error.ControlCannotEnterExpression();
-                    }
-                    throw Error.ControlCannotEnterTry();
-                }
-            }
-        }
-
-        internal void ValidateFinish()
-        {
-            // Make sure that if this label was jumped to, it is also defined
-            if (_references.Count > 0 && _definitions.Count == 0)
-            {
-                throw Error.LabelTargetUndefined(_node.Name);
-            }
-        }
-
         internal void EmitJump()
         {
             // Return directly if we can
@@ -226,15 +153,6 @@ namespace System.Linq.Expressions.Compiler
             {
                 StoreValue();
                 _ilg.Emit(_opCode, Label);
-            }
-        }
-
-        private void StoreValue()
-        {
-            EnsureLabelAndValue();
-            if (_value != null)
-            {
-                _ilg.Emit(OpCodes.Stloc, _value);
             }
         }
 
@@ -281,6 +199,24 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
+        internal void Reference(LabelScopeInfo block)
+        {
+            _references.Add(block);
+            if (_definitions.Count > 0)
+            {
+                ValidateJump(block);
+            }
+        }
+
+        internal void ValidateFinish()
+        {
+            // Make sure that if this label was jumped to, it is also defined
+            if (_references.Count > 0 && _definitions.Count == 0)
+            {
+                throw Error.LabelTargetUndefined(_node.Name);
+            }
+        }
+
         private void EnsureLabelAndValue()
         {
             if (!_labelDefined)
@@ -293,29 +229,92 @@ namespace System.Linq.Expressions.Compiler
                 }
             }
         }
-    }
 
-    internal enum LabelScopeKind
-    {
-        // any "statement like" node that can be jumped into
-        Statement,
+        private void StoreValue()
+        {
+            EnsureLabelAndValue();
+            if (_value != null)
+            {
+                _ilg.Emit(OpCodes.Stloc, _value);
+            }
+        }
 
-        // these correspond to the node of the same name
-        Block,
+        private void ValidateJump(LabelScopeInfo reference)
+        {
+            // Assume we can do a ret/branch
+            _opCode = _canReturn ? OpCodes.Ret : OpCodes.Br;
 
-        Switch,
-        Lambda,
-        Try,
+            // look for a simple jump out
+            for (LabelScopeInfo j = reference; j != null; j = j.Parent)
+            {
+                if (_definitions.Contains(j))
+                {
+                    // found it, jump is valid!
+                    return;
+                }
+                if (j.Kind == LabelScopeKind.Finally ||
+                    j.Kind == LabelScopeKind.Filter)
+                {
+                    break;
+                }
+                if (j.Kind == LabelScopeKind.Try ||
+                    j.Kind == LabelScopeKind.Catch)
+                {
+                    _opCode = OpCodes.Leave;
+                }
+            }
 
-        // these correspond to the part of the try block we're in
-        Catch,
+            _acrossBlockJump = true;
+            if (_node != null && _node.Type != typeof(void))
+            {
+                throw Error.NonLocalJumpWithValue(_node.Name);
+            }
 
-        Finally,
-        Filter,
+            if (_definitions.Count > 1)
+            {
+                // ReSharper disable once PossibleNullReferenceException
+                throw Error.AmbiguousJump(_node.Name);
+            }
 
-        // the catch-all value for any other expression type
-        // (means we can't jump into it)
-        Expression,
+            // We didn't find an outward jump. Look for a jump across blocks
+            LabelScopeInfo def = _definitions.First();
+            LabelScopeInfo common = Helpers.CommonNode(def, reference, b => b.Parent);
+
+            // Assume we can do a ret/branch
+            _opCode = _canReturn ? OpCodes.Ret : OpCodes.Br;
+
+            // Validate that we aren't jumping across a finally
+            for (LabelScopeInfo j = reference; j != common; j = j.Parent)
+            {
+                if (j.Kind == LabelScopeKind.Finally)
+                {
+                    throw Error.ControlCannotLeaveFinally();
+                }
+                if (j.Kind == LabelScopeKind.Filter)
+                {
+                    throw Error.ControlCannotLeaveFilterTest();
+                }
+                if (j.Kind == LabelScopeKind.Try ||
+                    j.Kind == LabelScopeKind.Catch)
+                {
+                    _opCode = OpCodes.Leave;
+                }
+            }
+
+            // Validate that we aren't jumping into a catch or an expression
+            for (LabelScopeInfo j = def; j != common; j = j.Parent)
+            {
+                if (!j.CanJumpInto)
+                {
+                    if (j.Kind == LabelScopeKind.Expression)
+                    {
+                        throw Error.ControlCannotEnterExpression();
+                    }
+
+                    throw Error.ControlCannotEnterTry();
+                }
+            }
+        }
     }
 
     //
@@ -332,9 +331,9 @@ namespace System.Linq.Expressions.Compiler
     //
     internal sealed class LabelScopeInfo
     {
-        private Dictionary<LabelTarget, LabelInfo> _labels; // lazily allocated, we typically use this only once every 6th-7th block
         internal readonly LabelScopeKind Kind;
         internal readonly LabelScopeInfo Parent;
+        private Dictionary<LabelTarget, LabelInfo> _labels; // lazily allocated, we typically use this only once every 6th-7th block
 
         internal LabelScopeInfo(LabelScopeInfo parent, LabelScopeKind kind)
         {
@@ -356,11 +355,21 @@ namespace System.Linq.Expressions.Compiler
                     case LabelScopeKind.Switch:
                     case LabelScopeKind.Lambda:
                         return true;
-
-                    default:
-                        return false;
                 }
+                return false;
             }
+        }
+
+        internal void AddLabelInfo(LabelTarget target, LabelInfo info)
+        {
+            Debug.Assert(CanJumpInto);
+
+            if (_labels == null)
+            {
+                _labels = new Dictionary<LabelTarget, LabelInfo>();
+            }
+
+            _labels.Add(target, info);
         }
 
         internal bool ContainsTarget(LabelTarget target)
@@ -383,17 +392,7 @@ namespace System.Linq.Expressions.Compiler
 
             return _labels.TryGetValue(target, out info);
         }
-
-        internal void AddLabelInfo(LabelTarget target, LabelInfo info)
-        {
-            Debug.Assert(CanJumpInto);
-
-            if (_labels == null)
-            {
-                _labels = new Dictionary<LabelTarget, LabelInfo>();
-            }
-
-            _labels.Add(target, info);
-        }
     }
 }
+
+#endif

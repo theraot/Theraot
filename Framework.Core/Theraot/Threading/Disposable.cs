@@ -1,23 +1,19 @@
 // Needed for NET40
 
 using System;
-
+using System.Diagnostics;
 using Theraot.Core;
 
 namespace Theraot.Threading
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public sealed partial class Disposable
     {
         private Action _release;
 
         private Disposable(Action release)
         {
-            if (release == null)
-            {
-                throw new ArgumentNullException("release");
-            }
-            _release = release;
+            _release = release ?? throw new ArgumentNullException(nameof(release));
         }
 
         public static Disposable Create()
@@ -34,21 +30,21 @@ namespace Theraot.Threading
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition));
             }
             return DisposedConditional
-                   (
-                       FuncHelper.GetFallacyFunc(),
-                       () =>
-                       {
-                           if (condition.Invoke())
-                           {
-                               Dispose();
-                               return true;
-                           }
-                           return false;
-                       }
-                   );
+            (
+                FuncHelper.GetFallacyFunc(),
+                () =>
+                {
+                    if (condition.Invoke())
+                    {
+                        Dispose();
+                        return true;
+                    }
+                    return false;
+                }
+            );
         }
     }
 }

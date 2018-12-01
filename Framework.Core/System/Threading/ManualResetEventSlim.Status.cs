@@ -9,7 +9,8 @@ namespace System.Threading
             Disposed = -1,
             NotSet = 0,
             Set = 1,
-            HandleRequested = 2,
+            HandleRequestedNotSet = 2,
+            HandleRequestedSet = 3,
             HandleReadyNotSet = 4,
             HandleReadySet = 5
         }

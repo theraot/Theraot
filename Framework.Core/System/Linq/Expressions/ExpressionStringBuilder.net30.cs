@@ -1,25 +1,27 @@
 #if NET20 || NET30
 
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Theraot.Collections.ThreadSafe;
-using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
+    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     internal sealed class ExpressionStringBuilder : ExpressionVisitor
     {
         private readonly StringBuilder _out;
 
         // Associate every unique label or anonymous parameter in the tree with an integer.
-        // The label is displayed as Label_#.
+        // Labels are displayed as UnnamedLabel_#; parameters are displayed as Param_#.
         private Dictionary<object, int> _ids;
 
         private ExpressionStringBuilder()
@@ -32,77 +34,25 @@ namespace System.Linq.Expressions
             return _out.ToString();
         }
 
-        private void AddLabel(LabelTarget label)
-        {
-            if (_ids == null)
-            {
-                _ids = new Dictionary<object, int>
-                {
-                    { label, 0 }
-                };
-            }
-            else
-            {
-                if (!_ids.ContainsKey(label))
-                {
-                    _ids.Add(label, _ids.Count);
-                }
-            }
-        }
-
-        private int GetLabelId(LabelTarget label)
+        private int GetId(object o)
         {
             if (_ids == null)
             {
                 _ids = new Dictionary<object, int>();
-                AddLabel(label);
-                return 0;
             }
-            int id;
-            if (!_ids.TryGetValue(label, out id))
+
+            if (!_ids.TryGetValue(o, out var id))
             {
-                //label is met the first time
                 id = _ids.Count;
-                AddLabel(label);
+                _ids.Add(o, id);
             }
+
             return id;
         }
 
-        private void AddParam(ParameterExpression p)
-        {
-            if (_ids == null)
-            {
-                _ids = new Dictionary<object, int>
-                {
-                    { _ids, 0 }
-                };
-            }
-            else
-            {
-                if (!_ids.ContainsKey(p))
-                {
-                    _ids.Add(p, _ids.Count);
-                }
-            }
-        }
+        private int GetLabelId(LabelTarget label) => GetId(label);
 
-        private int GetParamId(ParameterExpression p)
-        {
-            if (_ids == null)
-            {
-                _ids = new Dictionary<object, int>();
-                AddParam(p);
-                return 0;
-            }
-            int id;
-            if (!_ids.TryGetValue(p, out id))
-            {
-                // p is met the first time
-                id = _ids.Count;
-                AddParam(p);
-            }
-            return id;
-        }
+        private int GetParamId(ParameterExpression p) => GetId(p);
 
         #region The printing code
 
@@ -118,8 +68,30 @@ namespace System.Linq.Expressions
 
         #endregion The printing code
 
-        #region Output an expresstion tree to a string
+        #region Output an expression tree to a string
 
+        internal static string CatchBlockToString(CatchBlock node)
+        {
+            Debug.Assert(node != null);
+            var esb = new ExpressionStringBuilder();
+            esb.VisitCatchBlock(node);
+            return esb.ToString();
+        }
+
+        /// <summary>
+        /// Output a given ElementInit to a string.
+        /// </summary>
+        internal static string ElementInitBindingToString(ElementInit node)
+        {
+            Debug.Assert(node != null);
+            var esb = new ExpressionStringBuilder();
+            esb.VisitElementInit(node);
+            return esb.ToString();
+        }
+
+        /// <summary>
+        /// Output a given expression tree to a string.
+        /// </summary>
         internal static string ExpressionToString(Expression node)
         {
             Debug.Assert(node != null);
@@ -128,11 +100,14 @@ namespace System.Linq.Expressions
             return esb.ToString();
         }
 
-        internal static string CatchBlockToString(CatchBlock node)
+        /// <summary>
+        /// Output a given member binding to a string.
+        /// </summary>
+        internal static string MemberBindingToString(MemberBinding node)
         {
             Debug.Assert(node != null);
             var esb = new ExpressionStringBuilder();
-            esb.VisitCatchBlock(node);
+            esb.VisitMemberBinding(node);
             return esb.ToString();
         }
 
@@ -144,57 +119,15 @@ namespace System.Linq.Expressions
             return esb.ToString();
         }
 
-        internal static string MemberBindingToString(MemberBinding node)
-        {
-            Debug.Assert(node != null);
-            var esb = new ExpressionStringBuilder();
-            esb.VisitMemberBinding(node);
-            return esb.ToString();
-        }
-
-        internal static string ElementInitBindingToString(ElementInit node)
-        {
-            Debug.Assert(node != null);
-            var esb = new ExpressionStringBuilder();
-            esb.VisitElementInit(node);
-            return esb.ToString();
-        }
-
-        private void VisitExpressions<T>(char open, IList<T> expressions, char close) where T : Expression
-        {
-            VisitExpressions(open, expressions, close, ", ");
-        }
-
-        private void VisitExpressions<T>(char open, IList<T> expressions, char close, string seperator) where T : Expression
-        {
-            Out(open);
-            if (expressions != null)
-            {
-                var isFirst = true;
-                foreach (var e in expressions)
-                {
-                    if (isFirst)
-                    {
-                        isFirst = false;
-                    }
-                    else
-                    {
-                        Out(seperator);
-                    }
-                    Visit(e);
-                }
-            }
-            Out(close);
-        }
-
+        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         protected internal override Expression VisitBinary(BinaryExpression node)
         {
             if (node.NodeType == ExpressionType.ArrayIndex)
             {
                 Visit(node.Left);
-                Out("[");
+                Out('[');
                 Visit(node.Right);
-                Out("]");
+                Out(']');
             }
             else
             {
@@ -242,35 +175,23 @@ namespace System.Linq.Expressions
                         break;
 
                     case ExpressionType.Add:
-                        op = "+";
-                        break;
-
-                    case ExpressionType.AddAssign:
-                        op = "+=";
-                        break;
-
-                    case ExpressionType.AddAssignChecked:
-                        op = "+=";
-                        break;
-
                     case ExpressionType.AddChecked:
                         op = "+";
                         break;
 
+                    case ExpressionType.AddAssign:
+                    case ExpressionType.AddAssignChecked:
+                        op = "+=";
+                        break;
+
                     case ExpressionType.Subtract:
+                    case ExpressionType.SubtractChecked:
                         op = "-";
                         break;
 
                     case ExpressionType.SubtractAssign:
-                        op = "-=";
-                        break;
-
                     case ExpressionType.SubtractAssignChecked:
                         op = "-=";
-                        break;
-
-                    case ExpressionType.SubtractChecked:
-                        op = "-";
                         break;
 
                     case ExpressionType.Divide:
@@ -290,19 +211,13 @@ namespace System.Linq.Expressions
                         break;
 
                     case ExpressionType.Multiply:
+                    case ExpressionType.MultiplyChecked:
                         op = "*";
                         break;
 
                     case ExpressionType.MultiplyAssign:
-                        op = "*=";
-                        break;
-
                     case ExpressionType.MultiplyAssignChecked:
                         op = "*=";
-                        break;
-
-                    case ExpressionType.MultiplyChecked:
-                        op = "*";
                         break;
 
                     case ExpressionType.LeftShift:
@@ -322,47 +237,19 @@ namespace System.Linq.Expressions
                         break;
 
                     case ExpressionType.And:
-                        if (node.Type == typeof(bool) || node.Type == typeof(bool?))
-                        {
-                            op = "And";
-                        }
-                        else
-                        {
-                            op = "&";
-                        }
+                        op = IsBool(node) ? "And" : "&";
                         break;
 
                     case ExpressionType.AndAssign:
-                        if (node.Type == typeof(bool) || node.Type == typeof(bool?))
-                        {
-                            op = "&&=";
-                        }
-                        else
-                        {
-                            op = "&=";
-                        }
+                        op = IsBool(node) ? "&&=" : "&=";
                         break;
 
                     case ExpressionType.Or:
-                        if (node.Type == typeof(bool) || node.Type == typeof(bool?))
-                        {
-                            op = "Or";
-                        }
-                        else
-                        {
-                            op = "|";
-                        }
+                        op = IsBool(node) ? "Or" : "|";
                         break;
 
                     case ExpressionType.OrAssign:
-                        if (node.Type == typeof(bool) || node.Type == typeof(bool?))
-                        {
-                            op = "||=";
-                        }
-                        else
-                        {
-                            op = "|=";
-                        }
+                        op = IsBool(node) ? "||=" : "|=";
                         break;
 
                     case ExpressionType.ExclusiveOr:
@@ -374,11 +261,12 @@ namespace System.Linq.Expressions
                         break;
 
                     case ExpressionType.Power:
+                        /*op = "**";*/
                         op = "^";
-                        break;
-
+                        break; // This was changed in CoreFx from ^ to **
                     case ExpressionType.PowerAssign:
-                        op = "**=";
+                        /*op = "**=";*/
+                        op = "^=";
                         break;
 
                     case ExpressionType.Coalesce:
@@ -388,66 +276,28 @@ namespace System.Linq.Expressions
                     default:
                         throw new InvalidOperationException();
                 }
-                Out("(");
+
+                Out('(');
                 Visit(node.Left);
                 Out(' ');
                 Out(op);
                 Out(' ');
                 Visit(node.Right);
-                Out(")");
+                Out(')');
             }
             return node;
         }
 
-        protected internal override Expression VisitParameter(ParameterExpression node)
+        protected internal override Expression VisitBlock(BlockExpression node)
         {
-            if (node.IsByRef)
+            Out('{');
+            foreach (var v in node.Variables)
             {
-                Out("ref ");
+                Out("var ");
+                Visit(v);
+                Out(';');
             }
-            var name = node.Name;
-            if (string.IsNullOrEmpty(name))
-            {
-                Out("Param_" + GetParamId(node));
-            }
-            else
-            {
-                Out(name);
-            }
-            return node;
-        }
-
-        protected internal override Expression VisitLambda(LambdaExpression node)
-        {
-            if (node.Parameters.Count == 1)
-            {
-                // p => body
-                Visit(node.Parameters[0]);
-            }
-            else
-            {
-                // (p1, p2, ..., pn) => body
-                VisitExpressions('(', node.Parameters, ')');
-            }
-            Out(" => ");
-            Visit(node.Body);
-            return node;
-        }
-
-        protected internal override Expression VisitListInit(ListInitExpression node)
-        {
-            Visit(node.NewExpression);
-            Out(" {");
-            var n = node.Initializers.Count;
-            for (var i = 0; i < n; i++)
-            {
-                if (i > 0)
-                {
-                    Out(", ");
-                }
-                Out(node.Initializers[i].ToString());
-            }
-            Out("}");
+            Out(" ... }");
             return node;
         }
 
@@ -459,7 +309,7 @@ namespace System.Linq.Expressions
             Visit(node.IfTrue);
             Out(", ");
             Visit(node.IfFalse);
-            Out(")");
+            Out(')');
             return node;
         }
 
@@ -470,15 +320,15 @@ namespace System.Linq.Expressions
                 var sValue = node.Value.ToString();
                 if (node.Value is string)
                 {
-                    Out("\"");
+                    Out('\"');
                     Out(sValue);
-                    Out("\"");
+                    Out('\"');
                 }
                 else if (sValue == node.Value.GetType().ToString())
                 {
                     Out("value(");
                     Out(sValue);
-                    Out(")");
+                    Out(')');
                 }
                 else
                 {
@@ -507,25 +357,159 @@ namespace System.Linq.Expressions
             return node;
         }
 
-        protected internal override Expression VisitRuntimeVariables(RuntimeVariablesExpression node)
+        protected internal override Expression VisitDefault(DefaultExpression node)
         {
-            VisitExpressions('(', node.Variables, ')');
+            Out("default(");
+            Out(node.Type.Name);
+            Out(')');
             return node;
         }
 
-        // Prints ".instanceField" or "declaringType.staticField"
-        private void OutMember(Expression instance, MemberInfo member)
+        protected internal override Expression VisitExtension(Expression node)
         {
-            if (instance != null)
+            // Prefer an overridden ToString, if available.
+            var toString = node.GetType().GetMethod("ToString", Type.EmptyTypes);
+            // ReSharper disable once PossibleNullReferenceException
+            if (toString.DeclaringType != typeof(Expression) && !toString.IsStatic)
             {
-                Visit(instance);
-                Out("." + member.Name);
+                Out(node.ToString());
+                return node;
+            }
+
+            Out('[');
+            // For 3.5 subclasses, print the NodeType.
+            // For Extension nodes, print the class name.
+            Out(node.NodeType == ExpressionType.Extension ? node.GetType().FullName : node.NodeType.ToString());
+            Out(']');
+            return node;
+        }
+
+        protected internal override Expression VisitGoto(GotoExpression node)
+        {
+            string op;
+            switch (node.Kind)
+            {
+                case GotoExpressionKind.Goto: op = "goto"; break;
+                case GotoExpressionKind.Break: op = "break"; break;
+                case GotoExpressionKind.Continue: op = "continue"; break;
+                case GotoExpressionKind.Return: op = "return"; break;
+                default:
+                    throw new InvalidOperationException();
+            }
+            Out(op);
+            Out(' ');
+            DumpLabel(node.Target);
+            if (node.Value != null)
+            {
+                Out(" (");
+                Visit(node.Value);
+                Out(")");
+            }
+            return node;
+        }
+
+        protected internal override Expression VisitIndex(IndexExpression node)
+        {
+            if (node.Object != null)
+            {
+                Visit(node.Object);
             }
             else
             {
-                // For static members, include the type name
-                Out(member.DeclaringType.Name + "." + member.Name);
+                Debug.Assert(node.Indexer != null);
+                // ReSharper disable once PossibleNullReferenceException
+                Out(node.Indexer.DeclaringType.Name);
             }
+            if (node.Indexer != null)
+            {
+                Out('.');
+                Out(node.Indexer.Name);
+            }
+
+            Out('[');
+            for (int i = 0, n = node.ArgumentCount; i < n; i++)
+            {
+                if (i > 0)
+                {
+                    Out(", ");
+                }
+
+                Visit(node.GetArgument(i));
+            }
+            Out(']');
+
+            return node;
+        }
+
+        protected internal override Expression VisitInvocation(InvocationExpression node)
+        {
+            Out("Invoke(");
+            Visit(node.Expression);
+            var sep = ", ";
+            for (int i = 0, n = node.ArgumentCount; i < n; i++)
+            {
+                Out(sep);
+                Visit(node.GetArgument(i));
+            }
+            Out(')');
+            return node;
+        }
+
+        protected internal override Expression VisitLabel(LabelExpression node)
+        {
+            Out("{ ... } ");
+            DumpLabel(node.Target);
+            Out(':');
+            return node;
+        }
+
+        protected internal override Expression VisitLambda<T>(Expression<T> node)
+        {
+            if (node.ParameterCount == 1)
+            {
+                // p => body
+                Visit(node.GetParameter(0));
+            }
+            else
+            {
+                // (p1, p2, ..., pn) => body
+                Out('(');
+                var sep = ", ";
+                for (int i = 0, n = node.ParameterCount; i < n; i++)
+                {
+                    if (i > 0)
+                    {
+                        Out(sep);
+                    }
+                    Visit(node.GetParameter(i));
+                }
+                Out(')');
+            }
+            Out(" => ");
+            Visit(node.Body);
+            return node;
+        }
+
+        protected internal override Expression VisitListInit(ListInitExpression node)
+        {
+            Visit(node.NewExpression);
+            Out(" {");
+            for (int i = 0, n = node.Initializers.Count; i < n; i++)
+            {
+                if (i > 0)
+                {
+                    Out(", ");
+                }
+                VisitElementInit(node.Initializers[i]);
+            }
+            Out('}');
+            return node;
+        }
+
+        protected internal override Expression VisitLoop(LoopExpression node)
+        {
+            Out("loop { ... }");
+            return node;
         }
 
         protected internal override Expression VisitMember(MemberExpression node)
@@ -536,8 +520,8 @@ namespace System.Linq.Expressions
 
         protected internal override Expression VisitMemberInit(MemberInitExpression node)
         {
-            if (node.NewExpression.Arguments.Count == 0 &&
-                node.NewExpression.Type.Name.Contains("<"))
+            if (node.NewExpression.ArgumentCount == 0 &&
+                node.NewExpression.Type.Name.Contains('<'))
             {
                 // anonymous type constructor
                 Out("new");
@@ -547,8 +531,7 @@ namespace System.Linq.Expressions
                 Visit(node.NewExpression);
             }
             Out(" {");
-            var n = node.Bindings.Count;
-            for (var i = 0; i < n; i++)
+            for (int i = 0, n = node.Bindings.Count; i < n; i++)
             {
                 var b = node.Bindings[i];
                 if (i > 0)
@@ -557,72 +540,7 @@ namespace System.Linq.Expressions
                 }
                 VisitMemberBinding(b);
             }
-            Out("}");
-            return node;
-        }
-
-        protected override MemberAssignment VisitMemberAssignment(MemberAssignment node)
-        {
-            Out(node.Member.Name);
-            Out(" = ");
-            Visit(node.Expression);
-            return node;
-        }
-
-        protected override MemberListBinding VisitMemberListBinding(MemberListBinding node)
-        {
-            Out(node.Member.Name);
-            Out(" = {");
-            var n = node.Initializers.Count;
-            for (var i = 0; i < n; i++)
-            {
-                if (i > 0)
-                {
-                    Out(", ");
-                }
-                VisitElementInit(node.Initializers[i]);
-            }
-            Out("}");
-            return node;
-        }
-
-        protected override MemberMemberBinding VisitMemberMemberBinding(MemberMemberBinding node)
-        {
-            Out(node.Member.Name);
-            Out(" = {");
-            var n = node.Bindings.Count;
-            for (var i = 0; i < n; i++)
-            {
-                if (i > 0)
-                {
-                    Out(", ");
-                }
-                VisitMemberBinding(node.Bindings[i]);
-            }
-            Out("}");
-            return node;
-        }
-
-        protected override ElementInit VisitElementInit(ElementInit node)
-        {
-            Out(node.AddMethod.ToString());
-            const string Sep = ", ";
-            VisitExpressions('(', node.Arguments, ')', Sep);
-            return node;
-        }
-
-        protected internal override Expression VisitInvocation(InvocationExpression node)
-        {
-            Out("Invoke(");
-            Visit(node.Expression);
-            const string Sep = ", ";
-            var n = node.Arguments.Count;
-            for (var i = 0; i < n; i++)
-            {
-                Out(Sep);
-                Visit(node.Arguments[i]);
-            }
-            Out(")");
+            Out('}');
             return node;
         }
 
@@ -631,61 +549,39 @@ namespace System.Linq.Expressions
             var start = 0;
             var ob = node.Object;
 
-            if (node.Method.HasAttribute<ExtensionAttribute>())
+            if (node.Method.GetCustomAttributes(typeof(ExtensionAttribute), true).Length > 0)
             {
                 start = 1;
-                ob = node.Arguments[0];
+                ob = node.GetArgument(0);
             }
 
             if (ob != null)
             {
                 Visit(ob);
-                Out(".");
+                Out('.');
             }
             Out(node.Method.Name);
-            Out("(");
-            var n = node.Arguments.Count;
-            for (var i = start; i < n; i++)
+            Out('(');
+            for (int i = start, n = node.ArgumentCount; i < n; i++)
             {
                 if (i > start)
                 {
                     Out(", ");
                 }
 
-                Visit(node.Arguments[i]);
+                Visit(node.GetArgument(i));
             }
-            Out(")");
-            return node;
-        }
-
-        protected internal override Expression VisitNewArray(NewArrayExpression node)
-        {
-            switch (node.NodeType)
-            {
-                case ExpressionType.NewArrayBounds:
-                    // new MyType[](expr1, expr2)
-                    Out("new " + node.Type);
-                    VisitExpressions('(', node.Expressions, ')');
-                    break;
-
-                case ExpressionType.NewArrayInit:
-                    // new [] {expr1, expr2}
-                    Out("new [] ");
-                    VisitExpressions('{', node.Expressions, '}');
-                    break;
-
-                default:
-                    break;
-            }
+            Out(')');
             return node;
         }
 
         protected internal override Expression VisitNew(NewExpression node)
         {
-            Out("new " + node.Type.Name);
-            Out("(");
+            Out("new ");
+            Out(node.Type.Name);
+            Out('(');
             var members = node.Members;
-            for (var i = 0; i < node.Arguments.Count; i++)
+            for (var i = 0; i < node.ArgumentCount; i++)
             {
                 if (i > 0)
                 {
@@ -697,15 +593,74 @@ namespace System.Linq.Expressions
                     Out(name);
                     Out(" = ");
                 }
-                Visit(node.Arguments[i]);
+                Visit(node.GetArgument(i));
             }
-            Out(")");
+            Out(')');
+            return node;
+        }
+
+        protected internal override Expression VisitNewArray(NewArrayExpression node)
+        {
+            switch (node.NodeType)
+            {
+                case ExpressionType.NewArrayBounds:
+                    // new MyType[](expr1, expr2)
+                    Out("new ");
+                    Out(node.Type.ToString());
+                    VisitExpressions('(', node.Expressions, ')');
+                    break;
+
+                case ExpressionType.NewArrayInit:
+                    // new [] {expr1, expr2}
+                    Out("new [] ");
+                    VisitExpressions('{', node.Expressions, '}');
+                    break;
+            }
+            return node;
+        }
+
+        protected internal override Expression VisitParameter(ParameterExpression node)
+        {
+            if (node.IsByRef)
+            {
+                Out("ref ");
+            }
+            var name = node.Name;
+            if (string.IsNullOrEmpty(name))
+            {
+                Out("Param_" + GetParamId(node));
+            }
+            else
+            {
+                Out(name);
+            }
+            return node;
+        }
+
+        protected internal override Expression VisitRuntimeVariables(RuntimeVariablesExpression node)
+        {
+            VisitExpressions('(', node.Variables, ')');
+            return node;
+        }
+
+        protected internal override Expression VisitSwitch(SwitchExpression node)
+        {
+            Out("switch ");
+            Out('(');
+            Visit(node.SwitchValue);
+            Out(") { ... }");
+            return node;
+        }
+
+        protected internal override Expression VisitTry(TryExpression node)
+        {
+            Out("try { ... }");
             return node;
         }
 
         protected internal override Expression VisitTypeBinary(TypeBinaryExpression node)
         {
-            Out("(");
+            Out('(');
             Visit(node.Expression);
             switch (node.NodeType)
             {
@@ -716,67 +671,41 @@ namespace System.Linq.Expressions
                 case ExpressionType.TypeEqual:
                     Out(" TypeEqual ");
                     break;
-
-                default:
-                    break;
             }
             Out(node.TypeOperand.Name);
-            Out(")");
+            Out(')');
             return node;
         }
 
+        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         protected internal override Expression VisitUnary(UnaryExpression node)
         {
             switch (node.NodeType)
             {
-                case ExpressionType.TypeAs:
-                    Out("(");
-                    break;
-
-                case ExpressionType.Not:
-                    Out("Not(");
-                    break;
-
                 case ExpressionType.Negate:
-                case ExpressionType.NegateChecked:
-                    Out("-");
-                    break;
-
-                case ExpressionType.UnaryPlus:
-                    Out("+");
-                    break;
-
+                case ExpressionType.NegateChecked: Out('-'); break;
+                case ExpressionType.Not: Out("Not("); break;
+                case ExpressionType.IsFalse: Out("IsFalse("); break;
+                case ExpressionType.IsTrue: Out("IsTrue("); break;
+                case ExpressionType.OnesComplement: Out("~("); break;
+                case ExpressionType.ArrayLength: Out("ArrayLength("); break;
+                case ExpressionType.Convert: Out("Convert("); break;
+                case ExpressionType.ConvertChecked: Out("ConvertChecked("); break;
+                case ExpressionType.Throw: Out("throw("); break;
+                case ExpressionType.TypeAs: Out('('); break;
+                case ExpressionType.UnaryPlus: Out('+'); break;
+                case ExpressionType.Unbox: Out("Unbox("); break;
+                case ExpressionType.Increment: Out("Increment("); break;
+                case ExpressionType.Decrement: Out("Decrement("); break;
+                case ExpressionType.PreIncrementAssign: Out("++"); break;
+                case ExpressionType.PreDecrementAssign: Out("--"); break;
                 case ExpressionType.Quote:
-                    break;
-
-                case ExpressionType.Throw:
-                    Out("throw(");
-                    break;
-
-                case ExpressionType.Increment:
-                    Out("Increment(");
-                    break;
-
-                case ExpressionType.Decrement:
-                    Out("Decrement(");
-                    break;
-
-                case ExpressionType.PreIncrementAssign:
-                    Out("++");
-                    break;
-
-                case ExpressionType.PreDecrementAssign:
-                    Out("--");
-                    break;
-
-                case ExpressionType.OnesComplement:
-                    Out("~(");
+                case ExpressionType.PostIncrementAssign:
+                case ExpressionType.PostDecrementAssign:
                     break;
 
                 default:
-                    Out(node.NodeType.ToString());
-                    Out("(");
-                    break;
+                    throw new InvalidOperationException();
             }
 
             Visit(node.Operand);
@@ -794,70 +723,87 @@ namespace System.Linq.Expressions
                 case ExpressionType.TypeAs:
                     Out(" As ");
                     Out(node.Type.Name);
-                    Out(")");
-                    break;
-
-                case ExpressionType.PostIncrementAssign:
-                    Out("++");
-                    break;
-
-                case ExpressionType.PostDecrementAssign:
-                    Out("--");
-                    break;
-
-                default:
-                    Out(")");
-                    break;
+                    Out(')'); break;
+                case ExpressionType.Convert:
+                case ExpressionType.ConvertChecked:
+                    /*Out(", ");
+                    Out(node.Type.Name);*/
+                    Out(')'); break; // These were changed in CoreFx to add the type name
+                case ExpressionType.PostIncrementAssign: Out("++"); break;
+                case ExpressionType.PostDecrementAssign: Out("--"); break;
+                default: Out(')'); break;
             }
             return node;
         }
 
-        protected internal override Expression VisitBlock(BlockExpression node)
+        protected override CatchBlock VisitCatchBlock(CatchBlock node)
         {
-            Out("{");
-            foreach (var v in node.Variables)
+            Out("catch (");
+            Out(node.Test.Name);
+            if (!string.IsNullOrEmpty(node.Variable?.Name))
             {
-                Out("var ");
-                Visit(v);
-                Out(";");
+                Out(' ');
+                Out(node.Variable.Name);
             }
-            Out(" ... }");
+            Out(") { ... }");
             return node;
         }
 
-        protected internal override Expression VisitDefault(DefaultExpression node)
+        protected override ElementInit VisitElementInit(ElementInit initializer)
         {
-            Out("default(");
-            Out(node.Type.Name);
-            Out(")");
-            return node;
-        }
-
-        protected internal override Expression VisitLabel(LabelExpression node)
-        {
-            Out("{ ... } ");
-            DumpLabel(node.Target);
-            Out(":");
-            return node;
-        }
-
-        protected internal override Expression VisitGoto(GotoExpression node)
-        {
-            Out(node.Kind.ToString().ToLower());
-            DumpLabel(node.Target);
-            if (node.Value != null)
+            Out(initializer.AddMethod.ToString());
+            var sep = ", ";
+            Out('(');
+            for (int i = 0, n = initializer.ArgumentCount; i < n; i++)
             {
-                Out(" (");
-                Visit(node.Value);
-                Out(") ");
+                if (i > 0)
+                {
+                    Out(sep);
+                }
+                Visit(initializer.GetArgument(i));
             }
-            return node;
+            Out(')');
+            return initializer;
         }
 
-        protected internal override Expression VisitLoop(LoopExpression node)
+        protected override MemberAssignment VisitMemberAssignment(MemberAssignment assignment)
         {
-            Out("loop { ... }");
-            return node;
+            Out(assignment.Member.Name);
+            Out(" = ");
+            Visit(assignment.Expression);
+            return assignment;
+        }
+
+        protected override MemberListBinding VisitMemberListBinding(MemberListBinding binding)
+        {
+            Out(binding.Member.Name);
+            Out(" = {");
+            for (int i = 0, n = binding.Initializers.Count; i < n; i++)
+            {
+                if (i > 0)
+                {
+                    Out(", ");
+                }
+                VisitElementInit(binding.Initializers[i]);
+            }
+            Out('}');
+            return binding;
+        }
+
+        protected override MemberMemberBinding VisitMemberMemberBinding(MemberMemberBinding binding)
+        {
+            Out(binding.Member.Name);
+            Out(" = {");
+            for (int i = 0, n = binding.Bindings.Count; i < n; i++)
+            {
+                if (i > 0)
+                {
+                    Out(", ");
+                }
+                VisitMemberBinding(binding.Bindings[i]);
+            }
+            Out('}');
+            return binding;
         }
 
         protected override SwitchCase VisitSwitchCase(SwitchCase node)
@@ -868,76 +814,9 @@ namespace System.Linq.Expressions
             return node;
         }
 
-        protected internal override Expression VisitSwitch(SwitchExpression node)
+        private static bool IsBool(Expression node)
         {
-            Out("switch ");
-            Out("(");
-            Visit(node.SwitchValue);
-            Out(") { ... }");
-            return node;
-        }
-
-        protected override CatchBlock VisitCatchBlock(CatchBlock node)
-        {
-            Out("catch (" + node.Test.Name);
-            if (node.Variable != null)
-            {
-                Out(node.Variable.Name ?? "");
-            }
-            Out(") { ... }");
-            return node;
-        }
-
-        protected internal override Expression VisitTry(TryExpression node)
-        {
-            Out("try { ... }");
-            return node;
-        }
-
-        protected internal override Expression VisitIndex(IndexExpression node)
-        {
-            if (node.Object != null)
-            {
-                Visit(node.Object);
-            }
-            else
-            {
-                Debug.Assert(node.Indexer != null);
-                Out(node.Indexer.DeclaringType.Name);
-            }
-            if (node.Indexer != null)
-            {
-                Out(".");
-                Out(node.Indexer.Name);
-            }
-
-            VisitExpressions('[', node.Arguments, ']');
-            return node;
-        }
-
-        protected internal override Expression VisitExtension(Expression node)
-        {
-            // Prefer an overridden ToString, if available.
-            var toString = node.GetType().GetMethod("ToString", ArrayReservoir<Type>.EmptyArray);
-            if (toString.DeclaringType != typeof(Expression) && !toString.IsStatic)
-            {
-                Out(node.ToString());
-                return node;
-            }
-
-            Out("[");
-            // For 3.5 subclasses, print the NodeType.
-            // For Extension nodes, print the class name.
-            if (node.NodeType == ExpressionType.Extension)
-            {
-                Out(node.GetType().FullName);
-            }
-            else
-            {
-                Out(node.NodeType.ToString());
-            }
-            Out("]");
-            return node;
+            return node.Type == typeof(bool) || node.Type == typeof(bool?);
         }
 
         private void DumpLabel(LabelTarget target)
@@ -949,11 +828,51 @@ namespace System.Linq.Expressions
             else
             {
                 var labelId = GetLabelId(target);
-                Out("UnamedLabel_" + labelId);
+                Out("UnnamedLabel_" + labelId);
             }
         }
 
-        #endregion Output an expresstion tree to a string
+        // Prints ".instanceField" or "declaringType.staticField"
+        private void OutMember(Expression instance, MemberInfo member)
+        {
+            if (instance != null)
+            {
+                Visit(instance);
+            }
+            else
+            {
+                // For static members, include the type name
+                // ReSharper disable once PossibleNullReferenceException
+                Out(member.DeclaringType.Name);
+            }
+
+            Out('.');
+            Out(member.Name);
+        }
+
+        private void VisitExpressions<T>(char open, ReadOnlyCollection<T> expressions, char close, string separator = ", ") where T : Expression
+        {
+            Out(open);
+            if (expressions != null)
+            {
+                var isFirst = true;
+                foreach (var e in expressions)
+                {
+                    if (isFirst)
+                    {
+                        isFirst = false;
+                    }
+                    else
+                    {
+                        Out(separator);
+                    }
+                    Visit(e);
+                }
+            }
+            Out(close);
+        }
+
+        #endregion Output an expression tree to a string
     }
 }
 

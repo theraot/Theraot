@@ -100,18 +100,21 @@ namespace MonoTests.System
             {
                 var threadA = new Thread(() =>
                 {
+                    // ReSharper disable once AccessToDisposedClosure
                     manual.WaitOne();
                     GC.KeepAlive(needle.Value);
                     Interlocked.Increment(ref threadDone);
                 });
                 var threadB = new Thread(() =>
                 {
+                    // ReSharper disable once AccessToDisposedClosure
                     manual.WaitOne();
                     GC.KeepAlive(needle.Value);
                     Interlocked.Increment(ref threadDone);
                 });
                 var threadC = new Thread(() =>
                 {
+                    // ReSharper disable once AccessToDisposedClosure
                     manual.WaitOne();
                     GC.KeepAlive(needle.Value);
                     Interlocked.Increment(ref threadDone);
@@ -156,7 +159,7 @@ namespace MonoTests.System
         public void ValueFactoryReentry()
         {
             Lazy<int>[] needle = { null };
-            needle[0] = new Lazy<int>(() => ReferenceEquals(needle[0], null) ? 0 : needle[0].Value);
+            needle[0] = new Lazy<int>(() => needle[0]?.Value ?? 0);
             Assert.Throws(typeof(InvalidOperationException), () => GC.KeepAlive(needle[0].Value));
         }
 
@@ -174,7 +177,7 @@ namespace MonoTests.System
                 Prop = _count;
             }
 
-            public int Prop { get; private set; }
+            public int Prop { get; }
         }
     }
 }

@@ -21,7 +21,7 @@ namespace System.Collections.Generic
         {
             if (collection == null)
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
             }
             _wrapped = new NullAwareDictionary<T, object>();
             foreach (var item in collection)
@@ -39,7 +39,7 @@ namespace System.Collections.Generic
         {
             if (collection == null)
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
             }
             _wrapped = new NullAwareDictionary<T, object>(comparer);
             foreach (var item in collection)
@@ -54,25 +54,16 @@ namespace System.Collections.Generic
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
             _wrapped = new NullAwareDictionary<T, object>(info.GetValue("dictionary", typeof(KeyValuePair<T, object>[])) as KeyValuePair<T, object>[]);
         }
 
-        public IEqualityComparer<T> Comparer
-        {
-            get { return _wrapped.Comparer; }
-        }
+        public IEqualityComparer<T> Comparer => _wrapped.Comparer;
 
-        public int Count
-        {
-            get { return _wrapped.Count; }
-        }
+        public int Count => _wrapped.Count;
 
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         public static IEqualityComparer<HashSet<T>> CreateSetComparer()
         {
@@ -89,6 +80,11 @@ namespace System.Collections.Generic
             return true;
         }
 
+        void ICollection<T>.Add(T item)
+        {
+            Add(item);
+        }
+
         public void Clear()
         {
             _wrapped.Clear();
@@ -97,6 +93,7 @@ namespace System.Collections.Generic
         public bool Contains(T item)
         {
             // item can be null
+            // ReSharper disable once AssignNullToNotNullAttribute
             return _wrapped.ContainsKey(item);
         }
 
@@ -104,7 +101,7 @@ namespace System.Collections.Generic
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (Count > array.Length)
             {
@@ -117,15 +114,15 @@ namespace System.Collections.Generic
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "arrayIndex < 0");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "arrayIndex < 0");
             }
             if (Count > array.Length - arrayIndex)
             {
-                throw new ArgumentException("The array can not contain the number of elements.", "array");
+                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
             _wrapped.Keys.CopyTo(array, arrayIndex);
         }
@@ -134,19 +131,19 @@ namespace System.Collections.Generic
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
             if (count < 0)
             {
-                throw new ArgumentOutOfRangeException("count", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(count), "Non-negative number is required.");
             }
             if (count > array.Length - arrayIndex)
             {
-                throw new ArgumentException("The array can not contain the number of elements.", "array");
+                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
 
             var copiedCount = 0;
@@ -167,7 +164,7 @@ namespace System.Collections.Generic
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             foreach (var item in other)
             {
@@ -180,33 +177,27 @@ namespace System.Collections.Generic
             return new Enumerator(this);
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.SerializationFormatter)]
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
-            KeyValuePair<T, object>[] dictionary;
-            _wrapped.Deconstruct(out dictionary);
-            info.AddValue("dictionary", dictionary);
-        }
-
-        void ICollection<T>.Add(T item)
-        {
-            Add(item);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            _wrapped.Deconstruct(out var dictionary);
+            info.AddValue(nameof(dictionary), dictionary);
         }
 
         public void IntersectWith(IEnumerable<T> other)
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             this.IntersectWith(other, _wrapped.Comparer);
         }
@@ -235,7 +226,7 @@ namespace System.Collections.Generic
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             foreach (var item in other)
             {
@@ -250,6 +241,7 @@ namespace System.Collections.Generic
         public bool Remove(T item)
         {
             // item can be null
+            // ReSharper disable once AssignNullToNotNullAttribute
             if (_wrapped.ContainsKey(item))
             {
                 return _wrapped.Remove(item);
@@ -266,7 +258,7 @@ namespace System.Collections.Generic
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             var containsCount = 0;
             foreach (var item in ToHashSet(other))
@@ -284,7 +276,7 @@ namespace System.Collections.Generic
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             var tmpSet = new HashSet<T>(other);
             foreach (var item in tmpSet)
@@ -310,7 +302,7 @@ namespace System.Collections.Generic
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             foreach (var item in other)
             {
@@ -325,7 +317,7 @@ namespace System.Collections.Generic
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             var elementCount = 0;
             var matchCount = 0;
@@ -348,7 +340,7 @@ namespace System.Collections.Generic
         {
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             var elementCount = 0;
             foreach (var item in other)
@@ -366,11 +358,10 @@ namespace System.Collections.Generic
             return true;
         }
 
-        private IEnumerable<T> ToHashSet(IEnumerable<T> other)
+        private HashSet<T> ToHashSet(IEnumerable<T> other)
         {
-            var test = other as HashSet<T>;
             var comparer = Comparer;
-            if (test != null && comparer.Equals(test.Comparer))
+            if (other is HashSet<T> test && comparer.Equals(test.Comparer))
             {
                 return test;
             }
@@ -381,19 +372,15 @@ namespace System.Collections.Generic
         {
             private readonly IEnumerator<KeyValuePair<T, object>> _enumerator;
             private bool _valid;
-            private T _current;
 
             public Enumerator(HashSet<T> hashSet)
             {
                 _enumerator = hashSet._wrapped.GetEnumerator();
                 _valid = false;
-                _current = default(T);
+                Current = default;
             }
 
-            public T Current
-            {
-                get { return _current; }
-            }
+            public T Current { get; private set; }
 
             object IEnumerator.Current
             {
@@ -401,7 +388,7 @@ namespace System.Collections.Generic
                 {
                     if (_valid)
                     {
-                        return _current;
+                        return Current;
                     }
                     throw new InvalidOperationException("Call MoveNext first or use IEnumerator<T>");
                 }
@@ -410,20 +397,10 @@ namespace System.Collections.Generic
             public void Dispose()
             {
                 var enumerator = _enumerator;
+                // ReSharper disable once UseNullPropagation
                 if (enumerator != null)
                 {
                     enumerator.Dispose();
-                }
-            }
-
-            void IEnumerator.Reset()
-            {
-                _valid = false;
-                var enumerator = _enumerator;
-                if (enumerator != null)
-                {
-                    _current = _enumerator.Current.Key;
-                    _enumerator.Reset();
                 }
             }
 
@@ -433,10 +410,21 @@ namespace System.Collections.Generic
                 if (enumerator != null)
                 {
                     _valid = _enumerator.MoveNext();
-                    _current = _enumerator.Current.Key;
+                    Current = _enumerator.Current.Key;
                     return _valid;
                 }
                 return false;
+            }
+
+            void IEnumerator.Reset()
+            {
+                _valid = false;
+                var enumerator = _enumerator;
+                if (enumerator != null)
+                {
+                    Current = _enumerator.Current.Key;
+                    _enumerator.Reset();
+                }
             }
         }
 
@@ -468,7 +456,7 @@ namespace System.Collections.Generic
             {
                 try
                 {
-                    IEqualityComparer<T> comparer = EqualityComparer<T>.Default;
+                    var comparer = EqualityComparer<T>.Default;
                     var hash = 0;
                     foreach (var item in obj)
                     {

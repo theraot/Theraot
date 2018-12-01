@@ -80,10 +80,10 @@ namespace Tests.Theraot.Threading.Needles
                         {
                             info.Add("First thread did enter.");
                             var found = needle.Value;
-                            info.Add("First thread found: " + found + " will set: " + (found + 2));
+                            info.Add("First thread found: " + found.ToString() + " will set: " + (found + 2).ToString());
                             needle.Value = found + 2;
-                            info.Add("First thread set: " + needle.Value);
-                            info.Add("First thread set count to: " + Interlocked.Increment(ref count[0]));
+                            info.Add("First thread set: " + needle.Value.ToString());
+                            info.Add("First thread set count to: " + Interlocked.Increment(ref count[0]).ToString());
                             info.Add("First thread done.");
                         }
                         catch (Exception exc)
@@ -102,10 +102,10 @@ namespace Tests.Theraot.Threading.Needles
                         {
                             info.Add("Second thread did enter.");
                             var found = needle.Value;
-                            info.Add("Second thread found: " + found + " will set: " + (found + 3));
+                            info.Add("Second thread found: " + found.ToString() + " will set: " + (found + 3).ToString());
                             needle.Value = found + 3;
-                            info.Add("Second thread set: " + needle.Value);
-                            info.Add("Second thread set count to: " + Interlocked.Increment(ref count[0]));
+                            info.Add("Second thread set: " + needle.Value.ToString());
+                            info.Add("Second thread set count to: " + Interlocked.Increment(ref count[0]).ToString());
                             info.Add("Second thread done.");
                         }
                         catch (Exception exc)
@@ -128,8 +128,8 @@ namespace Tests.Theraot.Threading.Needles
                 Trace.WriteLine(item);
             }
 
-            Trace.WriteLine("Count = " + Thread.VolatileRead(ref count[0]));
-            Trace.WriteLine("Found = " + needle.Value);
+            Trace.WriteLine("Count = " + Volatile.Read(ref count[0]).ToString());
+            Trace.WriteLine("Found = " + needle.Value.ToString());
 
             Assert.IsTrue(needle.Value == 7 || needle.Value == 8 || needle.Value == 10);
         }
@@ -157,10 +157,10 @@ namespace Tests.Theraot.Threading.Needles
                         {
                             info.Add("First thread did enter.");
                             var found = needle.Value;
-                            info.Add("First thread found: " + found + " will increment by 2");
+                            info.Add("First thread found: " + found.ToString() + " will increment by 2");
                             needle.Update(value => value + 2);
-                            info.Add("First thread set: " + needle.Value);
-                            info.Add("First thread set count to: " + Interlocked.Increment(ref count[0]));
+                            info.Add("First thread set: " + needle.Value.ToString());
+                            info.Add("First thread set count to: " + Interlocked.Increment(ref count[0]).ToString());
                             info.Add("First thread done.");
                         }
                         catch (Exception exc)
@@ -179,10 +179,10 @@ namespace Tests.Theraot.Threading.Needles
                         {
                             info.Add("Second thread did enter.");
                             var found = needle.Value;
-                            info.Add("Second thread found: " + found + " will increment by 3");
+                            info.Add("Second thread found: " + found.ToString() + " will increment by 3");
                             needle.Update(value => value + 3);
-                            info.Add("Second thread set: " + needle.Value);
-                            info.Add("Second thread set count to: " + Interlocked.Increment(ref count[0]));
+                            info.Add("Second thread set: " + needle.Value.ToString());
+                            info.Add("Second thread set count to: " + Interlocked.Increment(ref count[0]).ToString());
                             info.Add("Second thread done.");
                         }
                         catch (Exception exc)
@@ -205,8 +205,8 @@ namespace Tests.Theraot.Threading.Needles
                 Trace.WriteLine(item);
             }
 
-            Trace.WriteLine("Count = " + Thread.VolatileRead(ref count[0]));
-            Trace.WriteLine("Found = " + needle.Value);
+            Trace.WriteLine("Count = " + Volatile.Read(ref count[0]).ToString());
+            Trace.WriteLine("Found = " + needle.Value.ToString());
 
             Assert.IsTrue(needle.Value == 10);
         }

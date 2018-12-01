@@ -79,9 +79,7 @@ namespace System.Threading
         public static T Read<T>(ref T location)
             where T : class
         {
-            var copy = location;
-            Thread.MemoryBarrier();
-            return copy;
+            return Interlocked.CompareExchange(ref location, null, null);
         }
 
         public static void Write(ref bool location, bool value)
@@ -159,9 +157,7 @@ namespace System.Threading
         public static void Write<T>(ref T location, T value)
             where T : class
         {
-            GC.KeepAlive(location);
-            Thread.MemoryBarrier();
-            location = value;
+            GC.KeepAlive(Interlocked.Exchange(ref location, value));
         }
     }
 }

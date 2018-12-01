@@ -10,11 +10,11 @@ namespace Theraot.Core
         {
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return () => converter.Invoke(source.Invoke());
         }
@@ -38,17 +38,12 @@ namespace Theraot.Core
 
         private static class IdentityHelper<TReturn>
         {
-            private static readonly Func<TReturn, TReturn> _instance;
-
             static IdentityHelper()
             {
-                _instance = IdentityFunc;
+                Instance = IdentityFunc;
             }
 
-            public static Func<TReturn, TReturn> Instance
-            {
-                get { return _instance; }
-            }
+            public static Func<TReturn, TReturn> Instance { get; }
 
             private static TReturn IdentityFunc(TReturn target)
             {
@@ -58,17 +53,12 @@ namespace Theraot.Core
 
         private static class NotNullHelper<T>
         {
-            private static readonly Predicate<T> _instance;
-
             static NotNullHelper()
             {
-                _instance = NotNullPredicate;
+                Instance = NotNullPredicate;
             }
 
-            public static Predicate<T> Instance
-            {
-                get { return _instance; }
-            }
+            public static Predicate<T> Instance { get; }
 
             private static bool NotNullPredicate(T target)
             {
@@ -78,17 +68,12 @@ namespace Theraot.Core
 
         private static class NullHelper<T>
         {
-            private static readonly Predicate<T> _instance;
-
             static NullHelper()
             {
-                _instance = NullPredicate;
+                Instance = NullPredicate;
             }
 
-            public static Predicate<T> Instance
-            {
-                get { return _instance; }
-            }
+            public static Predicate<T> Instance { get; }
 
             private static bool NullPredicate(T target)
             {

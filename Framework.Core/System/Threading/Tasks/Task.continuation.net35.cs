@@ -34,7 +34,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task ContinueWith(Action<Task> continuationAction)
         {
-            return ContinueWith(continuationAction, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationAction, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="continuationAction"/> argument is null.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
         public Task ContinueWith(Action<Task> continuationAction, CancellationToken cancellationToken)
@@ -86,7 +86,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task ContinueWith(Action<Task> continuationAction, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationAction, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationAction, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -98,8 +98,8 @@ namespace System.Threading.Tasks
         /// </param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <returns>A new continuation <see cref="Task"/>.</returns>
         /// <remarks>
@@ -115,7 +115,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task ContinueWith(Action<Task> continuationAction, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationAction, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+            return ContinueWith(continuationAction, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -127,8 +127,8 @@ namespace System.Threading.Tasks
         /// </param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new continuation task.</param>
         /// <param name="scheduler">
@@ -150,7 +150,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
         public Task ContinueWith(Action<Task> continuationAction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
@@ -177,7 +177,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task ContinueWith(Action<Task, object> continuationAction, object state)
         {
-            return ContinueWith(continuationAction, state, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationAction, state, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="continuationAction"/> argument is null.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
         public Task ContinueWith(Action<Task, object> continuationAction, object state, CancellationToken cancellationToken)
@@ -231,7 +231,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task ContinueWith(Action<Task, object> continuationAction, object state, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationAction, state, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationAction, state, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -244,8 +244,8 @@ namespace System.Threading.Tasks
         /// <param name="state">An object representing data to be used by the continuation action.</param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <returns>A new continuation <see cref="Task"/>.</returns>
         /// <remarks>
@@ -261,7 +261,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task ContinueWith(Action<Task, object> continuationAction, object state, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationAction, state, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+            return ContinueWith(continuationAction, state, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -274,8 +274,8 @@ namespace System.Threading.Tasks
         /// <param name="state">An object representing data to be used by the continuation action.</param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see  cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see  cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new continuation task.</param>
         /// <param name="scheduler">
@@ -297,7 +297,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
         public Task ContinueWith(Action<Task, object> continuationAction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
@@ -326,7 +326,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, TResult> continuationFunction)
         {
-            return ContinueWith(continuationFunction, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationFunction, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -349,7 +349,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="continuationFunction"/> argument is null.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, TResult> continuationFunction, CancellationToken cancellationToken)
@@ -384,7 +384,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, TResult> continuationFunction, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationFunction, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationFunction, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -399,8 +399,8 @@ namespace System.Threading.Tasks
         /// </param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <returns>A new continuation <see cref="Task{TResult}"/>.</returns>
         /// <remarks>
@@ -416,7 +416,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, TResult> continuationFunction, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationFunction, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+            return ContinueWith(continuationFunction, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -432,8 +432,8 @@ namespace System.Threading.Tasks
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new continuation task.</param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <param name="scheduler">
         /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its
@@ -454,7 +454,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, TResult> continuationFunction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
@@ -484,7 +484,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, object, TResult> continuationFunction, object state)
         {
-            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -508,7 +508,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="continuationFunction"/> argument is null.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, object, TResult> continuationFunction, object state, CancellationToken cancellationToken)
@@ -544,7 +544,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, object, TResult> continuationFunction, object state, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationFunction, state, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationFunction, state, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -560,8 +560,8 @@ namespace System.Threading.Tasks
         /// <param name="state">An object representing data to be used by the continuation function.</param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <returns>A new continuation <see cref="Task{TResult}"/>.</returns>
         /// <remarks>
@@ -577,7 +577,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, object, TResult> continuationFunction, object state, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -594,8 +594,8 @@ namespace System.Threading.Tasks
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new continuation task.</param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <param name="scheduler">
         /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its
@@ -616,7 +616,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, object, TResult> continuationFunction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
@@ -641,17 +641,17 @@ namespace System.Threading.Tasks
 
             if ((continuationOptions & IllegalMask) == IllegalMask)
             {
-                throw new ArgumentOutOfRangeException("continuationOptions", "The specified TaskContinuationOptions combined LongRunning and ExecuteSynchronously.  Synchronous continuations should not be long running.");
+                throw new ArgumentOutOfRangeException(nameof(continuationOptions), "The specified TaskContinuationOptions combined LongRunning and ExecuteSynchronously.  Synchronous continuations should not be long running.");
             }
             // Check that no illegal options were specified
             if ((continuationOptions & ~(CreationOptionsMask | NotOnAnything | TaskContinuationOptions.LazyCancellation | TaskContinuationOptions.ExecuteSynchronously)) != 0)
             {
-                throw new ArgumentOutOfRangeException("continuationOptions");
+                throw new ArgumentOutOfRangeException(nameof(continuationOptions));
             }
             // Check that we didn't specify "not on anything"
             if ((continuationOptions & NotOnAnything) == NotOnAnything)
             {
-                throw new ArgumentOutOfRangeException("continuationOptions", "The specified TaskContinuationOptions excluded all continuation kinds.");
+                throw new ArgumentOutOfRangeException(nameof(continuationOptions), "The specified TaskContinuationOptions excluded all continuation kinds.");
             }
             // This passes over all but LazyCancellation, which has no representation in TaskCreationOptions
             creationOptions = (TaskCreationOptions)(continuationOptions & CreationOptionsMask);
@@ -738,7 +738,7 @@ namespace System.Threading.Tasks
                     var spinWait = new SpinWait();
                     LockEnter(spinWait);
                     Interlocked.CompareExchange(ref _continuations, null, continuations);
-                    Thread.VolatileWrite(ref _continuationsStatus, _runningContinuations);
+                    Volatile.Write(ref _continuationsStatus, _runningContinuations);
                 }
                 finally
                 {
@@ -747,9 +747,9 @@ namespace System.Threading.Tasks
 
                 // Skip synchronous execution of continuations if this task's thread was aborted
                 var canInlineContinuations =
-                    Thread.VolatileRead(ref _threadAbortedmanaged) == 0
+                    Volatile.Read(ref _threadAbortedManaged) == 0
                     && (Thread.CurrentThread.ThreadState != ThreadState.AbortRequested)
-                    && ((_creationOptions & TaskCreationOptions.RunContinuationsAsynchronously) == 0);
+                    && ((CreationOptions & TaskCreationOptions.RunContinuationsAsynchronously) == 0);
 
                 //
                 // Begin processing of continuation list
@@ -762,8 +762,7 @@ namespace System.Threading.Tasks
                 {
                     // Synchronous continuation tasks will have the ExecuteSynchronously option,
                     // and we're looking for asynchronous tasks...
-                    var tc = continuations[index] as StandardTaskContinuation;
-                    if (tc == null || (tc.Options & TaskContinuationOptions.ExecuteSynchronously) != 0)
+                    if (!(continuations[index] is StandardTaskContinuation tc) || (tc.Options & TaskContinuationOptions.ExecuteSynchronously) != 0)
                     {
                         continue;
                     }
@@ -785,16 +784,14 @@ namespace System.Threading.Tasks
                     continuations[index] = null; // to enable free'ing up memory earlier
                     // If the continuation is an Action delegate, it came from an await continuation,
                     // and we should use AwaitTaskContinuation to run it.
-                    var ad = currentContinuation as Action;
-                    if (ad != null)
+                    if (currentContinuation is Action ad)
                     {
                         AwaitTaskContinuation.RunOrScheduleAction(ad, canInlineContinuations, ref InternalCurrent);
                     }
                     else
                     {
                         // If it's a TaskContinuation object of some kind, invoke it.
-                        var tc = currentContinuation as TaskContinuation;
-                        if (tc != null)
+                        if (currentContinuation is TaskContinuation tc)
                         {
                             // We know that this is a synchronous continuation because the
                             // asynchronous ones have been weeded out
@@ -867,17 +864,15 @@ namespace System.Threading.Tasks
             // Throw on continuation with null action
             if (continuationAction == null)
             {
-                throw new ArgumentNullException("continuationAction");
+                throw new ArgumentNullException(nameof(continuationAction));
             }
             // Throw on continuation with null TaskScheduler
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
             Contract.EndContractBlock();
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
-            CreationOptionsFromContinuationOptions(continuationOptions, out creationOptions, out internalOptions);
+            CreationOptionsFromContinuationOptions(continuationOptions, out var creationOptions, out var internalOptions);
             Task continuationTask = new ContinuationTaskFromTask
             (
                 this,
@@ -898,17 +893,15 @@ namespace System.Threading.Tasks
             // Throw on continuation with null action
             if (continuationAction == null)
             {
-                throw new ArgumentNullException("continuationAction");
+                throw new ArgumentNullException(nameof(continuationAction));
             }
             // Throw on continuation with null TaskScheduler
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
             Contract.EndContractBlock();
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
-            CreationOptionsFromContinuationOptions(continuationOptions, out creationOptions, out internalOptions);
+            CreationOptionsFromContinuationOptions(continuationOptions, out var creationOptions, out var internalOptions);
             Task continuationTask = new ContinuationTaskFromTask
             (
                 this,
@@ -929,17 +922,15 @@ namespace System.Threading.Tasks
             // Throw on continuation with null function
             if (continuationFunction == null)
             {
-                throw new ArgumentNullException("continuationFunction");
+                throw new ArgumentNullException(nameof(continuationFunction));
             }
             // Throw on continuation with null task scheduler
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
             Contract.EndContractBlock();
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
-            CreationOptionsFromContinuationOptions(continuationOptions, out creationOptions, out internalOptions);
+            CreationOptionsFromContinuationOptions(continuationOptions, out var creationOptions, out var internalOptions);
             Task<TResult> continuationTask = new ContinuationResultTaskFromTask<TResult>
             (
                 this, continuationFunction, null,
@@ -958,17 +949,15 @@ namespace System.Threading.Tasks
             // Throw on continuation with null function
             if (continuationFunction == null)
             {
-                throw new ArgumentNullException("continuationFunction");
+                throw new ArgumentNullException(nameof(continuationFunction));
             }
             // Throw on continuation with null task scheduler
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
             Contract.EndContractBlock();
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
-            CreationOptionsFromContinuationOptions(continuationOptions, out creationOptions, out internalOptions);
+            CreationOptionsFromContinuationOptions(continuationOptions, out var creationOptions, out var internalOptions);
             Task<TResult> continuationTask = new ContinuationResultTaskFromTask<TResult>
             (
                 this, continuationFunction, state,
@@ -986,7 +975,7 @@ namespace System.Threading.Tasks
             {
                 return null;
             }
-            if (Thread.VolatileRead(ref _continuationsStatus) == _continuationsInitialization)
+            if (Volatile.Read(ref _continuationsStatus) == _continuationsInitialization)
             {
                 // Initializing or initilized
                 var spinWait = new SpinWait();
@@ -996,7 +985,7 @@ namespace System.Threading.Tasks
                     spinWait.SpinOnce();
                 }
                 LockEnter(spinWait);
-                if (Thread.VolatileRead(ref _continuationsStatus) == _continuationsInitialization)
+                if (Volatile.Read(ref _continuationsStatus) == _continuationsInitialization)
                 {
                     return continuations;
                 }
@@ -1035,7 +1024,7 @@ namespace System.Threading.Tasks
                 return null;
             }
             List<object> continuations = null;
-            var found = Thread.VolatileRead(ref _continuationsStatus);
+            var found = Volatile.Read(ref _continuationsStatus);
             var spinWait = new SpinWait();
             switch (found)
             {
@@ -1054,11 +1043,11 @@ namespace System.Threading.Tasks
                     goto case _continuationsInitialization;
                 case _continuationsInitialization:
                     // Initializing or initilized
-                    while (Thread.VolatileRead(ref _continuationsStatus) == _continuationsInitialization && (continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
+                    while (Volatile.Read(ref _continuationsStatus) == _continuationsInitialization && (continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
                     {
                         spinWait.SpinOnce();
                     }
-                    if (Thread.VolatileRead(ref _continuationsStatus) == _takingContinuations)
+                    if (Volatile.Read(ref _continuationsStatus) == _takingContinuations)
                     {
                         return null;
                     }
@@ -1072,7 +1061,7 @@ namespace System.Threading.Tasks
                 default:
                     // The continuations may have already executed at this point
                     LockEnter(spinWait);
-                    if (Thread.VolatileRead(ref _continuationsStatus) == _continuationsInitialization)
+                    if (Volatile.Read(ref _continuationsStatus) == _continuationsInitialization)
                     {
                         return continuations;
                     }
@@ -1103,7 +1092,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction)
         {
-            return ContinueWith(continuationAction, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationAction, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1123,10 +1112,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="continuationAction"/> argument is null.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction, CancellationToken cancellationToken)
         {
             return ContinueWith(continuationAction, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
@@ -1154,10 +1143,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationAction, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationAction, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1169,8 +1158,8 @@ namespace System.Threading.Tasks
         /// </param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <returns>A new continuation <see cref="Task"/>.</returns>
         /// <remarks>
@@ -1184,10 +1173,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentOutOfRangeException">
         /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationAction, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+            return ContinueWith(continuationAction, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -1200,8 +1189,8 @@ namespace System.Threading.Tasks
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new continuation task.</param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <param name="scheduler">
         /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its
@@ -1222,10 +1211,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
             return ContinueWith(continuationAction, scheduler, cancellationToken, continuationOptions);
@@ -1248,10 +1237,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="continuationAction"/> argument is null.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state)
         {
-            return ContinueWith(continuationAction, state, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationAction, state, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1272,10 +1261,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="continuationAction"/> argument is null.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, CancellationToken cancellationToken)
         {
             return ContinueWith(continuationAction, state, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
@@ -1304,10 +1293,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationAction, state, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationAction, state, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1320,8 +1309,8 @@ namespace System.Threading.Tasks
         /// <param name="state">An object representing data to be used by the continuation action.</param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <returns>A new continuation <see cref="Task"/>.</returns>
         /// <remarks>
@@ -1335,10 +1324,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentOutOfRangeException">
         /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationAction, state, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+            return ContinueWith(continuationAction, state, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -1352,8 +1341,8 @@ namespace System.Threading.Tasks
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new continuation task.</param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <param name="scheduler">
         /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its
@@ -1374,10 +1363,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
             return ContinueWith(continuationAction, state, scheduler, cancellationToken, continuationOptions);
@@ -1402,10 +1391,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="continuationFunction"/> argument is null.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction)
         {
-            return ContinueWith(continuationFunction, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationFunction, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1428,10 +1417,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="continuationFunction"/> argument is null.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, CancellationToken cancellationToken)
         {
             return ContinueWith(continuationFunction, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
@@ -1462,10 +1451,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationFunction, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationFunction, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1480,8 +1469,8 @@ namespace System.Threading.Tasks
         /// </param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <returns>A new continuation <see cref="Task{TNewResult}"/>.</returns>
         /// <remarks>
@@ -1501,10 +1490,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentOutOfRangeException">
         /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationFunction, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+            return ContinueWith(continuationFunction, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -1520,8 +1509,8 @@ namespace System.Threading.Tasks
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new task.</param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <param name="scheduler">
         /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its
@@ -1549,10 +1538,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
             return ContinueWith(continuationFunction, scheduler, cancellationToken, continuationOptions);
@@ -1578,10 +1567,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="continuationFunction"/> argument is null.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state)
         {
-            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1605,10 +1594,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="continuationFunction"/> argument is null.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, CancellationToken cancellationToken)
         {
             return ContinueWith(continuationFunction, state, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
@@ -1640,10 +1629,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationFunction, state, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+            return ContinueWith(continuationFunction, state, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1659,8 +1648,8 @@ namespace System.Threading.Tasks
         /// <param name="state">An object representing data to be used by the continuation function.</param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <returns>A new continuation <see cref="Task{TNewResult}"/>.</returns>
         /// <remarks>
@@ -1680,10 +1669,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentOutOfRangeException">
         /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -1700,8 +1689,8 @@ namespace System.Threading.Tasks
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new task.</param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <param name="scheduler">
         /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its
@@ -1729,10 +1718,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
             return ContinueWith(continuationFunction, state, scheduler, cancellationToken, continuationOptions);
@@ -1743,19 +1732,17 @@ namespace System.Threading.Tasks
         {
             if (continuationAction == null)
             {
-                throw new ArgumentNullException("continuationAction");
+                throw new ArgumentNullException(nameof(continuationAction));
             }
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
             CreationOptionsFromContinuationOptions
             (
                 continuationOptions,
-                out creationOptions,
-                out internalOptions
+                out var creationOptions,
+                out var internalOptions
             );
             Task continuationTask = new ContinuationTaskFromResultTask<TResult>
             (
@@ -1776,20 +1763,18 @@ namespace System.Threading.Tasks
         {
             if (continuationAction == null)
             {
-                throw new ArgumentNullException("continuationAction");
+                throw new ArgumentNullException(nameof(continuationAction));
             }
 
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
             CreationOptionsFromContinuationOptions
             (
                 continuationOptions,
-                out creationOptions,
-                out internalOptions
+                out var creationOptions,
+                out var internalOptions
             );
             Task continuationTask = new ContinuationTaskFromResultTask<TResult>
             (
@@ -1810,20 +1795,17 @@ namespace System.Threading.Tasks
         {
             if (continuationFunction == null)
             {
-                throw new ArgumentNullException("continuationFunction");
+                throw new ArgumentNullException(nameof(continuationFunction));
             }
 
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
-
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
             CreationOptionsFromContinuationOptions(
                 continuationOptions,
-                out creationOptions,
-                out internalOptions);
+                out var creationOptions,
+                out var internalOptions);
 
             Task<TNewResult> continuationFuture = new ContinuationResultTaskFromResultTask<TResult, TNewResult>(
                 this, continuationFunction, null,
@@ -1842,20 +1824,17 @@ namespace System.Threading.Tasks
         {
             if (continuationFunction == null)
             {
-                throw new ArgumentNullException("continuationFunction");
+                throw new ArgumentNullException(nameof(continuationFunction));
             }
 
             if (scheduler == null)
             {
-                throw new ArgumentNullException("scheduler");
+                throw new ArgumentNullException(nameof(scheduler));
             }
-
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
             CreationOptionsFromContinuationOptions(
                 continuationOptions,
-                out creationOptions,
-                out internalOptions);
+                out var creationOptions,
+                out var internalOptions);
 
             Task<TNewResult> continuationFuture = new ContinuationResultTaskFromResultTask<TResult, TNewResult>(
                 this, continuationFunction, state,

@@ -10,33 +10,32 @@ using Theraot.Threading;
 namespace Theraot.Collections.Specialized
 {
     [Serializable]
-    public sealed partial class FlagArray
+    public sealed class FlagArray : IList<bool>, ICollection<bool>, ICloneable<FlagArray>
     {
         private readonly IReadOnlyCollection<bool> _asReadOnly;
-        private readonly int _capacity;
         private int[] _entries;
 
         public FlagArray(FlagArray prototype)
         {
-            if (ReferenceEquals(prototype, null))
+            if (prototype == null)
             {
-                throw new ArgumentNullException("prototype", "prototype is null.");
+                throw new ArgumentNullException(nameof(prototype), "prototype is null.");
             }
-            _capacity = prototype._capacity;
-            _entries = ArrayReservoir<int>.GetArray(GetLength(_capacity));
+            Capacity = prototype.Capacity;
+            _entries = ArrayReservoir<int>.GetArray(GetLength(Capacity));
             prototype._entries.CopyTo(_entries, 0);
-            _asReadOnly = new ExtendedReadOnlyCollection<bool>(this);
+            _asReadOnly = Extensions.WrapAsIReadOnlyCollection(this);
         }
 
         public FlagArray(int capacity)
         {
             if (capacity < 0)
             {
-                throw new ArgumentOutOfRangeException("capacity", "length < 0");
+                throw new ArgumentOutOfRangeException(nameof(capacity), "length < 0");
             }
-            _capacity = capacity;
-            _entries = ArrayReservoir<int>.GetArray(GetLength(_capacity));
-            _asReadOnly = new ExtendedReadOnlyCollection<bool>(this);
+            Capacity = capacity;
+            _entries = ArrayReservoir<int>.GetArray(GetLength(Capacity));
+            _asReadOnly = Extensions.WrapAsIReadOnlyCollection(this);
         }
 
         public FlagArray(int capacity, bool defaultValue)
@@ -53,14 +52,16 @@ namespace Theraot.Collections.Specialized
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
             if (!GCMonitor.FinalizingForUnload)
             {
-                RecycleExtracted();
+                var entries = _entries;
+                if (entries != null)
+                {
+                    ArrayReservoir<int>.DonateArray(entries);
+                    _entries = null;
+                }
             }
         }
 
-        public int Capacity
-        {
-            get { return _capacity; }
-        }
+        public int Capacity { get; }
 
         public int Count
         {
@@ -68,14 +69,14 @@ namespace Theraot.Collections.Specialized
             {
                 var count = 0;
                 var index = 0;
-                var newindex = 0;
+                var newIndex = 0;
                 foreach (var entry in _entries)
                 {
-                    newindex += 32;
-                    if (newindex <= _capacity)
+                    newIndex += 32;
+                    if (newIndex <= Capacity)
                     {
                         count += NumericHelper.PopulationCount(entry);
-                        index = newindex;
+                        index = newIndex;
                     }
                     else
                     {
@@ -86,7 +87,7 @@ namespace Theraot.Collections.Specialized
                                 count++;
                             }
                             index++;
-                            if (index == _capacity)
+                            if (index == Capacity)
                             {
                                 break;
                             }
@@ -108,7 +109,7 @@ namespace Theraot.Collections.Specialized
                     if (entry == 0)
                     {
                         index += 32;
-                        if (index >= _capacity)
+                        if (index >= Capacity)
                         {
                             yield break;
                         }
@@ -122,7 +123,7 @@ namespace Theraot.Collections.Specialized
                                 yield return index;
                             }
                             index++;
-                            if (index == _capacity)
+                            if (index == Capacity)
                             {
                                 yield break;
                             }
@@ -132,10 +133,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        bool ICollection<bool>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection<bool>.IsReadOnly => false;
 
         public bool this[int index]
         {
@@ -162,37 +160,52 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        void ICollection<bool>.Add(bool item)
+        {
+            throw new NotSupportedException();
+        }
+
+        void ICollection<bool>.Clear()
+        {
+            throw new NotSupportedException();
+        }
+
         public FlagArray Clone()
         {
             return new FlagArray(this);
         }
 
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
+
         public bool Contains(bool item)
         {
             var index = 0;
-            var newindex = 0;
+            var newIndex = 0;
             var check = item ? 0 : -1;
             foreach (var entry in _entries)
             {
-                newindex += 32;
-                if (newindex <= _capacity)
+                newIndex += 32;
+                if (newIndex <= Capacity)
                 {
                     if (entry != check)
                     {
                         return true;
                     }
-                    index = newindex;
+                    index = newIndex;
                 }
                 else
                 {
                     foreach (var bit in entry.BinaryReverse().BitsBinary())
                     {
-                        if ((bit == 1) == item)
+                        if (bit == 1 == item)
                         {
                             return true;
                         }
                         index++;
-                        if (index == _capacity)
+                        if (index == Capacity)
                         {
                             break;
                         }
@@ -210,13 +223,13 @@ namespace Theraot.Collections.Specialized
 
         public void CopyTo(bool[] array, int arrayIndex)
         {
-            Extensions.CanCopyTo(_capacity, array, arrayIndex);
+            Extensions.CanCopyTo(Capacity, array, arrayIndex);
             Extensions.CopyTo(this, array, arrayIndex);
         }
 
         public void CopyTo(bool[] array)
         {
-            Extensions.CanCopyTo(_capacity, array);
+            Extensions.CanCopyTo(Capacity, array);
             Extensions.CopyTo(this, array);
         }
 
@@ -235,7 +248,7 @@ namespace Theraot.Collections.Specialized
                 {
                     yield return bit == 1;
                     index++;
-                    if (index == _capacity)
+                    if (index == Capacity)
                     {
                         yield break;
                     }
@@ -244,18 +257,19 @@ namespace Theraot.Collections.Specialized
         }
 
 #if !NETCOREAPP1_0 && !NETCOREAPP1_1
-        object ICloneable.Clone()
-        {
-            return Clone();
-        }
 #endif
 
-        void ICollection<bool>.Add(bool item)
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            throw new NotSupportedException();
+            return GetEnumerator();
         }
 
-        void ICollection<bool>.Clear()
+        public int IndexOf(bool item)
+        {
+            return Extensions.IndexOf(this, item);
+        }
+
+        void IList<bool>.Insert(int index, bool item)
         {
             throw new NotSupportedException();
         }
@@ -265,30 +279,20 @@ namespace Theraot.Collections.Specialized
             throw new NotSupportedException();
         }
 
-        void IList<bool>.Insert(int index, bool item)
-        {
-            throw new NotSupportedException();
-        }
-
         void IList<bool>.RemoveAt(int index)
         {
             throw new NotSupportedException();
         }
 
-        public int IndexOf(bool item)
+        private static int GetLength(int length)
         {
-            return Extensions.IndexOf(this, item);
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            return (length >> 5) + ((length & 31) == 0 ? 0 : 1);
         }
 
         private void Fill(bool value)
         {
             var entryValue = value ? unchecked((int)0xffffffff) : 0;
-            for (var index = 0; index < GetLength(_capacity); index++)
+            for (var index = 0; index < GetLength(Capacity); index++)
             {
                 _entries[index] = entryValue;
             }
@@ -299,29 +303,13 @@ namespace Theraot.Collections.Specialized
             return (Volatile.Read(ref _entries[index]) & mask) != 0;
         }
 
-        private int GetLength(int length)
-        {
-            return (length >> 5) + ((length & 31) == 0 ? 0 : 1);
-        }
-
-        private void RecycleExtracted()
-        {
-            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
-            var entries = _entries;
-            if (entries != null)
-            {
-                ArrayReservoir<int>.DonateArray(entries);
-                _entries = null;
-            }
-        }
-
         private void SetBit(int index, int mask)
         {
-            again:
-            var readed = Volatile.Read(ref _entries[index]);
-            if ((readed & mask) == 0)
+        again:
+            var read = Volatile.Read(ref _entries[index]);
+            if ((read & mask) == 0)
             {
-                if (Interlocked.CompareExchange(ref _entries[index], readed | mask, readed) != readed)
+                if (Interlocked.CompareExchange(ref _entries[index], read | mask, read) != read)
                 {
                     goto again;
                 }
@@ -330,28 +318,15 @@ namespace Theraot.Collections.Specialized
 
         private void UnsetBit(int index, int mask)
         {
-            again:
-            var readed = Volatile.Read(ref _entries[index]);
-            if ((readed & mask) != 0)
+        again:
+            var read = Volatile.Read(ref _entries[index]);
+            if ((read & mask) != 0)
             {
-                if (Interlocked.CompareExchange(ref _entries[index], readed & ~mask, readed) != readed)
+                if (Interlocked.CompareExchange(ref _entries[index], read & ~mask, read) != read)
                 {
                     goto again;
                 }
             }
-        }
-    }
-
-    public sealed partial class FlagArray : IList<bool>, IExtendedCollection<bool>, ICloneable<FlagArray>
-    {
-        IReadOnlyCollection<bool> IExtendedCollection<bool>.AsReadOnly
-        {
-            get { return _asReadOnly; }
-        }
-
-        bool IExtendedCollection<bool>.Remove(bool item, IEqualityComparer<bool> comparer)
-        {
-            throw new NotSupportedException();
         }
     }
 }

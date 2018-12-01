@@ -14,7 +14,7 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
@@ -35,9 +35,9 @@ namespace Theraot.Threading
 
         public bool Value
         {
-            get { return _value == _set; }
+            get => _value == _set;
 
-            set { Exchange(value); }
+            set => Exchange(value);
         }
 
         public static implicit operator AtomicBoolean(bool value)
@@ -75,7 +75,7 @@ namespace Theraot.Threading
 
         public override bool Equals(object obj)
         {
-            return obj is AtomicBoolean && Equals((AtomicBoolean)obj);
+            return obj is AtomicBoolean boolean && Equals(boolean);
         }
 
         public bool Exchange(bool newVal)
@@ -94,14 +94,14 @@ namespace Theraot.Threading
             return Value.ToString();
         }
 
-        internal bool TryRelaxedSet()
-        {
-            return _value == _unset && !Exchange(true);
-        }
-
         public bool TrySet()
         {
             return !Exchange(true);
+        }
+
+        internal bool TryRelaxedSet()
+        {
+            return _value == _unset && !Exchange(true);
         }
     }
 }

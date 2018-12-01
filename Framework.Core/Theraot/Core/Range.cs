@@ -10,136 +10,122 @@ namespace Theraot.Core
     public struct Range<T>
         where T : IComparable<T>
     {
-        private bool _closedMaximun;
-        private bool _closedMinimun;
-        private T _maximun;
-        private T _minimun;
-
-        public Range(T minimun, T maximun)
+        public Range(T minimum, T maximum)
         {
-            _closedMaximun = true;
-            _closedMinimun = true;
+            ClosedMaximum = true;
+            ClosedMinimum = true;
             var comparer = Comparer<T>.Default;
-            if (comparer.Compare(minimun, maximun) > 0)
+            if (comparer.Compare(minimum, maximum) > 0)
             {
-                _minimun = maximun;
-                _maximun = minimun;
+                Minimum = maximum;
+                Maximum = minimum;
             }
             else
             {
-                _minimun = minimun;
-                _maximun = maximun;
+                Minimum = minimum;
+                Maximum = maximum;
             }
         }
 
-        public Range(T minimun, bool closedMinimun, T maximun, bool closedMaximun)
+        public Range(T minimum, bool closedMinimum, T maximum, bool closedMaximum)
         {
             var comparer = Comparer<T>.Default;
-            if (comparer.Compare(minimun, maximun) > 0)
+            if (comparer.Compare(minimum, maximum) > 0)
             {
-                _minimun = maximun;
-                _maximun = minimun;
-                _closedMinimun = closedMaximun;
-                _closedMaximun = closedMinimun;
+                Minimum = maximum;
+                Maximum = minimum;
+                ClosedMinimum = closedMaximum;
+                ClosedMaximum = closedMinimum;
             }
             else
             {
-                _minimun = minimun;
-                _maximun = maximun;
-                _closedMinimun = closedMinimun;
-                _closedMaximun = closedMaximun;
+                Minimum = minimum;
+                Maximum = maximum;
+                ClosedMinimum = closedMinimum;
+                ClosedMaximum = closedMaximum;
             }
         }
 
-        public bool ClosedMaximun
-        {
-            get { return _closedMaximun; }
-        }
+        public bool ClosedMaximum { get; }
 
-        public bool ClosedMinimun
-        {
-            get { return _closedMinimun; }
-        }
+        public bool ClosedMinimum { get; }
 
-        public T Maximun
-        {
-            get { return _maximun; }
-        }
+        public T Maximum { get; }
 
-        public T Minimun
-        {
-            get { return _minimun; }
-        }
+        public T Minimum { get; }
 
         public override int GetHashCode()
         {
-            return (_minimun.GetHashCode() * 7) + _maximun.GetHashCode();
+            // ReSharper disable once NonReadonlyMemberInGetHashCode
+            return Minimum.GetHashCode() * 7
+                   // ReSharper disable once NonReadonlyMemberInGetHashCode
+                   + Maximum.GetHashCode();
         }
 
         public IEnumerable<T> Iterate(Func<T, T> increment)
         {
-            return IterateIterator(increment, Comparer<T>.Default, _minimun, _closedMinimun, _maximun, _closedMaximun);
+            return IterateIterator(increment, Comparer<T>.Default, Minimum, ClosedMinimum, Maximum, ClosedMaximum);
         }
 
         public IEnumerable<T> Iterate(Func<T, T> increment, IComparer<T> comparer)
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
-            return IterateIterator(increment, comparer, _minimun, _closedMinimun, _maximun, _closedMaximun);
+            return IterateIterator(increment, comparer, Minimum, ClosedMinimum, Maximum, ClosedMaximum);
         }
 
         public IEnumerable<T> ReverseIterate(Func<T, T> decrement)
         {
-            return ReverseIterateIterator(decrement, Comparer<T>.Default, _minimun, _closedMinimun, _maximun, _closedMaximun);
+            return ReverseIterateIterator(decrement, Comparer<T>.Default, Minimum, ClosedMinimum, Maximum, ClosedMaximum);
         }
 
         public IEnumerable<T> ReverseIterate(Func<T, T> decrement, IComparer<T> comparer)
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
-            return ReverseIterateIterator(decrement, comparer, _minimun, _closedMinimun, _maximun, _closedMaximun);
+            return ReverseIterateIterator(decrement, comparer, Minimum, ClosedMinimum, Maximum, ClosedMaximum);
         }
 
         public override string ToString()
         {
-            return (_closedMinimun ? "[" : "(") + _minimun + ", " + _maximun + (_closedMaximun ? "]" : ")");
+            return (ClosedMinimum ? "[" : "(") + Minimum + ", " + Maximum + (ClosedMaximum ? "]" : ")");
         }
 
-        private static IEnumerable<T> IterateIterator(Func<T, T> increment, IComparer<T> comparer, T minimun, bool closedMinimun, T maximun, bool closedMaximun)
+        private static IEnumerable<T> IterateIterator(Func<T, T> increment, IComparer<T> comparer, T minimum, bool closedMinimum, T maximum, bool closedMaximum)
         {
-            if (closedMinimun)
+            if (closedMinimum)
             {
-                yield return minimun;
+                yield return minimum;
             }
-            var item = increment.Invoke(minimun);
-            while (comparer.Compare(maximun, item) > 0)
+            var item = increment.Invoke(minimum);
+            while (comparer.Compare(maximum, item) > 0)
             {
                 yield return item;
                 item = increment.Invoke(item);
             }
-            if (closedMaximun && comparer.Compare(maximun, item) == 0)
+            if (closedMaximum && comparer.Compare(maximum, item) == 0)
             {
                 yield return item;
             }
         }
 
-        private static IEnumerable<T> ReverseIterateIterator(Func<T, T> decrement, IComparer<T> comparer, T minimun, bool closedMinimun, T maximun, bool closedMaximun)
+        private static IEnumerable<T> ReverseIterateIterator(Func<T, T> decrement, IComparer<T> comparer, T minimum, bool closedMinimum, T maximum, bool closedMaximum)
         {
-            if (closedMaximun)
+            if (closedMaximum)
             {
-                yield return maximun;
+                yield return maximum;
             }
-            var item = decrement.Invoke(maximun);
-            while (comparer.Compare(minimun, item) < 0)
+            var item = decrement.Invoke(maximum);
+            while (comparer.Compare(minimum, item) < 0)
             {
                 yield return item;
                 item = decrement.Invoke(item);
             }
-            if (closedMinimun && comparer.Compare(minimun, item) == 0)
+            if (closedMinimum && comparer.Compare(minimum, item) == 0)
             {
                 yield return item;
             }

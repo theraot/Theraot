@@ -26,27 +26,18 @@ namespace Theraot.Core
         {
             if (clusterSize < 0)
             {
-                throw new ArgumentOutOfRangeException("clusterSize");
+                throw new ArgumentOutOfRangeException(nameof(clusterSize));
             }
             _sectorBits = NumericHelper.Log2(NumericHelper.PopulationCount(clusterSize) == 1 ? clusterSize : NumericHelper.NextPowerOf2(clusterSize));
             _length = 0;
             _bytes = new Bucket<KeyValuePair<long, byte[]>>();
         }
 
-        public override bool CanRead
-        {
-            get { return _position != -1; }
-        }
+        public override bool CanRead => _position != -1;
 
-        public override bool CanSeek
-        {
-            get { return _position != -1; }
-        }
+        public override bool CanSeek => _position != -1;
 
-        public override bool CanWrite
-        {
-            get { return _position != -1; }
-        }
+        public override bool CanWrite => _position != -1;
 
         public override long Length
         {
@@ -54,7 +45,7 @@ namespace Theraot.Core
             {
                 if (_position == -1)
                 {
-                    throw new ObjectDisposedException(typeof(RamStream).Name);
+                    throw new ObjectDisposedException(nameof(RamStream));
                 }
                 return _length;
             }
@@ -62,13 +53,13 @@ namespace Theraot.Core
 
         public override long Position
         {
-            get { return _position; }
+            get => _position;
 
             set
             {
                 if (_position == -1)
                 {
-                    throw new ObjectDisposedException(typeof(RamStream).Name);
+                    throw new ObjectDisposedException(nameof(RamStream));
                 }
                 if (value < 0)
                 {
@@ -76,7 +67,7 @@ namespace Theraot.Core
                 }
                 if (value > (long)int.MaxValue << _sectorBits)
                 {
-                    throw new ArgumentOutOfRangeException("value", "Overflow");
+                    throw new ArgumentOutOfRangeException(nameof(value), "Overflow");
                 }
                 _position = (int)value;
             }
@@ -92,7 +83,7 @@ namespace Theraot.Core
             var bytes = _bytes;
             if (_position == -1)
             {
-                throw new ObjectDisposedException(typeof(RamStream).Name);
+                throw new ObjectDisposedException(nameof(RamStream));
             }
             Extensions.CanCopyTo(buffer, offset, count);
             if (_position <= _length && _position + count > _length)
@@ -164,7 +155,7 @@ namespace Theraot.Core
         {
             if (_position == -1)
             {
-                throw new ObjectDisposedException(typeof(RamStream).Name);
+                throw new ObjectDisposedException(nameof(RamStream));
             }
             var position = _position;
             switch (origin)
@@ -190,7 +181,7 @@ namespace Theraot.Core
             }
             if (position > (long)int.MaxValue << _sectorBits)
             {
-                throw new ArgumentOutOfRangeException("offset", "Overflow");
+                throw new ArgumentOutOfRangeException(nameof(offset), "Overflow");
             }
             _position = position;
             return _position;
@@ -201,15 +192,15 @@ namespace Theraot.Core
             var bytes = _bytes;
             if (_position == -1)
             {
-                throw new ObjectDisposedException(typeof(RamStream).Name);
+                throw new ObjectDisposedException(nameof(RamStream));
             }
             if (value < 0)
             {
-                throw new ArgumentOutOfRangeException("value", "Negative length");
+                throw new ArgumentOutOfRangeException(nameof(value), "Negative length");
             }
             if (value > (long)int.MaxValue << _sectorBits)
             {
-                throw new ArgumentOutOfRangeException("value", "Overflow");
+                throw new ArgumentOutOfRangeException(nameof(value), "Overflow");
             }
             _length = (int)value;
             foreach (var node in bytes.EnumerateRange(int.MaxValue, (int)value >> _sectorBits))
@@ -223,13 +214,13 @@ namespace Theraot.Core
             var bytes = _bytes;
             if (_position == -1)
             {
-                throw new ObjectDisposedException(typeof(RamStream).Name);
+                throw new ObjectDisposedException(nameof(RamStream));
             }
             if (offset + count > buffer.Length)
             {
                 throw new ArgumentException("The sum of offset and count is greater than the buffer length.");
             }
-            again:
+        again:
             foreach (var node in bytes.EnumerateRange((int)(_position >> _sectorBits), int.MaxValue))
             {
                 var pair = node;
@@ -286,14 +277,13 @@ namespace Theraot.Core
             }
             while (count > 0)
             {
-                KeyValuePair<long, byte[]> pair;
                 var left = new byte[1 << _sectorBits];
                 var index = _position - ((_position >> _sectorBits) << _sectorBits);
                 var diff = (1 << _sectorBits) - index;
                 var contribution = diff > count ? count : diff;
                 var intContribution = (int)contribution;
                 Array.Copy(buffer, offset, left, (int)index, intContribution);
-                if (!Add(bytes, left, out pair))
+                if (!Add(bytes, left, out _))
                 {
                     goto again;
                 }

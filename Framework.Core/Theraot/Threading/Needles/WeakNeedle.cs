@@ -2,13 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public partial class WeakNeedle<T> : IEquatable<WeakNeedle<T>>, IRecyclableNeedle<T>, ICacheNeedle<T>
         where T : class
     {
@@ -56,11 +57,9 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                object target;
-                if (ReadTarget(out target))
+                if (ReadTarget(out var target))
                 {
-                    var exception = target as Exception;
-                    if (exception != null && _faultExpected)
+                    if (target is Exception exception && _faultExpected)
                     {
                         return exception;
                     }
@@ -69,22 +68,11 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        bool IPromise.IsCanceled
-        {
-            get { return false; }
-        }
-
-        bool IPromise.IsCompleted
-        {
-            get { return true; }
-        }
-
         public bool IsAlive
         {
             get
             {
-                object target;
-                if (ReadTarget(out target))
+                if (ReadTarget(out var target))
                 {
                     if (target is T && !_faultExpected)
                     {
@@ -95,12 +83,15 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        bool IPromise.IsCanceled => false;
+
+        bool IPromise.IsCompleted => true;
+
         public bool IsFaulted
         {
             get
             {
-                object target;
-                if (ReadTarget(out target))
+                if (ReadTarget(out var target))
                 {
                     if (target is Exception && _faultExpected)
                     {
@@ -111,21 +102,16 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public virtual bool TrackResurrection
-        {
-            get { return _trackResurrection; }
-        }
+        public virtual bool TrackResurrection => _trackResurrection;
 
         public virtual T Value
         {
             [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
             get
             {
-                object target;
-                if (ReadTarget(out target))
+                if (ReadTarget(out var target))
                 {
-                    var inner = target as T;
-                    if (inner != null && !_faultExpected)
+                    if (target is T inner && !_faultExpected)
                     {
                         return inner;
                     }
@@ -134,14 +120,14 @@ namespace Theraot.Threading.Needles
             }
 
             [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-            set { SetTargetValue(value); }
+            set => SetTargetValue(value);
         }
 
         public static explicit operator T(WeakNeedle<T> needle)
         {
             if (needle == null)
             {
-                throw new ArgumentNullException("needle");
+                throw new ArgumentNullException(nameof(needle));
             }
             return needle.Value;
         }
@@ -153,12 +139,20 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(WeakNeedle<T> left, WeakNeedle<T> right)
         {
-            return NotEqualsExtracted(left, right);
+            if (ReferenceEquals(left, null))
+            {
+                return !ReferenceEquals(right, null);
+            }
+            return ReferenceEquals(right, null) || NotEqualsExtractedExtracted(left, right);
         }
 
         public static bool operator ==(WeakNeedle<T> left, WeakNeedle<T> right)
         {
-            return EqualsExtracted(left, right);
+            if (ReferenceEquals(left, null))
+            {
+                return ReferenceEquals(right, null);
+            }
+            return !ReferenceEquals(right, null) && EqualsExtractedExtracted(left, right);
         }
 
         public sealed override bool Equals(object obj)
@@ -168,8 +162,7 @@ namespace Theraot.Threading.Needles
             {
                 return EqualsExtractedExtracted(this, needle);
             }
-            var value = obj as T;
-            if (value != null)
+            if (obj is T value)
             {
                 var target = Value;
                 return IsAlive && EqualityComparer<T>.Default.Equals(target, value);
@@ -206,11 +199,9 @@ namespace Theraot.Threading.Needles
         public virtual bool TryGetValue(out T value)
         {
             value = null;
-            object target;
-            if (ReadTarget(out target))
+            if (ReadTarget(out var target))
             {
-                var inner = target as T;
-                if (inner != null)
+                if (target is T inner)
                 {
                     value = inner;
                     return true;
@@ -233,15 +224,6 @@ namespace Theraot.Threading.Needles
             WriteTarget(value);
         }
 
-        private static bool EqualsExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
-        {
-            if (ReferenceEquals(left, null))
-            {
-                return ReferenceEquals(right, null);
-            }
-            return !ReferenceEquals(right, null) && EqualsExtractedExtracted(left, right);
-        }
-
         private static bool EqualsExtractedExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
         {
             var leftValue = left.Value;
@@ -251,15 +233,6 @@ namespace Theraot.Threading.Needles
                 return right.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
             }
             return !right.IsAlive;
-        }
-
-        private static bool NotEqualsExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
-        {
-            if (ReferenceEquals(left, null))
-            {
-                return !ReferenceEquals(right, null);
-            }
-            return ReferenceEquals(right, null) || NotEqualsExtractedExtracted(left, right);
         }
 
         private static bool NotEqualsExtractedExtracted(WeakNeedle<T> left, WeakNeedle<T> right)

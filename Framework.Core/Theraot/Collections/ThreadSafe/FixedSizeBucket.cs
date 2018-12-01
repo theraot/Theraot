@@ -1,6 +1,7 @@
 ﻿// Needed for NET40
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Theraot.Threading;
@@ -11,9 +12,13 @@ namespace Theraot.Collections.ThreadSafe
     /// Represent a thread-safe wait-free fixed size bucket.
     /// </summary>
     /// <typeparam name="T">The type of the item.</typeparam>
-    public sealed class FixedSizeBucket<T> : IEnumerable<T>, IBucket<T>
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+
+    [Serializable]
+#endif
+
+    public sealed class FixedSizeBucket<T> : IBucket<T>
     {
-        private readonly int _capacity;
         private int _count;
         private object[] _entries;
 
@@ -25,7 +30,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             _count = 0;
             _entries = ArrayReservoir<object>.GetArray(capacity);
-            _capacity = _entries.Length;
+            Capacity = _entries.Length;
         }
 
         /// <summary>
@@ -35,23 +40,23 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var collection = source as ICollection<T>;
-            _entries = ArrayReservoir<object>.GetArray(collection == null ? 64 : collection.Count);
-            _capacity = _entries.Length;
+            _entries = ArrayReservoir<object>.GetArray(collection?.Count ?? 64);
+            Capacity = _entries.Length;
             foreach (var item in source)
             {
-                if (_count == _capacity)
+                if (_count == Capacity)
                 {
                     var old = _entries;
-                    _entries = ArrayReservoir<object>.GetArray(_capacity << 1);
+                    _entries = ArrayReservoir<object>.GetArray(Capacity << 1);
                     if (old != null)
                     {
                         Array.Copy(old, 0, _entries, 0, _count);
                         ArrayReservoir<object>.DonateArray(old);
                     }
-                    _capacity = _entries.Length;
+                    Capacity = _entries.Length;
                 }
                 _entries[_count] = (object)item ?? BucketHelper.Null;
                 _count++;
@@ -65,10 +70,10 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             _entries = ArrayReservoir<object>.GetArray(source.Length);
-            _capacity = _entries.Length;
+            Capacity = _entries.Length;
             foreach (var item in source)
             {
                 _entries[_count] = (object)item ?? BucketHelper.Null;
@@ -93,40 +98,34 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Gets the capacity.
         /// </summary>
-        public int Capacity
-        {
-            get { return _capacity; }
-        }
+        public int Capacity { get; }
 
         /// <summary>
         /// Gets the number of items actually contained.
         /// </summary>
-        public int Count
-        {
-            get { return _count; }
-        }
+        public int Count => _count;
 
         /// <summary>
         /// Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="System.ArgumentNullException">array</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
+        /// <exception cref="ArgumentNullException">array</exception>
+        /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
             if (_count > array.Length - arrayIndex)
             {
-                throw new ArgumentException("The array can not contain the number of elements.", "array");
+                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
             try
             {
@@ -136,7 +135,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         if (entry == BucketHelper.Null)
                         {
-                            array[arrayIndex] = default(T);
+                            array[arrayIndex] = default;
                         }
                         else
                         {
@@ -148,7 +147,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             catch (IndexOutOfRangeException exception)
             {
-                throw new ArgumentOutOfRangeException("array", exception.Message);
+                throw new ArgumentOutOfRangeException(nameof(array), exception.Message);
             }
         }
 
@@ -161,12 +160,12 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was new; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool Exchange(int index, T item, out T previous)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
             return ExchangeInternal(index, item, out previous);
         }
@@ -185,7 +184,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     if (entry == BucketHelper.Null)
                     {
-                        yield return default(T);
+                        yield return default;
                     }
                     else
                     {
@@ -193,6 +192,11 @@ namespace Theraot.Collections.ThreadSafe
                     }
                 }
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <summary>
@@ -203,16 +207,16 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
         /// <remarks>
         /// The insertion can fail if the index is already used or is being written by another thread.
         /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
         /// </remarks>
         public bool Insert(int index, T item)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity.");
             }
             return InsertInternal(index, item);
         }
@@ -226,16 +230,16 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         /// <remarks>
         /// The insertion can fail if the index is already used or is being written by another thread.
         /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
         /// </remarks>
         public bool Insert(int index, T item, out T previous)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
             return InsertInternal(index, item, out previous);
         }
@@ -247,12 +251,12 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was removed; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool RemoveAt(int index)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
             var found = Interlocked.Exchange(ref _entries[index], null);
             if (found == null)
@@ -271,12 +275,12 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was removed; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool RemoveAt(int index, out T previous)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
             return RemoveAtInternal(index, out previous);
         }
@@ -289,21 +293,21 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was removed; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool RemoveAt(int index, Predicate<T> check)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             var found = Interlocked.CompareExchange(ref _entries[index], null, null);
             if (found != null)
             {
-                var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
+                var comparisonItem = found == BucketHelper.Null ? default : (T)found;
                 if (check(comparisonItem))
                 {
                     var compare = Interlocked.CompareExchange(ref _entries[index], null, found);
@@ -323,19 +327,14 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="index">The index.</param>
         /// <param name="item">The item.</param>
         /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public void Set(int index, T item, out bool isNew)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
             SetInternal(index, item, out isNew);
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         /// <summary>
@@ -346,12 +345,12 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was retrieved; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool TryGet(int index, out T value)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
             return TryGetInternal(index, out value);
         }
@@ -366,24 +365,24 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
         /// <remarks>
         /// The insertion can fail if the index is already used or is being written by another thread.
         /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
         /// </remarks>
         public bool Update(int index, Func<T, T> itemUpdateFactory, Predicate<T> check, out bool isEmpty)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Capacity)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
+                throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity.");
             }
             if (itemUpdateFactory == null)
             {
-                throw new ArgumentNullException("itemUpdateFactory");
+                throw new ArgumentNullException(nameof(itemUpdateFactory));
             }
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             return UpdateInternal(index, itemUpdateFactory, check, out isEmpty);
         }
@@ -392,20 +391,25 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
-            foreach (var entry in _entries)
+            return WhereExtracted();
+
+            IEnumerable<T> WhereExtracted()
             {
-                if (entry != null)
+                foreach (var entry in _entries)
                 {
-                    var yield = default(T);
-                    if (entry != BucketHelper.Null)
+                    if (entry != null)
                     {
-                        yield = (T)entry;
-                    }
-                    if (check(yield))
-                    {
-                        yield return yield;
+                        var yield = default(T);
+                        if (entry != BucketHelper.Null)
+                        {
+                            yield = (T)entry;
+                        }
+                        if (check(yield))
+                        {
+                            yield return yield;
+                        }
                     }
                 }
             }
@@ -413,7 +417,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool ExchangeInternal(int index, T item, out T previous)
         {
-            previous = default(T);
+            previous = default;
             var found = Interlocked.Exchange(ref _entries[index], (object)item ?? BucketHelper.Null);
             if (found == null)
             {
@@ -429,7 +433,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool InsertInternal(int index, T item, out T previous)
         {
-            previous = default(T);
+            previous = default;
             var found = Interlocked.CompareExchange(ref _entries[index], (object)item ?? BucketHelper.Null, null);
             if (found == null)
             {
@@ -445,7 +449,13 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool InsertInternal(int index, T item)
         {
-            var found = Interlocked.CompareExchange(ref _entries[index], (object)item ?? BucketHelper.Null, null);
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            var entries = _entries;
+            if (entries == null)
+            {
+                return false;
+            }
+            var found = Interlocked.CompareExchange(ref entries[index], (object)item ?? BucketHelper.Null, null);
             if (found == null)
             {
                 Interlocked.Increment(ref _count);
@@ -456,7 +466,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool RemoveAtInternal(int index, out T previous)
         {
-            previous = default(T);
+            previous = default;
             var found = Interlocked.Exchange(ref _entries[index], null);
             if (found == null)
             {
@@ -484,12 +494,12 @@ namespace Theraot.Collections.ThreadSafe
             var found = Interlocked.CompareExchange(ref _entries[index], null, null);
             if (found == null)
             {
-                value = default(T);
+                value = default;
                 return false;
             }
             if (found == BucketHelper.Null)
             {
-                value = default(T);
+                value = default;
             }
             else
             {
@@ -504,11 +514,11 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             if (itemUpdateFactory == null)
             {
-                throw new ArgumentNullException("itemUpdateFactory");
+                throw new ArgumentNullException(nameof(itemUpdateFactory));
             }
 #endif
             var found = Interlocked.CompareExchange(ref _entries[index], null, null);
@@ -516,7 +526,7 @@ namespace Theraot.Collections.ThreadSafe
             var result = false;
             if (found != null)
             {
-                var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
+                var comparisonItem = found == BucketHelper.Null ? default : (T)found;
                 if (check(comparisonItem))
                 {
                     var item = itemUpdateFactory(comparisonItem);

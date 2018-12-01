@@ -15,7 +15,7 @@ namespace System.Threading.Tasks
     /// </remarks>
     public static class TaskEx
     {
-        private const string ArgumentOutOfRange_TimeoutNonNegativeOrMinusOne = "The timeout must be non-negative or -1, and it must be less than or equal to Int32.MaxValue.";
+        private const string _argumentOutOfRangeTimeoutNonNegativeOrMinusOne = "The timeout must be non-negative or -1, and it must be less than or equal to Int32.MaxValue.";
 
         /// <summary>
         /// An already canceled task.
@@ -78,7 +78,7 @@ namespace System.Threading.Tasks
             var timeoutMs = (long)dueTime.TotalMilliseconds;
             if (timeoutMs < Timeout.Infinite || timeoutMs > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("dueTime", ArgumentOutOfRange_TimeoutNonNegativeOrMinusOne);
+                throw new ArgumentOutOfRangeException(nameof(dueTime), _argumentOutOfRangeTimeoutNonNegativeOrMinusOne);
             }
 
             return Delay((int)timeoutMs, cancellationToken);
@@ -97,41 +97,51 @@ namespace System.Threading.Tasks
         {
             if (dueTime < -1)
             {
-                throw new ArgumentOutOfRangeException("dueTime", ArgumentOutOfRange_TimeoutNonNegativeOrMinusOne);
+                throw new ArgumentOutOfRangeException(nameof(dueTime), _argumentOutOfRangeTimeoutNonNegativeOrMinusOne);
             }
-
             if (cancellationToken.IsCancellationRequested)
             {
                 return _preCanceledTask;
             }
-
             if (dueTime == 0)
             {
                 return _preCompletedTask;
             }
-
             var tcs = new TaskCompletionSource<bool>();
-            var ctr = new CancellationTokenRegistration();
-
-            Timer timer = null;
-            timer = new Timer(_ =>
+            var timerBox = new Timer[] { null };
+            var registration = GetRegistrationToken();
+            var timer = new Timer(_ =>
             {
-                ctr.Dispose();
-                timer.Dispose();
+                registration.Dispose();
+                Interlocked.Exchange(ref timerBox[0], null)?.Dispose();
                 tcs.TrySetResult(true);
             }, null, Timeout.Infinite, Timeout.Infinite);
-
-            if (cancellationToken.CanBeCanceled)
+            Volatile.Write(ref timerBox[0], timer);
+            try
             {
-                ctr = cancellationToken.Register(() =>
-                {
-                    timer.Dispose();
-                    tcs.TrySetCanceled();
-                });
+                timer.Change(dueTime, Timeout.Infinite);
             }
-
-            timer.Change(dueTime, Timeout.Infinite);
+            catch (ObjectDisposedException exception)
+            {
+                GC.KeepAlive(exception);
+            }
             return tcs.Task;
+            CancellationTokenRegistration GetRegistrationToken()
+            {
+                if (cancellationToken.CanBeCanceled)
+                {
+                    var newRegistration = cancellationToken.Register
+                    (
+                        () =>
+                        {
+                            Interlocked.Exchange(ref timerBox[0], null)?.Dispose();
+                            tcs.TrySetCanceled();
+                        }
+                    );
+                    return newRegistration;
+                }
+                return default;
+            }
         }
 
         /// <summary>
@@ -329,7 +339,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
         public static Task<TResult[]> WhenAll<TResult>(IEnumerable<Task<TResult>> tasks)
         {
-            return WhenAllCore<TResult[]>(tasks.Cast<Task>(), (completedTasks, tcs) =>
+            return WhenAllCore<TResult[]>(tasks, (completedTasks, tcs) =>
                                                  tcs.TrySetResult(completedTasks
                                                                       .Cast<Task<TResult>>()
                                                                       .Select(t => t.Result)
@@ -371,11 +381,11 @@ namespace System.Threading.Tasks
         {
             if (tasks == null)
             {
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
 
             var tcs = new TaskCompletionSource<Task>();
-            Task.Factory.ContinueWhenAny<bool>(tasks as Task[] ?? tasks.ToArray(), tcs.TrySetResult, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            Task.Factory.ContinueWhenAny(tasks as Task[] ?? tasks.ToArray(), tcs.TrySetResult, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             return tcs.Task;
         }
 
@@ -414,11 +424,11 @@ namespace System.Threading.Tasks
         {
             if (tasks == null)
             {
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
 
             var tcs = new TaskCompletionSource<Task<TResult>>();
-            Task.Factory.ContinueWhenAny<TResult, bool>(tasks as Task<TResult>[] ?? tasks.ToArray(), tcs.TrySetResult, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            Task.Factory.ContinueWhenAny(tasks as Task<TResult>[] ?? tasks.ToArray(), tcs.TrySetResult, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             return tcs.Task;
         }
 
@@ -479,7 +489,7 @@ namespace System.Threading.Tasks
 #endif
             if (tasks == null)
             {
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
 
             var tcs = new TaskCompletionSource<TResult>();

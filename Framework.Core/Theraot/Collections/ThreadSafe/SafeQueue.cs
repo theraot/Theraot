@@ -1,26 +1,34 @@
 // Needed for NET40
 
+using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 
 namespace Theraot.Collections.ThreadSafe
 {
     /// <summary>
-    /// Represent a fixed size thread-safe wait-free queue.
+    /// Represent a fixed size thread-safe lock-free (read may loop) queue.
     /// </summary>
     /// <typeparam name="T">The type of items stored in the queue.</typeparam>
-    public sealed class SafeQueue<T> : IEnumerable<T>
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+
+    [Serializable]
+#endif
+
+    public sealed class SafeQueue<T> : IProducerConsumerCollection<T>
     {
         private int _count;
-        private Node _root;
-        private Node _tail;
+        private Node<FixedSizeQueue<T>> _root;
+        private Node<FixedSizeQueue<T>> _tail;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SafeQueue{T}" /> class.
         /// </summary>
         public SafeQueue()
         {
-            _root = new Node();
+            _root = Node<FixedSizeQueue<T>>.GetNode(null, new FixedSizeQueue<T>(64));
             _tail = _root;
         }
 
@@ -29,37 +37,55 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public SafeQueue(IEnumerable<T> source)
         {
-            _root = new Node(source);
-            _count = _root.Queue.Count;
+            _root = Node<FixedSizeQueue<T>>.GetNode(null, new FixedSizeQueue<T>(source));
+            _count = _root.Value.Count;
             _tail = _root;
         }
 
         /// <summary>
         /// Gets the number of items actually contained.
         /// </summary>
-        public int Count
-        {
-            get { return Volatile.Read(ref _count); }
-        }
+        public int Count => Volatile.Read(ref _count);
+
+        bool ICollection.IsSynchronized => false;
+
+        object ICollection.SyncRoot => throw new NotSupportedException();
 
         /// <summary>
-        /// Attempts to Adds the specified item at the front.
+        /// Attempts to Adds the specified item.
         /// </summary>
         /// <param name="item">The item.</param>
         public void Add(T item)
         {
-            loop:
-            if (_tail.Queue.Add(item))
+            var spinWait = new SpinWait();
+            while (true)
             {
-                Interlocked.Increment(ref _count);
+                var tail = Volatile.Read(ref _tail);
+                if (tail.Value.TryAdd(item))
+                {
+                    Interlocked.Increment(ref _count);
+                    return;
+                }
+                var node = Node<FixedSizeQueue<T>>.GetNode(null, new FixedSizeQueue<T>(64));
+                var found = Interlocked.CompareExchange(ref tail.Link, node, null);
+                if (found == null)
+                {
+                    Volatile.Write(ref _tail, node);
+                }
+                spinWait.SpinOnce();
             }
-            else
-            {
-                var created = new Node();
-                var found = Interlocked.CompareExchange(ref _tail.Next, created, null);
-                _tail = found ?? created;
-                goto loop;
-            }
+        }
+
+        public void CopyTo(T[] array, int index)
+        {
+            Extensions.CanCopyTo(Count, array, index);
+            Extensions.DeprecatedCopyTo(this, array, index);
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            Extensions.CanCopyTo(Count, array, index);
+            Extensions.DeprecatedCopyTo(this, array, index);
         }
 
         /// <summary>
@@ -73,16 +99,32 @@ namespace Theraot.Collections.ThreadSafe
             var root = _root;
             do
             {
-                foreach (var item in root.Queue)
+                foreach (var item in root.Value)
                 {
                     yield return item;
                 }
-                root = root.Next;
+                root = root.Link;
             } while (root != null);
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public T[] ToArray()
+        {
+            return Extensions.ToArray(this, Count);
+        }
+
+        bool IProducerConsumerCollection<T>.TryAdd(T item)
+        {
+            Add(item);
+            return true;
+        }
+
         /// <summary>
-        /// Attempts to retrieve the next item to be taken from the back without removing it.
+        /// Attempts to retrieve the next item to be taken without removing it.
         /// </summary>
         /// <param name="item">The item retrieved.</param>
         /// <returns>
@@ -90,29 +132,29 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool TryPeek(out T item)
         {
-            var root = _root;
+            var spinWait = new SpinWait();
             while (true)
             {
-                if (_root.Queue.TryPeek(out item))
+                var root = Volatile.Read(ref _root);
+                if (root.Value.TryPeek(out item))
                 {
                     return true;
                 }
-                if (root.Next != null)
+                if (root.Link == null)
                 {
-                    var found = Interlocked.CompareExchange(ref _root, root.Next, root);
-                    root = found == root ? root.Next : found;
+                    return false;
                 }
-                else
+                var found = Interlocked.CompareExchange(ref _root, root.Link, root);
+                if (found == root)
                 {
-                    break;
+                    Node<FixedSizeQueue<T>>.Donate(root);
                 }
+                spinWait.SpinOnce();
             }
-            item = default(T);
-            return false;
         }
 
         /// <summary>
-        /// Attempts to retrieve and remove the next item from the back.
+        /// Attempts to retrieve and remove the next item.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns>
@@ -120,47 +162,25 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool TryTake(out T item)
         {
-            var root = _root;
+            var spinWait = new SpinWait();
             while (true)
             {
-                if (_root.Queue.TryTake(out item))
+                var root = Volatile.Read(ref _root);
+                if (root.Value.TryTake(out item))
                 {
                     Interlocked.Decrement(ref _count);
                     return true;
                 }
-                if (root.Next != null)
+                if (root.Link == null)
                 {
-                    var found = Interlocked.CompareExchange(ref _root, root.Next, root);
-                    root = found == root ? root.Next : found;
+                    return false;
                 }
-                else
+                var found = Interlocked.CompareExchange(ref _root, root.Link, root);
+                if (found == root)
                 {
-                    break;
+                    Node<FixedSizeQueue<T>>.Donate(root);
                 }
-            }
-            item = default(T);
-            return false;
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        private class Node
-        {
-            internal readonly FixedSizeQueue<T> Queue;
-
-            internal Node Next;
-
-            public Node()
-            {
-                Queue = new FixedSizeQueue<T>(64);
-            }
-
-            public Node(IEnumerable<T> source)
-            {
-                Queue = new FixedSizeQueue<T>(source);
+                spinWait.SpinOnce();
             }
         }
     }

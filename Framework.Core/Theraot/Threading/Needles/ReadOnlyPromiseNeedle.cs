@@ -1,10 +1,11 @@
 // Needed for Workaround
 
 using System;
+using System.Diagnostics;
 
 namespace Theraot.Threading.Needles
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public class ReadOnlyPromiseNeedle<T> : ReadOnlyPromise, IWaitablePromise<T>, ICacheNeedle<T>, IEquatable<ReadOnlyPromiseNeedle<T>>
     {
         private readonly ICacheNeedle<T> _promised;
@@ -15,40 +16,50 @@ namespace Theraot.Threading.Needles
             _promised = promised;
         }
 
+        public bool IsAlive => _promised.IsAlive;
+
         T INeedle<T>.Value
         {
-            get { return _promised.Value; }
+            get => _promised.Value;
 
-            set { throw new NotSupportedException(); }
+            set => throw new NotSupportedException();
         }
 
-        public bool IsAlive
-        {
-            get { return _promised.IsAlive; }
-        }
-
-        public T Value
-        {
-            get { return _promised.Value; }
-        }
-
-        public static bool operator !=(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
-        {
-            return NotEqualsExtracted(left, right);
-        }
-
-        public static bool operator ==(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
-        {
-            return EqualsExtracted(left, right);
-        }
+        public T Value => _promised.Value;
 
         public static explicit operator T(ReadOnlyPromiseNeedle<T> needle)
         {
             if (needle == null)
             {
-                throw new ArgumentNullException("needle");
+                throw new ArgumentNullException(nameof(needle));
             }
             return needle.Value;
+        }
+
+        public static bool operator !=(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
+        {
+            if (ReferenceEquals(left, null))
+            {
+                return !ReferenceEquals(right, null);
+            }
+            if (ReferenceEquals(right, null))
+            {
+                return true;
+            }
+            return !left._promised.Equals(right._promised);
+        }
+
+        public static bool operator ==(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
+        {
+            if (ReferenceEquals(left, null))
+            {
+                return ReferenceEquals(right, null);
+            }
+            if (ReferenceEquals(right, null))
+            {
+                return false;
+            }
+            return left._promised.Equals(right._promised);
         }
 
         public override bool Equals(object obj)
@@ -56,14 +67,14 @@ namespace Theraot.Threading.Needles
             var needle = obj as ReadOnlyPromiseNeedle<T>;
             if (obj != null)
             {
-                return EqualsExtracted(this, needle);
+                return this == needle;
             }
             return _promised.IsCompleted && _promised.Value.Equals(null);
         }
 
         public bool Equals(ReadOnlyPromiseNeedle<T> other)
         {
-            return EqualsExtracted(this, other);
+            return this == other;
         }
 
         public override int GetHashCode()
@@ -73,30 +84,12 @@ namespace Theraot.Threading.Needles
 
         public override string ToString()
         {
-            return string.Format("{{Promise: {0}}}", _promised);
+            return $"{{Promise: {_promised}}}";
         }
 
         public bool TryGetValue(out T value)
         {
             return _promised.TryGetValue(out value);
-        }
-
-        private static bool EqualsExtracted(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
-        {
-            if (left == null)
-            {
-                return right == null;
-            }
-            return left.Equals(right);
-        }
-
-        private static bool NotEqualsExtracted(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
-        {
-            if (left == null)
-            {
-                return right != null;
-            }
-            return !left.Equals(right);
         }
     }
 }

@@ -2,11 +2,16 @@
 
 using System;
 using System.Collections.Generic;
+using Theraot.Collections.Specialized;
+
+#if FAT
+
 using System.Reflection;
 using System.Threading;
 using Theraot.Collections;
-using Theraot.Collections.Specialized;
 using Theraot.Threading.Needles;
+
+#endif
 
 namespace Theraot.Core
 {
@@ -25,12 +30,9 @@ namespace Theraot.Core
 {
     public static class EqualityComparerHelper<T>
     {
-        private static readonly IEqualityComparer<T> _default;
-
         static EqualityComparerHelper()
         {
             var type = typeof(T);
-            Type tmp;
             PropertyInfo property;
             if (type.IsImplementationOf(typeof(IEquatable<>).MakeGenericType(type)))
             {
@@ -44,11 +46,11 @@ namespace Theraot.Core
             {
                 property = typeof(ReferenceEqualityComparer).GetProperty("Default", BindingFlags.Public | BindingFlags.Static);
             }
-            else if (type.IsGenericImplementationOf(out tmp, typeof(INeedle<>)))
+            else if (type.IsGenericImplementationOf(out var tmp, typeof(INeedle<>)))
             {
                 var types = tmp.GetGenericArguments();
                 var conversionType = typeof(NeedleConversionEqualityComparer<,>).MakeGenericType(tmp, types[0]);
-                _default = (IEqualityComparer<T>)conversionType.Create
+                Default = (IEqualityComparer<T>)conversionType.Create
                            (
                                GetPropertyDelegated
                                (
@@ -102,25 +104,23 @@ namespace Theraot.Core
             {
                 property = GetPropertyDelegated(type, typeof(EqualityComparer<>));
             }
-            _default = (IEqualityComparer<T>)property.GetValue(null, null);
+            // ReSharper disable once PossibleNullReferenceException
+            Default = (IEqualityComparer<T>)property.GetValue(null, null);
         }
 
-        public static IEqualityComparer<T> Default
-        {
-            get { return _default; }
-        }
+        public static IEqualityComparer<T> Default { get; }
 
         private static PropertyInfo GetProperty(Type type, Type equalityComparerType)
         {
             var genericTypeArguments = type.GetGenericArguments();
-            var generticType = equalityComparerType.MakeGenericType(genericTypeArguments);
-            return generticType.GetProperty("Default", BindingFlags.Public | BindingFlags.Static);
+            var genericType = equalityComparerType.MakeGenericType(genericTypeArguments);
+            return genericType.GetProperty("Default", BindingFlags.Public | BindingFlags.Static);
         }
 
         private static PropertyInfo GetPropertyDelegated(Type type, Type equalityComparerType)
         {
-            var generticType = equalityComparerType.MakeGenericType(type);
-            return generticType.GetProperty("Default", BindingFlags.Public | BindingFlags.Static);
+            var genericType = equalityComparerType.MakeGenericType(type);
+            return genericType.GetProperty("Default", BindingFlags.Public | BindingFlags.Static);
         }
     }
 }

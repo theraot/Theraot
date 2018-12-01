@@ -1,15 +1,11 @@
 ﻿// Needed for NET35 (TASK)
 
 using System;
-
-#if NET20 || NET30 || NET35
-
 using System.Threading;
-
-#endif
 
 namespace Theraot.Core
 {
+    [Serializable]
     public partial class NewOperationCanceledException : OperationCanceledException
     {
         public NewOperationCanceledException()
@@ -26,7 +22,7 @@ namespace Theraot.Core
 #if NET20 || NET30 || NET35
 
         [NonSerialized]
-        private CancellationToken? _token;
+        private readonly CancellationToken? _token;
 
         public NewOperationCanceledException(CancellationToken token)
         {
@@ -45,6 +41,18 @@ namespace Theraot.Core
             _token = token;
         }
 
+        public NewOperationCanceledException(string message)
+            : base(message)
+        {
+            //Empty
+        }
+
+        public NewOperationCanceledException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+            //Empty
+        }
+
         public CancellationToken CancellationToken
         {
             get
@@ -57,18 +65,19 @@ namespace Theraot.Core
             }
         }
 
-#endif
+#else
 
-        public NewOperationCanceledException(string message)
-            : base(message)
+        public NewOperationCanceledException(CancellationToken token)
+            : base(token)
         {
-            //Empty
+            // Empty
         }
 
-        public NewOperationCanceledException(string message, Exception innerException)
-            : base(message, innerException)
+#endif
+
+        public void Deconstruct(out CancellationToken token)
         {
-            //Empty
+            token = CancellationToken;
         }
     }
 }

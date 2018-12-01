@@ -3,9 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Theraot.Core;
+using Theraot.Threading;
 
 namespace Theraot.Collections.ThreadSafe
 {
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+
+    [Serializable]
+#endif
+
     internal class BucketCore : IEnumerable<object>
     {
         private const int _capacity = 32;
@@ -16,21 +22,47 @@ namespace Theraot.Collections.ThreadSafe
         private const long _lvl5 = _lvl4 * _capacity;
         private const long _lvl6 = _lvl5 * _capacity;
         private const long _lvl7 = _lvl6 * _capacity;
-        private readonly object[] _arrayFirst;
-        private readonly object[] _arraySecond;
-        private readonly int[] _arrayUse;
         private readonly int _level;
+        private object[] _arrayFirst;
+        private object[] _arraySecond;
+        private int[] _arrayUse;
 
         public BucketCore(int level)
         {
             if (level < 0 || level > 7)
             {
-                throw new ArgumentOutOfRangeException("level", "level < 0 || level > 7");
+                throw new ArgumentOutOfRangeException(nameof(level), "level < 0 || level > 7");
             }
             _level = level;
-            _arrayFirst = new object[_capacity];
-            _arraySecond = new object[_capacity];
-            _arrayUse = new int[_capacity];
+            _arrayFirst = ArrayReservoir<object>.GetArray(_capacity);
+            _arraySecond = ArrayReservoir<object>.GetArray(_capacity);
+            _arrayUse = ArrayReservoir<int>.GetArray(_capacity);
+        }
+
+        ~BucketCore()
+        {
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            if (!GCMonitor.FinalizingForUnload)
+            {
+                var arrayFirst = _arrayFirst;
+                if (arrayFirst != null)
+                {
+                    ArrayReservoir<object>.DonateArray(arrayFirst);
+                    _arrayFirst = null;
+                }
+                var arraySecond = _arraySecond;
+                if (arraySecond != null)
+                {
+                    ArrayReservoir<object>.DonateArray(arraySecond);
+                    _arraySecond = null;
+                }
+                var arrayUse = _arrayUse;
+                if (arrayUse != null)
+                {
+                    ArrayReservoir<int>.DonateArray(arrayUse);
+                    _arrayUse = null;
+                }
+            }
         }
 
         public long Length
@@ -180,68 +212,29 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (indexFrom < 0)
             {
-                throw new ArgumentOutOfRangeException("indexFrom", "indexFrom < 0");
+                throw new ArgumentOutOfRangeException(nameof(indexFrom), "indexFrom < 0");
             }
             if (indexTo < 0)
             {
-                throw new ArgumentOutOfRangeException("indexTo", "indexTo < 0");
+                throw new ArgumentOutOfRangeException(nameof(indexTo), "indexTo < 0");
             }
             var startSubIndex = SubIndex(indexFrom);
             var endSubIndex = SubIndex(indexTo);
             return PrivateEnumerableRange(indexFrom, indexTo, startSubIndex, endSubIndex);
         }
 
-        private IEnumerable<object> PrivateEnumerableRange(int indexFrom, int indexTo, int startSubIndex, int endSubIndex)
-        {
-            var step = endSubIndex - startSubIndex >= 0 ? 1 : -1;
-            for (var subindex = startSubIndex; subindex < endSubIndex + 1; subindex += step)
-            {
-                try
-                {
-                    Interlocked.Increment(ref _arrayUse[subindex]);
-                    var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subindex], null, null);
-                    if (_level == 1)
-                    {
-                        if (foundFirst == null)
-                        {
-                            continue;
-                        }
-                        yield return foundFirst;
-                    }
-                    else
-                    {
-                        var core = foundFirst as BucketCore;
-                        if (core == null)
-                        {
-                            continue;
-                        }
-                        var subIndexFrom = subindex == startSubIndex ? core.SubIndex(indexFrom) : 0;
-                        var subIndexTo = subindex == endSubIndex ? core.SubIndex(indexTo) : _capacity - 1;
-                        foreach (var item in core.PrivateEnumerableRange(indexFrom, indexTo, subIndexFrom, subIndexTo))
-                        {
-                            yield return item;
-                        }
-                    }
-                }
-                finally
-                {
-                    DoLeave(ref _arrayUse[subindex], ref _arrayFirst[subindex], ref _arraySecond[subindex]);
-                }
-            }
-        }
-
         public IEnumerator<object> GetEnumerator()
         {
-            for (var subindex = 0; subindex < _capacity; subindex++)
+            for (var subIndex = 0; subIndex < _capacity; subIndex++)
             {
-                var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subindex], null, null);
+                var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subIndex], null, null);
                 if (foundFirst == null)
                 {
                     continue;
                 }
                 try
                 {
-                    Interlocked.Increment(ref _arrayUse[subindex]);
+                    Interlocked.Increment(ref _arrayUse[subIndex]);
                     if (_level == 1)
                     {
                         yield return foundFirst;
@@ -256,7 +249,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 finally
                 {
-                    DoLeave(ref _arrayUse[subindex], ref _arrayFirst[subindex], ref _arraySecond[subindex]);
+                    DoLeave(ref _arrayUse[subIndex], ref _arrayFirst[subIndex], ref _arraySecond[subIndex]);
                 }
             }
         }
@@ -272,7 +265,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
 #endif
             var foundFirst = Interlocked.CompareExchange(ref first, null, null);
@@ -297,7 +290,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (factory == null)
             {
-                throw new ArgumentNullException("factory");
+                throw new ArgumentNullException(nameof(factory));
             }
 #endif
             try
@@ -319,7 +312,7 @@ namespace Theraot.Collections.ThreadSafe
                         foundFirst = Interlocked.CompareExchange(ref first, result, null);
                         if (foundFirst == null)
                         {
-                            // _firstt was set to result
+                            // first was set to result
                             if (result != null)
                             {
                                 Interlocked.Increment(ref use);
@@ -358,7 +351,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
 #endif
             try
@@ -387,7 +380,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (callback == null)
             {
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
             }
 #endif
             try
@@ -404,6 +397,44 @@ namespace Theraot.Collections.ThreadSafe
             finally
             {
                 DoLeave(ref use, ref first, ref second);
+            }
+        }
+
+        private IEnumerable<object> PrivateEnumerableRange(int indexFrom, int indexTo, int startSubIndex, int endSubIndex)
+        {
+            var step = endSubIndex - startSubIndex >= 0 ? 1 : -1;
+            for (var subIndex = startSubIndex; subIndex < endSubIndex + 1; subIndex += step)
+            {
+                try
+                {
+                    Interlocked.Increment(ref _arrayUse[subIndex]);
+                    var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subIndex], null, null);
+                    if (_level == 1)
+                    {
+                        if (foundFirst == null)
+                        {
+                            continue;
+                        }
+                        yield return foundFirst;
+                    }
+                    else
+                    {
+                        if (!(foundFirst is BucketCore core))
+                        {
+                            continue;
+                        }
+                        var subIndexFrom = subIndex == startSubIndex ? core.SubIndex(indexFrom) : 0;
+                        var subIndexTo = subIndex == endSubIndex ? core.SubIndex(indexTo) : _capacity - 1;
+                        foreach (var item in core.PrivateEnumerableRange(indexFrom, indexTo, subIndexFrom, subIndexTo))
+                        {
+                            yield return item;
+                        }
+                    }
+                }
+                finally
+                {
+                    DoLeave(ref _arrayUse[subIndex], ref _arrayFirst[subIndex], ref _arraySecond[subIndex]);
+                }
             }
         }
 

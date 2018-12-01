@@ -10,10 +10,7 @@ namespace Theraot.Collections.ThreadSafe
         [ThreadStatic]
         internal static int InternalRecycling;
 
-        public static bool Recycling
-        {
-            get { return InternalRecycling > 0; }
-        }
+        public static bool Recycling => InternalRecycling > 0;
     }
 
     public class NeedleReservoir<T, TNeedle>
@@ -24,30 +21,36 @@ namespace Theraot.Collections.ThreadSafe
 
         public NeedleReservoir(Func<T, TNeedle> needleFactory)
         {
-            if (needleFactory == null)
-            {
-                throw new ArgumentNullException("needleFactory");
-            }
-            _needleFactory = needleFactory;
+            _needleFactory = needleFactory ?? throw new ArgumentNullException(nameof(needleFactory));
             _pool = new Pool<TNeedle>(64, Recycle);
+
+            void Recycle(TNeedle obj)
+            {
+                try
+                {
+                    NeedleReservoir.InternalRecycling++;
+                    obj.Free();
+                }
+                finally
+                {
+                    NeedleReservoir.InternalRecycling--;
+                }
+            }
         }
 
         internal void DonateNeedle(TNeedle donation)
         {
             if (!_pool.Donate(donation))
             {
+                // ReSharper disable once SuspiciousTypeConversion.Global
                 var disposable = donation as IDisposable;
-                if (disposable != null)
-                {
-                    disposable.Dispose();
-                }
+                disposable?.Dispose();
             }
         }
 
         internal TNeedle GetNeedle(T value)
         {
-            TNeedle result;
-            if (_pool.TryGet(out result))
+            if (_pool.TryGet(out var result))
             {
                 NeedleReservoir.InternalRecycling++;
                 result.Value = value;
@@ -58,19 +61,6 @@ namespace Theraot.Collections.ThreadSafe
                 result = _needleFactory(value);
             }
             return result;
-        }
-
-        private static void Recycle(TNeedle obj)
-        {
-            try
-            {
-                NeedleReservoir.InternalRecycling++;
-                obj.Free();
-            }
-            finally
-            {
-                NeedleReservoir.InternalRecycling--;
-            }
         }
     }
 }

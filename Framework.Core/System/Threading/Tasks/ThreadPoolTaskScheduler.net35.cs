@@ -16,6 +16,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Security;
+using Theraot.Core;
 
 namespace System.Threading.Tasks
 {
@@ -30,13 +31,10 @@ namespace System.Threading.Tasks
         private static readonly ParameterizedThreadStart _longRunningThreadWork = LongRunningThreadWork;
 
         /// <summary>
-        /// This is the only scheduler that returns false for this property, indicating that the task entry codepath is unsafe (CAS free)
+        /// This is the only scheduler that returns false for this property, indicating that the task entry code path is unsafe (CAS free)
         /// since we know that the underlying scheduler already takes care of atomic transitions from queued to non-queued.
         /// </summary>
-        internal override bool RequiresAtomicStartTransition
-        {
-            get { return false; }
-        }
+        internal override bool RequiresAtomicStartTransition => false;
 
         /// <summary>
         /// Notifies the scheduler that work is progressing (no-op).
@@ -79,7 +77,7 @@ namespace System.Threading.Tasks
         [SecurityCritical]
         protected override bool TryDequeue(Task task)
         {
-            throw new Theraot.Core.InternalSpecialCancelException("ThreadPool");
+            throw new InternalSpecialCancelException("ThreadPool");
         }
 
         [SecurityCritical]
@@ -111,8 +109,7 @@ namespace System.Threading.Tasks
         private static void LongRunningThreadWork(object obj)
         {
             Contract.Requires(obj != null, "TaskScheduler.LongRunningThreadWork: obj is null");
-            var task = obj as Task;
-            if (task != null)
+            if (obj is Task task)
             {
                 task.ExecuteEntry(false);
             }
@@ -124,8 +121,7 @@ namespace System.Threading.Tasks
 
         private static void TaskExecuteCallback(object obj)
         {
-            var task = obj as Task;
-            if (task != null)
+            if (obj is Task task)
             {
                 task.ExecuteEntry(true);
             }

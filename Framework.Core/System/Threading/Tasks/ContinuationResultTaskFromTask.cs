@@ -9,17 +9,14 @@ namespace System.Threading.Tasks
         private Task _antecedent;
 
         public ContinuationResultTaskFromTask(Task antecedent, Delegate function, object state, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions)
-            : base(function, state, InternalCurrentIfAttached(creationOptions), default(CancellationToken), creationOptions, internalOptions, antecedent.ExecutingTaskScheduler)
+            : base(function, state, InternalCurrentIfAttached(creationOptions), default, creationOptions, internalOptions, antecedent.ExecutingTaskScheduler)
         {
             Contract.Requires(function is Func<Task, TResult> || function is Func<Task, object, TResult>, "Invalid delegate type in ContinuationResultTaskFromTask");
             _antecedent = antecedent;
             CapturedContext = ExecutionContext.Capture();
         }
 
-        Task IContinuationTask.Antecedent
-        {
-            get { return _antecedent; }
-        }
+        Task IContinuationTask.Antecedent => _antecedent;
 
         /// <summary>
         /// Evaluates the value selector of the Task which is passed in as an object and stores the result.
@@ -33,19 +30,20 @@ namespace System.Threading.Tasks
             _antecedent = null;
             // Invoke the delegate
             Contract.Assert(Action != null);
-            var func = Action as Func<Task, TResult>;
-            if (func != null)
+            switch (Action)
             {
-                InternalResult = func(antecedent);
-                return;
+                case Func<Task, TResult> func:
+                    InternalResult = func(antecedent);
+                    return;
+
+                case Func<Task, object, TResult> funcWithState:
+                    InternalResult = funcWithState(antecedent, State);
+                    return;
+
+                default:
+                    Contract.Assert(false, "Invalid Action in ContinuationResultTaskFromTask");
+                    break;
             }
-            var funcWithState = Action as Func<Task, object, TResult>;
-            if (funcWithState != null)
-            {
-                InternalResult = funcWithState(antecedent, State);
-                return;
-            }
-            Contract.Assert(false, "Invalid Action in ContinuationResultTaskFromTask");
         }
     }
 }

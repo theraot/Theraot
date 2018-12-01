@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35 || NET40 || NET45
+﻿#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP1_0 || NETCOREAPP1_1
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace System.Runtime.CompilerServices
 {
     /// <summary>
-    /// Indicates that the use of <see cref="System.ValueTuple"/> on a member is meant to be treated as a tuple with element names.
+    /// Indicates that the use of <see cref="ValueTuple"/> on a member is meant to be treated as a tuple with element names.
     /// </summary>
     [CLSCompliant(false)]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.ReturnValue | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Event)]
@@ -38,22 +38,15 @@ namespace System.Runtime.CompilerServices
         /// </remarks>
         public TupleElementNamesAttribute(string[] transformNames)
         {
-            if (transformNames == null)
-            {
-                throw new ArgumentNullException("transformNames");
-            }
-            _transformNames = transformNames;
+            _transformNames = transformNames ?? throw new ArgumentNullException(nameof(transformNames));
         }
 
         /// <summary>
         /// Specifies, in a pre-order depth-first traversal of a type's
-        /// construction, which <see cref="System.ValueTuple"/> elements are
+        /// construction, which <see cref="ValueTuple"/> elements are
         /// meant to carry element names.
         /// </summary>
-        public IList<string> TransformNames
-        {
-            get { return _transformNames; }
-        }
+        public IList<string> TransformNames => _transformNames;
     }
 }
 

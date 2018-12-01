@@ -2088,7 +2088,7 @@ namespace MonoTests.System.Threading.Tasks
                         try
                         {
                             var result = t.Wait(10000);
-                            Assert.Fail("#2 " + result);
+                            Assert.Fail("#2 " + result.ToString());
                         }
                         catch (AggregateException e)
                         {
@@ -2238,7 +2238,7 @@ namespace MonoTests.System.Threading.Tasks
                 {
                     var tasks = new[] { t1, t2 };
 
-                    var t = Task.WhenAll<string>(tasks);
+                    var t = Task.WhenAll(tasks);
                     Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
                     t2.Start();
 
@@ -2312,7 +2312,7 @@ namespace MonoTests.System.Threading.Tasks
                 Task.FromResult (2)
             };
 
-            var t = Task.WhenAll<int>(tasks);
+            var t = Task.WhenAll(tasks);
             Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#1");
             Assert.AreEqual(2, t.Result.Length, "#2");
             Assert.AreEqual(1, t.Result[0], "#2a");
@@ -2341,7 +2341,7 @@ namespace MonoTests.System.Threading.Tasks
 
             try
             {
-                Task.WhenAll<int>(tasks);
+                Task.WhenAll(tasks);
                 Assert.Fail("#1");
             }
             catch (ArgumentException ex)
@@ -2545,7 +2545,7 @@ namespace MonoTests.System.Threading.Tasks
                         t2,
                     };
 
-                    var t = Task.WhenAny<byte>(tasks);
+                    var t = Task.WhenAny(tasks);
                     Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
                     t2.Start();
 
@@ -2575,7 +2575,7 @@ namespace MonoTests.System.Threading.Tasks
 
                 cancelation.Cancel();
 
-                var t = Task.WhenAny<double>(tasks);
+                var t = Task.WhenAny(tasks);
                 Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#1");
                 tasks[0].Start();
 
@@ -2616,7 +2616,7 @@ namespace MonoTests.System.Threading.Tasks
 
                 cancelation.Cancel();
 
-                var t = Task.WhenAny<object>(tasks);
+                var t = Task.WhenAny(tasks);
                 Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#1");
                 tasks[0].Start();
 
@@ -2635,7 +2635,7 @@ namespace MonoTests.System.Threading.Tasks
                 Task.FromResult(2),
             };
 
-            var t = Task.WhenAny<int>(tasks);
+            var t = Task.WhenAny(tasks);
             Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#1");
 
             try
@@ -2655,7 +2655,7 @@ namespace MonoTests.System.Threading.Tasks
             );
             tasks = new[] { task };
 
-            t = Task.WhenAny<int>(tasks);
+            t = Task.WhenAny(tasks);
             Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#11");
 
             try
@@ -2679,7 +2679,7 @@ namespace MonoTests.System.Threading.Tasks
 
             try
             {
-                Task.WhenAny<int>(tasks);
+                Task.WhenAny(tasks);
                 Assert.Fail("#1");
             }
             catch (ArgumentException ex)
@@ -2699,7 +2699,7 @@ namespace MonoTests.System.Threading.Tasks
 
             try
             {
-                Task.WhenAny<short>(new Task<short>[0]);
+                Task.WhenAny(new Task<short>[0]);
                 Assert.Fail("#3");
             }
             catch (ArgumentException ex)

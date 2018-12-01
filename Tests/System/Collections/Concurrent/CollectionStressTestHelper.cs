@@ -71,7 +71,7 @@ namespace MonoTests.System.Collections.Concurrent
 
                 for (var i = 0; i < Threads; i++)
                 {
-                    Assert.AreEqual(Count, values[i], "#" + i);
+                    Assert.AreEqual(Count, values[i], "#" + i.ToString());
                 }
             });
         }
@@ -98,13 +98,11 @@ namespace MonoTests.System.Collections.Concurrent
                 ParallelTestHelper.ParallelStressTest(coll, (q) =>
                 {
                     var s = true;
-                    int t;
-
                     for (var i = 0; i < Count; i++)
                     {
-                        s &= coll.TryTake(out t);
+                        s &= coll.TryTake(out _);
                         // try again in case it was a transient failure
-                        if (!s && coll.TryTake(out t))
+                        if (!s && coll.TryTake(out _))
                         {
                             s = true;
                         }
@@ -132,7 +130,7 @@ namespace MonoTests.System.Collections.Concurrent
                     range = range.Reverse();
                 }
 
-                var expected = range.Aggregate(string.Empty, (acc, v) => acc + v);
+                var expected = range.Aggregate(string.Empty, (acc, v) => acc + v.ToString());
 
                 if (order == CheckOrderingType.DontCare)
                 {

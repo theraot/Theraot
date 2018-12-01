@@ -13,7 +13,7 @@ namespace Tests.Theraot.Collections.ThreadSafe
             var queue = new FixedSizeQueue<int>(64);
             foreach (var item in Enumerable.Range(0, queue.Capacity))
             {
-                queue.Add(item);
+                queue.TryAdd(item);
             }
             foreach (var item in Enumerable.Range(0, queue.Capacity))
             {
@@ -29,9 +29,9 @@ namespace Tests.Theraot.Collections.ThreadSafe
             var queue = new FixedSizeQueue<int>(64);
             foreach (var item in Enumerable.Range(0, queue.Capacity))
             {
-                queue.Add(item);
+                queue.TryAdd(item);
             }
-            Assert.IsFalse(queue.Add(999));
+            Assert.IsFalse(queue.TryAdd(999));
             foreach (var item in Enumerable.Range(0, queue.Capacity))
             {
                 int found;
@@ -44,7 +44,7 @@ namespace Tests.Theraot.Collections.ThreadSafe
         public void FillEnumerable()
         {
             var queue = new FixedSizeQueue<int>(Enumerable.Range(0, 64));
-            Assert.IsFalse(queue.Add(999));
+            Assert.IsFalse(queue.TryAdd(999));
             foreach (var item in Enumerable.Range(0, queue.Capacity))
             {
                 int found;

@@ -2,16 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Theraot.Collections
 {
-    [System.Diagnostics.DebuggerNonUserCode]
-    public
-#if FAT
-        partial
-# endif
-        class ProgressiveList<T> : ProgressiveCollection<T>, IReadOnlyList<T>, IList<T>
+    [DebuggerNonUserCode]
+    public class ProgressiveList<T> : ProgressiveCollection<T>, IList<T>
     {
         private readonly IList<T> _cache;
 
@@ -21,7 +18,7 @@ namespace Theraot.Collections
             // Empty
         }
 
-        public ProgressiveList(Progressor<T> wrapped)
+        public ProgressiveList(IObservable<T> wrapped)
             : this(wrapped, new List<T>(), null)
         {
             // Empty
@@ -33,7 +30,7 @@ namespace Theraot.Collections
             // Empty
         }
 
-        public ProgressiveList(Progressor<T> wrapped, IEqualityComparer<T> comparer)
+        public ProgressiveList(IObservable<T> wrapped, IEqualityComparer<T> comparer)
             : this(wrapped, new List<T>(), comparer)
         {
             // Empty
@@ -42,22 +39,18 @@ namespace Theraot.Collections
         protected ProgressiveList(IEnumerable<T> wrapped, IList<T> cache, IEqualityComparer<T> comparer)
             : base(wrapped, cache, comparer)
         {
-            if (cache == null)
-            {
-                throw new ArgumentNullException("cache");
-            }
-            _cache = cache;
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            Cache = new ExtendedReadOnlyList<T>(_cache);
         }
 
-        protected ProgressiveList(Progressor<T> wrapped, IList<T> cache, IEqualityComparer<T> comparer)
+        protected ProgressiveList(IObservable<T> wrapped, IList<T> cache, IEqualityComparer<T> comparer)
             : base(wrapped, cache, comparer)
         {
-            if (cache == null)
-            {
-                throw new ArgumentNullException("cache");
-            }
-            _cache = cache;
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            Cache = new ExtendedReadOnlyList<T>(_cache);
         }
+
+        public new IReadOnlyList<T> Cache { get; }
 
         public T this[int index]
         {
@@ -73,9 +66,19 @@ namespace Theraot.Collections
 
         T IList<T>.this[int index]
         {
-            get { return this[index]; }
+            get => this[index];
 
-            set { throw new NotSupportedException(); }
+            set => throw new NotSupportedException();
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        void ICollection<T>.Clear()
+        {
+            throw new NotSupportedException();
         }
 
         public int IndexOf(T item)
@@ -105,16 +108,6 @@ namespace Theraot.Collections
                 return index;
             }
             return -1;
-        }
-
-        void ICollection<T>.Add(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        void ICollection<T>.Clear()
-        {
-            throw new NotSupportedException();
         }
 
         void IList<T>.Insert(int index, T item)

@@ -254,7 +254,7 @@ namespace Tests.Theraot.Threading.Needles
             });
             var threadA = new Thread(() =>
             {
-                Thread.VolatileWrite(ref waitStarted, 1);
+                Volatile.Write(ref waitStarted, 1);
                 needle.Wait();
                 needle.Initialize();
                 Interlocked.Increment(ref threadDone);
@@ -263,7 +263,7 @@ namespace Tests.Theraot.Threading.Needles
             (
                 () =>
                 {
-                    while (Thread.VolatileRead(ref waitStarted) == 0)
+                    while (Volatile.Read(ref waitStarted) == 0)
                     {
                         Thread.Sleep(0);
                     }

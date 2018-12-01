@@ -1,11 +1,8 @@
 #if FAT
 
-using System;
-using System.Threading;
-
 namespace Theraot.Threading
 {
-    internal sealed partial class ReentrantReadWriteLock : IReadWriteLock
+    internal sealed partial class ReentrantReadWriteLock
     {
         private enum Status
         {

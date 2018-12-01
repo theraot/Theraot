@@ -10,7 +10,7 @@ namespace System.Diagnostics.Contracts
     /// Methods (and properties) marked with this attribute can be used within calls to Contract methods, but have no runtime behavior associated with them.
     /// </summary>
     [Conditional("CONTRACTS_FULL")]
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
     public sealed class ContractRuntimeIgnoredAttribute : Attribute
     {
         // Empty

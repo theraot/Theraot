@@ -12,19 +12,19 @@ namespace Theraot.Collections
         {
             if (items == null)
             {
-                throw new ArgumentNullException("items");
+                throw new ArgumentNullException(nameof(items));
             }
             if (partitionSize < 1)
             {
-                throw new ArgumentOutOfRangeException("partitionSize");
+                throw new ArgumentOutOfRangeException(nameof(partitionSize));
             }
             return new PartitionEnumerable<T>(items, partitionSize);
         }
 
         internal class PartitionEnumerable<T> : IEnumerable<IEnumerable<T>>
         {
-            private readonly IEnumerable<T> _source;
             private readonly int _partitionSize;
+            private readonly IEnumerable<T> _source;
 
             public PartitionEnumerable(IEnumerable<T> source, int partitionSize)
             {

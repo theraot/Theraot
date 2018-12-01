@@ -130,7 +130,7 @@ namespace Tests.Theraot.Threading.Needles
                 7,
                 8,
                 9
-            }).AsEnumerable();
+            });
             using (var handle = new ManualResetEvent(false))
             {
                 int[] count = { 0, 0, 0 };
@@ -147,16 +147,16 @@ namespace Tests.Theraot.Threading.Needles
                 };
                 Task.Factory.StartNew(work);
                 Task.Factory.StartNew(work);
-                while (Thread.VolatileRead(ref count[0]) != 2)
+                while (Volatile.Read(ref count[0]) != 2)
                 {
                     Thread.Sleep(0);
                 }
                 handle.Set();
-                while (Thread.VolatileRead(ref count[1]) != 2)
+                while (Volatile.Read(ref count[1]) != 2)
                 {
                     Thread.Sleep(0);
                 }
-                Assert.AreEqual(10, Thread.VolatileRead(ref count[2]));
+                Assert.AreEqual(10, Volatile.Read(ref count[2]));
                 handle.Close();
             }
         }
@@ -207,18 +207,18 @@ namespace Tests.Theraot.Threading.Needles
                         }
                     }
                 );
-                while (Thread.VolatileRead(ref count[0]) != 2)
+                while (Volatile.Read(ref count[0]) != 2)
                 {
                     Thread.Sleep(0);
                 }
                 handle.Set();
-                while (Thread.VolatileRead(ref count[1]) != 2)
+                while (Volatile.Read(ref count[1]) != 2)
                 {
                     Thread.Sleep(0);
                 }
                 // One, the other, or both
-                Trace.WriteLine("Winner: " + winner);
-                Trace.WriteLine("Value: " + needle.Value);
+                Trace.WriteLine("Winner: " + winner.ToString());
+                Trace.WriteLine("Value: " + needle.Value.ToString());
                 Assert.IsTrue((winner == 1 && needle.Value == 7) || (winner == 2 && needle.Value == 10) || (needle.Value == 12));
                 handle.Close();
             }

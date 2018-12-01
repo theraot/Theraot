@@ -1,7 +1,8 @@
 #if NET20 || NET30
 
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using System.Reflection;
 
@@ -23,7 +24,7 @@ namespace System.Linq.Expressions
         MemberBinding,
 
         /// <summary>
-        /// A binding that represents initializing a member of type <see cref="System.Collections.IList"/> or <see cref="System.Collections.Generic.ICollection{T}"/> from a list of elements.
+        /// A binding that represents initializing a member of type <see cref="Collections.IList"/> or <see cref="Collections.Generic.ICollection{T}"/> from a list of elements.
         /// </summary>
         ListBinding
     }
@@ -33,9 +34,6 @@ namespace System.Linq.Expressions
     /// </summary>
     public abstract class MemberBinding
     {
-        private readonly MemberBindingType _type;
-        private readonly MemberInfo _member;
-
         /// <summary>
         /// Initializes an instance of <see cref="MemberBinding"/> class.
         /// </summary>
@@ -44,34 +42,30 @@ namespace System.Linq.Expressions
         [Obsolete("Do not use this constructor. It will be removed in future releases.")]
         protected MemberBinding(MemberBindingType type, MemberInfo member)
         {
-            _type = type;
-            _member = member;
+            BindingType = type;
+            Member = member;
         }
 
         /// <summary>
         /// Gets the type of binding that is represented.
         /// </summary>
-        public MemberBindingType BindingType
-        {
-            get { return _type; }
-        }
+        public MemberBindingType BindingType { get; }
 
         /// <summary>
         /// Gets the field or property to be initialized.
         /// </summary>
-        public MemberInfo Member
-        {
-            get { return _member; }
-        }
+        public MemberInfo Member { get; }
 
         /// <summary>
         /// Returns a <see cref="string"/> that represents the current <see cref="object"/>.
         /// </summary>
-        /// <returns>A <see cref="string"/> that represents the current <see cref="object"/>. </returns>
+        /// <returns>A <see cref="string"/> that represents the current <see cref="object"/>.</returns>
         public override string ToString()
         {
             return ExpressionStringBuilder.MemberBindingToString(this);
         }
+
+        internal virtual void ValidateAsDefinedHere(int index) => throw Error.UnknownBindingType(index);
     }
 }
 

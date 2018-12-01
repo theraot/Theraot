@@ -9,22 +9,15 @@ namespace System.Collections
     {
         private static readonly InternalComparer _comparer = new InternalComparer();
 
-        public static IComparer StructuralComparer
-        {
-            get { return _comparer; }
-        }
+        public static IComparer StructuralComparer => _comparer;
 
-        public static IEqualityComparer StructuralEqualityComparer
-        {
-            get { return _comparer; }
-        }
+        public static IEqualityComparer StructuralEqualityComparer => _comparer;
 
         private sealed class InternalComparer : IComparer, IEqualityComparer
         {
             int IComparer.Compare(object x, object y)
             {
-                var comparable = x as IStructuralComparable;
-                if (comparable != null)
+                if (x is IStructuralComparable comparable)
                 {
                     return comparable.CompareTo(y, this);
                 }
@@ -33,13 +26,11 @@ namespace System.Collections
 
             bool IEqualityComparer.Equals(object x, object y)
             {
-                bool result;
-                if (NullComparison(x, y, out result))
+                if (NullComparison(x, y, out var result))
                 {
                     return result;
                 }
-                var comparable = x as IStructuralEquatable;
-                if (comparable != null)
+                if (x is IStructuralEquatable comparable)
                 {
                     return comparable.Equals(y, this);
                 }
@@ -69,7 +60,9 @@ namespace System.Collections
                         try
                         {
                             // If there comes the day when an array has no enumerator, let this code fail
+                            // ReSharper disable once PossibleNullReferenceException
                             firstEnumerator = (IEnumerator)xEnumeratorInfo.Invoke(x, TypeHelper.EmptyObjects);
+                            // ReSharper disable once PossibleNullReferenceException
                             secondEnumerator = (IEnumerator)yEnumeratorInfo.Invoke(y, TypeHelper.EmptyObjects);
                             while (firstEnumerator.MoveNext())
                             {
@@ -86,13 +79,11 @@ namespace System.Collections
                         }
                         finally
                         {
-                            var disposableX = firstEnumerator as IDisposable;
-                            if (disposableX != null)
+                            if (firstEnumerator is IDisposable disposableX)
                             {
                                 disposableX.Dispose();
                             }
-                            var disposableY = secondEnumerator as IDisposable;
-                            if (disposableY != null)
+                            if (secondEnumerator is IDisposable disposableY)
                             {
                                 disposableY.Dispose();
                             }
@@ -105,8 +96,7 @@ namespace System.Collections
 
             int IEqualityComparer.GetHashCode(object obj)
             {
-                var comparer = obj as IStructuralEquatable;
-                if (comparer != null)
+                if (obj is IStructuralEquatable comparer)
                 {
                     return comparer.GetHashCode(this);
                 }
@@ -124,11 +114,11 @@ namespace System.Collections
                 }
                 if ((int)xRankInfo.GetValue(x, TypeHelper.EmptyObjects) != 1)
                 {
-                    throw new ArgumentException("Only one-dimensional arrays are supported", "x");
+                    throw new ArgumentException("Only one-dimensional arrays are supported", nameof(x));
                 }
                 if ((int)yRankInfo.GetValue(y, TypeHelper.EmptyObjects) != 1)
                 {
-                    throw new ArgumentException("Only one-dimensional arrays are supported", "y");
+                    throw new ArgumentException("Only one-dimensional arrays are supported", nameof(y));
                 }
             }
 

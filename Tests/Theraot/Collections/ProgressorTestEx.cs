@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
@@ -13,52 +14,64 @@ namespace Tests.Theraot.Collections
     public class ProgressorTestEx
     {
         [Test]
+        [Category("Performance")]
+        public void ObservableProgressorWithPauseLoop()
+        {
+            for (int index = 0; index < 100000; index++)
+            {
+                ObservableProgressorWithPause();
+            }
+        }
+
+        [Test]
         public void ObservableProgressorWithPause()
         {
             var source = new SlowObservable<int>(new[] { 0, 1, 2, 3, 4, 5 });
-            var progresor = new Progressor<int>(source);
-            Assert.IsFalse(progresor.IsClosed);
-            var indexA = 0;
-            var indexB = 0;
-            progresor.SubscribeAction
+            var progressor = new Progressor<int>(source);
+            Assert.IsFalse(progressor.IsClosed);
+            var data = new[] { 0, 0, 0 };
+            using
             (
-                value =>
-                {
-                    Assert.AreEqual(value, indexB);
-                    indexB++;
-                }
-            );
-            int item;
-            while (progresor.TryTake(out item))
+                progressor.SubscribeAction
+                (
+                    value =>
+                    {
+                        if (value != Volatile.Read(ref data[0]))
+                        {
+                            Volatile.Write(ref data[2], 1);
+                        }
+
+                        Interlocked.Increment(ref data[0]);
+                    }
+                )
+            )
             {
-                Assert.AreEqual(item, indexA);
-                indexA++;
-            }
-            Assert.AreEqual(0, indexA);
-            Assert.AreEqual(indexA, indexB);
-            Assert.IsFalse(progresor.IsClosed);
-            source.Show();
-            while (indexA < 6)
-            {
-                while (progresor.TryTake(out item))
+                Thread.MemoryBarrier();
+                source.Show();
+                Thread.MemoryBarrier();
+                while (progressor.TryTake(out var item))
                 {
-                    Assert.AreEqual(item, indexA);
-                    indexA++;
+                    Assert.AreEqual(0, Volatile.Read(ref data[2]));
+                    Assert.AreEqual(item, Volatile.Read(ref data[1]));
+                    Interlocked.Increment(ref data[1]);
+                }
+                if (Volatile.Read(ref data[0]) != 6 || Volatile.Read(ref data[1]) != 6)
+                {
+                    Debugger.Break();
                 }
             }
-            Assert.AreEqual(indexA, indexB);
-            Assert.IsFalse(progresor.IsClosed);
-            source.Close();
-            Assert.IsFalse(progresor.IsClosed);
-            Assert.IsFalse(progresor.TryTake(out item));
-            Assert.IsTrue(progresor.IsClosed);
+            Assert.AreEqual(6, Volatile.Read(ref data[0]));
+            Assert.AreEqual(Volatile.Read(ref data[0]), Volatile.Read(ref data[1]));
+            Assert.IsTrue(progressor.IsClosed);
         }
 
         private class SlowObservable<T> : IObservable<T>
         {
             private readonly IEnumerable<T> _source;
             private readonly SafeSet<Needle<IObserver<T>>> _observers;
-            private int _done;
+            private object _last;
+            private bool _done;
+            private Exception _exception;
 
             public SlowObservable(IEnumerable<T> source)
             {
@@ -76,30 +89,19 @@ namespace Tests.Theraot.Collections
                             {
                                 foreach (var item in _source)
                                 {
-                                    if (Thread.VolatileRead(ref _done) == 1)
-                                    {
-                                        return;
-                                    }
+                                    Volatile.Write(ref _last, item);
                                     OnNext(item);
                                 }
+                                OnCompleted();
+                                Volatile.Write(ref _done, true);
                             }
                             catch (Exception exception)
                             {
-                                if (Thread.VolatileRead(ref _done) == 0)
-                                {
-                                    OnError(exception);
-                                }
+                                OnError(exception);
+                                Volatile.Write(ref _exception, exception);
                             }
                         }
                     );
-            }
-
-            public void Close()
-            {
-                if (Interlocked.CompareExchange(ref _done, 1, 0) == 0)
-                {
-                    OnCompleted();
-                }
             }
 
             private void OnCompleted()

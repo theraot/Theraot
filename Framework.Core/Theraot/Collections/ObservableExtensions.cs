@@ -10,7 +10,7 @@ namespace Theraot.Collections
         {
             if (observable == null)
             {
-                throw new ArgumentNullException("observable");
+                throw new ArgumentNullException(nameof(observable));
             }
             return observable.Subscribe(listener.ToObserver());
         }
@@ -19,7 +19,7 @@ namespace Theraot.Collections
         {
             if (observable == null)
             {
-                throw new ArgumentNullException("observable");
+                throw new ArgumentNullException(nameof(observable));
             }
             return observable.Subscribe(listener.ToObserver(converter));
         }
@@ -28,7 +28,7 @@ namespace Theraot.Collections
         {
             if (observable == null)
             {
-                throw new ArgumentNullException("observable");
+                throw new ArgumentNullException(nameof(observable));
             }
             return observable.Subscribe(new ConvertedObserver<TInput, TOutput>(observer, converter));
         }
@@ -37,7 +37,7 @@ namespace Theraot.Collections
         {
             if (observable == null)
             {
-                throw new ArgumentNullException("observable");
+                throw new ArgumentNullException(nameof(observable));
             }
             return observable.Subscribe(new FilteredObserver<T>(observer, filter));
         }
@@ -46,7 +46,7 @@ namespace Theraot.Collections
         {
             if (observable == null)
             {
-                throw new ArgumentNullException("observable");
+                throw new ArgumentNullException(nameof(observable));
             }
             return observable.Subscribe(new FilteredConvertedObserver<TInput, TOutput>(observer, filter, converter));
         }
@@ -55,7 +55,7 @@ namespace Theraot.Collections
         {
             if (listener == null)
             {
-                throw new ArgumentNullException("listener");
+                throw new ArgumentNullException(nameof(listener));
             }
             return new CustomObserver<T>(listener);
         }
@@ -64,11 +64,11 @@ namespace Theraot.Collections
         {
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (listener == null)
             {
-                throw new ArgumentNullException("listener");
+                throw new ArgumentNullException(nameof(listener));
             }
             return new CustomObserver<TInput>(input => listener(converter(input)));
         }

@@ -1,3 +1,5 @@
+#if NET20 || NET30 || NET35
+
 // QueryableTransformer.cs
 //
 // Authors:
@@ -32,7 +34,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-
 using Theraot.Core;
 
 namespace System.Linq
@@ -41,8 +42,7 @@ namespace System.Linq
     {
         protected override Expression VisitConstant(ConstantExpression constant)
         {
-            var qe = constant.Value as IQueryableEnumerable;
-            if (qe == null)
+            if (!(constant.Value is IQueryableEnumerable qe))
             {
                 return constant;
             }
@@ -80,7 +80,7 @@ namespace System.Linq
             }
             else if (type.IsGenericInstanceOf(typeof(Expression<>)))
             {
-                type = type.GetFirstGenericArgument();
+                type = type.GetGenericArguments()[0];
             }
             else if (type == typeof(IQueryable))
             {
@@ -166,15 +166,7 @@ namespace System.Linq
             {
                 return result;
             }
-            throw new InvalidOperationException
-                (
-                    string.Format
-                    (
-                        "There is no method {0} on type {1} that matches the specified arguments",
-                        method.Name,
-                        targetType.FullName
-                    )
-                );
+            throw new InvalidOperationException($"There is no method {method.Name} on type {targetType.FullName} that matches the specified arguments");
         }
 
         private static bool TypeMatch(Type candidate, Type type)
@@ -222,3 +214,5 @@ namespace System.Linq
         }
     }
 }
+
+#endif

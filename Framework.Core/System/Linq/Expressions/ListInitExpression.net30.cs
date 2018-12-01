@@ -1,7 +1,8 @@
 #if NET20 || NET30
 
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,75 +10,160 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Theraot.Collections;
 
 namespace System.Linq.Expressions
 {
+    public partial class Expression
+    {
+        /// <summary>
+        /// Creates a <see cref="ListInitExpression"/> that uses a method named "Add" to add elements to a collection.
+        /// </summary>
+        /// <param name="newExpression">A <see cref="NewExpression"/> to set the <see cref="ListInitExpression.NewExpression"/> property equal to.</param>
+        /// <param name="initializers">An array of <see cref="Expression"/> objects to use to populate the <see cref="ListInitExpression.Initializers"/> collection.</param>
+        /// <returns>A <see cref="ListInitExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.ListInit"/> and the <see cref="ListInitExpression.NewExpression"/> property set to the specified value.</returns>
+        public static ListInitExpression ListInit(NewExpression newExpression, params Expression[] initializers)
+        {
+            return ListInit(newExpression, initializers as IEnumerable<Expression>);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="ListInitExpression"/> that uses a method named "Add" to add elements to a collection.
+        /// </summary>
+        /// <param name="newExpression">A <see cref="NewExpression"/> to set the <see cref="ListInitExpression.NewExpression"/> property equal to.</param>
+        /// <param name="initializers">An <see cref="IEnumerable{T}"/> that contains <see cref="Expressions.ElementInit"/> objects to use to populate the <see cref="ListInitExpression.Initializers"/> collection.</param>
+        /// <returns>A <see cref="ListInitExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.ListInit"/> and the <see cref="ListInitExpression.NewExpression"/> property set to the specified value.</returns>
+        public static ListInitExpression ListInit(NewExpression newExpression, IEnumerable<Expression> initializers)
+        {
+            ContractUtils.RequiresNotNull(newExpression, nameof(newExpression));
+            ContractUtils.RequiresNotNull(initializers, nameof(initializers));
+
+            var initializerList = initializers.ToTrueReadOnly();
+            if (initializerList.Count == 0)
+            {
+                return new ListInitExpression(newExpression, EmptyReadOnlyCollection<ElementInit>.Instance);
+            }
+
+            var addMethod = FindMethod(newExpression.Type, "Add", null, new[] { initializerList[0] }, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            return ListInit(newExpression, addMethod, initializerList);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="ListInitExpression"/> that uses a specified method to add elements to a collection.
+        /// </summary>
+        /// <param name="newExpression">A <see cref="NewExpression"/> to set the <see cref="ListInitExpression.NewExpression"/> property equal to.</param>
+        /// <param name="addMethod">A <see cref="MethodInfo"/> that represents an instance method named "Add" (case insensitive), that adds an element to a collection.</param>
+        /// <param name="initializers">An array of <see cref="Expression"/> objects to use to populate the <see cref="ListInitExpression.Initializers"/> collection.</param>
+        /// <returns>A <see cref="ListInitExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.ListInit"/> and the <see cref="ListInitExpression.NewExpression"/> property set to the specified value.</returns>
+        public static ListInitExpression ListInit(NewExpression newExpression, MethodInfo addMethod, params Expression[] initializers)
+        {
+            return ListInit(newExpression, addMethod, initializers as IEnumerable<Expression>);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="ListInitExpression"/> that uses a specified method to add elements to a collection.
+        /// </summary>
+        /// <param name="newExpression">A <see cref="NewExpression"/> to set the <see cref="ListInitExpression.NewExpression"/> property equal to.</param>
+        /// <param name="addMethod">A <see cref="MethodInfo"/> that represents an instance method named "Add" (case insensitive), that adds an element to a collection.</param>
+        /// <param name="initializers">An <see cref="IEnumerable{T}"/> that contains <see cref="Expression"/> objects to use to populate the Initializers collection.</param>
+        /// <returns>A <see cref="ListInitExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.ListInit"/> and the <see cref="ListInitExpression.NewExpression"/> property set to the specified value.</returns>
+        public static ListInitExpression ListInit(NewExpression newExpression, MethodInfo addMethod, IEnumerable<Expression> initializers)
+        {
+            if (addMethod == null)
+            {
+                return ListInit(newExpression, initializers);
+            }
+            ContractUtils.RequiresNotNull(newExpression, nameof(newExpression));
+            ContractUtils.RequiresNotNull(initializers, nameof(initializers));
+
+            var initializerList = initializers.ToTrueReadOnly();
+            var initList = new ElementInit[initializerList.Count];
+            for (var i = 0; i < initializerList.Count; i++)
+            {
+                initList[i] = ElementInit(addMethod, initializerList[i]);
+            }
+            return ListInit(newExpression, new TrueReadOnlyCollection<ElementInit>(initList));
+        }
+
+        /// <summary>
+        /// Creates a <see cref="ListInitExpression"/> that uses specified <see cref="Expressions.ElementInit"/> objects to initialize a collection.
+        /// </summary>
+        /// <param name="newExpression">A <see cref="NewExpression"/> to set the <see cref="ListInitExpression.NewExpression"/> property equal to.</param>
+        /// <param name="initializers">An array that contains <see cref="Expressions.ElementInit"/> objects to use to populate the <see cref="ListInitExpression.Initializers"/> collection.</param>
+        /// <returns>
+        /// A <see cref="ListInitExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.ListInit"/>
+        /// and the <see cref="ListInitExpression.NewExpression"/> and <see cref="ListInitExpression.Initializers"/> properties set to the specified values.
+        /// </returns>
+        /// <remarks>
+        /// The <see cref="Type"/> property of <paramref name="newExpression"/> must represent a type that implements <see cref="Collections.IEnumerable"/>.
+        /// The <see cref="Type"/> property of the resulting <see cref="ListInitExpression"/> is equal to <paramref name="newExpression"/>.Type.
+        /// </remarks>
+        public static ListInitExpression ListInit(NewExpression newExpression, params ElementInit[] initializers)
+        {
+            return ListInit(newExpression, (IEnumerable<ElementInit>)initializers);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="ListInitExpression"/> that uses specified <see cref="Expressions.ElementInit"/> objects to initialize a collection.
+        /// </summary>
+        /// <param name="newExpression">A <see cref="NewExpression"/> to set the <see cref="ListInitExpression.NewExpression"/> property equal to.</param>
+        /// <param name="initializers">An <see cref="IEnumerable{T}"/> that contains <see cref="Expressions.ElementInit"/> objects to use to populate the <see cref="ListInitExpression.Initializers"/> collection.</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> that contains <see cref="Expressions.ElementInit"/> objects to use to populate the <see cref="ListInitExpression.Initializers"/> collection.</returns>
+        /// <remarks>
+        /// The <see cref="Type"/> property of <paramref name="newExpression"/> must represent a type that implements <see cref="Collections.IEnumerable"/>.
+        /// The <see cref="Type"/> property of the resulting <see cref="ListInitExpression"/> is equal to <paramref name="newExpression"/>.Type.
+        /// </remarks>
+        public static ListInitExpression ListInit(NewExpression newExpression, IEnumerable<ElementInit> initializers)
+        {
+            ContractUtils.RequiresNotNull(newExpression, nameof(newExpression));
+            ContractUtils.RequiresNotNull(initializers, nameof(initializers));
+            var initializerList = initializers.ToTrueReadOnly();
+            ValidateListInitArgs(newExpression.Type, initializerList, nameof(newExpression));
+            return new ListInitExpression(newExpression, initializerList);
+        }
+    }
+
     /// <summary>
     /// Represents a constructor call that has a collection initializer.
     /// </summary>
     /// <remarks>
-    /// Use the <see cref="M:ListInit"/> factory methods to create a ListInitExpression.
-    /// The value of the NodeType property of a ListInitExpression is ListInit.
+    /// Use the <see cref="Expression.ListInit"/> factory methods to create a ListInitExpression.
+    /// The value of the <see cref="NodeType" /> property of a ListInitExpression is ListInit.
     /// </remarks>
     [DebuggerTypeProxy(typeof(ListInitExpressionProxy))]
     public sealed class ListInitExpression : Expression
     {
-        private readonly NewExpression _newExpression;
-        private readonly ReadOnlyCollection<ElementInit> _initializers;
-
-        internal ListInitExpression(NewExpression newExpression, ElementInit[] initializers)
+        internal ListInitExpression(NewExpression newExpression, ReadOnlyCollection<ElementInit> initializers)
         {
-            _newExpression = newExpression;
-            _initializers = new TrueReadOnlyCollection<ElementInit>(initializers);
-        }
-
-        /// <summary>
-        /// Returns the node type of this <see cref="Expression"/>. (Inherited from <see cref="Expression" />.)
-        /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
-        public override ExpressionType NodeType
-        {
-            get { return ExpressionType.ListInit; }
-        }
-
-        /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression" /> represents. (Inherited from <see cref="Expression"/>.)
-        /// </summary>
-        /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
-        public override Type Type
-        {
-            get { return _newExpression.Type; }
+            NewExpression = newExpression;
+            Initializers = initializers;
         }
 
         /// <summary>
         /// Gets a value that indicates whether the expression tree node can be reduced.
         /// </summary>
-        public override bool CanReduce
-        {
-            get { return true; }
-        }
-
-        /// <summary>
-        /// Gets the expression that contains a call to the constructor of a collection type.
-        /// </summary>
-        public NewExpression NewExpression
-        {
-            get { return _newExpression; }
-        }
+        public override bool CanReduce => true;
 
         /// <summary>
         /// Gets the element initializers that are used to initialize a collection.
         /// </summary>
-        public ReadOnlyCollection<ElementInit> Initializers
-        {
-            get { return _initializers; }
-        }
+        public ReadOnlyCollection<ElementInit> Initializers { get; }
 
-        protected internal override Expression Accept(ExpressionVisitor visitor)
-        {
-            return visitor.VisitListInit(this);
-        }
+        /// <summary>
+        /// Gets the expression that contains a call to the constructor of a collection type.
+        /// </summary>
+        public NewExpression NewExpression { get; }
+
+        /// <summary>
+        /// Returns the node type of this <see cref="Expression"/>. (Inherited from <see cref="Expression"/>.)
+        /// </summary>
+        /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
+        public override ExpressionType NodeType => ExpressionType.ListInit;
+
+        /// <summary>
+        /// Gets the static type of the expression that this <see cref="Expression"/> represents. (Inherited from <see cref="Expression"/>.)
+        /// </summary>
+        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        public override Type Type => NewExpression.Type;
 
         /// <summary>
         /// Reduces the binary expression node to a simpler expression.
@@ -88,7 +174,7 @@ namespace System.Linq.Expressions
         /// <returns>The reduced expression.</returns>
         public override Expression Reduce()
         {
-            return MemberInitExpression.ReduceListInit(_newExpression, _initializers, true);
+            return MemberInitExpression.ReduceListInit(NewExpression, Initializers, keepOnStack: true);
         }
 
         /// <summary>
@@ -96,296 +182,28 @@ namespace System.Linq.Expressions
         /// supplied children. If all of the children are the same, it will
         /// return this expression.
         /// </summary>
-        /// <param name="newExpression">The <see cref="NewExpression" /> property of the result.</param>
-        /// <param name="initializers">The <see cref="Initializers" /> property of the result.</param>
+        /// <param name="newExpression">The <see cref="NewExpression"/> property of the result.</param>
+        /// <param name="initializers">The <see cref="Initializers"/> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public ListInitExpression Update(NewExpression newExpression, IEnumerable<ElementInit> initializers)
         {
-            if (newExpression == NewExpression && initializers == Initializers)
+            if (newExpression == NewExpression & initializers != null)
             {
-                return this;
+                if (ExpressionUtils.SameElements(ref initializers, Theraot.Collections.Extensions.AsArray(Initializers)))
+                {
+                    return this;
+                }
             }
+
             return ListInit(newExpression, initializers);
         }
-    }
-
-    public partial class Expression
-    {
-        /// <summary>
-        /// Creates a <see cref="ListInitExpression"/> that uses a method named "Add" to add elements to a collection.
-        /// </summary>
-        /// <param name="newExpression">A <see cref="NewExpression"/> to set the <see cref="P:ListInitExpression.NewExpression"/> property equal to.</param>
-        /// <param name="initializers">An array of <see cref="Expression"/> objects to use to populate the <see cref="ListInitExpression.Initializers"/> collection.</param>
-        /// <returns>A <see cref="ListInitExpression"/> that has the <see cref="P:ListInitExpression.NodeType"/> property equal to ListInit and the <see cref="P:ListInitExpression.NewExpression"/> property set to the specified value.</returns>
-        public static ListInitExpression ListInit(NewExpression newExpression, params Expression[] initializers)
-        {
-            ContractUtils.RequiresNotNull(newExpression, "newExpression");
-            ContractUtils.RequiresNotNull(initializers, "initializers");
-
-            if (initializers.Length == 0)
-            {
-                throw Error.ListInitializerWithZeroMembers();
-            }
-            var addMethod = FindMethod(newExpression.Type, "Add", null, new[] { initializers[0] },
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            var initArray = new ElementInit[initializers.Length];
-            var index = 0;
-            foreach (var initializer in initializers)
-            {
-                initArray[index] = ElementInit(addMethod, initializer);
-                index++;
-            }
-            ValidateListInitArgs(newExpression.Type, initArray);
-            return new ListInitExpression(newExpression, initArray);
-        }
 
         /// <summary>
-        /// Creates a <see cref="ListInitExpression"/> that uses a method named "Add" to add elements to a collection.
+        /// Dispatches to the specific visit method for this node type.
         /// </summary>
-        /// <param name="newExpression">A <see cref="NewExpression"/> to set the <see cref="P:ListInitExpression.NewExpression"/> property equal to.</param>
-        /// <param name="initializers">An <see cref="IEnumerable{T}"/> that contains <see cref="M:ElementInit"/> objects to use to populate the <see cref="ListInitExpression.Initializers"/> collection.</param>
-        /// <returns>A <see cref="ListInitExpression"/> that has the <see cref="P:ListInitExpression.NodeType"/> property equal to ListInit and the <see cref="P:ListInitExpression.NewExpression"/> property set to the specified value.</returns>
-        public static ListInitExpression ListInit(NewExpression newExpression, IEnumerable<Expression> initializers)
+        protected internal override Expression Accept(ExpressionVisitor visitor)
         {
-            ContractUtils.RequiresNotNull(newExpression, "newExpression");
-            ContractUtils.RequiresNotNull(initializers, "initializers");
-
-            List<ElementInit> initList = null;
-            ElementInit[] initArray = null;
-
-            initializers = initializers.NullOrEmptyChecked
-            (
-                () =>
-                {
-                    throw Error.ListInitializerWithZeroMembers();
-                },
-                () => initList = new List<ElementInit>(),
-                count => initArray = new ElementInit[count]
-            );
-            var enumerator = initializers.GetEnumerator();
-            try
-            {
-                enumerator.MoveNext();
-                var initializer = enumerator.Current;
-                var addMethod = FindMethod(newExpression.Type, "Add", null, new[] { initializer }, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                if (initList != null)
-                {
-                    initList.Add(ElementInit(addMethod, initializer));
-                    while (enumerator.MoveNext())
-                    {
-                        initializer = enumerator.Current;
-                        initList.Add(ElementInit(addMethod, initializer));
-                    }
-                    initArray = initList.ToArray();
-                }
-                else
-                {
-                    var index = 0;
-                    initArray[index] = ElementInit(addMethod, initializer);
-                    index++;
-                    while (enumerator.MoveNext())
-                    {
-                        initializer = enumerator.Current;
-                        initArray[index] = ElementInit(addMethod, initializer);
-                        index++;
-                    }
-                }
-            }
-            finally
-            {
-                enumerator.Dispose();
-            }
-            ValidateListInitArgs(newExpression.Type, initArray);
-            return new ListInitExpression(newExpression, initArray);
-        }
-
-        /// <summary>
-        /// Creates a <see cref="ListInitExpression"/> that uses a specified method to add elements to a collection.
-        /// </summary>
-        /// <param name="newExpression">A <see cref="NewExpression"/> to set the <see cref="P:ListInitExpression.NewExpression"/> property equal to.</param>
-        /// <param name="addMethod">A <see cref="MethodInfo"/> that represents an instance method named "Add" (case insensitive), that adds an element to a collection. </param>
-        /// <param name="initializers">An array of <see cref="Expression"/> objects to use to populate the <see cref="ListInitExpression.Initializers"/> collection.</param>
-        /// <returns>A <see cref="ListInitExpression"/> that has the <see cref="P:ListInitExpression.NodeType"/> property equal to ListInit and the <see cref="P:ListInitExpression.NewExpression"/> property set to the specified value.</returns>
-        public static ListInitExpression ListInit(NewExpression newExpression, MethodInfo addMethod, params Expression[] initializers)
-        {
-            if (addMethod == null)
-            {
-                return ListInit(newExpression, initializers as IEnumerable<Expression>);
-            }
-            ContractUtils.RequiresNotNull(newExpression, "newExpression");
-            ContractUtils.RequiresNotNull(initializers, "initializers");
-            if (initializers.Length == 0)
-            {
-                throw Error.ListInitializerWithZeroMembers();
-            }
-            var initArray = new ElementInit[initializers.Length];
-            var index = 0;
-            foreach (var initializer in initializers)
-            {
-                initArray[index] = ElementInit(addMethod, initializer);
-                index++;
-            }
-            ValidateListInitArgs(newExpression.Type, initArray);
-            return new ListInitExpression(newExpression, initArray);
-        }
-
-        /// <summary>
-        /// Creates a <see cref="ListInitExpression"/> that uses a specified method to add elements to a collection.
-        /// </summary>
-        /// <param name="newExpression">A <see cref="NewExpression"/> to set the <see cref="P:ListInitExpression.NewExpression"/> property equal to.</param>
-        /// <param name="addMethod">A <see cref="MethodInfo"/> that represents an instance method named "Add" (case insensitive), that adds an element to a collection. </param>
-        /// <param name="initializers">An <see cref="IEnumerable{T}"/> that contains <see cref="Expression"/> objects to use to populate the Initializers collection.</param>
-        /// <returns>A <see cref="ListInitExpression"/> that has the <see cref="P:ListInitExpression.NodeType"/> property equal to ListInit and the <see cref="P:ListInitExpression.NewExpression"/> property set to the specified value.</returns>
-        public static ListInitExpression ListInit(NewExpression newExpression, MethodInfo addMethod, IEnumerable<Expression> initializers)
-        {
-            if (addMethod == null)
-            {
-                return ListInit(newExpression, initializers);
-            }
-            ContractUtils.RequiresNotNull(newExpression, "newExpression");
-            ContractUtils.RequiresNotNull(initializers, "initializers");
-
-            List<ElementInit> initList = null;
-            ElementInit[] initArray = null;
-
-            initializers = initializers.NullOrEmptyChecked
-                (
-                    () =>
-                    {
-                        throw Error.ListInitializerWithZeroMembers();
-                    },
-                    () => initList = new List<ElementInit>(),
-                    count => initArray = new ElementInit[count]
-                );
-            var enumerator = initializers.GetEnumerator();
-            try
-            {
-                enumerator.MoveNext();
-                var initializer = enumerator.Current;
-                if (initList != null)
-                {
-                    initList.Add(ElementInit(addMethod, initializer));
-                    while (enumerator.MoveNext())
-                    {
-                        initializer = enumerator.Current;
-                        initList.Add(ElementInit(addMethod, initializer));
-                    }
-                    initArray = initList.ToArray();
-                }
-                else
-                {
-                    var index = 0;
-                    initArray[index] = ElementInit(addMethod, initializer);
-                    index++;
-                    while (enumerator.MoveNext())
-                    {
-                        initializer = enumerator.Current;
-                        initArray[index] = ElementInit(addMethod, initializer);
-                        index++;
-                    }
-                }
-            }
-            finally
-            {
-                enumerator.Dispose();
-            }
-            ValidateListInitArgs(newExpression.Type, initArray);
-            return new ListInitExpression(newExpression, initArray);
-        }
-
-        /// <summary>
-        /// Creates a <see cref="ListInitExpression"/> that uses specified <see cref="M:ElementInit"/> objects to initialize a collection.
-        /// </summary>
-        /// <param name="newExpression">A <see cref="NewExpression"/> to set the <see cref="P:ListInitExpression.NewExpression"/> property equal to.</param>
-        /// <param name="initializers">An array that contains <see cref="M:ElementInit"/> objects to use to populate the <see cref="ListInitExpression.Initializers"/> collection.</param>
-        /// <returns>
-        /// A <see cref="ListInitExpression"/> that has the <see cref="P:Expressions.NodeType"/> property equal to ListInit
-        /// and the <see cref="P:ListInitExpression.NewExpression"/> and <see cref="P:ListInitExpression.Initializers"/> properties set to the specified values.
-        /// </returns>
-        /// <remarks>
-        /// The <see cref="P:Expressions.Type"/> property of <paramref name="newExpression"/> must represent a type that implements <see cref="System.Collections.IEnumerable"/>.
-        /// The <see cref="P:Expressions.Type"/> property of the resulting <see cref="ListInitExpression"/> is equal to newExpression.Type.
-        /// </remarks>
-        public static ListInitExpression ListInit(NewExpression newExpression, params ElementInit[] initializers)
-        {
-            ContractUtils.RequiresNotNull(newExpression, "newExpression");
-            ContractUtils.RequiresNotNull(initializers, "initializers");
-            if (initializers.Length == 0)
-            {
-                throw Error.ListInitializerWithZeroMembers();
-            }
-            var initArray = new ElementInit[initializers.Length];
-            var index = 0;
-            foreach (var initializer in initializers)
-            {
-                initArray[index] = initializer;
-                index++;
-            }
-            ValidateListInitArgs(newExpression.Type, initArray);
-            return new ListInitExpression(newExpression, initArray);
-        }
-
-        /// <summary>
-        /// Creates a <see cref="ListInitExpression"/> that uses specified <see cref="M:ElementInit"/> objects to initialize a collection.
-        /// </summary>
-        /// <param name="newExpression">A <see cref="NewExpression"/> to set the <see cref="P:ListInitExpression.NewExpression"/> property equal to.</param>
-        /// <param name="initializers">An <see cref="IEnumerable{T}"/> that contains <see cref="M:ElementInit"/> objects to use to populate the <see cref="ListInitExpression.Initializers"/> collection.</param>
-        /// <returns>An <see cref="IEnumerable{T}"/> that contains <see cref="M:ElementInit"/> objects to use to populate the <see cref="ListInitExpression.Initializers"/> collection.</returns>
-        /// <remarks>
-        /// The <see cref="P:Expressions.Type"/> property of <paramref name="newExpression"/> must represent a type that implements <see cref="System.Collections.IEnumerable"/>.
-        /// The <see cref="P:Expressions.Type"/> property of the resulting <see cref="ListInitExpression"/> is equal to newExpression.Type.
-        /// </remarks>
-        public static ListInitExpression ListInit(NewExpression newExpression, IEnumerable<ElementInit> initializers)
-        {
-            ContractUtils.RequiresNotNull(newExpression, "newExpression");
-            ContractUtils.RequiresNotNull(initializers, "initializers");
-
-            List<ElementInit> initList = null;
-            ElementInit[] initArray = null;
-
-            initializers = initializers.NullOrEmptyChecked
-                (
-                    () =>
-                    {
-                        throw Error.ListInitializerWithZeroMembers();
-                    },
-                    () => initList = new List<ElementInit>(),
-                    count => initArray = new ElementInit[count]
-                );
-            var enumerator = initializers.GetEnumerator();
-            try
-            {
-                enumerator.MoveNext();
-                var initializer = enumerator.Current;
-                if (initList != null)
-                {
-                    initList.Add(initializer);
-                    while (enumerator.MoveNext())
-                    {
-                        initializer = enumerator.Current;
-                        initList.Add(initializer);
-                    }
-                    initArray = initList.ToArray();
-                }
-                else
-                {
-                    var index = 0;
-                    initArray[index] = initializer;
-                    index++;
-                    while (enumerator.MoveNext())
-                    {
-                        initializer = enumerator.Current;
-                        initArray[index] = initializer;
-                        index++;
-                    }
-                }
-            }
-            finally
-            {
-                enumerator.Dispose();
-            }
-            ValidateListInitArgs(newExpression.Type, initArray);
-            return new ListInitExpression(newExpression, initArray);
+            return visitor.VisitListInit(this);
         }
     }
 }

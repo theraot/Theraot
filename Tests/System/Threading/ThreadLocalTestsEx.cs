@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace MonoTests.System.Threading
 {
-    [TestFixtureAttribute]
+    [TestFixture]
     public class ThreadLocalTestsEx
     {
 #if NET20 || NET30 || NET35 || NET45

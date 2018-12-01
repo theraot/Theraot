@@ -18,14 +18,14 @@ namespace System.Runtime.CompilerServices
     ///       Using tracing and diagnostic routines.
     ///     </item>
     ///     <item>
-    ///       Implementing the <see cref="System.ComponentModel.INotifyPropertyChanged"/> interface when binding data.
+    ///       Implementing the <see cref="ComponentModel.INotifyPropertyChanged"/> interface when binding data.
     ///       This interface allows the property of an object to notify a bound control that the property has changed,
     ///       so that the control can display the updated information.
     ///       Without the CallerMemberName attribute, you must specify the property name as a literal.
     ///     </item>
     ///   </list>
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class CallerMemberNameAttribute : Attribute
     {
         [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]

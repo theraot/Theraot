@@ -23,6 +23,7 @@
 #if NET20 || NET30 || NET35
 
 using Theraot.Core;
+using Theraot.Threading;
 
 namespace System.Threading
 {
@@ -30,21 +31,13 @@ namespace System.Threading
     {
         private const int _maxTime = 200;
 
-        private int _count;
+        public int Count { get; private set; }
 
-        public int Count
-        {
-            get { return _count; }
-        }
-
-        public bool NextSpinWillYield
-        {
-            get { return EnvironmentHelper.IsSingleCPU || _count % Theraot.Threading.ThreadingHelper.SleepCountHint == 0; }
-        }
+        public bool NextSpinWillYield => EnvironmentHelper.IsSingleCPU || Count % ThreadingHelper.SleepCountHint == 0;
 
         public static void SpinUntil(Func<bool> condition)
         {
-            Theraot.Threading.ThreadingHelper.SpinWaitUntil(condition);
+            ThreadingHelper.SpinWaitUntil(condition);
         }
 
         public static bool SpinUntil(Func<bool> condition, TimeSpan timeout)
@@ -54,24 +47,24 @@ namespace System.Threading
 
         public static bool SpinUntil(Func<bool> condition, int millisecondsTimeout)
         {
-            return Theraot.Threading.ThreadingHelper.SpinWaitUntil(condition, TimeSpan.FromMilliseconds(millisecondsTimeout));
+            return ThreadingHelper.SpinWaitUntil(condition, TimeSpan.FromMilliseconds(millisecondsTimeout));
         }
 
         public void Reset()
         {
-            _count = 0;
+            Count = 0;
         }
 
         public void SpinOnce()
         {
-            _count++;
-            if (EnvironmentHelper.IsSingleCPU || _count % Theraot.Threading.ThreadingHelper.SleepCountHint == 0)
+            Count++;
+            if (EnvironmentHelper.IsSingleCPU || Count % ThreadingHelper.SleepCountHint == 0)
             {
                 Thread.Sleep(0);
             }
             else
             {
-                Thread.SpinWait(Math.Min(_count, _maxTime) << 1);
+                Thread.SpinWait(Math.Min(Count, _maxTime) << 1);
             }
         }
     }

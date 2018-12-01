@@ -353,6 +353,7 @@ namespace MonoTests.System.Linq.Expressions
                 return new B();
             }
 
+            // ReSharper disable once UnusedMember.Local
             public static bool op_True<T>(B x)
             {
                 GC.KeepAlive(x);
@@ -360,6 +361,7 @@ namespace MonoTests.System.Linq.Expressions
                 return true;
             }
 
+            // ReSharper disable once UnusedMember.Local
             public static bool op_False(B x)
             {
                 GC.KeepAlive(x);

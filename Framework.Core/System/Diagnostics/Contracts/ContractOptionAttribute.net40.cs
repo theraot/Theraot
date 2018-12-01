@@ -13,44 +13,27 @@ namespace System.Diagnostics.Contracts
     [Conditional("CONTRACTS_FULL")]
     public sealed class ContractOptionAttribute : Attribute
     {
-        private readonly string _category;
-        private readonly string _setting;
-        private readonly bool _enabled;
-        private readonly string _value;
-
         public ContractOptionAttribute(string category, string setting, bool enabled)
         {
-            _category = category;
-            _setting = setting;
-            _enabled = enabled;
+            Category = category;
+            Setting = setting;
+            Enabled = enabled;
         }
 
         public ContractOptionAttribute(string category, string setting, string value)
         {
-            _category = category;
-            _setting = setting;
-            _value = value;
+            Category = category;
+            Setting = setting;
+            Value = value;
         }
 
-        public string Category
-        {
-            get { return _category; }
-        }
+        public string Category { get; }
 
-        public string Setting
-        {
-            get { return _setting; }
-        }
+        public string Setting { get; }
 
-        public bool Enabled
-        {
-            get { return _enabled; }
-        }
+        public bool Enabled { get; }
 
-        public string Value
-        {
-            get { return _value; }
-        }
+        public string Value { get; }
     }
 }
 

@@ -9,99 +9,9 @@ namespace System.Numerics
     [Serializable]
     public partial struct BigInteger : IFormattable, IComparable, IComparable<BigInteger>, IEquatable<BigInteger>
     {
-        internal readonly int InternalSign;
-
         internal readonly uint[] InternalBits;
-
+        internal readonly int InternalSign;
         private static readonly BigInteger _bigIntegerMinInt = new BigInteger(-1, new[] { unchecked((uint)int.MinValue) });
-
-        private static readonly BigInteger _bigIntegerOneInt = new BigInteger(1);
-
-        private static readonly BigInteger _bigIntegerZeroInt = new BigInteger(0);
-
-        private static readonly BigInteger _bigIntegerMinusOneInt = new BigInteger(-1);
-
-        /// <summary>Indicates whether the value of the current <see cref="T:System.Numerics.BigInteger" /> object is an even number.</summary>
-        /// <returns>true if the value of the <see cref="T:System.Numerics.BigInteger" /> object is an even number; otherwise, false.</returns>
-        public bool IsEven
-        {
-            get { return (InternalBits != null ? (InternalBits[0] & 1) == 0 : (InternalSign & 1) == 0); }
-        }
-
-        /// <summary>Indicates whether the value of the current <see cref="T:System.Numerics.BigInteger" /> object is <see cref="P:System.Numerics.BigInteger.One" />.</summary>
-        /// <returns>true if the value of the <see cref="T:System.Numerics.BigInteger" /> object is <see cref="P:System.Numerics.BigInteger.One" />; otherwise, false.</returns>
-        public bool IsOne
-        {
-            get { return InternalSign == 1 && InternalBits == null; }
-        }
-
-        /// <summary>Indicates whether the value of the current <see cref="T:System.Numerics.BigInteger" /> object is a power of two.</summary>
-        /// <returns>true if the value of the <see cref="T:System.Numerics.BigInteger" /> object is a power of two; otherwise, false.</returns>
-        public bool IsPowerOfTwo
-        {
-            get
-            {
-                if (InternalBits == null)
-                {
-                    return (InternalSign & (InternalSign - 1)) == 0 && InternalSign != 0;
-                }
-                if (InternalSign != 1)
-                {
-                    return false;
-                }
-                var index = Length(InternalBits) - 1;
-                if ((InternalBits[index] & InternalBits[index] - 1) != 0)
-                {
-                    return false;
-                }
-                do
-                {
-                    index = index - 1;
-                    if (index >= 0)
-                    {
-                        continue;
-                    }
-                    return true;
-                }
-                while (InternalBits[index] == 0);
-                return false;
-            }
-        }
-
-        /// <summary>Indicates whether the value of the current <see cref="T:System.Numerics.BigInteger" /> object is <see cref="P:System.Numerics.BigInteger.Zero" />.</summary>
-        /// <returns>true if the value of the <see cref="T:System.Numerics.BigInteger" /> object is <see cref="P:System.Numerics.BigInteger.Zero" />; otherwise, false.</returns>
-        public bool IsZero
-        {
-            get { return InternalSign == 0; }
-        }
-
-        /// <summary>Gets a value that represents the number negative one (-1).</summary>
-        /// <returns>An integer whose value is negative one (-1).</returns>
-        public static BigInteger MinusOne
-        {
-            get { return _bigIntegerMinusOneInt; }
-        }
-
-        /// <summary>Gets a value that represents the number one (1).</summary>
-        /// <returns>An object whose value is one (1).</returns>
-        public static BigInteger One
-        {
-            get { return _bigIntegerOneInt; }
-        }
-
-        /// <summary>Gets a number that indicates the sign (negative, positive, or zero) of the current <see cref="T:System.Numerics.BigInteger" /> object.</summary>
-        /// <returns>A number that indicates the sign of the <see cref="T:System.Numerics.BigInteger" /> object, as shown in the following table.NumberDescription-1The value of this object is negative.0The value of this object is 0 (zero).1The value of this object is positive.</returns>
-        public int Sign
-        {
-            get { return (InternalSign >> 31) - (-InternalSign >> 31); }
-        }
-
-        /// <summary>Gets a value that represents the number 0 (zero).</summary>
-        /// <returns>An integer whose value is 0 (zero).</returns>
-        public static BigInteger Zero
-        {
-            get { return _bigIntegerZeroInt; }
-        }
 
         /// <summary>Initializes a new instance of the <see cref="T:System.Numerics.BigInteger" /> structure using a 32-bit signed integer value.</summary>
         /// <param name="value">A 32-bit signed integer.</param>
@@ -160,7 +70,7 @@ namespace System.Numerics
             }
             else
             {
-                num = (ulong)(-value);
+                num = (ulong)-value;
                 InternalSign = -1;
             }
             InternalBits = new[] { (uint)num, (uint)(num >> 32) };
@@ -227,7 +137,7 @@ namespace System.Numerics
             }
             if (size == 0)
             {
-                this = _bigIntegerZeroInt;
+                this = Zero;
             }
             else if (size != 1 || bits[0] <= 0)
             {
@@ -241,7 +151,7 @@ namespace System.Numerics
                 {
                     InternalBits[2] = (uint)bits[2];
                 }
-                InternalSign = ((bits[3] & int.MinValue) == 0 ? 1 : -1);
+                InternalSign = (bits[3] & int.MinValue) == 0 ? 1 : -1;
             }
             else
             {
@@ -260,10 +170,10 @@ namespace System.Numerics
         {
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
             var valueLength = value.Length;
-            var isNegative = (valueLength > 0 && (value[valueLength - 1] & 128) == 128);
+            var isNegative = valueLength > 0 && (value[valueLength - 1] & 128) == 128;
             while (valueLength > 0 && value[valueLength - 1] == 0)
             {
                 valueLength--;
@@ -284,11 +194,12 @@ namespace System.Numerics
                 var dwordIndex = 0;
                 for (; dwordIndex < dwordCount - (unalignedBytes == 0 ? 0 : 1); dwordIndex++)
                 {
+                    ref var current = ref internalBits[dwordIndex];
                     for (var byteInDword = 0; byteInDword < 4; byteInDword++)
                     {
                         isZero &= value[byteIndex] == 0;
-                        internalBits[dwordIndex] <<= 8;
-                        internalBits[dwordIndex] |= value[byteIndex];
+                        current <<= 8;
+                        current |= value[byteIndex];
                         byteIndex--;
                     }
                     byteIndex += 8;
@@ -301,14 +212,16 @@ namespace System.Numerics
                     }
                     for (byteIndex = valueLength - 1; byteIndex >= valueLength - unalignedBytes; byteIndex--)
                     {
-                        isZero &= value[byteIndex] == 0;
-                        internalBits[dwordIndex] <<= 8;
-                        internalBits[dwordIndex] |= value[byteIndex];
+                        ref var current = ref internalBits[dwordIndex];
+                        ref var currentValue = ref value[byteIndex];
+                        isZero &= currentValue == 0;
+                        current <<= 8;
+                        current |= currentValue;
                     }
                 }
                 if (isZero)
                 {
-                    this = _bigIntegerZeroInt;
+                    this = Zero;
                 }
                 else if (isNegative)
                 {
@@ -323,7 +236,7 @@ namespace System.Numerics
                         switch (internalBits[0])
                         {
                             case 1:
-                                this = _bigIntegerMinusOneInt;
+                                this = MinusOne;
                                 break;
 
                             case unchecked((uint)int.MinValue):
@@ -396,7 +309,7 @@ namespace System.Numerics
         {
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
             var length = value.Length;
             while (length > 0 && value[length - 1] == 0)
@@ -405,17 +318,17 @@ namespace System.Numerics
             }
             if (length == 0)
             {
-                this = _bigIntegerZeroInt;
+                this = Zero;
             }
             else if (length != 1 || value[0] >= unchecked((uint)int.MinValue))
             {
-                InternalSign = (!negative ? 1 : -1);
+                InternalSign = !negative ? 1 : -1;
                 InternalBits = new uint[length];
                 Array.Copy(value, InternalBits, length);
             }
             else
             {
-                InternalSign = (!negative ? (int)value[0] : (int)(-value[0]));
+                InternalSign = !negative ? (int)value[0] : (int)-value[0];
                 InternalBits = null;
                 if (InternalSign == int.MinValue)
                 {
@@ -428,17 +341,17 @@ namespace System.Numerics
         {
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
             var dwordCount = value.Length;
-            var isNegative = (dwordCount > 0 && (value[dwordCount - 1] & unchecked((uint)int.MinValue)) == unchecked((uint)int.MinValue));
+            var isNegative = dwordCount > 0 && (value[dwordCount - 1] & unchecked((uint)int.MinValue)) == unchecked((uint)int.MinValue);
             while (dwordCount > 0 && value[dwordCount - 1] == 0)
             {
                 dwordCount--;
             }
             if (dwordCount == 0)
             {
-                this = _bigIntegerZeroInt;
+                this = Zero;
                 return;
             }
             if (dwordCount == 1)
@@ -496,7 +409,7 @@ namespace System.Numerics
             }
             else if (value[0] == 1)
             {
-                this = _bigIntegerMinusOneInt;
+                this = MinusOne;
             }
             else if (value[0] != unchecked((uint)int.MinValue))
             {
@@ -509,12 +422,73 @@ namespace System.Numerics
             }
         }
 
+        /// <summary>Gets a value that represents the number negative one (-1).</summary>
+        /// <returns>An integer whose value is negative one (-1).</returns>
+        public static BigInteger MinusOne { get; } = new BigInteger(-1);
+
+        /// <summary>Gets a value that represents the number one (1).</summary>
+        /// <returns>An object whose value is one (1).</returns>
+        public static BigInteger One { get; } = new BigInteger(1);
+
+        /// <summary>Gets a value that represents the number 0 (zero).</summary>
+        /// <returns>An integer whose value is 0 (zero).</returns>
+        public static BigInteger Zero { get; } = new BigInteger(0);
+
+        /// <summary>Indicates whether the value of the current <see cref="T:System.Numerics.BigInteger" /> object is an even number.</summary>
+        /// <returns>true if the value of the <see cref="T:System.Numerics.BigInteger" /> object is an even number; otherwise, false.</returns>
+        public bool IsEven => InternalBits != null ? (InternalBits[0] & 1) == 0 : (InternalSign & 1) == 0;
+
+        /// <summary>Indicates whether the value of the current <see cref="T:System.Numerics.BigInteger" /> object is <see cref="P:System.Numerics.BigInteger.One" />.</summary>
+        /// <returns>true if the value of the <see cref="T:System.Numerics.BigInteger" /> object is <see cref="P:System.Numerics.BigInteger.One" />; otherwise, false.</returns>
+        public bool IsOne => InternalSign == 1 && InternalBits == null;
+
+        /// <summary>Indicates whether the value of the current <see cref="T:System.Numerics.BigInteger" /> object is a power of two.</summary>
+        /// <returns>true if the value of the <see cref="T:System.Numerics.BigInteger" /> object is a power of two; otherwise, false.</returns>
+        public bool IsPowerOfTwo
+        {
+            get
+            {
+                if (InternalBits == null)
+                {
+                    return (InternalSign & (InternalSign - 1)) == 0 && InternalSign != 0;
+                }
+                if (InternalSign != 1)
+                {
+                    return false;
+                }
+                var index = Length(InternalBits) - 1;
+                if ((InternalBits[index] & InternalBits[index] - 1) != 0)
+                {
+                    return false;
+                }
+                do
+                {
+                    index = index - 1;
+                    if (index >= 0)
+                    {
+                        continue;
+                    }
+                    return true;
+                }
+                while (InternalBits[index] == 0);
+                return false;
+            }
+        }
+
+        /// <summary>Indicates whether the value of the current <see cref="T:System.Numerics.BigInteger" /> object is <see cref="P:System.Numerics.BigInteger.Zero" />.</summary>
+        /// <returns>true if the value of the <see cref="T:System.Numerics.BigInteger" /> object is <see cref="P:System.Numerics.BigInteger.Zero" />; otherwise, false.</returns>
+        public bool IsZero => InternalSign == 0;
+
+        /// <summary>Gets a number that indicates the sign (negative, positive, or zero) of the current <see cref="T:System.Numerics.BigInteger" /> object.</summary>
+        /// <returns>A number that indicates the sign of the <see cref="T:System.Numerics.BigInteger" /> object, as shown in the following table.NumberDescription-1The value of this object is negative.0The value of this object is 0 (zero).1The value of this object is positive.</returns>
+        public int Sign => (InternalSign >> 31) - (-InternalSign >> 31);
+
         /// <summary>Gets the absolute value of a <see cref="T:System.Numerics.BigInteger" /> object.</summary>
         /// <returns>The absolute value of <paramref name="value" />.</returns>
         /// <param name="value">A number.</param>
         public static BigInteger Abs(BigInteger value)
         {
-            return (value < Zero ? -value : value);
+            return value < Zero ? -value : value;
         }
 
         /// <summary>Adds two <see cref="T:System.Numerics.BigInteger" /> values and returns the result.</summary>
@@ -526,17 +500,6 @@ namespace System.Numerics
             return left + right;
         }
 
-        internal static int BitLengthOfUInt(uint x)
-        {
-            var numBits = 0;
-            while (x > 0)
-            {
-                x = x >> 1;
-                numBits++;
-            }
-            return numBits;
-        }
-
         /// <summary>Compares two <see cref="T:System.Numerics.BigInteger" /> values and returns an integer that indicates whether the first value is less than, equal to, or greater than the second value.</summary>
         /// <returns>A signed integer that indicates the relative values of <paramref name="left" /> and <paramref name="right" />, as shown in the following table.ValueConditionLess than zero<paramref name="left" /> is less than <paramref name="right" />.Zero<paramref name="left" /> equals <paramref name="right" />.Greater than zero<paramref name="left" /> is greater than <paramref name="right" />.</returns>
         /// <param name="left">The first value to compare.</param>
@@ -544,115 +507,6 @@ namespace System.Numerics
         public static int Compare(BigInteger left, BigInteger right)
         {
             return left.CompareTo(right);
-        }
-
-        /// <summary>Compares this instance to a signed 64-bit integer and returns an integer that indicates whether the value of this instance is less than, equal to, or greater than the value of the signed 64-bit integer.</summary>
-        /// <returns>A signed integer value that indicates the relationship of this instance to <paramref name="other" />, as shown in the following table.Return valueDescriptionLess than zeroThe current instance is less than <paramref name="other" />.ZeroThe current instance equals <paramref name="other" />.Greater than zeroThe current instance is greater than <paramref name="other" />.</returns>
-        /// <param name="other">The signed 64-bit integer to compare.</param>
-        public int CompareTo(long other)
-        {
-            if (InternalBits == null)
-            {
-                return ((long)InternalSign).CompareTo(other);
-            }
-            if ((InternalSign ^ other) >= 0)
-            {
-                var length = Length(InternalBits);
-                if (length <= 2)
-                {
-                    var magnitude = (other >= 0 ? (ulong)other : (ulong)(-other));
-                    var unsigned = (length != 2 ? InternalBits[0] : NumericsHelpers.MakeUlong(InternalBits[1], InternalBits[0]));
-                    return InternalSign * unsigned.CompareTo(magnitude);
-                }
-            }
-            return InternalSign;
-        }
-
-        /// <summary>Compares this instance to an unsigned 64-bit integer and returns an integer that indicates whether the value of this instance is less than, equal to, or greater than the value of the unsigned 64-bit integer.</summary>
-        /// <returns>A signed integer that indicates the relative value of this instance and <paramref name="other" />, as shown in the following table.Return valueDescriptionLess than zeroThe current instance is less than <paramref name="other" />.ZeroThe current instance equals <paramref name="other" />.Greater than zeroThe current instance is greater than <paramref name="other" />.</returns>
-        /// <param name="other">The unsigned 64-bit integer to compare.</param>
-        [CLSCompliant(false)]
-        public int CompareTo(ulong other)
-        {
-            if (InternalSign < 0)
-            {
-                return -1;
-            }
-            if (InternalBits == null)
-            {
-                return ((ulong)InternalSign).CompareTo(other);
-            }
-            var length = Length(InternalBits);
-            if (length > 2)
-            {
-                return 1;
-            }
-            return ((length != 2 ? InternalBits[0] : NumericsHelpers.MakeUlong(InternalBits[1], InternalBits[0]))).CompareTo(other);
-        }
-
-        /// <summary>Compares this instance to a second <see cref="T:System.Numerics.BigInteger" /> and returns an integer that indicates whether the value of this instance is less than, equal to, or greater than the value of the specified object.</summary>
-        /// <returns>A signed integer value that indicates the relationship of this instance to <paramref name="other" />, as shown in the following table.Return valueDescriptionLess than zeroThe current instance is less than <paramref name="other" />.ZeroThe current instance equals <paramref name="other" />.Greater than zeroThe current instance is greater than <paramref name="other" />.</returns>
-        /// <param name="other">The object to compare.</param>
-        public int CompareTo(BigInteger other)
-        {
-            if ((InternalSign ^ other.InternalSign) < 0)
-            {
-                return (InternalSign >= 0 ? 1 : -1);
-            }
-            if (InternalBits == null)
-            {
-                if (other.InternalBits != null)
-                {
-                    return -other.InternalSign;
-                }
-                int result;
-                if (InternalSign >= other.InternalSign)
-                {
-                    result = (InternalSign <= other.InternalSign ? 0 : 1);
-                }
-                else
-                {
-                    result = -1;
-                }
-                return result;
-            }
-            if (other.InternalBits != null)
-            {
-                var length = Length(InternalBits);
-                var otherLength = Length(other.InternalBits);
-                if (Length(InternalBits) <= otherLength)
-                {
-                    if (length < otherLength)
-                    {
-                        return -InternalSign;
-                    }
-                    var diffLength = GetDiffLength(InternalBits, other.InternalBits, length);
-                    if (diffLength == 0)
-                    {
-                        return 0;
-                    }
-                    return (InternalBits[diffLength - 1] >= other.InternalBits[diffLength - 1] ? InternalSign : -InternalSign);
-                }
-            }
-            return InternalSign;
-        }
-
-        /// <summary>Compares this instance to a specified object and returns an integer that indicates whether the value of this instance is less than, equal to, or greater than the value of the specified object.</summary>
-        /// <returns>A signed integer that indicates the relationship of the current instance to the <paramref name="obj" /> parameter, as shown in the following table.Return valueDescriptionLess than zeroThe current instance is less than <paramref name="obj" />.ZeroThe current instance equals <paramref name="obj" />.Greater than zeroThe current instance is greater than <paramref name="obj" />, or the <paramref name="obj" /> parameter is null. </returns>
-        /// <param name="obj">The object to compare.</param>
-        /// <exception cref="T:System.ArgumentException">
-        ///   <paramref name="obj" /> is not a <see cref="T:System.Numerics.BigInteger" />. </exception>
-        public int CompareTo(object obj)
-        {
-            if (obj == null)
-            {
-                return 1;
-            }
-            if (!(obj is BigInteger))
-            {
-                throw new ArgumentException("The parameter must be a BigInteger.");
-            }
-            return CompareTo((BigInteger)obj);
         }
 
         /// <summary>Divides one <see cref="T:System.Numerics.BigInteger" /> value by another and returns the result.</summary>
@@ -685,149 +539,158 @@ namespace System.Numerics
             return regQuo.GetInteger(signNum * signDen);
         }
 
-        /// <summary>Returns a value that indicates whether the current instance and a specified object have the same value.</summary>
-        /// <returns>true if the <paramref name="obj" /> parameter is a <see cref="T:System.Numerics.BigInteger" /> object or a type capable of implicit conversion to a <see cref="T:System.Numerics.BigInteger" /> value, and its value is equal to the value of the current <see cref="T:System.Numerics.BigInteger" /> object; otherwise, false.</returns>
-        /// <param name="obj">The object to compare. </param>
-        public override bool Equals(object obj)
+        public static explicit operator BigInteger(float value)
         {
-            if (!(obj is BigInteger))
-            {
-                return false;
-            }
-            return Equals((BigInteger)obj);
+            return new BigInteger(value);
         }
 
-        /// <summary>Returns a value that indicates whether the current instance and a signed 64-bit integer have the same value.</summary>
-        /// <returns>true if the signed 64-bit integer and the current instance have the same value; otherwise, false.</returns>
-        /// <param name="other">The signed 64-bit integer value to compare.</param>
-        public bool Equals(long other)
+        public static explicit operator BigInteger(double value)
         {
-            if (InternalBits == null)
-            {
-                return InternalSign == other;
-            }
-            if ((InternalSign ^ other) >= 0)
-            {
-                var length = Length(InternalBits);
-                if (length <= 2)
-                {
-                    var magnitude = (other >= 0 ? (ulong)other : (ulong)(-other));
-                    if (length == 1)
-                    {
-                        return InternalBits[0] == magnitude;
-                    }
-                    return NumericsHelpers.MakeUlong(InternalBits[1], InternalBits[0]) == magnitude;
-                }
-            }
-            return false;
+            return new BigInteger(value);
         }
 
-        /// <summary>Returns a value that indicates whether the current instance and an unsigned 64-bit integer have the same value.</summary>
-        /// <returns>true if the current instance and the unsigned 64-bit integer have the same value; otherwise, false.</returns>
-        /// <param name="other">The unsigned 64-bit integer to compare.</param>
-        [CLSCompliant(false)]
-        public bool Equals(ulong other)
+        public static explicit operator BigInteger(decimal value)
         {
-            if (InternalSign < 0)
+            return new BigInteger(value);
+        }
+
+        public static explicit operator byte(BigInteger value)
+        {
+            return checked((byte)(int)value);
+        }
+
+        public static explicit operator decimal(BigInteger value)
+        {
+            if (value.InternalBits == null)
             {
-                return false;
+                return value.InternalSign;
             }
-            if (InternalBits == null)
+            var length = Length(value.InternalBits);
+            if (length > 3)
             {
-                return InternalSign == unchecked((long)other);
+                throw new OverflowException("Value was either too large or too small for a Decimal.");
             }
-            var length = Length(InternalBits);
+            var lo = 0;
+            var mi = 0;
+            var hi = 0;
             if (length > 2)
             {
-                return false;
+                hi = (int)value.InternalBits[2];
             }
-            if (length == 1)
+            if (length > 1)
             {
-                return InternalBits[0] == other;
+                mi = (int)value.InternalBits[1];
             }
-            return NumericsHelpers.MakeUlong(InternalBits[1], InternalBits[0]) == other;
+            if (length > 0)
+            {
+                lo = (int)value.InternalBits[0];
+            }
+            return new decimal(lo, mi, hi, value.InternalSign < 0, 0);
         }
 
-        /// <summary>Returns a value that indicates whether the current instance and a specified <see cref="T:System.Numerics.BigInteger" /> object have the same value.</summary>
-        /// <returns>true if this <see cref="T:System.Numerics.BigInteger" /> object and <paramref name="other" /> have the same value; otherwise, false.</returns>
-        /// <param name="other">The object to compare.</param>
-        public bool Equals(BigInteger other)
+        public static explicit operator double(BigInteger value)
         {
-            if (InternalSign != other.InternalSign)
+            if (value.InternalBits == null)
             {
-                return false;
+                return value.InternalSign;
             }
-            if (InternalBits == other.InternalBits)
-            {
-                return true;
-            }
-            if (InternalBits == null || other.InternalBits == null)
-            {
-                return false;
-            }
-            var length = Length(InternalBits);
-            if (length != Length(other.InternalBits))
-            {
-                return false;
-            }
-            var diffLength = GetDiffLength(InternalBits, other.InternalBits, length);
-            return diffLength == 0;
+            var sign = 1;
+            var bigIntegerBuilder = new BigIntegerBuilder(value, ref sign);
+            bigIntegerBuilder.GetApproxParts(out int exp, out ulong man);
+            return NumericHelper.BuildDouble(sign, man, exp);
         }
 
-        internal static int GetDiffLength(uint[] internalBits, uint[] otherInternalBits, int length)
+        public static explicit operator float(BigInteger value)
         {
-            var index = length;
-            do
-            {
-                index = index - 1;
-                if (index >= 0)
-                {
-                    continue;
-                }
-                return 0;
-            }
-            while (internalBits[index] == otherInternalBits[index]);
-            return index + 1;
+            return (float)(double)value;
         }
 
-        /// <summary>Returns the hash code for the current <see cref="T:System.Numerics.BigInteger" /> object.</summary>
-        /// <returns>A 32-bit signed integer hash code.</returns>
-        public override int GetHashCode()
+        public static explicit operator int(BigInteger value)
         {
-            if (InternalBits == null)
+            if (value.InternalBits == null)
             {
-                return InternalSign;
+                return value.InternalSign;
             }
-            var sign = InternalSign;
-            var index = Length(InternalBits);
-            while (true)
+            if (Length(value.InternalBits) > 1)
             {
-                index = index - 1;
-                if (index < 0)
-                {
-                    break;
-                }
-                sign = NumericsHelpers.CombineHash(sign, (int)InternalBits[index]);
+                throw new OverflowException("Value was either too large or too small for an Int32.");
             }
-            return sign;
+            if (value.InternalSign > 0)
+            {
+                return checked((int)value.InternalBits[0]);
+            }
+            if (value.InternalBits[0] > unchecked((uint)int.MinValue))
+            {
+                throw new OverflowException("Value was either too large or too small for an Int32.");
+            }
+            return (int)-value.InternalBits[0];
         }
 
-        private static bool GetPartsForBitManipulation(ref BigInteger x, out uint[] xd, out int xl)
+        public static explicit operator long(BigInteger value)
         {
-            if (x.InternalBits != null)
+            if (value.InternalBits == null)
             {
-                xd = x.InternalBits;
+                return value.InternalSign;
             }
-            else if (x.InternalSign >= 0)
+            var length = Length(value.InternalBits);
+            if (length > 2)
             {
-                xd = new[] { unchecked((uint)x.InternalSign) };
+                throw new OverflowException("Value was either too large or too small for an Int64.");
             }
-            else
+
+            var target = ULong(length, value.InternalBits);
+            var result = value.InternalSign <= 0 ? -(long)target : (long)target;
+            if ((result <= 0 || value.InternalSign <= 0) && (result >= 0 || value.InternalSign >= 0))
             {
-                xd = new[] { unchecked((uint)-x.InternalSign) };
+                throw new OverflowException("Value was either too large or too small for an Int64.");
             }
-            xl = (x.InternalBits != null ? x.InternalBits.Length : 1);
-            return x.InternalSign < 0;
+            return result;
+        }
+
+        [CLSCompliant(false)]
+        public static explicit operator sbyte(BigInteger value)
+        {
+            return checked((sbyte)(int)value);
+        }
+
+        public static explicit operator short(BigInteger value)
+        {
+            return checked((short)(int)value);
+        }
+
+        [CLSCompliant(false)]
+        public static explicit operator uint(BigInteger value)
+        {
+            if (value.InternalBits == null)
+            {
+                return checked((uint)value.InternalSign);
+            }
+            if (Length(value.InternalBits) > 1 || value.InternalSign < 0)
+            {
+                throw new OverflowException("Value was either too large or too small for a UInt32.");
+            }
+            return value.InternalBits[0];
+        }
+
+        [CLSCompliant(false)]
+        public static explicit operator ulong(BigInteger value)
+        {
+            if (value.InternalBits == null)
+            {
+                return checked((ulong)value.InternalSign);
+            }
+            var length = Length(value.InternalBits);
+            if (length > 2 || value.InternalSign < 0)
+            {
+                throw new OverflowException("Value was either too large or too small for a UInt64.");
+            }
+            return ULong(length, value.InternalBits);
+        }
+
+        [CLSCompliant(false)]
+        public static explicit operator ushort(BigInteger value)
+        {
+            return checked((ushort)(int)value);
         }
 
         /// <summary>Finds the greatest common divisor of two <see cref="T:System.Numerics.BigInteger" /> values.</summary>
@@ -850,14 +713,48 @@ namespace System.Numerics
             return bigIntegerBuilder.GetInteger(1);
         }
 
-        internal static int Length(uint[] internalBits)
+        public static implicit operator BigInteger(byte value)
         {
-            var length = internalBits.Length;
-            if (internalBits[length - 1] != 0)
-            {
-                return length;
-            }
-            return length - 1;
+            return new BigInteger(value);
+        }
+
+        [CLSCompliant(false)]
+        public static implicit operator BigInteger(sbyte value)
+        {
+            return new BigInteger(value);
+        }
+
+        public static implicit operator BigInteger(short value)
+        {
+            return new BigInteger(value);
+        }
+
+        [CLSCompliant(false)]
+        public static implicit operator BigInteger(ushort value)
+        {
+            return new BigInteger(value);
+        }
+
+        public static implicit operator BigInteger(int value)
+        {
+            return new BigInteger(value);
+        }
+
+        [CLSCompliant(false)]
+        public static implicit operator BigInteger(uint value)
+        {
+            return new BigInteger(value);
+        }
+
+        public static implicit operator BigInteger(long value)
+        {
+            return new BigInteger(value);
+        }
+
+        [CLSCompliant(false)]
+        public static implicit operator BigInteger(ulong value)
+        {
+            return new BigInteger(value);
         }
 
         /// <summary>Returns the natural (base e) logarithm of a specified number.</summary>
@@ -882,7 +779,7 @@ namespace System.Numerics
             }
             if (double.IsPositiveInfinity(baseValue))
             {
-                return (!value.IsOne ? double.NaN : 0);
+                return !value.IsOne ? double.NaN : 0;
             }
             if (NumericHelper.IsZero(baseValue) && !value.IsOne)
             {
@@ -895,21 +792,21 @@ namespace System.Numerics
             double c = 0;
             var d = 0.5;
             var length = Length(value.InternalBits);
-            var topbits = BitLengthOfUInt(value.InternalBits[length - 1]);
-            var bitlen = (length - 1) * 32 + topbits;
-            var indbit = (uint)(1 << (topbits - 1 & 31));
+            var topBits = BitLengthOfUInt(value.InternalBits[length - 1]);
+            var bitlen = (length - 1) * 32 + topBits;
+            var currentBitMask = (uint)(1 << (topBits - 1 & 31));
             for (var index = length - 1; index >= 0; index--)
             {
-                while (indbit != 0)
+                while (currentBitMask != 0)
                 {
-                    if ((value.InternalBits[index] & indbit) != 0)
+                    if ((value.InternalBits[index] & currentBitMask) != 0)
                     {
                         c = c + d;
                     }
                     d = d * 0.5;
-                    indbit = indbit >> 1;
+                    currentBitMask = currentBitMask >> 1;
                 }
-                indbit = unchecked((uint)int.MinValue);
+                currentBitMask = unchecked((uint)int.MinValue);
             }
             return (Math.Log(c) + 0.69314718055994529D * bitlen) / Math.Log(baseValue);
         }
@@ -962,7 +859,7 @@ namespace System.Numerics
         {
             if (exponent.Sign < 0)
             {
-                throw new ArgumentOutOfRangeException("exponent", "The number must be greater than or equal to zero.");
+                throw new ArgumentOutOfRangeException(nameof(exponent), "The number must be greater than or equal to zero.");
             }
             var signRes = 1;
             var signVal = 1;
@@ -990,69 +887,6 @@ namespace System.Numerics
             return regRes.GetInteger(value.InternalSign <= 0 ? (!isEven ? -1 : 1) : 1);
         }
 
-        private static void ModPowInner(uint exp, ref BigIntegerBuilder regRes, ref BigIntegerBuilder regVal, ref BigIntegerBuilder regMod, ref BigIntegerBuilder regTmp)
-        {
-            while (exp != 0)
-            {
-                if ((exp & 1) == 1)
-                {
-                    ModPowUpdateResult(ref regRes, ref regVal, ref regMod, ref regTmp);
-                }
-                if (exp != 1)
-                {
-                    ModPowSquareModValue(ref regVal, ref regMod, ref regTmp);
-                    exp = exp >> 1;
-                }
-                else
-                {
-                    break;
-                }
-            }
-        }
-
-        private static void ModPowInner32(uint exp, ref BigIntegerBuilder regRes, ref BigIntegerBuilder regVal, ref BigIntegerBuilder regMod, ref BigIntegerBuilder regTmp)
-        {
-            for (var index = 0; index < 32; index++)
-            {
-                if ((exp & 1) == 1)
-                {
-                    ModPowUpdateResult(ref regRes, ref regVal, ref regMod, ref regTmp);
-                }
-                ModPowSquareModValue(ref regVal, ref regMod, ref regTmp);
-                exp = exp >> 1;
-            }
-        }
-
-        private static void ModPowSquareModValue(ref BigIntegerBuilder regVal, ref BigIntegerBuilder regMod, ref BigIntegerBuilder regTmp)
-        {
-            NumericHelper.Swap(ref regVal, ref regTmp);
-            regVal.Mul(ref regTmp, ref regTmp);
-            regVal.Mod(ref regMod);
-        }
-
-        private static void ModPowUpdateResult(ref BigIntegerBuilder regRes, ref BigIntegerBuilder regVal, ref BigIntegerBuilder regMod, ref BigIntegerBuilder regTmp)
-        {
-            NumericHelper.Swap(ref regRes, ref regTmp);
-            regRes.Mul(ref regTmp, ref regVal);
-            regRes.Mod(ref regMod);
-        }
-
-        private static void MulLower(ref uint uHiRes, ref int cuRes, uint uHiMul, int cuMul)
-        {
-            var num = uHiRes * (ulong)uHiMul;
-            var hi = NumericHelper.GetHi(num);
-            if (hi == 0)
-            {
-                uHiRes = NumericHelper.GetLo(num);
-                cuRes = cuRes + (cuMul - 1);
-            }
-            else
-            {
-                uHiRes = hi;
-                cuRes = cuRes + cuMul;
-            }
-        }
-
         /// <summary>Returns the product of two <see cref="T:System.Numerics.BigInteger" /> values.</summary>
         /// <returns>The product of the <paramref name="left" /> and <paramref name="right" /> parameters.</returns>
         /// <param name="left">The first number to multiply.</param>
@@ -1062,38 +896,225 @@ namespace System.Numerics
             return left * right;
         }
 
-        private static void MulUpper(ref uint uHiRes, ref int cuRes, uint uHiMul, int cuMul)
-        {
-            var num = uHiRes * (ulong)uHiMul;
-            var hi = NumericHelper.GetHi(num);
-            if (hi == 0)
-            {
-                uHiRes = NumericHelper.GetLo(num);
-                cuRes = cuRes + (cuMul - 1);
-            }
-            else
-            {
-                if (NumericHelper.GetLo(num) != 0)
-                {
-                    var num1 = hi + 1;
-                    hi = num1;
-                    if (num1 == 0)
-                    {
-                        hi = 1;
-                        cuRes = cuRes + 1;
-                    }
-                }
-                uHiRes = hi;
-                cuRes = cuRes + cuMul;
-            }
-        }
-
         /// <summary>Negates a specified <see cref="T:System.Numerics.BigInteger" /> value.</summary>
         /// <returns>The result of the <paramref name="value" /> parameter multiplied by negative one (-1).</returns>
         /// <param name="value">The value to negate.</param>
         public static BigInteger Negate(BigInteger value)
         {
             return -value;
+        }
+
+        /// <summary>Subtracts a <see cref="T:System.Numerics.BigInteger" /> value from another <see cref="T:System.Numerics.BigInteger" /> value.</summary>
+        /// <returns>The result of subtracting <paramref name="right" /> from <paramref name="left" />.</returns>
+        /// <param name="left">The value to subtract from (the minuend).</param>
+        /// <param name="right">The value to subtract (the subtrahend).</param>
+        public static BigInteger operator -(BigInteger left, BigInteger right)
+        {
+            if (right.IsZero)
+            {
+                return left;
+            }
+            if (left.IsZero)
+            {
+                return -right;
+            }
+            var leftSign = 1;
+            var rightSign = -1;
+            var regLeft = new BigIntegerBuilder(left, ref leftSign);
+            var regRight = new BigIntegerBuilder(right, ref rightSign);
+            if (leftSign != rightSign)
+            {
+                regLeft.Sub(ref leftSign, ref regRight);
+            }
+            else
+            {
+                regLeft.Add(ref regRight);
+            }
+            return regLeft.GetInteger(leftSign);
+        }
+
+        /// <summary>Negates a specified BigInteger value. </summary>
+        /// <returns>The result of the <paramref name="value" /> parameter multiplied by negative one (-1).</returns>
+        /// <param name="value">The value to negate.</param>
+        public static BigInteger operator -(BigInteger value)
+        {
+            return new BigInteger(-value.InternalSign, value.InternalBits);
+        }
+
+        /// <summary>Decrements a <see cref="T:System.Numerics.BigInteger" /> value by 1.</summary>
+        /// <returns>The value of the <paramref name="value" /> parameter decremented by 1.</returns>
+        /// <param name="value">The value to decrement.</param>
+        public static BigInteger operator --(BigInteger value)
+        {
+            return value - One;
+        }
+
+        /// <summary>Returns a value that indicates whether two <see cref="T:System.Numerics.BigInteger" /> objects have different values.</summary>
+        /// <returns>true if <paramref name="left" /> and <paramref name="right" /> are not equal; otherwise, false.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        public static bool operator !=(BigInteger left, BigInteger right)
+        {
+            return !left.Equals(right);
+        }
+
+        /// <summary>Returns a value that indicates whether a <see cref="T:System.Numerics.BigInteger" /> value and a 64-bit signed integer are not equal.</summary>
+        /// <returns>true if <paramref name="left" /> and <paramref name="right" /> are not equal; otherwise, false.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        public static bool operator !=(BigInteger left, long right)
+        {
+            return !left.Equals(right);
+        }
+
+        /// <summary>Returns a value that indicates whether a 64-bit signed integer and a <see cref="T:System.Numerics.BigInteger" /> value are not equal.</summary>
+        /// <returns>true if <paramref name="left" /> and <paramref name="right" /> are not equal; otherwise, false.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        public static bool operator !=(long left, BigInteger right)
+        {
+            return !right.Equals(left);
+        }
+
+        /// <summary>Returns a value that indicates whether a <see cref="T:System.Numerics.BigInteger" /> value and a 64-bit unsigned integer are not equal.</summary>
+        /// <returns>true if <paramref name="left" /> and <paramref name="right" /> are not equal; otherwise, false.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        [CLSCompliant(false)]
+        public static bool operator !=(BigInteger left, ulong right)
+        {
+            return !left.Equals(right);
+        }
+
+        /// <summary>Returns a value that indicates whether a 64-bit unsigned integer and a <see cref="T:System.Numerics.BigInteger" /> value are not equal.</summary>
+        /// <returns>true if <paramref name="left" /> and <paramref name="right" /> are not equal; otherwise, false.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        [CLSCompliant(false)]
+        public static bool operator !=(ulong left, BigInteger right)
+        {
+            return !right.Equals(left);
+        }
+
+        /// <summary>Returns the remainder that results from division with two specified <see cref="T:System.Numerics.BigInteger" /> values.</summary>
+        /// <returns>The remainder that results from the division.</returns>
+        /// <param name="dividend">The value to be divided.</param>
+        /// <param name="divisor">The value to divide by.</param>
+        /// <exception cref="T:System.DivideByZeroException">
+        ///   <paramref name="divisor" /> is 0 (zero).</exception>
+        public static BigInteger operator %(BigInteger dividend, BigInteger divisor)
+        {
+            var signNUm = 1;
+            var signDen = 1;
+            var regNum = new BigIntegerBuilder(dividend, ref signNUm);
+            var regDen = new BigIntegerBuilder(divisor, ref signDen);
+            regNum.Mod(ref regDen);
+            return regNum.GetInteger(signNUm);
+        }
+
+        /// <summary>Performs a bitwise And operation on two <see cref="T:System.Numerics.BigInteger" /> values.</summary>
+        /// <returns>The result of the bitwise And operation.</returns>
+        /// <param name="left">The first value.</param>
+        /// <param name="right">The second value.</param>
+        public static BigInteger operator &(BigInteger left, BigInteger right)
+        {
+            if (left.IsZero || right.IsZero)
+            {
+                return Zero;
+            }
+            var x = left.ToUInt32Array();
+            var y = right.ToUInt32Array();
+            var z = new uint[Math.Max(x.Length, y.Length)];
+            var xExtend = (uint)(left.InternalSign >= 0 ? 0 : -1);
+            var yExtend = (uint)(right.InternalSign >= 0 ? 0 : -1);
+            for (var index = 0; index < z.Length; index++)
+            {
+                var num2 = index >= x.Length ? xExtend : x[index];
+                z[index] = num2 & (index >= y.Length ? yExtend : y[index]);
+            }
+            return new BigInteger(z);
+        }
+
+        /// <summary>Multiplies two specified <see cref="T:System.Numerics.BigInteger" /> values.</summary>
+        /// <returns>The product of <paramref name="left" /> and <paramref name="right" />.</returns>
+        /// <param name="left">The first value to multiply.</param>
+        /// <param name="right">The second value to multiply.</param>
+        public static BigInteger operator *(BigInteger left, BigInteger right)
+        {
+            var sign = 1;
+            var regLeft = new BigIntegerBuilder(left, ref sign);
+            var regRight = new BigIntegerBuilder(right, ref sign);
+            regLeft.Mul(ref regRight);
+            return regLeft.GetInteger(sign);
+        }
+
+        /// <summary>Divides a specified <see cref="T:System.Numerics.BigInteger" /> value by another specified <see cref="T:System.Numerics.BigInteger" /> value by using integer division.</summary>
+        /// <returns>The integral result of the division.</returns>
+        /// <param name="dividend">The value to be divided.</param>
+        /// <param name="divisor">The value to divide by.</param>
+        /// <exception cref="T:System.DivideByZeroException">
+        ///   <paramref name="divisor" /> is 0 (zero).</exception>
+        public static BigInteger operator /(BigInteger dividend, BigInteger divisor)
+        {
+            var sign = 1;
+            var regNum = new BigIntegerBuilder(dividend, ref sign);
+            var regDen = new BigIntegerBuilder(divisor, ref sign);
+            regNum.Div(ref regDen);
+            return regNum.GetInteger(sign);
+        }
+
+        /// <summary>Performs a bitwise exclusive Or (XOr) operation on two <see cref="T:System.Numerics.BigInteger" /> values.</summary>
+        /// <returns>The result of the bitwise Or operation.</returns>
+        /// <param name="left">The first value.</param>
+        /// <param name="right">The second value.</param>
+        public static BigInteger operator ^(BigInteger left, BigInteger right)
+        {
+            var x = left.ToUInt32Array();
+            var y = right.ToUInt32Array();
+            var z = new uint[Math.Max(x.Length, y.Length)];
+            var xEntend = (uint)(left.InternalSign >= 0 ? 0 : -1);
+            var yExtend = (uint)(right.InternalSign >= 0 ? 0 : -1);
+            for (var index = 0; index < z.Length; index++)
+            {
+                var num2 = index >= x.Length ? xEntend : x[index];
+                z[index] = num2 ^ (index >= y.Length ? yExtend : y[index]);
+            }
+            return new BigInteger(z);
+        }
+
+        /// <summary>Performs a bitwise Or operation on two <see cref="T:System.Numerics.BigInteger" /> values.</summary>
+        /// <returns>The result of the bitwise Or operation.</returns>
+        /// <param name="left">The first value.</param>
+        /// <param name="right">The second value.</param>
+        public static BigInteger operator |(BigInteger left, BigInteger right)
+        {
+            if (left.IsZero)
+            {
+                return right;
+            }
+            if (right.IsZero)
+            {
+                return left;
+            }
+            var x = left.ToUInt32Array();
+            var y = right.ToUInt32Array();
+            var z = new uint[Math.Max(x.Length, y.Length)];
+            var xExtend = (uint)(left.InternalSign >= 0 ? 0 : -1);
+            var yExtend = (uint)(right.InternalSign >= 0 ? 0 : -1);
+            for (var index = 0; index < z.Length; index++)
+            {
+                var num2 = index >= x.Length ? xExtend : x[index];
+                z[index] = num2 | (index >= y.Length ? yExtend : y[index]);
+            }
+            return new BigInteger(z);
+        }
+
+        /// <summary>Returns the bitwise one's complement of a <see cref="T:System.Numerics.BigInteger" /> value.</summary>
+        /// <returns>The bitwise one's complement of <paramref name="value" />.</returns>
+        /// <param name="value">An integer value.</param>
+        public static BigInteger operator ~(BigInteger value)
+        {
+            return -(value + One);
         }
 
         /// <summary>Adds the values of two specified <see cref="T:System.Numerics.BigInteger" /> objects.</summary>
@@ -1125,77 +1146,159 @@ namespace System.Numerics
             return regLeft.GetInteger(signLeft);
         }
 
-        /// <summary>Performs a bitwise And operation on two <see cref="T:System.Numerics.BigInteger" /> values.</summary>
-        /// <returns>The result of the bitwise And operation.</returns>
-        /// <param name="left">The first value.</param>
-        /// <param name="right">The second value.</param>
-        public static BigInteger operator &(BigInteger left, BigInteger right)
+        /// <summary>Returns the value of the <see cref="T:System.Numerics.BigInteger" /> operand. (The sign of the operand is unchanged.)</summary>
+        /// <returns>The value of the <paramref name="value" /> operand.</returns>
+        /// <param name="value">An integer value.</param>
+        public static BigInteger operator +(BigInteger value)
         {
-            if (left.IsZero || right.IsZero)
-            {
-                return Zero;
-            }
-            var x = left.ToUInt32Array();
-            var y = right.ToUInt32Array();
-            var z = new uint[Math.Max(x.Length, y.Length)];
-            var xExtend = (uint)((left.InternalSign >= 0 ? 0 : -1));
-            var yExtend = (uint)((right.InternalSign >= 0 ? 0 : -1));
-            for (var index = 0; index < z.Length; index++)
-            {
-                var num2 = (index >= x.Length ? xExtend : x[index]);
-                z[index] = num2 & (index >= y.Length ? yExtend : y[index]);
-            }
-            return new BigInteger(z);
+            return value;
         }
 
-        /// <summary>Performs a bitwise Or operation on two <see cref="T:System.Numerics.BigInteger" /> values.</summary>
-        /// <returns>The result of the bitwise Or operation.</returns>
-        /// <param name="left">The first value.</param>
-        /// <param name="right">The second value.</param>
-        public static BigInteger operator |(BigInteger left, BigInteger right)
+        /// <summary>Increments a <see cref="T:System.Numerics.BigInteger" /> value by 1.</summary>
+        /// <returns>The value of the <paramref name="value" /> parameter incremented by 1.</returns>
+        /// <param name="value">The value to increment.</param>
+        public static BigInteger operator ++(BigInteger value)
         {
-            if (left.IsZero)
-            {
-                return right;
-            }
-            if (right.IsZero)
-            {
-                return left;
-            }
-            var x = left.ToUInt32Array();
-            var y = right.ToUInt32Array();
-            var z = new uint[Math.Max(x.Length, y.Length)];
-            var xExtend = (uint)((left.InternalSign >= 0 ? 0 : -1));
-            var yExtend = (uint)((right.InternalSign >= 0 ? 0 : -1));
-            for (var index = 0; index < z.Length; index++)
-            {
-                var num2 = (index >= x.Length ? xExtend : x[index]);
-                z[index] = num2 | (index >= y.Length ? yExtend : y[index]);
-            }
-            return new BigInteger(z);
+            return value + One;
         }
 
-        /// <summary>Decrements a <see cref="T:System.Numerics.BigInteger" /> value by 1.</summary>
-        /// <returns>The value of the <paramref name="value" /> parameter decremented by 1.</returns>
-        /// <param name="value">The value to decrement.</param>
-        public static BigInteger operator --(BigInteger value)
+        /// <summary>Returns a value that indicates whether a <see cref="T:System.Numerics.BigInteger" /> value is less than another <see cref="T:System.Numerics.BigInteger" /> value.</summary>
+        /// <returns>true if <paramref name="left" /> is less than <paramref name="right" />; otherwise, false.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        public static bool operator <(BigInteger left, BigInteger right)
         {
-            return value - One;
+            return left.CompareTo(right) < 0;
         }
 
-        /// <summary>Divides a specified <see cref="T:System.Numerics.BigInteger" /> value by another specified <see cref="T:System.Numerics.BigInteger" /> value by using integer division.</summary>
-        /// <returns>The integral result of the division.</returns>
-        /// <param name="dividend">The value to be divided.</param>
-        /// <param name="divisor">The value to divide by.</param>
-        /// <exception cref="T:System.DivideByZeroException">
-        ///   <paramref name="divisor" /> is 0 (zero).</exception>
-        public static BigInteger operator /(BigInteger dividend, BigInteger divisor)
+        /// <summary>Returns a value that indicates whether a <see cref="T:System.Numerics.BigInteger" /> value is less than a 64-bit signed integer.</summary>
+        /// <returns>true if <paramref name="left" /> is less than <paramref name="right" />; otherwise, false.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        public static bool operator <(BigInteger left, long right)
         {
-            var sign = 1;
-            var regNum = new BigIntegerBuilder(dividend, ref sign);
-            var regDen = new BigIntegerBuilder(divisor, ref sign);
-            regNum.Div(ref regDen);
-            return regNum.GetInteger(sign);
+            return left.CompareTo(right) < 0;
+        }
+
+        /// <summary>Returns a value that indicates whether a 64-bit signed integer is less than a <see cref="T:System.Numerics.BigInteger" /> value.</summary>
+        /// <returns>true if <paramref name="left" /> is less than <paramref name="right" />; otherwise, false.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        public static bool operator <(long left, BigInteger right)
+        {
+            return right.CompareTo(left) > 0;
+        }
+
+        /// <summary>Returns a value that indicates whether a <see cref="T:System.Numerics.BigInteger" /> value is less than a 64-bit unsigned integer.</summary>
+        /// <returns>true if <paramref name="left" /> is less than <paramref name="right" />; otherwise, false.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        [CLSCompliant(false)]
+        public static bool operator <(BigInteger left, ulong right)
+        {
+            return left.CompareTo(right) < 0;
+        }
+
+        /// <summary>Returns a value that indicates whether a 64-bit unsigned integer is less than a <see cref="T:System.Numerics.BigInteger" /> value.</summary>
+        /// <returns>true if <paramref name="left" /> is less than <paramref name="right" />; otherwise, false.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        [CLSCompliant(false)]
+        public static bool operator <(ulong left, BigInteger right)
+        {
+            return right.CompareTo(left) > 0;
+        }
+
+        /// <summary>Shifts a <see cref="T:System.Numerics.BigInteger" /> value a specified number of bits to the left.</summary>
+        /// <returns>A value that has been shifted to the left by the specified number of bits.</returns>
+        /// <param name="value">The value whose bits are to be shifted.</param>
+        /// <param name="shift">The number of bits to shift <paramref name="value" /> to the left.</param>
+        public static BigInteger operator <<(BigInteger value, int shift)
+        {
+            if (shift == 0)
+            {
+                return value;
+            }
+            if (shift == int.MinValue)
+            {
+                return value >> int.MaxValue >> 1;
+            }
+            if (shift < 0)
+            {
+                return value >> -shift;
+            }
+            var digitShift = shift / 32;
+            var smallShift = shift - digitShift * 32;
+            var partsForBitManipulation = GetPartsForBitManipulation(ref value, out uint[] xd, out int xl);
+            var zd = new uint[xl + digitShift + 1];
+            if (smallShift != 0)
+            {
+                var carryShift = 32 - smallShift;
+                uint carry = 0;
+                int index;
+                for (index = 0; index < xl; index++)
+                {
+                    var rot = xd[index];
+                    zd[index + digitShift] = rot << (smallShift & 31) | carry;
+                    carry = rot >> (carryShift & 31);
+                }
+                zd[index + digitShift] = carry;
+            }
+            else
+            {
+                for (var index = 0; index < xl; index++)
+                {
+                    zd[index + digitShift] = xd[index];
+                }
+            }
+            return new BigInteger(zd, partsForBitManipulation);
+        }
+
+        /// <summary>Returns a value that indicates whether a <see cref="T:System.Numerics.BigInteger" /> value is less than or equal to another <see cref="T:System.Numerics.BigInteger" /> value.</summary>
+        /// <returns>true if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise, false.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        public static bool operator <=(BigInteger left, BigInteger right)
+        {
+            return left.CompareTo(right) <= 0;
+        }
+
+        /// <summary>Returns a value that indicates whether a <see cref="T:System.Numerics.BigInteger" /> value is less than or equal to a 64-bit signed integer.</summary>
+        /// <returns>true if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise, false.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        public static bool operator <=(BigInteger left, long right)
+        {
+            return left.CompareTo(right) <= 0;
+        }
+
+        /// <summary>Returns a value that indicates whether a 64-bit signed integer is less than or equal to a <see cref="T:System.Numerics.BigInteger" /> value.</summary>
+        /// <returns>true if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise, false.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        public static bool operator <=(long left, BigInteger right)
+        {
+            return right.CompareTo(left) >= 0;
+        }
+
+        /// <summary>Returns a value that indicates whether a <see cref="T:System.Numerics.BigInteger" /> value is less than or equal to a 64-bit unsigned integer.</summary>
+        /// <returns>true if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise, false.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        [CLSCompliant(false)]
+        public static bool operator <=(BigInteger left, ulong right)
+        {
+            return left.CompareTo(right) <= 0;
+        }
+
+        /// <summary>Returns a value that indicates whether a 64-bit unsigned integer is less than or equal to a <see cref="T:System.Numerics.BigInteger" /> value.</summary>
+        /// <returns>true if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise, false.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        [CLSCompliant(false)]
+        public static bool operator <=(ulong left, BigInteger right)
+        {
+            return right.CompareTo(left) >= 0;
         }
 
         /// <summary>Returns a value that indicates whether the values of two <see cref="T:System.Numerics.BigInteger" /> objects are equal.</summary>
@@ -1243,184 +1346,6 @@ namespace System.Numerics
         public static bool operator ==(ulong left, BigInteger right)
         {
             return right.Equals(left);
-        }
-
-        /// <summary>Performs a bitwise exclusive Or (XOr) operation on two <see cref="T:System.Numerics.BigInteger" /> values.</summary>
-        /// <returns>The result of the bitwise Or operation.</returns>
-        /// <param name="left">The first value.</param>
-        /// <param name="right">The second value.</param>
-        public static BigInteger operator ^(BigInteger left, BigInteger right)
-        {
-            var x = left.ToUInt32Array();
-            var y = right.ToUInt32Array();
-            var z = new uint[Math.Max(x.Length, y.Length)];
-            var xEntend = (uint)((left.InternalSign >= 0 ? 0 : -1));
-            var yExtend = (uint)((right.InternalSign >= 0 ? 0 : -1));
-            for (var index = 0; index < z.Length; index++)
-            {
-                var num2 = (index >= x.Length ? xEntend : x[index]);
-                z[index] = num2 ^ (index >= y.Length ? yExtend : y[index]);
-            }
-            return new BigInteger(z);
-        }
-
-        public static explicit operator BigInteger(float value)
-        {
-            return new BigInteger(value);
-        }
-
-        public static explicit operator BigInteger(double value)
-        {
-            return new BigInteger(value);
-        }
-
-        public static explicit operator BigInteger(decimal value)
-        {
-            return new BigInteger(value);
-        }
-
-        public static explicit operator byte(BigInteger value)
-        {
-            return checked((byte)((int)value));
-        }
-
-        [CLSCompliant(false)]
-        public static explicit operator sbyte(BigInteger value)
-        {
-            return checked((sbyte)((int)value));
-        }
-
-        public static explicit operator short(BigInteger value)
-        {
-            return checked((short)((int)value));
-        }
-
-        [CLSCompliant(false)]
-        public static explicit operator ushort(BigInteger value)
-        {
-            return checked((ushort)((int)value));
-        }
-
-        public static explicit operator int(BigInteger value)
-        {
-            if (value.InternalBits == null)
-            {
-                return value.InternalSign;
-            }
-            if (Length(value.InternalBits) > 1)
-            {
-                throw new OverflowException("Value was either too large or too small for an Int32.");
-            }
-            if (value.InternalSign > 0)
-            {
-                return checked((int)value.InternalBits[0]);
-            }
-            if (value.InternalBits[0] > unchecked((uint)int.MinValue))
-            {
-                throw new OverflowException("Value was either too large or too small for an Int32.");
-            }
-            return (int)(-value.InternalBits[0]);
-        }
-
-        [CLSCompliant(false)]
-        public static explicit operator uint(BigInteger value)
-        {
-            if (value.InternalBits == null)
-            {
-                return checked((uint)value.InternalSign);
-            }
-            if (Length(value.InternalBits) > 1 || value.InternalSign < 0)
-            {
-                throw new OverflowException("Value was either too large or too small for a UInt32.");
-            }
-            return value.InternalBits[0];
-        }
-
-        public static explicit operator long(BigInteger value)
-        {
-            if (value.InternalBits == null)
-            {
-                return value.InternalSign;
-            }
-            var length = Length(value.InternalBits);
-            if (length > 2)
-            {
-                throw new OverflowException("Value was either too large or too small for an Int64.");
-            }
-            var target = (length <= 1 ? value.InternalBits[0] : NumericsHelpers.MakeUlong(value.InternalBits[1], value.InternalBits[0]));
-            var result = (value.InternalSign <= 0 ? -(long)(target) : (long)target);
-            if ((result <= 0 || value.InternalSign <= 0) && (result >= 0 || value.InternalSign >= 0))
-            {
-                throw new OverflowException("Value was either too large or too small for an Int64.");
-            }
-            return result;
-        }
-
-        [CLSCompliant(false)]
-        public static explicit operator ulong(BigInteger value)
-        {
-            if (value.InternalBits == null)
-            {
-                return checked((ulong)value.InternalSign);
-            }
-            var length = Length(value.InternalBits);
-            if (length > 2 || value.InternalSign < 0)
-            {
-                throw new OverflowException("Value was either too large or too small for a UInt64.");
-            }
-            if (length <= 1)
-            {
-                return value.InternalBits[0];
-            }
-            return NumericsHelpers.MakeUlong(value.InternalBits[1], value.InternalBits[0]);
-        }
-
-        public static explicit operator float(BigInteger value)
-        {
-            return (float)((double)value);
-        }
-
-        public static explicit operator double(BigInteger value)
-        {
-            ulong man;
-            int exp;
-            if (value.InternalBits == null)
-            {
-                return value.InternalSign;
-            }
-            var sign = 1;
-            var bigIntegerBuilder = new BigIntegerBuilder(value, ref sign);
-            bigIntegerBuilder.GetApproxParts(out exp, out man);
-            return NumericsHelpers.GetDoubleFromParts(sign, exp, man);
-        }
-
-        public static explicit operator decimal(BigInteger value)
-        {
-            if (value.InternalBits == null)
-            {
-                return value.InternalSign;
-            }
-            var length = Length(value.InternalBits);
-            if (length > 3)
-            {
-                throw new OverflowException("Value was either too large or too small for a Decimal.");
-            }
-            var lo = 0;
-            var mi = 0;
-            var hi = 0;
-            if (length > 2)
-            {
-                hi = (int)value.InternalBits[2];
-            }
-            if (length > 1)
-            {
-                mi = (int)value.InternalBits[1];
-            }
-            if (length > 0)
-            {
-                lo = (int)value.InternalBits[0];
-            }
-            return new decimal(lo, mi, hi, value.InternalSign < 0, 0);
         }
 
         /// <summary>Returns a value that indicates whether a <see cref="T:System.Numerics.BigInteger" /> value is greater than another <see cref="T:System.Numerics.BigInteger" /> value.</summary>
@@ -1517,298 +1442,19 @@ namespace System.Numerics
             return right.CompareTo(left) <= 0;
         }
 
-        public static implicit operator BigInteger(byte value)
-        {
-            return new BigInteger(value);
-        }
-
-        [CLSCompliant(false)]
-        public static implicit operator BigInteger(sbyte value)
-        {
-            return new BigInteger(value);
-        }
-
-        public static implicit operator BigInteger(short value)
-        {
-            return new BigInteger(value);
-        }
-
-        [CLSCompliant(false)]
-        public static implicit operator BigInteger(ushort value)
-        {
-            return new BigInteger(value);
-        }
-
-        public static implicit operator BigInteger(int value)
-        {
-            return new BigInteger(value);
-        }
-
-        [CLSCompliant(false)]
-        public static implicit operator BigInteger(uint value)
-        {
-            return new BigInteger(value);
-        }
-
-        public static implicit operator BigInteger(long value)
-        {
-            return new BigInteger(value);
-        }
-
-        [CLSCompliant(false)]
-        public static implicit operator BigInteger(ulong value)
-        {
-            return new BigInteger(value);
-        }
-
-        /// <summary>Increments a <see cref="T:System.Numerics.BigInteger" /> value by 1.</summary>
-        /// <returns>The value of the <paramref name="value" /> parameter incremented by 1.</returns>
-        /// <param name="value">The value to increment.</param>
-        public static BigInteger operator ++(BigInteger value)
-        {
-            return value + One;
-        }
-
-        /// <summary>Returns a value that indicates whether two <see cref="T:System.Numerics.BigInteger" /> objects have different values.</summary>
-        /// <returns>true if <paramref name="left" /> and <paramref name="right" /> are not equal; otherwise, false.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        public static bool operator !=(BigInteger left, BigInteger right)
-        {
-            return !left.Equals(right);
-        }
-
-        /// <summary>Returns a value that indicates whether a <see cref="T:System.Numerics.BigInteger" /> value and a 64-bit signed integer are not equal.</summary>
-        /// <returns>true if <paramref name="left" /> and <paramref name="right" /> are not equal; otherwise, false.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        public static bool operator !=(BigInteger left, long right)
-        {
-            return !left.Equals(right);
-        }
-
-        /// <summary>Returns a value that indicates whether a 64-bit signed integer and a <see cref="T:System.Numerics.BigInteger" /> value are not equal.</summary>
-        /// <returns>true if <paramref name="left" /> and <paramref name="right" /> are not equal; otherwise, false.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        public static bool operator !=(long left, BigInteger right)
-        {
-            return !right.Equals(left);
-        }
-
-        /// <summary>Returns a value that indicates whether a <see cref="T:System.Numerics.BigInteger" /> value and a 64-bit unsigned integer are not equal.</summary>
-        /// <returns>true if <paramref name="left" /> and <paramref name="right" /> are not equal; otherwise, false.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        [CLSCompliant(false)]
-        public static bool operator !=(BigInteger left, ulong right)
-        {
-            return !left.Equals(right);
-        }
-
-        /// <summary>Returns a value that indicates whether a 64-bit unsigned integer and a <see cref="T:System.Numerics.BigInteger" /> value are not equal.</summary>
-        /// <returns>true if <paramref name="left" /> and <paramref name="right" /> are not equal; otherwise, false.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        [CLSCompliant(false)]
-        public static bool operator !=(ulong left, BigInteger right)
-        {
-            return !right.Equals(left);
-        }
-
-        /// <summary>Shifts a <see cref="T:System.Numerics.BigInteger" /> value a specified number of bits to the left.</summary>
-        /// <returns>A value that has been shifted to the left by the specified number of bits.</returns>
-        /// <param name="value">The value whose bits are to be shifted.</param>
-        /// <param name="shift">The number of bits to shift <paramref name="value" /> to the left.</param>
-        public static BigInteger operator <<(BigInteger value, int shift)
-        {
-            uint[] xd;
-            int xl;
-            if (shift == 0)
-            {
-                return value;
-            }
-            if (shift == int.MinValue)
-            {
-                return (value >> int.MaxValue) >> 1;
-            }
-            if (shift < 0)
-            {
-                return value >> -shift;
-            }
-            var digitShift = shift / 32;
-            var smallShift = shift - digitShift * 32;
-            var partsForBitManipulation = GetPartsForBitManipulation(ref value, out xd, out xl);
-            var zd = new uint[xl + digitShift + 1];
-            if (smallShift != 0)
-            {
-                var carryShift = 32 - smallShift;
-                uint carry = 0;
-                int index;
-                for (index = 0; index < xl; index++)
-                {
-                    var rot = xd[index];
-                    zd[index + digitShift] = rot << (smallShift & 31) | carry;
-                    carry = rot >> (carryShift & 31);
-                }
-                zd[index + digitShift] = carry;
-            }
-            else
-            {
-                for (var index = 0; index < xl; index++)
-                {
-                    zd[index + digitShift] = xd[index];
-                }
-            }
-            return new BigInteger(zd, partsForBitManipulation);
-        }
-
-        /// <summary>Returns a value that indicates whether a <see cref="T:System.Numerics.BigInteger" /> value is less than another <see cref="T:System.Numerics.BigInteger" /> value.</summary>
-        /// <returns>true if <paramref name="left" /> is less than <paramref name="right" />; otherwise, false.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        public static bool operator <(BigInteger left, BigInteger right)
-        {
-            return left.CompareTo(right) < 0;
-        }
-
-        /// <summary>Returns a value that indicates whether a <see cref="T:System.Numerics.BigInteger" /> value is less than a 64-bit signed integer.</summary>
-        /// <returns>true if <paramref name="left" /> is less than <paramref name="right" />; otherwise, false.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        public static bool operator <(BigInteger left, long right)
-        {
-            return left.CompareTo(right) < 0;
-        }
-
-        /// <summary>Returns a value that indicates whether a 64-bit signed integer is less than a <see cref="T:System.Numerics.BigInteger" /> value.</summary>
-        /// <returns>true if <paramref name="left" /> is less than <paramref name="right" />; otherwise, false.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        public static bool operator <(long left, BigInteger right)
-        {
-            return right.CompareTo(left) > 0;
-        }
-
-        /// <summary>Returns a value that indicates whether a <see cref="T:System.Numerics.BigInteger" /> value is less than a 64-bit unsigned integer.</summary>
-        /// <returns>true if <paramref name="left" /> is less than <paramref name="right" />; otherwise, false.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        [CLSCompliant(false)]
-        public static bool operator <(BigInteger left, ulong right)
-        {
-            return left.CompareTo(right) < 0;
-        }
-
-        /// <summary>Returns a value that indicates whether a 64-bit unsigned integer is less than a <see cref="T:System.Numerics.BigInteger" /> value.</summary>
-        /// <returns>true if <paramref name="left" /> is less than <paramref name="right" />; otherwise, false.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        [CLSCompliant(false)]
-        public static bool operator <(ulong left, BigInteger right)
-        {
-            return right.CompareTo(left) > 0;
-        }
-
-        /// <summary>Returns a value that indicates whether a <see cref="T:System.Numerics.BigInteger" /> value is less than or equal to another <see cref="T:System.Numerics.BigInteger" /> value.</summary>
-        /// <returns>true if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise, false.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        public static bool operator <=(BigInteger left, BigInteger right)
-        {
-            return left.CompareTo(right) <= 0;
-        }
-
-        /// <summary>Returns a value that indicates whether a <see cref="T:System.Numerics.BigInteger" /> value is less than or equal to a 64-bit signed integer.</summary>
-        /// <returns>true if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise, false.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        public static bool operator <=(BigInteger left, long right)
-        {
-            return left.CompareTo(right) <= 0;
-        }
-
-        /// <summary>Returns a value that indicates whether a 64-bit signed integer is less than or equal to a <see cref="T:System.Numerics.BigInteger" /> value.</summary>
-        /// <returns>true if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise, false.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        public static bool operator <=(long left, BigInteger right)
-        {
-            return right.CompareTo(left) >= 0;
-        }
-
-        /// <summary>Returns a value that indicates whether a <see cref="T:System.Numerics.BigInteger" /> value is less than or equal to a 64-bit unsigned integer.</summary>
-        /// <returns>true if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise, false.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        [CLSCompliant(false)]
-        public static bool operator <=(BigInteger left, ulong right)
-        {
-            return left.CompareTo(right) <= 0;
-        }
-
-        /// <summary>Returns a value that indicates whether a 64-bit unsigned integer is less than or equal to a <see cref="T:System.Numerics.BigInteger" /> value.</summary>
-        /// <returns>true if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise, false.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        [CLSCompliant(false)]
-        public static bool operator <=(ulong left, BigInteger right)
-        {
-            return right.CompareTo(left) >= 0;
-        }
-
-        /// <summary>Returns the remainder that results from division with two specified <see cref="T:System.Numerics.BigInteger" /> values.</summary>
-        /// <returns>The remainder that results from the division.</returns>
-        /// <param name="dividend">The value to be divided.</param>
-        /// <param name="divisor">The value to divide by.</param>
-        /// <exception cref="T:System.DivideByZeroException">
-        ///   <paramref name="divisor" /> is 0 (zero).</exception>
-        public static BigInteger operator %(BigInteger dividend, BigInteger divisor)
-        {
-            var signNUm = 1;
-            var signDen = 1;
-            var regNum = new BigIntegerBuilder(dividend, ref signNUm);
-            var regDen = new BigIntegerBuilder(divisor, ref signDen);
-            regNum.Mod(ref regDen);
-            return regNum.GetInteger(signNUm);
-        }
-
-        /// <summary>Multiplies two specified <see cref="T:System.Numerics.BigInteger" /> values.</summary>
-        /// <returns>The product of <paramref name="left" /> and <paramref name="right" />.</returns>
-        /// <param name="left">The first value to multiply.</param>
-        /// <param name="right">The second value to multiply.</param>
-        public static BigInteger operator *(BigInteger left, BigInteger right)
-        {
-            var sign = 1;
-            var regLeft = new BigIntegerBuilder(left, ref sign);
-            var regRight = new BigIntegerBuilder(right, ref sign);
-            regLeft.Mul(ref regRight);
-            return regLeft.GetInteger(sign);
-        }
-
-        /// <summary>Returns the bitwise one's complement of a <see cref="T:System.Numerics.BigInteger" /> value.</summary>
-        /// <returns>The bitwise one's complement of <paramref name="value" />.</returns>
-        /// <param name="value">An integer value.</param>
-        public static BigInteger operator ~(BigInteger value)
-        {
-            return -(value + One);
-        }
-
         /// <summary>Shifts a <see cref="T:System.Numerics.BigInteger" /> value a specified number of bits to the right.</summary>
         /// <returns>A value that has been shifted to the right by the specified number of bits.</returns>
         /// <param name="value">The value whose bits are to be shifted.</param>
         /// <param name="shift">The number of bits to shift <paramref name="value" /> to the right.</param>
         public static BigInteger operator >>(BigInteger value, int shift)
         {
-            uint[] xd;
-            int xl;
             if (shift == 0)
             {
                 return value;
             }
             if (shift == int.MinValue)
             {
-                return (value << int.MaxValue) << 1;
+                return value << int.MaxValue << 1;
             }
             if (shift < 0)
             {
@@ -1816,8 +1462,8 @@ namespace System.Numerics
             }
             var digitShift = shift / 32;
             var smallShift = shift - digitShift * 32;
-            var negx = GetPartsForBitManipulation(ref value, out xd, out xl);
-            if (negx)
+            var negative = GetPartsForBitManipulation(ref value, out uint[] xd, out int xl);
+            if (negative)
             {
                 if (shift >= 32 * xl)
                 {
@@ -1841,7 +1487,7 @@ namespace System.Numerics
                 for (var index = xl - 1; index >= digitShift; index--)
                 {
                     var rot = xd[index];
-                    if (!negx || index != xl - 1)
+                    if (!negative || index != xl - 1)
                     {
                         zd[index - digitShift] = rot >> (smallShift & 31) | carry;
                     }
@@ -1859,56 +1505,11 @@ namespace System.Numerics
                     zd[index - digitShift] = xd[index];
                 }
             }
-            if (negx)
+            if (negative)
             {
                 NumericsHelpers.DangerousMakeTwosComplement(zd);
             }
-            return new BigInteger(zd, negx);
-        }
-
-        /// <summary>Subtracts a <see cref="T:System.Numerics.BigInteger" /> value from another <see cref="T:System.Numerics.BigInteger" /> value.</summary>
-        /// <returns>The result of subtracting <paramref name="right" /> from <paramref name="left" />.</returns>
-        /// <param name="left">The value to subtract from (the minuend).</param>
-        /// <param name="right">The value to subtract (the subtrahend).</param>
-        public static BigInteger operator -(BigInteger left, BigInteger right)
-        {
-            if (right.IsZero)
-            {
-                return left;
-            }
-            if (left.IsZero)
-            {
-                return -right;
-            }
-            var leftSign = 1;
-            var rightSign = -1;
-            var regLeft = new BigIntegerBuilder(left, ref leftSign);
-            var regRight = new BigIntegerBuilder(right, ref rightSign);
-            if (leftSign != rightSign)
-            {
-                regLeft.Sub(ref leftSign, ref regRight);
-            }
-            else
-            {
-                regLeft.Add(ref regRight);
-            }
-            return regLeft.GetInteger(leftSign);
-        }
-
-        /// <summary>Negates a specified BigInteger value. </summary>
-        /// <returns>The result of the <paramref name="value" /> parameter multiplied by negative one (-1).</returns>
-        /// <param name="value">The value to negate.</param>
-        public static BigInteger operator -(BigInteger value)
-        {
-            return new BigInteger(-value.InternalSign, value.InternalBits);
-        }
-
-        /// <summary>Returns the value of the <see cref="T:System.Numerics.BigInteger" /> operand. (The sign of the operand is unchanged.)</summary>
-        /// <returns>The value of the <paramref name="value" /> operand.</returns>
-        /// <param name="value">An integer value.</param>
-        public static BigInteger operator +(BigInteger value)
-        {
-            return value;
+            return new BigInteger(zd, negative);
         }
 
         /// <summary>Converts the string representation of a number to its <see cref="T:System.Numerics.BigInteger" /> equivalent.</summary>
@@ -1976,7 +1577,7 @@ namespace System.Numerics
         {
             if (exponent < 0)
             {
-                throw new ArgumentOutOfRangeException("exponent", "The number must be greater than or equal to zero.");
+                throw new ArgumentOutOfRangeException(nameof(exponent), "The number must be greater than or equal to zero.");
             }
             if (exponent == 0)
             {
@@ -2071,74 +1672,6 @@ namespace System.Numerics
             return dividend % divisor;
         }
 
-        private static void SetBitsFromDouble(double value, out uint[] bits, out int sign)
-        {
-            int valueSign;
-            int valueExp;
-            ulong valueMan;
-            bool valueFinite;
-            sign = 0;
-            bits = null;
-            NumericsHelpers.GetDoubleParts(value, out valueSign, out valueExp, out valueMan, out valueFinite);
-            if (valueMan == 0)
-            {
-                return;
-            }
-            if (valueExp <= 0)
-            {
-                if (valueExp <= -64)
-                {
-                    return;
-                }
-                var tmp = valueMan >> (-valueExp & 63);
-                if (tmp > int.MaxValue)
-                {
-                    sign = 1;
-                    bits = new[] { (uint)tmp, (uint)(tmp >> 32) };
-                }
-                else
-                {
-                    sign = (int)tmp;
-                }
-                if (valueSign < 0)
-                {
-                    sign = -sign;
-                }
-            }
-            else if (valueExp > 11)
-            {
-                valueMan = valueMan << 11;
-                valueExp = valueExp - 11;
-                var significantDword = (valueExp - 1) / 32 + 1;
-                var extraDword = significantDword * 32 - valueExp;
-                bits = new uint[significantDword + 2];
-                bits[significantDword + 1] = (uint)(valueMan >> (extraDword + 32 & 63));
-                bits[significantDword] = (uint)(valueMan >> (extraDword & 63));
-                if (extraDword > 0)
-                {
-                    bits[significantDword - 1] = (uint)valueMan << (32 - extraDword & 31);
-                }
-                sign = valueSign;
-            }
-            else
-            {
-                var tmp = valueMan << (valueExp & 63);
-                if (tmp > int.MaxValue)
-                {
-                    sign = 1;
-                    bits = new[] { (uint)tmp, (uint)(tmp >> 32) };
-                }
-                else
-                {
-                    sign = (int)tmp;
-                }
-                if (valueSign < 0)
-                {
-                    sign = -sign;
-                }
-            }
-        }
-
         /// <summary>Subtracts one <see cref="T:System.Numerics.BigInteger" /> value from another and returns the result.</summary>
         /// <returns>The result of subtracting <paramref name="right" /> from <paramref name="left" />.</returns>
         /// <param name="left">The value to subtract from (the minuend).</param>
@@ -2146,6 +1679,242 @@ namespace System.Numerics
         public static BigInteger Subtract(BigInteger left, BigInteger right)
         {
             return left - right;
+        }
+
+        /// <summary>Tries to convert the string representation of a number to its <see cref="T:System.Numerics.BigInteger" /> equivalent, and returns a value that indicates whether the conversion succeeded.</summary>
+        /// <returns>true if <paramref name="value" /> was converted successfully; otherwise, false.</returns>
+        /// <param name="value">The string representation of a number.</param>
+        /// <param name="result">When this method returns, contains the <see cref="T:System.Numerics.BigInteger" /> equivalent to the number that is contained in <paramref name="value" />, or zero (0) if the conversion fails. The conversion fails if the <paramref name="value" /> parameter is null or is not of the correct format. This parameter is passed uninitialized.</param>
+        /// <exception cref="T:System.ArgumentNullException">
+        ///   <paramref name="value" /> is null.</exception>
+        public static bool TryParse(string value, out BigInteger result)
+        {
+            return TryParseBigInteger(value, NumberStyles.Integer, NumberFormatInfo.CurrentInfo, out result);
+        }
+
+        /// <summary>Tries to convert the string representation of a number in a specified style and culture-specific format to its <see cref="T:System.Numerics.BigInteger" /> equivalent, and returns a value that indicates whether the conversion succeeded.</summary>
+        /// <returns>true if the <paramref name="value" /> parameter was converted successfully; otherwise, false.</returns>
+        /// <param name="value">The string representation of a number. The string is interpreted using the style specified by <paramref name="style" />.</param>
+        /// <param name="style">A bitwise combination of enumeration values that indicates the style elements that can be present in <paramref name="value" />. A typical value to specify is <see cref="F:System.Globalization.NumberStyles.Integer" />.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information about <paramref name="value" />.</param>
+        /// <param name="result">When this method returns, contains the <see cref="T:System.Numerics.BigInteger" /> equivalent to the number that is contained in <paramref name="value" />, or <see cref="P:System.Numerics.BigInteger.Zero" /> if the conversion failed. The conversion fails if the <paramref name="value" /> parameter is null or is not in a format that is compliant with <paramref name="style" />. This parameter is passed uninitialized.</param>
+        /// <exception cref="T:System.ArgumentException">
+        ///   <paramref name="style" /> is not a <see cref="T:System.Globalization.NumberStyles" /> value.-or-<paramref name="style" /> includes the <see cref="F:System.Globalization.NumberStyles.AllowHexSpecifier" /> or <see cref="F:System.Globalization.NumberStyles.HexNumber" /> flag along with another value. </exception>
+        public static bool TryParse(string value, NumberStyles style, IFormatProvider provider, out BigInteger result)
+        {
+            return TryParseBigInteger(value, style, NumberFormatInfo.GetInstance(provider), out result);
+        }
+
+        /// <summary>Compares this instance to a signed 64-bit integer and returns an integer that indicates whether the value of this instance is less than, equal to, or greater than the value of the signed 64-bit integer.</summary>
+        /// <returns>A signed integer value that indicates the relationship of this instance to <paramref name="other" />, as shown in the following table.Return valueDescriptionLess than zeroThe current instance is less than <paramref name="other" />.ZeroThe current instance equals <paramref name="other" />.Greater than zeroThe current instance is greater than <paramref name="other" />.</returns>
+        /// <param name="other">The signed 64-bit integer to compare.</param>
+        public int CompareTo(long other)
+        {
+            if (InternalBits == null)
+            {
+                return ((long)InternalSign).CompareTo(other);
+            }
+            if ((InternalSign ^ other) >= 0)
+            {
+                var length = Length(InternalBits);
+                if (length <= 2)
+                {
+                    var magnitude = other >= 0 ? (ulong)other : (ulong)-other;
+                    ulong unsigned = ULong(length, InternalBits);
+                    return InternalSign * unsigned.CompareTo(magnitude);
+                }
+            }
+            return InternalSign;
+        }
+
+        /// <summary>Compares this instance to an unsigned 64-bit integer and returns an integer that indicates whether the value of this instance is less than, equal to, or greater than the value of the unsigned 64-bit integer.</summary>
+        /// <returns>A signed integer that indicates the relative value of this instance and <paramref name="other" />, as shown in the following table.Return valueDescriptionLess than zeroThe current instance is less than <paramref name="other" />.ZeroThe current instance equals <paramref name="other" />.Greater than zeroThe current instance is greater than <paramref name="other" />.</returns>
+        /// <param name="other">The unsigned 64-bit integer to compare.</param>
+        [CLSCompliant(false)]
+        public int CompareTo(ulong other)
+        {
+            if (InternalSign < 0)
+            {
+                return -1;
+            }
+            if (InternalBits == null)
+            {
+                return ((ulong)InternalSign).CompareTo(other);
+            }
+            var length = Length(InternalBits);
+            if (length > 2)
+            {
+                return 1;
+            }
+            return ULong(length, InternalBits).CompareTo(other);
+        }
+
+        /// <summary>Compares this instance to a second <see cref="T:System.Numerics.BigInteger" /> and returns an integer that indicates whether the value of this instance is less than, equal to, or greater than the value of the specified object.</summary>
+        /// <returns>A signed integer value that indicates the relationship of this instance to <paramref name="other" />, as shown in the following table.Return valueDescriptionLess than zeroThe current instance is less than <paramref name="other" />.ZeroThe current instance equals <paramref name="other" />.Greater than zeroThe current instance is greater than <paramref name="other" />.</returns>
+        /// <param name="other">The object to compare.</param>
+        public int CompareTo(BigInteger other)
+        {
+            if ((InternalSign ^ other.InternalSign) < 0)
+            {
+                return InternalSign >= 0 ? 1 : -1;
+            }
+            if (InternalBits == null)
+            {
+                if (other.InternalBits != null)
+                {
+                    return -other.InternalSign;
+                }
+                int result;
+                if (InternalSign >= other.InternalSign)
+                {
+                    result = InternalSign <= other.InternalSign ? 0 : 1;
+                }
+                else
+                {
+                    result = -1;
+                }
+                return result;
+            }
+            if (other.InternalBits != null)
+            {
+                var length = Length(InternalBits);
+                var otherLength = Length(other.InternalBits);
+                if (length <= otherLength)
+                {
+                    if (length < otherLength)
+                    {
+                        return -InternalSign;
+                    }
+                    var diffLength = GetDiffLength(InternalBits, other.InternalBits, length);
+                    if (diffLength == 0)
+                    {
+                        return 0;
+                    }
+                    return InternalBits[diffLength - 1] >= other.InternalBits[diffLength - 1] ? InternalSign : -InternalSign;
+                }
+            }
+            return InternalSign;
+        }
+
+        /// <summary>Compares this instance to a specified object and returns an integer that indicates whether the value of this instance is less than, equal to, or greater than the value of the specified object.</summary>
+        /// <returns>A signed integer that indicates the relationship of the current instance to the <paramref name="obj" /> parameter, as shown in the following table.Return valueDescriptionLess than zeroThe current instance is less than <paramref name="obj" />.ZeroThe current instance equals <paramref name="obj" />.Greater than zeroThe current instance is greater than <paramref name="obj" />, or the <paramref name="obj" /> parameter is null. </returns>
+        /// <param name="obj">The object to compare.</param>
+        /// <exception cref="T:System.ArgumentException">
+        ///   <paramref name="obj" /> is not a <see cref="T:System.Numerics.BigInteger" />. </exception>
+        public int CompareTo(object obj)
+        {
+            if (obj == null)
+            {
+                return 1;
+            }
+            if (!(obj is BigInteger))
+            {
+                throw new ArgumentException("The parameter must be a BigInteger.");
+            }
+            return CompareTo((BigInteger)obj);
+        }
+
+        /// <summary>Returns a value that indicates whether the current instance and a specified object have the same value.</summary>
+        /// <returns>true if the <paramref name="obj" /> parameter is a <see cref="T:System.Numerics.BigInteger" /> object or a type capable of implicit conversion to a <see cref="T:System.Numerics.BigInteger" /> value, and its value is equal to the value of the current <see cref="T:System.Numerics.BigInteger" /> object; otherwise, false.</returns>
+        /// <param name="obj">The object to compare. </param>
+        public override bool Equals(object obj)
+        {
+            if (!(obj is BigInteger))
+            {
+                return false;
+            }
+            return Equals((BigInteger)obj);
+        }
+
+        /// <summary>Returns a value that indicates whether the current instance and a signed 64-bit integer have the same value.</summary>
+        /// <returns>true if the signed 64-bit integer and the current instance have the same value; otherwise, false.</returns>
+        /// <param name="other">The signed 64-bit integer value to compare.</param>
+        public bool Equals(long other)
+        {
+            if (InternalBits == null)
+            {
+                return InternalSign == other;
+            }
+            if ((InternalSign ^ other) >= 0)
+            {
+                var length = Length(InternalBits);
+                if (length <= 2)
+                {
+                    var magnitude = other >= 0 ? (ulong)other : (ulong)-other;
+                    return ULong(length, InternalBits) == magnitude;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>Returns a value that indicates whether the current instance and an unsigned 64-bit integer have the same value.</summary>
+        /// <returns>true if the current instance and the unsigned 64-bit integer have the same value; otherwise, false.</returns>
+        /// <param name="other">The unsigned 64-bit integer to compare.</param>
+        [CLSCompliant(false)]
+        public bool Equals(ulong other)
+        {
+            if (InternalSign < 0)
+            {
+                return false;
+            }
+            if (InternalBits == null)
+            {
+                return InternalSign == unchecked((long)other);
+            }
+            var length = Length(InternalBits);
+            if (length > 2)
+            {
+                return false;
+            }
+            return ULong(length, InternalBits) == other;
+        }
+
+        /// <summary>Returns a value that indicates whether the current instance and a specified <see cref="T:System.Numerics.BigInteger" /> object have the same value.</summary>
+        /// <returns>true if this <see cref="T:System.Numerics.BigInteger" /> object and <paramref name="other" /> have the same value; otherwise, false.</returns>
+        /// <param name="other">The object to compare.</param>
+        public bool Equals(BigInteger other)
+        {
+            if (InternalSign != other.InternalSign)
+            {
+                return false;
+            }
+            if (InternalBits == other.InternalBits)
+            {
+                return true;
+            }
+            if (InternalBits == null || other.InternalBits == null)
+            {
+                return false;
+            }
+            var length = Length(InternalBits);
+            if (length != Length(other.InternalBits))
+            {
+                return false;
+            }
+            var diffLength = GetDiffLength(InternalBits, other.InternalBits, length);
+            return diffLength == 0;
+        }
+
+        /// <summary>Returns the hash code for the current <see cref="T:System.Numerics.BigInteger" /> object.</summary>
+        /// <returns>A 32-bit signed integer hash code.</returns>
+        public override int GetHashCode()
+        {
+            if (InternalBits == null)
+            {
+                return InternalSign;
+            }
+            var sign = InternalSign;
+            var index = Length(InternalBits);
+            while (true)
+            {
+                index = index - 1;
+                if (index < 0)
+                {
+                    break;
+                }
+                sign = NumericsHelpers.CombineHash(sign, (int)InternalBits[index]);
+            }
+            return sign;
         }
 
         /// <summary>Converts a <see cref="T:System.Numerics.BigInteger" /> value to a byte array.</summary>
@@ -2244,6 +2013,228 @@ namespace System.Numerics
             return FormatBigInteger(this, format, NumberFormatInfo.GetInstance(formatProvider));
         }
 
+        internal static int BitLengthOfUInt(uint x)
+        {
+            var numBits = 0;
+            while (x > 0)
+            {
+                x = x >> 1;
+                numBits++;
+            }
+            return numBits;
+        }
+
+        internal static int GetDiffLength(uint[] internalBits, uint[] otherInternalBits, int length)
+        {
+            var index = length;
+            do
+            {
+                index = index - 1;
+                if (index >= 0)
+                {
+                    continue;
+                }
+                return 0;
+            }
+            while (internalBits[index] == otherInternalBits[index]);
+            return index + 1;
+        }
+
+        internal static int Length(uint[] internalBits)
+        {
+            var length = internalBits.Length;
+            if (internalBits[length - 1] != 0)
+            {
+                return length;
+            }
+            return length - 1;
+        }
+
+        private static bool GetPartsForBitManipulation(ref BigInteger x, out uint[] xd, out int xl)
+        {
+            if (x.InternalBits != null)
+            {
+                xd = x.InternalBits;
+            }
+            else if (x.InternalSign >= 0)
+            {
+                xd = new[] { unchecked((uint)x.InternalSign) };
+            }
+            else
+            {
+                xd = new[] { unchecked((uint)-x.InternalSign) };
+            }
+            xl = x.InternalBits?.Length ?? 1;
+            return x.InternalSign < 0;
+        }
+
+        private static void ModPowInner(uint exp, ref BigIntegerBuilder regRes, ref BigIntegerBuilder regVal, ref BigIntegerBuilder regMod, ref BigIntegerBuilder regTmp)
+        {
+            while (exp != 0)
+            {
+                if ((exp & 1) == 1)
+                {
+                    ModPowUpdateResult(ref regRes, ref regVal, ref regMod, ref regTmp);
+                }
+                if (exp != 1)
+                {
+                    ModPowSquareModValue(ref regVal, ref regMod, ref regTmp);
+                    exp = exp >> 1;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
+        private static void ModPowInner32(uint exp, ref BigIntegerBuilder regRes, ref BigIntegerBuilder regVal, ref BigIntegerBuilder regMod, ref BigIntegerBuilder regTmp)
+        {
+            for (var index = 0; index < 32; index++)
+            {
+                if ((exp & 1) == 1)
+                {
+                    ModPowUpdateResult(ref regRes, ref regVal, ref regMod, ref regTmp);
+                }
+                ModPowSquareModValue(ref regVal, ref regMod, ref regTmp);
+                exp = exp >> 1;
+            }
+        }
+
+        private static void ModPowSquareModValue(ref BigIntegerBuilder regVal, ref BigIntegerBuilder regMod, ref BigIntegerBuilder regTmp)
+        {
+            NumericHelper.Swap(ref regVal, ref regTmp);
+            regVal.Mul(ref regTmp, ref regTmp);
+            regVal.Mod(ref regMod);
+        }
+
+        private static void ModPowUpdateResult(ref BigIntegerBuilder regRes, ref BigIntegerBuilder regVal, ref BigIntegerBuilder regMod, ref BigIntegerBuilder regTmp)
+        {
+            NumericHelper.Swap(ref regRes, ref regTmp);
+            regRes.Mul(ref regTmp, ref regVal);
+            regRes.Mod(ref regMod);
+        }
+
+        private static void MulLower(ref uint uHiRes, ref int cuRes, uint uHiMul, int cuMul)
+        {
+            var num = uHiRes * (ulong)uHiMul;
+            var hi = NumericHelper.GetHi(num);
+            if (hi == 0)
+            {
+                uHiRes = NumericHelper.GetLo(num);
+                cuRes = cuRes + (cuMul - 1);
+            }
+            else
+            {
+                uHiRes = hi;
+                cuRes = cuRes + cuMul;
+            }
+        }
+
+        private static void MulUpper(ref uint uHiRes, ref int cuRes, uint uHiMul, int cuMul)
+        {
+            var num = uHiRes * (ulong)uHiMul;
+            var hi = NumericHelper.GetHi(num);
+            if (hi == 0)
+            {
+                uHiRes = NumericHelper.GetLo(num);
+                cuRes = cuRes + (cuMul - 1);
+            }
+            else
+            {
+                if (NumericHelper.GetLo(num) != 0)
+                {
+                    var num1 = hi + 1;
+                    hi = num1;
+                    if (num1 == 0)
+                    {
+                        hi = 1;
+                        cuRes = cuRes + 1;
+                    }
+                }
+                uHiRes = hi;
+                cuRes = cuRes + cuMul;
+            }
+        }
+
+        private static void SetBitsFromDouble(double value, out uint[] bits, out int sign)
+        {
+            sign = 0;
+            bits = null;
+            NumericHelper.GetDoubleParts(value, out int valueSign, out int valueExp, out ulong valueMan, out _);
+            if (valueMan == 0)
+            {
+                return;
+            }
+            if (valueExp <= 0)
+            {
+                if (valueExp <= -64)
+                {
+                    return;
+                }
+                var tmp = valueMan >> (-valueExp & 63);
+                if (tmp > int.MaxValue)
+                {
+                    sign = 1;
+                    bits = new[] { (uint)tmp, (uint)(tmp >> 32) };
+                }
+                else
+                {
+                    sign = (int)tmp;
+                }
+                if (valueSign < 0)
+                {
+                    sign = -sign;
+                }
+            }
+            else if (valueExp > 11)
+            {
+                valueMan = valueMan << 11;
+                valueExp = valueExp - 11;
+                var significantDword = (valueExp - 1) / 32 + 1;
+                var extraDword = significantDword * 32 - valueExp;
+                bits = new uint[significantDword + 2];
+                bits[significantDword + 1] = (uint)(valueMan >> (extraDword + 32 & 63));
+                bits[significantDword] = (uint)(valueMan >> (extraDword & 63));
+                if (extraDword > 0)
+                {
+                    bits[significantDword - 1] = (uint)valueMan << (32 - extraDword & 31);
+                }
+                sign = valueSign;
+            }
+            else
+            {
+                var tmp = valueMan << (valueExp & 63);
+                if (tmp > int.MaxValue)
+                {
+                    sign = 1;
+                    bits = new[] { (uint)tmp, (uint)(tmp >> 32) };
+                }
+                else
+                {
+                    sign = (int)tmp;
+                }
+                if (valueSign < 0)
+                {
+                    sign = -sign;
+                }
+            }
+        }
+
+        private static ulong ULong(int length, uint[] internalBits)
+        {
+            ulong unsigned;
+            if (length <= 1)
+            {
+                unsigned = internalBits[0];
+            }
+            else
+            {
+                unsigned = NumericHelper.BuildUInt64(internalBits[1], internalBits[0]);
+            }
+            return unsigned;
+        }
+
         private uint[] ToUInt32Array()
         {
             uint[] internalBits;
@@ -2255,7 +2246,7 @@ namespace System.Numerics
             if (InternalBits == null)
             {
                 internalBits = new[] { unchecked((uint)InternalSign) };
-                highDword = (uint)((InternalSign >= 0 ? 0 : -1));
+                highDword = (uint)(InternalSign >= 0 ? 0 : -1);
             }
             else if (InternalSign != -1)
             {
@@ -2288,30 +2279,6 @@ namespace System.Numerics
                 trimmed[trimmed.Length - 1] = highDword;
             }
             return trimmed;
-        }
-
-        /// <summary>Tries to convert the string representation of a number to its <see cref="T:System.Numerics.BigInteger" /> equivalent, and returns a value that indicates whether the conversion succeeded.</summary>
-        /// <returns>true if <paramref name="value" /> was converted successfully; otherwise, false.</returns>
-        /// <param name="value">The string representation of a number.</param>
-        /// <param name="result">When this method returns, contains the <see cref="T:System.Numerics.BigInteger" /> equivalent to the number that is contained in <paramref name="value" />, or zero (0) if the conversion fails. The conversion fails if the <paramref name="value" /> parameter is null or is not of the correct format. This parameter is passed uninitialized.</param>
-        /// <exception cref="T:System.ArgumentNullException">
-        ///   <paramref name="value" /> is null.</exception>
-        public static bool TryParse(string value, out BigInteger result)
-        {
-            return TryParseBigInteger(value, NumberStyles.Integer, NumberFormatInfo.CurrentInfo, out result);
-        }
-
-        /// <summary>Tries to convert the string representation of a number in a specified style and culture-specific format to its <see cref="T:System.Numerics.BigInteger" /> equivalent, and returns a value that indicates whether the conversion succeeded.</summary>
-        /// <returns>true if the <paramref name="value" /> parameter was converted successfully; otherwise, false.</returns>
-        /// <param name="value">The string representation of a number. The string is interpreted using the style specified by <paramref name="style" />.</param>
-        /// <param name="style">A bitwise combination of enumeration values that indicates the style elements that can be present in <paramref name="value" />. A typical value to specify is <see cref="F:System.Globalization.NumberStyles.Integer" />.</param>
-        /// <param name="provider">An object that supplies culture-specific formatting information about <paramref name="value" />.</param>
-        /// <param name="result">When this method returns, contains the <see cref="T:System.Numerics.BigInteger" /> equivalent to the number that is contained in <paramref name="value" />, or <see cref="P:System.Numerics.BigInteger.Zero" /> if the conversion failed. The conversion fails if the <paramref name="value" /> parameter is null or is not in a format that is compliant with <paramref name="style" />. This parameter is passed uninitialized.</param>
-        /// <exception cref="T:System.ArgumentException">
-        ///   <paramref name="style" /> is not a <see cref="T:System.Globalization.NumberStyles" /> value.-or-<paramref name="style" /> includes the <see cref="F:System.Globalization.NumberStyles.AllowHexSpecifier" /> or <see cref="F:System.Globalization.NumberStyles.HexNumber" /> flag along with another value. </exception>
-        public static bool TryParse(string value, NumberStyles style, IFormatProvider provider, out BigInteger result)
-        {
-            return TryParseBigInteger(value, style, NumberFormatInfo.GetInstance(provider), out result);
         }
     }
 }

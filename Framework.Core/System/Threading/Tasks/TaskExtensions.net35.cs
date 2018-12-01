@@ -10,16 +10,16 @@ namespace System.Threading.Tasks
 {
     /// <summary>
     /// Provides a set of static (Shared in Visual Basic) methods for working with specific kinds of
-    /// <see cref="System.Threading.Tasks.Task"/> instances.
+    /// <see cref="Task"/> instances.
     /// </summary>
     public static class TaskExtensions
     {
         /// <summary>
-        /// Creates a proxy <see cref="System.Threading.Tasks.Task">Task</see> that represents the
+        /// Creates a proxy <see cref="Task">Task</see> that represents the
         /// asynchronous operation of a Task{Task}.
         /// </summary>
         /// <remarks>
-        /// It is often useful to be able to return a Task from a <see cref="System.Threading.Tasks.Task{TResult}">
+        /// It is often useful to be able to return a Task from a <see cref="Tasks.Task{TResult}">
         /// Task{TResult}</see>, where the inner Task represents work done as part of the outer Task{TResult}.  However,
         /// doing so results in a Task{Task}, which, if not dealt with carefully, could produce unexpected behavior.  Unwrap
         /// solves this problem by creating a proxy Task that represents the entire asynchronous operation of such a Task{Task}.
@@ -32,7 +32,7 @@ namespace System.Threading.Tasks
         {
             if (task == null)
             {
-                throw new ArgumentNullException("task");
+                throw new ArgumentNullException(nameof(task));
             }
 
             // Fast path for an already successfully completed outer task: just return the inner one.
@@ -50,7 +50,7 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a proxy <see cref="System.Threading.Tasks.Task{TResult}">Task{TResult}</see> that represents the
+        /// Creates a proxy <see cref="Tasks.Task{TResult}">Task{TResult}</see> that represents the
         /// asynchronous operation of a Task{Task{TResult}}.
         /// </summary>
         /// <remarks>
@@ -67,7 +67,7 @@ namespace System.Threading.Tasks
         {
             if (task == null)
             {
-                throw new ArgumentNullException("task");
+                throw new ArgumentNullException(nameof(task));
             }
 
             // Fast path for an already successfully completed outer task: just return the inner one.
@@ -87,7 +87,7 @@ namespace System.Threading.Tasks
         private static CancellationToken ExtractCancellationToken(Task task)
         {
             // With the public Task APIs as of .NET 4.6, the only way to extract a CancellationToken
-            // that was associated with a Task is by await'ing it, catching the resulting
+            // that was associated with a Task is by awaiting it, catching the resulting
             // OperationCanceledException, and getting the token from the OCE.
             Debug.Assert(task.IsCanceled);
             try
@@ -108,7 +108,7 @@ namespace System.Threading.Tasks
         /// <summary>
         /// Transfer the results of the <paramref name="outer"/> task's inner task to the <paramref name="completionSource"/>.
         /// </summary>
-        /// <param name="completionSource">The completion source to which results should be transfered.</param>
+        /// <param name="completionSource">The completion source to which results should be transferred</param>
         /// <param name="outer">
         /// The outer task that when completed will yield an inner task whose results we want marshaled to the <paramref name="completionSource"/>.
         /// </param>
@@ -138,7 +138,7 @@ namespace System.Threading.Tasks
                     var innerCallback = callback[0];
                     callback[0] = null;
 
-                    var result = true;
+                    bool result = false;
                     switch (outer.Status)
                     {
                         case TaskStatus.Canceled:
@@ -156,22 +156,29 @@ namespace System.Threading.Tasks
                                 // cancel the completionSource, and we're done.
                                 result = completionSource.TrySetCanceled();
                             }
-                            else if (inner.IsCompleted)
-                            {
-                                // The inner task also completed!  Transfer the results, and we're done.
-                                result = completionSource.TrySetFromTask(inner);
-                            }
                             else
                             {
-                                // Run this delegate again once the inner task has completed.
-                                inner.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(innerCallback);
+                                if (inner.IsCompleted)
+                                {
+                                    // The inner task also completed!  Transfer the results, and we're done.
+                                    result = completionSource.TrySetFromTask(inner);
+                                }
+                                if (!result)
+                                {
+                                    // Run this delegate again once the inner task has completed.
+                                    inner.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(innerCallback);
+                                    return;
+                                }
                             }
                             break;
 
                         default:
                             break;
                     }
-                    Debug.Assert(result);
+                    if (!result)
+                    {
+                        outer.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(innerCallback);
+                    }
                 }
                 else
                 {
@@ -204,10 +211,9 @@ namespace System.Threading.Tasks
                     break;
 
                 case TaskStatus.RanToCompletion:
-                    var resultTask = task as Task<TResult>;
-                    result = resultTask != null ?
+                    result = task is Task<TResult> resultTask ?
                         completionSource.TrySetResult(resultTask.Result) :
-                        completionSource.TrySetResult(default(TResult));
+                        completionSource.TrySetResult(default);
                     break;
 
                 default:

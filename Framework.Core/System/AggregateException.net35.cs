@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Security.Permissions;
-using Theraot.Core;
+using System.Text;
 
 namespace System
 {
@@ -16,23 +16,22 @@ namespace System
     {
         private const string _baseMessage = "Exception(s) occurred while inside the Parallel loop. {0}.";
 
-        private readonly ReadOnlyCollection<Exception> _innerExceptions;
-
         public AggregateException()
+            : base(_baseMessage)
         {
-            _innerExceptions = new ReadOnlyCollection<Exception>(new Exception[0]);
+            InnerExceptions = new ReadOnlyCollection<Exception>(new Exception[0]);
         }
 
         public AggregateException(string message)
             : base(message)
         {
-            _innerExceptions = new ReadOnlyCollection<Exception>(new Exception[0]);
+            InnerExceptions = new ReadOnlyCollection<Exception>(new Exception[0]);
         }
 
         public AggregateException(string message, Exception exception)
-            : base(message, Check.NotNullArgument(exception, "exception"))
+            : base(message, exception ?? throw new ArgumentNullException(nameof(exception)))
         {
-            _innerExceptions = new ReadOnlyCollection<Exception>(new[] { exception });
+            InnerExceptions = new ReadOnlyCollection<Exception>(new[] { exception });
         }
 
         public AggregateException(params Exception[] innerExceptions)
@@ -63,18 +62,17 @@ namespace System
         protected AggregateException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            var value = info.GetValue("InnerExceptions", typeof(Exception[])) as Exception[];
-            if (value == null)
+            if (!(info.GetValue(nameof(InnerExceptions), typeof(Exception[])) is Exception[] value))
             {
                 throw new SerializationException("Deserialization Failure");
             }
-            _innerExceptions = new ReadOnlyCollection<Exception>(value);
+            InnerExceptions = new ReadOnlyCollection<Exception>(value);
         }
 
         private AggregateException(CreationInfo creationInfo)
             : base(creationInfo.String, creationInfo.Exception)
         {
-            _innerExceptions = creationInfo.InnerExceptions;
+            InnerExceptions = creationInfo.InnerExceptions;
         }
 
         private AggregateException(IEnumerable<Exception> innerExceptions, string message)
@@ -83,10 +81,7 @@ namespace System
             // Empty
         }
 
-        public ReadOnlyCollection<Exception> InnerExceptions
-        {
-            get { return _innerExceptions; }
-        }
+        public ReadOnlyCollection<Exception> InnerExceptions { get; }
 
         public AggregateException Flatten()
         {
@@ -96,10 +91,9 @@ namespace System
             while (queue.Count > 0)
             {
                 var current = queue.Dequeue();
-                foreach (var exception in current._innerExceptions)
+                foreach (var exception in current.InnerExceptions)
                 {
-                    var aggregatedException = exception as AggregateException;
-                    if (aggregatedException != null)
+                    if (exception is AggregateException aggregatedException)
                     {
                         queue.Enqueue(aggregatedException);
                     }
@@ -118,12 +112,11 @@ namespace System
             while (true)
             {
                 Exception item;
-                if (result._innerExceptions.Count != 1 || ReferenceEquals(null, item = result._innerExceptions[0]))
+                if (result.InnerExceptions.Count != 1 || ReferenceEquals(null, item = result.InnerExceptions[0]))
                 {
                     return result;
                 }
-                var tmp = item as AggregateException;
-                if (tmp == null)
+                if (!(item is AggregateException tmp))
                 {
                     return item;
                 }
@@ -137,22 +130,22 @@ namespace System
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
             base.GetObjectData(info, context);
-            var exceptionArray = new Exception[_innerExceptions.Count];
-            _innerExceptions.CopyTo(exceptionArray, 0);
-            info.AddValue("InnerExceptions", exceptionArray, typeof(Exception[]));
+            var exceptionArray = new Exception[InnerExceptions.Count];
+            InnerExceptions.CopyTo(exceptionArray, 0);
+            info.AddValue(nameof(InnerExceptions), exceptionArray, typeof(Exception[]));
         }
 
         public void Handle(Func<Exception, bool> predicate)
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             var failed = new List<Exception>();
-            foreach (var exception in _innerExceptions)
+            foreach (var exception in InnerExceptions)
             {
                 try
                 {
@@ -181,25 +174,19 @@ namespace System
         {
             if (innerExceptions == null)
             {
-                throw new ArgumentNullException("innerExceptions");
+                throw new ArgumentNullException(nameof(innerExceptions));
             }
             return new CreationInfo(customMessage, innerExceptions);
         }
 
-        private class CreationInfo
+        private sealed class CreationInfo
         {
-            private readonly Exception _exception;
-
-            private readonly ReadOnlyCollection<Exception> _innerExceptions;
-
-            private readonly string _string;
-
             public CreationInfo(string customMessage, IEnumerable<Exception> innerExceptions)
             {
                 var exceptions = new List<Exception>();
-                var result = new Text.StringBuilder(string.Format(_baseMessage, customMessage));
+                var result = new StringBuilder($"Exception(s) occurred while inside the Parallel loop. {customMessage}.");
                 var first = true;
-                _exception = null;
+                Exception = null;
                 foreach (var exception in innerExceptions)
                 {
                     if (exception == null)
@@ -208,7 +195,7 @@ namespace System
                     }
                     if (first)
                     {
-                        _exception = exception;
+                        Exception = exception;
                         first = false;
                     }
                     exceptions.Add(exception);
@@ -218,24 +205,15 @@ namespace System
                     result.Append(" ]");
                     result.Append(Environment.NewLine);
                 }
-                _string = result.ToString();
-                _innerExceptions = exceptions.AsReadOnly();
+                String = result.ToString();
+                InnerExceptions = exceptions.AsReadOnly();
             }
 
-            public Exception Exception
-            {
-                get { return _exception; }
-            }
+            public Exception Exception { get; }
 
-            public ReadOnlyCollection<Exception> InnerExceptions
-            {
-                get { return _innerExceptions; }
-            }
+            public ReadOnlyCollection<Exception> InnerExceptions { get; }
 
-            public string String
-            {
-                get { return _string; }
-            }
+            public string String { get; }
         }
     }
 }

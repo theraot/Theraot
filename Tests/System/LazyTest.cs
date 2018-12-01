@@ -82,7 +82,7 @@ namespace MonoTests.System
                 Prop = 5;
             }
 
-            public int Prop { get; set; }
+            public int Prop { get; }
         }
 
         [Test]
@@ -157,20 +157,20 @@ namespace MonoTests.System
         }
 
         [Test]
-        public void InitRecursion() // TODO: Review
+        public void InitRecursion()
         {
-            Lazy<DefaultCtorClass> c = null; // Do not inline
-            c = new Lazy<DefaultCtorClass>
+            var c = new Lazy<DefaultCtorClass>[] { null };
+            c[0] = new Lazy<DefaultCtorClass>
             (
                 () =>
                 {
-                    Console.WriteLine(c.Value);
+                    Console.WriteLine(c[0].Value);
                     return null;
                 }
             );
             try
             {
-                GC.KeepAlive(c.Value);
+                GC.KeepAlive(c[0].Value);
                 Assert.Fail();
             }
             catch (InvalidOperationException ex)
@@ -180,13 +180,13 @@ namespace MonoTests.System
         }
 
         [Test]
-        public void ModeNone() // TODO: Review
+        public void ModeNone()
         {
-            int x;
-            var fail = true;
-            var lz = new Lazy<int>(() =>
+            var fail = new[] { true };
+            var lz = new Lazy<int>[] { null };
+            lz[0] = new Lazy<int>(() =>
             {
-                if (fail)
+                if (fail[0])
                 {
                     throw new Exception();
                 }
@@ -194,7 +194,7 @@ namespace MonoTests.System
             }, LazyThreadSafetyMode.None);
             try
             {
-                x = lz.Value;
+                GC.KeepAlive(lz[0].Value);
                 Assert.Fail("#1");
             }
             catch (Exception ex)
@@ -204,7 +204,7 @@ namespace MonoTests.System
 
             try
             {
-                GC.KeepAlive(lz.Value);
+                GC.KeepAlive(lz[0].Value);
                 Assert.Fail("#2");
             }
             catch (Exception ex)
@@ -212,10 +212,10 @@ namespace MonoTests.System
                 GC.KeepAlive(ex);
             }
 
-            fail = false;
+            fail[0] = false;
             try
             {
-                GC.KeepAlive(lz.Value);
+                GC.KeepAlive(lz[0].Value);
                 Assert.Fail("#3");
             }
             catch (Exception ex)
@@ -223,12 +223,12 @@ namespace MonoTests.System
                 GC.KeepAlive(ex);
             }
 
-            var rec = true;
-            lz = new Lazy<int>(() => rec ? lz.Value : 99, LazyThreadSafetyMode.None);
+            var rec = new[] { true };
+            lz[0] = new Lazy<int>(() => rec[0] ? lz[0].Value : 99, LazyThreadSafetyMode.None);
 
             try
             {
-                GC.KeepAlive(lz.Value);
+                GC.KeepAlive(lz[0].Value);
                 Assert.Fail("#4");
             }
             catch (InvalidOperationException ex)
@@ -236,10 +236,10 @@ namespace MonoTests.System
                 GC.KeepAlive(ex);
             }
 
-            rec = false;
+            rec[0] = false;
             try
             {
-                GC.KeepAlive(lz.Value);
+                GC.KeepAlive(lz[0].Value);
                 Assert.Fail("#5");
             }
             catch (InvalidOperationException ex)
@@ -249,14 +249,15 @@ namespace MonoTests.System
         }
 
         [Test]
-        public void ModePublicationOnly() // TODO: Review
+        public void ModePublicationOnly()
         {
-            var fail = true;
-            var invoke = 0;
-            var lz = new Lazy<int>(() =>
+            var fail = new[] { true };
+            var invoke = new[] { 0 };
+            var lz = new Lazy<int>[] { null };
+            lz[0] = new Lazy<int>(() =>
             {
-                ++invoke;
-                if (fail)
+                invoke[0]++;
+                if (fail[0])
                 {
                     throw new Exception();
                 }
@@ -265,7 +266,7 @@ namespace MonoTests.System
 
             try
             {
-                var x = lz.Value;
+                GC.KeepAlive(lz[0].Value);
                 Assert.Fail("#1");
             }
             catch (Exception ex)
@@ -275,7 +276,7 @@ namespace MonoTests.System
 
             try
             {
-                GC.KeepAlive(lz.Value);
+                GC.KeepAlive(lz[0].Value);
                 Assert.Fail("#2");
             }
             catch (Exception ex)
@@ -283,34 +284,35 @@ namespace MonoTests.System
                 GC.KeepAlive(ex);
             }
 
-            Assert.AreEqual(2, invoke, "#3");
-            fail = false;
-            Assert.AreEqual(99, lz.Value, "#4");
-            Assert.AreEqual(3, invoke, "#5");
+            Assert.AreEqual(2, invoke[0], "#3");
+            fail[0] = false;
+            Assert.AreEqual(99, lz[0].Value, "#4");
+            Assert.AreEqual(3, invoke[0], "#5");
 
-            invoke = 0;
+            invoke[0] = 0;
             var rec = true;
-            lz = new Lazy<int>(() =>
+            lz[0] = new Lazy<int>(() =>
             {
-                ++invoke;
+                invoke[0]++;
                 var r = rec;
                 rec = false;
-                return r ? lz.Value : 88;
+                return r ? lz[0].Value : 88;
             }, LazyThreadSafetyMode.PublicationOnly);
 
-            Assert.AreEqual(88, lz.Value, "#6");
-            Assert.AreEqual(2, invoke, "#7");
+            Assert.AreEqual(88, lz[0].Value, "#6");
+            Assert.AreEqual(2, invoke[0], "#7");
         }
 
         [Test]
-        public void ModeExecutionAndPublication() // TODO: Review
+        public void ModeExecutionAndPublication()
         {
             var invoke = 0;
-            var fail = true;
-            var lz = new Lazy<int>(() =>
+            var fail = new[] { true };
+            var lz = new Lazy<int>[] { null };
+            lz[0] = new Lazy<int>(() =>
             {
                 ++invoke;
-                if (fail)
+                if (fail[0])
                 {
                     throw new Exception();
                 }
@@ -319,7 +321,7 @@ namespace MonoTests.System
 
             try
             {
-                var x = lz.Value;
+                GC.KeepAlive(lz[0].Value);
                 Assert.Fail("#1");
             }
             catch (Exception ex)
@@ -330,7 +332,7 @@ namespace MonoTests.System
 
             try
             {
-                GC.KeepAlive(lz.Value);
+                GC.KeepAlive(lz[0].Value);
                 Assert.Fail("#3");
             }
             catch (Exception ex)
@@ -339,10 +341,10 @@ namespace MonoTests.System
             }
             Assert.AreEqual(1, invoke, "#4");
 
-            fail = false;
+            fail[0] = false;
             try
             {
-                GC.KeepAlive(lz.Value);
+                GC.KeepAlive(lz[0].Value);
                 Assert.Fail("#5");
             }
             catch (Exception ex)
@@ -351,12 +353,12 @@ namespace MonoTests.System
             }
             Assert.AreEqual(1, invoke, "#6");
 
-            var rec = true;
-            lz = new Lazy<int>(() => rec ? lz.Value : 99, LazyThreadSafetyMode.ExecutionAndPublication);
+            var rec = new[] { true };
+            lz[0] = new Lazy<int>(() => rec[0] ? lz[0].Value : 99, LazyThreadSafetyMode.ExecutionAndPublication);
 
             try
             {
-                GC.KeepAlive(lz.Value);
+                GC.KeepAlive(lz[0].Value);
                 Assert.Fail("#7");
             }
             catch (InvalidOperationException ex)
@@ -364,10 +366,10 @@ namespace MonoTests.System
                 GC.KeepAlive(ex);
             }
 
-            rec = false;
+            rec[0] = false;
             try
             {
-                GC.KeepAlive(lz.Value);
+                GC.KeepAlive(lz[0].Value);
                 Assert.Fail("#8");
             }
             catch (InvalidOperationException ex)
@@ -389,7 +391,7 @@ namespace MonoTests.System
         }
 
         [Test]
-        public void ConcurrentInitialization() // TODO: Review
+        public void ConcurrentInitialization()
         {
             using (var init = new AutoResetEvent(false))
             {
@@ -397,6 +399,7 @@ namespace MonoTests.System
                 {
                     var lazy = new Lazy<string>(() =>
                     {
+                        // ReSharper disable once AccessToDisposedClosure
                         init.Set();
                         Thread.Sleep(10);
                         throw new ApplicationException();
@@ -412,6 +415,7 @@ namespace MonoTests.System
                         catch (Exception ex)
                         {
                             e1 = ex;
+                            // ReSharper disable once AccessToDisposedClosure
                             e1Set.Set();
                         }
                     });

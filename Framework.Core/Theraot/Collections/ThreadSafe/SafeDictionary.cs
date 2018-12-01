@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Theraot.Collections.Specialized;
+using Theraot.Core;
 
 namespace Theraot.Collections.ThreadSafe
 {
@@ -15,18 +16,60 @@ namespace Theraot.Collections.ThreadSafe
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <remarks>
-    /// Consider wrapping this class to implement <see cref="IDictionary{TKey, TValue}" /> or any other desired interface.
+    /// Consider wrapping this class to implement <see cref="IDictionary{TKey,TValue}" /> or any other desired interface.
     /// </remarks>
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+
+    [Serializable]
+#endif
+
     public sealed partial class SafeDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private const int _defaultProbing = 1;
-
-        private readonly KeyCollection<TKey, TValue> _keyCollection;
-        private readonly IEqualityComparer<TKey> _keyComparer;
-        private readonly ValueCollection<TKey, TValue> _valueCollection;
         private readonly IEqualityComparer<TValue> _valueComparer;
         private Bucket<KeyValuePair<TKey, TValue>> _bucket;
         private int _probing;
+
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+
+        [NonSerialized]
+        private KeyCollection<TKey, TValue> _keyCollection;
+
+        [NonSerialized]
+        private ValueCollection<TKey, TValue> _valueCollection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SafeDictionary{TKey,TValue}" /> class.
+        /// </summary>
+        /// <param name="comparer">The key comparer.</param>
+        /// <param name="initialProbing">The number of steps in linear probing.</param>
+        public SafeDictionary(IEqualityComparer<TKey> comparer, int initialProbing)
+        {
+            KeyComparer = comparer ?? EqualityComparer<TKey>.Default;
+            _valueComparer = EqualityComparer<TValue>.Default;
+            _bucket = new Bucket<KeyValuePair<TKey, TValue>>();
+            _probing = initialProbing;
+        }
+
+#else
+
+        private KeyCollection<TKey, TValue> _keyCollection;
+        private ValueCollection<TKey, TValue> _valueCollection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SafeDictionary{TKey,TValue}" /> class.
+        /// </summary>
+        /// <param name="comparer">The key comparer.</param>
+        /// <param name="initialProbing">The number of steps in linear probing.</param>
+        public SafeDictionary(IEqualityComparer<TKey> comparer, int initialProbing)
+        {
+            KeyComparer = comparer ?? EqualityComparer<TKey>.Default;
+            _valueComparer = EqualityComparer<TValue>.Default;
+            _bucket = new Bucket<KeyValuePair<TKey, TValue>>();
+            _probing = initialProbing;
+        }
+
+#endif
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SafeDictionary{TKey,TValue}" /> class.
@@ -57,59 +100,50 @@ namespace Theraot.Collections.ThreadSafe
             // Empty
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SafeDictionary{TKey,TValue}" /> class.
-        /// </summary>
-        /// <param name="comparer">The key comparer.</param>
-        /// <param name="initialProbing">The number of steps in linear probing.</param>
-        public SafeDictionary(IEqualityComparer<TKey> comparer, int initialProbing)
-        {
-            _keyComparer = comparer ?? EqualityComparer<TKey>.Default;
-            _valueComparer = EqualityComparer<TValue>.Default;
-            _bucket = new Bucket<KeyValuePair<TKey, TValue>>();
-            _probing = initialProbing;
-            _keyCollection = new KeyCollection<TKey, TValue>(this);
-            _valueCollection = new ValueCollection<TKey, TValue>(this);
-        }
+        public int Count => _bucket.Count;
 
-        public int Count
-        {
-            get { return _bucket.Count; }
-        }
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
 
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
-        {
-            get { return false; }
-        }
-
-        public IEqualityComparer<TKey> KeyComparer
-        {
-            get { return _keyComparer; }
-        }
+        public IEqualityComparer<TKey> KeyComparer { get; }
 
         public ICollection<TKey> Keys
         {
-            get { return _keyCollection; }
+            get
+            {
+                return TypeHelper.LazyCreate(ref _keyCollection, () => new KeyCollection<TKey, TValue>(this));
+            }
         }
 
         public ICollection<TValue> Values
         {
-            get { return _valueCollection; }
+            get
+            {
+                return TypeHelper.LazyCreate(ref _valueCollection, () => new ValueCollection<TKey, TValue>(this));
+            }
         }
 
         public TValue this[TKey key]
         {
             get
             {
-                TValue value;
-                if (TryGetValue(key, out value))
+                if (TryGetValue(key, out var value))
                 {
                     return value;
                 }
                 throw new KeyNotFoundException();
             }
 
-            set { Set(key, value); }
+            set => Set(key, value);
+        }
+
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
+        {
+            AddNew(item.Key, item.Value);
+        }
+
+        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
+        {
+            AddNew(key, value);
         }
 
         /// <summary>
@@ -117,7 +151,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        /// <exception cref="System.ArgumentException">An item with the same key has already been added</exception>
+        /// <exception cref="ArgumentException">An item with the same key has already been added</exception>
         public void AddNew(TKey key, TValue value)
         {
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
@@ -126,14 +160,13 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                KeyValuePair<TKey, TValue> found;
-                if (_bucket.Insert(hashCode + attempts, insertPair, out found))
+                if (_bucket.Insert(hashCode + attempts, insertPair, out var found))
                 {
                     return;
                 }
-                if (_keyComparer.Equals(found.Key, key))
+                if (KeyComparer.Equals(found.Key, key))
                 {
-                    throw new ArgumentException("An item with the same key has already been added", "key");
+                    throw new ArgumentException("An item with the same key has already been added", nameof(key));
                 }
                 attempts++;
             }
@@ -156,6 +189,26 @@ namespace Theraot.Collections.ThreadSafe
             return Interlocked.Exchange(ref _bucket, _bucket = new Bucket<KeyValuePair<TKey, TValue>>());
         }
 
+        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
+        {
+            var hashCode = GetHashCode(item.Key);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                if (_bucket.TryGet(hashCode + attempts, out var found))
+                {
+                    if (KeyComparer.Equals(found.Key, item.Key))
+                    {
+                        if (_valueComparer.Equals(found.Value, item.Value))
+                        {
+                            return true;
+                        }
+                        return false;
+                    }
+                }
+            }
+            return false;
+        }
+
         /// <summary>
         /// Determines whether the specified key is contained.
         /// </summary>
@@ -168,10 +221,9 @@ namespace Theraot.Collections.ThreadSafe
             var hashCode = GetHashCode(key);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                KeyValuePair<TKey, TValue> found;
-                if (_bucket.TryGet(hashCode + attempts, out found))
+                if (_bucket.TryGet(hashCode + attempts, out var found))
                 {
-                    if (_keyComparer.Equals(found.Key, key))
+                    if (KeyComparer.Equals(found.Key, key))
                     {
                         return true;
                     }
@@ -192,12 +244,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                KeyValuePair<TKey, TValue> found;
-                if (_bucket.TryGet(hashCode + attempts, out found))
+                if (_bucket.TryGet(hashCode + attempts, out var found))
                 {
                     if (GetHashCode(found.Key) == hashCode && keyCheck(found.Key))
                     {
@@ -221,16 +272,15 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                KeyValuePair<TKey, TValue> found;
-                if (_bucket.TryGet(hashCode + attempts, out found))
+                if (_bucket.TryGet(hashCode + attempts, out var found))
                 {
                     if (GetHashCode(found.Key) == hashCode && keyCheck(found.Key) && valueCheck(found.Value))
                     {
@@ -246,9 +296,9 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="System.ArgumentNullException">array</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
+        /// <exception cref="ArgumentNullException">array</exception>
+        /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             _bucket.CopyTo(array, arrayIndex);
@@ -265,23 +315,27 @@ namespace Theraot.Collections.ThreadSafe
             return _bucket.GetEnumerator();
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             var hashCode = GetHashCode(key);
             var attempts = 0;
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                KeyValuePair<TKey, TValue> storedPair;
-                if (_bucket.TryGetOrInsert(hashCode + attempts, () => new KeyValuePair<TKey, TValue>(key, valueFactory(key)), out storedPair))
+                if (_bucket.TryGetOrInsert(hashCode + attempts, () => new KeyValuePair<TKey, TValue>(key, valueFactory(key)), out var storedPair))
                 {
                     return storedPair.Value;
                 }
-                if (_keyComparer.Equals(storedPair.Key, key))
+                if (KeyComparer.Equals(storedPair.Key, key))
                 {
                     return storedPair.Value;
                 }
@@ -297,12 +351,11 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                KeyValuePair<TKey, TValue> storedPair;
-                if (_bucket.TryGetOrInsert(hashCode + attempts, insertPair, out storedPair))
+                if (_bucket.TryGetOrInsert(hashCode + attempts, insertPair, out var storedPair))
                 {
                     return storedPair.Value;
                 }
-                if (_keyComparer.Equals(storedPair.Key, key))
+                if (KeyComparer.Equals(storedPair.Key, key))
                 {
                     return storedPair.Value;
                 }
@@ -321,32 +374,6 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
-        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
-        {
-            AddNew(item.Key, item.Value);
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
-        {
-            var hashCode = GetHashCode(item.Key);
-            for (var attempts = 0; attempts < _probing; attempts++)
-            {
-                KeyValuePair<TKey, TValue> found;
-                if (_bucket.TryGet(hashCode + attempts, out found))
-                {
-                    if (_keyComparer.Equals(found.Key, item.Key))
-                    {
-                        if (_valueComparer.Equals(found.Value, item.Value))
-                        {
-                            return true;
-                        }
-                        return false;
-                    }
-                }
-            }
-            return false;
-        }
-
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
         {
             var hashCode = GetHashCode(item.Key);
@@ -358,7 +385,7 @@ namespace Theraot.Collections.ThreadSafe
                         hashCode + attempts,
                         found =>
                         {
-                            if (_keyComparer.Equals(found.Key, item.Key))
+                            if (KeyComparer.Equals(found.Key, item.Key))
                             {
                                 done = true;
                                 if (_valueComparer.Equals(found.Value, item.Value))
@@ -377,16 +404,6 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
-        {
-            AddNew(key, value);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         /// <summary>
         /// Removes the specified key.
         /// </summary>
@@ -400,19 +417,19 @@ namespace Theraot.Collections.ThreadSafe
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
-                Predicate<KeyValuePair<TKey, TValue>> check = found =>
+                bool Check(KeyValuePair<TKey, TValue> found)
                 {
-                    if (_keyComparer.Equals(found.Key, key))
+                    if (KeyComparer.Equals(found.Key, key))
                     {
                         done = true;
                         return true;
                     }
                     return false;
-                };
+                }
                 var result = _bucket.RemoveAt
                     (
                         hashCode + attempts,
-                        check
+                        Check
                     );
                 if (done)
                 {
@@ -432,26 +449,26 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(TKey key, out TValue value)
         {
-            value = default(TValue);
+            value = default;
             var hashCode = GetHashCode(key);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
                 var previous = default(KeyValuePair<TKey, TValue>);
-                Predicate<KeyValuePair<TKey, TValue>> check = found =>
+                bool Check(KeyValuePair<TKey, TValue> found)
                 {
                     previous = found;
-                    if (_keyComparer.Equals(found.Key, key))
+                    if (KeyComparer.Equals(found.Key, key))
                     {
                         done = true;
                         return true;
                     }
                     return false;
-                };
+                }
                 var result = _bucket.RemoveAt
                     (
                         hashCode + attempts,
-                        check
+                        Check
                     );
                 if (done)
                 {
@@ -475,14 +492,14 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
-            value = default(TValue);
+            value = default;
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
                 var previous = default(KeyValuePair<TKey, TValue>);
-                Predicate<KeyValuePair<TKey, TValue>> check = found =>
+                bool Check(KeyValuePair<TKey, TValue> found)
                 {
                     previous = found;
                     if (GetHashCode(found.Key) == hashCode && keyCheck(found.Key))
@@ -491,11 +508,11 @@ namespace Theraot.Collections.ThreadSafe
                         return true;
                     }
                     return false;
-                };
+                }
                 var result = _bucket.RemoveAt
                     (
                         hashCode + attempts,
-                        check
+                        Check
                     );
                 if (done)
                 {
@@ -519,18 +536,18 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
-            value = default(TValue);
+            value = default;
             var hashCode = GetHashCode(key);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
                 var previous = default(KeyValuePair<TKey, TValue>);
-                Predicate<KeyValuePair<TKey, TValue>> check = found =>
+                bool Check(KeyValuePair<TKey, TValue> found)
                 {
                     previous = found;
-                    if (_keyComparer.Equals(found.Key, key))
+                    if (KeyComparer.Equals(found.Key, key))
                     {
                         done = true;
                         if (valueCheck(found.Value))
@@ -539,11 +556,11 @@ namespace Theraot.Collections.ThreadSafe
                         }
                     }
                     return false;
-                };
+                }
                 var result = _bucket.RemoveAt
                     (
                         hashCode + attempts,
-                        check
+                        Check
                     );
                 if (done)
                 {
@@ -568,18 +585,18 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
-            value = default(TValue);
+            value = default;
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
                 var previous = default(KeyValuePair<TKey, TValue>);
-                Predicate<KeyValuePair<TKey, TValue>> check = found =>
+                bool Check(KeyValuePair<TKey, TValue> found)
                 {
                     previous = found;
                     if (GetHashCode(found.Key) == hashCode && keyCheck(found.Key))
@@ -591,11 +608,11 @@ namespace Theraot.Collections.ThreadSafe
                         }
                     }
                     return false;
-                };
+                }
                 var result = _bucket.RemoveAt
                     (
                         hashCode + attempts,
-                        check
+                        Check
                     );
                 if (done)
                 {
@@ -620,7 +637,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             var matches = _bucket.Where(pair => keyCheck(pair.Key));
             return matches.Count(pair => Remove(pair.Key));
@@ -640,7 +657,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             var matches = _bucket.Where(pair => keyCheck(pair.Key));
             return from pair in matches where Remove(pair.Key) select pair.Value;
@@ -660,7 +677,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
             var matches = _bucket.Where(pair => valueCheck(pair.Value));
             return matches.Count(pair => Remove(pair.Key));
@@ -680,7 +697,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
             var matches = _bucket.Where(pair => valueCheck(pair.Value));
             return from pair in matches where Remove(pair.Key) select pair.Value;
@@ -699,8 +716,7 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                bool isNew;
-                if (_bucket.InsertOrUpdate(hashCode + attempts, insertPair, found => _keyComparer.Equals(found.Key, key), out isNew))
+                if (_bucket.InsertOrUpdateChecked(hashCode + attempts, insertPair, found => KeyComparer.Equals(found.Key, key), out _))
                 {
                     return;
                 }
@@ -722,7 +738,7 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                if (_bucket.InsertOrUpdate(hashCode + attempts, insertPair, found => _keyComparer.Equals(found.Key, key), out isNew))
+                if (_bucket.InsertOrUpdateChecked(hashCode + attempts, insertPair, found => KeyComparer.Equals(found.Key, key), out isNew))
                 {
                     return;
                 }
@@ -746,12 +762,11 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                KeyValuePair<TKey, TValue> found;
-                if (_bucket.Insert(hashCode + attempts, insertPair, out found))
+                if (_bucket.Insert(hashCode + attempts, insertPair, out var found))
                 {
                     return true;
                 }
-                if (_keyComparer.Equals(found.Key, key))
+                if (KeyComparer.Equals(found.Key, key))
                 {
                     return false;
                 }
@@ -781,7 +796,7 @@ namespace Theraot.Collections.ThreadSafe
                     stored = insertPair;
                     return true;
                 }
-                if (_keyComparer.Equals(stored.Key, key))
+                if (KeyComparer.Equals(stored.Key, key))
                 {
                     return false;
                 }
@@ -797,13 +812,12 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                KeyValuePair<TKey, TValue> storedPair;
-                if (_bucket.TryGetOrInsert(hashCode + attempts, insertPair, out storedPair))
+                if (_bucket.TryGetOrInsert(hashCode + attempts, insertPair, out var storedPair))
                 {
                     stored = storedPair.Value;
                     return true;
                 }
-                if (_keyComparer.Equals(storedPair.Key, key))
+                if (KeyComparer.Equals(storedPair.Key, key))
                 {
                     stored = storedPair.Value;
                     return false;
@@ -816,20 +830,19 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueFactory == null)
             {
-                throw new ArgumentException("valueFactory");
+                throw new ArgumentException(nameof(valueFactory));
             }
             var hashCode = GetHashCode(key);
             var attempts = 0;
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                KeyValuePair<TKey, TValue> storedPair;
-                if (_bucket.TryGetOrInsert(hashCode + attempts, () => new KeyValuePair<TKey, TValue>(key, valueFactory(key)), out storedPair))
+                if (_bucket.TryGetOrInsert(hashCode + attempts, () => new KeyValuePair<TKey, TValue>(key, valueFactory(key)), out var storedPair))
                 {
                     stored = storedPair.Value;
                     return true;
                 }
-                if (_keyComparer.Equals(storedPair.Key, key))
+                if (KeyComparer.Equals(storedPair.Key, key))
                 {
                     stored = storedPair.Value;
                     return false;
@@ -848,14 +861,13 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool TryGetValue(TKey key, out TValue value)
         {
-            value = default(TValue);
+            value = default;
             var hashCode = GetHashCode(key);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                KeyValuePair<TKey, TValue> found;
-                if (_bucket.TryGet(hashCode + attempts, out found))
+                if (_bucket.TryGet(hashCode + attempts, out var found))
                 {
-                    if (_keyComparer.Equals(found.Key, key))
+                    if (KeyComparer.Equals(found.Key, key))
                     {
                         value = found.Value;
                         return true;
@@ -873,12 +885,12 @@ namespace Theraot.Collections.ThreadSafe
             {
                 var keyMatch = false;
                 ExtendProbingIfNeeded(attempts);
-                Predicate<KeyValuePair<TKey, TValue>> check = found =>
+                bool Check(KeyValuePair<TKey, TValue> found)
                 {
-                    keyMatch = _keyComparer.Equals(found.Key, key);
+                    keyMatch = KeyComparer.Equals(found.Key, key);
                     return keyMatch && _valueComparer.Equals(found.Value, comparisonValue);
-                };
-                if (_bucket.Update(hashCode + attempts, insertPair, check))
+                }
+                if (_bucket.UpdateChecked(hashCode + attempts, insertPair, Check))
                 {
                     return true;
                 }
@@ -894,7 +906,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, newValue);
@@ -902,13 +914,12 @@ namespace Theraot.Collections.ThreadSafe
             {
                 var keyMatch = false;
                 ExtendProbingIfNeeded(attempts);
-                Predicate<KeyValuePair<TKey, TValue>> check = found =>
+                bool Check(KeyValuePair<TKey, TValue> found)
                 {
-                    keyMatch = _keyComparer.Equals(found.Key, key);
+                    keyMatch = KeyComparer.Equals(found.Key, key);
                     return keyMatch && valueCheck(found.Value);
-                };
-                bool isEmpty;
-                if (_bucket.Update(hashCode + attempts, _ => insertPair, check, out isEmpty))
+                }
+                if (_bucket.Update(hashCode + attempts, _ => insertPair, Check, out _))
                 {
                     return true;
                 }
@@ -924,20 +935,19 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (newValue == null)
             {
-                throw new ArgumentNullException("newValue");
+                throw new ArgumentNullException(nameof(newValue));
             }
             var hashCode = GetHashCode(key);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var keyMatch = false;
                 ExtendProbingIfNeeded(attempts);
-                Predicate<KeyValuePair<TKey, TValue>> check = found =>
+                bool Check(KeyValuePair<TKey, TValue> found)
                 {
-                    keyMatch = _keyComparer.Equals(found.Key, key);
+                    keyMatch = KeyComparer.Equals(found.Key, key);
                     return keyMatch;
-                };
-                bool isEmpty;
-                if (_bucket.Update(hashCode + attempts, existing => new KeyValuePair<TKey, TValue>(key, newValue(existing.Value)), check, out isEmpty))
+                }
+                if (_bucket.Update(hashCode + attempts, existing => new KeyValuePair<TKey, TValue>(key, newValue(existing.Value)), Check, out _))
                 {
                     return true;
                 }
@@ -963,7 +973,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
             var matches = _bucket.Where(pair => keyCheck(pair.Key));
             return matches.Select(pair => pair.Value);
@@ -983,7 +993,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueCheck == null)
             {
-                throw new ArgumentNullException("valueCheck");
+                throw new ArgumentNullException(nameof(valueCheck));
             }
             var matches = _bucket.Where(pair => valueCheck(pair.Value));
             return matches.Select(pair => pair.Value);
@@ -995,14 +1005,14 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="key">The key.</param>
         /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
         /// <param name="value">The value.</param>
-        /// <exception cref="System.ArgumentException">An item with the same key has already been added</exception>
+        /// <exception cref="ArgumentException">An item with the same key has already been added</exception>
         internal void AddNew(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
         {
 #if FAT
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
-                throw new ArgumentNullException("keyOverwriteCheck");
+                throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
 #endif
             var hashCode = GetHashCode(key);
@@ -1011,21 +1021,20 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                Predicate<KeyValuePair<TKey, TValue>> check = found =>
+                bool Check(KeyValuePair<TKey, TValue> found)
                 {
-                    if (_keyComparer.Equals(found.Key, key))
+                    if (KeyComparer.Equals(found.Key, key))
                     {
                         // This is the item that has been stored with the key
                         // Throw to abort overwrite
-                        throw CreateKeyArgumentException(null); // This exception will buble up to the context where "key" is an argument.
+                        throw CreateKeyArgumentException(null); // This exception will bubble up to the context where "key" is an argument.
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(found.Key);
-                };
+                }
                 // No try-catch - let the exception go.
-                bool isNew;
                 // InsertOrUpdate will add if no item is found, otherwise it calls check
-                _bucket.InsertOrUpdate(hashCode + attempts, insertPair, check, out isNew);
+                _bucket.InsertOrUpdateChecked(hashCode + attempts, insertPair, Check, out var isNew);
                 if (isNew)
                 {
                     // It added a new item
@@ -1047,7 +1056,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
-                throw new ArgumentNullException("keyOverwriteCheck");
+                throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
 #endif
             var hashCode = GetHashCode(key);
@@ -1056,9 +1065,8 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                bool isNew;
-                Predicate<KeyValuePair<TKey, TValue>> check = found => _keyComparer.Equals(found.Key, key) || keyOverwriteCheck(found.Key);
-                if (_bucket.InsertOrUpdate(hashCode + attempts, insertPair, check, out isNew))
+                bool Check(KeyValuePair<TKey, TValue> found) => KeyComparer.Equals(found.Key, key) || keyOverwriteCheck(found.Key);
+                if (_bucket.InsertOrUpdateChecked(hashCode + attempts, insertPair, Check, out _))
                 {
                     return;
                 }
@@ -1079,7 +1087,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
-                throw new ArgumentNullException("keyOverwriteCheck");
+                throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
 #endif
             var hashCode = GetHashCode(key);
@@ -1088,8 +1096,8 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                Predicate<KeyValuePair<TKey, TValue>> check = found => _keyComparer.Equals(found.Key, key) || keyOverwriteCheck(found.Key);
-                if (_bucket.InsertOrUpdate(hashCode + attempts, insertPair, check, out isNew))
+                bool Check(KeyValuePair<TKey, TValue> found) => KeyComparer.Equals(found.Key, key) || keyOverwriteCheck(found.Key);
+                if (_bucket.InsertOrUpdateChecked(hashCode + attempts, insertPair, Check, out isNew))
                 {
                     return;
                 }
@@ -1112,7 +1120,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
-                throw new ArgumentNullException("keyOverwriteCheck");
+                throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
 #endif
             var hashCode = GetHashCode(key);
@@ -1121,22 +1129,21 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                Predicate<KeyValuePair<TKey, TValue>> check = found =>
+                bool Check(KeyValuePair<TKey, TValue> found)
                 {
-                    if (_keyComparer.Equals(found.Key, key))
+                    if (KeyComparer.Equals(found.Key, key))
                     {
                         // This is the item that has been stored with the key
                         // Throw to abort overwrite
-                        throw CreateKeyArgumentException(null); // This exception will buble up to the context where "key" is an argument.
+                        throw CreateKeyArgumentException(null); // This exception will bubble up to the context where "key" is an argument.
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(found.Key);
-                };
+                }
                 try
                 {
-                    bool isNew;
                     // InsertOrUpdate will add if no item is found, otherwise it calls check
-                    _bucket.InsertOrUpdate(hashCode + attempts, insertPair, check, out isNew);
+                    _bucket.InsertOrUpdateChecked(hashCode + attempts, insertPair, Check, out var isNew);
                     if (isNew)
                     {
                         // It added a new item
@@ -1158,7 +1165,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
-                throw new ArgumentNullException("keyOverwriteCheck");
+                throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
 #endif
             var hashCode = GetHashCode(key);
@@ -1167,23 +1174,22 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                Predicate<KeyValuePair<TKey, TValue>> check = found =>
+                bool Check(KeyValuePair<TKey, TValue> found)
                 {
-                    if (_keyComparer.Equals(found.Key, key))
+                    if (KeyComparer.Equals(found.Key, key))
                     {
                         // This is the item that has been stored with the key
                         value = found.Value;
                         // Throw to abort overwrite
-                        throw CreateKeyArgumentException(null); // This exception will buble up to the context where "key" is an argument.
+                        throw CreateKeyArgumentException(null); // This exception will bubble up to the context where "key" is an argument.
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(found.Key);
-                };
+                }
                 try
                 {
-                    bool isNew;
                     // InsertOrUpdate will add if no item is found, otherwise it calls check
-                    _bucket.InsertOrUpdate(hashCode + attempts, insertPair, check, out isNew);
+                    _bucket.InsertOrUpdateChecked(hashCode + attempts, insertPair, Check, out var isNew);
                     if (isNew)
                     {
                         // It added a new item
@@ -1213,7 +1219,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private int GetHashCode(TKey key)
         {
-            var hashCode = _keyComparer.GetHashCode(key);
+            var hashCode = KeyComparer.GetHashCode(key);
             if (hashCode < 0)
             {
                 hashCode = -hashCode;
@@ -1233,11 +1239,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (addValueFactory == null)
             {
-                throw new ArgumentNullException("addValueFactory");
+                throw new ArgumentNullException(nameof(addValueFactory));
             }
             if (updateValueFactory == null)
             {
-                throw new ArgumentNullException("updateValueFactory");
+                throw new ArgumentNullException(nameof(updateValueFactory));
             }
             var hashCode = GetHashCode(key);
             var attempts = 0;
@@ -1246,17 +1252,16 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                bool isNew;
-                Func<KeyValuePair<TKey, TValue>> itemFactory = () => insertPair = new KeyValuePair<TKey, TValue>(key, addValueFactory(key));
-                Func<KeyValuePair<TKey, TValue>, KeyValuePair<TKey, TValue>> itemUpdateFactory = found => updatePair = new KeyValuePair<TKey, TValue>(key, updateValueFactory(found.Key, found.Value));
-                Predicate<KeyValuePair<TKey, TValue>> check = found => _keyComparer.Equals(key, found.Key);
-                var result = _bucket.InsertOrUpdate
+                KeyValuePair<TKey, TValue> ItemFactory() => insertPair = new KeyValuePair<TKey, TValue>(key, addValueFactory(key));
+                KeyValuePair<TKey, TValue> ItemUpdateFactory(KeyValuePair<TKey, TValue> found) => updatePair = new KeyValuePair<TKey, TValue>(key, updateValueFactory(found.Key, found.Value));
+                bool Check(KeyValuePair<TKey, TValue> found) => KeyComparer.Equals(key, found.Key);
+                var result = _bucket.InsertOrUpdateChecked
                     (
                         hashCode + attempts,
-                        itemFactory,
-                        itemUpdateFactory,
-                        check,
-                        out isNew
+                        ItemFactory,
+                        ItemUpdateFactory,
+                        Check,
+                        out var isNew
                     );
                 if (result)
                 {
@@ -1270,7 +1275,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (updateValueFactory == null)
             {
-                throw new ArgumentNullException("updateValueFactory");
+                throw new ArgumentNullException(nameof(updateValueFactory));
             }
             var hashCode = GetHashCode(key);
             var attempts = 0;
@@ -1279,16 +1284,15 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                bool isNew;
-                Func<KeyValuePair<TKey, TValue>, KeyValuePair<TKey, TValue>> updateFactory = found => updatePair = new KeyValuePair<TKey, TValue>(key, updateValueFactory(found.Key, found.Value));
-                Predicate<KeyValuePair<TKey, TValue>> check = found => _keyComparer.Equals(key, found.Key);
-                var result = _bucket.InsertOrUpdate
+                KeyValuePair<TKey, TValue> UpdateFactory(KeyValuePair<TKey, TValue> found) => updatePair = new KeyValuePair<TKey, TValue>(key, updateValueFactory(found.Key, found.Value));
+                bool Check(KeyValuePair<TKey, TValue> found) => KeyComparer.Equals(key, found.Key);
+                var result = _bucket.InsertOrUpdateChecked
                     (
                         hashCode + attempts,
                         insertPair,
-                        updateFactory,
-                        check,
-                        out isNew
+                        UpdateFactory,
+                        Check,
+                        out var isNew
                     );
                 if (result)
                 {
@@ -1302,11 +1306,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (addValueFactory == null)
             {
-                throw new ArgumentNullException("addValueFactory");
+                throw new ArgumentNullException(nameof(addValueFactory));
             }
             if (updateValueFactory == null)
             {
-                throw new ArgumentNullException("updateValueFactory");
+                throw new ArgumentNullException(nameof(updateValueFactory));
             }
             var hashCode = GetHashCode(key);
             var attempts = 0;
@@ -1315,15 +1319,15 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                Func<KeyValuePair<TKey, TValue>> valueFactory = () => insertPair = new KeyValuePair<TKey, TValue>(key, addValueFactory(key));
-                Func<KeyValuePair<TKey, TValue>, KeyValuePair<TKey, TValue>> updateFactory = found => updatePair = new KeyValuePair<TKey, TValue>(key, updateValueFactory(found.Key, found.Value));
-                Predicate<KeyValuePair<TKey, TValue>> check = found => _keyComparer.Equals(key, found.Key);
-                var result = _bucket.InsertOrUpdate
+                KeyValuePair<TKey, TValue> ValueFactory() => insertPair = new KeyValuePair<TKey, TValue>(key, addValueFactory(key));
+                KeyValuePair<TKey, TValue> UpdateFactory(KeyValuePair<TKey, TValue> found) => updatePair = new KeyValuePair<TKey, TValue>(key, updateValueFactory(found.Key, found.Value));
+                bool Check(KeyValuePair<TKey, TValue> found) => KeyComparer.Equals(key, found.Key);
+                var result = _bucket.InsertOrUpdateChecked
                     (
                         hashCode + attempts,
-                        valueFactory,
-                        updateFactory,
-                        check,
+                        ValueFactory,
+                        UpdateFactory,
+                        Check,
                         out isNew
                     );
                 if (result)
@@ -1338,7 +1342,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (updateValueFactory == null)
             {
-                throw new ArgumentNullException("updateValueFactory");
+                throw new ArgumentNullException(nameof(updateValueFactory));
             }
             var hashCode = GetHashCode(key);
             var attempts = 0;
@@ -1347,14 +1351,14 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                Func<KeyValuePair<TKey, TValue>, KeyValuePair<TKey, TValue>> updateFactory = found => updatePair = new KeyValuePair<TKey, TValue>(key, updateValueFactory(found.Key, found.Value));
-                Predicate<KeyValuePair<TKey, TValue>> check = found => _keyComparer.Equals(key, found.Key);
-                var result = _bucket.InsertOrUpdate
+                KeyValuePair<TKey, TValue> UpdateFactory(KeyValuePair<TKey, TValue> found) => updatePair = new KeyValuePair<TKey, TValue>(key, updateValueFactory(found.Key, found.Value));
+                bool Check(KeyValuePair<TKey, TValue> found) => KeyComparer.Equals(key, found.Key);
+                var result = _bucket.InsertOrUpdateChecked
                     (
                         hashCode + attempts,
                         insertPair,
-                        updateFactory,
-                        check,
+                        UpdateFactory,
+                        Check,
                         out isNew
                     );
                 if (result)
@@ -1378,13 +1382,12 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (keyCheck == null)
             {
-                throw new ArgumentNullException("keyCheck");
+                throw new ArgumentNullException(nameof(keyCheck));
             }
-            value = default(TValue);
+            value = default;
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                KeyValuePair<TKey, TValue> found;
-                if (_bucket.TryGet(hashCode + attempts, out found))
+                if (_bucket.TryGet(hashCode + attempts, out var found))
                 {
                     if (GetHashCode(found.Key) == hashCode && keyCheck(found.Key))
                     {
@@ -1412,7 +1415,7 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
-                throw new ArgumentNullException("keyOverwriteCheck");
+                throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
 #endif
             var hashCode = GetHashCode(key);
@@ -1422,23 +1425,22 @@ namespace Theraot.Collections.ThreadSafe
             {
                 var foundPair = created;
                 ExtendProbingIfNeeded(attempts);
-                Predicate<KeyValuePair<TKey, TValue>> check = found =>
+                bool Check(KeyValuePair<TKey, TValue> found)
                 {
                     foundPair = found;
-                    if (_keyComparer.Equals(foundPair.Key, key))
+                    if (KeyComparer.Equals(foundPair.Key, key))
                     {
                         // This is the item that has been stored with the key
                         // Throw to abort overwrite
-                        throw CreateKeyArgumentException(null); // This exception will buble up to the context where "key" is an argument.
+                        throw CreateKeyArgumentException(null); // This exception will bubble up to the context where "key" is an argument.
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(foundPair.Key);
-                };
+                }
                 try
                 {
-                    bool isNew;
                     // InsertOrUpdate will add if no item is found, otherwise it calls check
-                    _bucket.InsertOrUpdate(hashCode + attempts, created, check, out isNew);
+                    _bucket.InsertOrUpdateChecked(hashCode + attempts, created, Check, out var isNew);
                     if (isNew)
                     {
                         // It added a new item
@@ -1462,11 +1464,11 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (addValueFactory == null)
             {
-                throw new ArgumentNullException("addValueFactory");
+                throw new ArgumentNullException(nameof(addValueFactory));
             }
             if (updateValueFactory == null)
             {
-                throw new ArgumentNullException("updateValueFactory");
+                throw new ArgumentNullException(nameof(updateValueFactory));
             }
 #endif
             var hashCode = GetHashCode(key);
@@ -1475,23 +1477,22 @@ namespace Theraot.Collections.ThreadSafe
             {
                 var value = default(TValue);
                 ExtendProbingIfNeeded(attempts);
-                Func<KeyValuePair<TKey, TValue>> itemFactory = () => new KeyValuePair<TKey, TValue>(key, value = addValueFactory());
-                Func<KeyValuePair<TKey, TValue>, KeyValuePair<TKey, TValue>> itemUpdateFactory = found =>
+                KeyValuePair<TKey, TValue> ItemFactory() => new KeyValuePair<TKey, TValue>(key, value = addValueFactory());
+                KeyValuePair<TKey, TValue> ItemUpdateFactory(KeyValuePair<TKey, TValue> found)
                 {
-                    if (_keyComparer.Equals(found.Key, key))
+                    if (KeyComparer.Equals(found.Key, key))
                     {
                         // This is the item that has been stored with the key
                         value = found.Value;
                         // Throw to abort overwrite
-                        throw CreateKeyArgumentException(null); // This exception will buble up to the context where "key" is an argument.
+                        throw CreateKeyArgumentException(null); // This exception will bubble up to the context where "key" is an argument.
                     }
                     value = updateValueFactory(found.Key, found.Value);
                     return new KeyValuePair<TKey, TValue>(key, value);
-                };
+                }
                 try
                 {
-                    bool isNew;
-                    _bucket.InsertOrUpdate(hashCode + attempts, itemFactory, itemUpdateFactory, out isNew);
+                    _bucket.InsertOrUpdate(hashCode + attempts, ItemFactory, ItemUpdateFactory, out var isNew);
                     if (isNew)
                     {
                         // It added a new item
@@ -1513,7 +1514,7 @@ namespace Theraot.Collections.ThreadSafe
         private static ArgumentException CreateKeyArgumentException(object key)
         {
             GC.KeepAlive(key);
-            return new ArgumentException("An item with the same key has already been added", "key");
+            return new ArgumentException("An item with the same key has already been added", nameof(key));
         }
     }
 }

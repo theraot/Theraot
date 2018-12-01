@@ -17,10 +17,7 @@ namespace Theraot.Threading
                         null,
                         () =>
                         {
-                            if (action != null)
-                            {
-                                action.Invoke(disposable);
-                            }
+                            action?.Invoke(disposable);
                         });
             }
         }
@@ -64,25 +61,24 @@ namespace Theraot.Threading
                         }
                     );
             }
-            return alternative == null ? alternative.Invoke() : def;
+            return alternative != null ? alternative.Invoke() : def;
         }
 
         public static void DisposedConditional(this IExtendedDisposable disposable, string exceptionMessageWhenDisposed, Action whenNotDisposed)
         {
-            Action whenDisposed =
-            () =>
+            void WhenDisposed()
             {
                 throw new ObjectDisposedException(exceptionMessageWhenDisposed);
-            };
+            }
             if (disposable == null)
             {
-                whenDisposed();
+                WhenDisposed();
             }
             else
             {
                 disposable.DisposedConditional
                 (
-                    whenDisposed,
+                    WhenDisposed,
                     whenNotDisposed
                 );
             }
@@ -90,18 +86,17 @@ namespace Theraot.Threading
 
         public static TReturn DisposedConditional<TReturn>(this IExtendedDisposable disposable, string exceptionMessageWhenDisposed, Func<TReturn> whenNotDisposed)
         {
-            Func<TReturn> whenDisposed =
-            () =>
+            TReturn WhenDisposed()
             {
                 throw new ObjectDisposedException(exceptionMessageWhenDisposed);
-            };
+            }
             if (disposable == null)
             {
-                return whenDisposed();
+                return WhenDisposed();
             }
             return disposable.DisposedConditional
             (
-                whenDisposed,
+                WhenDisposed,
                 whenNotDisposed
             );
         }
@@ -129,10 +124,7 @@ namespace Theraot.Threading
             }
             finally
             {
-                if (resource != null)
-                {
-                    resource.Dispose();
-                }
+                resource?.Dispose();
             }
         }
 
@@ -182,7 +174,7 @@ namespace Theraot.Threading
         {
             if (action == null)
             {
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             }
             action.Invoke(obj);
         }
@@ -191,7 +183,7 @@ namespace Theraot.Threading
         {
             if (action == null)
             {
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             }
             return action.Invoke(obj);
         }

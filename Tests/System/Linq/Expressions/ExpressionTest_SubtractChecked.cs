@@ -176,10 +176,10 @@ namespace MonoTests.System.Linq.Expressions
         {
             // These should overflow, check the various types and codepaths
             // in BinaryExpression:
-            MustOverflow<int>(int.MinValue, 1);
-            MustOverflow<int>(int.MaxValue, -1);
-            MustOverflow<long>(long.MinValue, 1);
-            MustOverflow<long>(long.MaxValue, -1);
+            MustOverflow(int.MinValue, 1);
+            MustOverflow(int.MaxValue, -1);
+            MustOverflow(long.MinValue, 1);
+            MustOverflow(long.MaxValue, -1);
 
             MustOverflow<ushort>(ushort.MinValue, 1);
 
@@ -195,7 +195,7 @@ namespace MonoTests.System.Linq.Expressions
         public void TestNoOverflow()
         {
             // Simple stuff
-            MustNotOverflow<int>(10, 20);
+            MustNotOverflow(10, 20);
 
             // There are invalid:
             InvalidOperation<byte>(byte.MinValue, 1);
@@ -205,8 +205,8 @@ namespace MonoTests.System.Linq.Expressions
             MustNotOverflow<ushort>(ushort.MaxValue, 2);
 
             // Doubles, floats, do not overflow
-            MustNotOverflow<float>(float.MaxValue, 1);
-            MustNotOverflow<double>(double.MaxValue, 1);
+            MustNotOverflow(float.MaxValue, 1);
+            MustNotOverflow(double.MaxValue, 1);
         }
     }
 }

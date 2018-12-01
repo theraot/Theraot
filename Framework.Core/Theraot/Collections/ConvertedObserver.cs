@@ -11,16 +11,8 @@ namespace Theraot.Collections
 
         public ConvertedObserver(IObserver<TOutput> observer, Func<TInput, TOutput> converter)
         {
-            if (observer == null)
-            {
-                throw new ArgumentNullException("observer");
-            }
-            _observer = observer;
-            if (converter == null)
-            {
-                throw new ArgumentNullException("converter");
-            }
-            _converter = converter;
+            _observer = observer ?? throw new ArgumentNullException(nameof(observer));
+            _converter = converter ?? throw new ArgumentNullException(nameof(converter));
         }
 
         public void OnCompleted()

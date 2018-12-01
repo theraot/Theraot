@@ -14,6 +14,10 @@ namespace Theraot.Collections.ThreadSafe
         public static bool Enter(UniqueId id)
         {
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            if (GCMonitor.FinalizingForUnload)
+            {
+                return false;
+            }
             var guard = _guard;
             if (guard == null)
             {
@@ -37,10 +41,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
             var guard = _guard;
-            if (guard != null)
-            {
-                guard.Remove(id);
-            }
+            guard?.Remove(id);
         }
     }
 }

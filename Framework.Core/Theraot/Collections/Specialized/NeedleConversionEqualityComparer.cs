@@ -1,12 +1,13 @@
 // Needed for NET35 (ConditionalWeakTable)
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.Specialized
 {
-    [System.Diagnostics.DebuggerNonUserCode]
-    public sealed class NeedleConversionEqualityComparer<TNeedle, T> : ConversionEqualityComparer<TNeedle, T>, IEqualityComparer<TNeedle>
+    [DebuggerNonUserCode]
+    public sealed class NeedleConversionEqualityComparer<TNeedle, T> : ConversionEqualityComparer<TNeedle, T>
         where TNeedle : INeedle<T>
     {
         public NeedleConversionEqualityComparer(IEqualityComparer<T> comparer)
@@ -19,7 +20,7 @@ namespace Theraot.Collections.Specialized
         {
             if (ReferenceEquals(needle, null))
             {
-                return default(T);
+                return default;
             }
             return needle.Value;
         }

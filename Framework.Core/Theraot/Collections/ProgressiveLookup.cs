@@ -13,10 +13,7 @@ namespace Theraot.Collections
     public class ProgressiveLookup<TKey, T> : ILookup<TKey, T>
     {
         private readonly IDictionary<TKey, IGrouping<TKey, T>> _cache;
-        private readonly IEqualityComparer<T> _itemComparer;
-        private readonly IEqualityComparer<TKey> _keyComparer;
         private readonly ProgressiveSet<TKey> _keysReadonly;
-        private readonly Progressor<IGrouping<TKey, T>> _progressor;
 
         public ProgressiveLookup(IEnumerable<IGrouping<TKey, T>> wrapped)
             : this(wrapped, new NullAwareDictionary<TKey, IGrouping<TKey, T>>(), null, null)
@@ -32,86 +29,48 @@ namespace Theraot.Collections
 
         protected ProgressiveLookup(IEnumerable<IGrouping<TKey, T>> wrapped, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
         {
-            if (cache == null)
-            {
-                throw new ArgumentNullException("cache");
-            }
-            _cache = cache;
-            _progressor = new Progressor<IGrouping<TKey, T>>(wrapped);
-            _progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
-            _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
-            _itemComparer = itemComparer ?? EqualityComparer<T>.Default;
-            _keysReadonly = new ProgressiveSet<TKey>(Progressor<TKey>.CreateConverted(Progressor, input => input.Key), keyComparer);
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            Progressor = new Progressor<IGrouping<TKey, T>>(wrapped);
+            Progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
+            KeyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
+            ItemComparer = itemComparer ?? EqualityComparer<T>.Default;
+            _keysReadonly = new ProgressiveSet<TKey>(Progressor.ConvertProgressive(input => input.Key), keyComparer);
         }
 
-        protected ProgressiveLookup(Progressor<IGrouping<TKey, T>> wrapped, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
+        protected ProgressiveLookup(IObservable<IGrouping<TKey, T>> wrapped, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
         {
-            if (cache == null)
-            {
-                throw new ArgumentNullException("cache");
-            }
-            _cache = cache;
-            _progressor = new Progressor<IGrouping<TKey, T>>(wrapped);
-            _progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
-            _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
-            _itemComparer = itemComparer ?? EqualityComparer<T>.Default;
-            _keysReadonly = new ProgressiveSet<TKey>(Progressor<TKey>.CreateConverted(Progressor, input => input.Key), keyComparer);
-        }
-
-        protected ProgressiveLookup(TryTake<IGrouping<TKey, T>> tryTake, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
-        {
-            if (cache == null)
-            {
-                throw new ArgumentNullException("cache");
-            }
-            _cache = cache;
-            _progressor = new Progressor<IGrouping<TKey, T>>(tryTake, false); // false because the underlaying structure may change
-            _progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
-            _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
-            _itemComparer = itemComparer ?? EqualityComparer<T>.Default;
-            _keysReadonly = new ProgressiveSet<TKey>(Progressor<TKey>.CreateConverted(Progressor, input => input.Key), keyComparer);
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            Progressor = new Progressor<IGrouping<TKey, T>>(wrapped);
+            Progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
+            KeyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
+            ItemComparer = itemComparer ?? EqualityComparer<T>.Default;
+            _keysReadonly = new ProgressiveSet<TKey>(Progressor.ConvertProgressive(input => input.Key), keyComparer);
         }
 
         public int Count
         {
             get
             {
-                _progressor.AsEnumerable().Consume();
+                Progressor.AsEnumerable().Consume();
                 return _cache.Count;
             }
         }
 
-        public bool EndOfEnumeration
-        {
-            get { return _progressor.IsClosed; }
-        }
+        public bool EndOfEnumeration => Progressor.IsClosed;
 
-        public IReadOnlyCollection<TKey> Keys
-        {
-            get { return _keysReadonly; }
-        }
+        public IReadOnlyCollection<TKey> Keys => _keysReadonly;
 
-        protected IEqualityComparer<T> ItemComparer
-        {
-            get { return _itemComparer; }
-        }
+        protected IEqualityComparer<T> ItemComparer { get; }
 
-        protected IEqualityComparer<TKey> KeyComparer
-        {
-            get { return _keyComparer; }
-        }
+        protected IEqualityComparer<TKey> KeyComparer { get; }
 
-        protected Progressor<IGrouping<TKey, T>> Progressor
-        {
-            get { return _progressor; }
-        }
+        protected Progressor<IGrouping<TKey, T>> Progressor { get; }
 
         public IEnumerable<T> this[TKey key]
         {
             get
             {
-                IGrouping<TKey, T> grouping;
-                if (TryGetValue(key, out grouping))
+                if (TryGetValue(key, out var grouping))
                 {
                     return grouping;
                 }
@@ -150,10 +109,9 @@ namespace Theraot.Collections
             {
                 return true;
             }
-            IGrouping<TKey, T> item;
-            while (_progressor.TryTake(out item))
+            while (Progressor.TryTake(out var item))
             {
-                if (_keyComparer.Equals(key, item.Key))
+                if (KeyComparer.Equals(key, item.Key))
                 {
                     return true;
                 }
@@ -163,40 +121,40 @@ namespace Theraot.Collections
 
         public void CopyTo(KeyValuePair<TKey, IGrouping<TKey, T>>[] array)
         {
-            _progressor.AsEnumerable().Consume();
+            Progressor.AsEnumerable().Consume();
             _cache.CopyTo(array, 0);
         }
 
         public void CopyTo(KeyValuePair<TKey, IGrouping<TKey, T>>[] array, int arrayIndex)
         {
-            _progressor.AsEnumerable().Consume();
+            Progressor.AsEnumerable().Consume();
             _cache.CopyTo(array, arrayIndex);
         }
 
         public void CopyTo(KeyValuePair<TKey, IGrouping<TKey, T>>[] array, int arrayIndex, int countLimit)
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            _progressor.While(() => _cache.Count < countLimit).Consume();
-            _cache.CopyTo(array, arrayIndex, countLimit);
+            Progressor.While(() => _cache.Count < countLimit).Consume();
+            Extensions.CopyTo(_cache, array, arrayIndex, countLimit);
         }
 
         public void CopyTo(IGrouping<TKey, T>[] array, int arrayIndex)
         {
-            _progressor.AsEnumerable().Consume();
+            Progressor.AsEnumerable().Consume();
             _cache.Values.CopyTo(array, arrayIndex);
         }
 
         public void CopyTo(IGrouping<TKey, T>[] array)
         {
-            _progressor.AsEnumerable().Consume();
+            Progressor.AsEnumerable().Consume();
             _cache.Values.CopyTo(array, 0);
         }
 
         public void CopyTo(IGrouping<TKey, T>[] array, int arrayIndex, int countLimit)
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            _progressor.While(() => _cache.Count < countLimit).Consume();
-            _cache.Values.CopyTo(array, arrayIndex, countLimit);
+            Progressor.While(() => _cache.Count < countLimit).Consume();
+            Extensions.CopyTo(_cache.Values, array, arrayIndex, countLimit);
         }
 
         public IEnumerator<IGrouping<TKey, T>> GetEnumerator()
@@ -206,8 +164,7 @@ namespace Theraot.Collections
                 yield return item.Value;
             }
             {
-                IGrouping<TKey, T> item;
-                while (_progressor.TryTake(out item))
+                while (Progressor.TryTake(out var item))
                 {
                     yield return item;
                 }
@@ -225,10 +182,9 @@ namespace Theraot.Collections
             {
                 return true;
             }
-            IGrouping<TKey, T> item;
-            while (_progressor.TryTake(out item))
+            while (Progressor.TryTake(out var item))
             {
-                if (_keyComparer.Equals(key, item.Key))
+                if (KeyComparer.Equals(key, item.Key))
                 {
                     value = item;
                     return true;

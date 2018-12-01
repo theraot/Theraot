@@ -13,7 +13,6 @@ namespace Theraot.Collections.ThreadSafe
     /// </remarks>
     public sealed class CircularBucket<T> : IEnumerable<T>
     {
-        private readonly int _capacity;
         private readonly FixedSizeBucket<T> _entries;
         private int _index;
 
@@ -23,26 +22,20 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="capacity">The capacity.</param>
         public CircularBucket(int capacity)
         {
-            _capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
+            Capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
             _index = -1;
-            _entries = new FixedSizeBucket<T>(_capacity);
+            _entries = new FixedSizeBucket<T>(Capacity);
         }
 
         /// <summary>
         /// Gets the capacity.
         /// </summary>
-        public int Capacity
-        {
-            get { return _capacity; }
-        }
+        public int Capacity { get; }
 
         /// <summary>
         /// Gets the number of items that has been added.
         /// </summary>
-        public int Count
-        {
-            get { return _entries.Count; }
-        }
+        public int Count => _entries.Count;
 
         /// <summary>
         /// Adds the specified item. May overwrite an existing item.
@@ -51,9 +44,8 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>Returns the position where the item was added.</returns>
         public int Add(T item)
         {
-            var index = Interlocked.Increment(ref _index) & (_capacity - 1);
-            bool isNew;
-            _entries.SetInternal(index, item, out isNew);
+            var index = Interlocked.Increment(ref _index) & (Capacity - 1);
+            _entries.SetInternal(index, item, out _);
             return index;
         }
 
@@ -66,6 +58,11 @@ namespace Theraot.Collections.ThreadSafe
         public IEnumerator<T> GetEnumerator()
         {
             return _entries.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <summary>
@@ -95,11 +92,6 @@ namespace Theraot.Collections.ThreadSafe
             return _entries.RemoveAt(index, out previous);
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         /// <summary>
         /// Adds the specified item. Will not overwrite existing items.
         /// </summary>
@@ -107,7 +99,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>Returns the position where the item was added, -1 otherwise.</returns>
         public int TryAdd(T item)
         {
-            var index = Interlocked.Increment(ref _index) & (_capacity - 1);
+            var index = Interlocked.Increment(ref _index) & (Capacity - 1);
             if (_entries.InsertInternal(index, item))
             {
                 return index;

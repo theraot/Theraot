@@ -10,20 +10,15 @@ namespace System.Diagnostics.Contracts
     /// Types marked with this attribute specify that they are a contract for the type that is the argument of the constructor.
     /// </summary>
     [Conditional("CONTRACTS_FULL")]
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public sealed class ContractClassForAttribute : Attribute
     {
-        private readonly Type _typeIamAContractFor;
-
         public ContractClassForAttribute(Type typeContractsAreFor)
         {
-            _typeIamAContractFor = typeContractsAreFor;
+            TypeContractsAreFor = typeContractsAreFor;
         }
 
-        public Type TypeContractsAreFor
-        {
-            get { return _typeIamAContractFor; }
-        }
+        public Type TypeContractsAreFor { get; }
     }
 }
 

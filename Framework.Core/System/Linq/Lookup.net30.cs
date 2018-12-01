@@ -25,17 +25,13 @@ namespace System.Linq
             }
         }
 
-        public int Count
-        {
-            get { return _groupings.Count; }
-        }
+        public int Count => _groupings.Count;
 
         public IEnumerable<TElement> this[TKey key]
         {
             get
             {
-                Grouping grouping;
-                if (_groupings.TryGetValue(key, out grouping))
+                if (_groupings.TryGetValue(key, out Grouping grouping))
                 {
                     return grouping;
                 }
@@ -45,7 +41,7 @@ namespace System.Linq
 
         public IEnumerable<TResult> ApplyResultSelector<TResult>(Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
         {
-            // MICROSFT doens't do a null check for resultSelector
+            // MICROSFT does not null check resultSelector
             foreach (var group in _groupings.Values)
             {
                 yield return resultSelector(group.Key, group);
@@ -74,15 +70,15 @@ namespace System.Linq
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (elementSelector == null)
             {
-                throw new ArgumentNullException("elementSelector");
+                throw new ArgumentNullException(nameof(elementSelector));
             }
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             var result = new Lookup<TKey, TElement>(comparer);
             foreach (var item in source)
@@ -94,8 +90,7 @@ namespace System.Linq
 
         private ICollection<TElement> GetOrCreateGrouping(TKey key)
         {
-            Grouping grouping;
-            if (!_groupings.TryGetValue(key, out grouping))
+            if (!_groupings.TryGetValue(key, out Grouping grouping))
             {
                 grouping = new Grouping(key);
                 _groupings.Add(key, grouping);
@@ -113,12 +108,9 @@ namespace System.Linq
                 Key = key;
             }
 
-            public Collection<TElement> Items
-            {
-                get { return _items; }
-            }
+            public Collection<TElement> Items => _items;
 
-            public TKey Key { get; set; }
+            public TKey Key { get; }
 
             public IEnumerator<TElement> GetEnumerator()
             {

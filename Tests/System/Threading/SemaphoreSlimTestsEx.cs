@@ -11,10 +11,45 @@ using Theraot.Collections.ThreadSafe;
 
 namespace Tests.System.Threading
 {
-    [TestFixtureAttribute]
+    [TestFixture]
     public static class SemaphoreSlimTestsEx
     {
         [Test]
+        [Category("Performance")]
+        public static void LongWait()
+        {
+            var semaphore1 = new SemaphoreSlim(0);
+            var semaphore2 = new SemaphoreSlim(0);
+            var semaphore3 = new SemaphoreSlim(0);
+            var thread = new Thread
+            (
+                () =>
+                {
+                    Thread.Sleep(5000);
+                    semaphore1.Release();
+                    Thread.Sleep(5000);
+                    semaphore2.Release();
+                }
+            );
+            thread.Start();
+            semaphore1.Wait();
+            var source1 = new CancellationTokenSource(10000);
+            semaphore2.Wait(source1.Token);
+            var source2 = new CancellationTokenSource(10);
+            try
+            {
+                semaphore3.Wait(source2.Token);
+            }
+            catch (OperationCanceledException exception)
+            {
+                GC.KeepAlive(exception);
+                return;
+            }
+            Assert.Fail();
+        }
+
+        [Test]
+        [Category("Performance")]
         public static void WaitAsyncWaitCorrectly()
         {
             for (var count = 0; count < 10; count++)
@@ -25,8 +60,8 @@ namespace Tests.System.Threading
 
         private static void WaitAsyncWaitCorrectlyExtracted(int maxCount, int maxTasks)
         {
-            // Note: if WaitAsync takes to long, "x" can happen before the chunk of "a" has completed.
-            retry:
+        // Note: if WaitAsync takes to long, "x" can happen before the chunk of "a" has completed.
+        retry:
             var log = new CircularBucket<string>(maxTasks * 4 + 2);
             var logCount = new CircularBucket<int>(maxTasks * 2 + 2);
             using (var source = new CancellationTokenSource(TimeSpan.FromSeconds(100)))
@@ -43,6 +78,7 @@ namespace Tests.System.Threading
                         (
                             _ =>
                             {
+                                // ReSharper disable once MethodSupportsCancellation
                                 return Task.Factory.StartNew
                                 (
                                     async () =>
@@ -87,6 +123,7 @@ namespace Tests.System.Threading
             // So, we will retry until it does not happen
             if ((new Regex("c[bc]+d")).IsMatch(str))
             {
+                Console.WriteLine("...");
                 goto retry;
             }
             var regexSuccess = string.Format("a{{{0}}}x(b{{0,{1}}}(cd)+)+z", maxTasks, maxCount);

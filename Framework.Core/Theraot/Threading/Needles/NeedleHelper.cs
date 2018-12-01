@@ -84,25 +84,22 @@ namespace Theraot.Threading.Needles
         private static class DeferredNeedleCreator<T, TNeedle>
             where TNeedle : INeedle<T>
         {
-            private static readonly bool _canCreate;
             private static readonly Func<Func<T>, TNeedle> _create;
 
             static DeferredNeedleCreator()
             {
-                _canCreate = TypeHelper.TryGetCreate(out _create);
-                if (!_canCreate)
+                CanCreate = TypeHelper.TryGetCreate(out _create);
+                if (!CanCreate)
                 {
-                    Func<T, TNeedle> tmpA;
-                    _canCreate = TypeHelper.TryGetCreate(out tmpA);
-                    if (_canCreate)
+                    CanCreate = TypeHelper.TryGetCreate(out Func<T, TNeedle> tmpA);
+                    if (CanCreate)
                     {
                         _create = target => tmpA(target.Invoke());
                     }
                     else
                     {
-                        Func<TNeedle> tmpB;
-                        _canCreate = TypeHelper.TryGetCreate(out tmpB);
-                        if (_canCreate)
+                        CanCreate = TypeHelper.TryGetCreate(out Func<TNeedle> tmpB);
+                        if (CanCreate)
                         {
                             _create =
                             target =>
@@ -114,20 +111,15 @@ namespace Theraot.Threading.Needles
                         }
                     }
                 }
-                if (!_canCreate)
+                if (!CanCreate)
                 {
                     _create =
-                    _ =>
-                    {
-                        throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
-                    };
+                    _ => throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
                 }
             }
 
-            public static bool CanCreate
-            {
-                get { return _canCreate; }
-            }
+            // ReSharper disable once StaticMemberInGenericType
+            public static bool CanCreate { get; }
 
             public static TNeedle Create(Func<T> target)
             {
@@ -138,35 +130,28 @@ namespace Theraot.Threading.Needles
         private static class DeferredReadOnlyNeedleCreator<T, TNeedle>
             where TNeedle : IReadOnlyNeedle<T>
         {
-            private static readonly bool _canCreate;
             private static readonly Func<Func<T>, TNeedle> _create;
 
             static DeferredReadOnlyNeedleCreator()
             {
-                _canCreate = TypeHelper.TryGetCreate(out _create);
-                if (!_canCreate)
+                CanCreate = TypeHelper.TryGetCreate(out _create);
+                if (!CanCreate)
                 {
-                    Func<T, TNeedle> tmp;
-                    _canCreate = TypeHelper.TryGetCreate(out tmp);
-                    if (_canCreate)
+                    CanCreate = TypeHelper.TryGetCreate(out Func<T, TNeedle> tmp);
+                    if (CanCreate)
                     {
                         _create = target => tmp(target.Invoke());
                     }
                 }
-                if (!_canCreate)
+                if (!CanCreate)
                 {
                     _create =
-                    _ =>
-                    {
-                        throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
-                    };
+                    _ => throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
                 }
             }
 
-            public static bool CanCreate
-            {
-                get { return _canCreate; }
-            }
+            // ReSharper disable once StaticMemberInGenericType
+            public static bool CanCreate { get; }
 
             public static TNeedle Create(Func<T> target)
             {
@@ -177,17 +162,15 @@ namespace Theraot.Threading.Needles
         private static class NeedleCreator<T, TNeedle>
             where TNeedle : INeedle<T>
         {
-            private static readonly bool _canCreate;
             private static readonly Func<T, TNeedle> _create;
 
             static NeedleCreator()
             {
-                _canCreate = TypeHelper.TryGetCreate(out _create);
-                if (!_canCreate)
+                CanCreate = TypeHelper.TryGetCreate(out _create);
+                if (!CanCreate)
                 {
-                    Func<TNeedle> tmpA;
-                    _canCreate = TypeHelper.TryGetCreate(out tmpA);
-                    if (_canCreate)
+                    CanCreate = TypeHelper.TryGetCreate(out Func<TNeedle> tmpA);
+                    if (CanCreate)
                     {
                         _create =
                         target =>
@@ -199,28 +182,22 @@ namespace Theraot.Threading.Needles
                     }
                     else
                     {
-                        Func<Func<T>, TNeedle> tmpB;
-                        _canCreate = TypeHelper.TryGetCreate(out tmpB);
-                        if (_canCreate)
+                        CanCreate = TypeHelper.TryGetCreate(out Func<Func<T>, TNeedle> tmpB);
+                        if (CanCreate)
                         {
                             _create = target => tmpB(() => target);
                         }
                     }
-                    if (!_canCreate)
+                    if (!CanCreate)
                     {
                         _create =
-                        _ =>
-                        {
-                            throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
-                        };
+                        _ => throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
                     }
                 }
             }
 
-            public static bool CanCreate
-            {
-                get { return _canCreate; }
-            }
+            // ReSharper disable once StaticMemberInGenericType
+            public static bool CanCreate { get; }
 
             public static TNeedle Create(T target)
             {
@@ -231,35 +208,28 @@ namespace Theraot.Threading.Needles
         private static class NestedNeedleCreator<T, TNeedle>
         where TNeedle : INeedle<T>
         {
-            private static readonly bool _canCreate;
             private static readonly Func<INeedle<T>, TNeedle> _create;
 
             static NestedNeedleCreator()
             {
-                _canCreate = TypeHelper.TryGetCreate(out _create);
-                if (!_canCreate)
+                CanCreate = TypeHelper.TryGetCreate(out _create);
+                if (!CanCreate)
                 {
-                    Func<Func<INeedle<T>>, TNeedle> tmp;
-                    _canCreate = TypeHelper.TryGetCreate(out tmp);
-                    if (_canCreate)
+                    CanCreate = TypeHelper.TryGetCreate(out Func<Func<INeedle<T>>, TNeedle> tmp);
+                    if (CanCreate)
                     {
                         _create = target => tmp(() => target);
                     }
-                    if (!_canCreate)
+                    if (!CanCreate)
                     {
                         _create =
-                        _ =>
-                        {
-                            throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
-                        };
+                        _ => throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
                     }
                 }
             }
 
-            public static bool CanCreate
-            {
-                get { return _canCreate; }
-            }
+            // ReSharper disable once StaticMemberInGenericType
+            public static bool CanCreate { get; }
 
             public static TNeedle Create(INeedle<T> target)
             {
@@ -270,35 +240,28 @@ namespace Theraot.Threading.Needles
         private static class NestedReadOnlyNeedleCreator<T, TNeedle>
             where TNeedle : IReadOnlyNeedle<T>
         {
-            private static readonly bool _canCreate;
             private static readonly Func<IReadOnlyNeedle<T>, TNeedle> _create;
 
             static NestedReadOnlyNeedleCreator()
             {
-                _canCreate = TypeHelper.TryGetCreate(out _create);
-                if (!_canCreate)
+                CanCreate = TypeHelper.TryGetCreate(out _create);
+                if (!CanCreate)
                 {
-                    Func<Func<IReadOnlyNeedle<T>>, TNeedle> tmp;
-                    _canCreate = TypeHelper.TryGetCreate(out tmp);
-                    if (_canCreate)
+                    CanCreate = TypeHelper.TryGetCreate(out Func<Func<IReadOnlyNeedle<T>>, TNeedle> tmp);
+                    if (CanCreate)
                     {
                         _create = target => tmp(() => target);
                     }
                 }
-                if (!_canCreate)
+                if (!CanCreate)
                 {
                     _create =
-                    _ =>
-                    {
-                        throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
-                    };
+                    _ => throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
                 }
             }
 
-            public static bool CanCreate
-            {
-                get { return _canCreate; }
-            }
+            // ReSharper disable once StaticMemberInGenericType
+            public static bool CanCreate { get; }
 
             public static TNeedle Create(IReadOnlyNeedle<T> target)
             {
@@ -309,35 +272,28 @@ namespace Theraot.Threading.Needles
         private static class ReadOnlyNeedleCreator<T, TNeedle>
             where TNeedle : IReadOnlyNeedle<T>
         {
-            private static readonly bool _canCreate;
             private static readonly Func<T, TNeedle> _create;
 
             static ReadOnlyNeedleCreator()
             {
-                _canCreate = TypeHelper.TryGetCreate(out _create);
-                if (!_canCreate)
+                CanCreate = TypeHelper.TryGetCreate(out _create);
+                if (!CanCreate)
                 {
-                    Func<Func<T>, TNeedle> tmp;
-                    _canCreate = TypeHelper.TryGetCreate(out tmp);
-                    if (_canCreate)
+                    CanCreate = TypeHelper.TryGetCreate(out Func<Func<T>, TNeedle> tmp);
+                    if (CanCreate)
                     {
                         _create = target => tmp(() => target);
                     }
                 }
-                if (!_canCreate)
+                if (!CanCreate)
                 {
                     _create =
-                    _ =>
-                    {
-                        throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
-                    };
+                    _ => throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
                 }
             }
 
-            public static bool CanCreate
-            {
-                get { return _canCreate; }
-            }
+            // ReSharper disable once StaticMemberInGenericType
+            public static bool CanCreate { get; }
 
             public static TNeedle Create(T target)
             {

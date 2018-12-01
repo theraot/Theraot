@@ -3,7 +3,6 @@
 using System;
 using System.IO;
 using System.Reflection;
-using System.Threading;
 
 #if !NETCOREAPP1_0 && !NETCOREAPP1_1
 
@@ -122,6 +121,7 @@ namespace Theraot.Core
             {
                 // Only called with ICloneable target
                 // No need to check for null - let it throw
+                // ReSharper disable once PossibleNullReferenceException
                 return (T)(target as ICloneable).Clone();
             }
         }
@@ -141,17 +141,7 @@ namespace Theraot.Core
 
             public static ICloner<T> GetInstance(ConstructorInfo constructor)
             {
-                var found = _instance;
-                if (found == null)
-                {
-                    var created = new ConstructorCloner(constructor);
-                    found = Interlocked.CompareExchange(ref _instance, created, null);
-                    if (found == null)
-                    {
-                        return created;
-                    }
-                }
-                return found;
+                return TypeHelper.LazyCreate(ref _instance, () => new ConstructorCloner(constructor));
             }
 
             public T Clone(T target)
@@ -175,17 +165,7 @@ namespace Theraot.Core
 
             public static ICloner<T> GetInstance(MethodInfo deconstruct, ConstructorInfo constructor)
             {
-                var found = _instance;
-                if (found == null)
-                {
-                    var created = new DeconstructCloner(deconstruct, constructor);
-                    found = Interlocked.CompareExchange(ref _instance, created, null);
-                    if (found == null)
-                    {
-                        return created;
-                    }
-                }
-                return found;
+                return TypeHelper.LazyCreate(ref _instance, () => new DeconstructCloner(deconstruct, constructor));
             }
 
             public T Clone(T target)
@@ -214,6 +194,7 @@ namespace Theraot.Core
             {
                 // Only called with ICloneable<T> target
                 // No need to check for null - let it throw
+                // ReSharper disable once PossibleNullReferenceException
                 return (target as ICloneable<T>).Clone();
             }
         }
@@ -231,17 +212,7 @@ namespace Theraot.Core
 
             public static ICloner<T> GetInstance(MethodInfo method)
             {
-                var found = _instance;
-                if (found == null)
-                {
-                    var created = new MockCloner(method);
-                    found = Interlocked.CompareExchange(ref _instance, created, null);
-                    if (found == null)
-                    {
-                        return created;
-                    }
-                }
-                return found;
+                return TypeHelper.LazyCreate(ref _instance, () => new MockCloner(method));
             }
 
             public T Clone(T target)
@@ -251,6 +222,7 @@ namespace Theraot.Core
         }
 
 #if !NETCOREAPP1_0 && !NETCOREAPP1_1
+
         private class SerializerCloner : ICloner<T>
         {
             private static readonly ICloner<T> _instance = new SerializerCloner(); // We need a cloner per T type.
@@ -276,6 +248,7 @@ namespace Theraot.Core
                 }
             }
         }
+
 #endif
 
         private class StructCloner : ICloner<T>

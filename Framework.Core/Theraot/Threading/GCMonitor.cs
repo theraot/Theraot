@@ -1,14 +1,23 @@
 ﻿// Needed for Workaround
 
 using System;
+using System.Diagnostics;
 using System.Threading;
+
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+
+using System.Runtime.ConstrainedExecution;
+
+#endif
 
 namespace Theraot.Threading
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public static partial class GCMonitor
     {
+        // ReSharper disable once UnusedMember.Local
         private const int _statusFinished = 1;
+
         private const int _statusNotReady = -2;
         private const int _statusPending = -1;
         private const int _statusReady = 0;
@@ -92,7 +101,7 @@ namespace Theraot.Threading
             }
         }
 
-#if !NETCOREAPP1_1
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
 
         private static void ReportApplicationDomainExit(object sender, EventArgs e)
         {
@@ -101,10 +110,10 @@ namespace Theraot.Threading
 
 #endif
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         private sealed class GCProbe
 #if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5  && !NETSTANDARD1_6
-            : System.Runtime.ConstrainedExecution.CriticalFinalizerObject
+            : CriticalFinalizerObject
 #endif
         {
             ~GCProbe()
@@ -126,7 +135,7 @@ namespace Theraot.Threading
                     }
                     catch (Exception exception)
                     {
-                        // Catch'em all - there shouldn't be exceptions here, yet we really don't want them
+                        // Catch them all - there shouldn't be exceptions here, yet we really don't want them
                         GC.KeepAlive(exception);
                     }
                 }

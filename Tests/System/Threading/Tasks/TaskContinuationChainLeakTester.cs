@@ -9,13 +9,9 @@ namespace MonoTests.System.Threading.Tasks
     {
         private volatile bool _stop;
         private int _counter;
-        private readonly ManualResetEvent _mre = new ManualResetEvent(false); // Leaked
         private WeakReference<Task> _headTaskWeakRef;
 
-        public ManualResetEvent TasksPilledUp
-        {
-            get { return _mre; }
-        }
+        public ManualResetEvent TasksPilledUp { get; } = new ManualResetEvent(false);
 
         public void Run()
         {
@@ -31,7 +27,7 @@ namespace MonoTests.System.Threading.Tasks
 
             if (++_counter == 50)
             {
-                _mre.Set();
+                TasksPilledUp.Set();
             }
 
             return Task.Factory.StartNew(DummyWorker).ContinueWith(task => StartNewTask());

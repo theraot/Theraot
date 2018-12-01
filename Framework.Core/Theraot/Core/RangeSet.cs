@@ -24,7 +24,7 @@ namespace Theraot.Core
         {
             if (ranges == null)
             {
-                throw new ArgumentNullException("ranges");
+                throw new ArgumentNullException(nameof(ranges));
             }
             _comparer = Comparer<T>.Default;
             _ranges = new List<Range<T>>();
@@ -36,11 +36,7 @@ namespace Theraot.Core
 
         public RangeSet(IComparer<T> comparer)
         {
-            if (comparer == null)
-            {
-                throw new ArgumentNullException("comparer");
-            }
-            _comparer = comparer;
+            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
             _ranges = new List<Range<T>>();
         }
 
@@ -48,28 +44,18 @@ namespace Theraot.Core
         {
             if (ranges == null)
             {
-                throw new ArgumentNullException("ranges");
+                throw new ArgumentNullException(nameof(ranges));
             }
-            if (comparer == null)
-            {
-                throw new ArgumentNullException("comparer");
-            }
-            _comparer = comparer;
+            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
             foreach (var range in ranges)
             {
                 Add(range);
             }
         }
 
-        int ICollection<Range<T>>.Count
-        {
-            get { return _ranges.Count; }
-        }
+        int ICollection<Range<T>>.Count => _ranges.Count;
 
-        bool ICollection<Range<T>>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection<Range<T>>.IsReadOnly => false;
 
         public void Add(Range<T> item)
         {
@@ -129,7 +115,7 @@ namespace Theraot.Core
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             foreach (var stored in _ranges)
             {
@@ -147,7 +133,7 @@ namespace Theraot.Core
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             foreach (var stored in _ranges)
             {
@@ -201,7 +187,7 @@ namespace Theraot.Core
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             if (_ranges.Count == 0)
             {
@@ -219,7 +205,7 @@ namespace Theraot.Core
         {
             if (comparer == null)
             {
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             }
             return !Overlapped(_ranges, range, comparer).IsEmpty();
         }
@@ -233,7 +219,7 @@ namespace Theraot.Core
         {
             var sb = new StringBuilder();
             var first = true;
-            sb.Append("{");
+            sb.Append('{');
             foreach (var item in _ranges)
             {
                 if (first)
@@ -246,7 +232,7 @@ namespace Theraot.Core
                 }
                 sb.Append(item.ToString());
             }
-            sb.Append("}");
+            sb.Append('}');
             return sb.ToString();
         }
 
@@ -256,7 +242,7 @@ namespace Theraot.Core
             Range<T>? add = null;
             int? insert = null;
             var justAdd = true;
-            for (int index = 0; index < ranges.Count; index++)
+            for (var index = 0; index < ranges.Count; index++)
             {
                 var currentRange = ranges[index];
                 switch (currentRange.CompareTo(range, comparer))
@@ -273,10 +259,10 @@ namespace Theraot.Core
                         }
                         add = new Range<T>
                         (
-                            currentRange.Minimun,
-                            currentRange.ClosedMinimun,
-                            range.Maximun,
-                            range.ClosedMaximun
+                            currentRange.Minimum,
+                            currentRange.ClosedMinimum,
+                            range.Maximum,
+                            range.ClosedMaximum
                         );
                         justAdd = false;
                         continue;
@@ -289,10 +275,10 @@ namespace Theraot.Core
                         }
                         add = add.HasValue ? new Range<T>
                             (
-                                add.Value.Minimun,
-                                add.Value.ClosedMinimun,
-                                range.Maximun,
-                                range.ClosedMaximun
+                                add.Value.Minimum,
+                                add.Value.ClosedMinimum,
+                                range.Maximum,
+                                range.ClosedMaximum
                             ) : range;
                         justAdd = false;
                         continue;
@@ -311,16 +297,16 @@ namespace Theraot.Core
                         }
                         add = add.HasValue ? new Range<T>
                             (
-                                add.Value.Minimun,
-                                add.Value.ClosedMinimun,
-                                range.Maximun,
-                                range.ClosedMaximun
+                                add.Value.Minimum,
+                                add.Value.ClosedMinimum,
+                                range.Maximum,
+                                range.ClosedMaximum
                             ) : new Range<T>
                             (
-                                currentRange.Minimun,
-                                currentRange.ClosedMinimun,
-                                range.Maximun,
-                                range.ClosedMaximun
+                                currentRange.Minimum,
+                                currentRange.ClosedMinimum,
+                                range.Maximum,
+                                range.ClosedMaximum
                             );
                         justAdd = false;
                         continue;
@@ -349,7 +335,7 @@ namespace Theraot.Core
             }
             var removeStart = -1;
             var removeCount = 0;
-            for (int index = remove.Count - 1; index >= 0; index--)
+            for (var index = remove.Count - 1; index >= 0; index--)
             {
                 if (remove[index] == removeStart - removeCount)
                 {
@@ -374,7 +360,7 @@ namespace Theraot.Core
             {
                 ranges.Insert(insert.Value, add.Value);
             }
-            else
+            else if (add.HasValue)
             {
                 ranges.Add(add.Value);
             }
@@ -394,7 +380,7 @@ namespace Theraot.Core
         private static bool Remove(List<Range<T>> ranges, Range<T> range, IComparer<T> comparer)
         {
             var replacements = new List<Tuple<int, Range<T>?, Range<T>?>>();
-            for (int index = 0; index < ranges.Count; index++)
+            for (var index = 0; index < ranges.Count; index++)
             {
                 var currentRange = ranges[index];
                 switch (currentRange.CompareTo(range, comparer))
@@ -409,10 +395,10 @@ namespace Theraot.Core
                                 index,
                                 new Range<T>
                                 (
-                                    currentRange.Minimun,
-                                    currentRange.ClosedMinimun,
-                                    range.Minimun,
-                                    !range.ClosedMinimun
+                                    currentRange.Minimum,
+                                    currentRange.ClosedMinimum,
+                                    range.Minimum,
+                                    !range.ClosedMinimum
                                 ),
                                 null
                             )
@@ -446,17 +432,17 @@ namespace Theraot.Core
                                 index,
                                 new Range<T>
                                 (
-                                    currentRange.Minimun,
-                                    currentRange.ClosedMinimun,
-                                    range.Minimun,
-                                    !range.ClosedMinimun
+                                    currentRange.Minimum,
+                                    currentRange.ClosedMinimum,
+                                    range.Minimum,
+                                    !range.ClosedMinimum
                                 ),
                                 new Range<T>
                                 (
-                                    range.Maximun,
-                                    !range.ClosedMaximun,
-                                    currentRange.Maximun,
-                                    currentRange.ClosedMaximun
+                                    range.Maximum,
+                                    !range.ClosedMaximum,
+                                    currentRange.Maximum,
+                                    currentRange.ClosedMaximum
                                 )
                             )
                         );
@@ -470,10 +456,10 @@ namespace Theraot.Core
                                 null,
                                 new Range<T>
                                 (
-                                    range.Maximun,
-                                    !range.ClosedMaximun,
-                                    currentRange.Maximun,
-                                    currentRange.ClosedMaximun
+                                    range.Maximum,
+                                    !range.ClosedMaximum,
+                                    currentRange.Maximum,
+                                    currentRange.ClosedMaximum
                                 )
                             )
                         );

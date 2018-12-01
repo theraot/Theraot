@@ -18,20 +18,20 @@ namespace Theraot.Collections.ThreadSafe
         private const int _minCapacity = 1 << _minCapacityLog2;
         private const int _minCapacityLog2 = 3;
         private const int _poolSize = 16;
-
-        private static readonly T[] _emptyArray;
         private static readonly Pool<T[]>[] _pools;
+
+        // ReSharper disable once StaticMemberInGenericType
         private static int _done;
 
         static ArrayReservoir()
         {
             if (typeof(T) == typeof(Type))
             {
-                _emptyArray = (T[])(object)Type.EmptyTypes;
+                EmptyArray = (T[])(object)Type.EmptyTypes;
             }
             else
             {
-                _emptyArray = new T[0];
+                EmptyArray = new T[0];
             }
             _pools = new Pool<T[]>[_capacityCount];
             for (var index = 0; index < _capacityCount; index++)
@@ -50,10 +50,7 @@ namespace Theraot.Collections.ThreadSafe
             Volatile.Write(ref _done, 1);
         }
 
-        public static T[] EmptyArray
-        {
-            get { return _emptyArray; }
-        }
+        public static T[] EmptyArray { get; }
 
         internal static void DonateArray(T[] donation)
         {
@@ -75,18 +72,14 @@ namespace Theraot.Collections.ThreadSafe
             capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
             var index = NumericHelper.Log2(capacity) - _minCapacityLog2;
             var pool = pools[index];
-            if (pool == null)
-            {
-                return;
-            }
-            pool.Donate(donation);
+            pool?.Donate(donation);
         }
 
         internal static T[] GetArray(int capacity)
         {
             if (capacity == 0)
             {
-                return _emptyArray;
+                return EmptyArray;
             }
             if (capacity < _minCapacity)
             {
@@ -96,9 +89,8 @@ namespace Theraot.Collections.ThreadSafe
             if (capacity <= _maxCapacity && Volatile.Read(ref _done) == 1)
             {
                 var index = NumericHelper.Log2(capacity) - _minCapacityLog2;
-                T[] result;
                 var currentPool = _pools[index];
-                if (currentPool.TryGet(out result))
+                if (currentPool.TryGet(out var result))
                 {
                     return result;
                 }

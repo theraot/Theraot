@@ -8,17 +8,12 @@ namespace Theraot.Core
 {
     public sealed class DelegateDeepEqualityComparer : IEqualityComparer<Delegate>
     {
-        private static readonly DelegateDeepEqualityComparer _default = new DelegateDeepEqualityComparer();
-
         private DelegateDeepEqualityComparer()
         {
             //Empty
         }
 
-        public static DelegateDeepEqualityComparer Default
-        {
-            get { return _default; }
-        }
+        public static DelegateDeepEqualityComparer Default { get; } = new DelegateDeepEqualityComparer();
 
         public bool Equals(Delegate x, Delegate y)
         {
@@ -41,14 +36,15 @@ namespace Theraot.Core
             var body = methodBody.GetILAsByteArray();
             for (var index = 0; index < body.Length; index++)
             {
+                ref var current = ref body[index];
                 if (index % 4 == 0)
                 {
                     hash = (hash << 5) - hash + tmp;
-                    tmp = body[index];
+                    tmp = current;
                 }
                 else
                 {
-                    tmp = tmp << 8 | body[index];
+                    tmp = tmp << 8 | current;
                 }
             }
             if (tmp != 0)

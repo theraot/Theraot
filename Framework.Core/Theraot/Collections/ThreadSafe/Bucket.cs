@@ -9,6 +9,11 @@ namespace Theraot.Collections.ThreadSafe
     /// Represent a thread-safe wait-free bucket.
     /// </summary>
     /// <typeparam name="T">The type of the item.</typeparam>
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+
+    [Serializable]
+#endif
+
     public sealed class Bucket<T> : IBucket<T>
     {
         private readonly BucketCore _bucketCore;
@@ -23,7 +28,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             _bucketCore = new BucketCore(7);
             var index = 0;
@@ -40,13 +45,11 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public int Count
-        {
-            get { return _count; }
-        }
+        public int Count => _count;
 
         public void CopyTo(T[] array, int arrayIndex)
         {
+            Extensions.CanCopyTo(Count, array, arrayIndex);
             Extensions.CopyTo(this, array, arrayIndex);
         }
 
@@ -54,14 +57,14 @@ namespace Theraot.Collections.ThreadSafe
         {
             foreach (var value in _bucketCore.EnumerateRange(indexFrom, indexTo))
             {
-                yield return value == BucketHelper.Null ? default(T) : (T)value;
+                yield return value == BucketHelper.Null ? default : (T)value;
             }
         }
 
         public bool Exchange(int index, T item, out T previous)
         {
             var found = BucketHelper.Null;
-            previous = default(T);
+            previous = default;
             var result = _bucketCore.DoMayIncrement
                 (
                     index,
@@ -87,7 +90,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             foreach (var value in _bucketCore)
             {
-                yield return value == BucketHelper.Null ? default(T) : (T)value;
+                yield return value == BucketHelper.Null ? default : (T)value;
             }
         }
 
@@ -117,7 +120,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool Insert(int index, T item, out T previous)
         {
             var found = BucketHelper.Null;
-            previous = default(T);
+            previous = default;
             var result = _bucketCore.DoMayIncrement
                 (
                     index,
@@ -156,7 +159,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool RemoveAt(int index, out T previous)
         {
             var found = BucketHelper.Null;
-            previous = default(T);
+            previous = default;
             var result = _bucketCore.DoMayDecrement
                 (
                     index,
@@ -182,7 +185,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             return _bucketCore.DoMayDecrement
                 (
@@ -192,7 +195,7 @@ namespace Theraot.Collections.ThreadSafe
                         var found = Interlocked.CompareExchange(ref target, null, null);
                         if (found != null)
                         {
-                            var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
+                            var comparisonItem = found == BucketHelper.Null ? default : (T)found;
                             if (check(comparisonItem))
                             {
                                 var compare = Interlocked.CompareExchange(ref target, null, found);
@@ -224,7 +227,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryGet(int index, out T value)
         {
             var found = BucketHelper.Null;
-            value = default(T);
+            value = default;
             var done = _bucketCore.Do
                 (
                     index,
@@ -249,11 +252,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (itemUpdateFactory == null)
             {
-                throw new ArgumentNullException("itemUpdateFactory");
+                throw new ArgumentNullException(nameof(itemUpdateFactory));
             }
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
             var found = BucketHelper.Null;
             var compare = BucketHelper.Null;
@@ -266,7 +269,7 @@ namespace Theraot.Collections.ThreadSafe
                         found = Interlocked.CompareExchange(ref target, null, null);
                         if (found != null)
                         {
-                            var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
+                            var comparisonItem = found == BucketHelper.Null ? default : (T)found;
                             if (check(comparisonItem))
                             {
                                 var item = itemUpdateFactory(comparisonItem);
@@ -290,14 +293,19 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (check == null)
             {
-                throw new ArgumentNullException("check");
+                throw new ArgumentNullException(nameof(check));
             }
-            foreach (var value in _bucketCore)
+            return WhereExtracted();
+
+            IEnumerable<T> WhereExtracted()
             {
-                var castedValue = value == BucketHelper.Null ? default(T) : (T)value;
-                if (check(castedValue))
+                foreach (var value in _bucketCore)
                 {
-                    yield return castedValue;
+                    var castValue = value == BucketHelper.Null ? default : (T)value;
+                    if (check(castValue))
+                    {
+                        yield return castValue;
+                    }
                 }
             }
         }

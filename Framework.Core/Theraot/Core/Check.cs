@@ -1,10 +1,11 @@
 // Needed for NET40
 
 using System;
+using System.Diagnostics;
 
 namespace Theraot.Core
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public static class Check
     {
         public static TArgument CheckArgument<TArgument>(TArgument argument, Predicate<TArgument> check, string parameterName)

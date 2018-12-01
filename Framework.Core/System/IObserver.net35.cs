@@ -4,13 +4,7 @@ namespace System
 {
     /// <summary>Provides a mechanism for receiving push-based notifications.</summary>
     /// <typeparam name="T">The object that provides notification information.</typeparam>
-#if NETCF
-
-    public interface IObserver<T>
-#else
-
     public interface IObserver<in T>
-#endif
     {
         /// <summary>Notifies the observer that the provider has finished sending push-based notifications.</summary>
         void OnCompleted();

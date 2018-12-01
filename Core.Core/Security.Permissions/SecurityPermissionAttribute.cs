@@ -8,15 +8,13 @@ namespace System.Security.Permissions
     [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Constructor | AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
     internal sealed class SecurityPermissionAttribute : Attribute
     {
-        private readonly SecurityAction _securityAction;
-
-        public SecurityPermissionAttribute(SecurityAction securityAction)
+        public SecurityPermissionAttribute(SecurityAction action)
         {
-            _securityAction = securityAction;
+            Action = action;
         }
 
         public bool UnmanagedCode { get; set; }
-        public SecurityPermissionFlag Flags { get; set; }
+        public SecurityAction Action { get; }
     }
 }
 

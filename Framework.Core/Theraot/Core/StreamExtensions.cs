@@ -7,20 +7,19 @@ namespace Theraot.Core
 {
     public static class StreamExtensions
     {
-        private const int _defaultBufferSize = 4096;
-
 #if NET20 || NET30 || NET35
+        private const int _defaultBufferSize = 4096;
 
         public static void CopyTo(this Stream input, Stream output)
         {
             //Added in .NET 4.0
             if (ReferenceEquals(input, null))
             {
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
             }
             if (ReferenceEquals(output, null))
             {
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
             }
             var buffer = new byte[_defaultBufferSize];
             int read;
@@ -33,11 +32,13 @@ namespace Theraot.Core
         }
 
 #else
+
         public static void CopyTo(Stream input, Stream output)
         {
             // Added in .NET 4.0
             input.CopyTo(output);
         }
+
 #endif
 
 #if NET20 || NET30 || NET35
@@ -47,11 +48,11 @@ namespace Theraot.Core
             //Added in .NET 4.0
             if (ReferenceEquals(input, null))
             {
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
             }
             if (ReferenceEquals(output, null))
             {
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
             }
             var buffer = new byte[bufferSize];
             int read;
@@ -64,11 +65,13 @@ namespace Theraot.Core
         }
 
 #else
+
         public static void CopyTo(Stream input, Stream output, int bufferSize)
         {
             // Added in .NET 4.0
             input.CopyTo(output, bufferSize);
         }
+
 #endif
 
         public static bool IsDisposed(this Stream stream)
@@ -88,7 +91,7 @@ namespace Theraot.Core
         {
             if (ReferenceEquals(stream, null))
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
             while (length > 0)
             {
@@ -106,10 +109,9 @@ namespace Theraot.Core
         {
             if (ReferenceEquals(stream, null))
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
-            var streamAsMemoryStream = stream as MemoryStream;
-            if (streamAsMemoryStream != null)
+            if (stream is MemoryStream streamAsMemoryStream)
             {
                 return streamAsMemoryStream.ToArray();
             }

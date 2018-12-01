@@ -92,10 +92,10 @@ namespace MonoTests.System.Collections.Concurrent
             var didRemove = 0;
             var found = new CircularBucket<string>(16);
 
-            ThreadStart remover = () =>
+            void Remover()
             {
                 var removed = d.TryRemove("a", out a);
-                if (Thread.VolatileRead(ref didRemove) == 0 && removed)
+                if (Volatile.Read(ref didRemove) == 0 && removed)
                 {
                     expectedCount[0]--;
                 }
@@ -103,20 +103,21 @@ namespace MonoTests.System.Collections.Concurrent
                 {
                     Interlocked.CompareExchange(ref didRemove, 1, 0);
                 }
-            };
+            }
 
-            ThreadStart adder = () =>
+            void Adder()
             {
                 var added = d.TryAdd("c", "d");
-                if (Thread.VolatileRead(ref didAdd) == 0 && added)
+                if (Volatile.Read(ref didAdd) == 0 && added)
                 {
                     expectedCount[0]++;
                 }
+
                 if (added)
                 {
                     Interlocked.CompareExchange(ref didAdd, 1, 0);
                 }
-            };
+            }
 
             // MSDN says: "it does not represent a moment-in-time snapshot of the dictionary."
             // And also "The contents exposed through the enumerator may contain modifications made to the dictionary after GetEnumerator was called."
@@ -127,7 +128,7 @@ namespace MonoTests.System.Collections.Concurrent
                 var old = expectedCount[0];
                 Assert.AreEqual(expectedCount[0], d.Count);
                 {
-                    var t = new Thread(remover);
+                    var t = new Thread(Remover);
                     t.Start();
                     t.Join();
                 }
@@ -142,7 +143,7 @@ namespace MonoTests.System.Collections.Concurrent
                 Assert.AreEqual(expectedCount[0], d.Count);
                 old = expectedCount[0];
                 {
-                    var t = new Thread(adder);
+                    var t = new Thread(Adder);
                     t.Start();
                     t.Join();
                 }
@@ -181,14 +182,13 @@ namespace MonoTests.System.Collections.Concurrent
                 new KeyValuePair<int, int>(0, 0),
                 new KeyValuePair<int, int>(0, 1)
             };
-            Assert.Throws<ArgumentException>(() => new ConcurrentDictionary<int, int>(data));
+            Assert.Throws<ArgumentException>(() => GC.KeepAlive(new ConcurrentDictionary<int, int>(data)));
         }
 
         [Test]
         public void NullOnNonExistingKey()
         {
-            var dict = new ConcurrentDictionary<long, string>();
-            Assert.Throws<KeyNotFoundException>(() => GC.KeepAlive(dict[1234L]));
+            Assert.Throws<KeyNotFoundException>(() => GC.KeepAlive(new ConcurrentDictionary<long, string>()[1234L]));
         }
 
         [Test]

@@ -14,51 +14,36 @@ namespace System.Diagnostics.Contracts
     [Serializable]
     internal sealed class ContractException : Exception
     {
-        private readonly ContractFailureKind _kind;
-        private readonly string _userMessage;
-        private readonly string _condition;
+        public ContractFailureKind Kind { get; }
 
-        public ContractFailureKind Kind
-        {
-            get { return _kind; }
-        }
+        public string Failure => Message;
 
-        public string Failure
-        {
-            get { return Message; }
-        }
+        public string UserMessage { get; }
 
-        public string UserMessage
-        {
-            get { return _userMessage; }
-        }
+        public string Condition { get; }
 
-        public string Condition
-        {
-            get { return _condition; }
-        }
-
-        // Called by COM Interop, if we see Cor_E_Codecontractfailed as an HRESULT.
+        // Called by COM Interop, if we see Cor_E_CodeContractFailed as an HRESULT.
+        // ReSharper disable once UnusedMember.Local
         private ContractException()
         {
-            HResult = ContractHelper.Cor_E_Codecontractfailed;
+            HResult = ContractHelper.Cor_E_CodeContractFailed;
         }
 
         public ContractException(ContractFailureKind kind, string failure, string userMessage, string condition, Exception innerException)
             : base(failure, innerException)
         {
-            HResult = ContractHelper.Cor_E_Codecontractfailed;
-            _kind = kind;
-            _userMessage = userMessage;
-            _condition = condition;
+            HResult = ContractHelper.Cor_E_CodeContractFailed;
+            Kind = kind;
+            UserMessage = userMessage;
+            Condition = condition;
         }
 
         private ContractException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            _kind = (ContractFailureKind)info.GetInt32("Kind");
-            _userMessage = info.GetString("UserMessage");
-            _condition = info.GetString("Condition");
+            Kind = (ContractFailureKind)info.GetInt32(nameof(Kind));
+            UserMessage = info.GetString(nameof(UserMessage));
+            Condition = info.GetString(nameof(Condition));
         }
 
         [SecurityCritical]
@@ -67,9 +52,9 @@ namespace System.Diagnostics.Contracts
         {
             base.GetObjectData(info, context);
 
-            info.AddValue("Kind", _kind);
-            info.AddValue("UserMessage", _userMessage);
-            info.AddValue("Condition", _condition);
+            info.AddValue(nameof(Kind), Kind);
+            info.AddValue(nameof(UserMessage), UserMessage);
+            info.AddValue(nameof(Condition), Condition);
         }
     }
 }

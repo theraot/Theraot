@@ -18,11 +18,7 @@ namespace Theraot.Threading
 
         internal NeedleLock(LockContext<T> context)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException("context");
-            }
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
             _hashCode = base.GetHashCode();
             _capture = new FlagArray(_context.Capacity);
             _owner = -1;
@@ -30,11 +26,7 @@ namespace Theraot.Threading
 
         internal NeedleLock(LockContext<T> context, T target)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException("context");
-            }
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
             if (ReferenceEquals(target, null))
             {
                 _hashCode = base.GetHashCode();
@@ -48,17 +40,13 @@ namespace Theraot.Threading
             _owner = -1;
         }
 
-        bool IReadOnlyNeedle<T>.IsAlive
-        {
-            get { return !ReferenceEquals(_target, null); }
-        }
+        bool IReadOnlyNeedle<T>.IsAlive => !ReferenceEquals(_target, null);
 
         public T Value
         {
             get
             {
-                LockSlot<T> slot;
-                if (_context.Read(_capture, ref _owner, out slot))
+                if (_context.Read(_capture, ref _owner, out var slot))
                 {
                     _target = slot.Value;
                 }
@@ -70,19 +58,35 @@ namespace Theraot.Threading
         {
             if (needle == null)
             {
-                throw new ArgumentNullException("needle");
+                throw new ArgumentNullException(nameof(needle));
             }
             return needle.Value;
         }
 
         public static bool operator !=(NeedleLock<T> left, NeedleLock<T> right)
         {
-            return NotEqualsExtracted(left, right);
+            if (ReferenceEquals(left, null))
+            {
+                return !ReferenceEquals(right, null);
+            }
+            if (ReferenceEquals(right, null))
+            {
+                return true;
+            }
+            return !left._target.Equals(right._target);
         }
 
         public static bool operator ==(NeedleLock<T> left, NeedleLock<T> right)
         {
-            return EqualsExtracted(left, right);
+            if (ReferenceEquals(left, null))
+            {
+                return ReferenceEquals(right, null);
+            }
+            if (ReferenceEquals(right, null))
+            {
+                return false;
+            }
+            return left._target.Equals(right._target);
         }
 
         public override bool Equals(object obj)
@@ -92,12 +96,12 @@ namespace Theraot.Threading
             {
                 return _target.Equals(obj);
             }
-            return EqualsExtracted(this, needle);
+            return this == needle;
         }
 
         public bool Equals(NeedleLock<T> other)
         {
-            return EqualsExtracted(this, other);
+            return this == other;
         }
 
         public override int GetHashCode()
@@ -124,36 +128,14 @@ namespace Theraot.Threading
         {
             if (Volatile.Read(ref _capture).Flags.IsEmpty())
             {
-                _target = default(T);
+                _target = default;
             }
         }
 
-        internal void Uncapture(LockSlot<T> slot)
+        internal void Release(LockSlot<T> slot)
         {
             Interlocked.CompareExchange(ref _owner, -1, slot.Id);
             _capture[slot.Id] = false;
-        }
-
-        private static bool EqualsExtracted(NeedleLock<T> left, NeedleLock<T> right)
-        {
-            if (left == null)
-            {
-                return right == null;
-            }
-            return left._target.Equals(right._target);
-        }
-
-        private static bool NotEqualsExtracted(NeedleLock<T> left, NeedleLock<T> right)
-        {
-            if (left == null)
-            {
-                if (right == null)
-                {
-                    return false;
-                }
-                return true;
-            }
-            return !left._target.Equals(right._target);
         }
     }
 }

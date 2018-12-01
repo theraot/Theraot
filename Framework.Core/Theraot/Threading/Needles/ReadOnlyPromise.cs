@@ -1,10 +1,11 @@
 // Needed for Workaround
 
 using System;
+using System.Diagnostics;
 
 namespace Theraot.Threading.Needles
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public class ReadOnlyPromise : IWaitablePromise
     {
         private readonly IPromise _promised;
@@ -15,8 +16,7 @@ namespace Theraot.Threading.Needles
             _promised = promised;
             if (allowWait)
             {
-                var promise = _promised as IWaitablePromise;
-                if (promise != null)
+                if (_promised is IWaitablePromise promise)
                 {
                     _wait = promise.Wait;
                 }
@@ -28,32 +28,17 @@ namespace Theraot.Threading.Needles
             else
             {
                 _wait =
-                () =>
-                {
-                    throw new InvalidOperationException();
-                };
+                () => throw new InvalidOperationException();
             }
         }
 
-        public Exception Exception
-        {
-            get { return _promised.Exception; }
-        }
+        public Exception Exception => _promised.Exception;
 
-        public bool IsCanceled
-        {
-            get { return _promised.IsCanceled; }
-        }
+        public bool IsCanceled => _promised.IsCanceled;
 
-        public bool IsCompleted
-        {
-            get { return _promised.IsCompleted; }
-        }
+        public bool IsCompleted => _promised.IsCompleted;
 
-        public bool IsFaulted
-        {
-            get { return _promised.IsFaulted; }
-        }
+        public bool IsFaulted => _promised.IsFaulted;
 
         public override int GetHashCode()
         {
@@ -62,7 +47,7 @@ namespace Theraot.Threading.Needles
 
         public override string ToString()
         {
-            return string.Format("{{Promise: {0}}}", _promised);
+            return $"{{Promise: {_promised}}}";
         }
 
         public void Wait()

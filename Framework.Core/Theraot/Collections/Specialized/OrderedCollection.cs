@@ -6,56 +6,39 @@ using System.Linq;
 
 namespace Theraot.Collections.Specialized
 {
-    public sealed class OrderedCollection<T> : ICollection<T>, IExtendedCollection<T>
+    public sealed class OrderedCollection<T> : ICollection<T>
     {
-        private readonly ExtendedReadOnlyCollection<T> _readOnly;
-
-        private int _count;
         private AVLTree<T, T> _data;
 
         public OrderedCollection()
         {
             _data = new AVLTree<T, T>();
-            _readOnly = new ExtendedReadOnlyCollection<T>(this);
         }
 
         public OrderedCollection(IComparer<T> comparer)
         {
             _data = new AVLTree<T, T>(comparer);
-            _readOnly = new ExtendedReadOnlyCollection<T>(this);
         }
 
         public OrderedCollection(Comparison<T> comparison)
         {
             _data = new AVLTree<T, T>(comparison);
-            _readOnly = new ExtendedReadOnlyCollection<T>(this);
         }
 
-        public IReadOnlyCollection<T> AsReadOnly
-        {
-            get { return _readOnly; }
-        }
+        public int Count { get; private set; }
 
-        public int Count
-        {
-            get { return _count; }
-        }
-
-        bool ICollection<T>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection<T>.IsReadOnly => false;
 
         public void Add(T item)
         {
             _data.Add(item, item);
-            _count++;
+            Count++;
         }
 
         public void Clear()
         {
             _data = null;
-            _count = 0;
+            Count = 0;
         }
 
         public bool Contains(T item)
@@ -95,7 +78,7 @@ namespace Theraot.Collections.Specialized
         {
             if (_data.Remove(item))
             {
-                _count--;
+                Count--;
                 return true;
             }
             return false;
@@ -105,7 +88,7 @@ namespace Theraot.Collections.Specialized
         {
             if (Extensions.Remove(this, item, comparer))
             {
-                _count--;
+                Count--;
                 return true;
             }
             return false;

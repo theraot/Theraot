@@ -1,12 +1,14 @@
 ﻿#if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using Theraot.Core;
 using Theraot.Threading;
 
 namespace System.Threading
 {
-    [Diagnostics.DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
+    [DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
     public sealed class ThreadLocal<T> : IDisposable
     {
         private int _disposing;
@@ -34,7 +36,7 @@ namespace System.Threading
         {
             if (valueFactory == null)
             {
-                throw new ArgumentNullException("valueFactory");
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             if (trackAllValues)
             {
@@ -46,7 +48,7 @@ namespace System.Threading
             }
         }
 
-        [Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         ~ThreadLocal()
         {
             try
@@ -63,9 +65,9 @@ namespace System.Threading
         {
             get
             {
-                if (Thread.VolatileRead(ref _disposing) == 1)
+                if (Volatile.Read(ref _disposing) == 1)
                 {
-                    throw new ObjectDisposedException(GetType().FullName);
+                    throw new ObjectDisposedException(nameof(ThreadLocal<T>));
                 }
                 return _wrapped.IsValueCreated;
             }
@@ -75,33 +77,26 @@ namespace System.Threading
         {
             get
             {
-                if (Thread.VolatileRead(ref _disposing) == 1)
+                if (Volatile.Read(ref _disposing) == 1)
                 {
-                    throw new ObjectDisposedException(GetType().FullName);
+                    throw new ObjectDisposedException(nameof(ThreadLocal<T>));
                 }
                 return _wrapped.Value;
             }
             set
             {
-                if (Thread.VolatileRead(ref _disposing) == 1)
+                if (Volatile.Read(ref _disposing) == 1)
                 {
-                    throw new ObjectDisposedException(GetType().FullName);
+                    throw new ObjectDisposedException(nameof(ThreadLocal<T>));
                 }
                 _wrapped.Value = value;
             }
         }
 
-        public IList<T> Values
-        {
-            get { return _wrapped.Values; }
-        }
+        internal T ValueForDebugDisplay => _wrapped.ValueForDebugDisplay;
+        public IList<T> Values => _wrapped.Values;
 
-        internal T ValueForDebugDisplay
-        {
-            get { return _wrapped.ValueForDebugDisplay; }
-        }
-
-        [Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public void Dispose()
         {
             try
@@ -116,10 +111,10 @@ namespace System.Threading
 
         public override string ToString()
         {
-            return string.Format(Globalization.CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
+            return string.Format(CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
         }
 
-        [Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         private void Dispose(bool disposeManagedResources)
         {
             if (disposeManagedResources)

@@ -19,16 +19,8 @@ namespace Theraot.Threading
 
         private DisposableAkin(Action release, Thread thread)
         {
-            if (release == null)
-            {
-                throw new ArgumentNullException("release");
-            }
-            if (thread == null)
-            {
-                throw new ArgumentNullException("thread");
-            }
-            _release = release;
-            _thread = thread;
+            _release = release ?? throw new ArgumentNullException(nameof(release));
+            _thread = thread ?? throw new ArgumentNullException(nameof(thread));
         }
 
         ~DisposableAkin()
@@ -45,16 +37,13 @@ namespace Theraot.Threading
                 }
                 catch (Exception exception)
                 {
-                    // Catch'em all - fields may be partially collected.
+                    // Catch them all - fields may be partially collected.
                     GC.KeepAlive(exception);
                 }
             }
         }
 
-        public bool IsDisposed
-        {
-            get { return _thread == null; }
-        }
+        public bool IsDisposed => _thread == null;
 
         public static DisposableAkin Create(Action release)
         {
@@ -70,7 +59,7 @@ namespace Theraot.Threading
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition));
             }
             if (ReferenceEquals(Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread), Thread.CurrentThread))
             {

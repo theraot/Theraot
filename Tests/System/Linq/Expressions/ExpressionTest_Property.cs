@@ -128,10 +128,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             public string Prop { get; set; }
 
-            public static string StatProp
-            {
-                get { return "StaticFoo"; }
-            }
+            public static string StatProp => "StaticFoo";
         }
 
         [Test]
@@ -156,18 +153,11 @@ namespace MonoTests.System.Linq.Expressions
 
         public struct Bar
         {
-            private string _slot; // Do not use auto-implemented property
-
-            public string Prop
-            {
-                get { return _slot; }
-
-                set { _slot = value; }
-            }
+            public string Prop { get; set; }
 
             public Bar(string slot)
             {
-                _slot = slot;
+                Prop = slot;
             }
         }
 
@@ -181,10 +171,7 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual("bar", barer(new Bar("bar")));
         }
 
-        public static int StaticProperty
-        {
-            get { return 42; }
-        }
+        public static int StaticProperty => 42;
 
         [Test]
         [Category("NotDotNet")] // http://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=339351

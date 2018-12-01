@@ -15,26 +15,16 @@ namespace Theraot.Threading
 
         internal LockSlot(LockContext<T> context, int id, VersionProvider.VersionToken versionToken)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException("context");
-            }
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
             _versionToken = versionToken;
             Id = id;
         }
 
-        bool IReadOnlyNeedle<T>.IsAlive
-        {
-            get { return !ReferenceEquals(Value, null); }
-        }
+        bool IReadOnlyNeedle<T>.IsAlive => !ReferenceEquals(Value, null);
 
         public T Value { get; set; }
 
-        internal bool IsOpen
-        {
-            get { return Volatile.Read(ref _free) == 0; }
-        }
+        internal bool IsOpen => Volatile.Read(ref _free) == 0;
 
         public static bool operator !=(LockSlot<T> left, LockSlot<T> right)
         {
@@ -76,7 +66,7 @@ namespace Theraot.Threading
         {
             if (Interlocked.CompareExchange(ref _free, 1, 0) == 0)
             {
-                Value = default(T);
+                Value = default;
                 _context.Close(this);
             }
         }
@@ -92,7 +82,7 @@ namespace Theraot.Threading
 
         public override bool Equals(object obj)
         {
-            return obj is LockSlot<T> && Equals((LockSlot<T>)obj);
+            return obj is LockSlot<T> slot && Equals(slot);
         }
 
         public bool Equals(LockSlot<T> other)

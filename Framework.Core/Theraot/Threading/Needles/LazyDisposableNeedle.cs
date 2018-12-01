@@ -36,10 +36,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public bool IsDisposed
-        {
-            get { return _status == -1; }
-        }
+        public bool IsDisposed => _status == -1;
 
         [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
@@ -59,10 +56,7 @@ namespace Theraot.Threading.Needles
         {
             if (_status == -1)
             {
-                if (whenDisposed != null)
-                {
-                    whenDisposed.Invoke();
-                }
+                whenDisposed?.Invoke();
             }
             else
             {
@@ -81,10 +75,7 @@ namespace Theraot.Threading.Needles
                     }
                     else
                     {
-                        if (whenDisposed != null)
-                        {
-                            whenDisposed.Invoke();
-                        }
+                        whenDisposed?.Invoke();
                     }
                 }
             }
@@ -97,13 +88,13 @@ namespace Theraot.Threading.Needles
             {
                 if (whenDisposed == null)
                 {
-                    return default(TReturn);
+                    return default;
                 }
                 return whenDisposed.Invoke();
             }
             if (whenNotDisposed == null)
             {
-                return default(TReturn);
+                return default;
             }
             if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
             {
@@ -118,14 +109,14 @@ namespace Theraot.Threading.Needles
             }
             if (whenDisposed == null)
             {
-                return default(TReturn);
+                return default;
             }
             return whenDisposed.Invoke();
         }
 
         public override void Initialize()
         {
-            Initialize(() => UnDispose());
+            Initialize(UnDispose);
         }
 
         public void Reinitialize()
@@ -153,27 +144,24 @@ namespace Theraot.Threading.Needles
 
         protected override void Initialize(Action beforeInitialize)
         {
-            Action beforeInitializeReplacement = () =>
-                       {
-                           try
-                           {
-                               var waitHandle = WaitHandle.Value;
-                               if (!WaitHandle.IsAlive)
-                               {
-                                   WaitHandle.Value = new System.Threading.ManualResetEventSlim(false);
-                                   GC.KeepAlive(waitHandle);
-                               }
-                               if (beforeInitialize != null)
-                               {
-                                   beforeInitialize.Invoke();
-                               }
-                           }
-                           finally
-                           {
-                               UnDispose();
-                           }
-                       };
-            base.Initialize(beforeInitializeReplacement);
+            void BeforeInitializeReplacement()
+            {
+                try
+                {
+                    var waitHandle = WaitHandle.Value;
+                    if (!WaitHandle.IsAlive)
+                    {
+                        WaitHandle.Value = new System.Threading.ManualResetEventSlim(false);
+                        GC.KeepAlive(waitHandle);
+                    }
+                    beforeInitialize?.Invoke();
+                }
+                finally
+                {
+                    UnDispose();
+                }
+            }
+            base.Initialize(BeforeInitializeReplacement);
         }
 
         private void OnDispose()

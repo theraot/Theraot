@@ -31,15 +31,12 @@ namespace Theraot.Threading.Needles
             Dispose();
         }
 
-        internal LockSlot<Thread> LockSlot
-        {
-            get { return _lockSlot; }
-        }
+        internal LockSlot<Thread> LockSlot => _lockSlot;
 
         public void Dispose()
         {
-            var lockslot = Interlocked.Exchange(ref _lockSlot, null);
-            if (ReferenceEquals(lockslot, null))
+            var lockSlot = Interlocked.Exchange(ref _lockSlot, null);
+            if (ReferenceEquals(lockSlot, null))
             {
                 return;
             }
@@ -53,12 +50,12 @@ namespace Theraot.Threading.Needles
             {
                 foreach (var needleLock in needleLocks)
                 {
-                    needleLock.Uncapture(lockslot);
+                    needleLock.Release(lockSlot);
                     needleLock.Release();
                 }
                 needleLocks.Clear();
             }
-            lockslot.Close();
+            lockSlot.Close();
             ThreadingHelper.MemoryBarrier();
             _parent = null;
             GC.SuppressFinalize(this);

@@ -15,6 +15,11 @@ namespace System.Runtime.CompilerServices
     public struct AsyncVoidMethodBuilder : IAsyncMethodBuilder
     {
         /// <summary>
+        /// Non-zero if PreventUnobservedTaskExceptions has already been invoked.
+        /// </summary>
+        private static int _preventUnobservedTaskExceptionsInvoked;
+
+        /// <summary>
         /// The synchronization context associated with this operation.
         /// </summary>
         private readonly SynchronizationContext _synchronizationContext;
@@ -23,11 +28,6 @@ namespace System.Runtime.CompilerServices
         /// State related to the IAsyncStateMachine.
         /// </summary>
         private AsyncMethodBuilderCore _coreState;
-
-        /// <summary>
-        /// Non-zero if PreventUnobservedTaskExceptions has already been invoked.
-        /// </summary>
-        private static int _preventUnobservedTaskExceptionsInvoked;
 
         /// <summary>
         /// Temporary support for disabling crashing if tasks go unobserved.
@@ -51,25 +51,9 @@ namespace System.Runtime.CompilerServices
         private AsyncVoidMethodBuilder(SynchronizationContext synchronizationContext)
         {
             _synchronizationContext = synchronizationContext;
-            if (synchronizationContext != null)
-            {
-                synchronizationContext.OperationStarted();
-            }
+            synchronizationContext?.OperationStarted();
 
             _coreState = new AsyncMethodBuilderCore();
-        }
-
-        /// <summary>
-        /// Registers with UnobservedTaskException to suppress exception crashing.
-        /// </summary>
-        internal static void PreventUnobservedTaskExceptions()
-        {
-            if (Interlocked.CompareExchange(ref _preventUnobservedTaskExceptionsInvoked, 1, 0) != 0)
-            {
-                return;
-            }
-
-            TaskScheduler.UnobservedTaskException += (s, e) => e.SetObserved();
         }
 
         /// <summary>
@@ -82,29 +66,6 @@ namespace System.Runtime.CompilerServices
         public static AsyncVoidMethodBuilder Create()
         {
             return new AsyncVoidMethodBuilder(SynchronizationContext.Current);
-        }
-
-        /// <summary>
-        /// Initiates the builder's execution with the associated state machine.
-        /// </summary>
-        /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam><param name="stateMachine">The state machine instance, passed by reference.</param><exception cref="T:System.ArgumentNullException">The <paramref name="stateMachine"/> argument was null (Nothing in Visual Basic).</exception>
-        [DebuggerStepThrough]
-        public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
-        {
-            _coreState.Start(ref stateMachine);
-        }
-
-        /// <summary>
-        /// Associates the builder with the state machine it represents.
-        /// </summary>
-        /// <param name="stateMachine">The heap-allocated state machine object.</param><exception cref="T:System.ArgumentNullException">The <paramref name="stateMachine"/> argument was null (Nothing in Visual Basic).</exception><exception cref="T:System.InvalidOperationException">The builder is incorrectly initialized.</exception>
-        public void SetStateMachine(IAsyncStateMachine stateMachine)
-        {
-            _coreState.SetStateMachine(stateMachine);
-        }
-
-        void IAsyncMethodBuilder.PreBoxInitialization()
-        {
         }
 
         /// <summary>
@@ -148,17 +109,8 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        /// <summary>
-        /// Completes the method builder successfully.
-        /// </summary>
-        public void SetResult()
+        void IAsyncMethodBuilder.PreBoxInitialization()
         {
-            if (_synchronizationContext == null)
-            {
-                return;
-            }
-
-            NotifySynchronizationContextOfCompletion();
         }
 
         /// <summary>
@@ -169,7 +121,7 @@ namespace System.Runtime.CompilerServices
         {
             if (exception == null)
             {
-                throw new ArgumentNullException("exception");
+                throw new ArgumentNullException(nameof(exception));
             }
 
             if (_synchronizationContext != null)
@@ -187,6 +139,52 @@ namespace System.Runtime.CompilerServices
             {
                 AsyncMethodBuilderCore.ThrowOnContext(exception, null);
             }
+        }
+
+        /// <summary>
+        /// Completes the method builder successfully.
+        /// </summary>
+        public void SetResult()
+        {
+            if (_synchronizationContext == null)
+            {
+                return;
+            }
+
+            NotifySynchronizationContextOfCompletion();
+        }
+
+        /// <summary>
+        /// Associates the builder with the state machine it represents.
+        /// </summary>
+        /// <param name="stateMachine">The heap-allocated state machine object.</param><exception cref="T:System.ArgumentNullException">The <paramref name="stateMachine"/> argument was null (Nothing in Visual Basic).</exception><exception cref="T:System.InvalidOperationException">The builder is incorrectly initialized.</exception>
+        public void SetStateMachine(IAsyncStateMachine stateMachine)
+        {
+            _coreState.SetStateMachine(stateMachine);
+        }
+
+        /// <summary>
+        /// Initiates the builder's execution with the associated state machine.
+        /// </summary>
+        /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam><param name="stateMachine">The state machine instance, passed by reference.</param><exception cref="T:System.ArgumentNullException">The <paramref name="stateMachine"/> argument was null (Nothing in Visual Basic).</exception>
+        [DebuggerStepThrough]
+        public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
+        {
+            // Should not be static
+            AsyncMethodBuilderCore.Start(ref stateMachine);
+        }
+
+        /// <summary>
+        /// Registers with UnobservedTaskException to suppress exception crashing.
+        /// </summary>
+        internal static void PreventUnobservedTaskExceptions()
+        {
+            if (Interlocked.CompareExchange(ref _preventUnobservedTaskExceptionsInvoked, 1, 0) != 0)
+            {
+                return;
+            }
+
+            TaskScheduler.UnobservedTaskException += (s, e) => e.SetObserved();
         }
 
         /// <summary>

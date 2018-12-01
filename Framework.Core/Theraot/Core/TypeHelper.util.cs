@@ -4,10 +4,18 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
-using System.Reflection.Emit;
+using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Security.Principal;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Theraot.Core
 {
@@ -16,39 +24,39 @@ namespace Theraot.Core
         private static readonly Type[] _known = {
             typeof(object),
             typeof(BitConverter),
-            typeof(System.Collections.StructuralComparisons),
+            typeof(StructuralComparisons),
             typeof(Debug),
-            typeof(System.Runtime.CompilerServices.IStrongBox),
-            typeof(System.Threading.BarrierPostPhaseException),
-            typeof(System.Threading.Tasks.TaskExtensions),
+            typeof(IStrongBox),
+            typeof(BarrierPostPhaseException),
+            typeof(TaskExtensions),
             typeof(Uri),
             typeof(TypeHelper),
-            typeof(System.ComponentModel.CancelEventArgs),
+            typeof(CancelEventArgs),
             typeof(Console),
-            typeof(System.IO.BufferedStream),
-            typeof(System.IO.File),
-            typeof(System.IO.FileAccess),
-            typeof(System.Resources.ResourceReader),
-            typeof(System.Security.Cryptography.AsnEncodedData),
-            typeof(System.Security.Cryptography.AsymmetricAlgorithm),
-            typeof(System.Security.Principal.IIdentity)
+            typeof(BufferedStream),
+            typeof(File),
+            typeof(FileAccess),
+            typeof(ResourceReader),
+            typeof(AsnEncodedData),
+            typeof(AsymmetricAlgorithm),
+            typeof(IIdentity)
         };
 
-        private static readonly Assembly[] _knownAssembies;
+        private static readonly Assembly[] _knownAssemblies;
 
         static TypeHelper()
         {
-            var knownAssembies = new List<Assembly>();
+            var assemblies = new List<Assembly>();
             foreach (var type in _known)
             {
                 var info = type.GetTypeInfo();
                 var assembly = info.Assembly;
-                if (!knownAssembies.Contains(assembly))
+                if (!assemblies.Contains(assembly))
                 {
-                    knownAssembies.Add(assembly);
+                    assemblies.Add(assembly);
                 }
             }
-            _knownAssembies = knownAssembies.ToArray();
+            _knownAssemblies = assemblies.ToArray();
         }
 
         public static bool AreReferenceAssignable(Type target, Type source)
@@ -141,6 +149,8 @@ namespace Theraot.Core
             }
             return type;
         }
+
+        public static Type GetReturnType(this MethodBase mi) => mi.IsConstructor ? mi.DeclaringType : ((MethodInfo)mi).ReturnType;
 
         public static MethodInfo GetStaticMethod(this Type type, string name)
         {
@@ -333,11 +343,11 @@ namespace Theraot.Core
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (target == null)
             {
-                throw new ArgumentNullException("target");
+                throw new ArgumentNullException(nameof(target));
             }
 
             // Identity conversion
@@ -372,11 +382,11 @@ namespace Theraot.Core
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (target == null)
             {
-                throw new ArgumentNullException("target");
+                throw new ArgumentNullException(nameof(target));
             }
             // void -> void is  an identity conversion, not a reference conversion
             if (source == typeof(void) || target == typeof(void))
@@ -516,6 +526,22 @@ namespace Theraot.Core
             return type.IsPrimitiveInteger();
         }
 
+        public static bool IsInteger64(this Type type)
+        {
+            type = GetNonNullableType(type);
+            if (!type.IsSameOrSubclassOf(typeof(Enum)))
+            {
+                switch (type.GetTypeCode())
+                {
+                    case TypeCode.Int64:
+                    case TypeCode.UInt64:
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
         public static bool IsIntegerOrBool(this Type type)
         {
             type = GetNonNullableType(type);
@@ -541,11 +567,11 @@ namespace Theraot.Core
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (target == null)
             {
-                throw new ArgumentNullException("target");
+                throw new ArgumentNullException(nameof(target));
             }
 
             // There *might* be a legal conversion from a generic delegate type S to generic delegate type  T,
@@ -628,6 +654,11 @@ namespace Theraot.Core
                 return true;
             }
             return false;
+        }
+
+        public static bool IsNumericOrBool(this Type type)
+        {
+            return IsNumeric(type) || IsBool(type);
         }
 
         public static bool IsReferenceAssignableFrom(this Type type, Type source)
@@ -804,8 +835,7 @@ namespace Theraot.Core
         /// <param name="delegateType">Delegate type with a matching signature.</param>
         public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType)
         {
-            var dynamicMethod = methodInfo as DynamicMethod;
-            if (dynamicMethod != null)
+            if (methodInfo is System.Reflection.Emit.DynamicMethod dynamicMethod)
             {
                 return dynamicMethod.CreateDelegate(delegateType);
             }
@@ -820,8 +850,7 @@ namespace Theraot.Core
         /// <param name="target">The object to which the delegate is bound, or null to treat method as static.</param>
         public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
         {
-            var dynamicMethod = methodInfo as DynamicMethod;
-            if (dynamicMethod != null)
+            if (methodInfo is System.Reflection.Emit.DynamicMethod dynamicMethod)
             {
                 return dynamicMethod.CreateDelegate(delegateType, target);
             }

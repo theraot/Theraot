@@ -5,7 +5,7 @@ using System;
 
 namespace Theraot.Core
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public static partial class FuncHelper
     {<#
     for (var indice = 0; indice < 17; indice++)
@@ -31,7 +31,7 @@ namespace Theraot.Core
 
         public static Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> GetReturnFunc<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>(TReturn def)
         {
-            return (<# if (indice != 0) { if (indice == 1) #>T obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#> arg<#=subindice#><#}}#>) =>
+            return (<# if (indice != 0) { if (indice == 1) #>/*T*/ obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>/*T<#=subindice#>*/ arg<#=subindice#><#}}#>) =>
             {
                 return def;
             };
@@ -52,7 +52,7 @@ namespace Theraot.Core
 
         public static Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> GetThrowFunc<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>(Exception exception)
         {
-            return (<# if (indice != 0) { if (indice == 1) #>T obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#> arg<#=subindice#><#}}#>) =>
+            return (<# if (indice != 0) { if (indice == 1) #>/*T*/ obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>/*T<#=subindice#>*/ arg<#=subindice#><#}}#>) =>
             {
                 throw exception;
             };

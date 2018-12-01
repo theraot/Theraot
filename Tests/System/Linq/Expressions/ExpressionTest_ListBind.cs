@@ -127,19 +127,12 @@ namespace MonoTests.System.Linq.Expressions
             public string Str;
 
             public int Baz;
-            private readonly List<string> _list = new List<string>();
 
-            public List<string> List
-            {
-                get { return _list; }
-            }
+            public List<string> List { get; } = new List<string>();
 
             public string[] Bar { get; set; }
 
-            public int BarBar
-            {
-                get { return 0; }
-            }
+            public int BarBar => 0;
 
             public string[] Test()
             {

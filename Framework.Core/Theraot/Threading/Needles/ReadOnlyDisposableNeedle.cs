@@ -9,43 +9,32 @@ namespace Theraot.Threading.Needles
     public sealed class ReadOnlyDisposableNeedle<T> : IReadOnlyNeedle<T>
     {
         private readonly int _hashCode;
-        private bool _isAlive;
         private int _status;
-        private T _target;
 
         public ReadOnlyDisposableNeedle()
         {
-            _isAlive = false;
-            _hashCode = EqualityComparer<T>.Default.GetHashCode(default(T));
+            IsAlive = false;
+            _hashCode = EqualityComparer<T>.Default.GetHashCode(default);
         }
 
         public ReadOnlyDisposableNeedle(T target)
         {
-            _isAlive = true;
-            _target = target;
+            IsAlive = true;
+            Value = target;
             _hashCode = EqualityComparer<T>.Default.GetHashCode(target);
         }
 
-        public bool IsAlive
-        {
-            get { return _isAlive; }
-        }
+        public bool IsAlive { get; private set; }
 
-        public bool IsDisposed
-        {
-            get { return _status == -1; }
-        }
+        public bool IsDisposed => _status == -1;
 
-        public T Value
-        {
-            get { return _target; }
-        }
+        public T Value { get; private set; }
 
         public static explicit operator T(ReadOnlyDisposableNeedle<T> needle)
         {
             if (needle == null)
             {
-                throw new ArgumentNullException("needle");
+                throw new ArgumentNullException(nameof(needle));
             }
             return needle.Value;
         }
@@ -65,7 +54,7 @@ namespace Theraot.Threading.Needles
             {
                 return true;
             }
-            return !EqualityComparer<T>.Default.Equals(left._target, right._target);
+            return !EqualityComparer<T>.Default.Equals(left.Value, right.Value);
         }
 
         public static bool operator ==(ReadOnlyDisposableNeedle<T> left, ReadOnlyDisposableNeedle<T> right)
@@ -78,7 +67,7 @@ namespace Theraot.Threading.Needles
             {
                 return false;
             }
-            return EqualityComparer<T>.Default.Equals(left._target, right._target);
+            return EqualityComparer<T>.Default.Equals(left.Value, right.Value);
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
@@ -95,10 +84,7 @@ namespace Theraot.Threading.Needles
         {
             if (_status == -1)
             {
-                if (whenDisposed == null)
-                {
-                    whenDisposed.Invoke();
-                }
+                whenDisposed?.Invoke();
             }
             else
             {
@@ -117,10 +103,7 @@ namespace Theraot.Threading.Needles
                     }
                     else
                     {
-                        if (whenDisposed == null)
-                        {
-                            whenDisposed.Invoke();
-                        }
+                        whenDisposed?.Invoke();
                     }
                 }
             }
@@ -133,13 +116,13 @@ namespace Theraot.Threading.Needles
             {
                 if (whenDisposed == null)
                 {
-                    return default(TReturn);
+                    return default;
                 }
                 return whenDisposed.Invoke();
             }
             if (whenNotDisposed == null)
             {
-                return default(TReturn);
+                return default;
             }
             if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
             {
@@ -154,7 +137,7 @@ namespace Theraot.Threading.Needles
             }
             if (whenDisposed == null)
             {
-                return default(TReturn);
+                return default;
             }
             return whenDisposed.Invoke();
         }
@@ -164,19 +147,19 @@ namespace Theraot.Threading.Needles
             var needle = obj as ReadOnlyDisposableNeedle<T>;
             if (needle != null)
             {
-                return EqualityComparer<T>.Default.Equals(_target, needle._target);
+                return EqualityComparer<T>.Default.Equals(Value, needle.Value);
             }
             // Keep the "is" operator
-            if (obj is T)
+            if (obj is T variable)
             {
-                return EqualityComparer<T>.Default.Equals(_target, (T)obj);
+                return EqualityComparer<T>.Default.Equals(Value, variable);
             }
             return false;
         }
 
         public bool Equals(ReadOnlyDisposableNeedle<T> other)
         {
-            return !ReferenceEquals(_target, null) && EqualityComparer<T>.Default.Equals(_target, other.Value);
+            return !ReferenceEquals(Value, null) && EqualityComparer<T>.Default.Equals(Value, other.Value);
         }
 
         public override int GetHashCode()
@@ -187,7 +170,7 @@ namespace Theraot.Threading.Needles
         public override string ToString()
         {
             var target = Value;
-            if (_isAlive)
+            if (IsAlive)
             {
                 return target.ToString();
             }
@@ -196,8 +179,8 @@ namespace Theraot.Threading.Needles
 
         private void Kill()
         {
-            _isAlive = false;
-            _target = default(T);
+            IsAlive = false;
+            Value = default;
         }
 
         private bool TakeDisposalExecution()

@@ -16,19 +16,28 @@ namespace System.Runtime.CompilerServices
     public struct TaskAwaiter : ICriticalNotifyCompletion
     {
         /// <summary>
-        ///   A MethodInfo for the Exception.PrepForRemoting method.
-        /// </summary>
-        private static readonly MethodInfo _prepForRemoting = GetPrepForRemotingMethodInfo();
-
-        /// <summary>
         ///   An empty array to use with MethodInfo.Invoke.
         /// </summary>
         private static readonly object[] _emptyParams = new object[0];
 
         /// <summary>
+        ///   A MethodInfo for the Exception.PrepForRemoting method.
+        /// </summary>
+        private static readonly MethodInfo _prepForRemoting = GetPrepForRemotingMethodInfo();
+
+        /// <summary>
         ///   The task being awaited.
         /// </summary>
         private readonly Task _task;
+
+        /// <summary>
+        ///   Initializes the <see cref="TaskAwaiter" /> .
+        /// </summary>
+        /// <param name="task"> The <see cref="Task" /> to be awaited. </param>
+        internal TaskAwaiter(Task task)
+        {
+            _task = task;
+        }
 
         /// <summary>
         ///   Gets whether the task being awaited is completed.
@@ -37,10 +46,7 @@ namespace System.Runtime.CompilerServices
         ///   This property is intended for compiler user rather than use directly in code.
         /// </remarks>
         /// <exception cref="NullReferenceException">The awaiter was not properly initialized.</exception>
-        public bool IsCompleted
-        {
-            get { return _task.IsCompleted; }
-        }
+        public bool IsCompleted => _task.IsCompleted;
 
         /// <summary>
         ///   Whether the current thread is appropriate for inlining the await continuation.
@@ -60,12 +66,15 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///   Initializes the <see cref="TaskAwaiter" /> .
+        ///   Ends the await on the completed <see cref="Task" /> .
         /// </summary>
-        /// <param name="task"> The <see cref="Task" /> to be awaited. </param>
-        internal TaskAwaiter(Task task)
+        /// <exception cref="NullReferenceException">The awaiter was not properly initialized.</exception>
+        /// <exception cref="InvalidOperationException">The task was not yet completed.</exception>
+        /// <exception cref="TaskCanceledException">The task was canceled.</exception>
+        /// <exception cref="Exception">The task completed in a Faulted state.</exception>
+        public void GetResult()
         {
-            _task = task;
+            ValidateEnd(_task);
         }
 
         /// <summary>
@@ -102,70 +111,6 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///   Ends the await on the completed <see cref="Task" /> .
-        /// </summary>
-        /// <exception cref="NullReferenceException">The awaiter was not properly initialized.</exception>
-        /// <exception cref="InvalidOperationException">The task was not yet completed.</exception>
-        /// <exception cref="TaskCanceledException">The task was canceled.</exception>
-        /// <exception cref="Exception">The task completed in a Faulted state.</exception>
-        public void GetResult()
-        {
-            ValidateEnd(_task);
-        }
-
-        /// <summary>
-        ///   Fast checks for the end of an await operation to determine whether more needs to be done prior to completing the await.
-        /// </summary>
-        /// <param name="task"> The awaited task. </param>
-        internal static void ValidateEnd(Task task)
-        {
-            if (task.Status == TaskStatus.RanToCompletion)
-            {
-                return;
-            }
-
-            HandleNonSuccess(task);
-        }
-
-        /// <summary>
-        ///   Handles validations on tasks that aren't successfully completed.
-        /// </summary>
-        /// <param name="task"> The awaited task. </param>
-        private static void HandleNonSuccess(Task task)
-        {
-            if (!task.IsCompleted)
-            {
-                try
-                {
-                    task.Wait();
-                }
-                catch (Exception ex)
-                {
-                    GC.KeepAlive(ex);
-                }
-            }
-            if (task.Status == TaskStatus.RanToCompletion)
-            {
-                return;
-            }
-
-            ThrowForNonSuccess(task);
-        }
-
-        private static void ThrowForNonSuccess(Task task)
-        {
-            switch (task.Status)
-            {
-                case TaskStatus.Canceled:
-                    throw new TaskCanceledException(task);
-                case TaskStatus.Faulted:
-                    throw PrepareExceptionForRethrow(task.Exception.InnerException);
-                default:
-                    throw new InvalidOperationException("The task has not yet completed.");
-            }
-        }
-
-        /// <summary>
         ///   Schedules the continuation onto the <see cref="Task" /> associated with this <see cref="TaskAwaiter" /> .
         /// </summary>
         /// <param name="task"> The awaited task. </param>
@@ -182,7 +127,7 @@ namespace System.Runtime.CompilerServices
         {
             if (continuation == null)
             {
-                throw new ArgumentNullException("continuation");
+                throw new ArgumentNullException(nameof(continuation));
             }
 
             var syncContext = continueOnCapturedContext ? SynchronizationContext.Current : null;
@@ -232,22 +177,6 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        private static void RunNoException(Action continuation)
-        {
-            if (continuation == null)
-            {
-                return;
-            }
-            try
-            {
-                continuation();
-            }
-            catch (Exception ex)
-            {
-                AsyncMethodBuilderCore.ThrowOnContext(ex, null);
-            }
-        }
-
         /// <summary>
         ///   Copies the exception's stack trace so its stack trace isn't overwritten.
         /// </summary>
@@ -269,6 +198,20 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
+        ///   Fast checks for the end of an await operation to determine whether more needs to be done prior to completing the await.
+        /// </summary>
+        /// <param name="task"> The awaited task. </param>
+        internal static void ValidateEnd(Task task)
+        {
+            if (task.Status == TaskStatus.RanToCompletion)
+            {
+                return;
+            }
+
+            HandleNonSuccess(task);
+        }
+
+        /// <summary>
         ///   Gets the MethodInfo for the internal PrepForRemoting method on Exception.
         /// </summary>
         /// <returns> The MethodInfo if it could be retrieved, or else null. </returns>
@@ -282,6 +225,60 @@ namespace System.Runtime.CompilerServices
             {
                 GC.KeepAlive(ex);
                 return null;
+            }
+        }
+
+        /// <summary>
+        ///   Handles validations on tasks that aren't successfully completed.
+        /// </summary>
+        /// <param name="task"> The awaited task. </param>
+        private static void HandleNonSuccess(Task task)
+        {
+            if (!task.IsCompleted)
+            {
+                try
+                {
+                    task.Wait();
+                }
+                catch (Exception ex)
+                {
+                    GC.KeepAlive(ex);
+                }
+            }
+            if (task.Status == TaskStatus.RanToCompletion)
+            {
+                return;
+            }
+
+            ThrowForNonSuccess(task);
+        }
+
+        private static void RunNoException(Action continuation)
+        {
+            if (continuation == null)
+            {
+                return;
+            }
+            try
+            {
+                continuation();
+            }
+            catch (Exception ex)
+            {
+                AsyncMethodBuilderCore.ThrowOnContext(ex, null);
+            }
+        }
+
+        private static void ThrowForNonSuccess(Task task)
+        {
+            switch (task.Status)
+            {
+                case TaskStatus.Canceled:
+                    throw new TaskCanceledException(task);
+                case TaskStatus.Faulted:
+                    throw PrepareExceptionForRethrow(task.Exception.InnerException);
+                default:
+                    throw new InvalidOperationException("The task has not yet completed.");
             }
         }
     }
@@ -300,24 +297,35 @@ namespace System.Runtime.CompilerServices
         private readonly Task<TResult> _task;
 
         /// <summary>
-        ///   Gets whether the task being awaited is completed.
-        /// </summary>
-        /// <remarks>
-        ///   This property is intended for compiler user rather than use directly in code.
-        /// </remarks>
-        /// <exception cref="NullReferenceException">The awaiter was not properly initialized.</exception>
-        public bool IsCompleted
-        {
-            get { return _task.IsCompleted; }
-        }
-
-        /// <summary>
         ///   Initializes the <see cref="TaskAwaiter{TResult}" /> .
         /// </summary>
         /// <param name="task"> The <see cref="Task{TResult}" /> to be awaited. </param>
         internal TaskAwaiter(Task<TResult> task)
         {
             _task = task;
+        }
+
+        /// <summary>
+        ///   Gets whether the task being awaited is completed.
+        /// </summary>
+        /// <remarks>
+        ///   This property is intended for compiler user rather than use directly in code.
+        /// </remarks>
+        /// <exception cref="NullReferenceException">The awaiter was not properly initialized.</exception>
+        public bool IsCompleted => _task.IsCompleted;
+
+        /// <summary>
+        ///   Ends the await on the completed <see cref="Task{TResult}" /> .
+        /// </summary>
+        /// <returns> The result of the completed <see cref="Task{TResult}" /> . </returns>
+        /// <exception cref="NullReferenceException">The awaiter was not properly initialized.</exception>
+        /// <exception cref="InvalidOperationException">The task was not yet completed.</exception>
+        /// <exception cref="TaskCanceledException">The task was canceled.</exception>
+        /// <exception cref="Exception">The task completed in a Faulted state.</exception>
+        public TResult GetResult()
+        {
+            TaskAwaiter.ValidateEnd(_task);
+            return _task.Result;
         }
 
         /// <summary>
@@ -351,20 +359,6 @@ namespace System.Runtime.CompilerServices
         public void UnsafeOnCompleted(Action continuation)
         {
             TaskAwaiter.OnCompletedInternal(_task, continuation, true);
-        }
-
-        /// <summary>
-        ///   Ends the await on the completed <see cref="Task{TResult}" /> .
-        /// </summary>
-        /// <returns> The result of the completed <see cref="Task{TResult}" /> . </returns>
-        /// <exception cref="NullReferenceException">The awaiter was not properly initialized.</exception>
-        /// <exception cref="InvalidOperationException">The task was not yet completed.</exception>
-        /// <exception cref="TaskCanceledException">The task was canceled.</exception>
-        /// <exception cref="Exception">The task completed in a Faulted state.</exception>
-        public TResult GetResult()
-        {
-            TaskAwaiter.ValidateEnd(_task);
-            return _task.Result;
         }
     }
 }

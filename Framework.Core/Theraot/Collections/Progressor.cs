@@ -1,8 +1,9 @@
 // Needed for NET40
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
@@ -10,668 +11,137 @@ using Theraot.Threading;
 
 namespace Theraot.Collections
 {
-    public sealed class Progressor<T> : IObservable<T>
+    public sealed class Progressor<T> : IObservable<T>, IEnumerable<T>
     {
-        private bool _done;
         private ProxyObservable<T> _proxy;
         private TryTake<T> _tryTake;
-
-        public Progressor(Progressor<T> wrapped)
-        {
-            if (wrapped == null)
-            {
-                throw new ArgumentNullException("wrapped");
-            }
-
-            var control = 0;
-
-            Predicate<T> newFilter = item => Volatile.Read(ref control) == 0;
-            var buffer = new SafeQueue<T>();
-            wrapped.SubscribeAction
-            (
-                item =>
-                {
-                    if (newFilter(item))
-                    {
-                        buffer.Add(item);
-                    }
-                }
-            );
-            _proxy = new ProxyObservable<T>();
-
-            _tryTake = (out T value) =>
-            {
-                Interlocked.Increment(ref control);
-                try
-                {
-                    if (buffer.TryTake(out value) || wrapped.TryTake(out value))
-                    {
-                        _proxy.OnNext(value);
-                        return true;
-                    }
-                    else
-                    {
-                        _done = wrapped._done;
-                        return false;
-                    }
-                }
-                finally
-                {
-                    Interlocked.Decrement(ref control);
-                }
-            };
-        }
-
-        public Progressor(IEnumerable<T> preface, Progressor<T> wrapped)
-        {
-            if (wrapped == null)
-            {
-                throw new ArgumentNullException("wrapped");
-            }
-            if (preface == null)
-            {
-                throw new ArgumentNullException("preface");
-            }
-            var enumerator = preface.GetEnumerator();
-            if (enumerator == null)
-            {
-                throw new ArgumentException("preface.GetEnumerator()");
-            }
-
-            var control = 0;
-            var guard = 0;
-
-            Predicate<T> newFilter = item => Volatile.Read(ref control) == 0;
-            var buffer = new SafeQueue<T>();
-            wrapped.SubscribeAction
-            (
-                item =>
-                {
-                    if (newFilter(item))
-                    {
-                        buffer.Add(item);
-                    }
-                }
-            );
-            _proxy = new ProxyObservable<T>();
-
-            TryTake<T> tryTakeReplacement = (out T value) =>
-            {
-                Interlocked.Increment(ref control);
-                try
-                {
-                    if (buffer.TryTake(out value) || wrapped.TryTake(out value))
-                    {
-                        _proxy.OnNext(value);
-                        return true;
-                    }
-                    else
-                    {
-                        _done = wrapped._done;
-                        return false;
-                    }
-                }
-                finally
-                {
-                    Interlocked.Decrement(ref control);
-                }
-            };
-
-            _tryTake = (out T value) =>
-            {
-                value = default(T);
-                if (Volatile.Read(ref guard) == 0)
-                {
-                    bool result;
-                    // We need a lock, there is no way around it. IEnumerator is just awful. Use another overload if possible.
-                    lock (enumerator)
-                    {
-                        result = enumerator.MoveNext();
-                        if (result)
-                        {
-                            value = enumerator.Current;
-                        }
-                    }
-                    if (result)
-                    {
-                        _proxy.OnNext(value);
-                        return true;
-                    }
-                    enumerator.Dispose();
-                    Interlocked.CompareExchange(ref guard, 1, 0);
-                }
-                if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
-                {
-                    _tryTake = tryTakeReplacement;
-                    Volatile.Write(ref guard, 3);
-                }
-                else
-                {
-                    ThreadingHelper.SpinWaitUntil(ref guard, 3);
-                }
-                var tryTake = _tryTake;
-                return tryTake(out value);
-            };
-        }
+        private IDisposable _disposable;
 
         public Progressor(T[] wrapped)
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
-
-            var guard = 0;
             var index = -1;
-
             _proxy = new ProxyObservable<T>();
-
-            TryTake<T> tryTakeReplacement = (out T value) =>
+            _tryTake = Take;
+            bool Take(out T value)
             {
                 value = default(T);
-                return false;
-            };
-
-            _tryTake = (out T value) =>
-            {
-                value = default(T);
-                if (Volatile.Read(ref guard) == 0)
+                var currentIndex = Interlocked.Increment(ref index);
+                if (currentIndex >= wrapped.Length)
                 {
-                    var currentIndex = Interlocked.Increment(ref index);
-                    if (currentIndex < wrapped.Length)
-                    {
-                        value = wrapped[currentIndex];
-                        _proxy.OnNext(value);
-                        return true;
-                    }
-                    Interlocked.CompareExchange(ref guard, 1, 0);
+                    return false;
                 }
-                if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
-                {
-                    _tryTake = tryTakeReplacement;
-                }
-                return false;
-            };
-        }
 
-        public Progressor(T[] preface, Progressor<T> wrapped)
-        {
-            if (wrapped == null)
-            {
-                throw new ArgumentNullException("wrapped");
+                value = wrapped[currentIndex];
+                return true;
             }
-            if (preface == null)
-            {
-                throw new ArgumentNullException("preface");
-            }
-
-            var control = 0;
-            var guard = 0;
-            var index = -1;
-
-            Predicate<T> newFilter = item => Volatile.Read(ref control) == 0;
-            var buffer = new SafeQueue<T>();
-            wrapped.SubscribeAction
-            (
-                item =>
-                {
-                    if (newFilter(item))
-                    {
-                        buffer.Add(item);
-                    }
-                }
-            );
-            _proxy = new ProxyObservable<T>();
-
-            TryTake<T> tryTakeReplacement = (out T value) =>
-            {
-                Interlocked.Increment(ref control);
-                try
-                {
-                    if (buffer.TryTake(out value) || wrapped.TryTake(out value))
-                    {
-                        _proxy.OnNext(value);
-                        return true;
-                    }
-                    else
-                    {
-                        _done = wrapped._done;
-                        return false;
-                    }
-                }
-                finally
-                {
-                    Interlocked.Decrement(ref control);
-                }
-            };
-
-            _tryTake = (out T value) =>
-            {
-                if (Volatile.Read(ref guard) == 0)
-                {
-                    var currentIndex = Interlocked.Increment(ref index);
-                    if (currentIndex < preface.Length)
-                    {
-                        value = preface[currentIndex];
-                        _proxy.OnNext(value);
-                        return true;
-                    }
-                    Interlocked.CompareExchange(ref guard, 1, 0);
-                }
-                if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
-                {
-                    _tryTake = tryTakeReplacement;
-                    Volatile.Write(ref guard, 3);
-                }
-                else
-                {
-                    ThreadingHelper.SpinWaitUntil(ref guard, 3);
-                }
-                var tryTake = _tryTake;
-                return tryTake(out value);
-            };
         }
 
         public Progressor(IEnumerable<T> wrapped)
         {
             if (wrapped == null)
             {
-                throw new ArgumentNullException("wrapped");
+                throw new ArgumentNullException(nameof(wrapped));
             }
             var enumerator = wrapped.GetEnumerator();
-            if (enumerator == null)
-            {
-                throw new ArgumentException("wrapped.GetEnumerator()");
-            }
-
-            var guard = 0;
-
+            _disposable = enumerator;
             _proxy = new ProxyObservable<T>();
-
-            TryTake<T> tryTakeReplacement = (out T value) =>
+            _tryTake = Take;
+            bool Take(out T value)
             {
-                value = default(T);
-                return false;
-            };
-
-            _tryTake = (out T value) =>
-            {
-                value = default(T);
-                if (Volatile.Read(ref guard) == 0)
+                // We need a lock, there is no way around it. IEnumerator is just awful. Use another overload if possible.
+                var enumeratorCopy = enumerator;
+                if (enumeratorCopy != null)
                 {
-                    bool result;
-                    // We need a lock, there is no way around it. IEnumerator is just awful. Use another overload if possible.
-                    lock (enumerator)
+                    lock (enumeratorCopy)
                     {
-                        result = enumerator.MoveNext();
-                        if (result)
+                        if (enumeratorCopy.MoveNext())
                         {
-                            value = enumerator.Current;
+                            value = enumeratorCopy.Current;
+                            return true;
                         }
                     }
-                    if (result)
-                    {
-                        _proxy.OnNext(value);
-                        return true;
-                    }
-                    enumerator.Dispose();
-                    Interlocked.CompareExchange(ref guard, 1, 0);
+                    Interlocked.Exchange(ref enumerator, null)?.Dispose();
                 }
-                if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
-                {
-                    _tryTake = tryTakeReplacement;
-                }
+                value = default(T);
                 return false;
-            };
-        }
-
-        public Progressor(TryTake<T> tryTake, bool doneOnFalse)
-        {
-            if (tryTake == null)
-            {
-                throw new ArgumentNullException("tryTake");
             }
-            _proxy = new ProxyObservable<T>();
-            _tryTake = GetTryTake(tryTake, doneOnFalse, this);
-        }
-
-        public Progressor(TryTake<T> tryTake, Func<bool> isDone)
-        {
-            if (tryTake == null)
-            {
-                throw new ArgumentNullException("tryTake");
-            }
-            if (isDone == null)
-            {
-                throw new ArgumentNullException("isDone");
-            }
-            _proxy = new ProxyObservable<T>();
-            _tryTake = GetTryTake(tryTake, isDone, this);
         }
 
         public Progressor(IObservable<T> wrapped)
         {
             var buffer = new SafeQueue<T>();
-            wrapped.Subscribe
+            var semaphore = new SemaphoreSlim(0);
+            var source = new CancellationTokenSource();
+            var subscription = wrapped.Subscribe
                 (
-                    new CustomObserver<T>
-                    (
-                        () => _done = true,
-                        exception => _done = true,
-                        buffer.Add
+                    new CustomObserver<T>(
+                        onCompleted: source.Cancel,
+                        onError: exception => source.Cancel(),
+                        onNext: OnNext
                     )
                 );
             _proxy = new ProxyObservable<T>();
-
-            _tryTake = (out T value) =>
+            var tryTake = new TryTake<T>[] { null };
+            tryTake[0] = Take;
+            _tryTake = tryTake[0];
+            void OnNext(T item)
+            {
+                buffer.Add(item);
+                semaphore.Release();
+            }
+            bool Take(out T value)
+            {
+                if (source.IsCancellationRequested)
+                {
+                    if (Interlocked.CompareExchange(ref _tryTake, Replacement, tryTake[0]) == tryTake[0])
+                    {
+                        Interlocked.Exchange(ref subscription, null)?.Dispose();
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        semaphore.Wait(source.Token);
+                    }
+                    catch (OperationCanceledException exception)
+                    {
+                        GC.KeepAlive(exception);
+                    }
+                }
+                return Replacement(out value);
+            }
+            bool Replacement(out T value)
             {
                 if (buffer.TryTake(out value))
                 {
-                    _proxy.OnNext(value);
                     return true;
                 }
                 value = default(T);
                 return false;
-            };
+            }
         }
 
-        private Progressor(TryTake<T> tryTake, ProxyObservable<T> proxy)
+        public bool IsClosed => Volatile.Read(ref _tryTake) == null;
+
+        public void Close()
         {
-            _proxy = proxy;
-            _tryTake = tryTake;
+            Volatile.Write(ref _tryTake, null);
+            var subscription = Interlocked.Exchange(ref _disposable, null);
+            subscription?.Dispose();
+            var proxy = Interlocked.Exchange(ref _proxy, null);
+            proxy?.OnCompleted();
         }
 
-        public bool IsClosed
+        public IEnumerator<T> GetEnumerator()
         {
-            get { return _tryTake == null; }
-        }
-
-        public static Progressor<T> CreateConverted<TInput>(Progressor<TInput> wrapped, Func<TInput, T> converter)
-        {
-            if (wrapped == null)
-            {
-                throw new ArgumentNullException("wrapped");
-            }
-            if (converter == null)
-            {
-                throw new ArgumentNullException("converter");
-            }
-
-            var control = 0;
-
-            Predicate<TInput> newFilter = item => Volatile.Read(ref control) == 0;
-            var buffer = new SafeQueue<T>();
-            var proxy = new ProxyObservable<T>();
-
-            var result = new Progressor<T>(
-                (out T value) =>
-                {
-                    Interlocked.Increment(ref control);
-                    try
-                    {
-                        TInput item;
-                        if (buffer.TryTake(out value))
-                        {
-                            proxy.OnNext(value);
-                            return true;
-                        }
-                        else if (wrapped.TryTake(out item))
-                        {
-                            value = converter(item);
-                            proxy.OnNext(value);
-                            return true;
-                        }
-                        value = default(T);
-                        return false;
-                    }
-                    finally
-                    {
-                        Interlocked.Decrement(ref control);
-                    }
-                },
-                proxy
-            );
-            wrapped.Subscribe
-            (
-                new CustomObserver<TInput>
-                (
-                    () => result._done = true,
-                    exception => result._done = true,
-                    item =>
-                    {
-                        if (newFilter(item))
-                        {
-                            buffer.Add(converter(item));
-                        }
-                    }
-                )
-            );
-            return result;
-        }
-
-        public static Progressor<T> CreatedFiltered(Progressor<T> wrapped, Predicate<T> filter)
-        {
-            if (wrapped == null)
-            {
-                throw new ArgumentNullException("wrapped");
-            }
-            if (filter == null)
-            {
-                throw new ArgumentNullException("filter");
-            }
-
-            var control = 0;
-
-            Predicate<T> newFilter = item => Volatile.Read(ref control) == 0 && filter(item);
-            var buffer = new SafeQueue<T>();
-            var proxy = new ProxyObservable<T>();
-
-            var result = new Progressor<T>(
-                (out T value) =>
-                {
-                    Volatile.Write(ref control, 1);
-                    try
-                    {
-                        again:
-                        if (buffer.TryTake(out value))
-                        {
-                            proxy.OnNext(value);
-                            return true;
-                        }
-                        else if (wrapped.TryTake(out value))
-                        {
-                            if (filter(value))
-                            {
-                                proxy.OnNext(value);
-                                return true;
-                            }
-                            else
-                            {
-                                goto again;
-                            }
-                        }
-                        value = default(T);
-                        return false;
-                    }
-                    finally
-                    {
-                        Interlocked.Decrement(ref control);
-                    }
-                },
-                proxy
-            );
-            wrapped.Subscribe
-            (
-                new CustomObserver<T>
-                (
-                    () => result._done = true,
-                    exception => result._done = true,
-                    item =>
-                    {
-                        if (newFilter(item))
-                        {
-                            buffer.Add(item);
-                        }
-                    }
-                )
-            );
-            return result;
-        }
-
-        public static Progressor<T> CreatedFilteredConverted<TInput>(Progressor<TInput> wrapped, Predicate<TInput> filter, Func<TInput, T> converter)
-        {
-            if (wrapped == null)
-            {
-                throw new ArgumentNullException("wrapped");
-            }
-            if (filter == null)
-            {
-                throw new ArgumentNullException("filter");
-            }
-            if (converter == null)
-            {
-                throw new ArgumentNullException("converter");
-            }
-
-            var control = 0;
-
-            Predicate<TInput> newFilter = item => Volatile.Read(ref control) == 0 && filter(item);
-            var buffer = new SafeQueue<T>();
-            var proxy = new ProxyObservable<T>();
-
-            var result = new Progressor<T>(
-                (out T value) =>
-                {
-                    Interlocked.Increment(ref control);
-                    try
-                    {
-                        TInput item;
-                        again:
-                        if (buffer.TryTake(out value))
-                        {
-                            proxy.OnNext(value);
-                            return true;
-                        }
-                        else if (wrapped.TryTake(out item))
-                        {
-                            if (filter(item))
-                            {
-                                value = converter(item);
-                                proxy.OnNext(value);
-                                return true;
-                            }
-                            else
-                            {
-                                goto again;
-                            }
-                        }
-                        value = default(T);
-                        return false;
-                    }
-                    finally
-                    {
-                        Interlocked.Decrement(ref control);
-                    }
-                },
-                proxy
-            );
-            wrapped.Subscribe
-            (
-                new CustomObserver<TInput>
-                (
-                    () => result._done = true,
-                    exception => result._done = true,
-                    item =>
-                    {
-                        if (newFilter(item))
-                        {
-                            buffer.Add(converter(item));
-                        }
-                    }
-                )
-            );
-            return result;
-        }
-
-        public static Progressor<T> CreateDistinct(Progressor<T> wrapped)
-        {
-            if (wrapped == null)
-            {
-                throw new ArgumentNullException("wrapped");
-            }
-
-            var control = 0;
-
-            var buffer = new SafeDictionary<T, bool>();
-            Predicate<T> newFilter = item => Volatile.Read(ref control) == 0;
-            var proxy = new ProxyObservable<T>();
-
-            var result = new Progressor<T>(
-                (out T value) =>
-                {
-                    Interlocked.Increment(ref control);
-                    try
-                    {
-                        again:
-                        foreach (var item in buffer.Where(item => !item.Value))
-                        {
-                            value = item.Key;
-                            buffer.Set(value, true);
-                            proxy.OnNext(value);
-                            return true;
-                        }
-                        if (wrapped.TryTake(out value))
-                        {
-                            bool seen;
-                            if (!buffer.TryGetValue(value, out seen) || !seen)
-                            {
-                                buffer.Set(value, true);
-                                proxy.OnNext(value);
-                                return true;
-                            }
-                            else
-                            {
-                                goto again;
-                            }
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                    finally
-                    {
-                        Interlocked.Decrement(ref control);
-                    }
-                },
-                proxy
-            );
-            wrapped.Subscribe
-            (
-                new CustomObserver<T>
-                (
-                    () => result._done = true,
-                    exception => result._done = true,
-                    item =>
-                    {
-                        if (newFilter(item))
-                        {
-                            buffer.TryAdd(item, false);
-                        }
-                    }
-                )
-            );
-            return result;
-        }
-
-        public IEnumerable<T> AsEnumerable()
-        {
-            // After enumerating - the consumer of this method must check if the Progressor is closed.
             while (true)
             {
-                T item;
-                var tryTake = _tryTake;
-                if (tryTake(out item))
+                if (TryTake(out var item))
                 {
                     yield return item;
                 }
@@ -682,35 +152,41 @@ namespace Theraot.Collections
             }
         }
 
-        public void Close()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            _tryTake = null;
-            _proxy.OnCompleted();
-            _proxy = null;
+            return GetEnumerator();
         }
 
         public IDisposable Subscribe(IObserver<T> observer)
         {
-            if (_proxy != null)
+            var proxy = Volatile.Read(ref _proxy);
+            if (proxy != null)
             {
-                return _proxy.Subscribe(observer);
+                return proxy.Subscribe(observer);
             }
+            observer.OnCompleted();
             return Disposable.Create(ActionHelper.GetNoopAction());
         }
 
         public bool TryTake(out T item)
         {
-            if (_tryTake != null)
+            var tryTake = Volatile.Read(ref _tryTake);
+            var proxy = Volatile.Read(ref _proxy);
+            if (tryTake != null)
             {
-                if (_tryTake.Invoke(out item))
+                if (tryTake.Invoke(out item))
                 {
+                    if (proxy != null)
+                    {
+                        proxy.OnNext(item);
+                    }
+                    else
+                    {
+                        Debugger.Break();
+                    }
                     return true;
                 }
-                if (_done)
-                {
-                    Close();
-                }
-                return false;
+                Close();
             }
             item = default(T);
             return false;
@@ -720,19 +196,22 @@ namespace Theraot.Collections
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition));
             }
-            while (true)
+            return WhileExtracted();
+            IEnumerable<T> WhileExtracted()
             {
-                T item;
-                var tryTake = _tryTake;
-                if (tryTake(out item) && condition(item))
+                while (true)
                 {
-                    yield return item;
-                }
-                else
-                {
-                    break;
+                    var tryTake = Volatile.Read(ref _tryTake);
+                    if (tryTake != null && tryTake(out var item) && condition(item))
+                    {
+                        yield return item;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
         }
@@ -741,51 +220,24 @@ namespace Theraot.Collections
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition));
             }
-            while (true)
+            return WhileExtracted();
+            IEnumerable<T> WhileExtracted()
             {
-                T item;
-                var tryTake = _tryTake;
-                if (tryTake(out item) && condition())
+                while (true)
                 {
-                    yield return item;
-                }
-                else
-                {
-                    break;
+                    var tryTake = Volatile.Read(ref _tryTake);
+                    if (tryTake != null && tryTake(out var item) && condition())
+                    {
+                        yield return item;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
-        }
-
-        private static TryTake<T> GetTryTake(TryTake<T> tryTake, bool doneOnFalse, Progressor<T> that)
-        {
-            var tryTakeCopy = tryTake;
-            return (out T value) =>
-            {
-                if (tryTakeCopy(out value))
-                {
-                    that._proxy.OnNext(value);
-                    return true;
-                }
-                that._done = doneOnFalse;
-                return false;
-            };
-        }
-
-        private static TryTake<T> GetTryTake(TryTake<T> tryTake, Func<bool> isDone, Progressor<T> that)
-        {
-            var tryTakeCopy = tryTake;
-            return (out T value) =>
-            {
-                if (tryTakeCopy(out value))
-                {
-                    that._proxy.OnNext(value);
-                    return true;
-                }
-                that._done = new ValueFuncClosure<bool>(isDone).InvokeReturn();
-                return false;
-            };
         }
     }
 }

@@ -45,10 +45,7 @@ namespace System.Runtime.CompilerServices
         /// <returns>An instance of a reference type that represents the value to attach to the specified key.</returns>
         public delegate TValue CreateValueCallback(TKey key);
 
-        internal ICollection<TKey> Keys
-        {
-            get { return _wrapped.Keys; }
-        }
+        internal ICollection<TKey> Keys => _wrapped.Keys;
 
         /// <summary>
         /// Adds a key to the table.
@@ -59,7 +56,7 @@ namespace System.Runtime.CompilerServices
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             _wrapped.AddNew(key, value);
         }
@@ -73,7 +70,7 @@ namespace System.Runtime.CompilerServices
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             return PrivateGetValue(key, k => Activator.CreateInstance<TValue>());
         }
@@ -88,18 +85,13 @@ namespace System.Runtime.CompilerServices
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             if (createValueCallback == null)
             {
-                throw new ArgumentNullException("createValueCallback");
+                throw new ArgumentNullException(nameof(createValueCallback));
             }
             return _wrapped.GetOrAdd(key, input => createValueCallback(input));
-        }
-
-        private TValue PrivateGetValue(TKey key, Func<TKey, TValue> createValueCallback)
-        {
-            return _wrapped.GetOrAdd(key, createValueCallback);
         }
 
         /// <summary>
@@ -113,7 +105,7 @@ namespace System.Runtime.CompilerServices
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             return _wrapped.Remove(key);
         }
@@ -130,9 +122,14 @@ namespace System.Runtime.CompilerServices
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             return _wrapped.TryGetValue(key, out value);
+        }
+
+        private TValue PrivateGetValue(TKey key, Func<TKey, TValue> createValueCallback)
+        {
+            return _wrapped.GetOrAdd(key, createValueCallback);
         }
     }
 }

@@ -57,7 +57,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool AutoRemoveDeadItems
         {
-            get { return _eventHandler.IsAlive; }
+            get => _eventHandler.IsAlive;
 
             set
             {
@@ -72,20 +72,16 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public int Count
-        {
-            get { return _wrapped.Count; }
-        }
+        public int Count => _wrapped.Count;
 
-        bool ICollection<T>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection<T>.IsReadOnly => false;
 
         public void Add(T item)
         {
-            var needle = new TNeedle();
-            needle.Value = item;
+            var needle = new TNeedle
+            {
+                Value = item
+            };
             _wrapped.Add(needle);
         }
 
@@ -100,7 +96,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Contains(T item)
         {
-            Predicate<TNeedle> check = Check(item);
+            var check = Check(item);
             return _wrapped.Where(check).Any();
         }
 
@@ -108,14 +104,15 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (itemCheck == null)
             {
-                throw new ArgumentNullException("itemCheck");
+                throw new ArgumentNullException(nameof(itemCheck));
             }
-            Predicate<TNeedle> check = Check(itemCheck);
+            var check = Check(itemCheck);
             return _wrapped.Where(check).Any();
         }
 
         public void CopyTo(T[] array, int arrayIndex)
         {
+            Extensions.CanCopyTo(Count, array, arrayIndex);
             Extensions.CopyTo(this, array, arrayIndex);
         }
 
@@ -128,8 +125,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             foreach (var pair in _wrapped)
             {
-                T result;
-                if (pair.TryGetValue(out result))
+                if (pair.TryGetValue(out var result))
                 {
                     yield return result;
                 }
@@ -143,7 +139,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Remove(T item)
         {
-            Predicate<TNeedle> check = Check(item);
+            var check = Check(item);
             foreach (var removed in _wrapped.RemoveWhereEnumerable(check))
             {
                 removed.Dispose();
@@ -159,17 +155,16 @@ namespace Theraot.Collections.ThreadSafe
 
         public int RemoveWhere(Predicate<T> itemCheck)
         {
-            Predicate<TNeedle> check = Check(itemCheck);
+            var check = Check(itemCheck);
             return _wrapped.RemoveWhere(check);
         }
 
         public IEnumerable<T> RemoveWhereEnumerable(Predicate<T> itemCheck)
         {
-            Predicate<TNeedle> check = Check(itemCheck);
+            var check = Check(itemCheck);
             foreach (var removed in _wrapped.RemoveWhereEnumerable(check))
             {
-                T value;
-                if (removed.TryGetValue(out value))
+                if (removed.TryGetValue(out var value))
                 {
                     yield return value;
                 }
@@ -196,8 +191,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             foreach (var removed in _wrapped.RemoveWhereEnumerable(needleCheck))
             {
-                T value;
-                if (removed.TryGetValue(out value))
+                if (removed.TryGetValue(out var value))
                 {
                     yield return value;
                 }
@@ -209,8 +203,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             return input =>
             {
-                T value;
-                if (input.TryGetValue(out value))
+                if (input.TryGetValue(out var value))
                 {
                     return itemCheck(value);
                 }
@@ -222,8 +215,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             return input =>
             {
-                T value;
-                if (input.TryGetValue(out value))
+                if (input.TryGetValue(out var value))
                 {
                     return _comparer.Equals(item, value);
                 }
@@ -278,8 +270,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private bool UnRegisterForAutoRemoveDeadItemsExtracted()
         {
-            EventHandler eventHandler;
-            if (_eventHandler.Value.Retrieve(out eventHandler))
+            if (_eventHandler.Value.Retrieve(out EventHandler eventHandler))
             {
                 GCMonitor.Collected -= eventHandler;
                 _eventHandler.Value = null;

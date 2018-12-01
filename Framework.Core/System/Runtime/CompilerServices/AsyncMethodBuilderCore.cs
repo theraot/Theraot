@@ -21,37 +21,53 @@ namespace System.Runtime.CompilerServices
         internal IAsyncStateMachine StateMachine;
 
         /// <summary>
-        /// Initiates the builder's execution with the associated state machine.
-        /// </summary>
-        /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam><param name="stateMachine">The state machine instance, passed by reference.</param><exception cref="T:System.ArgumentNullException">The <paramref name="stateMachine"/> argument is null (Nothing in Visual Basic).</exception>
-        [SecuritySafeCritical]
-        [DebuggerStepThrough]
-        internal void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
-        {
-            if (ReferenceEquals(stateMachine, null))
-            {
-                throw new ArgumentNullException("stateMachine");
-            }
-            stateMachine.MoveNext();
-        }
-
-        /// <summary>
         /// Associates the builder with the state machine it represents.
         /// </summary>
         /// <param name="stateMachine">The heap-allocated state machine object.</param><exception cref="T:System.ArgumentNullException">The <paramref name="stateMachine"/> argument was null (Nothing in Visual Basic).</exception><exception cref="T:System.InvalidOperationException">The builder is incorrectly initialized.</exception>
         public void SetStateMachine(IAsyncStateMachine stateMachine)
         {
-            if (stateMachine == null)
-            {
-                throw new ArgumentNullException("stateMachine");
-            }
-
             if (StateMachine != null)
             {
                 throw new InvalidOperationException("The builder was not properly initialized.");
             }
 
-            StateMachine = stateMachine;
+            StateMachine = stateMachine ?? throw new ArgumentNullException(nameof(stateMachine));
+        }
+
+        /// <summary>
+        /// Initiates the builder's execution with the associated state machine.
+        /// </summary>
+        /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam><param name="stateMachine">The state machine instance, passed by reference.</param><exception cref="T:System.ArgumentNullException">The <paramref name="stateMachine"/> argument is null (Nothing in Visual Basic).</exception>
+        [SecuritySafeCritical]
+        [DebuggerStepThrough]
+        internal static void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
+        {
+            if (ReferenceEquals(stateMachine, null))
+            {
+                throw new ArgumentNullException(nameof(stateMachine));
+            }
+            stateMachine.MoveNext();
+        }
+
+        /// <summary>
+        /// Throws the exception on the ThreadPool.
+        /// </summary>
+        /// <param name="exception">The exception to propagate.</param><param name="targetContext">The target context on which to propagate the exception.  Null to use the ThreadPool.</param>
+        internal static void ThrowOnContext(Exception exception, SynchronizationContext targetContext)
+        {
+            if (targetContext != null)
+            {
+                try
+                {
+                    targetContext.Post(state => throw TaskAwaiter.PrepareExceptionForRethrow((Exception)state), exception);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    exception = new AggregateException(exception, ex);
+                }
+            }
+            ThreadPool.QueueUserWorkItem(state => throw TaskAwaiter.PrepareExceptionForRethrow((Exception)state), exception);
         }
 
         /// <summary>
@@ -81,42 +97,10 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Throws the exception on the ThreadPool.
-        /// </summary>
-        /// <param name="exception">The exception to propagate.</param><param name="targetContext">The target context on which to propagate the exception.  Null to use the ThreadPool.</param>
-        internal static void ThrowOnContext(Exception exception, SynchronizationContext targetContext)
-        {
-            if (targetContext != null)
-            {
-                try
-                {
-                    targetContext.Post(state =>
-                    {
-                        throw TaskAwaiter.PrepareExceptionForRethrow((Exception)state);
-                    }, exception);
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    exception = new AggregateException(exception, ex);
-                }
-            }
-            ThreadPool.QueueUserWorkItem(state =>
-            {
-                throw TaskAwaiter.PrepareExceptionForRethrow((Exception)state);
-            }, exception);
-        }
-
-        /// <summary>
         /// Provides the ability to invoke a state machine's MoveNext method under a supplied ExecutionContext.
         /// </summary>
         private sealed class MoveNextRunner
         {
-            /// <summary>
-            /// The context with which to run MoveNext.
-            /// </summary>
-            private readonly ExecutionContext _context;
-
             /// <summary>
             /// The state machine whose MoveNext method should be invoked.
             /// </summary>
@@ -127,6 +111,11 @@ namespace System.Runtime.CompilerServices
             /// </summary>
             [SecurityCritical]
             private static ContextCallback _invokeMoveNext;
+
+            /// <summary>
+            /// The context with which to run MoveNext.
+            /// </summary>
+            private readonly ExecutionContext _context;
 
             /// <summary>
             /// Initializes the runner.
@@ -155,16 +144,11 @@ namespace System.Runtime.CompilerServices
                     _invokeMoveNext = callback = InvokeMoveNext;
                 }
                 ExecutionContext.Run(_context, callback, StateMachine);
-            }
 
-            /// <summary>
-            /// Invokes the MoveNext method on the supplied IAsyncStateMachine.
-            /// </summary>
-            /// <param name="stateMachine">The IAsyncStateMachine machine instance.</param>
-            [SecurityCritical]
-            private static void InvokeMoveNext(object stateMachine)
-            {
-                ((IAsyncStateMachine)stateMachine).MoveNext();
+                void InvokeMoveNext(object stateMachine)
+                {
+                    ((IAsyncStateMachine)stateMachine).MoveNext();
+                }
             }
         }
     }

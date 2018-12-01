@@ -7,6 +7,13 @@ namespace Theraot.Core
     [System.Diagnostics.DebuggerStepThrough]
     public static partial class NumericHelper
     {
+        [CLSCompliant(false)]
+        public static uint Abs(int a)
+        {
+            var mask = (uint)(a >> 31);
+            return ((uint)a ^ mask) - mask;
+        }
+
         public static int GCD(int left, int right)
         {
             if (left < 0)
@@ -106,7 +113,7 @@ namespace Theraot.Core
         {
             if (number < 0)
             {
-                throw new ArgumentOutOfRangeException("number", "The logarithm of a negative number is imaginary.");
+                throw new ArgumentOutOfRangeException(nameof(number), "The logarithm of a negative number is imaginary.");
             }
             return Log2(unchecked((uint)number));
         }
@@ -117,7 +124,7 @@ namespace Theraot.Core
         {
             if (number == 0)
             {
-                throw new ArgumentOutOfRangeException("number", "The logarithm of zero is not defined.");
+                throw new ArgumentOutOfRangeException(nameof(number), "The logarithm of zero is not defined.");
             }
             number |= number >> 1;
             number |= number >> 2;
@@ -132,7 +139,7 @@ namespace Theraot.Core
         {
             if (number < 0)
             {
-                throw new ArgumentOutOfRangeException("number", "The logarithm of a negative number is imaginary.");
+                throw new ArgumentOutOfRangeException(nameof(number), "The logarithm of a negative number is imaginary.");
             }
             return Log2(unchecked((ulong)number));
         }
@@ -143,7 +150,7 @@ namespace Theraot.Core
         {
             if (number == 0)
             {
-                throw new ArgumentOutOfRangeException("number", "The logarithm of zero is not defined.");
+                throw new ArgumentOutOfRangeException(nameof(number), "The logarithm of zero is not defined.");
             }
             number |= number >> 1;
             number |= number >> 2;
@@ -243,7 +250,7 @@ namespace Theraot.Core
         [System.Diagnostics.DebuggerNonUserCode]
         public static int Sqrt(int number)
         {
-            // Newton's  method  aproximation  for  positive  integers
+            // Newton's  method  approximation  for  positive  integers
             // if  (number  ==  0)  return  0;
             var x = number >> 1;
             while (true)

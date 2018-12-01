@@ -1,6 +1,7 @@
 ﻿#if NET20 || NET30 || NET35 || NET40
 
 using System.Threading;
+using Theraot.Core;
 
 namespace System
 {
@@ -33,12 +34,12 @@ namespace System
         {
             if (handler == null)
             {
-                throw new ArgumentNullException("handler");
+                throw new ArgumentNullException(nameof(handler));
             }
             ProgressChanged += (sender, args) => handler(args);
         }
 
-        public event Theraot.Core.NewEventHandler<T> ProgressChanged;
+        public event NewEventHandler<T> ProgressChanged;
 
         public void Report(T value)
         {
@@ -57,10 +58,7 @@ namespace System
         {
             var valueT = (T)value;
             var progressChanged = ProgressChanged;
-            if (progressChanged != null)
-            {
-                progressChanged.Invoke(this, valueT);
-            }
+            progressChanged?.Invoke(this, valueT);
         }
     }
 }

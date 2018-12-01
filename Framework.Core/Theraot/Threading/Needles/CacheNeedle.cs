@@ -23,33 +23,21 @@ namespace Theraot.Threading.Needles
         public CacheNeedle(Func<T> valueFactory)
             : base(default(T))
         {
-            if (valueFactory == null)
-            {
-                throw new ArgumentNullException("valueFactory");
-            }
-            _valueFactory = valueFactory;
+            _valueFactory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
             _waitHandle = new StructNeedle<ManualResetEventSlim>(new ManualResetEventSlim(false));
         }
 
         public CacheNeedle(Func<T> valueFactory, T target)
             : base(target)
         {
-            if (valueFactory == null)
-            {
-                throw new ArgumentNullException("valueFactory");
-            }
-            _valueFactory = valueFactory;
+            _valueFactory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
             _waitHandle = new StructNeedle<ManualResetEventSlim>(new ManualResetEventSlim(false));
         }
 
         public CacheNeedle(Func<T> valueFactory, T target, bool cacheExceptions)
             : base(target)
         {
-            if (valueFactory == null)
-            {
-                throw new ArgumentNullException("valueFactory");
-            }
-            _valueFactory = valueFactory;
+            _valueFactory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
             if (cacheExceptions)
             {
                 _valueFactory = () =>
@@ -82,30 +70,15 @@ namespace Theraot.Threading.Needles
             _waitHandle = new StructNeedle<ManualResetEventSlim>(null);
         }
 
-        public T CachedTarget
-        {
-            get { return base.Value; }
-        }
+        public T CachedTarget => base.Value;
 
-        Exception IPromise.Exception
-        {
-            get { return Exception; }
-        }
+        Exception IPromise.Exception => Exception;
 
-        bool IPromise.IsCanceled
-        {
-            get { return false; }
-        }
+        bool IPromise.IsCanceled => false;
 
-        public bool IsCompleted
-        {
-            get { return !_waitHandle.IsAlive; }
-        }
+        public bool IsCompleted => !_waitHandle.IsAlive;
 
-        bool IPromise.IsFaulted
-        {
-            get { return IsFaulted; }
-        }
+        bool IPromise.IsFaulted => IsFaulted;
 
         public override T Value
         {
@@ -121,10 +94,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        protected INeedle<ManualResetEventSlim> WaitHandle
-        {
-            get { return _waitHandle; }
-        }
+        protected INeedle<ManualResetEventSlim> WaitHandle => _waitHandle;
 
         public bool Equals(CacheNeedle<T> other)
         {
@@ -143,7 +113,7 @@ namespace Theraot.Threading.Needles
 
         public override bool TryGetValue(out T value)
         {
-            value = default(T);
+            value = default;
             return IsCompleted && base.TryGetValue(out value);
         }
 
@@ -199,7 +169,7 @@ namespace Theraot.Threading.Needles
         {
             if (beforeInitialize == null)
             {
-                throw new ArgumentNullException("beforeInitialize");
+                throw new ArgumentNullException(nameof(beforeInitialize));
             }
             if (Volatile.Read(ref _valueFactory) == null)
             {
@@ -223,7 +193,7 @@ namespace Theraot.Threading.Needles
 
         private void InitializeExtracted()
         {
-            back:
+        back:
             var valueFactory = Interlocked.Exchange(ref _valueFactory, null);
             if (valueFactory == null)
             {
@@ -264,7 +234,7 @@ namespace Theraot.Threading.Needles
                 {
                     // Initialize from the value factory
                     SetTargetValue(valueFactory.Invoke());
-                    // Initialization done, let any wating thread go
+                    // Initialization done, let any waiting thread go
                     ReleaseWaitHandle();
                 }
                 catch (Exception exception)

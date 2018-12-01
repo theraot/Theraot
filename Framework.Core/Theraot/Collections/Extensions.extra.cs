@@ -1,6 +1,11 @@
-using System;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
+
+#if FAT
+
+using System;
+
+#endif
 
 namespace Theraot.Collections
 {
@@ -13,7 +18,7 @@ namespace Theraot.Collections
 
         public static IEnumerable<T> Append<T>(this IEnumerable<T> target, T append)
         {
-            return new ExtendedEnumerable<T>(target, AsUnaryEnumerable(append));
+            return new ExtendedEnumerable<T>(target, AsUnaryIEnumerable(append));
         }
 
         public static IEnumerable<T> Prepend<T>(this IEnumerable<T> target, IEnumerable<T> prepend)
@@ -23,7 +28,7 @@ namespace Theraot.Collections
 
         public static IEnumerable<T> Prepend<T>(this IEnumerable<T> target, T prepend)
         {
-            return new ExtendedEnumerable<T>(AsUnaryEnumerable(prepend), target);
+            return new ExtendedEnumerable<T>(AsUnaryIEnumerable(prepend), target);
         }
 
 #if FAT
@@ -32,17 +37,23 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
-            var progressive = new ProgressiveCollection<T>(source);
-            while (true)
+            var progressive = AsICollection(source);
+            return CycleExtracted();
+
+            IEnumerable<T> CycleExtracted()
             {
-                foreach (var item in progressive)
+                while (true)
                 {
-                    yield return item;
+                    foreach (var item in progressive)
+                    {
+                        yield return item;
+                    }
                 }
+                // Infinite Loop - This method creates an endless IEnumerable<T>
+                // ReSharper disable once IteratorNeverReturns
             }
-            // Infinite Loop - This method creates an endless IEnumerable<T>
         }
 
 #endif

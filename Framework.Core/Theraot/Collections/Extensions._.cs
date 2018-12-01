@@ -4,22 +4,27 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
-
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
-using Theraot.Core;
+
+#if NET20 || NET30 || NET35 || NET40
+
+using System.Runtime.CompilerServices;
+
+#endif
 
 namespace Theraot.Collections
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public static partial class Extensions
     {
         public static void Add<T>(this Stack<T> stack, T item)
         {
             if (stack == null)
             {
-                throw new ArgumentNullException("stack");
+                throw new ArgumentNullException(nameof(stack));
             }
             stack.Push(item);
         }
@@ -28,34 +33,90 @@ namespace Theraot.Collections
         {
             if (queue == null)
             {
-                throw new ArgumentNullException("queue");
+                throw new ArgumentNullException(nameof(queue));
             }
             queue.Enqueue(item);
         }
 
-        public static T[] AddFirst<T>(this IList<T> list, T item)
+        public static T[] AddFirst<T>(this T[] array, T item)
         {
-            if (list == null)
+            if (array == null)
             {
-                throw new ArgumentNullException("list");
+                throw new ArgumentNullException(nameof(array));
             }
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
-            var res = new T[list.Count + 1];
+            var res = new T[array.Length + 1];
             res[0] = item;
-            list.CopyTo(res, 1);
+            array.CopyTo(res, 1);
             return res;
+        }
+
+        public static T[] AddLast<T>(this T[] array, T item)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+            var res = new T[array.Length + 1];
+            array.CopyTo(res, 0);
+            res[array.Length] = item;
+            return res;
+        }
+
+        public static T[] AsArray<T>(IEnumerable<T> source)
+        {
+            if (source == null)
+            {
+                return ArrayReservoir<T>.EmptyArray;
+            }
+            if (source is T[] array)
+            {
+                return array;
+            }
+#if NET20 || NET30 || NET35 || NET40
+            if (source is TrueReadOnlyCollection<T> trueReadOnlyCollection)
+            {
+                return trueReadOnlyCollection.Wrapped;
+            }
+#endif
+            if (source is ICollection<T> collection)
+            {
+                if (collection.Count == 0)
+                {
+                    return ArrayReservoir<T>.EmptyArray;
+                }
+                var result = new T[collection.Count];
+                collection.CopyTo(result, 0);
+                return result;
+            }
+            return (new List<T>(source)).ToArray();
+        }
+
+        public static List<T> AsList<T>(IEnumerable<T> source)
+        {
+            if (source == null)
+            {
+                return new List<T>();
+            }
+            if (source is List<T> list)
+            {
+                return list;
+            }
+            return new List<T>(source);
         }
 
         public static void CanCopyTo(int count, Array array)
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (count > array.Length)
             {
-                throw new ArgumentException("The array can not contain the number of elements.", "array");
+                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
         }
 
@@ -63,15 +124,15 @@ namespace Theraot.Collections
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
             if (count > array.Length - arrayIndex)
             {
-                throw new ArgumentException("The array can not contain the number of elements.", "array");
+                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
         }
 
@@ -79,11 +140,11 @@ namespace Theraot.Collections
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (count > array.Length)
             {
-                throw new ArgumentException("The array can not contain the number of elements.", "array");
+                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
         }
 
@@ -91,15 +152,15 @@ namespace Theraot.Collections
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
             if (count > array.Length - arrayIndex)
             {
-                throw new ArgumentException("The array can not contain the number of elements.", "array");
+                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
         }
 
@@ -107,19 +168,19 @@ namespace Theraot.Collections
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
             if (countLimit < 0)
             {
-                throw new ArgumentOutOfRangeException("countLimit", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(countLimit), "Non-negative number is required.");
             }
             if (countLimit > array.Length - arrayIndex)
             {
-                throw new ArgumentException("The array can not contain the number of elements.", "array");
+                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
         }
 
@@ -132,7 +193,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             foreach (var element in source)
             {
@@ -144,14 +205,14 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (items == null)
             {
-                throw new ArgumentNullException("items");
+                throw new ArgumentNullException(nameof(items));
             }
             IEqualityComparer<T> comparer = EqualityComparer<T>.Default;
-            var localCollection = AsCollection(source);
+            var localCollection = AsICollection(source);
             foreach (var item in items)
             {
                 if (localCollection.Contains(item, comparer))
@@ -166,14 +227,14 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (items == null)
             {
-                throw new ArgumentNullException("items");
+                throw new ArgumentNullException(nameof(items));
             }
             comparer = comparer ?? EqualityComparer<T>.Default;
-            var localCollection = AsCollection(source);
+            var localCollection = AsICollection(source);
             foreach (var item in items)
             {
                 if (localCollection.Contains(item, comparer))
@@ -188,11 +249,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             var result = new List<TOutput>();
             foreach (var item in source)
@@ -207,11 +268,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             var result = new TList();
             foreach (var item in source)
@@ -225,15 +286,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
             var result = new List<TOutput>();
             foreach (var item in source)
@@ -250,15 +311,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
             var index = 0;
             var result = new List<TOutput>();
@@ -278,15 +339,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
             var result = new TList();
             foreach (var item in source)
@@ -304,15 +365,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
             var index = 0;
             var result = new TList();
@@ -331,15 +392,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
             var index = 0;
             var result = new List<KeyValuePair<int, TOutput>>();
@@ -358,15 +419,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
             var index = 0;
             var result = new List<KeyValuePair<int, TOutput>>();
@@ -386,15 +447,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
             var index = 0;
             var result = new TList();
@@ -414,15 +475,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
             var index = 0;
             var result = new TList();
@@ -441,15 +502,20 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
-            foreach (var item in source)
+            return ConvertProgressiveExtracted();
+
+            IEnumerable<TOutput> ConvertProgressiveExtracted()
             {
-                yield return converter(item);
+                foreach (var item in source)
+                {
+                    yield return converter(item);
+                }
             }
         }
 
@@ -457,21 +523,26 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
-            foreach (var item in source)
+            return ConvertProgressiveFilteredExtracted();
+
+            IEnumerable<TOutput> ConvertProgressiveFilteredExtracted()
             {
-                if (filter(item))
+                foreach (var item in source)
                 {
-                    yield return converter(item);
+                    if (filter(item))
+                    {
+                        yield return converter(item);
+                    }
                 }
             }
         }
@@ -480,49 +551,46 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
-            var index = 0;
-            foreach (var item in source)
-            {
-                if (filter(item, index))
-                {
-                    yield return converter(item);
-                }
-                index++;
-            }
+            return ConvertProgressiveFiltered(source, converter, filter);
         }
 
         public static IEnumerable<KeyValuePair<int, TOutput>> ConvertProgressiveIndexed<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
-            var index = 0;
-            foreach (var item in source)
+            return ConvertProgressiveIndexedExtracted();
+
+            IEnumerable<KeyValuePair<int, TOutput>> ConvertProgressiveIndexedExtracted()
             {
-                if (filter(item))
+                var index = 0;
+                foreach (var item in source)
                 {
-                    yield return new KeyValuePair<int, TOutput>(index, converter(item));
+                    if (filter(item))
+                    {
+                        yield return new KeyValuePair<int, TOutput>(index, converter(item));
+                    }
+                    index++;
                 }
-                index++;
             }
         }
 
@@ -530,24 +598,29 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
-            var index = 0;
-            foreach (var item in source)
+            return ConvertProgressiveIndexedExtracted();
+
+            IEnumerable<KeyValuePair<int, TOutput>> ConvertProgressiveIndexedExtracted()
             {
-                if (filter(item, index))
+                var index = 0;
+                foreach (var item in source)
                 {
-                    yield return new KeyValuePair<int, TOutput>(index, converter(item));
+                    if (filter(item, index))
+                    {
+                        yield return new KeyValuePair<int, TOutput>(index, converter(item));
+                    }
+                    index++;
                 }
-                index++;
             }
         }
 
@@ -555,7 +628,7 @@ namespace Theraot.Collections
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
@@ -569,15 +642,20 @@ namespace Theraot.Collections
             CopyTo(source, array, 0);
         }
 
+        public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array)
+        {
+            CopyTo(source.SkipItems(sourceIndex), array, 0);
+        }
+
         public static void CopyTo<T>(this IEnumerable<T> source, T[] array, int arrayIndex)
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             try
             {
@@ -590,8 +668,13 @@ namespace Theraot.Collections
             }
             catch (IndexOutOfRangeException exception)
             {
-                throw new ArgumentException(exception.Message, "array");
+                throw new ArgumentException(exception.Message, nameof(array));
             }
+        }
+
+        public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array, int arrayIndex)
+        {
+            CopyTo(source.SkipItems(sourceIndex), array, arrayIndex);
         }
 
         public static void CopyTo<T>(this IEnumerable<T> source, T[] array, int arrayIndex, int countLimit)
@@ -599,11 +682,16 @@ namespace Theraot.Collections
             CopyTo(source.TakeItems(countLimit), array, arrayIndex);
         }
 
+        public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array, int arrayIndex, int countLimit)
+        {
+            CopyTo(source.SkipItems(sourceIndex).TakeItems(countLimit), array, arrayIndex);
+        }
+
         public static int CountContiguousItems<T>(this IEnumerable<T> source, T item)
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var result = 0;
             var equalityComparer = EqualityComparer<T>.Default;
@@ -625,11 +713,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             var result = 0;
             foreach (var item in source)
@@ -650,7 +738,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var result = 0;
             foreach (var value in source)
@@ -665,7 +753,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var result = 0;
             var equalityComparer = EqualityComparer<T>.Default;
@@ -683,11 +771,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             var result = 0;
             foreach (var item in source)
@@ -704,11 +792,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             var index = 0;
             foreach (var item in source)
@@ -721,11 +809,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             foreach (var item in source)
             {
@@ -737,14 +825,13 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (onEmpty == null)
             {
                 throw new ArgumentException("onEmpty");
             }
-            var sourceCollection = source as ICollection<T>;
-            if (sourceCollection != null)
+            if (source is ICollection<T> sourceCollection)
             {
                 if (sourceCollection.Count == 0)
                 {
@@ -759,14 +846,17 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (onEmpty == null)
             {
                 throw new ArgumentException("onEmpty");
             }
-            var sourceCollection = source as ICollection<T>;
-            if (sourceCollection != null)
+            if (onNotEmpty == null)
+            {
+                throw new ArgumentException("onNotEmpty");
+            }
+            if (source is ICollection<T> sourceCollection)
             {
                 if (sourceCollection.Count == 0)
                 {
@@ -782,14 +872,21 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (onEmpty == null)
             {
                 throw new ArgumentException("onEmpty");
             }
-            var sourceCollection = source as ICollection<T>;
-            if (sourceCollection != null)
+            if (onUnknownSize == null)
+            {
+                throw new ArgumentNullException(nameof(onUnknownSize));
+            }
+            if (onKnownSize == null)
+            {
+                throw new ArgumentException("onKnownSize");
+            }
+            if (source is ICollection<T> sourceCollection)
             {
                 if (sourceCollection.Count == 0)
                 {
@@ -805,11 +902,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             var count = 0;
             foreach (var item in other)
@@ -826,17 +923,22 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
-            foreach (var item in other)
+            return ExceptWithEnumerableExtracted();
+
+            IEnumerable<T> ExceptWithEnumerableExtracted()
             {
-                while (source.Remove(item))
+                foreach (var item in other)
                 {
-                    yield return item;
+                    while (source.Remove(item))
+                    {
+                        yield return item;
+                    }
                 }
             }
         }
@@ -845,7 +947,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             IEqualityComparer<T> comparer = EqualityComparer<T>.Default;
             foreach (var local in source)
@@ -862,7 +964,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             comparer = comparer ?? EqualityComparer<T>.Default;
             foreach (var local in source)
@@ -879,11 +981,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             foreach (var item in source)
             {
@@ -899,11 +1001,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             var currentIndex = 0;
             var limit = index + count;
@@ -937,11 +1039,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             var currentIndex = 0;
             using (var enumerator = source.GetEnumerator())
@@ -970,11 +1072,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             using (var enumerator = source.GetEnumerator())
             {
@@ -993,11 +1095,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             var currentIndex = 0;
             var limit = index + count;
@@ -1031,11 +1133,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             var currentIndex = 0;
             using (var enumerator = source.GetEnumerator())
@@ -1056,11 +1158,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             var currentIndex = 0;
             using (var enumerator = source.GetEnumerator())
@@ -1089,11 +1191,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             var currentIndex = 0;
             var limit = index + count;
@@ -1128,11 +1230,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             var currentIndex = 0;
             var result = default(T);
@@ -1162,11 +1264,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             var result = default(T);
             using (var enumerator = source.GetEnumerator())
@@ -1186,11 +1288,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             var currentIndex = 0;
             var limit = index + count;
@@ -1225,11 +1327,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             var currentIndex = 0;
             var result = -1;
@@ -1259,11 +1361,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             var currentIndex = 0;
             var result = -1;
@@ -1285,11 +1387,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             var result = new List<T>();
             foreach (var item in source)
@@ -1307,11 +1409,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             var result = new TList();
             foreach (var item in source)
@@ -1328,20 +1430,31 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
-            return FlattenExtracted(source);
+            return FlattenExtracted();
+
+            IEnumerable<T> FlattenExtracted()
+            {
+                foreach (var key in source)
+                {
+                    foreach (var item in key)
+                    {
+                        yield return item;
+                    }
+                }
+            }
         }
 
         public static void For<T>(this IEnumerable<T> source, Action<int, T> action)
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             }
             var index = 0;
             foreach (var item in source)
@@ -1355,15 +1468,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (action == null)
             {
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             }
             var index = 0;
             foreach (var item in source)
@@ -1380,15 +1493,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (filter == null)
             {
-                throw new ArgumentNullException("filter");
+                throw new ArgumentNullException(nameof(filter));
             }
             if (action == null)
             {
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             }
             var index = 0;
             foreach (var item in source)
@@ -1405,11 +1518,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (action == null)
             {
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             }
             foreach (var item in source)
             {
@@ -1421,15 +1534,15 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (action == null)
             {
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             }
             foreach (var item in source)
             {
@@ -1444,10 +1557,9 @@ namespace Theraot.Collections
         {
             if (dictionary == null)
             {
-                throw new ArgumentNullException("dictionary");
+                throw new ArgumentNullException(nameof(dictionary));
             }
-            TValue value;
-            if (dictionary.TryGetValue(key, out value))
+            if (dictionary.TryGetValue(key, out var value))
             {
                 return value;
             }
@@ -1459,10 +1571,9 @@ namespace Theraot.Collections
         {
             if (dictionary == null)
             {
-                throw new ArgumentNullException("dictionary");
+                throw new ArgumentNullException(nameof(dictionary));
             }
-            TValue value;
-            if (dictionary.TryGetValue(key, out value))
+            if (dictionary.TryGetValue(key, out var value))
             {
                 return value;
             }
@@ -1475,7 +1586,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
             var limit = index + count;
@@ -1510,7 +1621,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
             var limit = index + count;
@@ -1545,7 +1656,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
             var comparer = EqualityComparer<T>.Default;
@@ -1575,7 +1686,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
             comparer = comparer ?? EqualityComparer<T>.Default;
@@ -1605,7 +1716,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
             var comparer = EqualityComparer<T>.Default;
@@ -1627,7 +1738,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
             comparer = comparer ?? EqualityComparer<T>.Default;
@@ -1649,30 +1760,29 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
-            var enumerators = source.Select(x => x.GetEnumerator()).ToArray();
-            try
+            var enumerators = source.Select(x => x.GetEnumerator()).ToList();
+            return InterleaveManyExtracted();
+
+            IEnumerable<T> InterleaveManyExtracted()
             {
-                var ok = true;
-                while (ok)
+                try
                 {
-                    ok = false;
-                    foreach (var enumerator in enumerators)
+                    while (enumerators.All(enumerator => enumerator.MoveNext()))
                     {
-                        if (enumerator.MoveNext())
+                        foreach (var enumerator in enumerators)
                         {
                             yield return enumerator.Current;
-                            ok = true;
                         }
                     }
                 }
-            }
-            finally
-            {
-                foreach (var enumerator in enumerators)
+                finally
                 {
-                    enumerator.Dispose();
+                    foreach (var enumerator in enumerators)
+                    {
+                        enumerator.Dispose();
+                    }
                 }
             }
         }
@@ -1681,13 +1791,13 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
-            var otherAsCollection = AsCollection(other);
+            var otherAsCollection = AsICollection(other);
             return source.RemoveWhere(input => !otherAsCollection.Contains(input));
         }
 
@@ -1695,14 +1805,14 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             comparer = comparer ?? EqualityComparer<T>.Default;
-            var otherAsCollection = AsCollection(other);
+            var otherAsCollection = AsICollection(other);
             return source.RemoveWhere(input => !otherAsCollection.Contains(input, comparer));
         }
 
@@ -1710,13 +1820,13 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
-            var otherAsCollection = AsCollection(other);
+            var otherAsCollection = AsICollection(other);
             return source.RemoveWhereEnumerable(input => !otherAsCollection.Contains(input));
         }
 
@@ -1724,14 +1834,14 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             comparer = comparer ?? EqualityComparer<T>.Default;
-            var otherAsCollection = AsCollection(other);
+            var otherAsCollection = AsICollection(other);
             return source.RemoveWhereEnumerable(input => !otherAsCollection.Contains(input, comparer));
         }
 
@@ -1744,11 +1854,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             return IsSubsetOf(source, other, true);
         }
@@ -1757,11 +1867,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             return IsSupersetOf(source, other, true);
         }
@@ -1770,11 +1880,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             return IsSubsetOf(source, other, false);
         }
@@ -1783,11 +1893,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
             return IsSupersetOf(source, other, false);
         }
@@ -1796,7 +1906,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
             comparer = comparer ?? EqualityComparer<T>.Default;
@@ -1827,7 +1937,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
             var comparer = EqualityComparer<T>.Default;
@@ -1858,7 +1968,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
             var comparer = EqualityComparer<T>.Default;
@@ -1881,7 +1991,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
             comparer = comparer ?? EqualityComparer<T>.Default;
@@ -1904,7 +2014,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
             var limit = index + count;
@@ -1940,7 +2050,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
             var limit = index + count;
@@ -1976,11 +2086,11 @@ namespace Theraot.Collections
         {
             if (first == null)
             {
-                throw new ArgumentNullException("first");
+                throw new ArgumentNullException(nameof(first));
             }
             if (second == null)
             {
-                throw new ArgumentNullException("second");
+                throw new ArgumentNullException(nameof(second));
             }
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
@@ -2016,7 +2126,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
@@ -2034,7 +2144,7 @@ namespace Theraot.Collections
         {
             if (list == null)
             {
-                throw new ArgumentNullException("list");
+                throw new ArgumentNullException(nameof(list));
             }
             var item = list[oldIndex];
             list.RemoveAt(oldIndex);
@@ -2056,8 +2166,7 @@ namespace Theraot.Collections
                 onEmpty();
                 return ArrayReservoir<T>.EmptyArray;
             }
-            var sourceCollection = source as ICollection<T>;
-            if (sourceCollection != null)
+            if (source is ICollection<T> sourceCollection)
             {
                 if (sourceCollection.Count == 0)
                 {
@@ -2079,8 +2188,11 @@ namespace Theraot.Collections
                 onEmpty();
                 return ArrayReservoir<T>.EmptyArray;
             }
-            var sourceCollection = source as ICollection<T>;
-            if (sourceCollection != null)
+            if (onNotEmpty == null)
+            {
+                throw new ArgumentException("onNotEmpty");
+            }
+            if (source is ICollection<T> sourceCollection)
             {
                 if (sourceCollection.Count == 0)
                 {
@@ -2103,8 +2215,15 @@ namespace Theraot.Collections
                 onEmpty();
                 return ArrayReservoir<T>.EmptyArray;
             }
-            var sourceCollection = source as ICollection<T>;
-            if (sourceCollection != null)
+            if (onUnknownSize == null)
+            {
+                throw new ArgumentException("onEmpty");
+            }
+            if (onKnownSize == null)
+            {
+                throw new ArgumentException("onEmpty");
+            }
+            if (source is ICollection<T> sourceCollection)
             {
                 if (sourceCollection.Count == 0)
                 {
@@ -2126,8 +2245,45 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
+            return PackExtracted<T, TPackage>(source, size);
+        }
+
+        public static IEnumerable<T[]> Pack<T>(this IEnumerable<T> source, int size)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            return PackExtracted();
+
+            IEnumerable<T[]> PackExtracted()
+            {
+                var index = 0;
+                var currentPackage = new T[size];
+                foreach (var item in source)
+                {
+                    currentPackage[index] = item;
+                    index++;
+                    if (index == size)
+                    {
+                        yield return currentPackage;
+                        currentPackage = new T[size];
+                        index = 0;
+                    }
+                }
+                if (index > 0)
+                {
+                    Array.Resize(ref currentPackage, index);
+                    yield return currentPackage;
+                }
+            }
+        }
+
+        public static IEnumerable<TPackage> PackExtracted<T, TPackage>(IEnumerable<T> source, int size)
+            where TPackage : ICollection<T>, new()
+        {
             var count = 0;
             var currentPackage = new TPackage();
             foreach (var item in source)
@@ -2147,37 +2303,11 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<T[]> Pack<T>(this IEnumerable<T> source, int size)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException("source");
-            }
-            var index = 0;
-            var currentPackage = new T[size];
-            foreach (var item in source)
-            {
-                currentPackage[index] = item;
-                index++;
-                if (index == size)
-                {
-                    yield return currentPackage;
-                    currentPackage = new T[size];
-                    index = 0;
-                }
-            }
-            if (index > 0)
-            {
-                Array.Resize(ref currentPackage, index);
-                yield return currentPackage;
-            }
-        }
-
         public static bool Remove<T>(this ICollection<T> source, T item, IEqualityComparer<T> comparer)
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             comparer = comparer ?? EqualityComparer<T>.Default;
             using (var enumerator = source.RemoveWhereEnumerable(input => comparer.Equals(input, item)).GetEnumerator())
@@ -2190,7 +2320,7 @@ namespace Theraot.Collections
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
@@ -2203,7 +2333,7 @@ namespace Theraot.Collections
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
@@ -2216,7 +2346,7 @@ namespace Theraot.Collections
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             return RemoveWhere(source, items => Where(items, predicate));
         }
@@ -2225,11 +2355,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             return ExceptWith
                    (
@@ -2242,7 +2372,7 @@ namespace Theraot.Collections
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             return RemoveWhereEnumerable(source, items => Where(items, predicate));
         }
@@ -2251,11 +2381,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
             return ExceptWithEnumerable
                    (
@@ -2268,20 +2398,20 @@ namespace Theraot.Collections
         {
             if (list == null)
             {
-                throw new ArgumentNullException("list");
+                throw new ArgumentNullException(nameof(list));
             }
             if (index < 0)
             {
-                throw new ArgumentOutOfRangeException("index", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(index), "Non-negative number is required.");
             }
             if (count < 0)
             {
-                throw new ArgumentOutOfRangeException("count", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(count), "Non-negative number is required.");
             }
             var listCount = list.Count;
             if (count > listCount - index)
             {
-                throw new ArgumentException("The list does not contain the number of elements.", "list");
+                throw new ArgumentException("The list does not contain the number of elements.", nameof(list));
             }
             var end = index + count;
             for (; index < end; index++, end++)
@@ -2294,13 +2424,13 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (other == null)
             {
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
             }
-            var thatAsCollection = AsCollection(other);
+            var thatAsCollection = AsICollection(other);
             foreach (var item in thatAsCollection.Where(input => !source.Contains(input)))
             {
                 GC.KeepAlive(item);
@@ -2318,21 +2448,21 @@ namespace Theraot.Collections
         {
             if (list == null)
             {
-                throw new ArgumentNullException("list");
+                throw new ArgumentNullException(nameof(list));
             }
             comparer = comparer ?? Comparer<T>.Default;
             if (index < 0)
             {
-                throw new ArgumentOutOfRangeException("index", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(index), "Non-negative number is required.");
             }
             if (count < 0)
             {
-                throw new ArgumentOutOfRangeException("count", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(count), "Non-negative number is required.");
             }
             var listCount = list.Count;
             if (count > listCount - index)
             {
-                throw new ArgumentException("The list does not contain the number of elements.", "list");
+                throw new ArgumentException("The list does not contain the number of elements.", nameof(list));
             }
             SortExtracted(list, index, count + index, comparer);
         }
@@ -2341,20 +2471,20 @@ namespace Theraot.Collections
         {
             if (list == null)
             {
-                throw new ArgumentNullException("list");
+                throw new ArgumentNullException(nameof(list));
             }
             if (indexA < 0)
             {
-                throw new ArgumentOutOfRangeException("indexA", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(indexA), "Non-negative number is required.");
             }
             if (indexB < 0)
             {
-                throw new ArgumentOutOfRangeException("indexB", "Non-negative number is required.");
+                throw new ArgumentOutOfRangeException(nameof(indexB), "Non-negative number is required.");
             }
             var listCount = list.Count;
             if (indexA >= listCount || indexB >= listCount)
             {
-                throw new ArgumentException("The list does not contain the number of elements.", "list");
+                throw new ArgumentException("The list does not contain the number of elements.", nameof(list));
             }
             if (indexA != indexB)
             {
@@ -2372,13 +2502,38 @@ namespace Theraot.Collections
             return source.AddRangeEnumerable(Where(other.Distinct(), input => !source.Remove(input)));
         }
 
-        public static T[] ToArray<T>(this ICollection<T> source)
+        public static T[] ToArray<T>(this IEnumerable<T> source, int count)
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
-            return (new List<T>(source)).ToArray();
+            if (count < 0)
+            {
+                throw new ArgumentNullException(nameof(count));
+            }
+            if (source is ICollection<T> collection && count >= collection.Count)
+            {
+                var array = new T[collection.Count];
+                collection.CopyTo(array, 0);
+                return array;
+            }
+            if (source is string str && count >= str.Length)
+            {
+                var array = new char[str.Length];
+                str.CopyTo(array, 0);
+                return (T[])(object)array;
+            }
+            var result = new List<T>(count);
+            foreach (var item in source)
+            {
+                if (result.Count == count)
+                {
+                    break;
+                }
+                result.Add(item);
+            }
+            return result.ToArray();
         }
 
         public static ReadOnlyCollection<TSource> ToReadOnly<TSource>(this IEnumerable<TSource> source)
@@ -2387,19 +2542,18 @@ namespace Theraot.Collections
             {
                 return new ReadOnlyCollection<TSource>(ArrayReservoir<TSource>.EmptyArray);
             }
-            var sourceAsReadOnlyCollection = source as ReadOnlyCollection<TSource>;
-            if (sourceAsReadOnlyCollection != null)
+            if (source is ReadOnlyCollection<TSource> sourceAsReadOnlyCollection)
             {
                 return sourceAsReadOnlyCollection;
             }
-            return new ReadOnlyCollection<TSource>(source.ToArray());
+            return new ReadOnlyCollection<TSource>(AsIList(source));
         }
 
         public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
             if (dictionary == null)
             {
-                throw new ArgumentNullException("dictionary");
+                throw new ArgumentNullException(nameof(dictionary));
             }
             try
             {
@@ -2413,15 +2567,15 @@ namespace Theraot.Collections
             }
         }
 
-        public static bool TryFind<T>(this IEnumerable<T> source, int index, int count, Predicate<T> predicate, out T founT)
+        public static bool TryFind<T>(this IEnumerable<T> source, int index, int count, Predicate<T> predicate, out T found)
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
             var limit = index + count;
@@ -2443,25 +2597,25 @@ namespace Theraot.Collections
                     }
                     if (predicate(enumerator.Current))
                     {
-                        founT = enumerator.Current;
+                        found = enumerator.Current;
                         return true;
                     }
                     currentIndex++;
                 }
-                founT = default(T);
+                found = default(T);
                 return false;
             }
         }
 
-        public static bool TryFind<T>(this IEnumerable<T> source, int index, Predicate<T> predicate, out T founT)
+        public static bool TryFind<T>(this IEnumerable<T> source, int index, Predicate<T> predicate, out T found)
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
             using (var enumerator = source.GetEnumerator())
@@ -2478,25 +2632,25 @@ namespace Theraot.Collections
                 {
                     if (predicate(enumerator.Current))
                     {
-                        founT = enumerator.Current;
+                        found = enumerator.Current;
                         return true;
                     }
                     currentIndex++;
                 }
-                founT = default(T);
+                found = default(T);
                 return false;
             }
         }
 
-        public static bool TryFind<T>(this IEnumerable<T> source, Predicate<T> predicate, out T founT)
+        public static bool TryFind<T>(this IEnumerable<T> source, Predicate<T> predicate, out T found)
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             using (var enumerator = source.GetEnumerator())
             {
@@ -2504,11 +2658,11 @@ namespace Theraot.Collections
                 {
                     if (predicate(enumerator.Current))
                     {
-                        founT = enumerator.Current;
+                        found = enumerator.Current;
                         return true;
                     }
                 }
-                founT = default(T);
+                found = default(T);
                 return false;
             }
         }
@@ -2517,11 +2671,11 @@ namespace Theraot.Collections
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
             var limit = index + count;
@@ -2558,11 +2712,11 @@ namespace Theraot.Collections
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
             foundItem = default(T);
@@ -2594,11 +2748,11 @@ namespace Theraot.Collections
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             foundItem = default(T);
             var found = false;
@@ -2620,7 +2774,7 @@ namespace Theraot.Collections
         {
             if (stack == null)
             {
-                throw new ArgumentNullException("stack");
+                throw new ArgumentNullException(nameof(stack));
             }
             try
             {
@@ -2638,7 +2792,7 @@ namespace Theraot.Collections
         {
             if (queue == null)
             {
-                throw new ArgumentNullException("queue");
+                throw new ArgumentNullException(nameof(queue));
             }
             try
             {
@@ -2666,24 +2820,35 @@ namespace Theraot.Collections
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
-            return WhereExtracted(source, predicate);
+            return WhereExtracted();
+
+            IEnumerable<T> WhereExtracted()
+            {
+                foreach (var item in source)
+                {
+                    if (predicate(item))
+                    {
+                        yield return item;
+                    }
+                }
+            }
         }
 
         public static IEnumerable<T> Where<T>(this IEnumerable<T> source, Func<T, int, bool> predicate)
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             return WhereExtracted(source, predicate);
         }
@@ -2692,11 +2857,11 @@ namespace Theraot.Collections
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (whereNot == null)
             {
@@ -2709,11 +2874,11 @@ namespace Theraot.Collections
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (whereNot == null)
             {
@@ -2726,11 +2891,11 @@ namespace Theraot.Collections
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (whereNot == null)
             {
@@ -2743,11 +2908,11 @@ namespace Theraot.Collections
         {
             if (predicate == null)
             {
-                throw new ArgumentNullException("predicate");
+                throw new ArgumentNullException(nameof(predicate));
             }
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (whereNot == null)
             {
@@ -2763,38 +2928,40 @@ namespace Theraot.Collections
 
         public static IEnumerable<TResult> ZipMany<T, TResult>(this IEnumerable<IEnumerable<T>> source, Func<IEnumerable<T>, TResult> func)
         {
-            var enumerators = source.Select(x => x.GetEnumerator()).ToArray();
-            try
+            if (source == null)
             {
-                while (enumerators.All(enumerator => enumerator.MoveNext()))
-                {
-                    yield return func(enumerators.Select(enumerator => enumerator.Current));
-                }
+                throw new ArgumentNullException(nameof(source));
             }
-            finally
+            if (func == null)
             {
-                foreach (var enumerator in enumerators)
-                {
-                    enumerator.Dispose();
-                }
+                throw new ArgumentNullException(nameof(func));
             }
-        }
+            return ZipManyExtracted();
 
-        private static IEnumerable<T> FlattenExtracted<T>(IEnumerable<IEnumerable<T>> source)
-        {
-            foreach (var key in source)
+            IEnumerable<TResult> ZipManyExtracted()
             {
-                foreach (var item in key)
+                var enumerators = source.Select(x => x.GetEnumerator()).ToList();
+                try
                 {
-                    yield return item;
+                    while (enumerators.All(enumerator => enumerator.MoveNext()))
+                    {
+                        yield return func(enumerators.Select(enumerator => enumerator.Current));
+                    }
+                }
+                finally
+                {
+                    foreach (var enumerator in enumerators)
+                    {
+                        enumerator.Dispose();
+                    }
                 }
             }
         }
 
         private static bool IsSubsetOf<T>(this IEnumerable<T> source, IEnumerable<T> other, bool proper)
         {
-            var @this = AsDistinctCollection(source);
-            var that = AsDistinctCollection(other);
+            var @this = AsDistinctICollection(source);
+            var that = AsDistinctICollection(other);
             var elementCount = 0;
             var matchCount = 0;
             foreach (var item in that)
@@ -2814,8 +2981,8 @@ namespace Theraot.Collections
 
         private static bool IsSupersetOf<T>(this IEnumerable<T> source, IEnumerable<T> other, bool proper)
         {
-            var @this = AsDistinctCollection(source);
-            var that = AsDistinctCollection(other);
+            var @this = AsDistinctICollection(source);
+            var that = AsDistinctICollection(other);
             var elementCount = 0;
             foreach (var item in that)
             {
@@ -2928,17 +3095,6 @@ namespace Theraot.Collections
             list[indexB] = itemA;
         }
 
-        private static IEnumerable<T> WhereExtracted<T>(IEnumerable<T> source, Predicate<T> predicate)
-        {
-            foreach (var item in source)
-            {
-                if (predicate(item))
-                {
-                    yield return item;
-                }
-            }
-        }
-
         private static IEnumerable<T> WhereExtracted<T>(IEnumerable<T> source, Func<T, int, bool> predicate)
         {
             var index = 0;
@@ -3043,7 +3199,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("items");
             }
             var localComparer = EqualityComparer<T>.Default;
-            var localCollection = AsCollection(source);
+            var localCollection = AsICollection(source);
             foreach (var item in items)
             {
                 if (!localCollection.Contains(item, localComparer))
@@ -3065,7 +3221,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("items");
             }
             var localComparer = comparer ?? EqualityComparer<T>.Default;
-            var localCollection = AsCollection(source);
+            var localCollection = AsICollection(source);
             foreach (var item in items)
             {
                 if (!localCollection.Contains(item, localComparer))

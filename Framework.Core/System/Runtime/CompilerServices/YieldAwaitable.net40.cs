@@ -16,6 +16,7 @@ namespace System.Runtime.CompilerServices
         /// <remarks>This method is intended for compiler user rather than use directly in code.</remarks>
         public YieldAwaiter GetAwaiter()
         {
+            // Should not be static
             return new YieldAwaiter();
         }
 
@@ -29,26 +30,24 @@ namespace System.Runtime.CompilerServices
 
             /// <summary>Gets whether a yield is not required.</summary>
             /// <remarks>This property is intended for compiler user rather than use directly in code.</remarks>
-            public bool IsCompleted
-            {
-                get { return false; }
-            }
+            public bool IsCompleted => false;
 
             /// <summary>Ends the await operation.</summary>
             public void GetResult()
             {
+                // Should not be static
                 // Empty
             }
 
             /// <summary>Posts the <paramref name="continuation"/> back to the current context.</summary>
             /// <param name="continuation">The action to invoke asynchronously.</param>
-            /// <exception cref="System.ArgumentNullException">The <paramref name="continuation"/> argument is null (Nothing in Visual Basic).</exception>
+            /// <exception cref="ArgumentNullException">The <paramref name="continuation"/> argument is null (Nothing in Visual Basic).</exception>
             [SecuritySafeCritical]
             public void OnCompleted(Action continuation)
             {
                 if (continuation == null)
                 {
-                    throw new ArgumentNullException("continuation");
+                    throw new ArgumentNullException(nameof(continuation));
                 }
                 if (TaskScheduler.Current == TaskScheduler.Default)
                 {
@@ -56,19 +55,19 @@ namespace System.Runtime.CompilerServices
                 }
                 else
                 {
-                    Task.Factory.StartNew(continuation, default(CancellationToken), TaskCreationOptions.PreferFairness, TaskScheduler.Current);
+                    Task.Factory.StartNew(continuation, default, TaskCreationOptions.PreferFairness, TaskScheduler.Current);
                 }
             }
 
             /// <summary>Posts the <paramref name="continuation"/> back to the current context.</summary>
             /// <param name="continuation">The action to invoke asynchronously.</param>
-            /// <exception cref="System.ArgumentNullException">The <paramref name="continuation"/> argument is null (Nothing in Visual Basic).</exception>
+            /// <exception cref="ArgumentNullException">The <paramref name="continuation"/> argument is null (Nothing in Visual Basic).</exception>
             [SecurityCritical]
             public void UnsafeOnCompleted(Action continuation)
             {
                 if (continuation == null)
                 {
-                    throw new ArgumentNullException("continuation");
+                    throw new ArgumentNullException(nameof(continuation));
                 }
                 if (TaskScheduler.Current == TaskScheduler.Default)
                 {
@@ -76,7 +75,7 @@ namespace System.Runtime.CompilerServices
                 }
                 else
                 {
-                    Task.Factory.StartNew(continuation, default(CancellationToken), TaskCreationOptions.PreferFairness, TaskScheduler.Current);
+                    Task.Factory.StartNew(continuation, default, TaskCreationOptions.PreferFairness, TaskScheduler.Current);
                 }
             }
 
