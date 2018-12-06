@@ -30,14 +30,9 @@ namespace System.Linq.Expressions
         /// <summary>
         /// Gets a value that indicates whether the expression tree node can be reduced.
         /// </summary>
-        public override bool CanReduce
-        {
-            get
-            {
-                // Only OpAssignments are reducible.
-                return IsOpAssignment(NodeType);
-            }
-        }
+        public override bool CanReduce =>
+            // Only OpAssignments are reducible.
+            IsOpAssignment(NodeType);
 
         /// <summary>
         /// Gets the type conversion function that is used by a coalescing or compound assignment operation.

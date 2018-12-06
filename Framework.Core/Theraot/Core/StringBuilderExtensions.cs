@@ -1,4 +1,4 @@
-﻿// Needed for Workadound
+﻿// Needed for Workaround
 
 using System.Text;
 

@@ -220,6 +220,7 @@ namespace System
         /// </summary>
         /// <param name="obj">The object to compare with this instance.</param>
         /// <returns><see langword="true"/> if <paramref name="obj"/> is a <see cref="ValueTuple"/>.</returns>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2231:OverloadOperatorEqualsOnOverridingValueTypeEquals")]
         public override bool Equals(object obj)
         {
             return obj is ValueTuple;
@@ -390,6 +391,7 @@ namespace System
         ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
         /// </list>
         /// </remarks>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2231:OverloadOperatorEqualsOnOverridingValueTypeEquals")]
         public override bool Equals(object obj)
         {
             return obj is ValueTuple<T1> && Equals((ValueTuple<T1>)obj);
@@ -454,12 +456,12 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            return "(" + (ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString()) + ")";
+            return "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ")";
         }
 
         string ITupleInternal.ToStringEnd()
         {
-            return (ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString()) + ")";
+            return (Item1 == null ? string.Empty : Item1.ToString()) + ")";
         }
     }
 
@@ -509,6 +511,7 @@ namespace System
         ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
         /// </list>
         /// </remarks>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2231:OverloadOperatorEqualsOnOverridingValueTypeEquals")]
         public override bool Equals(object obj)
         {
             return obj is ValueTuple<T1, T2> && Equals((ValueTuple<T1, T2>)obj);
@@ -661,12 +664,12 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            return "(" + (ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? string.Empty : Item2.ToString()) + ")";
+            return "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ")";
         }
 
         string ITupleInternal.ToStringEnd()
         {
-            return (ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? string.Empty : Item2.ToString()) + ")";
+            return (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ")";
         }
 
         int ITupleInternal.Size => 2;
@@ -726,6 +729,7 @@ namespace System
         ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
         /// </list>
         /// </remarks>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2231:OverloadOperatorEqualsOnOverridingValueTypeEquals")]
         public override bool Equals(object obj)
         {
             return obj is ValueTuple<T1, T2, T3> && Equals((ValueTuple<T1, T2, T3>)obj);
@@ -876,12 +880,12 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            return "(" + (ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? string.Empty : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? string.Empty : Item3.ToString()) + ")";
+            return "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ")";
         }
 
         string ITupleInternal.ToStringEnd()
         {
-            return (ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? string.Empty : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? string.Empty : Item3.ToString()) + ")";
+            return (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ")";
         }
 
         int ITupleInternal.Size => 3;
@@ -950,6 +954,7 @@ namespace System
         ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
         /// </list>
         /// </remarks>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2231:OverloadOperatorEqualsOnOverridingValueTypeEquals")]
         public override bool Equals(object obj)
         {
             return obj is ValueTuple<T1, T2, T3, T4> && Equals((ValueTuple<T1, T2, T3, T4>)obj);
@@ -1117,12 +1122,12 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            return "(" + (ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? string.Empty : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? string.Empty : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? string.Empty : Item4.ToString()) + ")";
+            return "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ")";
         }
 
         string ITupleInternal.ToStringEnd()
         {
-            return (ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? string.Empty : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? string.Empty : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? string.Empty : Item4.ToString()) + ")";
+            return (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ")";
         }
 
         int ITupleInternal.Size => 4;
@@ -1200,6 +1205,7 @@ namespace System
         ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
         /// </list>
         /// </remarks>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2231:OverloadOperatorEqualsOnOverridingValueTypeEquals")]
         public override bool Equals(object obj)
         {
             return obj is ValueTuple<T1, T2, T3, T4, T5> && Equals((ValueTuple<T1, T2, T3, T4, T5>)obj);
@@ -1384,12 +1390,12 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            return "(" + (ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? string.Empty : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? string.Empty : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? string.Empty : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? string.Empty : Item5.ToString()) + ")";
+            return "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ")";
         }
 
         string ITupleInternal.ToStringEnd()
         {
-            return (ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? string.Empty : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? string.Empty : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? string.Empty : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? string.Empty : Item5.ToString()) + ")";
+            return (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ")";
         }
 
         int ITupleInternal.Size => 5;
@@ -1476,6 +1482,7 @@ namespace System
         ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
         /// </list>
         /// </remarks>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2231:OverloadOperatorEqualsOnOverridingValueTypeEquals")]
         public override bool Equals(object obj)
         {
             return obj is ValueTuple<T1, T2, T3, T4, T5, T6> && Equals((ValueTuple<T1, T2, T3, T4, T5, T6>)obj);
@@ -1677,12 +1684,12 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            return "(" + (ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? string.Empty : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? string.Empty : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? string.Empty : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? string.Empty : Item5.ToString()) + ", " + (ReferenceEquals(Item6, null) ? string.Empty : Item6.ToString()) + ")";
+            return "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ", " + (Item6 == null ? string.Empty : Item6.ToString()) + ")";
         }
 
         string ITupleInternal.ToStringEnd()
         {
-            return (ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? string.Empty : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? string.Empty : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? string.Empty : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? string.Empty : Item5.ToString()) + ", " + (ReferenceEquals(Item6, null) ? string.Empty : Item6.ToString()) + ")";
+            return (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ", " + (Item6 == null ? string.Empty : Item6.ToString()) + ")";
         }
 
         int ITupleInternal.Size => 6;
@@ -1778,6 +1785,7 @@ namespace System
         ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
         /// </list>
         /// </remarks>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2231:OverloadOperatorEqualsOnOverridingValueTypeEquals")]
         public override bool Equals(object obj)
         {
             return obj is ValueTuple<T1, T2, T3, T4, T5, T6, T7> && Equals((ValueTuple<T1, T2, T3, T4, T5, T6, T7>)obj);
@@ -1996,12 +2004,12 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            return "(" + (ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? string.Empty : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? string.Empty : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? string.Empty : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? string.Empty : Item5.ToString()) + ", " + (ReferenceEquals(Item6, null) ? string.Empty : Item6.ToString()) + ", " + (ReferenceEquals(Item7, null) ? string.Empty : Item7.ToString()) + ")";
+            return "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ", " + (Item6 == null ? string.Empty : Item6.ToString()) + ", " + (Item7 == null ? string.Empty : Item7.ToString()) + ")";
         }
 
         string ITupleInternal.ToStringEnd()
         {
-            return (ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? string.Empty : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? string.Empty : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? string.Empty : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? string.Empty : Item5.ToString()) + ", " + (ReferenceEquals(Item6, null) ? string.Empty : Item6.ToString()) + ", " + (ReferenceEquals(Item7, null) ? string.Empty : Item7.ToString()) + ")";
+            return (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ", " + (Item6 == null ? string.Empty : Item6.ToString()) + ", " + (Item7 == null ? string.Empty : Item7.ToString()) + ")";
         }
 
         int ITupleInternal.Size => 7;
@@ -2111,6 +2119,7 @@ namespace System
         ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
         /// </list>
         /// </remarks>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2231:OverloadOperatorEqualsOnOverridingValueTypeEquals")]
         public override bool Equals(object obj)
         {
             return obj is ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> tuple && Equals(tuple);
@@ -2506,12 +2515,12 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            return !(Rest is ITupleInternal rest) ? $"({(ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString())}, {(ReferenceEquals(Item2, null) ? string.Empty : Item2.ToString())}, {(ReferenceEquals(Item3, null) ? string.Empty : Item3.ToString())}, {(ReferenceEquals(Item4, null) ? string.Empty : Item4.ToString())}, {(ReferenceEquals(Item5, null) ? string.Empty : Item5.ToString())}, {(ReferenceEquals(Item6, null) ? string.Empty : Item6.ToString())}, {(ReferenceEquals(Item7, null) ? string.Empty : Item7.ToString())}, {Rest})" : "(" + (ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? string.Empty : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? string.Empty : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? string.Empty : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? string.Empty : Item5.ToString()) + ", " + (ReferenceEquals(Item6, null) ? string.Empty : Item6.ToString()) + ", " + (ReferenceEquals(Item7, null) ? string.Empty : Item7.ToString()) + ", " + rest.ToStringEnd();
+            return !(Rest is ITupleInternal rest) ? $"({(Item1 == null ? string.Empty : Item1.ToString())}, {(Item2 == null ? string.Empty : Item2.ToString())}, {(Item3 == null ? string.Empty : Item3.ToString())}, {(Item4 == null ? string.Empty : Item4.ToString())}, {(Item5 == null ? string.Empty : Item5.ToString())}, {(Item6 == null ? string.Empty : Item6.ToString())}, {(Item7 == null ? string.Empty : Item7.ToString())}, {Rest})" : "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ", " + (Item6 == null ? string.Empty : Item6.ToString()) + ", " + (Item7 == null ? string.Empty : Item7.ToString()) + ", " + rest.ToStringEnd();
         }
 
         string ITupleInternal.ToStringEnd()
         {
-            return !(Rest is ITupleInternal rest) ? $"{(ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString())}, {(ReferenceEquals(Item2, null) ? string.Empty : Item2.ToString())}, {(ReferenceEquals(Item3, null) ? string.Empty : Item3.ToString())}, {(ReferenceEquals(Item4, null) ? string.Empty : Item4.ToString())}, {(ReferenceEquals(Item5, null) ? string.Empty : Item5.ToString())}, {(ReferenceEquals(Item6, null) ? string.Empty : Item6.ToString())}, {(ReferenceEquals(Item7, null) ? string.Empty : Item7.ToString())}, {Rest})" : (ReferenceEquals(Item1, null) ? string.Empty : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? string.Empty : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? string.Empty : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? string.Empty : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? string.Empty : Item5.ToString()) + ", " + (ReferenceEquals(Item6, null) ? string.Empty : Item6.ToString()) + ", " + (ReferenceEquals(Item7, null) ? string.Empty : Item7.ToString()) + ", " + rest.ToStringEnd();
+            return !(Rest is ITupleInternal rest) ? $"{(Item1 == null ? string.Empty : Item1.ToString())}, {(Item2 == null ? string.Empty : Item2.ToString())}, {(Item3 == null ? string.Empty : Item3.ToString())}, {(Item4 == null ? string.Empty : Item4.ToString())}, {(Item5 == null ? string.Empty : Item5.ToString())}, {(Item6 == null ? string.Empty : Item6.ToString())}, {(Item7 == null ? string.Empty : Item7.ToString())}, {Rest})" : (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ", " + (Item6 == null ? string.Empty : Item6.ToString()) + ", " + (Item7 == null ? string.Empty : Item7.ToString()) + ", " + rest.ToStringEnd();
         }
 
         int ITupleInternal.Size => !(Rest is ITupleInternal rest) ? 8 : 7 + rest.Size;

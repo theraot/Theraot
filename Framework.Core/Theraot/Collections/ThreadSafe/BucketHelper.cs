@@ -11,7 +11,7 @@ namespace Theraot.Collections.ThreadSafe
             Null = new object();
         }
 
-        internal static object Null { get; private set; }
+        internal static object Null { get; }
 
         public static T GetOrInsert<T>(this IBucket<T> bucket, int index, T item)
         {

@@ -17,7 +17,7 @@ namespace System.Collections.ObjectModel
 
         public int Count => Dictionary.Count;
 
-        public IDictionary<TKey, TValue> Dictionary { get; }
+        protected IDictionary<TKey, TValue> Dictionary { get; }
 
         bool IDictionary.IsFixedSize => ((IDictionary)Dictionary).IsFixedSize;
 
@@ -49,7 +49,7 @@ namespace System.Collections.ObjectModel
         {
             get
             {
-                if (ReferenceEquals(key, null))
+                if (key == null)
                 {
                     throw new ArgumentNullException(nameof(key));
                 }
@@ -105,7 +105,7 @@ namespace System.Collections.ObjectModel
 
         bool IDictionary.Contains(object key)
         {
-            if (ReferenceEquals(key, null))
+            if (key == null)
             {
                 throw new ArgumentNullException(nameof(key));
             }

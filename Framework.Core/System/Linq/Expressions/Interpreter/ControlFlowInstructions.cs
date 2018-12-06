@@ -14,17 +14,7 @@ namespace System.Linq.Expressions.Interpreter
     {
         private static Instruction[] _cache;
 
-        public override Instruction[] Cache
-        {
-            get
-            {
-                if (_cache == null)
-                {
-                    _cache = new Instruction[CacheSize];
-                }
-                return _cache;
-            }
-        }
+        public override Instruction[] Cache => _cache ?? (_cache = new Instruction[CacheSize]);
 
         public override int ConsumedStack => 1;
         public override string InstructionName => "BranchFalse";

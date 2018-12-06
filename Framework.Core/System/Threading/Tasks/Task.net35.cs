@@ -72,9 +72,11 @@ namespace System.Threading.Tasks
         /// <param name="internalOptions">Internal options to control its execution</param>
         internal Task(Delegate action, object state, Task parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
         {
-            if (ReferenceEquals(scheduler, null))
+            if (scheduler == null)
             {
+#pragma warning disable IDE0016
                 throw new ArgumentNullException(nameof(scheduler));
+#pragma warning restore IDE0016
             }
             Contract.EndContractBlock();
             // This is readonly, and so must be set in the constructor
@@ -98,9 +100,9 @@ namespace System.Threading.Tasks
             {
                 _parent.AddNewChild();
             }
+            ExecutingTaskScheduler = scheduler;
             Action = action ?? throw new ArgumentNullException(nameof(action));
             State = state;
-            ExecutingTaskScheduler = scheduler;
             _waitHandle = new ManualResetEventSlim(false);
             if ((creationOptions &
                     ~(TaskCreationOptions.AttachedToParent |
@@ -596,6 +598,7 @@ namespace System.Threading.Tasks
             return InternalStart(scheduler, inline, true);
         }
 
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -605,7 +608,7 @@ namespace System.Threading.Tasks
                     throw new InvalidOperationException("A task may only be disposed if it is in a completion state.");
                 }
                 var waitHandle = _waitHandle.Value;
-                if (!ReferenceEquals(waitHandle, null))
+                if (waitHandle != null)
                 {
                     if (!waitHandle.IsSet)
                     {

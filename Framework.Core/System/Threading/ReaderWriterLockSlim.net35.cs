@@ -18,7 +18,7 @@ namespace System.Threading
         private const int _rwRead = 8;
         private const int _rwReadBit = 3;
 
-        /* These values are used to manipulate the corresponding flags in _rwlock field
+        /* These values are used to manipulate the corresponding flags in _rwLock field
         */
         private const int _rwWait = 1;
         private const int _rwWaitUpgrade = 2;

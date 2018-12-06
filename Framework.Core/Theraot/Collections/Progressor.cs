@@ -28,7 +28,7 @@ namespace Theraot.Collections
             _tryTake = Take;
             bool Take(out T value)
             {
-                value = default(T);
+                value = default;
                 var currentIndex = Interlocked.Increment(ref index);
                 if (currentIndex >= wrapped.Length)
                 {
@@ -66,7 +66,7 @@ namespace Theraot.Collections
                     }
                     Interlocked.Exchange(ref enumerator, null)?.Dispose();
                 }
-                value = default(T);
+                value = default;
                 return false;
             }
         }
@@ -121,7 +121,7 @@ namespace Theraot.Collections
                 {
                     return true;
                 }
-                value = default(T);
+                value = default;
                 return false;
             }
         }
@@ -188,7 +188,7 @@ namespace Theraot.Collections
                 }
                 Close();
             }
-            item = default(T);
+            item = default;
             return false;
         }
 

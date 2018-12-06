@@ -1031,7 +1031,7 @@ namespace Theraot.Collections
                     }
                     currentIndex++;
                 }
-                return default(T);
+                return default;
             }
         }
 
@@ -1064,7 +1064,7 @@ namespace Theraot.Collections
                     }
                     currentIndex++;
                 }
-                return default(T);
+                return default;
             }
         }
 
@@ -1087,7 +1087,7 @@ namespace Theraot.Collections
                         return enumerator.Current;
                     }
                 }
-                return default(T);
+                return default;
             }
         }
 
@@ -1577,7 +1577,7 @@ namespace Theraot.Collections
             {
                 return value;
             }
-            var newValue = create == null ? default(TValue) : create();
+            var newValue = create == null ? default : create();
             dictionary.Add(key, newValue);
             return newValue;
         }
@@ -2602,7 +2602,7 @@ namespace Theraot.Collections
                     }
                     currentIndex++;
                 }
-                found = default(T);
+                found = default;
                 return false;
             }
         }
@@ -2637,7 +2637,7 @@ namespace Theraot.Collections
                     }
                     currentIndex++;
                 }
-                found = default(T);
+                found = default;
                 return false;
             }
         }
@@ -2662,7 +2662,7 @@ namespace Theraot.Collections
                         return true;
                     }
                 }
-                found = default(T);
+                found = default;
                 return false;
             }
         }
@@ -2679,7 +2679,7 @@ namespace Theraot.Collections
             }
             var currentIndex = 0;
             var limit = index + count;
-            foundItem = default(T);
+            foundItem = default;
             var found = false;
             using (var enumerator = source.GetEnumerator())
             {
@@ -2719,7 +2719,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
-            foundItem = default(T);
+            foundItem = default;
             var found = false;
             using (var enumerator = source.GetEnumerator())
             {
@@ -2754,7 +2754,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            foundItem = default(T);
+            foundItem = default;
             var found = false;
             using (var enumerator = source.GetEnumerator())
             {
@@ -2783,7 +2783,7 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default(T);
+                item = default;
                 return false;
             }
         }
@@ -2801,7 +2801,7 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default(T);
+                item = default;
                 return false;
             }
         }

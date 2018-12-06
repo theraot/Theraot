@@ -77,8 +77,7 @@ namespace System
 
                 case LazyThreadSafetyMode.PublicationOnly:
                     {
-                        _valueFactory =
-                            () => PublicationOnlyMode();
+                        _valueFactory = PublicationOnlyMode;
                     }
                     break;
 

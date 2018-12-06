@@ -141,13 +141,13 @@ namespace System.Linq
                 return queryable;
             }
 
-            if (!source.GetType().IsGenericImplementationOf(out Type ienumerable, typeof(IEnumerable<>)))
+            if (!source.GetType().IsGenericImplementationOf(out Type iEnumerable, typeof(IEnumerable<>)))
             {
                 throw new ArgumentException("source is not IEnumerable<>");
             }
 
             return (IQueryable)Activator.CreateInstance(
-                       typeof(QueryableEnumerable<>).MakeGenericType(ienumerable.GetGenericArguments()[0]), source);
+                       typeof(QueryableEnumerable<>).MakeGenericType(iEnumerable.GetGenericArguments()[0]), source);
         }
 
         public static double Average(this IQueryable<int> source)

@@ -82,7 +82,7 @@ namespace System.Diagnostics.Contracts
                 probablyNotRewritten = thisAssembly;
             }
             var simpleName = probablyNotRewritten.GetName().Name;
-            ContractHelper.TriggerFailure(kind, $"The code has not been rewriten. ContractKind: {contractKind} - Source: {simpleName}", null, null, null);
+            ContractHelper.TriggerFailure(kind, $"The code has not been rewritten. ContractKind: {contractKind} - Source: {simpleName}", null, null, null);
 
             _assertingMustUseRewriter = false;
         }
@@ -93,7 +93,7 @@ namespace System.Diagnostics.Contracts
         {
             if (failureKind < ContractFailureKind.Precondition || failureKind > ContractFailureKind.Assume)
             {
-                throw new ArgumentException(string.Format("Invalid enum value: {0}", failureKind), nameof(failureKind));
+                throw new ArgumentException($"Invalid enum value: {failureKind}", nameof(failureKind));
             }
 
             EndContractBlock();

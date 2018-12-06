@@ -302,6 +302,8 @@ namespace System.Threading
         /// Unlike most of the members of <see cref="Barrier"/>, Dispose is not thread-safe and may not be
         /// used concurrently with other members of this instance.
         /// </remarks>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly")]
         public void Dispose()
         {
             // in case of this is called from the PHA

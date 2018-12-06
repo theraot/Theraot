@@ -77,8 +77,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<TReturn> _create;
             private static readonly Func<TReturn> _createOrDefault;
-            private static readonly Func<TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -88,47 +86,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<TReturn> Create => _create;
 
-            public static Func<TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor()
             {
@@ -216,8 +190,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<T, TReturn> _create;
             private static readonly Func<T, TReturn> _createOrDefault;
-            private static readonly Func<T, TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -227,47 +199,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T, TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T, TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T, TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<T, TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<T, TReturn> Create => _create;
 
-            public static Func<T, TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<T, TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<T, TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<T, TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor(T obj)
             {
@@ -355,8 +303,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<T1, T2, TReturn> _create;
             private static readonly Func<T1, T2, TReturn> _createOrDefault;
-            private static readonly Func<T1, T2, TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -366,47 +312,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<T1, T2, TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<T1, T2, TReturn> Create => _create;
 
-            public static Func<T1, T2, TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<T1, T2, TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<T1, T2, TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<T1, T2, TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2)
             {
@@ -494,8 +416,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<T1, T2, T3, TReturn> _create;
             private static readonly Func<T1, T2, T3, TReturn> _createOrDefault;
-            private static readonly Func<T1, T2, T3, TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -505,47 +425,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<T1, T2, T3, TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<T1, T2, T3, TReturn> Create => _create;
 
-            public static Func<T1, T2, T3, TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<T1, T2, T3, TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<T1, T2, T3, TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<T1, T2, T3, TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3)
             {
@@ -633,8 +529,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<T1, T2, T3, T4, TReturn> _create;
             private static readonly Func<T1, T2, T3, T4, TReturn> _createOrDefault;
-            private static readonly Func<T1, T2, T3, T4, TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -644,47 +538,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<T1, T2, T3, T4, TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<T1, T2, T3, T4, TReturn> Create => _create;
 
-            public static Func<T1, T2, T3, T4, TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<T1, T2, T3, T4, TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<T1, T2, T3, T4, TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<T1, T2, T3, T4, TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4)
             {
@@ -772,8 +642,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<T1, T2, T3, T4, T5, TReturn> _create;
             private static readonly Func<T1, T2, T3, T4, T5, TReturn> _createOrDefault;
-            private static readonly Func<T1, T2, T3, T4, T5, TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -783,47 +651,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<T1, T2, T3, T4, T5, TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, TReturn> Create => _create;
 
-            public static Func<T1, T2, T3, T4, T5, TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<T1, T2, T3, T4, T5, TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
             {
@@ -911,8 +755,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<T1, T2, T3, T4, T5, T6, TReturn> _create;
             private static readonly Func<T1, T2, T3, T4, T5, T6, TReturn> _createOrDefault;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -922,47 +764,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<T1, T2, T3, T4, T5, T6, TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, TReturn> Create => _create;
 
-            public static Func<T1, T2, T3, T4, T5, T6, TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<T1, T2, T3, T4, T5, T6, TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
             {
@@ -1050,8 +868,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, TReturn> _create;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, TReturn> _createOrDefault;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -1061,47 +877,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, TReturn> Create => _create;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
             {
@@ -1189,8 +981,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> _create;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> _createOrDefault;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -1200,47 +990,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> Create => _create;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
             {
@@ -1328,8 +1094,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> _create;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> _createOrDefault;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -1339,47 +1103,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> Create => _create;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
             {
@@ -1467,8 +1207,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> _create;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> _createOrDefault;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -1478,47 +1216,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> Create => _create;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
             {
@@ -1606,8 +1320,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> _create;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> _createOrDefault;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -1617,47 +1329,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> Create => _create;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11)
             {
@@ -1745,8 +1433,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> _create;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> _createOrDefault;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -1756,47 +1442,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> Create => _create;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12)
             {
@@ -1884,8 +1546,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> _create;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> _createOrDefault;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -1895,47 +1555,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> Create => _create;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13)
             {
@@ -2023,8 +1659,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> _create;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> _createOrDefault;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -2034,47 +1668,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> Create => _create;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14)
             {
@@ -2162,8 +1772,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> _create;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> _createOrDefault;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -2173,47 +1781,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> Create => _create;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15)
             {
@@ -2301,8 +1885,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> _create;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> _createOrDefault;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -2312,47 +1894,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> Create => _create;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15, T16 arg16)
             {

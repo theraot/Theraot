@@ -781,7 +781,7 @@ namespace System.Threading.Tasks
                         continue;
                     }
 
-                    continuations[index] = null; // to enable free'ing up memory earlier
+                    continuations[index] = null; // to enable freeing up memory earlier
                     // If the continuation is an Action delegate, it came from an await continuation,
                     // and we should use AwaitTaskContinuation to run it.
                     if (currentContinuation is Action ad)
@@ -977,7 +977,7 @@ namespace System.Threading.Tasks
             }
             if (Volatile.Read(ref _continuationsStatus) == _continuationsInitialization)
             {
-                // Initializing or initilized
+                // Initializing or initialized
                 var spinWait = new SpinWait();
                 List<object> continuations;
                 while ((continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
@@ -1033,16 +1033,12 @@ namespace System.Threading.Tasks
                     if (Interlocked.CompareExchange(ref _continuationsStatus, _continuationsInitialization, _continuationsNotInitialized) == _continuationsNotInitialized)
                     {
                         var created = new List<object>();
-                        continuations = Interlocked.CompareExchange(ref _continuations, created, null);
-                        if (continuations == null)
-                        {
-                            continuations = created;
-                        }
+                        continuations = Interlocked.CompareExchange(ref _continuations, created, null) ?? created;
                         goto default;
                     }
                     goto case _continuationsInitialization;
                 case _continuationsInitialization:
-                    // Initializing or initilized
+                    // Initializing or initialized
                     while (Volatile.Read(ref _continuationsStatus) == _continuationsInitialization && (continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
                     {
                         spinWait.SpinOnce();
@@ -1237,6 +1233,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="continuationAction"/> argument is null.
         /// </exception>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1061:DoNotHideBaseClassMethods")]
         [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state)
         {
@@ -1264,6 +1261,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1061:DoNotHideBaseClassMethods")]
         [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, CancellationToken cancellationToken)
         {
@@ -1293,6 +1291,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1061:DoNotHideBaseClassMethods")]
         [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskScheduler scheduler)
         {
@@ -1324,6 +1323,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentOutOfRangeException">
         /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1061:DoNotHideBaseClassMethods")]
         [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskContinuationOptions continuationOptions)
         {
@@ -1366,6 +1366,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1061:DoNotHideBaseClassMethods")]
         [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
@@ -1759,6 +1760,7 @@ namespace System.Threading.Tasks
         }
 
         // Same as the above overload, only with a stack mark.
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1061:DoNotHideBaseClassMethods")]
         internal Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskScheduler scheduler, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions)
         {
             if (continuationAction == null)

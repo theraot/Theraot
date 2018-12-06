@@ -40,7 +40,11 @@ namespace Theraot.Collections.ThreadSafe
                         recycler.Invoke(entry);
                         return entries.TryAdd(entry);
                     }
-                    return false;
+                    return true;
+                }
+                catch (ObjectDisposedException exception)
+                {
+                    GC.KeepAlive(exception);
                 }
                 catch (InvalidOperationException exception)
                 {
@@ -53,6 +57,10 @@ namespace Theraot.Collections.ThreadSafe
                 finally
                 {
                     ReentryGuardHelper.Leave(_id);
+                }
+                if (entry is IDisposable disposable)
+                {
+                    disposable.Dispose();
                 }
             }
             return false;

@@ -12,7 +12,6 @@ namespace Theraot.Core
     public class ValueFuncClosure<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>
     {
         private readonly Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> _target;
-        private TReturn _result;
         <# if (indice != 0) { #>private readonly <# if (indice == 1) #>T _obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>;
         private readonly <#}#>T<#=subindice#> _arg<#=subindice#><#}#>;<#}#>
 
@@ -22,17 +21,11 @@ namespace Theraot.Core
             <# if (indice != 0) { if (indice == 1) #>_obj = obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>;
             <#}#>_arg<#=subindice#> = arg<#=subindice#><#}#>;<#}#>
 
-            _result = default(TReturn);
+            Result = default;
             _target = target ?? FuncHelper.GetDefaultFunc<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>();
         }
 
-        public TReturn Result
-        {
-            get
-            {
-                return _result;
-            }
-        }
+        public TReturn Result { get; private set; }
 
         public Action InvokeAction()
         {
@@ -41,7 +34,7 @@ namespace Theraot.Core
 
         public void Invoke()
         {
-            _result = _target.Invoke(<# if (indice != 0) { if (indice == 1) #>_obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>_arg<#=subindice#><#}}#>);
+            Result = _target.Invoke(<# if (indice != 0) { if (indice == 1) #>_obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>_arg<#=subindice#><#}}#>);
         }
 
         public TReturn InvokeReturn()

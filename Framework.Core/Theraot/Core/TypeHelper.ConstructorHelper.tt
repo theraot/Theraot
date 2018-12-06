@@ -80,8 +80,6 @@ namespace Theraot.Core
             private static readonly ConstructorInfo _constructorInfo;
             private static readonly Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> _create;
             private static readonly Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> _createOrDefault;
-            private static readonly Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> _createOrFail;
-
 
             static ConstructorHelper()
             {
@@ -91,47 +89,23 @@ namespace Theraot.Core
                 if (HasConstructor)
                 {
                     _createOrDefault = _create;
-                    _createOrFail = _create;
+                    CreateOrFail = _create;
                 }
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>();
                     var info = typeof(TReturn).GetTypeInfo();
-                    _createOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>(CreateMissingMemberException());
+                    CreateOrFail = info.IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>(CreateMissingMemberException());
                 }
             }
 
-            public static Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> Create
-            {
-                get
-                {
-                    return _create;
-                }
-            }
+            public static Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> Create => _create;
 
-            public static Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> CreateOrDefault
-            {
-                get
-                {
-                    return _createOrDefault;
-                }
-            }
+            public static Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> CreateOrDefault => _createOrDefault;
 
-            public static Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> CreateOrFail
-            {
-                get
-                {
-                    return _createOrFail;
-                }
-            }
+            public static Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> CreateOrFail { get; }
 
-            public static bool HasConstructor
-            {
-                get
-                {
-                    return _constructorInfo != null;
-                }
-            }
+            public static bool HasConstructor => _constructorInfo != null;
 
             public static TReturn InvokeConstructor(<# if (indice != 0) { if (indice == 1) #>T obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#> arg<#=subindice#><#}}#>)
             {

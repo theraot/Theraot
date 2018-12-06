@@ -23,7 +23,7 @@ namespace Theraot.Threading
                 }
                 catch (Exception exception)
                 {
-                    // Catch'em all - fields may be partially collected.
+                    // Catch them all - fields may be partially collected.
                     GC.KeepAlive(exception);
                 }
             }
@@ -53,10 +53,7 @@ namespace Theraot.Threading
         {
             if (_disposeStatus == -1)
             {
-                if (!ReferenceEquals(whenDisposed, null))
-                {
-                    whenDisposed.Invoke();
-                }
+                whenDisposed?.Invoke();
             }
             else
             {
@@ -75,10 +72,7 @@ namespace Theraot.Threading
                     }
                     else
                     {
-                        if (!ReferenceEquals(whenDisposed, null))
-                        {
-                            whenDisposed.Invoke();
-                        }
+                        whenDisposed?.Invoke();
                     }
                 }
             }

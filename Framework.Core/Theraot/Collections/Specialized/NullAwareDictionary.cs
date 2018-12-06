@@ -148,10 +148,12 @@ namespace Theraot.Collections.Specialized
             get
             {
                 // key could be null
-                if (ReferenceEquals(key, null))
+                if (key == null)
                 {
-                    if (_hasNull) // TODO: Test coverage?
+                    if (_hasNull)
+                    // ReSharper disable once HeuristicUnreachableCode
                     {
+                        // ReSharper disable once HeuristicUnreachableCode
                         return _valueForNull[0];
                     }
                     throw new KeyNotFoundException();
@@ -161,8 +163,10 @@ namespace Theraot.Collections.Specialized
             set
             {
                 // key could  be null
-                if (ReferenceEquals(key, null))
+                if (key == null)
+                // ReSharper disable once HeuristicUnreachableCode
                 {
+                    // ReSharper disable once HeuristicUnreachableCode
                     SetForNull(value); // OK
                 }
                 else
@@ -175,11 +179,15 @@ namespace Theraot.Collections.Specialized
         public void Add(TKey key, TValue value)
         {
             // key could  be null
-            if (ReferenceEquals(key, null))
+            if (key == null)
+            // ReSharper disable once HeuristicUnreachableCode
             {
+                // ReSharper disable once HeuristicUnreachableCode
                 if (_hasNull)
+                // ReSharper disable once HeuristicUnreachableCode
                 {
-                    throw new ArgumentException(); // TODO: Test coverage?
+                    // ReSharper disable once HeuristicUnreachableCode
+                    throw new ArgumentException();
                 }
                 SetForNull(value);
             }
@@ -206,7 +214,7 @@ namespace Theraot.Collections.Specialized
         {
             var key = item.Key;
             var value = item.Value;
-            if (ReferenceEquals(key, null))
+            if (key == null)
             {
                 if (_hasNull)
                 {
@@ -232,8 +240,10 @@ namespace Theraot.Collections.Specialized
         public bool ContainsKey(TKey key)
         {
             // key could  be null
-            if (ReferenceEquals(key, null))
+            if (key == null)
+            // ReSharper disable once HeuristicUnreachableCode
             {
+                // ReSharper disable once HeuristicUnreachableCode
                 return _hasNull; // OK
             }
             return _wrapped.ContainsKey(key);
@@ -263,7 +273,7 @@ namespace Theraot.Collections.Specialized
             if (_hasNull)
             {
                 // if the dictionary has null, TKey can be null, if TKey can be null, the default of TKey is null
-                result = result.Prepend(new KeyValuePair<TKey, TValue>(default(TKey), _valueForNull[0]));
+                result = result.Prepend(new KeyValuePair<TKey, TValue>(default, _valueForNull[0]));
             }
             dictionary = Enumerable.ToArray(result);
         }
@@ -278,7 +288,7 @@ namespace Theraot.Collections.Specialized
             if (_hasNull)
             {
                 // if the dictionary has null, TKey can be null, if TKey can be null, the default of TKey is null
-                yield return new KeyValuePair<TKey, TValue>(default(TKey), _valueForNull[0]);
+                yield return new KeyValuePair<TKey, TValue>(default, _valueForNull[0]);
             }
             foreach (var item in _wrapped)
             {
@@ -324,10 +334,14 @@ namespace Theraot.Collections.Specialized
         public bool Remove(TKey key)
         {
             // key can be null
-            if (ReferenceEquals(key, null))
+            if (key == null)
+            // ReSharper disable once HeuristicUnreachableCode
             {
+                // ReSharper disable once HeuristicUnreachableCode
                 if (_hasNull) // OK
+                // ReSharper disable once HeuristicUnreachableCode
                 {
+                    // ReSharper disable once HeuristicUnreachableCode
                     ClearForNull();
                     return true;
                 }
@@ -340,7 +354,7 @@ namespace Theraot.Collections.Specialized
         {
             var key = item.Key;
             var value = item.Value;
-            if (ReferenceEquals(key, null))
+            if (key == null)
             {
                 if (_valueComparer.Equals(_valueForNull[0], value))
                 {
@@ -365,7 +379,7 @@ namespace Theraot.Collections.Specialized
 
         public bool Remove(KeyValuePair<TKey, TValue> item, IEqualityComparer<KeyValuePair<TKey, TValue>> comparer)
         {
-            if (ReferenceEquals(item.Key, null))
+            if (item.Key == null)
             {
                 if (_hasNull)
                 {
@@ -390,14 +404,18 @@ namespace Theraot.Collections.Specialized
         public bool TryGetValue(TKey key, out TValue value)
         {
             // key can be null
-            if (ReferenceEquals(key, null))
+            if (key == null)
+            // ReSharper disable once HeuristicUnreachableCode
             {
-                if (_hasNull) // TODO: Test coverage?
+                // ReSharper disable once HeuristicUnreachableCode
+                if (_hasNull)
+                // ReSharper disable once HeuristicUnreachableCode
                 {
+                    // ReSharper disable once HeuristicUnreachableCode
                     value = _valueForNull[0];
                     return true;
                 }
-                value = default(TValue);
+                value = default;
                 return false;
             }
             return _wrapped.TryGetValue(key, out value);
@@ -426,12 +444,12 @@ namespace Theraot.Collections.Specialized
 
         private void TakeValueForNull(IDictionary<TKey, TValue> dictionary)
         {
-            TValue valueForNull = default(TValue);
+            TValue valueForNull = default;
             try
             {
                 // if the dictionary has null, TKey can be null, if TKey can be null, the default of TKey is null
                 // ReSharper disable once AssignNullToNotNullAttribute
-                _hasNull = dictionary.TryGetValue(default(TKey), out valueForNull);
+                _hasNull = dictionary.TryGetValue(default, out valueForNull);
             }
             catch (ArgumentNullException exception)
             {

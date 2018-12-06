@@ -189,7 +189,7 @@ namespace Theraot.Threading
                 else
                 {
                     _targetTime = _startTime + dueTime;
-                    wrapped.Change(TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
+                    wrapped.Change(Finish, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
                 }
                 Volatile.Write(ref _status, _created);
                 return true;
@@ -211,7 +211,7 @@ namespace Theraot.Threading
             var remaining = _targetTime - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
             if (remaining <= 0)
             {
-                Finish(null);
+                Finish();
                 return 0;
             }
             return remaining;
@@ -261,20 +261,18 @@ namespace Theraot.Threading
             {
                 _targetTime = _startTime + dueTime;
             }
-            _wrapped = new Timer(Finish, null, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
+            _wrapped = Timer.GetTimer(Finish, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
         }
 
         private void Close()
         {
-            var wrapped = Interlocked.Exchange(ref _wrapped, null);
-            wrapped?.Dispose();
+            Timer.Donate(_wrapped);
             Volatile.Write(ref Callback, null);
             GC.SuppressFinalize(this);
         }
 
-        private void Finish(object state)
+        private void Finish()
         {
-            GC.KeepAlive(state);
             ThreadingHelper.SpinWaitWhile(ref _status, _changing);
             if (Interlocked.CompareExchange(ref _status, _executing, _created) == _created)
             {

@@ -240,7 +240,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             var result = false;
             EventHandler eventHandler;
-            if (ReferenceEquals(_eventHandler.Value, null))
+            if (_eventHandler.Value == null)
             {
                 eventHandler = GarbageCollected;
                 _eventHandler = new WeakNeedle<EventHandler>(eventHandler);

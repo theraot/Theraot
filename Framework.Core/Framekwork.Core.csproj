@@ -213,6 +213,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CLSCompliant.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="System\Action.net30.cs" />
     <Compile Include="System\Action10.net35.cs" />
     <Compile Include="System\Action11.net35.cs" />
@@ -751,6 +752,7 @@
     <Compile Include="Theraot\Threading\NoReentrantReadWriteLock.Status.cs" />
     <Compile Include="Theraot\Threading\NoTrackingThreadLocal.cs" />
     <Compile Include="Theraot\Threading\ReadWriteLock.cs" />
+    <Compile Include="Theraot\Threading\Timer.cs" />
     <Compile Include="Theraot\Threading\ReentrantReadWriteLock.Status.cs" />
     <Compile Include="Theraot\Threading\ReentrantReadWriteLock.disposable.cs" />
     <Compile Include="Theraot\Threading\ReentrantReadWriteLock.cs" />
