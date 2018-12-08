@@ -29,10 +29,10 @@ namespace Theraot.Threading.Needles
             : base(true)
         {
             _target = target;
-            _hashCode = ReferenceEquals(target, null) ? base.GetHashCode() : target.GetHashCode();
+            _hashCode = target == null ? base.GetHashCode() : target.GetHashCode();
         }
 
-        public bool IsAlive => !ReferenceEquals(_target, null);
+        public bool IsAlive => _target != null;
 
         public virtual T Value
         {
@@ -68,11 +68,11 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(PromiseNeedle<T> left, PromiseNeedle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return !ReferenceEquals(right, null);
+                return !(right is null);
             }
-            if (ReferenceEquals(right, null))
+            if (right is null)
             {
                 return true;
             }
@@ -81,11 +81,11 @@ namespace Theraot.Threading.Needles
 
         public static bool operator ==(PromiseNeedle<T> left, PromiseNeedle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return ReferenceEquals(right, null);
+                return right is null;
             }
-            if (ReferenceEquals(right, null))
+            if (right is null)
             {
                 return false;
             }

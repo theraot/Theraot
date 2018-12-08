@@ -19,7 +19,7 @@ namespace Theraot.Threading.Needles
 
         public Needle(T target)
         {
-            if (ReferenceEquals(target, null))
+            if (target == null)
             {
                 _target = null;
                 _hashCode = base.GetHashCode();
@@ -81,11 +81,11 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(Needle<T> left, Needle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return !ReferenceEquals(right, null);
+                return !(right is null);
             }
-            if (ReferenceEquals(right, null))
+            if (right is null)
             {
                 return true;
             }
@@ -104,11 +104,11 @@ namespace Theraot.Threading.Needles
 
         public static bool operator ==(Needle<T> left, Needle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return ReferenceEquals(right, null);
+                return right is null;
             }
-            if (ReferenceEquals(right, null))
+            if (right is null)
             {
                 return false;
             }

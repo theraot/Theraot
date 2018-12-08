@@ -12,7 +12,7 @@ namespace Theraot.Core
     {
         public static bool CanBe<T>(this Type type, T value)
         {
-            if (ReferenceEquals(value, null))
+            if (value == null)
             {
                 return type.CanBeNull();
             }

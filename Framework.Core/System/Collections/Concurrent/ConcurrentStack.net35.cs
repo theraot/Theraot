@@ -12,7 +12,7 @@ namespace System.Collections.Concurrent
 {
     [Serializable]
     [ComVisible(false)]
-    [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
+    [DebuggerDisplay("Count = {Count}")]
     [HostProtection(SecurityAction.LinkDemand, Synchronization = true, ExternalThreading = true)]
     public class ConcurrentStack<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>
     {

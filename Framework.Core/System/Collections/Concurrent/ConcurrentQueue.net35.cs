@@ -11,7 +11,7 @@ namespace System.Collections.Concurrent
 {
     [Serializable]
     [ComVisible(false)]
-    [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
+    [DebuggerDisplay("Count = {Count}")]
     [HostProtection(SecurityAction.LinkDemand, Synchronization = true, ExternalThreading = true)]
     public class ConcurrentQueue<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>
     {

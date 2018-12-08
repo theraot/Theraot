@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
@@ -11,11 +10,11 @@ using Theraot.Threading;
 
 namespace Theraot.Collections
 {
-    public sealed class Progressor<T> : IObservable<T>, IEnumerable<T>
+    [System.Diagnostics.DebuggerTypeProxy(typeof(ProgressorProxy))]
+    public sealed class Progressor<T> : IObservable<T>, IEnumerable<T>, IClosable
     {
         private ProxyObservable<T> _proxy;
         private TryTake<T> _tryTake;
-        private IDisposable _disposable;
 
         public Progressor(T[] wrapped)
         {
@@ -47,24 +46,26 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(wrapped));
             }
             var enumerator = wrapped.GetEnumerator();
-            _disposable = enumerator;
             _proxy = new ProxyObservable<T>();
             _tryTake = Take;
             bool Take(out T value)
             {
                 // We need a lock, there is no way around it. IEnumerator is just awful. Use another overload if possible.
-                var enumeratorCopy = enumerator;
+                var enumeratorCopy = Volatile.Read(ref enumerator);
                 if (enumeratorCopy != null)
                 {
                     lock (enumeratorCopy)
                     {
-                        if (enumeratorCopy.MoveNext())
+                        if (enumeratorCopy == Volatile.Read(ref enumerator))
                         {
-                            value = enumeratorCopy.Current;
-                            return true;
+                            if (enumeratorCopy.MoveNext())
+                            {
+                                value = enumeratorCopy.Current;
+                                return true;
+                            }
+                            Interlocked.Exchange(ref enumerator, null)?.Dispose();
                         }
                     }
-                    Interlocked.Exchange(ref enumerator, null)?.Dispose();
                 }
                 value = default;
                 return false;
@@ -131,24 +132,15 @@ namespace Theraot.Collections
         public void Close()
         {
             Volatile.Write(ref _tryTake, null);
-            var subscription = Interlocked.Exchange(ref _disposable, null);
-            subscription?.Dispose();
             var proxy = Interlocked.Exchange(ref _proxy, null);
             proxy?.OnCompleted();
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            while (true)
+            while (TryTake(out var item))
             {
-                if (TryTake(out var item))
-                {
-                    yield return item;
-                }
-                else
-                {
-                    break;
-                }
+                yield return item;
             }
         }
 
@@ -172,18 +164,11 @@ namespace Theraot.Collections
         {
             var tryTake = Volatile.Read(ref _tryTake);
             var proxy = Volatile.Read(ref _proxy);
-            if (tryTake != null)
+            if (tryTake != null && proxy != null)
             {
                 if (tryTake.Invoke(out item))
                 {
-                    if (proxy != null)
-                    {
-                        proxy.OnNext(item);
-                    }
-                    else
-                    {
-                        Debugger.Break();
-                    }
+                    proxy.OnNext(item);
                     return true;
                 }
                 Close();
@@ -239,5 +224,22 @@ namespace Theraot.Collections
                 }
             }
         }
+    }
+
+    internal interface IClosable
+    {
+        bool IsClosed { get; }
+    }
+
+    internal class ProgressorProxy
+    {
+        private readonly IClosable _node;
+
+        public ProgressorProxy(IClosable node)
+        {
+            _node = node ?? throw new ArgumentNullException(nameof(node));
+        }
+
+        public bool IsClosed => _node.IsClosed;
     }
 }

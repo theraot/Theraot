@@ -46,20 +46,20 @@ namespace Theraot.Core
 
         public static Delegate BuildDelegate(MethodInfo methodInfo, object target)
         {
-            if (ReferenceEquals(methodInfo, null))
+            if (methodInfo is null)
             {
                 throw new ArgumentNullException(nameof(methodInfo));
             }
-            if (methodInfo.IsStatic != ReferenceEquals(null, target))
+            if (methodInfo.IsStatic != target is null)
             {
-                if (ReferenceEquals(target, null))
+                if (target is null)
                 {
                     throw new ArgumentNullException(nameof(target), "target is null and the method is not static.");
                 }
                 throw new ArgumentException("target is not null and the method is static", nameof(target));
             }
             var type = methodInfo.DeclaringType;
-            if (ReferenceEquals(type, null))
+            if (type is null)
             {
                 throw new ArgumentException("methodInfo.DeclaringType is null", nameof(methodInfo));
             }
@@ -73,7 +73,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(type));
             }
             var info = type.GetTypeInfo();
-            return !info.IsValueType || !ReferenceEquals(Nullable.GetUnderlyingType(type), null);
+            return !info.IsValueType || !(Nullable.GetUnderlyingType(type) is null);
         }
 
         public static TTarget Cast<TTarget>(object source)

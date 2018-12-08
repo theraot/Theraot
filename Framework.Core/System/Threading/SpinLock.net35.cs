@@ -62,7 +62,7 @@ namespace System.Threading
                     //Throw on recursion
                     throw new LockRecursionException();
                 }
-                if (Interlocked.CompareExchange(ref _isHeld, 1, 0) == 0 && ReferenceEquals(Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null), null))
+                if (Interlocked.CompareExchange(ref _isHeld, 1, 0) == 0 && Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null) is null)
                 {
                     lockTaken = true;
                 }
@@ -128,7 +128,7 @@ namespace System.Threading
                     //Throw on recursion
                     throw new LockRecursionException();
                 }
-                lockTaken |= ThreadingHelper.SpinWaitSet(ref _isHeld, 1, 0, millisecondsTimeout) && ReferenceEquals(Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null), null);
+                lockTaken |= ThreadingHelper.SpinWaitSet(ref _isHeld, 1, 0, millisecondsTimeout) && Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null) is null;
             }
         }
 

@@ -14,7 +14,7 @@ namespace Theraot.Threading.Needles
             Value = target;
         }
 
-        public bool IsAlive => !ReferenceEquals(Value, null);
+        public bool IsAlive => Value != null;
 
         public T Value { get; set; }
 

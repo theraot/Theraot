@@ -52,7 +52,7 @@ namespace System.Threading
         public void Dispose()
         {
             var source = _source;
-            if (!ReferenceEquals(source, null))
+            if (!(source is null))
             {
                 if (source.RemoveCallback(this))
                 {

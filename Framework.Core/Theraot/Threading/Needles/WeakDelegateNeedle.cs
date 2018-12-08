@@ -43,7 +43,7 @@ namespace Theraot.Threading.Needles
         public bool Equals(Delegate other)
         {
             var method = other.GetMethodInfo();
-            return !ReferenceEquals(null, other) && Equals(method, other.Target);
+            return !(other is null) && Equals(method, other.Target);
         }
 
         public bool Equals(MethodInfo method, object target)
@@ -54,7 +54,7 @@ namespace Theraot.Threading.Needles
 
         public bool Equals(WeakDelegateNeedle other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
             {
                 return false;
             }

@@ -1126,7 +1126,9 @@ namespace System.Dynamic
 
         #region INotifyPropertyChanged
 
+#pragma warning disable IDE0051 // Remove unused private members
         event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+#pragma warning restore IDE0051 // Remove unused private members
         {
             add => _propertyChanged.Add(value.Method, value.Target);
             remove => _propertyChanged.Remove(value.Method, value.Target);

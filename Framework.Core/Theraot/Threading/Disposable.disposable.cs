@@ -57,7 +57,7 @@ namespace Theraot.Threading
             }
             else
             {
-                if (!ReferenceEquals(whenNotDisposed, null))
+                if (!(whenNotDisposed is null))
                 {
                     if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
                     {
@@ -83,13 +83,13 @@ namespace Theraot.Threading
         {
             if (_disposeStatus == -1)
             {
-                if (ReferenceEquals(whenDisposed, null))
+                if (whenDisposed is null)
                 {
                     return default;
                 }
                 return whenDisposed.Invoke();
             }
-            if (ReferenceEquals(whenNotDisposed, null))
+            if (whenNotDisposed is null)
             {
                 return default;
             }
@@ -104,7 +104,7 @@ namespace Theraot.Threading
                     Interlocked.Decrement(ref _disposeStatus);
                 }
             }
-            if (ReferenceEquals(whenDisposed, null))
+            if (whenDisposed is null)
             {
                 return default;
             }

@@ -62,7 +62,7 @@ namespace Theraot.Core
 
             private static bool NotNullPredicate(T target)
             {
-                return !ReferenceEquals(target, null);
+                return target != null;
             }
         }
 
@@ -77,7 +77,7 @@ namespace Theraot.Core
 
             private static bool NullPredicate(T target)
             {
-                return ReferenceEquals(target, null);
+                return target == null;
             }
         }
     }

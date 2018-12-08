@@ -96,7 +96,7 @@ namespace System
 
         private static void CheckType(TRest rest)
         {
-            if (!ReferenceEquals(rest, null))
+            if (rest != null)
             {
                 if (typeof(TRest).IsGenericType)
                 {

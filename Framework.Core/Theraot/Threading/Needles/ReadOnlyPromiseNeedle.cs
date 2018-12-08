@@ -38,11 +38,11 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return !ReferenceEquals(right, null);
+                return !(right is null);
             }
-            if (ReferenceEquals(right, null))
+            if (right is null)
             {
                 return true;
             }
@@ -51,11 +51,11 @@ namespace Theraot.Threading.Needles
 
         public static bool operator ==(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return ReferenceEquals(right, null);
+                return right is null;
             }
-            if (ReferenceEquals(right, null))
+            if (right is null)
             {
                 return false;
             }
