@@ -29,7 +29,7 @@ namespace Theraot.Collections
             {
                 value = default;
                 var currentIndex = Interlocked.Increment(ref index);
-                if (currentIndex >= wrapped.Length)
+                if (currentIndex >= wrapped.Count)
                 {
                     return false;
                 }
