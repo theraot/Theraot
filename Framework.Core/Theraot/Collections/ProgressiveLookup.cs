@@ -100,6 +100,18 @@ namespace Theraot.Collections
             return new ProgressiveLookup<TKey, T>(source.GroupProgressiveBy(item => item.Key, item => item.Value, keyComparer), keyComparer);
         }
 
+        public static ProgressiveLookup<TKey, T> Create<TGroupingDictionary>(IEnumerable<IGrouping<TKey, T>> wrapped, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
+            where TGroupingDictionary : IDictionary<TKey, IGrouping<TKey, T>>, new()
+        {
+            return new ProgressiveLookup<TKey, T>(wrapped, new TGroupingDictionary(), keyComparer, itemComparer);
+        }
+
+        public static ProgressiveLookup<TKey, T> Create<TGroupingDictionary>(IObservable<IGrouping<TKey, T>> wrapped, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
+            where TGroupingDictionary : IDictionary<TKey, IGrouping<TKey, T>>, new()
+        {
+            return new ProgressiveLookup<TKey, T>(wrapped, new TGroupingDictionary(), keyComparer, itemComparer);
+        }
+
         public bool Contains(TKey key)
         {
             if (_cache.ContainsKey(key))

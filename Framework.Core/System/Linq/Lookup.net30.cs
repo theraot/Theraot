@@ -80,21 +80,23 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(keySelector));
             }
             var result = new Lookup<TKey, TElement>(comparer);
+            var collections = new NullAwareDictionary<TKey, List<TElement>>(comparer);
             foreach (var item in source)
             {
-                result.GetOrCreateGrouping(keySelector(item)).Add(elementSelector(item));
+                var key = keySelector(item);
+                if (!collections.TryGetValue(key, out var collection))
+                {
+                    collection = new List<TElement>();
+                    collections.Add(key, collection);
+                }
+                if (!result._groupings.TryGetValue(key, out var grouping))
+                {
+                    grouping = new Grouping<TKey, TElement>(key, collection);
+                    result._groupings.Add(key, grouping);
+                }
+                collection.Add(elementSelector(item));
             }
             return result;
-        }
-
-        private Grouping<TKey, TElement> GetOrCreateGrouping(TKey key)
-        {
-            if (!_groupings.TryGetValue(key, out Grouping<TKey, TElement> grouping))
-            {
-                grouping = new Grouping<TKey, TElement>(key);
-                _groupings.Add(key, grouping);
-            }
-            return grouping;
         }
     }
 }

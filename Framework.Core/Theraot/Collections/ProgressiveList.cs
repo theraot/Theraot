@@ -71,6 +71,18 @@ namespace Theraot.Collections
             set => throw new NotSupportedException();
         }
 
+        public new static ProgressiveList<T> Create<TList>(IEnumerable<T> wrapped, IEqualityComparer<T> comparer)
+            where TList : IList<T>, new()
+        {
+            return new ProgressiveList<T>(wrapped, new TList(), comparer);
+        }
+
+        public new static ProgressiveList<T> Create<TList>(IObservable<T> wrapped, IEqualityComparer<T> comparer)
+            where TList : IList<T>, new()
+        {
+            return new ProgressiveList<T>(wrapped, new TList(), comparer);
+        }
+
         void ICollection<T>.Add(T item)
         {
             throw new NotSupportedException();

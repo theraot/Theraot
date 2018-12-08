@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Theraot.Collections.Specialized;
+using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections
 {
@@ -25,20 +26,24 @@ namespace Theraot.Collections
             return CreateGroupByIterator();
             IEnumerable<IGrouping<TKey, TSource>> CreateGroupByIterator()
             {
-                var groups = new NullAwareDictionary<TKey, Grouping<TKey, TSource>>(comparer);
+                var groupings = new NullAwareDictionary<TKey, Tuple<Grouping<TKey, TSource>, ProxyObservable<TSource>>>(comparer);
                 foreach (var element in source)
                 {
                     var key = keySelector(element);
-                    if (!groups.TryGetValue(key, out var group))
+                    if (!groupings.TryGetValue(key, out var tuple))
                     {
-                        group = new Grouping<TKey, TSource>(key);
-                        groups.Add(key, group);
+                        var proxy = new ProxyObservable<TSource>();
+                        var collection = ProgressiveCollection<TSource>.Create<SafeCollection<TSource>>(proxy, EqualityComparer<TSource>.Default);
+                        var grouping = new Grouping<TKey, TSource>(key, collection);
+                        tuple = new Tuple<Grouping<TKey, TSource>, ProxyObservable<TSource>>(grouping, proxy);
+                        groupings.Add(key, tuple);
+                        yield return grouping;
                     }
-                    group.Add(element);
+                    tuple.Item2.OnNext(element);
                 }
-                foreach (var group in groups)
+                foreach (var group in groupings)
                 {
-                    yield return group.Value;
+                    group.Value.Item2.OnCompleted();
                 }
             }
         }
@@ -65,21 +70,25 @@ namespace Theraot.Collections
             return CreateGroupByIterator();
             IEnumerable<IGrouping<TKey, TElement>> CreateGroupByIterator()
             {
-                var groups = new NullAwareDictionary<TKey, Grouping<TKey, TElement>>(comparer);
+                var groupings = new NullAwareDictionary<TKey, Tuple<Grouping<TKey, TElement>, ProxyObservable<TElement>>>(comparer);
                 foreach (var item in source)
                 {
                     var key = keySelector(item);
                     var element = resultSelector(item);
-                    if (!groups.TryGetValue(key, out var group))
+                    if (!groupings.TryGetValue(key, out var tuple))
                     {
-                        group = new Grouping<TKey, TElement>(key);
-                        groups.Add(key, group);
+                        var proxy = new ProxyObservable<TElement>();
+                        var collection = ProgressiveCollection<TElement>.Create<SafeCollection<TElement>>(proxy, EqualityComparer<TElement>.Default);
+                        var grouping = new Grouping<TKey, TElement>(key, collection);
+                        tuple = new Tuple<Grouping<TKey, TElement>, ProxyObservable<TElement>>(grouping, proxy);
+                        groupings.Add(key, tuple);
+                        yield return grouping;
                     }
-                    group.Add(element);
+                    tuple.Item2.OnNext(element);
                 }
-                foreach (var group in groups)
+                foreach (var group in groupings)
                 {
-                    yield return group.Value;
+                    group.Value.Item2.OnCompleted();
                 }
             }
         }

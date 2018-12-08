@@ -74,6 +74,18 @@ namespace Theraot.Collections
 
         protected Progressor<T> Progressor { get; }
 
+        public static ProgressiveCollection<T> Create<TCollection>(IEnumerable<T> wrapped, IEqualityComparer<T> comparer)
+            where TCollection : ICollection<T>, new()
+        {
+            return new ProgressiveCollection<T>(wrapped, new TCollection(), comparer);
+        }
+
+        public static ProgressiveCollection<T> Create<TCollection>(IObservable<T> wrapped, IEqualityComparer<T> comparer)
+            where TCollection : ICollection<T>, new()
+        {
+            return new ProgressiveCollection<T>(wrapped, new TCollection(), comparer);
+        }
+
         void ICollection<T>.Add(T item)
         {
             throw new NotSupportedException();

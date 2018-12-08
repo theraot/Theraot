@@ -102,16 +102,17 @@ namespace System.Linq
 
             public IEnumerator<TResult> GetEnumerator()
             {
-                var groupings = new NullAwareDictionary<TKey, Grouping<TKey, TElement>>(_comparer);
+                var groupings = new NullAwareDictionary<TKey, Tuple<Grouping<TKey, TElement>, List<TElement>>>(_comparer);
                 foreach (var item in _source)
                 {
                     var key = _keySelector(item);
-                    if (!groupings.TryGetValue(key, out Grouping<TKey, TElement> grouping))
+                    if (!groupings.TryGetValue(key, out var tuple))
                     {
-                        grouping = new Grouping<TKey, TElement>(key);
-                        groupings.Add(key, grouping);
+                        var collection = new List<TElement>();
+                        tuple = new Tuple<Grouping<TKey, TElement>, List<TElement>>(new Grouping<TKey, TElement>(key, collection), collection);
+                        groupings.Add(key, tuple);
                     }
-                    grouping.Add(_elementSelector(item));
+                    tuple.Item2.Add(_elementSelector(item));
                 }
                 return Enumerator(groupings);
             }
@@ -121,11 +122,11 @@ namespace System.Linq
                 return GetEnumerator();
             }
 
-            private IEnumerator<TResult> Enumerator(IDictionary<TKey, Grouping<TKey, TElement>> groupings)
+            private IEnumerator<TResult> Enumerator(IDictionary<TKey, Tuple<Grouping<TKey, TElement>, List<TElement>>> groupings)
             {
                 foreach (var grouping in groupings.Values)
                 {
-                    yield return _resultSelector(grouping.Key, grouping);
+                    yield return _resultSelector(grouping.Item1.Key, grouping.Item1);
                 }
             }
         }
@@ -147,16 +148,17 @@ namespace System.Linq
 
             public IEnumerator<IGrouping<TKey, TElement>> GetEnumerator()
             {
-                var groupings = new NullAwareDictionary<TKey, Grouping<TKey, TElement>>(_comparer);
+                var groupings = new NullAwareDictionary<TKey, Tuple<Grouping<TKey, TElement>, List<TElement>>>(_comparer);
                 foreach (var item in _source)
                 {
                     var key = _keySelector(item);
-                    if (!groupings.TryGetValue(key, out Grouping<TKey, TElement> grouping))
+                    if (!groupings.TryGetValue(key, out var tuple))
                     {
-                        grouping = new Grouping<TKey, TElement>(key);
-                        groupings.Add(key, grouping);
+                        var collection = new List<TElement>();
+                        tuple = new Tuple<Grouping<TKey, TElement>, List<TElement>>(new Grouping<TKey, TElement>(key, collection), collection);
+                        groupings.Add(key, tuple);
                     }
-                    grouping.Add(_elementSelector(item));
+                    tuple.Item2.Add(_elementSelector(item));
                 }
                 return Enumerator(groupings);
             }
@@ -166,11 +168,11 @@ namespace System.Linq
                 return GetEnumerator();
             }
 
-            private static IEnumerator<IGrouping<TKey, TElement>> Enumerator(IDictionary<TKey, Grouping<TKey, TElement>> groupings)
+            private static IEnumerator<IGrouping<TKey, TElement>> Enumerator(IDictionary<TKey, Tuple<Grouping<TKey, TElement>, List<TElement>>> groupings)
             {
                 foreach (var grouping in groupings.Values)
                 {
-                    yield return grouping;
+                    yield return grouping.Item1;
                 }
             }
         }
