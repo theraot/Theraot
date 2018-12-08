@@ -92,7 +92,7 @@ namespace System.Linq
         {
             if (!_groupings.TryGetValue(key, out Grouping<TKey, TElement> grouping))
             {
-                grouping = new Grouping<TKey, TElement>(key, new List<TElement>());
+                grouping = new Grouping<TKey, TElement>(key, new SafeCollection<TElement>());
                 _groupings.Add(key, grouping);
             }
             return grouping.Items;

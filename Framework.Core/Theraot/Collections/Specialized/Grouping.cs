@@ -1,18 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections.Specialized
 {
     internal sealed class Grouping<TKey, TElement> : IGrouping<TKey, TElement>
     {
-        internal Grouping(TKey key, List<TElement> items)
+        internal Grouping(TKey key, SafeCollection<TElement> items)
         {
             Items = items;
             Key = key;
         }
 
-        public List<TElement> Items { get; }
+        public SafeCollection<TElement> Items { get; }
 
         public TKey Key { get; }
 

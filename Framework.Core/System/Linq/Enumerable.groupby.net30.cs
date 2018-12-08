@@ -3,6 +3,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
+using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 
 namespace System.Linq
@@ -108,7 +109,7 @@ namespace System.Linq
                     var key = _keySelector(item);
                     if (!groupings.TryGetValue(key, out Grouping<TKey, TElement> grouping))
                     {
-                        grouping = new Grouping<TKey, TElement>(key, new List<TElement>());
+                        grouping = new Grouping<TKey, TElement>(key, new SafeCollection<TElement>());
                         groupings.Add(key, grouping);
                     }
                     grouping.Items.Add(_elementSelector(item));
@@ -153,7 +154,7 @@ namespace System.Linq
                     var key = _keySelector(item);
                     if (!groupings.TryGetValue(key, out Grouping<TKey, TElement> grouping))
                     {
-                        grouping = new Grouping<TKey, TElement>(key, new List<TElement>());
+                        grouping = new Grouping<TKey, TElement>(key, new SafeCollection<TElement>());
                         groupings.Add(key, grouping);
                     }
                     grouping.Items.Add(_elementSelector(item));
