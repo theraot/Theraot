@@ -1,17 +1,13 @@
-#if FAT
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using Theraot.Core;
 
 namespace Theraot.Collections
 {
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public sealed class ExtendedList<T> : IList<T>, ICloneable<ExtendedList<T>>, IEqualityComparer<T>
+    public sealed class ExtendedList<T> : IList<T>, IEqualityComparer<T>
     {
         private readonly IEqualityComparer<T> _comparer;
         private readonly List<T> _wrapped;
@@ -116,15 +112,6 @@ namespace Theraot.Collections
         {
             return _comparer.GetHashCode(obj);
         }
-
-#if !NETCOREAPP1_0 && !NETCOREAPP1_1
-
-        object ICloneable.Clone()
-        {
-            return Clone();
-        }
-
-#endif
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
@@ -254,5 +241,3 @@ namespace Theraot.Collections
         }
     }
 }
-
-#endif

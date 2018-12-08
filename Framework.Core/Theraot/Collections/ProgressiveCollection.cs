@@ -14,25 +14,25 @@ namespace Theraot.Collections
         private readonly ICollection<T> _cache;
 
         public ProgressiveCollection(IEnumerable<T> wrapped)
-            : this(wrapped, new HashSet<T>(), null)
+            : this(wrapped, new List<T>(), null)
         {
             // Empty
         }
 
         public ProgressiveCollection(IObservable<T> wrapped)
-            : this(wrapped, new HashSet<T>(), null)
+            : this(wrapped, new List<T>(), null)
         {
             // Empty
         }
 
         public ProgressiveCollection(IEnumerable<T> wrapped, IEqualityComparer<T> comparer)
-            : this(wrapped, new HashSet<T>(comparer), comparer)
+            : this(wrapped, new ExtendedList<T>(comparer), comparer)
         {
             // Empty
         }
 
         public ProgressiveCollection(IObservable<T> wrapped, IEqualityComparer<T> comparer)
-            : this(wrapped, new HashSet<T>(comparer), comparer)
+            : this(wrapped, new ExtendedList<T>(comparer), comparer)
         {
             // Empty
         }
