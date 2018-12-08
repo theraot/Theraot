@@ -72,7 +72,13 @@ namespace System.Threading.Tasks
         /// <param name="internalOptions">Internal options to control its execution</param>
         internal Task(Delegate action, object state, Task parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
         {
-            if (scheduler == null)
+            if (action == null)
+            {
+#pragma warning disable IDE0016
+                throw new ArgumentNullException(nameof(action));
+#pragma warning restore IDE0016
+            }
+            if (ReferenceEquals(scheduler, null))
             {
 #pragma warning disable IDE0016
                 throw new ArgumentNullException(nameof(scheduler));
@@ -101,7 +107,7 @@ namespace System.Threading.Tasks
                 _parent.AddNewChild();
             }
             ExecutingTaskScheduler = scheduler;
-            Action = action ?? throw new ArgumentNullException(nameof(action));
+            Action = action;
             State = state;
             _waitHandle = new ManualResetEventSlim(false);
             if ((creationOptions &
