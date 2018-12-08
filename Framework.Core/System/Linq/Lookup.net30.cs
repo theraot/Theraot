@@ -11,17 +11,17 @@ namespace System.Linq
 {
     public class Lookup<TKey, TElement> : ILookup<TKey, TElement>
     {
-        private readonly IDictionary<TKey, Grouping> _groupings;
+        private readonly IDictionary<TKey, Grouping<TKey, TElement>> _groupings;
 
         internal Lookup(IEqualityComparer<TKey> comparer)
         {
             if (typeof(TKey).CanBeNull())
             {
-                _groupings = new NullAwareDictionary<TKey, Grouping>(comparer);
+                _groupings = new NullAwareDictionary<TKey, Grouping<TKey, TElement>>(comparer);
             }
             else
             {
-                _groupings = new Dictionary<TKey, Grouping>(comparer);
+                _groupings = new Dictionary<TKey, Grouping<TKey, TElement>>(comparer);
             }
         }
 
@@ -31,7 +31,7 @@ namespace System.Linq
         {
             get
             {
-                if (_groupings.TryGetValue(key, out Grouping grouping))
+                if (_groupings.TryGetValue(key, out Grouping<TKey, TElement> grouping))
                 {
                     return grouping;
                 }
@@ -90,35 +90,12 @@ namespace System.Linq
 
         private ICollection<TElement> GetOrCreateGrouping(TKey key)
         {
-            if (!_groupings.TryGetValue(key, out Grouping grouping))
+            if (!_groupings.TryGetValue(key, out Grouping<TKey, TElement> grouping))
             {
-                grouping = new Grouping(key, new List<TElement>());
+                grouping = new Grouping<TKey, TElement>(key, new List<TElement>());
                 _groupings.Add(key, grouping);
             }
             return grouping.Items;
-        }
-
-        internal sealed class Grouping : IGrouping<TKey, TElement>
-        {
-            internal Grouping(TKey key, List<TElement> items)
-            {
-                Items = items;
-                Key = key;
-            }
-
-            public List<TElement> Items { get; }
-
-            public TKey Key { get; }
-
-            public IEnumerator<TElement> GetEnumerator()
-            {
-                return Items.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return Items.GetEnumerator();
-            }
         }
     }
 }
