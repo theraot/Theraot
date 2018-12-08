@@ -92,7 +92,7 @@ namespace System.Linq
         {
             if (!_groupings.TryGetValue(key, out Grouping grouping))
             {
-                grouping = new Grouping(key);
+                grouping = new Grouping(key, new Collection<TElement>());
                 _groupings.Add(key, grouping);
             }
             return grouping.Items;
@@ -100,26 +100,24 @@ namespace System.Linq
 
         internal sealed class Grouping : IGrouping<TKey, TElement>
         {
-            private readonly Collection<TElement> _items;
-
-            internal Grouping(TKey key)
+            internal Grouping(TKey key, Collection<TElement> items)
             {
-                _items = new Collection<TElement>();
+                Items = items;
                 Key = key;
             }
 
-            public Collection<TElement> Items => _items;
+            public Collection<TElement> Items { get; }
 
             public TKey Key { get; }
 
             public IEnumerator<TElement> GetEnumerator()
             {
-                return _items.GetEnumerator();
+                return Items.GetEnumerator();
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return _items.GetEnumerator();
+                return Items.GetEnumerator();
             }
         }
     }

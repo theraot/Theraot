@@ -108,7 +108,7 @@ namespace System.Linq
                     var key = _keySelector(item);
                     if (!groupings.TryGetValue(key, out Lookup<TKey, TElement>.Grouping grouping))
                     {
-                        grouping = new Lookup<TKey, TElement>.Grouping(key);
+                        grouping = new Lookup<TKey, TElement>.Grouping(key, new Collections.ObjectModel.Collection<TElement>());
                         groupings.Add(key, grouping);
                     }
                     grouping.Items.Add(_elementSelector(item));
@@ -153,7 +153,7 @@ namespace System.Linq
                     var key = _keySelector(item);
                     if (!groupings.TryGetValue(key, out Lookup<TKey, TElement>.Grouping grouping))
                     {
-                        grouping = new Lookup<TKey, TElement>.Grouping(key);
+                        grouping = new Lookup<TKey, TElement>.Grouping(key, new Collections.ObjectModel.Collection<TElement>());
                         groupings.Add(key, grouping);
                     }
                     grouping.Items.Add(_elementSelector(item));
