@@ -12,7 +12,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using Theraot.Core;
-using Theraot.Core.Theraot.Collections.Specialized;
+using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions.Compiler
 {

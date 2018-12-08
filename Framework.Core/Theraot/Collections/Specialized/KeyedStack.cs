@@ -2,7 +2,7 @@
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
 
-namespace Theraot.Core.Theraot.Collections.Specialized
+namespace Theraot.Collections.Specialized
 {
     public sealed class KeyedStack<TKey, TValue>
     {
