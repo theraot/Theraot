@@ -108,14 +108,19 @@ namespace Theraot.Collections
             return _wrapped.GetEnumerator();
         }
 
-        public int GetHashCode(T obj)
-        {
-            return _comparer.GetHashCode(obj);
-        }
-
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public int GetHashCode(T obj)
+        {
+            return _comparer.GetHashCode(obj);
         }
 
         public int IndexOf(T item)
@@ -233,11 +238,6 @@ namespace Theraot.Collections
         public void Swap(int indexA, int indexB)
         {
             _wrapped.Swap(indexA, indexB);
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

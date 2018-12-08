@@ -56,68 +56,6 @@ namespace Theraot.Core
             return (ulong)hi << 32 | lo;
         }
 
-        internal static double GetDoubleFromParts(int sign, int exp, ulong man)
-        {
-            DoubleUlong du;
-            du.Dbl = 0;
-
-            if (man == 0)
-            {
-                du.Uu = 0;
-            }
-            else
-            {
-                // Normalize so that 0x0010 0000 0000 0000 is the highest bit set.
-                var cbitShift = CbitHighZero(man) - 11;
-                if (cbitShift < 0)
-                {
-                    man >>= -cbitShift;
-                }
-                else
-                {
-                    man <<= cbitShift;
-                }
-
-                exp -= cbitShift;
-
-                // Move the point to just behind the leading 1: 0x001.0 0000 0000 0000
-                // (52 bits) and skew the exponent (by 0x3FF == 1023).
-                exp += 1075;
-
-                if (exp >= 0x7FF)
-                {
-                    // Infinity.
-                    du.Uu = 0x7FF0000000000000;
-                }
-                else if (exp <= 0)
-                {
-                    // Denormalized.
-                    exp--;
-                    if (exp < -52)
-                    {
-                        // Underflow to zero.
-                        du.Uu = 0;
-                    }
-                    else
-                    {
-                        du.Uu = man >> -exp;
-                    }
-                }
-                else
-                {
-                    // Mask off the implicit high bit.
-                    du.Uu = (man & 0x000FFFFFFFFFFFFF) | ((ulong)exp << 52);
-                }
-            }
-
-            if (sign < 0)
-            {
-                du.Uu |= 0x8000000000000000;
-            }
-
-            return du.Dbl;
-        }
-
         [CLSCompliant(false)]
         public static void GetDoubleParts(double dbl, out int sign, out int exp, out ulong man, out bool fFinite)
         {
@@ -325,6 +263,67 @@ namespace Theraot.Core
             return cbit;
         }
 
+        internal static double GetDoubleFromParts(int sign, int exp, ulong man)
+        {
+            DoubleUlong du;
+            du.Dbl = 0;
+
+            if (man == 0)
+            {
+                du.Uu = 0;
+            }
+            else
+            {
+                // Normalize so that 0x0010 0000 0000 0000 is the highest bit set.
+                var cbitShift = CbitHighZero(man) - 11;
+                if (cbitShift < 0)
+                {
+                    man >>= -cbitShift;
+                }
+                else
+                {
+                    man <<= cbitShift;
+                }
+
+                exp -= cbitShift;
+
+                // Move the point to just behind the leading 1: 0x001.0 0000 0000 0000
+                // (52 bits) and skew the exponent (by 0x3FF == 1023).
+                exp += 1075;
+
+                if (exp >= 0x7FF)
+                {
+                    // Infinity.
+                    du.Uu = 0x7FF0000000000000;
+                }
+                else if (exp <= 0)
+                {
+                    // Denormalized.
+                    exp--;
+                    if (exp < -52)
+                    {
+                        // Underflow to zero.
+                        du.Uu = 0;
+                    }
+                    else
+                    {
+                        du.Uu = man >> -exp;
+                    }
+                }
+                else
+                {
+                    // Mask off the implicit high bit.
+                    du.Uu = (man & 0x000FFFFFFFFFFFFF) | ((ulong)exp << 52);
+                }
+            }
+
+            if (sign < 0)
+            {
+                du.Uu |= 0x8000000000000000;
+            }
+
+            return du.Dbl;
+        }
         [StructLayout(LayoutKind.Explicit)]
         private struct DoubleUlong
         {

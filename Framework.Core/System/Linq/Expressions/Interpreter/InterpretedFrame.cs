@@ -132,6 +132,21 @@ namespace System.Linq.Expressions.Interpreter
 
         public InterpretedFrame Parent { get; internal set; }
 
+        internal string[] Trace
+        {
+            get
+            {
+                var trace = new List<string>();
+                InterpretedFrame frame = this;
+                do
+                {
+                    trace.Add(frame.Name);
+                    frame = frame.Parent;
+                } while (frame != null);
+                return trace.ToArray();
+            }
+        }
+
         public static InterpretedFrameInfo[] GetExceptionStackTrace(Exception exception)
         {
             return exception.Data[typeof(InterpretedFrameInfo)] as InterpretedFrameInfo[];
@@ -174,20 +189,6 @@ namespace System.Linq.Expressions.Interpreter
         }
 
 #if DEBUG
-        internal string[] Trace
-        {
-            get
-            {
-                var trace = new List<string>();
-                InterpretedFrame frame = this;
-                do
-                {
-                    trace.Add(frame.Name);
-                    frame = frame.Parent;
-                } while (frame != null);
-                return trace.ToArray();
-            }
-        }
 #endif
 
         #endregion Stack Trace

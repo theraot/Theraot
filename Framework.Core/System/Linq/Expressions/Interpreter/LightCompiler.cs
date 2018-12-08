@@ -324,6 +324,18 @@ namespace System.Linq.Expressions.Interpreter
             throw new InvalidOperationException("MemberNotFieldOrProperty");
         }
 
+        private static bool IsNullComparison(Expression left, Expression right)
+        {
+            return IsNullConstant(left)
+                ? !IsNullConstant(right) && right.Type.IsNullableType()
+                : IsNullConstant(right) && left.Type.IsNullableType();
+        }
+
+        private static bool IsNullConstant(Expression e)
+        {
+            return e is ConstantExpression c && c.Value == null;
+        }
+
         private static bool ShouldWritebackNode(Expression node)
         {
             if (node.Type.IsValueType)
@@ -2947,19 +2959,6 @@ namespace System.Linq.Expressions.Interpreter
         }
 
 #if DEBUG
-
-        private static bool IsNullComparison(Expression left, Expression right)
-        {
-            return IsNullConstant(left)
-                ? !IsNullConstant(right) && right.Type.IsNullableType()
-                : IsNullConstant(right) && left.Type.IsNullableType();
-        }
-
-        private static bool IsNullConstant(Expression e)
-        {
-            return e is ConstantExpression c && c.Value == null;
-        }
-
 #endif
 
         private bool TryPushLabelBlock(Expression node)

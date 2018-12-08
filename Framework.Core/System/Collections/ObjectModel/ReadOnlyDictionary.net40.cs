@@ -17,8 +17,6 @@ namespace System.Collections.ObjectModel
 
         public int Count => Dictionary.Count;
 
-        protected IDictionary<TKey, TValue> Dictionary { get; }
-
         bool IDictionary.IsFixedSize => ((IDictionary)Dictionary).IsFixedSize;
 
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => true;
@@ -44,6 +42,8 @@ namespace System.Collections.ObjectModel
         IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Values;
 
         public ValueCollection Values { get; }
+
+        protected IDictionary<TKey, TValue> Dictionary { get; }
 
         object IDictionary.this[object key]
         {
