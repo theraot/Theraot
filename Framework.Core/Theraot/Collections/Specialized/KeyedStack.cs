@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using Theraot.Collections;
-using Theraot.Collections.Specialized;
 
 namespace Theraot.Collections.Specialized
 {
