@@ -1,5 +1,3 @@
-#if FAT
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +6,6 @@ using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections
 {
-    [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     public class ProgressiveLookup<TKey, T> : ILookup<TKey, T>
     {
@@ -194,5 +191,3 @@ namespace Theraot.Collections
         }
     }
 }
-
-#endif
