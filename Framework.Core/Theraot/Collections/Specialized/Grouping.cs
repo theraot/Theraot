@@ -7,24 +7,29 @@ namespace Theraot.Collections.Specialized
 {
     internal sealed class Grouping<TKey, TElement> : IGrouping<TKey, TElement>
     {
-        internal Grouping(TKey key, SafeCollection<TElement> items)
+        private readonly SafeCollection<TElement> _items;
+
+        internal Grouping(TKey key)
         {
-            Items = items;
+            _items = new SafeCollection<TElement>();
             Key = key;
         }
 
-        public SafeCollection<TElement> Items { get; }
+        public void Add(TElement element)
+        {
+            _items.Add(element);
+        }
 
         public TKey Key { get; }
 
         public IEnumerator<TElement> GetEnumerator()
         {
-            return Items.GetEnumerator();
+            return _items.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return Items.GetEnumerator();
+            return _items.GetEnumerator();
         }
     }
 }

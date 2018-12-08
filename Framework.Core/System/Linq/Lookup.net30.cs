@@ -2,7 +2,6 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
@@ -88,14 +87,14 @@ namespace System.Linq
             return result;
         }
 
-        private ICollection<TElement> GetOrCreateGrouping(TKey key)
+        private Grouping<TKey, TElement> GetOrCreateGrouping(TKey key)
         {
             if (!_groupings.TryGetValue(key, out Grouping<TKey, TElement> grouping))
             {
-                grouping = new Grouping<TKey, TElement>(key, new SafeCollection<TElement>());
+                grouping = new Grouping<TKey, TElement>(key);
                 _groupings.Add(key, grouping);
             }
-            return grouping.Items;
+            return grouping;
         }
     }
 }
