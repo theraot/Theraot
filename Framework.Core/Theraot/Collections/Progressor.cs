@@ -16,7 +16,7 @@ namespace Theraot.Collections
         private ProxyObservable<T> _proxy;
         private TryTake<T> _tryTake;
 
-        public Progressor(T[] wrapped)
+        public Progressor(IList<T> wrapped)
         {
             if (wrapped == null)
             {
