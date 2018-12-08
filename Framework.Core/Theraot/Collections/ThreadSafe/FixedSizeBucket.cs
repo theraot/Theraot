@@ -394,21 +394,41 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException(nameof(check));
             }
             return WhereExtracted();
-
             IEnumerable<T> WhereExtracted()
             {
                 foreach (var entry in _entries)
                 {
                     if (entry != null)
                     {
-                        var yield = default(T);
-                        if (entry != BucketHelper.Null)
+                        var castValue = entry == BucketHelper.Null ? default : (T)entry;
+                        if (check(castValue))
                         {
-                            yield = (T)entry;
+                            yield return castValue;
                         }
-                        if (check(yield))
+                    }
+                }
+            }
+        }
+
+        public IEnumerable<KeyValuePair<int, T>> WhereIndexed(Predicate<T> check)
+        {
+            if (check == null)
+            {
+                throw new ArgumentNullException(nameof(check));
+            }
+            return WhereExtracted();
+            IEnumerable<KeyValuePair<int, T>> WhereExtracted()
+            {
+                var index = 0;
+                foreach (var entry in _entries)
+                {
+                    if (entry != null)
+                    {
+                        var castValue = entry == BucketHelper.Null ? default : (T)entry;
+                        if (check(castValue))
                         {
-                            yield return yield;
+                            yield return new KeyValuePair<int, T>(index, castValue);
+                            index++;
                         }
                     }
                 }

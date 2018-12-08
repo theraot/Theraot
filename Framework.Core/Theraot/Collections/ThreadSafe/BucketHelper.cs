@@ -1,6 +1,8 @@
 ﻿// Needed for NET40
 
 using System;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Theraot.Collections.ThreadSafe
 {
@@ -449,6 +451,42 @@ namespace Theraot.Collections.ThreadSafe
                     }
                 }
             }
+        }
+
+        public static int RemoveWhere<T>(this IBucket<T> bucket, Predicate<T> check)
+        {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException(nameof(bucket));
+            }
+            if (check == null)
+            {
+                throw new ArgumentNullException(nameof(check));
+            }
+            var matches = bucket.WhereIndexed(value => check(value));
+            var count = 0;
+            foreach (var pair in matches)
+            {
+                if (bucket.RemoveAt(pair.Key))
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        public static IEnumerable<T> RemoveWhereEnumerable<T>(this IBucket<T> bucket, Predicate<T> check)
+        {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException(nameof(bucket));
+            }
+            if (check == null)
+            {
+                throw new ArgumentNullException(nameof(check));
+            }
+            var matches = bucket.WhereIndexed(value => check(value));
+            return from pair in matches where bucket.RemoveAt(pair.Key) select pair.Value;
         }
 
         public static void Set<T>(this IBucket<T> bucket, int index, T value)
