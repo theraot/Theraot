@@ -260,7 +260,7 @@ namespace Theraot.Core
             {
                 return string.Empty;
             }
-            if (ReferenceEquals(separator, null))
+            if (separator is null)
             {
                 separator = string.Empty;
             }
@@ -289,7 +289,7 @@ namespace Theraot.Core
             {
                 return string.Empty;
             }
-            if (ReferenceEquals(separator, null))
+            if (separator is null)
             {
                 separator = string.Empty;
             }
@@ -298,11 +298,11 @@ namespace Theraot.Core
 
         public static string Implode(string separator, params string[] value)
         {
-            if (ReferenceEquals(value, null))
+            if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
-            if (ReferenceEquals(separator, null))
+            if (separator is null)
             {
                 separator = string.Empty;
             }
@@ -323,7 +323,7 @@ namespace Theraot.Core
             {
                 return string.Empty;
             }
-            if (ReferenceEquals(separator, null))
+            if (separator is null)
             {
                 separator = string.Empty;
             }
@@ -352,7 +352,7 @@ namespace Theraot.Core
             {
                 return string.Empty;
             }
-            if (ReferenceEquals(separator, null))
+            if (separator is null)
             {
                 separator = string.Empty;
             }
@@ -721,7 +721,7 @@ namespace Theraot.Core
             for (var index = startIndex; index < maxIndex; index++)
             {
                 var item = array[index];
-                if (!ReferenceEquals(item, null))
+                if (item != null)
                 {
                     var itemToString = item.ToString();
                     newArray[index - startIndex] = itemToString;
@@ -738,7 +738,7 @@ namespace Theraot.Core
             for (var index = startIndex; index < maxIndex; index++)
             {
                 var item = array[index];
-                if (!ReferenceEquals(item, null))
+                if (!(item is null))
                 {
                     length += item.Length;
                 }
@@ -769,7 +769,7 @@ namespace Theraot.Core
             for (var index = startIndex; index < maxIndex; index++)
             {
                 var item = array[index];
-                if (!ReferenceEquals(item, null))
+                if (item != null)
                 {
                     var itemToString = item.ToString();
                     newArray[index - startIndex] = itemToString;
@@ -787,7 +787,7 @@ namespace Theraot.Core
             for (var index = startIndex; index < maxIndex; index++)
             {
                 var item = array[index];
-                if (!ReferenceEquals(item, null))
+                if (!(item is null))
                 {
                     length += item.Length;
                 }

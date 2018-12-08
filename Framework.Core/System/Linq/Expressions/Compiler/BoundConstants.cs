@@ -190,7 +190,7 @@ namespace System.Linq.Expressions.Compiler
             [SuppressMessage("Microsoft.Usage", "CA2231:OverloadOperatorEqualsOnOverridingValueTypeEquals")]
             public override bool Equals(object obj)
             {
-                return (obj is TypedConstant constant) && Equals(constant);
+                return obj is TypedConstant constant && Equals(constant);
             }
 
             public override int GetHashCode()

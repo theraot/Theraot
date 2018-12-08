@@ -1118,7 +1118,7 @@ namespace System.Dynamic
                 const int DataArrayAlignment = 8;
 
                 // round up and then mask off lower bits
-                return (len + (DataArrayAlignment - 1)) & (~(DataArrayAlignment - 1));
+                return (len + (DataArrayAlignment - 1)) & ~(DataArrayAlignment - 1);
             }
         }
 

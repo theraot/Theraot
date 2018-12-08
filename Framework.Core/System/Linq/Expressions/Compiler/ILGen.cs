@@ -986,7 +986,7 @@ namespace System.Linq.Expressions.Compiler
                     }
 
                     convCode = isChecked
-                        ? (isFromUnsigned ? OpCodes.Conv_Ovf_I2_Un : OpCodes.Conv_Ovf_I2)
+                        ? isFromUnsigned ? OpCodes.Conv_Ovf_I2_Un : OpCodes.Conv_Ovf_I2
                         : OpCodes.Conv_I2;
                     break;
 
@@ -1010,7 +1010,7 @@ namespace System.Linq.Expressions.Compiler
                     }
 
                     convCode = isChecked
-                        ? (isFromUnsigned ? OpCodes.Conv_Ovf_U2_Un : OpCodes.Conv_Ovf_U2)
+                        ? isFromUnsigned ? OpCodes.Conv_Ovf_U2_Un : OpCodes.Conv_Ovf_U2
                         : OpCodes.Conv_U2;
                     break;
 
@@ -1033,7 +1033,7 @@ namespace System.Linq.Expressions.Compiler
                     }
 
                     convCode = isChecked
-                        ? (isFromUnsigned ? OpCodes.Conv_Ovf_I4_Un : OpCodes.Conv_Ovf_I4)
+                        ? isFromUnsigned ? OpCodes.Conv_Ovf_I4_Un : OpCodes.Conv_Ovf_I4
                         : OpCodes.Conv_I4;
                     break;
 
@@ -1057,7 +1057,7 @@ namespace System.Linq.Expressions.Compiler
                     }
 
                     convCode = isChecked
-                        ? (isFromUnsigned ? OpCodes.Conv_Ovf_U4_Un : OpCodes.Conv_Ovf_U4)
+                        ? isFromUnsigned ? OpCodes.Conv_Ovf_U4_Un : OpCodes.Conv_Ovf_U4
                         : OpCodes.Conv_U4;
                     break;
 
@@ -1068,8 +1068,8 @@ namespace System.Linq.Expressions.Compiler
                     }
 
                     convCode = isChecked
-                        ? (isFromUnsigned ? OpCodes.Conv_Ovf_I8_Un : OpCodes.Conv_Ovf_I8)
-                        : (isFromUnsigned ? OpCodes.Conv_U8 : OpCodes.Conv_I8);
+                        ? isFromUnsigned ? OpCodes.Conv_Ovf_I8_Un : OpCodes.Conv_Ovf_I8
+                        : isFromUnsigned ? OpCodes.Conv_U8 : OpCodes.Conv_I8;
                     break;
 
                 case TypeCode.UInt64:
@@ -1079,8 +1079,8 @@ namespace System.Linq.Expressions.Compiler
                     }
 
                     convCode = isChecked
-                        ? (isFromUnsigned || tf.IsFloatingPoint() ? OpCodes.Conv_Ovf_U8_Un : OpCodes.Conv_Ovf_U8)
-                        : (isFromUnsigned || tf.IsFloatingPoint() ? OpCodes.Conv_U8 : OpCodes.Conv_I8);
+                        ? isFromUnsigned || tf.IsFloatingPoint() ? OpCodes.Conv_Ovf_U8_Un : OpCodes.Conv_Ovf_U8
+                        : isFromUnsigned || tf.IsFloatingPoint() ? OpCodes.Conv_U8 : OpCodes.Conv_I8;
                     break;
 
                 default:

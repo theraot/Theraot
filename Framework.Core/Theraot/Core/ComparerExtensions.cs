@@ -10,8 +10,7 @@ namespace Theraot.Core
     {
         public static IComparer<T> Reverse<T>(this IComparer<T> comparer)
         {
-            var originalAsReverse = comparer as ReverseComparer<T>;
-            return originalAsReverse is null ? new ReverseComparer<T>(comparer ?? Comparer<T>.Default) : originalAsReverse.Wrapped;
+            return !(comparer is ReverseComparer<T> originalAsReverse) ? new ReverseComparer<T>(comparer ?? Comparer<T>.Default) : originalAsReverse.Wrapped;
         }
 
         public static IComparer<T> ToComparer<T>(this Comparison<T> comparison)
@@ -20,7 +19,7 @@ namespace Theraot.Core
             return new CustomComparer<T>(comparison);
         }
 
-        private class ReverseComparer<T> : IComparer<T>
+        private sealed class ReverseComparer<T> : IComparer<T>
         {
             public ReverseComparer(IComparer<T> wrapped)
             {

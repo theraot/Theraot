@@ -1679,8 +1679,7 @@ namespace System.Linq.Expressions.Interpreter
                         EmitThisForMethodCall(from);
                     }
 
-                    if (!method.IsStatic &&
-                        (from != null && from.Type.IsNullableType()))
+                    if (!method.IsStatic && @from != null && @from.Type.IsNullableType())
                     {
                         // reflection doesn't let us call methods on Nullable<T> when the value
                         // is null...  so we get to special case those methods!
@@ -3254,7 +3253,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             get
             {
-                Debug.Assert((FinallyStartIndex != Instruction.UnknownInstrIndex) == (FinallyEndIndex != Instruction.UnknownInstrIndex));
+                Debug.Assert(FinallyStartIndex != Instruction.UnknownInstrIndex == (FinallyEndIndex != Instruction.UnknownInstrIndex));
                 return FinallyStartIndex != Instruction.UnknownInstrIndex;
             }
         }

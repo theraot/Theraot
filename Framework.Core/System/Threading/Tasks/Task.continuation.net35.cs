@@ -748,8 +748,8 @@ namespace System.Threading.Tasks
                 // Skip synchronous execution of continuations if this task's thread was aborted
                 var canInlineContinuations =
                     Volatile.Read(ref _threadAbortedManaged) == 0
-                    && (Thread.CurrentThread.ThreadState != ThreadState.AbortRequested)
-                    && ((CreationOptions & TaskCreationOptions.RunContinuationsAsynchronously) == 0);
+                    && Thread.CurrentThread.ThreadState != ThreadState.AbortRequested
+                    && (CreationOptions & TaskCreationOptions.RunContinuationsAsynchronously) == 0;
 
                 //
                 // Begin processing of continuation list

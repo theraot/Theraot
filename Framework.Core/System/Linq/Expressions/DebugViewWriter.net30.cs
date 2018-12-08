@@ -162,7 +162,7 @@ namespace System.Linq.Expressions
         {
             if ((flow & Flow.Break) != 0)
             {
-                if (_column > (_maxColumn + Depth))
+                if (_column > _maxColumn + Depth)
                 {
                     flow = Flow.NewLine;
                 }
@@ -371,22 +371,22 @@ namespace System.Linq.Expressions
             {
                 Out("null");
             }
-            else if ((value is string) && node.Type == typeof(string))
+            else if (value is string && node.Type == typeof(string))
             {
                 Out(string.Format(
                     CultureInfo.CurrentCulture,
                     "\"{0}\"",
                     value));
             }
-            else if ((value is char) && node.Type == typeof(char))
+            else if (value is char && node.Type == typeof(char))
             {
                 Out(string.Format(
                     CultureInfo.CurrentCulture,
                     "'{0}'",
                     value));
             }
-            else if ((value is int) && node.Type == typeof(int)
-              || (value is bool) && node.Type == typeof(bool))
+            else if (value is int && node.Type == typeof(int)
+              || value is bool && node.Type == typeof(bool))
             {
                 Out(value.ToString());
             }

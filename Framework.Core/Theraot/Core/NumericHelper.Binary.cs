@@ -601,7 +601,7 @@ namespace Theraot.Core
             value |= value >> 4;
             value |= value >> 8;
             value |= value >> 16;
-            return (sizeof(int) * 8) - PopulationCount(value);
+            return sizeof(int) * 8 - PopulationCount(value);
         }
 
         [CLSCompliant(false)]
@@ -613,7 +613,7 @@ namespace Theraot.Core
             value |= value >> 8;
             value |= value >> 16;
             value |= value >> 32;
-            return (sizeof(long) * 8) - PopulationCount(value);
+            return sizeof(long) * 8 - PopulationCount(value);
         }
 
         // Gem from Hacker's Delight

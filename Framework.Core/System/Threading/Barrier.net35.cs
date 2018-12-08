@@ -253,7 +253,7 @@ namespace System.Threading
                     // To know that the current phase is  the sense doesn't match the
                     // phase odd even, so that means it didn't yet change the phase count, so currentPhase +1 is returned, otherwise currentPhase is returned
                     var currentPhaseNumber = CurrentPhaseNumber;
-                    newPhase = (sense != (currentPhaseNumber % 2 == 0)) ? currentPhaseNumber + 1 : currentPhaseNumber;
+                    newPhase = sense != (currentPhaseNumber % 2 == 0) ? currentPhaseNumber + 1 : currentPhaseNumber;
 
                     // If this participant is going to join the next phase, which means the postPhaseAction is being running, this participants must wait until this done
                     // and its event is reset.

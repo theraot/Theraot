@@ -255,7 +255,7 @@ namespace Theraot.Core
             var x = number >> 1;
             while (true)
             {
-                var xNext = (x + (number / x)) >> 1;
+                var xNext = (x + number / x) >> 1;
                 if (xNext >= x)
                 {
                     return x;

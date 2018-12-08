@@ -755,7 +755,7 @@ namespace Theraot.Core
                 return true;
             }
 
-            return (pi.Attributes & (ParameterAttributes.Out)) == ParameterAttributes.Out;
+            return (pi.Attributes & ParameterAttributes.Out) == ParameterAttributes.Out;
         }
 
         internal static bool IsFloatingPoint(this Type type)

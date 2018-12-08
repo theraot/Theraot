@@ -198,7 +198,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             // TODO: we know this at compile time (except for compiled loop):
             var target = Interpreter.Labels[labelIndex];
-            Debug.Assert(!gotoExceptionHandler || (gotoExceptionHandler && _continuationIndex == target.ContinuationStackDepth),
+            Debug.Assert(!gotoExceptionHandler || gotoExceptionHandler && _continuationIndex == target.ContinuationStackDepth,
                 "When it's time to jump to the exception handler, all previous finally blocks should already be processed");
 
             if (_continuationIndex == target.ContinuationStackDepth)

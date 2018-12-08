@@ -450,7 +450,7 @@ namespace System.Linq.Expressions
                     if (moo != null && IsCompatible(moo, args))
                     {
                         // favor public over non-public methods
-                        if (method == null || (!method.IsPublic && moo.IsPublic))
+                        if (method == null || !method.IsPublic && moo.IsPublic)
                         {
                             method = moo;
                             count = 1;

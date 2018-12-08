@@ -37,7 +37,7 @@ namespace System.Dynamic.Utils
 
         private static Type ConvertToBoxableType(Type t)
         {
-            return (t.IsPointer) ? typeof(IntPtr) : t;
+            return t.IsPointer ? typeof(IntPtr) : t;
         }
 
         // We will generate the following code:

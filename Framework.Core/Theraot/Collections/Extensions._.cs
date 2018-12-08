@@ -92,7 +92,7 @@ namespace Theraot.Collections
                 collection.CopyTo(result, 0);
                 return result;
             }
-            return (new List<T>(source)).ToArray();
+            return new List<T>(source).ToArray();
         }
 
         public static List<T> AsList<T>(IEnumerable<T> source)
@@ -3054,7 +3054,7 @@ namespace Theraot.Collections
         {
             var low = indexStart;
             var high = indexEnd;
-            var pivot = list[low + ((high - low) / 2)];
+            var pivot = list[low + (high - low) / 2];
             while (low <= high)
             {
                 while (low < indexEnd && comparer.Compare(list[low], pivot) < 0)

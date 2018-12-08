@@ -264,11 +264,9 @@ namespace System.Linq.Expressions
         protected virtual NewExpression VisitNew(NewExpression nex)
         {
             var args = VisitExpressionList(nex.Arguments);
-            return args != nex.Arguments ? (
-                nex.Members != null
-                    ? Expression.New(nex.Constructor, args, nex.Members)
-                    : Expression.New(nex.Constructor, args)
-            ) : nex;
+            return args != nex.Arguments ? nex.Members != null
+                ? Expression.New(nex.Constructor, args, nex.Members)
+                : Expression.New(nex.Constructor, args) : nex;
         }
 
         protected virtual Expression VisitNewArray(NewArrayExpression na)

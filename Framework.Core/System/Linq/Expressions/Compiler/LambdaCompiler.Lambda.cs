@@ -135,7 +135,7 @@ namespace System.Linq.Expressions.Compiler
                 // new DelegateType(closure)
                 EmitClosureCreation(inner);
                 _ilg.Emit(OpCodes.Ldftn, inner._method);
-                _ilg.Emit(OpCodes.Newobj, (ConstructorInfo)(delegateType.GetMember(".ctor")[0]));
+                _ilg.Emit(OpCodes.Newobj, (ConstructorInfo)delegateType.GetMember(".ctor")[0]);
             }
         }
 

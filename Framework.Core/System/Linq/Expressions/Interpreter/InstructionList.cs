@@ -124,7 +124,7 @@ namespace System.Linq.Expressions.Interpreter
                     var cookieEnumerator =
                     (
                         debugCookies ??
-                        (ArrayReservoir<KeyValuePair<int, object>>.EmptyArray)
+                        ArrayReservoir<KeyValuePair<int, object>>.EmptyArray
                     )
                     .GetEnumerator()
                 )

@@ -107,7 +107,7 @@ namespace System.Linq.Expressions.Compiler
                 }
 
                 // Clone the lambda, replacing the body & variables.
-                return Expression<T>.Create(newBody, lambda.Name, lambda.TailCall, (new ParameterList(lambda)).ToArray());
+                return Expression<T>.Create(newBody, lambda.Name, lambda.TailCall, new ParameterList(lambda).ToArray());
             }
 
             return lambda;
@@ -187,7 +187,7 @@ namespace System.Linq.Expressions.Compiler
 
             // If the lambda gets rewritten, we don't need to spill the stack,
             // but we do need to rebuild the tree above us so it includes the new node.
-            RewriteAction action = (expr == node) ? RewriteAction.None : RewriteAction.Copy;
+            RewriteAction action = expr == node ? RewriteAction.None : RewriteAction.Copy;
 
             return new Result(action, expr);
         }

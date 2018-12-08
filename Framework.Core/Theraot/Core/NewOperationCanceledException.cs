@@ -57,7 +57,7 @@ namespace Theraot.Core
         {
             get
             {
-                if (_token is null)
+                if (_token == null)
                 {
                     return CancellationToken.None;
                 }

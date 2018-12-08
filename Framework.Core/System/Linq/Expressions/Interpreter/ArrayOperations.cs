@@ -13,7 +13,7 @@ namespace System.Linq.Expressions.Interpreter
             // If the value is null, unbox and cast to throw an InvalidOperationException
             // that the desktop throws.
             // ReSharper disable once PossibleInvalidOperationException
-            return (val == null) ? (int)(int?)val : Convert.ToInt32(val);
+            return val == null ? (int)(int?)val : Convert.ToInt32(val);
         }
     }
 

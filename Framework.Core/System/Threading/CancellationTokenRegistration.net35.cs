@@ -52,7 +52,7 @@ namespace System.Threading
         public void Dispose()
         {
             var source = _source;
-            if (!(source is null))
+            if (source != null)
             {
                 if (source.RemoveCallback(this))
                 {
@@ -68,7 +68,7 @@ namespace System.Threading
 
         public override bool Equals(object obj)
         {
-            return (obj is CancellationTokenRegistration registration) && Equals(registration);
+            return obj is CancellationTokenRegistration registration && Equals(registration);
         }
 
         public override int GetHashCode()

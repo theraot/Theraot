@@ -78,7 +78,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(action));
 #pragma warning restore IDE0016
             }
-            if (ReferenceEquals(scheduler, null))
+            if (scheduler == null)
             {
 #pragma warning disable IDE0016
                 throw new ArgumentNullException(nameof(scheduler));
@@ -89,8 +89,8 @@ namespace System.Threading.Tasks
             // Keep a link to your parent if: (A) You are attached, or (B) you are self-replicating.
             if
                 (
-                ((creationOptions & TaskCreationOptions.AttachedToParent) != 0)
-                || ((internalOptions & InternalTaskOptions.SelfReplicating) != 0)
+                (creationOptions & TaskCreationOptions.AttachedToParent) != 0
+                || (internalOptions & InternalTaskOptions.SelfReplicating) != 0
                 )
             {
                 _parent = parent;
@@ -100,8 +100,8 @@ namespace System.Threading.Tasks
             if
             (
                 _parent != null
-                && ((creationOptions & TaskCreationOptions.AttachedToParent) != 0)
-                && ((_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0)
+                && (creationOptions & TaskCreationOptions.AttachedToParent) != 0
+                && (_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0
             )
             {
                 _parent.AddNewChild();
@@ -121,8 +121,8 @@ namespace System.Threading.Tasks
                 throw new ArgumentOutOfRangeException(nameof(creationOptions));
             }
             // Throw exception if the user specifies both LongRunning and SelfReplicating
-            if (((creationOptions & TaskCreationOptions.LongRunning) != 0) &&
-                ((internalOptions & InternalTaskOptions.SelfReplicating) != 0))
+            if ((creationOptions & TaskCreationOptions.LongRunning) != 0 &&
+                (internalOptions & InternalTaskOptions.SelfReplicating) != 0)
             {
                 throw new InvalidOperationException("An attempt was made to create a LongRunning SelfReplicating task.");
             }
@@ -190,7 +190,7 @@ namespace System.Threading.Tasks
                 // Only return an exception in faulted state (skip manufactured exceptions)
                 // A "benevolent" race condition makes it possible to return null when IsFaulted is
                 // true (i.e., if IsFaulted is set just after the check to IsFaulted above).
-                Contract.Assert((e == null) || IsFaulted, "Task.Exception_get(): returning non-null value when not Faulted");
+                Contract.Assert(e == null || IsFaulted, "Task.Exception_get(): returning non-null value when not Faulted");
 
                 return e;
             }
@@ -749,7 +749,7 @@ namespace System.Threading.Tasks
             while (true)
             {
                 var lastValue = Volatile.Read(ref _status);
-                if ((preventDoubleExecution && lastValue >= 3) || lastValue == 6)
+                if (preventDoubleExecution && lastValue >= 3 || lastValue == 6)
                 {
                     return false;
                 }

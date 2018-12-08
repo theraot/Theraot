@@ -79,9 +79,8 @@ namespace System.Threading.Tasks
             get
             {
                 var currentTask = Task.InternalCurrent;
-                return ((currentTask != null)
-                    && ((currentTask.CreationOptions & TaskCreationOptions.HideScheduler) == 0)
-                    ) ? currentTask.ExecutingTaskScheduler : null;
+                return currentTask != null
+                       && (currentTask.CreationOptions & TaskCreationOptions.HideScheduler) == 0 ? currentTask.ExecutingTaskScheduler : null;
             }
         }
 

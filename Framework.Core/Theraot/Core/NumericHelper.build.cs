@@ -201,7 +201,7 @@ namespace Theraot.Core
             else
             {
                 var bits = SingleAsInt32(value);
-                sign = (bits < 0) ? -1 : 1;
+                sign = bits < 0 ? -1 : 1;
                 exponent = (bits >> 23) & 0xff;
                 if (exponent == 2047)
                 {

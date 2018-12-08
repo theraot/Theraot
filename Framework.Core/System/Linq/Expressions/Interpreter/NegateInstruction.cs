@@ -46,7 +46,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(checked((short)(-(short)obj)));
+                    frame.Push(checked((short)-(short)obj));
                 }
                 return 1;
             }
@@ -142,7 +142,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(unchecked((short)(-(short)obj)));
+                    frame.Push(unchecked((short)-(short)obj));
                 }
                 return 1;
             }

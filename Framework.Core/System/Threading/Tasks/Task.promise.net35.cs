@@ -118,7 +118,7 @@ namespace System.Threading.Tasks
             while (true)
             {
                 var lastValue = Volatile.Read(ref _status);
-                if ((preventDoubleExecution && lastValue >= 3) || lastValue == 6)
+                if (preventDoubleExecution && lastValue >= 3 || lastValue == 6)
                 {
                     return false;
                 }
@@ -168,9 +168,9 @@ namespace System.Threading.Tasks
                 // from our parent before throwing it.
                 if
                 (
-                    (_parent != null)
-                    && ((CreationOptions & TaskCreationOptions.AttachedToParent) != 0)
-                    && ((_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0)
+                    _parent != null
+                    && (CreationOptions & TaskCreationOptions.AttachedToParent) != 0
+                    && (_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0
                 )
                 {
                     _parent.DisregardChild();

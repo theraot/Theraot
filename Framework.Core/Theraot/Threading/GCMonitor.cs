@@ -49,7 +49,7 @@ namespace Theraot.Threading
                 }
                 catch
                 {
-                    if (value is null)
+                    if (value == null)
                     {
                         return;
                     }
@@ -66,7 +66,7 @@ namespace Theraot.Threading
                     }
                     catch
                     {
-                        if (value is null)
+                        if (value == null)
                         {
                             return;
                         }

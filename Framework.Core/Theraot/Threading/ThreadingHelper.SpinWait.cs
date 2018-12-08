@@ -658,7 +658,7 @@ namespace Theraot.Threading
             var spinWait = new SpinWait();
         retry:
             lastValue = Volatile.Read(ref check);
-            if ((lastValue > maxValue) || (lastValue > maxValue - value))
+            if (lastValue > maxValue || lastValue > maxValue - value)
             {
                 return false;
             }
@@ -679,7 +679,7 @@ namespace Theraot.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Volatile.Read(ref check);
-            if ((lastValue > maxValue) || (lastValue > maxValue - value))
+            if (lastValue > maxValue || lastValue > maxValue - value)
             {
                 return false;
             }
@@ -707,7 +707,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             lastValue = Volatile.Read(ref check);
-            if ((lastValue > maxValue) || (lastValue > maxValue - value))
+            if (lastValue > maxValue || lastValue > maxValue - value)
             {
                 return false;
             }
@@ -741,7 +741,7 @@ namespace Theraot.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Volatile.Read(ref check);
-            if ((lastValue > maxValue) || (lastValue > maxValue - value))
+            if (lastValue > maxValue || lastValue > maxValue - value)
             {
                 return false;
             }
@@ -775,7 +775,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             lastValue = Volatile.Read(ref check);
-            if ((lastValue > maxValue) || (lastValue > maxValue - value))
+            if (lastValue > maxValue || lastValue > maxValue - value)
             {
                 return false;
             }
@@ -811,7 +811,7 @@ namespace Theraot.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Volatile.Read(ref check);
-            if ((lastValue > maxValue) || (lastValue > maxValue - value))
+            if (lastValue > maxValue || lastValue > maxValue - value)
             {
                 return false;
             }
@@ -835,7 +835,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             lastValue = Volatile.Read(ref check);
-            if ((lastValue > maxValue) || (lastValue > maxValue - value))
+            if (lastValue > maxValue || lastValue > maxValue - value)
             {
                 return false;
             }
@@ -861,7 +861,7 @@ namespace Theraot.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Volatile.Read(ref check);
-            if ((lastValue > maxValue) || (lastValue > maxValue - value))
+            if (lastValue > maxValue || lastValue > maxValue - value)
             {
                 return false;
             }
@@ -884,7 +884,7 @@ namespace Theraot.Threading
             var spinWait = new SpinWait();
         retry:
             lastValue = Volatile.Read(ref check);
-            if ((lastValue < 0) || (lastValue < -value))
+            if (lastValue < 0 || lastValue < -value)
             {
                 return false;
             }
@@ -905,7 +905,7 @@ namespace Theraot.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Volatile.Read(ref check);
-            if ((lastValue < 0) || (lastValue < -value))
+            if (lastValue < 0 || lastValue < -value)
             {
                 return false;
             }
@@ -933,7 +933,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             lastValue = Volatile.Read(ref check);
-            if ((lastValue < 0) || (lastValue < -value))
+            if (lastValue < 0 || lastValue < -value)
             {
                 return false;
             }
@@ -967,7 +967,7 @@ namespace Theraot.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Volatile.Read(ref check);
-            if ((lastValue < 0) || (lastValue < -value))
+            if (lastValue < 0 || lastValue < -value)
             {
                 return false;
             }
@@ -1001,7 +1001,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             lastValue = Volatile.Read(ref check);
-            if ((lastValue < 0) || (lastValue < -value))
+            if (lastValue < 0 || lastValue < -value)
             {
                 return false;
             }
@@ -1037,7 +1037,7 @@ namespace Theraot.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Volatile.Read(ref check);
-            if ((lastValue < 0) || (lastValue < -value))
+            if (lastValue < 0 || lastValue < -value)
             {
                 return false;
             }
@@ -1061,7 +1061,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             lastValue = Volatile.Read(ref check);
-            if ((lastValue < 0) || (lastValue < -value))
+            if (lastValue < 0 || lastValue < -value)
             {
                 return false;
             }
@@ -1087,7 +1087,7 @@ namespace Theraot.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Volatile.Read(ref check);
-            if ((lastValue < 0) || (lastValue < -value))
+            if (lastValue < 0 || lastValue < -value)
             {
                 return false;
             }
@@ -1748,7 +1748,7 @@ namespace Theraot.Threading
             var spinWait = new SpinWait();
         retry:
             var lastValue = Volatile.Read(ref check);
-            if ((lastValue > maxValue) || (lastValue > maxValue - value))
+            if (lastValue > maxValue || lastValue > maxValue - value)
             {
                 return false;
             }
@@ -1769,7 +1769,7 @@ namespace Theraot.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Volatile.Read(ref check);
-            if ((lastValue > maxValue) || (lastValue > maxValue - value))
+            if (lastValue > maxValue || lastValue > maxValue - value)
             {
                 return false;
             }
@@ -1797,7 +1797,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             var lastValue = Volatile.Read(ref check);
-            if ((lastValue > maxValue) || (lastValue > maxValue - value))
+            if (lastValue > maxValue || lastValue > maxValue - value)
             {
                 return false;
             }
@@ -1831,7 +1831,7 @@ namespace Theraot.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Volatile.Read(ref check);
-            if ((lastValue > maxValue) || (lastValue > maxValue - value))
+            if (lastValue > maxValue || lastValue > maxValue - value)
             {
                 return false;
             }
@@ -1865,7 +1865,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             var lastValue = Volatile.Read(ref check);
-            if ((lastValue > maxValue) || (lastValue > maxValue - value))
+            if (lastValue > maxValue || lastValue > maxValue - value)
             {
                 return false;
             }
@@ -1901,7 +1901,7 @@ namespace Theraot.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Volatile.Read(ref check);
-            if ((lastValue > maxValue) || (lastValue > maxValue - value))
+            if (lastValue > maxValue || lastValue > maxValue - value)
             {
                 return false;
             }
@@ -1925,7 +1925,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             var lastValue = Volatile.Read(ref check);
-            if ((lastValue > maxValue) || (lastValue > maxValue - value))
+            if (lastValue > maxValue || lastValue > maxValue - value)
             {
                 return false;
             }
@@ -1951,7 +1951,7 @@ namespace Theraot.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Volatile.Read(ref check);
-            if ((lastValue > maxValue) || (lastValue > maxValue - value))
+            if (lastValue > maxValue || lastValue > maxValue - value)
             {
                 return false;
             }
@@ -1974,7 +1974,7 @@ namespace Theraot.Threading
             var spinWait = new SpinWait();
         retry:
             var lastValue = Volatile.Read(ref check);
-            if ((lastValue < 0) || (lastValue < -value))
+            if (lastValue < 0 || lastValue < -value)
             {
                 return false;
             }
@@ -1995,7 +1995,7 @@ namespace Theraot.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Volatile.Read(ref check);
-            if ((lastValue < 0) || (lastValue < -value))
+            if (lastValue < 0 || lastValue < -value)
             {
                 return false;
             }
@@ -2023,7 +2023,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             var lastValue = Volatile.Read(ref check);
-            if ((lastValue < 0) || (lastValue < -value))
+            if (lastValue < 0 || lastValue < -value)
             {
                 return false;
             }
@@ -2057,7 +2057,7 @@ namespace Theraot.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Volatile.Read(ref check);
-            if ((lastValue < 0) || (lastValue < -value))
+            if (lastValue < 0 || lastValue < -value)
             {
                 return false;
             }
@@ -2091,7 +2091,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             var lastValue = Volatile.Read(ref check);
-            if ((lastValue < 0) || (lastValue < -value))
+            if (lastValue < 0 || lastValue < -value)
             {
                 return false;
             }
@@ -2127,7 +2127,7 @@ namespace Theraot.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Volatile.Read(ref check);
-            if ((lastValue < 0) || (lastValue < -value))
+            if (lastValue < 0 || lastValue < -value)
             {
                 return false;
             }
@@ -2151,7 +2151,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             var lastValue = Volatile.Read(ref check);
-            if ((lastValue < 0) || (lastValue < -value))
+            if (lastValue < 0 || lastValue < -value)
             {
                 return false;
             }
@@ -2177,7 +2177,7 @@ namespace Theraot.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Volatile.Read(ref check);
-            if ((lastValue < 0) || (lastValue < -value))
+            if (lastValue < 0 || lastValue < -value)
             {
                 return false;
             }

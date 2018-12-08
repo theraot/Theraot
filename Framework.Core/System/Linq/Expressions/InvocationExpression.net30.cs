@@ -419,9 +419,9 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type { get; }
 
-        internal LambdaExpression LambdaOperand => (Expression.NodeType == ExpressionType.Quote)
+        internal LambdaExpression LambdaOperand => Expression.NodeType == ExpressionType.Quote
             ? (LambdaExpression)((UnaryExpression)Expression).Operand
-            : (Expression as LambdaExpression);
+            : Expression as LambdaExpression;
 
         /// <summary>
         /// Gets the argument expression with the specified <paramref name="index"/>.

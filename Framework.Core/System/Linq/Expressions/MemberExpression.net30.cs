@@ -233,7 +233,7 @@ namespace System.Linq.Expressions
             if (type != null)
             {
                 var flags = BindingFlags.Public | BindingFlags.NonPublic;
-                flags |= (mi.IsStatic) ? BindingFlags.Static : BindingFlags.Instance;
+                flags |= mi.IsStatic ? BindingFlags.Static : BindingFlags.Instance;
                 var props = type.GetProperties(flags);
                 foreach (var pi in props)
                 {

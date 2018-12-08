@@ -115,7 +115,7 @@ namespace System.Threading.Tasks
             }
             else
             {
-                Contract.Assert(false, "TaskScheduler.LongRunningThreadWork: t is null");
+                Contract.Assert(false, "TaskScheduler.LongRunningThreadWork: obj is null");
             }
         }
 

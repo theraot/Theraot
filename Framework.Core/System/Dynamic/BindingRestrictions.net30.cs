@@ -196,7 +196,7 @@ namespace System.Dynamic
 
             public override bool Equals(object obj)
             {
-                return obj is InstanceRestriction other && (other._expression == _expression && other._instance == _instance);
+                return obj is InstanceRestriction other && other._expression == _expression && other._instance == _instance;
             }
 
             public override int GetHashCode()
@@ -349,7 +349,7 @@ namespace System.Dynamic
 
             public override bool Equals(object obj)
             {
-                return obj is TypeRestriction other && (other._expression == _expression && TypeUtils.AreEquivalent(other._type, _type));
+                return obj is TypeRestriction other && other._expression == _expression && TypeUtils.AreEquivalent(other._type, _type);
             }
 
             public override int GetHashCode() => _typeRestrictionHash ^ _expression.GetHashCode() ^ _type.GetHashCode();

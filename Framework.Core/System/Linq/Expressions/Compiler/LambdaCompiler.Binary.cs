@@ -482,7 +482,7 @@ namespace System.Linq.Expressions.Compiler
                     break;
 
                 case ExpressionType.AddChecked:
-                    _ilg.Emit(leftType.IsFloatingPoint() ? OpCodes.Add : (leftType.IsUnsigned() ? OpCodes.Add_Ovf_Un : OpCodes.Add_Ovf));
+                    _ilg.Emit(leftType.IsFloatingPoint() ? OpCodes.Add : leftType.IsUnsigned() ? OpCodes.Add_Ovf_Un : OpCodes.Add_Ovf);
                     break;
 
                 case ExpressionType.Subtract:
@@ -507,7 +507,7 @@ namespace System.Linq.Expressions.Compiler
                     break;
 
                 case ExpressionType.MultiplyChecked:
-                    _ilg.Emit(leftType.IsFloatingPoint() ? OpCodes.Mul : (leftType.IsUnsigned() ? OpCodes.Mul_Ovf_Un : OpCodes.Mul_Ovf));
+                    _ilg.Emit(leftType.IsFloatingPoint() ? OpCodes.Mul : leftType.IsUnsigned() ? OpCodes.Mul_Ovf_Un : OpCodes.Mul_Ovf);
                     break;
 
                 case ExpressionType.Divide:

@@ -167,7 +167,7 @@ namespace System.Threading
                     // Have to be careful not to create secondary background timer
                     var newTimer = new Timeout<CancellationTokenSource>(_timerCallback, Timeout.Infinite, this);
                     var oldTimer = Interlocked.CompareExchange(ref _timeout, newTimer, null);
-                    if (!(oldTimer is null))
+                    if (oldTimer != null)
                     {
                         newTimer.Cancel();
                     }
@@ -295,7 +295,7 @@ namespace System.Threading
                 }
                 catch (Exception exception)
                 {
-                    if (exceptions is null)
+                    if (exceptions == null)
                     {
                         exceptions = new List<Exception>();
                     }
@@ -364,7 +364,7 @@ namespace System.Threading
         private void UnregisterLinkedTokens()
         {
             var registrations = Interlocked.Exchange(ref _linkedTokens, null);
-            if (!(registrations is null))
+            if (registrations != null)
             {
                 foreach (var linked in registrations)
                 {

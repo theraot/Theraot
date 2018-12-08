@@ -20,7 +20,7 @@ namespace Theraot.Collections
 
         public int GetHashCode(KeyValuePair<TKey, TValue> obj)
         {
-            return (_keyComparer.GetHashCode(obj.Key) * 13) + _valueComparer.GetHashCode(obj.Value);
+            return _keyComparer.GetHashCode(obj.Key) * 13 + _valueComparer.GetHashCode(obj.Value);
         }
     }
 }
