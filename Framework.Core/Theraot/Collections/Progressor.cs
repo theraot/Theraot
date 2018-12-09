@@ -73,18 +73,24 @@ namespace Theraot.Collections
         }
 
         public Progressor(IObservable<T> wrapped)
+            : this(wrapped, null)
+        {
+            // Empty
+        }
+
+        public Progressor(IObservable<T> wrapped, Action exhaustedCallback)
         {
             var buffer = new SafeQueue<T>();
             var semaphore = new SemaphoreSlim(0);
             var source = new CancellationTokenSource();
             var subscription = wrapped.Subscribe
-                (
-                    new CustomObserver<T>(
-                        onCompleted: source.Cancel,
-                        onError: exception => source.Cancel(),
-                        onNext: OnNext
-                    )
-                );
+            (
+                new CustomObserver<T>(
+                    onCompleted: source.Cancel,
+                    onError: exception => source.Cancel(),
+                    onNext: OnNext
+                )
+            );
             _proxy = new ProxyObservable<T>();
             var tryTake = new TryTake<T>[] { null };
             tryTake[0] = Take;
@@ -104,6 +110,18 @@ namespace Theraot.Collections
                     }
                 }
                 else
+                {
+                    if (exhaustedCallback != null)
+                    {
+                        var spinWait = new SpinWait();
+                        while (semaphore.CurrentCount == 0 && !source.IsCancellationRequested)
+                        {
+                            exhaustedCallback();
+                            spinWait.SpinOnce();
+                        }
+                    }
+                }
+                if (!source.IsCancellationRequested)
                 {
                     try
                     {

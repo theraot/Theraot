@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 
@@ -26,25 +28,55 @@ namespace Theraot.Collections
             return CreateGroupByIterator();
             IEnumerable<IGrouping<TKey, TSource>> CreateGroupByIterator()
             {
-                var groupings = new NullAwareDictionary<TKey, Tuple<Grouping<TKey, TSource>, ProxyObservable<TSource>>>(comparer);
-                foreach (var element in source)
+                var iterator = new Iterator<TKey, TSource, TSource>(comparer, source.GetEnumerator());
+                try
                 {
-                    var key = keySelector(element);
-                    if (!groupings.TryGetValue(key, out var tuple))
+                    while (true)
                     {
-                        var proxy = new ProxyObservable<TSource>();
-                        var collection = ProgressiveCollection<TSource>.Create<SafeCollection<TSource>>(proxy, EqualityComparer<TSource>.Default);
-                        var grouping = new Grouping<TKey, TSource>(key, collection);
-                        tuple = new Tuple<Grouping<TKey, TSource>, ProxyObservable<TSource>>(grouping, proxy);
-                        groupings.Add(key, tuple);
-                        yield return grouping;
+                        var advanced = Advance(iterator);
+                        foreach (var pendingResult in iterator.GetPendingResults())
+                        {
+                            yield return pendingResult;
+                        }
+                        if (!advanced)
+                        {
+                            break;
+                        }
                     }
-                    tuple.Item2.OnNext(element);
                 }
-                foreach (var group in groupings)
+                finally
                 {
-                    group.Value.Item2.OnCompleted();
+                    iterator.Dispose();
                 }
+            }
+            void ProcessElement(TSource element, Iterator<TKey, TSource, TSource> iterator)
+            {
+                var key = keySelector(element);
+                if (!iterator.TryGetProxy(key, out var proxy))
+                {
+                    proxy = new ProxyObservable<TSource>();
+                    var collection = ProgressiveCollection<TSource>.Create<SafeCollection<TSource>>
+                    (
+                        proxy,
+                        () => { Advance(iterator); },
+                        EqualityComparer<TSource>.Default
+                    );
+                    var result = new Grouping<TKey, TSource>(key, collection);
+                    iterator.AddProxy(key, proxy);
+                    iterator.AddResult(result);
+                }
+                proxy.OnNext(element);
+            }
+            bool Advance(Iterator<TKey, TSource, TSource> iterator)
+            {
+                if (iterator.MoveNext())
+                {
+                    var element = iterator.Current;
+                    ProcessElement(element, iterator);
+                    return true;
+                }
+                iterator.Dispose();
+                return false;
             }
         }
 
@@ -70,26 +102,56 @@ namespace Theraot.Collections
             return CreateGroupByIterator();
             IEnumerable<IGrouping<TKey, TElement>> CreateGroupByIterator()
             {
-                var groupings = new NullAwareDictionary<TKey, Tuple<Grouping<TKey, TElement>, ProxyObservable<TElement>>>(comparer);
-                foreach (var item in source)
+                var iterator = new Iterator<TKey, TSource, TElement>(comparer, source.GetEnumerator());
+                try
                 {
-                    var key = keySelector(item);
-                    var element = resultSelector(item);
-                    if (!groupings.TryGetValue(key, out var tuple))
+                    while (true)
                     {
-                        var proxy = new ProxyObservable<TElement>();
-                        var collection = ProgressiveCollection<TElement>.Create<SafeCollection<TElement>>(proxy, EqualityComparer<TElement>.Default);
-                        var grouping = new Grouping<TKey, TElement>(key, collection);
-                        tuple = new Tuple<Grouping<TKey, TElement>, ProxyObservable<TElement>>(grouping, proxy);
-                        groupings.Add(key, tuple);
-                        yield return grouping;
+                        var advanced = Advance(iterator);
+                        foreach (var pendingResult in iterator.GetPendingResults())
+                        {
+                            yield return pendingResult;
+                        }
+                        if (!advanced)
+                        {
+                            break;
+                        }
                     }
-                    tuple.Item2.OnNext(element);
                 }
-                foreach (var group in groupings)
+                finally
                 {
-                    group.Value.Item2.OnCompleted();
+                    iterator.Dispose();
                 }
+            }
+            void ProcessElement(TSource item, Iterator<TKey, TSource, TElement> iterator)
+            {
+                var key = keySelector(item);
+                var element = resultSelector(item);
+                if (!iterator.TryGetProxy(key, out var proxy))
+                {
+                    proxy = new ProxyObservable<TElement>();
+                    var collection = ProgressiveCollection<TElement>.Create<SafeCollection<TElement>>
+                    (
+                        proxy,
+                        () => { Advance(iterator); },
+                        EqualityComparer<TElement>.Default
+                    );
+                    var result = new Grouping<TKey, TElement>(key, collection);
+                    iterator.AddProxy(key, proxy);
+                    iterator.AddResult(result);
+                }
+                proxy.OnNext(element);
+            }
+            bool Advance(Iterator<TKey, TSource, TElement> iterator)
+            {
+                if (iterator.MoveNext())
+                {
+                    var element = iterator.Current;
+                    ProcessElement(element, iterator);
+                    return true;
+                }
+                iterator.Dispose();
+                return false;
             }
         }
 
@@ -157,6 +219,77 @@ namespace Theraot.Collections
                 {
                     yield return resultSelector(group.Key, group);
                 }
+            }
+        }
+
+        private sealed class Iterator<TKey, TSource, TElement> : IEnumerator<TSource>
+        {
+            private readonly SafeQueue<Grouping<TKey, TElement>> _results;
+            private IEnumerator<TSource> _enumerator;
+            private NullAwareDictionary<TKey, ProxyObservable<TElement>> _proxies;
+            private TSource _current;
+
+            public Iterator(IEqualityComparer<TKey> comparer, IEnumerator<TSource> enumerator)
+            {
+                _proxies = new NullAwareDictionary<TKey, ProxyObservable<TElement>>(comparer);
+                _enumerator = enumerator;
+                _results = new SafeQueue<Grouping<TKey, TElement>>();
+            }
+
+            public TSource Current => _enumerator.Current;
+
+            object IEnumerator.Current => _current;
+
+            public void AddProxy(TKey key, ProxyObservable<TElement> proxy)
+            {
+                _proxies.Add(key, proxy);
+            }
+
+            public void AddResult(Grouping<TKey, TElement> result)
+            {
+                _results.Add(result);
+            }
+
+            public void Dispose()
+            {
+                Interlocked.Exchange(ref _enumerator, null)?.Dispose();
+                var proxies = Interlocked.Exchange(ref _proxies, null);
+                if (proxies != null)
+                {
+                    foreach (var group in proxies)
+                    {
+                        group.Value.OnCompleted();
+                    }
+                }
+            }
+
+            public IEnumerable<Grouping<TKey, TElement>> GetPendingResults()
+            {
+                while (_results.TryTake(out var result))
+                {
+                    yield return result;
+                }
+            }
+
+            public bool MoveNext()
+            {
+                var enumerator = Volatile.Read(ref _enumerator);
+                if (enumerator != null && enumerator.MoveNext())
+                {
+                    _current = enumerator.Current;
+                    return true;
+                }
+                return false;
+            }
+
+            public void Reset()
+            {
+                Volatile.Read(ref _enumerator)?.Reset();
+            }
+
+            public bool TryGetProxy(TKey key, out ProxyObservable<TElement> proxy)
+            {
+                return _proxies.TryGetValue(key, out proxy);
             }
         }
     }

@@ -44,7 +44,13 @@ namespace Theraot.Collections
         }
 
         protected ProgressiveList(IObservable<T> wrapped, IList<T> cache, IEqualityComparer<T> comparer)
-            : base(wrapped, cache, comparer)
+            : this(wrapped, null, cache, comparer)
+        {
+            // Empty
+        }
+
+        protected ProgressiveList(IObservable<T> wrapped, Action exhaustedCallback, IList<T> cache, IEqualityComparer<T> comparer)
+            : base(wrapped, exhaustedCallback, cache, comparer)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             Cache = new ExtendedReadOnlyList<T>(_cache);
@@ -81,6 +87,12 @@ namespace Theraot.Collections
             where TList : IList<T>, new()
         {
             return new ProgressiveList<T>(wrapped, new TList(), comparer);
+        }
+
+        public new static ProgressiveList<T> Create<TList>(IObservable<T> wrapped, Action exhaustedCallback, IEqualityComparer<T> comparer)
+            where TList : IList<T>, new()
+        {
+            return new ProgressiveList<T>(wrapped, exhaustedCallback, new TList(), comparer);
         }
 
         void ICollection<T>.Add(T item)

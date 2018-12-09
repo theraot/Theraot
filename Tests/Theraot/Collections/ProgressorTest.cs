@@ -13,10 +13,10 @@ namespace Tests.Theraot.Collections
         public void EnumerableProgressor()
         {
             var source = new[] { 0, 1, 2, 3, 4, 5 };
-            var progresor = new Progressor<int>(source);
+            var progressor = new Progressor<int>(source);
             var indexA = 0;
             var indexB = 0;
-            progresor.SubscribeAction
+            progressor.SubscribeAction
             (
                 value =>
                 {
@@ -24,8 +24,7 @@ namespace Tests.Theraot.Collections
                     indexB++;
                 }
             );
-            int item;
-            while (progresor.TryTake(out item))
+            while (progressor.TryTake(out var item))
             {
                 Assert.AreEqual(item, indexA);
                 indexA++;
@@ -38,11 +37,11 @@ namespace Tests.Theraot.Collections
         public void ObservableProgressor()
         {
             var source = new Progressor<int>(new[] { 0, 1, 2, 3, 4, 5 });
-            var progresor = new Progressor<int>((IObservable<int>)source);
+            var progressor = new Progressor<int>((IObservable<int>)source);
             source.Consume();
             var indexA = 0;
             var indexB = 0;
-            progresor.SubscribeAction
+            progressor.SubscribeAction
             (
                 value =>
                 {
@@ -50,8 +49,7 @@ namespace Tests.Theraot.Collections
                     indexB++;
                 }
             );
-            int item;
-            while (progresor.TryTake(out item))
+            while (progressor.TryTake(out var item))
             {
                 Assert.AreEqual(item, indexA);
                 indexA++;

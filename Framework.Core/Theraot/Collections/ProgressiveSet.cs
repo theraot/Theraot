@@ -47,6 +47,12 @@ namespace Theraot.Collections
             // Empty
         }
 
+        protected ProgressiveSet(IObservable<T> wrapped, Action exhaustedCallback, ISet<T> cache, IEqualityComparer<T> comparer)
+            : base(wrapped ?? throw new ArgumentNullException(nameof(wrapped)), exhaustedCallback, cache, comparer)
+        {
+            // Empty
+        }
+
         bool ICollection<T>.IsReadOnly => true;
 
         public new static ProgressiveSet<T> Create<TSet>(IEnumerable<T> wrapped, IEqualityComparer<T> comparer)
@@ -59,6 +65,12 @@ namespace Theraot.Collections
             where TSet : ISet<T>, new()
         {
             return new ProgressiveSet<T>(wrapped, new TSet(), comparer);
+        }
+
+        public new static ProgressiveSet<T> Create<TSet>(IObservable<T> wrapped, Action exhaustedCallback, IEqualityComparer<T> comparer)
+            where TSet : ISet<T>, new()
+        {
+            return new ProgressiveSet<T>(wrapped, exhaustedCallback, new TSet(), comparer);
         }
 
         void ICollection<T>.Add(T item)

@@ -1,6 +1,4 @@
-﻿#if FAT
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -23,7 +21,7 @@ namespace Tests.Theraot.Collections
                     StringComparer.OrdinalIgnoreCase
                 );
 
-            var l = lookup["notexist"];
+            var l = lookup["notExist"];
             Assert.IsNotNull(l);
             var values = (int[])l;
             Assert.AreEqual(values.Length, 0);
@@ -49,7 +47,7 @@ namespace Tests.Theraot.Collections
             var lookup = ProgressiveLookup<string, string>.Create
                 (
                     new[] { "hi", "bye", "42" },
-                    c => (char.IsNumber(c[0]) ? null : c[0].ToString(CultureInfo.InvariantCulture))
+                    c => char.IsNumber(c[0]) ? null : c[0].ToString(CultureInfo.InvariantCulture)
                 );
 
             Assert.IsTrue(lookup.Contains("h"));
@@ -63,7 +61,7 @@ namespace Tests.Theraot.Collections
             var lookup = ProgressiveLookup<string, string>.Create
                 (
                     new[] { "hi", "bye", "42" },
-                    c => (char.IsNumber(c[0]) ? null : c[0].ToString(CultureInfo.InvariantCulture))
+                    c => char.IsNumber(c[0]) ? null : c[0].ToString(CultureInfo.InvariantCulture)
                 );
 
             Assert.IsTrue(lookup.Any(g => g.Key == "h"));
@@ -129,11 +127,9 @@ namespace Tests.Theraot.Collections
                 Value = value;
             }
 
-            public string Name { get; private set; }
+            public string Name { get; }
 
-            public int Value { get; private set; }
+            public int Value { get; }
         }
     }
 }
-
-#endif

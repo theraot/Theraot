@@ -47,10 +47,16 @@ namespace Theraot.Collections
         }
 
         protected ProgressiveCollection(IObservable<T> wrapped, ICollection<T> cache, IEqualityComparer<T> comparer)
+            : this (wrapped, null, cache, comparer)
+        {
+            // Empty
+        }
+
+        protected ProgressiveCollection(IObservable<T> wrapped, Action exhaustedCallback, ICollection<T> cache, IEqualityComparer<T> comparer)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             Cache = Extensions.WrapAsIReadOnlyCollection(_cache);
-            Progressor = new Progressor<T>(wrapped);
+            Progressor = new Progressor<T>(wrapped, exhaustedCallback);
             Progressor.SubscribeAction(obj => _cache.Add(obj));
             Comparer = comparer ?? EqualityComparer<T>.Default;
         }
@@ -82,6 +88,12 @@ namespace Theraot.Collections
             where TCollection : ICollection<T>, new()
         {
             return new ProgressiveCollection<T>(wrapped, new TCollection(), comparer);
+        }
+
+        public static ProgressiveCollection<T> Create<TCollection>(IObservable<T> wrapped, Action exhaustedCallback, IEqualityComparer<T> comparer)
+            where TCollection : ICollection<T>, new()
+        {
+            return new ProgressiveCollection<T>(wrapped, exhaustedCallback, new TCollection(), comparer);
         }
 
         void ICollection<T>.Add(T item)

@@ -35,9 +35,15 @@ namespace Theraot.Collections
         }
 
         protected ProgressiveLookup(IObservable<IGrouping<TKey, T>> wrapped, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
+            : this (wrapped, null, cache, keyComparer, itemComparer)
+        {
+            // Empty
+        }
+
+        protected ProgressiveLookup(IObservable<IGrouping<TKey, T>> wrapped, Action exhaustedCallback, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            Progressor = new Progressor<IGrouping<TKey, T>>(wrapped);
+            Progressor = new Progressor<IGrouping<TKey, T>>(wrapped, exhaustedCallback);
             Progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
             KeyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
             ItemComparer = itemComparer ?? EqualityComparer<T>.Default;
@@ -108,6 +114,12 @@ namespace Theraot.Collections
             where TGroupingDictionary : IDictionary<TKey, IGrouping<TKey, T>>, new()
         {
             return new ProgressiveLookup<TKey, T>(wrapped, new TGroupingDictionary(), keyComparer, itemComparer);
+        }
+
+        public static ProgressiveLookup<TKey, T> Create<TGroupingDictionary>(IObservable<IGrouping<TKey, T>> wrapped, Action exhaustedCallback, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
+            where TGroupingDictionary : IDictionary<TKey, IGrouping<TKey, T>>, new()
+        {
+            return new ProgressiveLookup<TKey, T>(wrapped, exhaustedCallback, new TGroupingDictionary(), keyComparer, itemComparer);
         }
 
         public bool Contains(TKey key)
@@ -188,7 +200,12 @@ namespace Theraot.Collections
             {
                 return true;
             }
-            return ProgressorWhere(Check).Any();
+            foreach (var found in ProgressorWhere(Check))
+            {
+                value = found;
+                return true;
+            }
+            return false;
             bool Check(IGrouping<TKey, T> item)
             {
                 return KeyComparer.Equals(key, item.Key);
