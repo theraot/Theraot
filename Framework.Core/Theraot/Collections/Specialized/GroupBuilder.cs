@@ -1,0 +1,128 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Theraot.Collections.ThreadSafe;
+
+namespace Theraot.Collections.Specialized
+{
+    internal sealed class GroupBuilder<TKey, TSource, TElement> : IDisposable
+    {
+        private readonly Func<TSource, TKey> _keySelector;
+        private readonly SafeQueue<Grouping<TKey, TElement>> _results;
+        private readonly Func<TSource, TElement> _resultSelector;
+        private TSource _current;
+        private IEnumerator<TSource> _enumerator;
+        private NullAwareDictionary<TKey, ProxyObservable<TElement>> _proxies;
+
+        private GroupBuilder(IEnumerator<TSource> enumerator, IEqualityComparer<TKey> comparer, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector)
+        {
+            _proxies = new NullAwareDictionary<TKey, ProxyObservable<TElement>>(comparer);
+            _enumerator = enumerator;
+            _results = new SafeQueue<Grouping<TKey, TElement>>();
+            _keySelector = keySelector;
+            _resultSelector = resultSelector;
+        }
+
+        public static IEnumerable<IGrouping<TKey, TElement>> CreateGroups(IEnumerable<TSource> source, IEqualityComparer<TKey> comparer, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector)
+        {
+            var builder = new GroupBuilder<TKey, TSource, TElement>(source.GetEnumerator(), comparer, keySelector, resultSelector);
+            return builder.GetGroups();
+        }
+
+        public void Dispose()
+        {
+            Interlocked.Exchange(ref _enumerator, null)?.Dispose();
+            var proxies = Interlocked.Exchange(ref _proxies, null);
+            if (proxies != null)
+            {
+                foreach (var group in proxies)
+                {
+                    group.Value.OnCompleted();
+                }
+            }
+        }
+        private void Add(TKey key, ICollection<TElement> items, ProxyObservable<TElement> proxy)
+        {
+            var result = new Grouping<TKey, TElement>(key, items);
+            _proxies.Add(key, proxy);
+            _results.Add(result);
+        }
+
+        private bool Advance()
+        {
+            if (MoveNext())
+            {
+                var element = _current;
+                ProcessElement(element);
+                return true;
+            }
+            Dispose();
+            return false;
+        }
+
+        private IEnumerable<IGrouping<TKey, TElement>> GetGroups()
+        {
+            try
+            {
+                while (true)
+                {
+                    var advanced = Advance();
+                    foreach (var pendingResult in GetPendingGroups())
+                    {
+                        yield return pendingResult;
+                    }
+                    if (!advanced)
+                    {
+                        break;
+                    }
+                }
+            }
+            finally
+            {
+                Dispose();
+            }
+        }
+        private IEnumerable<Grouping<TKey, TElement>> GetPendingGroups()
+        {
+            while (_results.TryTake(out var result))
+            {
+                yield return result;
+            }
+        }
+
+        private bool MoveNext()
+        {
+            var enumerator = Volatile.Read(ref _enumerator);
+            if (enumerator != null && enumerator.MoveNext())
+            {
+                _current = enumerator.Current;
+                return true;
+            }
+            return false;
+        }
+
+        private void ProcessElement(TSource item)
+        {
+            var key = _keySelector(item);
+            var element = _resultSelector(item);
+            if (!TryGetProxy(key, out var proxy))
+            {
+                proxy = new ProxyObservable<TElement>();
+                var items = ProgressiveCollection<TElement>.Create<SafeCollection<TElement>>
+                (
+                    proxy,
+                    () => { Advance(); },
+                    EqualityComparer<TElement>.Default
+                );
+                Add(key, items, proxy);
+            }
+            proxy.OnNext(element);
+        }
+
+        private bool TryGetProxy(TKey key, out ProxyObservable<TElement> proxy)
+        {
+            return _proxies.TryGetValue(key, out proxy);
+        }
+    }
+}
