@@ -1,4 +1,6 @@
-﻿namespace System.Collections.Concurrent
+﻿#if NET20 || NET30 || NET35
+
+namespace System.Collections.Concurrent
 {
     [Flags]
     public enum EnumerablePartitionerOptions
@@ -7,3 +9,5 @@
         NoBuffering = 0x1
     }
 }
+
+#endif

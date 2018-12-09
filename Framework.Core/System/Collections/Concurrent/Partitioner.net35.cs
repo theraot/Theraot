@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#if NET20 || NET30 || NET35
+
+using System.Collections.Generic;
 using System.Threading;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
@@ -290,3 +292,5 @@ namespace System.Collections.Concurrent
         }
     }
 }
+
+#endif
