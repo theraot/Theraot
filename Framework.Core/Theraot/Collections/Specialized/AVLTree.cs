@@ -590,7 +590,7 @@ namespace Theraot.Collections.Specialized
                             trunk = successor;
                             successor = trunk._left;
                         }
-                        if (ReferenceEquals(trunk, successor))
+                        if (trunk == successor)
                         {
                             node._right = successor._right;
                         }

@@ -464,11 +464,10 @@ namespace System.Dynamic
             private static Expression[] BuildCallArgs<TBinder>(TBinder binder, Expression[] parameters, Expression arg0, Expression arg1)
                 where TBinder : DynamicMetaObjectBinder
             {
-                if (!ReferenceEquals(parameters, _noArgs))
+                if (parameters != _noArgs)
                 {
                     return arg1 != null ? new[] { Constant(binder), arg0, arg1 } : new[] { Constant(binder), arg0 };
                 }
-
                 return arg1 != null ? new[] { Constant(binder), arg1 } : new Expression[] { Constant(binder) };
             }
 

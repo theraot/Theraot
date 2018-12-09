@@ -127,8 +127,7 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            var needle = obj as Needle<T>;
-            if (needle != null)
+            if (obj is Needle<T> needle)
             {
                 return this == needle;
             }
@@ -146,16 +145,21 @@ namespace Theraot.Threading.Needles
 
         public bool Equals(Needle<T> other)
         {
-            if (other == null)
+            if (other is null)
             {
                 return false;
             }
-            var target = _target;
-            if (target == null)
+            var leftTarget = _target;
+            var rightTarget = other._target;
+            if (leftTarget == null)
             {
-                return other._target == null;
+                return rightTarget == null;
             }
-            return this == other;
+            if (rightTarget == null)
+            {
+                return false;
+            }
+            return leftTarget.Equals(rightTarget);
         }
 
         public virtual void Free()

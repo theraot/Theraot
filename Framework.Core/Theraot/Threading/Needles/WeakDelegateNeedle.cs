@@ -65,7 +65,7 @@ namespace Theraot.Threading.Needles
                 if (other.IsAlive)
                 {
                     var method = otherValue.GetMethodInfo();
-                    return value.GetMethodInfo().Equals(method) && ReferenceEquals(value.Target, otherValue.Target);
+                    return value.GetMethodInfo().Equals(method) && value.Target != otherValue.Target;
                 }
                 return false;
             }

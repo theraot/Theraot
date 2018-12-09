@@ -52,11 +52,11 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(ReadOnlyNeedle<T> left, ReadOnlyNeedle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return !ReferenceEquals(right, null);
+                return !(right is null);
             }
-            if (ReferenceEquals(right, null))
+            if (right is null)
             {
                 return true;
             }
@@ -65,11 +65,11 @@ namespace Theraot.Threading.Needles
 
         public static bool operator ==(ReadOnlyNeedle<T> left, ReadOnlyNeedle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return ReferenceEquals(right, null);
+                return right is null;
             }
-            if (ReferenceEquals(right, null))
+            if (right is null)
             {
                 return false;
             }
@@ -78,12 +78,16 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            return (obj is ReadOnlyNeedle<T>) ? this == (ReadOnlyNeedle<T>)obj : _target.Equals(obj);
+            return obj is ReadOnlyNeedle<T> needle ? this == needle : _target.Equals(obj);
         }
 
         public bool Equals(ReadOnlyNeedle<T> other)
         {
-            return this == other;
+            if (other is null)
+            {
+                return false;
+            }
+            return other._target.Equals(_target);
         }
 
         public override int GetHashCode()

@@ -126,7 +126,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(@delegate));
             }
-            return @delegate.GetMethodInfo().Equals(method) && ReferenceEquals(@delegate.Target, target);
+            return @delegate.GetMethodInfo().Equals(method) && @delegate.Target == target;
         }
 
         public static MethodInfo FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly)

@@ -21,16 +21,16 @@ namespace Theraot.Threading
 
             public static bool operator !=(Target left, Target right)
             {
-                if (ReferenceEquals(left, null))
+                if (left is null)
                 {
-                    return !ReferenceEquals(right, null);
+                    return !(right is null);
                 }
                 return left.Equals(right);
             }
 
             public static bool operator <(Target left, Target right)
             {
-                if (ReferenceEquals(left, null))
+                if (left is null)
                 {
                     return true;
                 }
@@ -39,16 +39,16 @@ namespace Theraot.Threading
 
             public static bool operator ==(Target left, Target right)
             {
-                if (ReferenceEquals(left, null))
+                if (left is null)
                 {
-                    return ReferenceEquals(right, null);
+                    return right is null;
                 }
                 return left.Equals(right);
             }
 
             public static bool operator >(Target left, Target right)
             {
-                if (ReferenceEquals(left, null))
+                if (left is null)
                 {
                     return false;
                 }
@@ -57,7 +57,7 @@ namespace Theraot.Threading
 
             public int CompareTo(Target other)
             {
-                if (ReferenceEquals(other, null))
+                if (other is null)
                 {
                     return 1;
                 }
@@ -66,7 +66,7 @@ namespace Theraot.Threading
 
             public bool Equals(Target other)
             {
-                if (ReferenceEquals(other, null))
+                if (other is null)
                 {
                     return false;
                 }

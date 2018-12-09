@@ -23,7 +23,7 @@ namespace Theraot.Threading.Needles
                 : base(value)
             {
                 _cloner = CloneHelper<T>.GetCloner();
-                if (ReferenceEquals(_cloner, null))
+                if (_cloner == null)
                 {
                     throw new InvalidOperationException("Unable to get a cloner for " + typeof(T));
                 }
@@ -45,7 +45,7 @@ namespace Theraot.Threading.Needles
                 : base(value)
             {
                 _cloner = CloneHelper<T>.GetCloner();
-                if (ReferenceEquals(_cloner, null))
+                if (_cloner == null)
                 {
                     throw new InvalidOperationException("Unable to get a cloner for " + typeof(T));
                 }
@@ -205,7 +205,7 @@ namespace Theraot.Threading.Needles
                 var transaction = CurrentTransaction;
                 if (transaction != null)
                 {
-                    if (!ReferenceEquals(transaction._lockSlot, null))
+                    if (transaction._lockSlot != null)
                     {
                         _needleLock.Release(transaction._lockSlot);
                     }
@@ -223,7 +223,7 @@ namespace Theraot.Threading.Needles
 
             private T RetrieveClone(Transact transaction)
             {
-                if (ReferenceEquals(transaction, null))
+                if (transaction == null)
                 {
                     return base.Value;
                 }
@@ -250,7 +250,7 @@ namespace Theraot.Threading.Needles
 
             private T RetrieveValue(Transact transaction)
             {
-                if (ReferenceEquals(transaction, null))
+                if (transaction == null)
                 {
                     return base.Value;
                 }
@@ -272,7 +272,7 @@ namespace Theraot.Threading.Needles
 
             private void StoreValue(Transact transaction, T value)
             {
-                if (!IsAlive || ReferenceEquals(transaction, null))
+                if (!IsAlive || transaction == null)
                 {
                     base.Value = value;
                 }

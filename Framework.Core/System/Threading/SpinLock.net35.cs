@@ -29,7 +29,7 @@ namespace System.Threading
                 {
                     throw new InvalidOperationException("Thread ownership tracking is disabled");
                 }
-                return IsHeld && ReferenceEquals(_ownerThread, Thread.CurrentThread);
+                return IsHeld && _ownerThread == Thread.CurrentThread;
             }
         }
 

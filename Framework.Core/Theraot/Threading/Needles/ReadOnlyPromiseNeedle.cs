@@ -64,17 +64,20 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            var needle = obj as ReadOnlyPromiseNeedle<T>;
-            if (obj != null)
+            if (obj is ReadOnlyPromiseNeedle<T> needle)
             {
-                return this == needle;
+                return _promised.Equals(needle._promised);
             }
             return _promised.IsCompleted && _promised.Value.Equals(null);
         }
 
         public bool Equals(ReadOnlyPromiseNeedle<T> other)
         {
-            return this == other;
+            if (other is null)
+            {
+                return false;
+            }
+            return _promised.Equals(other._promised);
         }
 
         public override int GetHashCode()

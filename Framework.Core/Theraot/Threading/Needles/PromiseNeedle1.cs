@@ -94,17 +94,20 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            var needle = obj as PromiseNeedle<T>;
-            if (needle != null)
+            if (obj is PromiseNeedle<T> needle)
             {
-                return this == needle;
+                return _target.Equals(needle._target);
             }
             return IsCompleted && Value.Equals(obj);
         }
 
         public bool Equals(PromiseNeedle<T> other)
         {
-            return this == other;
+            if (other is null)
+            {
+                return false;
+            }
+            return _target.Equals(other._target);
         }
 
         public override void Free()

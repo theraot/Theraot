@@ -52,22 +52,31 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            if (obj is StructNeedle<T> needle)
+            if (obj is StructNeedle<T> right)
             {
-                return this == needle;
+                if (!right.IsAlive)
+                {
+                    return !IsAlive;
+                }
+                obj = right.Value;
             }
-            // Keep the "is" operator
-            if (obj is T variable)
+            if (obj is T rightValue)
             {
-                var target = Value;
-                return IsAlive && EqualityComparer<T>.Default.Equals(target, variable);
+                var value = Value;
+                return IsAlive && EqualityComparer<T>.Default.Equals(value, rightValue);
             }
             return false;
         }
 
         public bool Equals(StructNeedle<T> other)
         {
-            return this == other;
+            var leftValue = Value;
+            if (IsAlive)
+            {
+                var rightValue = other.Value;
+                return other.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
+            }
+            return !other.IsAlive;
         }
 
         void IRecyclableNeedle<T>.Free()

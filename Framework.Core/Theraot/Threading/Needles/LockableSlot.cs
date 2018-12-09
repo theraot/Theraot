@@ -36,7 +36,7 @@ namespace Theraot.Threading.Needles
         public void Dispose()
         {
             var lockSlot = Interlocked.Exchange(ref _lockSlot, null);
-            if (ReferenceEquals(lockSlot, null))
+            if (lockSlot == null)
             {
                 return;
             }

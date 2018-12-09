@@ -39,7 +39,7 @@ namespace Theraot.Threading.Needles
 
         public bool Commit()
         {
-            if (ReferenceEquals(_currentTransaction, this))
+            if (_currentTransaction == this)
             {
                 ThreadingHelper.MemoryBarrier();
                 try
@@ -86,7 +86,7 @@ namespace Theraot.Threading.Needles
                     }
                     finally
                     {
-                        if (!ReferenceEquals(_lockSlot, null))
+                        if (_lockSlot != null)
                         {
                             _lockSlot.Close();
                             _lockSlot = null;
@@ -103,7 +103,7 @@ namespace Theraot.Threading.Needles
 
         public void Rollback()
         {
-            if (ReferenceEquals(Thread.CurrentThread, _thread))
+            if (Thread.CurrentThread == _thread)
             {
                 Release(false);
             }
