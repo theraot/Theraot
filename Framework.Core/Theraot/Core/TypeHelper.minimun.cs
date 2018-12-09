@@ -211,7 +211,7 @@ namespace Theraot.Core
         {
 #if NETCOREAPP1_0 || NETCOREAPP1_1
             var info = typeof(T).GetTypeInfo();
-            return info.IsClass || (info.IsPrimitive && Marshal.SizeOf<T>() <= IntPtr.Size);
+            return info.IsClass || info.IsPrimitive && Marshal.SizeOf<T>() <= IntPtr.Size;
 #else
             var type = typeof(T);
             var info = type.GetTypeInfo();

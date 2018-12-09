@@ -143,6 +143,7 @@
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\ExtendedEnumerable.cs" Link="Theraot\Collections\Specialized\ExtendedEnumerable.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\ExtendedEnumerableBase.cs" Link="Theraot\Collections\Specialized\ExtendedEnumerableBase.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\FlagArray.cs" Link="Theraot\Collections\Specialized\FlagArray.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\GroupBuilder.cs" Link="Theraot\Collections\Specialized\GroupBuilder.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\Grouping.cs" Link="Theraot\Collections\Specialized\Grouping.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\KeyCollection.cs" Link="Theraot\Collections\Specialized\KeyCollection.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\KeyedStack.cs" Link="Theraot\Collections\Specialized\KeyedStack.cs" />

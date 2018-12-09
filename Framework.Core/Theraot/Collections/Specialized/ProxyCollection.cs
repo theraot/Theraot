@@ -73,7 +73,7 @@ namespace Theraot.Collections.Specialized
             var collection = Instance;
             foreach (var item in collection)
             {
-                if (collection != Instance)
+                if (!ReferenceEquals(collection, Instance))
                 {
                     throw new InvalidOperationException();
                 }
