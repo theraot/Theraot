@@ -24,8 +24,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
-            var groupBuilder = new GroupBuilder<TKey, TSource, TSource>(comparer, source.GetEnumerator(), keySelector, item => item);
-            return groupBuilder.GetGroups();
+            return GroupBuilder<TKey, TSource, TSource>.CreateGroups(source, comparer, keySelector, item => item);
         }
 
         public static IEnumerable<IGrouping<TKey, TElement>> GroupProgressiveBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
@@ -47,8 +46,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
-            var groupBuilder = new GroupBuilder<TKey, TSource, TElement>(comparer, source.GetEnumerator(), keySelector, resultSelector);
-            return groupBuilder.GetGroups();
+            return GroupBuilder<TKey, TSource, TElement>.CreateGroups(source, comparer, keySelector, resultSelector);
         }
 
         public static IEnumerable<TResult> GroupProgressiveBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
@@ -123,17 +121,23 @@ namespace Theraot.Collections
             private readonly Func<TSource, TKey> _keySelector;
             private readonly SafeQueue<Grouping<TKey, TElement>> _results;
             private readonly Func<TSource, TElement> _resultSelector;
+            private TSource _current;
             private IEnumerator<TSource> _enumerator;
             private NullAwareDictionary<TKey, ProxyObservable<TElement>> _proxies;
-            private TSource _current;
 
-            public GroupBuilder(IEqualityComparer<TKey> comparer, IEnumerator<TSource> enumerator, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector)
+            private GroupBuilder(IEnumerator<TSource> enumerator, IEqualityComparer<TKey> comparer, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector)
             {
                 _proxies = new NullAwareDictionary<TKey, ProxyObservable<TElement>>(comparer);
                 _enumerator = enumerator;
                 _results = new SafeQueue<Grouping<TKey, TElement>>();
                 _keySelector = keySelector;
                 _resultSelector = resultSelector;
+            }
+
+            public static IEnumerable<IGrouping<TKey, TElement>> CreateGroups(IEnumerable<TSource> source, IEqualityComparer<TKey> comparer, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector)
+            {
+                var builder = new GroupBuilder<TKey, TSource, TElement>(source.GetEnumerator(), comparer, keySelector, resultSelector);
+                return builder.GetGroups();
             }
 
             public void Dispose()
@@ -148,8 +152,26 @@ namespace Theraot.Collections
                     }
                 }
             }
+            private void Add(TKey key, ICollection<TElement> items, ProxyObservable<TElement> proxy)
+            {
+                var result = new Grouping<TKey, TElement>(key, items);
+                _proxies.Add(key, proxy);
+                _results.Add(result);
+            }
 
-            public IEnumerable<IGrouping<TKey, TElement>> GetGroups()
+            private bool Advance()
+            {
+                if (MoveNext())
+                {
+                    var element = _current;
+                    ProcessElement(element);
+                    return true;
+                }
+                Dispose();
+                return false;
+            }
+
+            private IEnumerable<IGrouping<TKey, TElement>> GetGroups()
             {
                 try
                 {
@@ -171,26 +193,6 @@ namespace Theraot.Collections
                     Dispose();
                 }
             }
-
-            private void Add(TKey key, ICollection<TElement> items, ProxyObservable<TElement> proxy)
-            {
-                var result = new Grouping<TKey, TElement>(key, items);
-                _proxies.Add(key, proxy);
-                _results.Add(result);
-            }
-
-            private bool Advance()
-            {
-                if (MoveNext())
-                {
-                    var element = _current;
-                    ProcessElement(element);
-                    return true;
-                }
-                Dispose();
-                return false;
-            }
-
             private IEnumerable<Grouping<TKey, TElement>> GetPendingGroups()
             {
                 while (_results.TryTake(out var result))
