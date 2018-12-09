@@ -48,12 +48,10 @@ namespace Theraot.Collections
         {
             get
             {
-                Progressor.AsEnumerable().Consume();
+                ConsumeAll();
                 return _cache.Count;
             }
         }
-
-        public bool EndOfEnumeration => Progressor.IsClosed;
 
         public IReadOnlyCollection<TKey> Keys => _keysReadonly;
 
@@ -61,7 +59,7 @@ namespace Theraot.Collections
 
         protected IEqualityComparer<TKey> KeyComparer { get; }
 
-        protected Progressor<IGrouping<TKey, T>> Progressor { get; }
+        private Progressor<IGrouping<TKey, T>> Progressor { get; }
 
         public IEnumerable<T> this[TKey key]
         {
@@ -118,14 +116,11 @@ namespace Theraot.Collections
             {
                 return true;
             }
-            while (Progressor.TryTake(out var item))
+            return ProgressorWhere(Check).Any();
+            bool Check(IGrouping<TKey, T> item)
             {
-                if (KeyComparer.Equals(key, item.Key))
-                {
-                    return true;
-                }
+                return KeyComparer.Equals(key, item.Key);
             }
-            return false;
         }
 
         public void CopyTo(KeyValuePair<TKey, IGrouping<TKey, T>>[] array)
@@ -172,8 +167,10 @@ namespace Theraot.Collections
             {
                 yield return item.Value;
             }
+            var knownCount = _cache.Count;
+            while (Progressor.TryTake(out var item))
             {
-                while (Progressor.TryTake(out var item))
+                if (_cache.Count > knownCount)
                 {
                     yield return item;
                 }
@@ -191,15 +188,52 @@ namespace Theraot.Collections
             {
                 return true;
             }
+            return ProgressorWhere(Check).Any();
+            bool Check(IGrouping<TKey, T> item)
+            {
+                return KeyComparer.Equals(key, item.Key);
+            }
+        }
+
+        protected void ConsumeAll()
+        {
+            Progressor.Consume();
+        }
+
+        protected IEnumerable<IGrouping<TKey, T>> ProgressorWhere(Predicate<IGrouping<TKey, T>> check)
+        {
+            var knownCount = _cache.Count;
             while (Progressor.TryTake(out var item))
             {
-                if (KeyComparer.Equals(key, item.Key))
+                if (_cache.Count > knownCount)
                 {
-                    value = item;
-                    return true;
+                    if (check(item))
+                    {
+                        yield return item;
+                    }
+                    knownCount = _cache.Count;
                 }
             }
-            return false;
+        }
+
+        protected IEnumerable<IGrouping<TKey, T>> ProgressorWhile(Predicate<IGrouping<TKey, T>> check)
+        {
+            var knownCount = _cache.Count;
+            while (Progressor.TryTake(out var item))
+            {
+                if (_cache.Count > knownCount)
+                {
+                    if (check(item))
+                    {
+                        yield return item;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    knownCount = _cache.Count;
+                }
+            }
         }
     }
 }
