@@ -34,7 +34,7 @@ namespace Theraot.Collections
                     while (true)
                     {
                         var advanced = Advance(iterator);
-                        foreach (var pendingResult in iterator.GetPendingResults())
+                        foreach (var pendingResult in iterator.GetPendingGroups())
                         {
                             yield return pendingResult;
                         }
@@ -55,15 +55,13 @@ namespace Theraot.Collections
                 if (!iterator.TryGetProxy(key, out var proxy))
                 {
                     proxy = new ProxyObservable<TSource>();
-                    var collection = ProgressiveCollection<TSource>.Create<SafeCollection<TSource>>
+                    var items = ProgressiveCollection<TSource>.Create<SafeCollection<TSource>>
                     (
                         proxy,
                         () => { Advance(iterator); },
                         EqualityComparer<TSource>.Default
                     );
-                    var result = new Grouping<TKey, TSource>(key, collection);
-                    iterator.AddProxy(key, proxy);
-                    iterator.AddResult(result);
+                    iterator.Add(key, items, proxy);
                 }
                 proxy.OnNext(element);
             }
@@ -108,7 +106,7 @@ namespace Theraot.Collections
                     while (true)
                     {
                         var advanced = Advance(iterator);
-                        foreach (var pendingResult in iterator.GetPendingResults())
+                        foreach (var pendingResult in iterator.GetPendingGroups())
                         {
                             yield return pendingResult;
                         }
@@ -130,15 +128,13 @@ namespace Theraot.Collections
                 if (!iterator.TryGetProxy(key, out var proxy))
                 {
                     proxy = new ProxyObservable<TElement>();
-                    var collection = ProgressiveCollection<TElement>.Create<SafeCollection<TElement>>
+                    var items = ProgressiveCollection<TElement>.Create<SafeCollection<TElement>>
                     (
                         proxy,
                         () => { Advance(iterator); },
                         EqualityComparer<TElement>.Default
                     );
-                    var result = new Grouping<TKey, TElement>(key, collection);
-                    iterator.AddProxy(key, proxy);
-                    iterator.AddResult(result);
+                    iterator.Add(key, items, proxy);
                 }
                 proxy.OnNext(element);
             }
@@ -227,7 +223,6 @@ namespace Theraot.Collections
             private readonly SafeQueue<Grouping<TKey, TElement>> _results;
             private IEnumerator<TSource> _enumerator;
             private NullAwareDictionary<TKey, ProxyObservable<TElement>> _proxies;
-            private TSource _current;
 
             public Iterator(IEqualityComparer<TKey> comparer, IEnumerator<TSource> enumerator)
             {
@@ -236,17 +231,14 @@ namespace Theraot.Collections
                 _results = new SafeQueue<Grouping<TKey, TElement>>();
             }
 
-            public TSource Current => _enumerator.Current;
+            public TSource Current { get; private set; }
 
-            object IEnumerator.Current => _current;
+            object IEnumerator.Current => Current;
 
-            public void AddProxy(TKey key, ProxyObservable<TElement> proxy)
+            public void Add(TKey key, ICollection<TElement> items, ProxyObservable<TElement> proxy)
             {
+                var result = new Grouping<TKey, TElement>(key, items);
                 _proxies.Add(key, proxy);
-            }
-
-            public void AddResult(Grouping<TKey, TElement> result)
-            {
                 _results.Add(result);
             }
 
@@ -263,7 +255,7 @@ namespace Theraot.Collections
                 }
             }
 
-            public IEnumerable<Grouping<TKey, TElement>> GetPendingResults()
+            public IEnumerable<Grouping<TKey, TElement>> GetPendingGroups()
             {
                 while (_results.TryTake(out var result))
                 {
@@ -276,13 +268,13 @@ namespace Theraot.Collections
                 var enumerator = Volatile.Read(ref _enumerator);
                 if (enumerator != null && enumerator.MoveNext())
                 {
-                    _current = enumerator.Current;
+                    Current = enumerator.Current;
                     return true;
                 }
                 return false;
             }
 
-            public void Reset()
+            void IEnumerator.Reset()
             {
                 Volatile.Read(ref _enumerator)?.Reset();
             }
