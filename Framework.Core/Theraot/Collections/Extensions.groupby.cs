@@ -24,30 +24,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
-            return CreateGroupByIterator();
-            IEnumerable<IGrouping<TKey, TSource>> CreateGroupByIterator()
-            {
-                var groupBuilder = new GroupBuilder<TKey, TSource, TSource>(comparer, source.GetEnumerator(), keySelector, item => item);
-                try
-                {
-                    while (true)
-                    {
-                        var advanced = groupBuilder.Advance();
-                        foreach (var pendingResult in groupBuilder.GetPendingGroups())
-                        {
-                            yield return pendingResult;
-                        }
-                        if (!advanced)
-                        {
-                            break;
-                        }
-                    }
-                }
-                finally
-                {
-                    groupBuilder.Dispose();
-                }
-            }
+            var groupBuilder = new GroupBuilder<TKey, TSource, TSource>(comparer, source.GetEnumerator(), keySelector, item => item);
+            return groupBuilder.GetGroups();
         }
 
         public static IEnumerable<IGrouping<TKey, TElement>> GroupProgressiveBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
@@ -69,30 +47,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
-            return CreateGroupByIterator();
-            IEnumerable<IGrouping<TKey, TElement>> CreateGroupByIterator()
-            {
-                var groupBuilder = new GroupBuilder<TKey, TSource, TElement>(comparer, source.GetEnumerator(), keySelector, resultSelector);
-                try
-                {
-                    while (true)
-                    {
-                        var advanced = groupBuilder.Advance();
-                        foreach (var pendingResult in groupBuilder.GetPendingGroups())
-                        {
-                            yield return pendingResult;
-                        }
-                        if (!advanced)
-                        {
-                            break;
-                        }
-                    }
-                }
-                finally
-                {
-                    groupBuilder.Dispose();
-                }
-            }
+            var groupBuilder = new GroupBuilder<TKey, TSource, TElement>(comparer, source.GetEnumerator(), keySelector, resultSelector);
+            return groupBuilder.GetGroups();
         }
 
         public static IEnumerable<TResult> GroupProgressiveBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
@@ -169,6 +125,7 @@ namespace Theraot.Collections
             private readonly Func<TSource, TElement> _resultSelector;
             private IEnumerator<TSource> _enumerator;
             private NullAwareDictionary<TKey, ProxyObservable<TElement>> _proxies;
+            private TSource _current;
 
             public GroupBuilder(IEqualityComparer<TKey> comparer, IEnumerator<TSource> enumerator, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector)
             {
@@ -177,20 +134,6 @@ namespace Theraot.Collections
                 _results = new SafeQueue<Grouping<TKey, TElement>>();
                 _keySelector = keySelector;
                 _resultSelector = resultSelector;
-            }
-
-            private TSource Current { get; set; }
-
-            public bool Advance()
-            {
-                if (MoveNext())
-                {
-                    var element = Current;
-                    ProcessElement(element);
-                    return true;
-                }
-                Dispose();
-                return false;
             }
 
             public void Dispose()
@@ -206,11 +149,26 @@ namespace Theraot.Collections
                 }
             }
 
-            public IEnumerable<Grouping<TKey, TElement>> GetPendingGroups()
+            public IEnumerable<IGrouping<TKey, TElement>> GetGroups()
             {
-                while (_results.TryTake(out var result))
+                try
                 {
-                    yield return result;
+                    while (true)
+                    {
+                        var advanced = Advance();
+                        foreach (var pendingResult in GetPendingGroups())
+                        {
+                            yield return pendingResult;
+                        }
+                        if (!advanced)
+                        {
+                            break;
+                        }
+                    }
+                }
+                finally
+                {
+                    Dispose();
                 }
             }
 
@@ -220,12 +178,33 @@ namespace Theraot.Collections
                 _proxies.Add(key, proxy);
                 _results.Add(result);
             }
+
+            private bool Advance()
+            {
+                if (MoveNext())
+                {
+                    var element = _current;
+                    ProcessElement(element);
+                    return true;
+                }
+                Dispose();
+                return false;
+            }
+
+            private IEnumerable<Grouping<TKey, TElement>> GetPendingGroups()
+            {
+                while (_results.TryTake(out var result))
+                {
+                    yield return result;
+                }
+            }
+
             private bool MoveNext()
             {
                 var enumerator = Volatile.Read(ref _enumerator);
                 if (enumerator != null && enumerator.MoveNext())
                 {
-                    Current = enumerator.Current;
+                    _current = enumerator.Current;
                     return true;
                 }
                 return false;
