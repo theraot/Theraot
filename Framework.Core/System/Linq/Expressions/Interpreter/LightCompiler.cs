@@ -324,6 +324,7 @@ namespace System.Linq.Expressions.Interpreter
             throw new InvalidOperationException("MemberNotFieldOrProperty");
         }
 
+#if DEBUG
         private static bool IsNullComparison(Expression left, Expression right)
         {
             return IsNullConstant(left)
@@ -335,6 +336,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             return e is ConstantExpression c && c.Value == null;
         }
+#endif
 
         private static bool ShouldWritebackNode(Expression node)
         {
