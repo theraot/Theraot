@@ -1,96 +1,84 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections.Specialized
 {
-    internal sealed class GroupBuilder<TKey, TSource, TElement>
+    internal class GroupBuilder<TKey, TSource, TElement>
     {
-        private readonly Func<TSource, TKey> _keySelector;
         private readonly SafeQueue<Grouping<TKey, TElement>> _results;
+        private readonly SafeDictionary<TKey, ProxyObservable<TElement>> _proxies;
+        private readonly Func<TSource, TKey> _keySelector;
         private readonly Func<TSource, TElement> _resultSelector;
         private IEnumerator<TSource> _enumerator;
-        private SafeDictionary<TKey, ProxyObservable<TElement>> _proxies;
 
-        private GroupBuilder(IEnumerator<TSource> enumerator, IEqualityComparer<TKey> comparer, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector)
+        private GroupBuilder(IEnumerable<TSource> source, IEqualityComparer<TKey> comparer, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector)
         {
-            _proxies = new SafeDictionary<TKey, ProxyObservable<TElement>>(comparer);
-            _enumerator = enumerator;
+            _enumerator = source.GetEnumerator();
             _results = new SafeQueue<Grouping<TKey, TElement>>();
+            _proxies = new SafeDictionary<TKey, ProxyObservable<TElement>>(comparer);
             _keySelector = keySelector;
             _resultSelector = resultSelector;
         }
 
         public static IEnumerable<IGrouping<TKey, TElement>> CreateGroups(IEnumerable<TSource> source, IEqualityComparer<TKey> comparer, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector)
         {
-            var builder = new GroupBuilder<TKey, TSource, TElement>(source.GetEnumerator(), comparer, keySelector, resultSelector);
-            return builder.GetGroups();
+            var instance = new GroupBuilder<TKey, TSource, TElement>(source, comparer, keySelector, resultSelector);
+            while (true)
+            {
+                var advanced = instance.MoveNext();
+                while (instance.GetPendingResults(out var pendingResult))
+                {
+                    yield return pendingResult;
+                }
+                if (!advanced)
+                {
+                    break;
+                }
+            }
         }
 
         private void Advance()
         {
-            var enumerator = Volatile.Read(ref _enumerator);
-            if (enumerator != null && !MoveNext(enumerator))
-            {
-                Dispose();
-            }
+            MoveNext();
         }
 
-        private void Dispose()
+        private bool GetPendingResults(out Grouping<TKey, TElement> pendingResult)
         {
-            Interlocked.Exchange(ref _enumerator, null)?.Dispose();
-            var proxies = Interlocked.Exchange(ref _proxies, null);
-            if (proxies != null)
-            {
-                foreach (var group in proxies)
-                {
-                    group.Value.OnCompleted();
-                }
-            }
+            return _results.TryTake(out pendingResult);
         }
 
-        private IEnumerable<IGrouping<TKey, TElement>> GetGroups()
-        {
-            try
-            {
-                var enumerator = _enumerator;
-                while (true)
-                {
-                    var advanced = MoveNext(enumerator);
-                    while (_results.TryTake(out var pendingResult))
-                    {
-                        yield return pendingResult;
-                    }
-                    if (!advanced)
-                    {
-                        break;
-                    }
-                }
-            }
-            finally
-            {
-                Dispose();
-            }
-        }
-
-        private bool MoveNext(IEnumerator<TSource> enumerator)
+        private bool MoveNext()
         {
             TSource item;
-            lock (enumerator)
+            if (_enumerator == null)
             {
-                if (!enumerator.MoveNext())
+                return false;
+            }
+            lock (_enumerator)
+            {
+                if (!_enumerator.MoveNext())
                 {
+                    _enumerator.Dispose();
+                    foreach (var group in _proxies)
+                    {
+                        group.Value.OnCompleted();
+                    }
+                    _enumerator = null;
                     return false;
                 }
-                item = enumerator.Current;
+                item = _enumerator.Current;
             }
             var key = _keySelector(item);
             var element = _resultSelector(item);
             if (_proxies.TryGetOrAdd(key, _ => new ProxyObservable<TElement>(), out var proxy))
             {
-                var progressor = Progressor<TElement>.CreateFromIObservable(proxy, Advance);
+                var progressor = Progressor<TElement>.CreateFromIObservable
+                (
+                    proxy,
+                    Advance
+                );
                 var items = ProgressiveCollection<TElement>.Create<SafeCollection<TElement>>
                 (
                     progressor,
