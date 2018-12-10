@@ -17,20 +17,14 @@ namespace Theraot.Collections.ThreadSafe
         private const int _capacityLog2 = 5;
         private const int _capacity = 1 << _capacityLog2;
         private const int _mask = _capacity - 1;
-        private const long _lvl1 = 1L << (_capacityLog2 * 1);
-        private const long _lvl2 = 1L << (_capacityLog2 * 2);
-        private const long _lvl3 = 1L << (_capacityLog2 * 3);
-        private const long _lvl4 = 1L << (_capacityLog2 * 4);
-        private const long _lvl5 = 1L << (_capacityLog2 * 5);
-        private const long _lvl6 = 1L << (_capacityLog2 * 6);
-        private const long _lvl7 = 1L << (_capacityLog2 * 7);
+        private const int _maxLevel = 1 + 31 / _capacityLog2;
         private readonly int _level;
         private object[] _arrayFirst;
         private object[] _arraySecond;
         private int[] _arrayUse;
 
         public BucketCore()
-            : this (7)
+            : this (_maxLevel)
         {
             // Empty
         }
@@ -65,39 +59,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     ArrayReservoir<int>.DonateArray(arrayUse);
                     _arrayUse = null;
-                }
-            }
-        }
-
-        public long Length
-        {
-            get
-            {
-                switch (_level)
-                {
-                    case 1:
-                        return _lvl1;
-
-                    case 2:
-                        return _lvl2;
-
-                    case 3:
-                        return _lvl3;
-
-                    case 4:
-                        return _lvl4;
-
-                    case 5:
-                        return _lvl5;
-
-                    case 6:
-                        return _lvl6;
-
-                    case 7:
-                        return _lvl7;
-
-                    default:
-                        return 0;
                 }
             }
         }
