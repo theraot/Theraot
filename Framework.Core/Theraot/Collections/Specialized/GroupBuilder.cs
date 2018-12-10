@@ -29,13 +29,6 @@ namespace Theraot.Collections.Specialized
             return builder.GetGroups();
         }
 
-        private void Add(TKey key, ICollection<TElement> items, ProxyObservable<TElement> proxy)
-        {
-            var result = new Grouping<TKey, TElement>(key, items);
-            _proxies.Add(key, proxy);
-            _results.Add(result);
-        }
-
         private void Advance()
         {
             var enumerator = Volatile.Read(ref _enumerator);
@@ -66,7 +59,7 @@ namespace Theraot.Collections.Specialized
                 while (true)
                 {
                     var advanced = MoveNext(enumerator);
-                    foreach (var pendingResult in GetPendingGroups())
+                    while (_results.TryTake(out var pendingResult))
                     {
                         yield return pendingResult;
                     }
@@ -82,47 +75,33 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        private IEnumerable<Grouping<TKey, TElement>> GetPendingGroups()
-        {
-            while (_results.TryTake(out var result))
-            {
-                yield return result;
-            }
-        }
-
         private bool MoveNext(IEnumerator<TSource> enumerator)
         {
             lock (enumerator)
             {
                 if (enumerator.MoveNext())
                 {
-                    ProcessElement(enumerator.Current);
+                    var item = enumerator.Current;
+                    var key = _keySelector(item);
+                    var element = _resultSelector(item);
+                    if (!_proxies.TryGetValue(key, out var proxy))
+                    {
+                        proxy = new ProxyObservable<TElement>();
+                        var progressor = Progressor<TElement>.CreateFromIObservable(proxy, Advance);
+                        var items = ProgressiveCollection<TElement>.Create<SafeCollection<TElement>>
+                        (
+                            progressor,
+                            EqualityComparer<TElement>.Default
+                        );
+                        var result = new Grouping<TKey, TElement>(key, items);
+                        _proxies.Add(key, proxy);
+                        _results.Add(result);
+                    }
+                    proxy.OnNext(element);
                     return true;
                 }
             }
             return false;
-        }
-
-        private void ProcessElement(TSource item)
-        {
-            var key = _keySelector(item);
-            var element = _resultSelector(item);
-            if (!TryGetProxy(key, out var proxy))
-            {
-                proxy = new ProxyObservable<TElement>();
-                var progressor = Progressor<TElement>.CreateFromIObservable(proxy, Advance);
-                var items = ProgressiveCollection<TElement>.Create<SafeCollection<TElement>>(
-                    progressor,
-                    EqualityComparer<TElement>.Default
-                );
-                Add(key, items, proxy);
-            }
-            proxy.OnNext(element);
-        }
-
-        private bool TryGetProxy(TKey key, out ProxyObservable<TElement> proxy)
-        {
-            return _proxies.TryGetValue(key, out proxy);
         }
     }
 }
