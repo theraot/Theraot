@@ -108,7 +108,7 @@ namespace Theraot.Collections
             return new Progressor<T>(proxy, Take);
         }
 
-        public static Progressor<T> CreateFromIObservable(IObservable<T> observable, Action exhaustedCallback = null)
+        public static Progressor<T> CreateFromIObservable(IObservable<T> observable, Action exhaustedCallback = null, CancellationToken token = default)
         {
             if (observable == null)
             {
@@ -139,37 +139,53 @@ namespace Theraot.Collections
             }
             bool TakeInitial(out T value)
             {
-                if (source.IsCancellationRequested)
+                if (!token.IsCancellationRequested)
                 {
-                    if (Interlocked.CompareExchange(ref tryTake[0], TakeReplacement, tryTake[0]) == tryTake[0])
+                    if (source.IsCancellationRequested)
                     {
-                        Interlocked.Exchange(ref subscription, null)?.Dispose();
-                    }
-                }
-                else
-                {
-                    if (exhaustedCallback != null)
-                    {
-                        var spinWait = new SpinWait();
-                        while (semaphore.CurrentCount == 0 && !source.IsCancellationRequested)
+                        if (Interlocked.CompareExchange(ref tryTake[0], TakeReplacement, tryTake[0]) == tryTake[0])
                         {
-                            exhaustedCallback();
-                            spinWait.SpinOnce();
+                            Interlocked.Exchange(ref subscription, null)?.Dispose();
+                        }
+                    }
+                    else
+                    {
+                        if (exhaustedCallback != null)
+                        {
+                            var spinWait = new SpinWait();
+                            while (semaphore.CurrentCount == 0 && !source.IsCancellationRequested &&
+                                   !token.IsCancellationRequested)
+                            {
+                                exhaustedCallback();
+                                spinWait.SpinOnce();
+                            }
+                            if (token.IsCancellationRequested)
+                            {
+                                Interlocked.Exchange(ref subscription, null)?.Dispose();
+                                value = default;
+                                return false;
+                            }
                         }
                     }
                 }
-                if (!source.IsCancellationRequested)
+                if (!token.IsCancellationRequested)
                 {
-                    try
+                    if (!source.IsCancellationRequested)
                     {
-                        semaphore.Wait(source.Token);
+                        try
+                        {
+                            semaphore.Wait(source.Token);
+                        }
+                        catch (OperationCanceledException exception)
+                        {
+                            GC.KeepAlive(exception);
+                        }
                     }
-                    catch (OperationCanceledException exception)
-                    {
-                        GC.KeepAlive(exception);
-                    }
+                    return TakeReplacement(out value);
                 }
-                return TakeReplacement(out value);
+                Interlocked.Exchange(ref subscription, null)?.Dispose();
+                value = default;
+                return false;
             }
             bool TakeReplacement(out T value)
             {
