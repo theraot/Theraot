@@ -6,7 +6,7 @@ using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections.Specialized
 {
-    internal sealed class GroupBuilder<TKey, TSource, TElement> : IDisposable
+    internal sealed class GroupBuilder<TKey, TSource, TElement>
     {
         private readonly Func<TSource, TKey> _keySelector;
         private readonly SafeQueue<Grouping<TKey, TElement>> _results;
@@ -29,18 +29,6 @@ namespace Theraot.Collections.Specialized
             return builder.GetGroups();
         }
 
-        public void Dispose()
-        {
-            Interlocked.Exchange(ref _enumerator, null)?.Dispose();
-            var proxies = Interlocked.Exchange(ref _proxies, null);
-            if (proxies != null)
-            {
-                foreach (var group in proxies)
-                {
-                    group.Value.OnCompleted();
-                }
-            }
-        }
         private void Add(TKey key, ICollection<TElement> items, ProxyObservable<TElement> proxy)
         {
             var result = new Grouping<TKey, TElement>(key, items);
@@ -54,6 +42,19 @@ namespace Theraot.Collections.Specialized
             if (enumerator != null && !MoveNext(enumerator))
             {
                 Dispose();
+            }
+        }
+
+        private void Dispose()
+        {
+            Interlocked.Exchange(ref _enumerator, null)?.Dispose();
+            var proxies = Interlocked.Exchange(ref _proxies, null);
+            if (proxies != null)
+            {
+                foreach (var group in proxies)
+                {
+                    group.Value.OnCompleted();
+                }
             }
         }
 
