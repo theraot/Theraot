@@ -14,7 +14,7 @@ namespace Theraot.Collections.ThreadSafe
 
     internal class BucketCore : IEnumerable<object>
     {
-        private const int _capacityLog2 = 5;
+        private const int _capacityLog2 = 8;
         private const int _capacity = 1 << _capacityLog2;
         private const int _mask = _capacity - 1;
         private const int _maxLevel = 1 + 31 / _capacityLog2;
