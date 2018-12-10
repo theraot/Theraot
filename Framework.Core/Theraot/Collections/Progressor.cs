@@ -139,53 +139,42 @@ namespace Theraot.Collections
             }
             bool TakeInitial(out T value)
             {
-                if (!token.IsCancellationRequested)
+                if (source.IsCancellationRequested || token.IsCancellationRequested)
                 {
-                    if (source.IsCancellationRequested)
+                    if (Interlocked.CompareExchange(ref tryTake[0], TakeReplacement, tryTake[0]) == tryTake[0])
                     {
-                        if (Interlocked.CompareExchange(ref tryTake[0], TakeReplacement, tryTake[0]) == tryTake[0])
-                        {
-                            Interlocked.Exchange(ref subscription, null)?.Dispose();
-                        }
+                        Interlocked.Exchange(ref subscription, null)?.Dispose();
                     }
-                    else
+                }
+                else
+                {
+                    if (exhaustedCallback != null)
                     {
-                        if (exhaustedCallback != null)
+                        var spinWait = new SpinWait();
+                        while
+                        (
+                            semaphore.CurrentCount == 0
+                            && !source.IsCancellationRequested
+                            && !token.IsCancellationRequested
+                        )
                         {
-                            var spinWait = new SpinWait();
-                            while (semaphore.CurrentCount == 0 && !source.IsCancellationRequested &&
-                                   !token.IsCancellationRequested)
-                            {
-                                exhaustedCallback();
-                                spinWait.SpinOnce();
-                            }
-                            if (token.IsCancellationRequested)
-                            {
-                                Interlocked.Exchange(ref subscription, null)?.Dispose();
-                                value = default;
-                                return false;
-                            }
+                            exhaustedCallback();
+                            spinWait.SpinOnce();
                         }
                     }
                 }
-                if (!token.IsCancellationRequested)
+                if (!source.IsCancellationRequested && !token.IsCancellationRequested)
                 {
-                    if (!source.IsCancellationRequested)
+                    try
                     {
-                        try
-                        {
-                            semaphore.Wait(source.Token);
-                        }
-                        catch (OperationCanceledException exception)
-                        {
-                            GC.KeepAlive(exception);
-                        }
+                        semaphore.Wait(source.Token);
                     }
-                    return TakeReplacement(out value);
+                    catch (OperationCanceledException exception)
+                    {
+                        GC.KeepAlive(exception);
+                    }
                 }
-                Interlocked.Exchange(ref subscription, null)?.Dispose();
-                value = default;
-                return false;
+                return TakeReplacement(out value);
             }
             bool TakeReplacement(out T value)
             {
