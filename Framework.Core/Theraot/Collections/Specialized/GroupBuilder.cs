@@ -28,18 +28,15 @@ namespace Theraot.Collections.Specialized
         public static IEnumerable<IGrouping<TKey, TElement>> CreateGroups(IEnumerable<TSource> source, IEqualityComparer<TKey> comparer, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector)
         {
             var instance = new GroupBuilder<TKey, TSource, TElement>(source, comparer, keySelector, resultSelector);
-            while (true)
+            bool advanced;
+            do
             {
-                var advanced = instance.MoveNext();
+                advanced = instance.MoveNext();
                 while (instance.GetPendingResults(out var pendingResult))
                 {
                     yield return pendingResult;
                 }
-                if (!advanced)
-                {
-                    break;
-                }
-            }
+            } while (advanced);
         }
 
         private void Advance()
@@ -68,7 +65,6 @@ namespace Theraot.Collections.Specialized
                     _enumerator = null;
                     return false;
                 }
-
                 item = _enumerator.Current;
             }
             var key = _keySelector(item);
