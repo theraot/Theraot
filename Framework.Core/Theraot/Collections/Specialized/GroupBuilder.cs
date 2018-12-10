@@ -11,7 +11,6 @@ namespace Theraot.Collections.Specialized
         private readonly Func<TSource, TKey> _keySelector;
         private readonly SafeQueue<Grouping<TKey, TElement>> _results;
         private readonly Func<TSource, TElement> _resultSelector;
-        private TSource _current;
         private IEnumerator<TSource> _enumerator;
         private NullAwareDictionary<TKey, ProxyObservable<TElement>> _proxies;
 
@@ -49,25 +48,23 @@ namespace Theraot.Collections.Specialized
             _results.Add(result);
         }
 
-        private bool Advance()
+        private void Advance()
         {
-            if (MoveNext())
+            var enumerator = Volatile.Read(ref _enumerator);
+            if (enumerator != null && !MoveNext(enumerator))
             {
-                var element = _current;
-                ProcessElement(element);
-                return true;
+                Dispose();
             }
-            Dispose();
-            return false;
         }
 
         private IEnumerable<IGrouping<TKey, TElement>> GetGroups()
         {
             try
             {
+                var enumerator = _enumerator;
                 while (true)
                 {
-                    var advanced = Advance();
+                    var advanced = MoveNext(enumerator);
                     foreach (var pendingResult in GetPendingGroups())
                     {
                         yield return pendingResult;
@@ -83,6 +80,7 @@ namespace Theraot.Collections.Specialized
                 Dispose();
             }
         }
+
         private IEnumerable<Grouping<TKey, TElement>> GetPendingGroups()
         {
             while (_results.TryTake(out var result))
@@ -91,13 +89,15 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        private bool MoveNext()
+        private bool MoveNext(IEnumerator<TSource> enumerator)
         {
-            var enumerator = Volatile.Read(ref _enumerator);
-            if (enumerator != null && enumerator.MoveNext())
+            lock (enumerator)
             {
-                _current = enumerator.Current;
-                return true;
+                if (enumerator.MoveNext())
+                {
+                    ProcessElement(enumerator.Current);
+                    return true;
+                }
             }
             return false;
         }
@@ -112,7 +112,7 @@ namespace Theraot.Collections.Specialized
                 var items = ProgressiveCollection<TElement>.Create<SafeCollection<TElement>>
                 (
                     proxy,
-                    () => { Advance(); },
+                    Advance,
                     EqualityComparer<TElement>.Default
                 );
                 Add(key, items, proxy);
