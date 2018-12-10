@@ -8,13 +8,12 @@ namespace Theraot.Core
 {
     class TupleEqualityComparer<T> : IEqualityComparer<Tuple<T>>
     {
-        private static readonly TupleEqualityComparer<T> _default;
 
         private readonly IEqualityComparer<T> _comparer;
 
         static TupleEqualityComparer()
         {
-            _default = new TupleEqualityComparer<T>();
+            Default = new TupleEqualityComparer<T>();
         }
 
         public TupleEqualityComparer(IEqualityComparer<T> comparer)
@@ -27,13 +26,7 @@ namespace Theraot.Core
             _comparer = EqualityComparerHelper<T>.Default;
         }
 
-        public static TupleEqualityComparer<T> Default
-        {
-            get
-            {
-                return _default;
-            }
-        }
+        public static TupleEqualityComparer<T> Default { get; }
 
         public bool Equals(Tuple<T> x, Tuple<T> y)
         {
@@ -58,20 +51,23 @@ namespace Theraot.Core
             {
                 return EqualityComparer<object>.Default.GetHashCode(null);
             }
-            return _comparer.GetHashCode(obj.Item1);
+            else 
+            {
+                return
+                    _comparer.GetHashCode(obj.Item1);
+            }
         }
     }
 
     class TupleEqualityComparer<T1, T2> : IEqualityComparer<Tuple<T1, T2>>
     {
-        private static readonly TupleEqualityComparer<T1, T2> _default;
 
         private readonly IEqualityComparer<T1> _comparer1;
         private readonly IEqualityComparer<T2> _comparer2;
 
         static TupleEqualityComparer()
         {
-            _default = new TupleEqualityComparer<T1, T2>();
+            Default = new TupleEqualityComparer<T1, T2>();
         }
 
         public TupleEqualityComparer(IEqualityComparer<T1> comparer1, IEqualityComparer<T2> comparer2)
@@ -86,13 +82,7 @@ namespace Theraot.Core
             _comparer2 = EqualityComparerHelper<T2>.Default;
         }
 
-        public static TupleEqualityComparer<T1, T2> Default
-        {
-            get
-            {
-                return _default;
-            }
-        }
+        public static TupleEqualityComparer<T1, T2> Default { get; }
 
         public bool Equals(Tuple<T1, T2> x, Tuple<T1, T2> y)
         {
@@ -121,7 +111,7 @@ namespace Theraot.Core
             else unchecked
             {
                 return
-                    (_comparer1.GetHashCode(obj.Item1) * 17) +
+                    _comparer1.GetHashCode(obj.Item1) * 17 +
                     _comparer2.GetHashCode(obj.Item2);
             }
         }
@@ -129,7 +119,6 @@ namespace Theraot.Core
 
     class TupleEqualityComparer<T1, T2, T3> : IEqualityComparer<Tuple<T1, T2, T3>>
     {
-        private static readonly TupleEqualityComparer<T1, T2, T3> _default;
 
         private readonly IEqualityComparer<T1> _comparer1;
         private readonly IEqualityComparer<T2> _comparer2;
@@ -137,7 +126,7 @@ namespace Theraot.Core
 
         static TupleEqualityComparer()
         {
-            _default = new TupleEqualityComparer<T1, T2, T3>();
+            Default = new TupleEqualityComparer<T1, T2, T3>();
         }
 
         public TupleEqualityComparer(IEqualityComparer<T1> comparer1, IEqualityComparer<T2> comparer2, IEqualityComparer<T3> comparer3)
@@ -154,13 +143,7 @@ namespace Theraot.Core
             _comparer3 = EqualityComparerHelper<T3>.Default;
         }
 
-        public static TupleEqualityComparer<T1, T2, T3> Default
-        {
-            get
-            {
-                return _default;
-            }
-        }
+        public static TupleEqualityComparer<T1, T2, T3> Default { get; }
 
         public bool Equals(Tuple<T1, T2, T3> x, Tuple<T1, T2, T3> y)
         {
@@ -190,8 +173,8 @@ namespace Theraot.Core
             else unchecked
             {
                 return
-                    (_comparer1.GetHashCode(obj.Item1) * 17) +
-                    (_comparer2.GetHashCode(obj.Item2) * 17) +
+                    _comparer1.GetHashCode(obj.Item1) * 17 +
+                    _comparer2.GetHashCode(obj.Item2) * 17 +
                     _comparer3.GetHashCode(obj.Item3);
             }
         }
@@ -199,7 +182,6 @@ namespace Theraot.Core
 
     class TupleEqualityComparer<T1, T2, T3, T4> : IEqualityComparer<Tuple<T1, T2, T3, T4>>
     {
-        private static readonly TupleEqualityComparer<T1, T2, T3, T4> _default;
 
         private readonly IEqualityComparer<T1> _comparer1;
         private readonly IEqualityComparer<T2> _comparer2;
@@ -208,7 +190,7 @@ namespace Theraot.Core
 
         static TupleEqualityComparer()
         {
-            _default = new TupleEqualityComparer<T1, T2, T3, T4>();
+            Default = new TupleEqualityComparer<T1, T2, T3, T4>();
         }
 
         public TupleEqualityComparer(IEqualityComparer<T1> comparer1, IEqualityComparer<T2> comparer2, IEqualityComparer<T3> comparer3, IEqualityComparer<T4> comparer4)
@@ -227,13 +209,7 @@ namespace Theraot.Core
             _comparer4 = EqualityComparerHelper<T4>.Default;
         }
 
-        public static TupleEqualityComparer<T1, T2, T3, T4> Default
-        {
-            get
-            {
-                return _default;
-            }
-        }
+        public static TupleEqualityComparer<T1, T2, T3, T4> Default { get; }
 
         public bool Equals(Tuple<T1, T2, T3, T4> x, Tuple<T1, T2, T3, T4> y)
         {
@@ -264,9 +240,9 @@ namespace Theraot.Core
             else unchecked
             {
                 return
-                    (_comparer1.GetHashCode(obj.Item1) * 17) +
-                    (_comparer2.GetHashCode(obj.Item2) * 17) +
-                    (_comparer3.GetHashCode(obj.Item3) * 17) +
+                    _comparer1.GetHashCode(obj.Item1) * 17 +
+                    _comparer2.GetHashCode(obj.Item2) * 17 +
+                    _comparer3.GetHashCode(obj.Item3) * 17 +
                     _comparer4.GetHashCode(obj.Item4);
             }
         }
@@ -274,7 +250,6 @@ namespace Theraot.Core
 
     class TupleEqualityComparer<T1, T2, T3, T4, T5> : IEqualityComparer<Tuple<T1, T2, T3, T4, T5>>
     {
-        private static readonly TupleEqualityComparer<T1, T2, T3, T4, T5> _default;
 
         private readonly IEqualityComparer<T1> _comparer1;
         private readonly IEqualityComparer<T2> _comparer2;
@@ -284,7 +259,7 @@ namespace Theraot.Core
 
         static TupleEqualityComparer()
         {
-            _default = new TupleEqualityComparer<T1, T2, T3, T4, T5>();
+            Default = new TupleEqualityComparer<T1, T2, T3, T4, T5>();
         }
 
         public TupleEqualityComparer(IEqualityComparer<T1> comparer1, IEqualityComparer<T2> comparer2, IEqualityComparer<T3> comparer3, IEqualityComparer<T4> comparer4, IEqualityComparer<T5> comparer5)
@@ -305,13 +280,7 @@ namespace Theraot.Core
             _comparer5 = EqualityComparerHelper<T5>.Default;
         }
 
-        public static TupleEqualityComparer<T1, T2, T3, T4, T5> Default
-        {
-            get
-            {
-                return _default;
-            }
-        }
+        public static TupleEqualityComparer<T1, T2, T3, T4, T5> Default { get; }
 
         public bool Equals(Tuple<T1, T2, T3, T4, T5> x, Tuple<T1, T2, T3, T4, T5> y)
         {
@@ -343,10 +312,10 @@ namespace Theraot.Core
             else unchecked
             {
                 return
-                    (_comparer1.GetHashCode(obj.Item1) * 17) +
-                    (_comparer2.GetHashCode(obj.Item2) * 17) +
-                    (_comparer3.GetHashCode(obj.Item3) * 17) +
-                    (_comparer4.GetHashCode(obj.Item4) * 17) +
+                    _comparer1.GetHashCode(obj.Item1) * 17 +
+                    _comparer2.GetHashCode(obj.Item2) * 17 +
+                    _comparer3.GetHashCode(obj.Item3) * 17 +
+                    _comparer4.GetHashCode(obj.Item4) * 17 +
                     _comparer5.GetHashCode(obj.Item5);
             }
         }
@@ -354,7 +323,6 @@ namespace Theraot.Core
 
     class TupleEqualityComparer<T1, T2, T3, T4, T5, T6> : IEqualityComparer<Tuple<T1, T2, T3, T4, T5, T6>>
     {
-        private static readonly TupleEqualityComparer<T1, T2, T3, T4, T5, T6> _default;
 
         private readonly IEqualityComparer<T1> _comparer1;
         private readonly IEqualityComparer<T2> _comparer2;
@@ -365,7 +333,7 @@ namespace Theraot.Core
 
         static TupleEqualityComparer()
         {
-            _default = new TupleEqualityComparer<T1, T2, T3, T4, T5, T6>();
+            Default = new TupleEqualityComparer<T1, T2, T3, T4, T5, T6>();
         }
 
         public TupleEqualityComparer(IEqualityComparer<T1> comparer1, IEqualityComparer<T2> comparer2, IEqualityComparer<T3> comparer3, IEqualityComparer<T4> comparer4, IEqualityComparer<T5> comparer5, IEqualityComparer<T6> comparer6)
@@ -388,13 +356,7 @@ namespace Theraot.Core
             _comparer6 = EqualityComparerHelper<T6>.Default;
         }
 
-        public static TupleEqualityComparer<T1, T2, T3, T4, T5, T6> Default
-        {
-            get
-            {
-                return _default;
-            }
-        }
+        public static TupleEqualityComparer<T1, T2, T3, T4, T5, T6> Default { get; }
 
         public bool Equals(Tuple<T1, T2, T3, T4, T5, T6> x, Tuple<T1, T2, T3, T4, T5, T6> y)
         {
@@ -427,11 +389,11 @@ namespace Theraot.Core
             else unchecked
             {
                 return
-                    (_comparer1.GetHashCode(obj.Item1) * 17) +
-                    (_comparer2.GetHashCode(obj.Item2) * 17) +
-                    (_comparer3.GetHashCode(obj.Item3) * 17) +
-                    (_comparer4.GetHashCode(obj.Item4) * 17) +
-                    (_comparer5.GetHashCode(obj.Item5) * 17) +
+                    _comparer1.GetHashCode(obj.Item1) * 17 +
+                    _comparer2.GetHashCode(obj.Item2) * 17 +
+                    _comparer3.GetHashCode(obj.Item3) * 17 +
+                    _comparer4.GetHashCode(obj.Item4) * 17 +
+                    _comparer5.GetHashCode(obj.Item5) * 17 +
                     _comparer6.GetHashCode(obj.Item6);
             }
         }
@@ -439,7 +401,6 @@ namespace Theraot.Core
 
     class TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7> : IEqualityComparer<Tuple<T1, T2, T3, T4, T5, T6, T7>>
     {
-        private static readonly TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7> _default;
 
         private readonly IEqualityComparer<T1> _comparer1;
         private readonly IEqualityComparer<T2> _comparer2;
@@ -451,7 +412,7 @@ namespace Theraot.Core
 
         static TupleEqualityComparer()
         {
-            _default = new TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7>();
+            Default = new TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7>();
         }
 
         public TupleEqualityComparer(IEqualityComparer<T1> comparer1, IEqualityComparer<T2> comparer2, IEqualityComparer<T3> comparer3, IEqualityComparer<T4> comparer4, IEqualityComparer<T5> comparer5, IEqualityComparer<T6> comparer6, IEqualityComparer<T7> comparer7)
@@ -476,13 +437,7 @@ namespace Theraot.Core
             _comparer7 = EqualityComparerHelper<T7>.Default;
         }
 
-        public static TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7> Default
-        {
-            get
-            {
-                return _default;
-            }
-        }
+        public static TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7> Default { get; }
 
         public bool Equals(Tuple<T1, T2, T3, T4, T5, T6, T7> x, Tuple<T1, T2, T3, T4, T5, T6, T7> y)
         {
@@ -516,12 +471,12 @@ namespace Theraot.Core
             else unchecked
             {
                 return
-                    (_comparer1.GetHashCode(obj.Item1) * 17) +
-                    (_comparer2.GetHashCode(obj.Item2) * 17) +
-                    (_comparer3.GetHashCode(obj.Item3) * 17) +
-                    (_comparer4.GetHashCode(obj.Item4) * 17) +
-                    (_comparer5.GetHashCode(obj.Item5) * 17) +
-                    (_comparer6.GetHashCode(obj.Item6) * 17) +
+                    _comparer1.GetHashCode(obj.Item1) * 17 +
+                    _comparer2.GetHashCode(obj.Item2) * 17 +
+                    _comparer3.GetHashCode(obj.Item3) * 17 +
+                    _comparer4.GetHashCode(obj.Item4) * 17 +
+                    _comparer5.GetHashCode(obj.Item5) * 17 +
+                    _comparer6.GetHashCode(obj.Item6) * 17 +
                     _comparer7.GetHashCode(obj.Item7);
             }
         }
@@ -529,7 +484,6 @@ namespace Theraot.Core
 
     class TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7, T8> : IEqualityComparer<Tuple<T1, T2, T3, T4, T5, T6, T7, T8>>
     {
-        private static readonly TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7, T8> _default;
 
         private readonly IEqualityComparer<T1> _comparer1;
         private readonly IEqualityComparer<T2> _comparer2;
@@ -542,7 +496,7 @@ namespace Theraot.Core
 
         static TupleEqualityComparer()
         {
-            _default = new TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7, T8>();
+            Default = new TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7, T8>();
         }
 
         public TupleEqualityComparer(IEqualityComparer<T1> comparer1, IEqualityComparer<T2> comparer2, IEqualityComparer<T3> comparer3, IEqualityComparer<T4> comparer4, IEqualityComparer<T5> comparer5, IEqualityComparer<T6> comparer6, IEqualityComparer<T7> comparer7, IEqualityComparer<T8> comparer8)
@@ -569,13 +523,7 @@ namespace Theraot.Core
             _comparer8 = EqualityComparerHelper<T8>.Default;
         }
 
-        public static TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7, T8> Default
-        {
-            get
-            {
-                return _default;
-            }
-        }
+        public static TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7, T8> Default { get; }
 
         public bool Equals(Tuple<T1, T2, T3, T4, T5, T6, T7, T8> x, Tuple<T1, T2, T3, T4, T5, T6, T7, T8> y)
         {
@@ -610,13 +558,13 @@ namespace Theraot.Core
             else unchecked
             {
                 return
-                    (_comparer1.GetHashCode(obj.Item1) * 17) +
-                    (_comparer2.GetHashCode(obj.Item2) * 17) +
-                    (_comparer3.GetHashCode(obj.Item3) * 17) +
-                    (_comparer4.GetHashCode(obj.Item4) * 17) +
-                    (_comparer5.GetHashCode(obj.Item5) * 17) +
-                    (_comparer6.GetHashCode(obj.Item6) * 17) +
-                    (_comparer7.GetHashCode(obj.Item7) * 17) +
+                    _comparer1.GetHashCode(obj.Item1) * 17 +
+                    _comparer2.GetHashCode(obj.Item2) * 17 +
+                    _comparer3.GetHashCode(obj.Item3) * 17 +
+                    _comparer4.GetHashCode(obj.Item4) * 17 +
+                    _comparer5.GetHashCode(obj.Item5) * 17 +
+                    _comparer6.GetHashCode(obj.Item6) * 17 +
+                    _comparer7.GetHashCode(obj.Item7) * 17 +
                     _comparer8.GetHashCode(obj.Rest);
             }
         }
