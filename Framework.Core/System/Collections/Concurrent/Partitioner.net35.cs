@@ -180,9 +180,9 @@ namespace System.Collections.Concurrent
         {
             if (_source is IList<T> list)
             {
-                return new Progressor<T>(list);
+                return Progressor<T>.CreateFromIList(list);
             }
-            return new Progressor<T>(_source);
+            return Progressor<T>.CreateFromIEnumerable(_source);
         }
 
         public override IEnumerable<KeyValuePair<long, T>> GetOrderableDynamicPartitions()

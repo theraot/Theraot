@@ -27,7 +27,7 @@ namespace Theraot.Collections
         protected ProgressiveLookup(IEnumerable<IGrouping<TKey, T>> wrapped, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            Progressor = new Progressor<IGrouping<TKey, T>>(wrapped);
+            Progressor = Progressor<IGrouping<TKey, T>>.CreateFromIEnumerable(wrapped);
             Progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
             KeyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
             ItemComparer = itemComparer ?? EqualityComparer<T>.Default;
@@ -43,7 +43,7 @@ namespace Theraot.Collections
         protected ProgressiveLookup(IObservable<IGrouping<TKey, T>> wrapped, Action exhaustedCallback, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            Progressor = new Progressor<IGrouping<TKey, T>>(wrapped, exhaustedCallback);
+            Progressor = Progressor<IGrouping<TKey, T>>.CreateFromIObservable(wrapped, exhaustedCallback);
             Progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
             KeyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
             ItemComparer = itemComparer ?? EqualityComparer<T>.Default;

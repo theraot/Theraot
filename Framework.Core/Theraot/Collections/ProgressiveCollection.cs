@@ -41,7 +41,7 @@ namespace Theraot.Collections
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             Cache = Extensions.WrapAsIReadOnlyList(_cache);
-            Progressor = new Progressor<T>(wrapped);
+            Progressor = Progressor<T>.CreateFromIEnumerable(wrapped);
             Progressor.SubscribeAction(obj => _cache.Add(obj));
             Comparer = comparer ?? EqualityComparer<T>.Default;
         }
@@ -56,7 +56,7 @@ namespace Theraot.Collections
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             Cache = Extensions.WrapAsIReadOnlyCollection(_cache);
-            Progressor = new Progressor<T>(wrapped, exhaustedCallback);
+            Progressor = Progressor<T>.CreateFromIObservable(wrapped, exhaustedCallback);
             Progressor.SubscribeAction(obj => _cache.Add(obj));
             Comparer = comparer ?? EqualityComparer<T>.Default;
         }
