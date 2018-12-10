@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections.Specialized
 {
     internal class GroupBuilder<TKey, TSource, TElement>
     {
-        private readonly SafeQueue<Grouping<TKey, TElement>> _results;
-        private readonly SafeDictionary<TKey, ProxyObservable<TElement>> _proxies;
+        private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly Func<TSource, TKey> _keySelector;
+        private readonly SafeDictionary<TKey, ProxyObservable<TElement>> _proxies;
+        private readonly SafeQueue<Grouping<TKey, TElement>> _results;
         private readonly Func<TSource, TElement> _resultSelector;
         private IEnumerator<TSource> _enumerator;
 
@@ -20,6 +22,7 @@ namespace Theraot.Collections.Specialized
             _proxies = new SafeDictionary<TKey, ProxyObservable<TElement>>(comparer);
             _keySelector = keySelector;
             _resultSelector = resultSelector;
+            _cancellationTokenSource = new CancellationTokenSource();
         }
 
         public static IEnumerable<IGrouping<TKey, TElement>> CreateGroups(IEnumerable<TSource> source, IEqualityComparer<TKey> comparer, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector)
@@ -61,13 +64,11 @@ namespace Theraot.Collections.Specialized
                 if (!_enumerator.MoveNext())
                 {
                     _enumerator.Dispose();
-                    foreach (var group in _proxies)
-                    {
-                        group.Value.OnCompleted();
-                    }
+                    _cancellationTokenSource.Cancel();
                     _enumerator = null;
                     return false;
                 }
+
                 item = _enumerator.Current;
             }
             var key = _keySelector(item);
@@ -77,7 +78,8 @@ namespace Theraot.Collections.Specialized
                 var progressor = Progressor<TElement>.CreateFromIObservable
                 (
                     proxy,
-                    Advance
+                    Advance,
+                    _cancellationTokenSource.Token
                 );
                 var items = ProgressiveCollection<TElement>.Create<SafeCollection<TElement>>
                 (
