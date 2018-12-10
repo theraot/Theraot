@@ -14,7 +14,9 @@ namespace Theraot.Collections.ThreadSafe
 
     internal class BucketCore : IEnumerable<object>
     {
-        private const int _capacity = 32;
+        private const int _capacityLog2 = 5;
+        private const int _capacity = 1 << _capacityLog2;
+        private const int _mask = _capacity - 1;
         private const long _lvl1 = _capacity;
         private const long _lvl2 = _lvl1 * _capacity;
         private const long _lvl3 = _lvl2 * _capacity;
@@ -27,12 +29,14 @@ namespace Theraot.Collections.ThreadSafe
         private object[] _arraySecond;
         private int[] _arrayUse;
 
-        public BucketCore(int level)
+        public BucketCore()
+            : this (7)
         {
-            if (level < 0 || level > 7)
-            {
-                throw new ArgumentOutOfRangeException(nameof(level), "level < 0 || level > 7");
-            }
+            // Empty
+        }
+
+        private BucketCore(int level)
+        {
             _level = level;
             _arrayFirst = ArrayReservoir<object>.GetArray(_capacity);
             _arraySecond = ArrayReservoir<object>.GetArray(_capacity);
@@ -440,8 +444,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private int SubIndex(int index)
         {
-            var result = (index >> (5 * (_level - 1))) & 0x1F;
-            return result;
+            return (index >> (_capacityLog2 * (_level - 1))) & _mask;
         }
     }
 }

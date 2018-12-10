@@ -21,7 +21,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public Bucket()
         {
-            _bucketCore = new BucketCore(7);
+            _bucketCore = new BucketCore();
         }
 
         public Bucket(IEnumerable<T> source)
@@ -30,7 +30,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            _bucketCore = new BucketCore(7);
+            _bucketCore = new BucketCore();
             var index = 0;
             foreach (var item in source)
             {
