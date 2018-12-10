@@ -27,7 +27,7 @@ namespace Tests.Theraot.Collections
         public void ObservableProgressorWithPause()
         {
             var source = new SlowObservable<int>(new[] { 0, 1, 2, 3, 4, 5 });
-            var progressor = new Progressor<int>(source);
+            var progressor = Progressor<int>.CreateFromIObservable(source);
             Assert.IsFalse(progressor.IsClosed);
             var data = new[] { 0, 0, 0 };
             using

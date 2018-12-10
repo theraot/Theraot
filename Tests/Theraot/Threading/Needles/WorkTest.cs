@@ -118,7 +118,7 @@ namespace Tests.Theraot.Threading.Needles
         [Category("RaceToDeadLock")] // This test creates a race condition, that when resolved sequentially will be stuck
         public void Progressor_ThreadedUse() // TODO: Review
         {
-            var source = new Progressor<int>(new List<int>
+            var source = Progressor<int>.CreateFromIList(new List<int>
             {
                 0,
                 1,
