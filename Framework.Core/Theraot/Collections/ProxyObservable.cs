@@ -1,26 +1,28 @@
 // Needed for NET40
 
 using System;
+using System.Threading;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
-using Theraot.Threading.Needles;
 
 namespace Theraot.Collections
 {
     public sealed class ProxyObservable<T> : IProxyObservable<T>
     {
-        private readonly SafeSet<Needle<IObserver<T>>> _observers;
+        private readonly Bucket<IObserver<T>> _observers;
+        private int _index;
 
         public ProxyObservable()
         {
-            _observers = new SafeSet<Needle<IObserver<T>>>();
+            _observers = new Bucket<IObserver<T>>();
+            _index = -1;
         }
 
         public void OnCompleted()
         {
             foreach (var item in _observers)
             {
-                item.Value.OnCompleted();
+                item.OnCompleted();
             }
         }
 
@@ -28,7 +30,7 @@ namespace Theraot.Collections
         {
             foreach (var item in _observers)
             {
-                item.Value.OnError(error);
+                item.OnError(error);
             }
         }
 
@@ -36,15 +38,15 @@ namespace Theraot.Collections
         {
             foreach (var item in _observers)
             {
-                item.Value.OnNext(value);
+                item.OnNext(value);
             }
         }
 
         public IDisposable Subscribe(IObserver<T> observer)
         {
-            var needle = new Needle<IObserver<T>>(observer);
-            _observers.AddNew(needle);
-            return Disposable.Create(() => _observers.Remove(needle));
+            var index = Interlocked.Increment(ref _index);
+            _observers.Insert(index, observer);
+            return Disposable.Create(() => _observers.RemoveAt(index));
         }
     }
 }
