@@ -34,13 +34,14 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
-            if (!bucket.TryGet(index, out var stored))
+            if (bucket.TryGet(index, out var stored))
             {
-                var created = itemFactory.Invoke();
-                if (bucket.Insert(index, created, out stored))
-                {
-                    return created;
-                }
+                return stored;
+            }
+            var created = itemFactory.Invoke();
+            if (bucket.Insert(index, created, out stored))
+            {
+                return created;
             }
             return stored;
         }
@@ -463,7 +464,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(check));
             }
-            var matches = bucket.WhereIndexed(value => check(value));
+            var matches = bucket.WhereIndexed(check);
             var count = 0;
             foreach (var pair in matches)
             {
@@ -485,7 +486,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(check));
             }
-            var matches = bucket.WhereIndexed(value => check(value));
+            var matches = bucket.WhereIndexed(check);
             return from pair in matches where bucket.RemoveAt(pair.Key) select pair.Value;
         }
 
