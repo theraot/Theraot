@@ -12,38 +12,34 @@ namespace Theraot.Collections
         private readonly IDictionary<TKey, IGrouping<TKey, T>> _cache;
         private readonly ProgressiveSet<TKey> _keysReadonly;
 
-        public ProgressiveLookup(IEnumerable<IGrouping<TKey, T>> wrapped)
-            : this(wrapped, new NullAwareDictionary<TKey, IGrouping<TKey, T>>(), null, null)
+        public ProgressiveLookup(IEnumerable<IGrouping<TKey, T>> enumerable)
+            : this(Progressor<IGrouping<TKey, T>>.CreateFromIEnumerable(enumerable), new NullAwareDictionary<TKey, IGrouping<TKey, T>>(), null, null)
         {
             // Empty
         }
 
-        public ProgressiveLookup(IEnumerable<IGrouping<TKey, T>> wrapped, IEqualityComparer<TKey> keyComparer)
-            : this(wrapped, new NullAwareDictionary<TKey, IGrouping<TKey, T>>(keyComparer), keyComparer, null)
+        public ProgressiveLookup(IEnumerable<IGrouping<TKey, T>> enumerable, IEqualityComparer<TKey> keyComparer)
+            : this(Progressor<IGrouping<TKey, T>>.CreateFromIEnumerable(enumerable), new NullAwareDictionary<TKey, IGrouping<TKey, T>>(keyComparer), keyComparer, null)
         {
             // Empty
         }
 
-        protected ProgressiveLookup(IEnumerable<IGrouping<TKey, T>> wrapped, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
+        public ProgressiveLookup(IObservable<IGrouping<TKey, T>> observable)
+            : this(Progressor<IGrouping<TKey, T>>.CreateFromIObservable(observable, null), new NullAwareDictionary<TKey, IGrouping<TKey, T>>(), null, null)
+        {
+            // Empty
+        }
+
+        public ProgressiveLookup(IObservable<IGrouping<TKey, T>> observable, IEqualityComparer<TKey> keyComparer)
+            : this(Progressor<IGrouping<TKey, T>>.CreateFromIObservable(observable, null), new NullAwareDictionary<TKey, IGrouping<TKey, T>>(keyComparer), keyComparer, null)
+        {
+            // Empty
+        }
+
+        protected ProgressiveLookup(Progressor<IGrouping<TKey, T>> progressor, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            Progressor = Progressor<IGrouping<TKey, T>>.CreateFromIEnumerable(wrapped);
-            Progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
-            KeyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
-            ItemComparer = itemComparer ?? EqualityComparer<T>.Default;
-            _keysReadonly = new ProgressiveSet<TKey>(Progressor.ConvertProgressive(input => input.Key), keyComparer);
-        }
-
-        protected ProgressiveLookup(IObservable<IGrouping<TKey, T>> wrapped, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
-            : this (wrapped, null, cache, keyComparer, itemComparer)
-        {
-            // Empty
-        }
-
-        protected ProgressiveLookup(IObservable<IGrouping<TKey, T>> wrapped, Action exhaustedCallback, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
-        {
-            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            Progressor = Progressor<IGrouping<TKey, T>>.CreateFromIObservable(wrapped, exhaustedCallback);
+            Progressor = progressor ?? throw new ArgumentNullException(nameof(progressor));
             Progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
             KeyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
             ItemComparer = itemComparer ?? EqualityComparer<T>.Default;
@@ -104,22 +100,10 @@ namespace Theraot.Collections
             return new ProgressiveLookup<TKey, T>(source.GroupProgressiveBy(item => item.Key, item => item.Value, keyComparer), keyComparer);
         }
 
-        public static ProgressiveLookup<TKey, T> Create<TGroupingDictionary>(IEnumerable<IGrouping<TKey, T>> wrapped, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
+        public static ProgressiveLookup<TKey, T> Create<TGroupingDictionary>(Progressor<IGrouping<TKey, T>> progressor, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
             where TGroupingDictionary : IDictionary<TKey, IGrouping<TKey, T>>, new()
         {
-            return new ProgressiveLookup<TKey, T>(wrapped, new TGroupingDictionary(), keyComparer, itemComparer);
-        }
-
-        public static ProgressiveLookup<TKey, T> Create<TGroupingDictionary>(IObservable<IGrouping<TKey, T>> wrapped, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
-            where TGroupingDictionary : IDictionary<TKey, IGrouping<TKey, T>>, new()
-        {
-            return new ProgressiveLookup<TKey, T>(wrapped, new TGroupingDictionary(), keyComparer, itemComparer);
-        }
-
-        public static ProgressiveLookup<TKey, T> Create<TGroupingDictionary>(IObservable<IGrouping<TKey, T>> wrapped, Action exhaustedCallback, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
-            where TGroupingDictionary : IDictionary<TKey, IGrouping<TKey, T>>, new()
-        {
-            return new ProgressiveLookup<TKey, T>(wrapped, exhaustedCallback, new TGroupingDictionary(), keyComparer, itemComparer);
+            return new ProgressiveLookup<TKey, T>(progressor, new TGroupingDictionary(), keyComparer, itemComparer);
         }
 
         public bool Contains(TKey key)

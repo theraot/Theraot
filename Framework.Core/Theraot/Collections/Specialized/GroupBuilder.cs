@@ -109,10 +109,9 @@ namespace Theraot.Collections.Specialized
             if (!TryGetProxy(key, out var proxy))
             {
                 proxy = new ProxyObservable<TElement>();
-                var items = ProgressiveCollection<TElement>.Create<SafeCollection<TElement>>
-                (
-                    proxy,
-                    Advance,
+                var progressor = Progressor<TElement>.CreateFromIObservable(proxy, Advance);
+                var items = ProgressiveCollection<TElement>.Create<SafeCollection<TElement>>(
+                    progressor,
                     EqualityComparer<TElement>.Default
                 );
                 Add(key, items, proxy);

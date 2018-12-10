@@ -15,29 +15,32 @@ namespace Theraot.Collections
         private readonly ProgressiveSet<TKey> _keysReadonly;
         private readonly ProgressiveSet<TValue> _valuesReadonly;
 
-        public ProgressiveDictionary(IEnumerable<KeyValuePair<TKey, TValue>> wrapped)
-            : this(wrapped, new Dictionary<TKey, TValue>(), null, null)
+        public ProgressiveDictionary(IEnumerable<KeyValuePair<TKey, TValue>> enumerable)
+            : this(Progressor<KeyValuePair<TKey, TValue>>.CreateFromIEnumerable(enumerable), new Dictionary<TKey, TValue>(), null, null)
         {
             //Empty
         }
 
-        public ProgressiveDictionary(IEnumerable<KeyValuePair<TKey, TValue>> wrapped, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
-            : this(wrapped, new Dictionary<TKey, TValue>(keyComparer), keyComparer, valueComparer)
+        public ProgressiveDictionary(IEnumerable<KeyValuePair<TKey, TValue>> enumerable, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
+            : this(Progressor<KeyValuePair<TKey, TValue>>.CreateFromIEnumerable(enumerable), new Dictionary<TKey, TValue>(keyComparer), keyComparer, valueComparer)
         {
             //Empty
         }
 
-        protected ProgressiveDictionary(IEnumerable<KeyValuePair<TKey, TValue>> wrapped, IDictionary<TKey, TValue> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
-            : base(wrapped, cache ?? throw new ArgumentNullException(nameof(cache)), new KeyValuePairEqualityComparer<TKey, TValue>(keyComparer, valueComparer))
+        public ProgressiveDictionary(IObservable<KeyValuePair<TKey, TValue>> observable)
+            : this(Progressor<KeyValuePair<TKey, TValue>>.CreateFromIObservable(observable, null), new Dictionary<TKey, TValue>(), null, null)
         {
-            _cache = (IDictionary<TKey, TValue>)Cache;
-            _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
-            _valuesReadonly = new ProgressiveSet<TValue>(this.ConvertProgressive(input => input.Value), valueComparer);
-            _keysReadonly = new ProgressiveSet<TKey>(this.ConvertProgressive(input => input.Key), keyComparer);
+            //Empty
         }
 
-        protected ProgressiveDictionary(IObservable<KeyValuePair<TKey, TValue>> wrapped, IDictionary<TKey, TValue> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
-            : base(wrapped, cache ?? throw new ArgumentNullException(nameof(cache)), new KeyValuePairEqualityComparer<TKey, TValue>(keyComparer, valueComparer))
+        public ProgressiveDictionary(IObservable<KeyValuePair<TKey, TValue>> observable, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
+            : this(Progressor<KeyValuePair<TKey, TValue>>.CreateFromIObservable(observable, null), new Dictionary<TKey, TValue>(keyComparer), keyComparer, valueComparer)
+        {
+            //Empty
+        }
+
+        protected ProgressiveDictionary(Progressor<KeyValuePair<TKey, TValue>> progressor, IDictionary<TKey, TValue> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
+            : base(progressor, cache ?? throw new ArgumentNullException(nameof(cache)), new KeyValuePairEqualityComparer<TKey, TValue>(keyComparer, valueComparer))
         {
             _cache = (IDictionary<TKey, TValue>)Cache;
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
@@ -50,7 +53,9 @@ namespace Theraot.Collections
         ICollection<TKey> IDictionary<TKey, TValue>.Keys => _keysReadonly;
 
         public IReadOnlyCollection<TKey> Keys => _keysReadonly;
+
         ICollection<TValue> IDictionary<TKey, TValue>.Values => _valuesReadonly;
+
         public IReadOnlyCollection<TValue> Values => _valuesReadonly;
 
         TValue IDictionary<TKey, TValue>.this[TKey key]
@@ -81,6 +86,12 @@ namespace Theraot.Collections
                     return _keyComparer.Equals(key, pair.Key);
                 }
             }
+        }
+
+        public static ProgressiveDictionary<TKey, TValue> Create<TDictionary>(Progressor<KeyValuePair<TKey, TValue>> progressor, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
+            where TDictionary : IDictionary<TKey, TValue>, new()
+        {
+            return new ProgressiveDictionary<TKey, TValue>(progressor, new TDictionary(), keyComparer, valueComparer);
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)

@@ -13,50 +13,35 @@ namespace Theraot.Collections
     {
         private readonly ICollection<T> _cache;
 
-        public ProgressiveCollection(IEnumerable<T> wrapped)
-            : this(wrapped, new List<T>(), null)
+        public ProgressiveCollection(IEnumerable<T> enumerable)
+            : this(Progressor<T>.CreateFromIEnumerable(enumerable), new List<T>(), null)
         {
             // Empty
         }
 
-        public ProgressiveCollection(IObservable<T> wrapped)
-            : this(wrapped, new List<T>(), null)
+        public ProgressiveCollection(IObservable<T> observable)
+            : this(Progressor<T>.CreateFromIObservable(observable, null), new List<T>(), null)
         {
             // Empty
         }
 
-        public ProgressiveCollection(IEnumerable<T> wrapped, IEqualityComparer<T> comparer)
-            : this(wrapped, new ExtendedList<T>(comparer), comparer)
+        public ProgressiveCollection(IEnumerable<T> enumerable, IEqualityComparer<T> comparer)
+            : this(Progressor<T>.CreateFromIEnumerable(enumerable), new ExtendedList<T>(comparer), comparer)
         {
             // Empty
         }
 
-        public ProgressiveCollection(IObservable<T> wrapped, IEqualityComparer<T> comparer)
-            : this(wrapped, new ExtendedList<T>(comparer), comparer)
+        public ProgressiveCollection(IObservable<T> observable, IEqualityComparer<T> comparer)
+            : this(Progressor<T>.CreateFromIObservable(observable, null), new ExtendedList<T>(comparer), comparer)
         {
             // Empty
         }
 
-        protected ProgressiveCollection(IEnumerable<T> wrapped, ICollection<T> cache, IEqualityComparer<T> comparer)
-        {
-            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            Cache = Extensions.WrapAsIReadOnlyList(_cache);
-            Progressor = Progressor<T>.CreateFromIEnumerable(wrapped);
-            Progressor.SubscribeAction(obj => _cache.Add(obj));
-            Comparer = comparer ?? EqualityComparer<T>.Default;
-        }
-
-        protected ProgressiveCollection(IObservable<T> wrapped, ICollection<T> cache, IEqualityComparer<T> comparer)
-            : this (wrapped, null, cache, comparer)
-        {
-            // Empty
-        }
-
-        protected ProgressiveCollection(IObservable<T> wrapped, Action exhaustedCallback, ICollection<T> cache, IEqualityComparer<T> comparer)
+        protected ProgressiveCollection(Progressor<T> progressor, ICollection<T> cache, IEqualityComparer<T> comparer)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             Cache = Extensions.WrapAsIReadOnlyCollection(_cache);
-            Progressor = Progressor<T>.CreateFromIObservable(wrapped, exhaustedCallback);
+            Progressor = progressor ?? throw new ArgumentNullException(nameof(progressor));
             Progressor.SubscribeAction(obj => _cache.Add(obj));
             Comparer = comparer ?? EqualityComparer<T>.Default;
         }
@@ -78,23 +63,11 @@ namespace Theraot.Collections
 
         private Progressor<T> Progressor { get; }
 
-        public static ProgressiveCollection<T> Create<TCollection>(IEnumerable<T> wrapped, IEqualityComparer<T> comparer)
+        public static ProgressiveCollection<T> Create<TCollection>(Progressor<T> progressor, IEqualityComparer<T> comparer)
             where TCollection : ICollection<T>, new()
         {
-            return new ProgressiveCollection<T>(wrapped, new TCollection(), comparer);
-        }
-
-        public static ProgressiveCollection<T> Create<TCollection>(IObservable<T> wrapped, IEqualityComparer<T> comparer)
-            where TCollection : ICollection<T>, new()
-        {
-            return new ProgressiveCollection<T>(wrapped, new TCollection(), comparer);
-        }
-
-        public static ProgressiveCollection<T> Create<TCollection>(IObservable<T> wrapped, Action exhaustedCallback, IEqualityComparer<T> comparer)
-            where TCollection : ICollection<T>, new()
-        {
-            return new ProgressiveCollection<T>(wrapped, exhaustedCallback, new TCollection(), comparer);
-        }
+            return new ProgressiveCollection<T>(progressor, new TCollection(), comparer);
+        }       
 
         void ICollection<T>.Add(T item)
         {
