@@ -17,13 +17,13 @@ namespace Theraot.Collections.ThreadSafe
         private const int _capacityLog2 = 5;
         private const int _capacity = 1 << _capacityLog2;
         private const int _mask = _capacity - 1;
-        private const long _lvl1 = _capacity;
-        private const long _lvl2 = _lvl1 * _capacity;
-        private const long _lvl3 = _lvl2 * _capacity;
-        private const long _lvl4 = _lvl3 * _capacity;
-        private const long _lvl5 = _lvl4 * _capacity;
-        private const long _lvl6 = _lvl5 * _capacity;
-        private const long _lvl7 = _lvl6 * _capacity;
+        private const long _lvl1 = 1L << (_capacityLog2 * 1);
+        private const long _lvl2 = 1L << (_capacityLog2 * 2);
+        private const long _lvl3 = 1L << (_capacityLog2 * 3);
+        private const long _lvl4 = 1L << (_capacityLog2 * 4);
+        private const long _lvl5 = 1L << (_capacityLog2 * 5);
+        private const long _lvl6 = 1L << (_capacityLog2 * 6);
+        private const long _lvl7 = 1L << (_capacityLog2 * 7);
         private readonly int _level;
         private object[] _arrayFirst;
         private object[] _arraySecond;
@@ -444,7 +444,8 @@ namespace Theraot.Collections.ThreadSafe
 
         private int SubIndex(int index)
         {
-            return (index >> (_capacityLog2 * (_level - 1))) & _mask;
+            var uIndex = unchecked((uint)index);
+            return (int)((uIndex >> (_capacityLog2 * (_level - 1))) & _mask);
         }
     }
 }
