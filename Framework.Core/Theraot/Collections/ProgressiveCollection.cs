@@ -20,7 +20,7 @@ namespace Theraot.Collections
         }
 
         public ProgressiveCollection(IObservable<T> observable)
-            : this(Progressor<T>.CreateFromIObservable(observable, null), new List<T>(), null)
+            : this(Progressor<T>.CreateFromIObservable(observable), new List<T>(), null)
         {
             // Empty
         }
@@ -32,7 +32,7 @@ namespace Theraot.Collections
         }
 
         public ProgressiveCollection(IObservable<T> observable, IEqualityComparer<T> comparer)
-            : this(Progressor<T>.CreateFromIObservable(observable, null), new ExtendedList<T>(comparer), comparer)
+            : this(Progressor<T>.CreateFromIObservable(observable), new ExtendedList<T>(comparer), comparer)
         {
             // Empty
         }

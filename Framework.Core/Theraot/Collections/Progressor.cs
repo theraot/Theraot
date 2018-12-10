@@ -108,7 +108,7 @@ namespace Theraot.Collections
             return new Progressor<T>(proxy, Take);
         }
 
-        public static Progressor<T> CreateFromIObservable(IObservable<T> observable, Action exhaustedCallback)
+        public static Progressor<T> CreateFromIObservable(IObservable<T> observable, Action exhaustedCallback = null)
         {
             if (observable == null)
             {
@@ -116,7 +116,7 @@ namespace Theraot.Collections
             }
             if (exhaustedCallback == null)
             {
-                throw new ArgumentNullException(nameof(exhaustedCallback));
+                exhaustedCallback = ActionHelper.GetNoopAction();
             }
             var buffer = new SafeQueue<T>();
             var semaphore = new SemaphoreSlim(0);

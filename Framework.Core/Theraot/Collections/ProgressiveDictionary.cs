@@ -28,13 +28,13 @@ namespace Theraot.Collections
         }
 
         public ProgressiveDictionary(IObservable<KeyValuePair<TKey, TValue>> observable)
-            : this(Progressor<KeyValuePair<TKey, TValue>>.CreateFromIObservable(observable, null), new Dictionary<TKey, TValue>(), null, null)
+            : this(Progressor<KeyValuePair<TKey, TValue>>.CreateFromIObservable(observable), new Dictionary<TKey, TValue>(), null, null)
         {
             //Empty
         }
 
         public ProgressiveDictionary(IObservable<KeyValuePair<TKey, TValue>> observable, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
-            : this(Progressor<KeyValuePair<TKey, TValue>>.CreateFromIObservable(observable, null), new Dictionary<TKey, TValue>(keyComparer), keyComparer, valueComparer)
+            : this(Progressor<KeyValuePair<TKey, TValue>>.CreateFromIObservable(observable), new Dictionary<TKey, TValue>(keyComparer), keyComparer, valueComparer)
         {
             //Empty
         }

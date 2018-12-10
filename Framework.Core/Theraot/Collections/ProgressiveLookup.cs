@@ -25,13 +25,13 @@ namespace Theraot.Collections
         }
 
         public ProgressiveLookup(IObservable<IGrouping<TKey, T>> observable)
-            : this(Progressor<IGrouping<TKey, T>>.CreateFromIObservable(observable, null), new NullAwareDictionary<TKey, IGrouping<TKey, T>>(), null, null)
+            : this(Progressor<IGrouping<TKey, T>>.CreateFromIObservable(observable), new NullAwareDictionary<TKey, IGrouping<TKey, T>>(), null, null)
         {
             // Empty
         }
 
         public ProgressiveLookup(IObservable<IGrouping<TKey, T>> observable, IEqualityComparer<TKey> keyComparer)
-            : this(Progressor<IGrouping<TKey, T>>.CreateFromIObservable(observable, null), new NullAwareDictionary<TKey, IGrouping<TKey, T>>(keyComparer), keyComparer, null)
+            : this(Progressor<IGrouping<TKey, T>>.CreateFromIObservable(observable), new NullAwareDictionary<TKey, IGrouping<TKey, T>>(keyComparer), keyComparer, null)
         {
             // Empty
         }

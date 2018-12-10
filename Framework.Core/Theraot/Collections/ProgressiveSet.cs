@@ -18,7 +18,7 @@ namespace Theraot.Collections
         }
 
         public ProgressiveSet(IObservable<T> observable)
-            : this(Progressor<T>.CreateFromIObservable(observable, null), new ExtendedSet<T>(), null)
+            : this(Progressor<T>.CreateFromIObservable(observable), new ExtendedSet<T>(), null)
         {
             // Empty
         }
@@ -30,7 +30,7 @@ namespace Theraot.Collections
         }
 
         public ProgressiveSet(IObservable<T> observable, IEqualityComparer<T> comparer)
-           : this(Progressor<T>.CreateFromIObservable(observable, null), new ExtendedSet<T>(comparer), null)
+           : this(Progressor<T>.CreateFromIObservable(observable), new ExtendedSet<T>(comparer), null)
         {
             // Empty
         }
