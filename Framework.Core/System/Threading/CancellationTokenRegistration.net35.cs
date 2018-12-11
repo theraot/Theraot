@@ -54,7 +54,7 @@ namespace System.Threading
             var source = _source;
             if (source != null)
             {
-                if (source.RemoveCallback(this))
+                if (source.RemoveCallback(_id))
                 {
                     _source = null;
                 }
@@ -74,11 +74,6 @@ namespace System.Threading
         public override int GetHashCode()
         {
             return _id;
-        }
-
-        internal bool Equals(int id, CancellationTokenSource source)
-        {
-            return _id == id && _source == source;
         }
     }
 }
