@@ -42,7 +42,7 @@ namespace System.Threading
         internal static readonly CancellationTokenSource NoneSource = new CancellationTokenSource(); // Leaked
         private static readonly Action<CancellationTokenSource> _timerCallback;
         private readonly ManualResetEvent _handle;
-        private SafeDictionary<int, Action> _callbacks;
+        private Bucket<Action> _callbacks;
         private int _cancelRequested;
         private int _currentId = int.MaxValue;
         private int _disposeRequested;
@@ -64,7 +64,7 @@ namespace System.Threading
 
         public CancellationTokenSource()
         {
-            _callbacks = new SafeDictionary<int, Action>();
+            _callbacks = new Bucket<Action>();
             _handle = new ManualResetEvent(false);
         }
 
@@ -197,7 +197,7 @@ namespace System.Threading
             }
         }
 
-        internal SafeDictionary<int, Action> CheckDisposedGetCallbacks()
+        internal Bucket<Action> CheckDisposedGetCallbacks()
         {
             var result = _callbacks;
             if (result == null || Volatile.Read(ref _disposeRequested) == 1)
@@ -229,10 +229,10 @@ namespace System.Threading
                     var originalCallback = callback;
                     callback = () => capturedSyncContext.Send(_ => originalCallback(), null);
                 }
-                callbacks.TryAdd(id, callback);
+                callbacks.Insert(id, callback);
                 // Check if the source was just canceled and if so, it may be that it executed the callbacks except the one just added...
                 // So try to inline the callback
-                if (Volatile.Read(ref _cancelRequested) == 1 && callbacks.Remove(id, out callback))
+                if (Volatile.Read(ref _cancelRequested) == 1 && callbacks.RemoveAt(id, out callback))
                 {
                     callback();
                 }
@@ -248,7 +248,7 @@ namespace System.Threading
                 var callbacks = _callbacks;
                 if (callbacks != null)
                 {
-                    return callbacks.Remove(reg, out var dummy);
+                    return callbacks.RemoveAt(reg, out var dummy);
                 }
             }
             return true;
@@ -305,7 +305,7 @@ namespace System.Threading
             }
         }
 
-        private void CancelExtracted(bool throwOnFirstException, SafeDictionary<int, Action> callbacks, bool ignoreDisposedException)
+        private void CancelExtracted(bool throwOnFirstException, Bucket<Action> callbacks, bool ignoreDisposedException)
         {
             if (Interlocked.CompareExchange(ref _cancelRequested, 1, 0) == 0)
             {
@@ -328,7 +328,7 @@ namespace System.Threading
                     var id = _currentId;
                     do
                     {
-                        if (callbacks.Remove(id, out var callback) && callback != null)
+                        if (callbacks.RemoveAt(id, out var callback) && callback != null)
                         {
                             RunCallback(throwOnFirstException, callback, ref exceptions);
                         }
@@ -339,7 +339,7 @@ namespace System.Threading
                     // Whatever was added after the cancellation process started, it should run inline in Register... if they don't, handle then here.
                     foreach (
                         var callback in
-                            callbacks.RemoveWhereKeyEnumerable(_ => true))
+                            callbacks.RemoveWhereEnumerable(_ => true))
                     {
                         RunCallback(throwOnFirstException, callback, ref exceptions);
                     }
