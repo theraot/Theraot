@@ -4,9 +4,9 @@ namespace Theraot.Threading
 {
     public struct UniqueId : IEquatable<UniqueId>
     {
-        private readonly int _id;
+        private readonly uint _id;
 
-        internal UniqueId(int id)
+        internal UniqueId(uint id)
         {
             _id = id;
         }
@@ -37,7 +37,7 @@ namespace Theraot.Threading
 
         public override int GetHashCode()
         {
-            return _id;
+            return unchecked((int)_id);
         }
 
         public override string ToString()
