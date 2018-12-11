@@ -10,7 +10,6 @@ namespace Theraot.Collections
     public class ProgressiveLookup<TKey, T> : ILookup<TKey, T>
     {
         private readonly IDictionary<TKey, IGrouping<TKey, T>> _cache;
-        private readonly ProgressiveSet<TKey> _keysReadonly;
 
         public ProgressiveLookup(IEnumerable<IGrouping<TKey, T>> enumerable)
             : this(Progressor<IGrouping<TKey, T>>.CreateFromIEnumerable(enumerable), new NullAwareDictionary<TKey, IGrouping<TKey, T>>(), null, null)
@@ -43,7 +42,7 @@ namespace Theraot.Collections
             Progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
             KeyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
             ItemComparer = itemComparer ?? EqualityComparer<T>.Default;
-            _keysReadonly = new ProgressiveSet<TKey>(Progressor.ConvertProgressive(input => input.Key), keyComparer);
+            Keys = new EnumerationList<TKey>(this.ConvertProgressive(input => input.Key));
         }
 
         public int Count
@@ -55,7 +54,7 @@ namespace Theraot.Collections
             }
         }
 
-        public IReadOnlyCollection<TKey> Keys => _keysReadonly;
+        public IReadOnlyCollection<TKey> Keys { get; }
 
         protected IEqualityComparer<T> ItemComparer { get; }
 
