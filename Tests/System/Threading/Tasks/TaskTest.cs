@@ -1006,14 +1006,14 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WaitAllTest()
         {
-            Action action = () =>
+            void Action()
             {
                 var achieved = 0;
                 InitWithDelegate(() => Interlocked.Increment(ref achieved));
                 Task.WaitAll(_tasks);
                 Assert.AreEqual(_max, achieved, "#1");
-            };
-            ParallelTestHelper.Repeat(action, 1000);
+            }
+            ParallelTestHelper.Repeat(Action, 1000);
         }
 
         [Test]
@@ -1515,11 +1515,7 @@ namespace MonoTests.System.Threading.Tasks
             protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
             {
                 var handler = TryExecuteTaskInlineHandler;
-                if (handler != null)
-                {
-                    handler(task, taskWasPreviouslyQueued);
-                }
-
+                handler?.Invoke(task, taskWasPreviouslyQueued);
                 return TryExecuteTask(task);
             }
         }

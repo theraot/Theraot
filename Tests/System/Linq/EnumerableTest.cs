@@ -480,12 +480,10 @@ namespace MonoTests.System.Linq
 
             public override bool Equals(object obj)
             {
-                var b = obj as Baz;
-                if (b == null)
+                if (!(obj is Baz b))
                 {
                     return false;
                 }
-
                 return b.Age == Age && b.Name == Name;
             }
 
