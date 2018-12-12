@@ -25,5 +25,10 @@ namespace Theraot.Collections.Specialized
         {
             return _items.GetEnumerator();
         }
+
+        public override string ToString()
+        {
+            return $"<Key = {Key}>";
+        }
     }
 }
