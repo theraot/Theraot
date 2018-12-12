@@ -10,6 +10,7 @@ namespace Theraot.Collections
     public class ProgressiveLookup<TKey, T> : ILookup<TKey, T>
     {
         private readonly IDictionary<TKey, IGrouping<TKey, T>> _cache;
+        private readonly IDisposable _subscription;
 
         public ProgressiveLookup(IEnumerable<IGrouping<TKey, T>> enumerable)
             : this(Progressor<IGrouping<TKey, T>>.CreateFromIEnumerable(enumerable), new NullAwareDictionary<TKey, IGrouping<TKey, T>>(), null, null)
@@ -39,7 +40,7 @@ namespace Theraot.Collections
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             Progressor = progressor ?? throw new ArgumentNullException(nameof(progressor));
-            Progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
+            _subscription = Progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
             KeyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
             ItemComparer = itemComparer ?? EqualityComparer<T>.Default;
             Keys = new EnumerationList<TKey>(this.ConvertProgressive(input => input.Key));

@@ -12,6 +12,7 @@ namespace Theraot.Collections
     public class ProgressiveCollection<T> : IReadOnlyCollection<T>, ICollection<T>
     {
         private readonly ICollection<T> _cache;
+        private readonly IDisposable _subscription;
 
         public ProgressiveCollection(IEnumerable<T> enumerable)
             : this(Progressor<T>.CreateFromIEnumerable(enumerable), new List<T>(), null)
@@ -42,7 +43,7 @@ namespace Theraot.Collections
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             Cache = Extensions.WrapAsIReadOnlyCollection(_cache);
             Progressor = progressor ?? throw new ArgumentNullException(nameof(progressor));
-            Progressor.SubscribeAction(obj => _cache.Add(obj));
+            _subscription = Progressor.SubscribeAction(obj => _cache.Add(obj));
             Comparer = comparer ?? EqualityComparer<T>.Default;
         }
 

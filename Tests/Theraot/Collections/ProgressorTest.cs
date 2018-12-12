@@ -16,21 +16,26 @@ namespace Tests.Theraot.Collections
             var progressor = Progressor<int>.CreateFromArray(source);
             var indexA = 0;
             var indexB = 0;
-            progressor.SubscribeAction
+            using
             (
-                value =>
-                {
-                    Assert.AreEqual(value, indexB);
-                    indexB++;
-                }
-            );
-            while (progressor.TryTake(out var item))
+                progressor.SubscribeAction
+                (
+                    value =>
+                    {
+                        Assert.AreEqual(value, indexB);
+                        indexB++;
+                    }
+                )
+            )
             {
-                Assert.AreEqual(item, indexA);
-                indexA++;
+                while (progressor.TryTake(out var item))
+                {
+                    Assert.AreEqual(item, indexA);
+                    indexA++;
+                }
+                Assert.AreEqual(6, indexA);
+                Assert.AreEqual(indexA, indexB);
             }
-            Assert.AreEqual(6, indexA);
-            Assert.AreEqual(indexA, indexB);
         }
 
         [Test]
@@ -41,21 +46,26 @@ namespace Tests.Theraot.Collections
             source.Consume();
             var indexA = 0;
             var indexB = 0;
-            progressor.SubscribeAction
+            using
             (
-                value =>
-                {
-                    Assert.AreEqual(value, indexB);
-                    indexB++;
-                }
-            );
-            while (progressor.TryTake(out var item))
+                progressor.SubscribeAction
+                (
+                    value =>
+                    {
+                        Assert.AreEqual(value, indexB);
+                        indexB++;
+                    }
+                )
+            )
             {
-                Assert.AreEqual(item, indexA);
-                indexA++;
+                while (progressor.TryTake(out var item))
+                {
+                    Assert.AreEqual(item, indexA);
+                    indexA++;
+                }
+                Assert.AreEqual(6, indexA);
+                Assert.AreEqual(indexA, indexB);
             }
-            Assert.AreEqual(6, indexA);
-            Assert.AreEqual(indexA, indexB);
         }
 
         [Test]
