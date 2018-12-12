@@ -178,6 +178,10 @@ namespace System.Collections.Concurrent
 
         public override IEnumerable<T> GetDynamicPartitions()
         {
+            if (_source is T[] array)
+            {
+                return Progressor<T>.CreateFromArray(array);
+            }
             if (_source is IList<T> list)
             {
                 return Progressor<T>.CreateFromIList(list);

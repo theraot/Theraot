@@ -1,4 +1,4 @@
-// Needed for NET40
+#if FAT
 
 using System;
 using System.Collections;
@@ -556,3 +556,5 @@ namespace Theraot.Collections.ThreadSafe
         }
     }
 }
+
+#endif

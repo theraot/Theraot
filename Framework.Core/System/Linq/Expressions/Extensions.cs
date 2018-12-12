@@ -79,7 +79,7 @@ namespace System.Linq.Expressions
 
         public static void OnFieldOrProperty(this MemberInfo self, Action<FieldInfo> onField, Action<PropertyInfo> onProperty)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (onField == null)
             {
@@ -107,7 +107,7 @@ namespace System.Linq.Expressions
 
         public static T OnFieldOrProperty<T>(this MemberInfo self, Func<FieldInfo, T> onField, Func<PropertyInfo, T> onProperty)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (onField == null)
             {

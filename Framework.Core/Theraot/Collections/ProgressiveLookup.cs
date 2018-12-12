@@ -46,6 +46,11 @@ namespace Theraot.Collections
             Keys = new EnumerationList<TKey>(this.ConvertProgressive(input => input.Key));
         }
 
+        ~ProgressiveLookup()
+        {
+            Close();
+        }
+
         public int Count
         {
             get
@@ -100,11 +105,14 @@ namespace Theraot.Collections
             return new ProgressiveLookup<TKey, T>(source.GroupProgressiveBy(item => item.Key, item => item.Value, keyComparer), keyComparer);
         }
 
-        public static ProgressiveLookup<TKey, T> Create<TGroupingDictionary>(Progressor<IGrouping<TKey, T>> progressor, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
+#if FAT
+
+        internal static ProgressiveLookup<TKey, T> Create<TGroupingDictionary>(Progressor<IGrouping<TKey, T>> progressor, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
             where TGroupingDictionary : IDictionary<TKey, IGrouping<TKey, T>>, new()
         {
             return new ProgressiveLookup<TKey, T>(progressor, new TGroupingDictionary(), keyComparer, itemComparer);
         }
+#endif
 
         public bool Contains(TKey key)
         {
@@ -235,6 +243,12 @@ namespace Theraot.Collections
                     knownCount = _cache.Count;
                 }
             }
+        }
+
+        private void Close()
+        {
+            _subscription?.Dispose();
+            Progressor?.Close();
         }
     }
 }

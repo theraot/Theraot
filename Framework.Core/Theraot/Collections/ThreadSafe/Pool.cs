@@ -12,13 +12,6 @@ namespace Theraot.Collections.ThreadSafe
         private readonly UniqueId _id;
         private readonly Action<T> _recycler;
 
-        public Pool(int capacity)
-        {
-            _id = RuntimeUniqueIdProvider.GetNextId();
-            _entries = new FixedSizeQueue<T>(capacity);
-            _recycler = GC.KeepAlive;
-        }
-
         public Pool(int capacity, Action<T> recycler)
         {
             _id = RuntimeUniqueIdProvider.GetNextId();

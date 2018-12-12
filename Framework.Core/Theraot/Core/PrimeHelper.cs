@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if FAT
+
+using System;
 using System.Diagnostics;
 
 namespace Theraot.Core
@@ -106,3 +108,5 @@ namespace Theraot.Core
         }
     }
 }
+
+#endif

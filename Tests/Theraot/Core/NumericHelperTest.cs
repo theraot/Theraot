@@ -84,6 +84,7 @@ namespace Tests.Theraot.Core
         }
     }
 
+#if FAT
     internal partial class NumericHelperTest
     {
         [Test]
@@ -494,6 +495,7 @@ namespace Tests.Theraot.Core
             }
         }
     }
+#endif
 
     internal partial class NumericHelperTest
     {
@@ -541,11 +543,7 @@ namespace Tests.Theraot.Core
 
         private static void CheckValue(double value)
         {
-            int sign;
-            long mantissa;
-            int exponent;
-            bool finite;
-            NumericHelper.GetParts(value, out sign, out mantissa, out exponent, out finite);
+            NumericHelper.GetParts(value, out int sign, out long mantissa, out int exponent, out bool finite);
             var check = NumericHelper.BuildDouble(sign, mantissa, exponent);
             Assert.AreEqual(finite, !double.IsInfinity(value) && !double.IsNaN(value));
             if (finite)

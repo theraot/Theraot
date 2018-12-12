@@ -10,7 +10,7 @@ namespace Theraot.Collections
 #endif
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public sealed class ExtendedList<T> : IList<T>, IEqualityComparer<T>
+    public sealed class ExtendedList<T> : IList<T>
     {
         private readonly IEqualityComparer<T> _comparer;
         private readonly List<T> _wrapped;
@@ -72,7 +72,7 @@ namespace Theraot.Collections
 
         public ExtendedList<T> Clone()
         {
-            return new ExtendedList<T>(this as IEnumerable<T>);
+            return new ExtendedList<T>(this);
         }
 
         public bool Contains(T item)
@@ -95,17 +95,6 @@ namespace Theraot.Collections
             _wrapped.CopyTo(array, arrayIndex);
         }
 
-        public void CopyTo(T[] array, int arrayIndex, int countLimit)
-        {
-            Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            Extensions.CopyTo(_wrapped, array, arrayIndex, countLimit);
-        }
-
-        public bool Equals(T x, T y)
-        {
-            return _comparer.Equals(x, y);
-        }
-
         public IEnumerator<T> GetEnumerator()
         {
             return _wrapped.GetEnumerator();
@@ -121,11 +110,6 @@ namespace Theraot.Collections
             return GetEnumerator();
         }
 
-        public int GetHashCode(T obj)
-        {
-            return _comparer.GetHashCode(obj);
-        }
-
         public int IndexOf(T item)
         {
             return _wrapped.IndexOf(item, _comparer);
@@ -139,26 +123,6 @@ namespace Theraot.Collections
         public void Move(int oldIndex, int newIndex)
         {
             _wrapped.Move(oldIndex, newIndex);
-        }
-
-        public bool Overlaps(IEnumerable<T> other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            if (Count == 0)
-            {
-                return false;
-            }
-            foreach (var item in other)
-            {
-                if (Contains(item))
-                {
-                    return true;
-                }
-            }
-            return false;
         }
 
         public bool Remove(T item)
@@ -206,26 +170,6 @@ namespace Theraot.Collections
         public void Reverse(int index, int count)
         {
             _wrapped.Reverse(index, count);
-        }
-
-        public bool SetEquals(IEnumerable<T> other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            var that = Extensions.AsDistinctICollection(other);
-            foreach (var item in that.Where(input => !Contains(input)))
-            {
-                GC.KeepAlive(item);
-                return false;
-            }
-            foreach (var item in this.Where(input => !that.Contains(input)))
-            {
-                GC.KeepAlive(item);
-                return false;
-            }
-            return true;
         }
 
         public void Sort(IComparer<T> comparer)

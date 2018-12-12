@@ -26,6 +26,8 @@ namespace Theraot.Collections
             return count;
         }
 
+#if FAT
+
         public static IEnumerable<T> AddRangeEnumerable<T>(this ICollection<T> collection, IEnumerable<T> items)
         {
             if (collection == null)
@@ -47,5 +49,7 @@ namespace Theraot.Collections
                 }
             }
         }
+
+#endif
     }
 }

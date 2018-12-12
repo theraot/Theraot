@@ -47,6 +47,11 @@ namespace Theraot.Collections
             Comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
+        ~ProgressiveCollection()
+        {
+            Close();
+        }
+
         public IReadOnlyCollection<T> Cache { get; }
 
         public int Count
@@ -64,12 +69,6 @@ namespace Theraot.Collections
 
         private Progressor<T> Progressor { get; }
 
-        public static ProgressiveCollection<T> Create<TCollection>(Progressor<T> progressor, IEqualityComparer<T> comparer)
-            where TCollection : ICollection<T>, new()
-        {
-            return new ProgressiveCollection<T>(progressor, new TCollection(), comparer);
-        }       
-
         void ICollection<T>.Add(T item)
         {
             throw new NotSupportedException();
@@ -82,7 +81,8 @@ namespace Theraot.Collections
 
         public void Close()
         {
-            Progressor.Close();
+            _subscription?.Dispose();
+            Progressor?.Close();
         }
 
         public bool Contains(T item)
@@ -96,11 +96,6 @@ namespace Theraot.Collections
             {
                 return Comparer.Equals(item, found);
             }
-        }
-
-        public bool Contains(T item, IEqualityComparer<T> comparer)
-        {
-            return Enumerable.Contains(this, item, comparer);
         }
 
         public void CopyTo(T[] array)
@@ -159,6 +154,12 @@ namespace Theraot.Collections
             {
                 yield return p;
             }
+        }
+
+        internal static ProgressiveCollection<T> Create<TCollection>(Progressor<T> progressor, IEqualityComparer<T> comparer)
+            where TCollection : ICollection<T>, new()
+        {
+            return new ProgressiveCollection<T>(progressor, new TCollection(), comparer);
         }
 
         protected virtual bool CacheContains(T item)

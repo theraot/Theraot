@@ -24,27 +24,6 @@ namespace Theraot.Collections.ThreadSafe
             _bucketCore = new BucketCore();
         }
 
-        public Bucket(IEnumerable<T> source)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            _bucketCore = new BucketCore();
-            var index = 0;
-            foreach (var item in source)
-            {
-                var copy = item;
-                _bucketCore.DoMayIncrement
-                    (
-                        index,
-                        (ref object target) => Interlocked.Exchange(ref target, (object)copy ?? BucketHelper.Null) == null
-                    );
-                index++;
-                _count++;
-            }
-        }
-
         public int Count => _count;
 
         public void CopyTo(T[] array, int arrayIndex)
@@ -53,6 +32,7 @@ namespace Theraot.Collections.ThreadSafe
             Extensions.CopyTo(this, array, arrayIndex);
         }
 
+#if FAT
         public IEnumerable<T> EnumerateRange(int indexFrom, int indexTo)
         {
             foreach (var value in _bucketCore.EnumerateRange(indexFrom, indexTo))
@@ -60,6 +40,7 @@ namespace Theraot.Collections.ThreadSafe
                 yield return value == BucketHelper.Null ? default : (T)value;
             }
         }
+#endif
 
         public bool Exchange(int index, T item, out T previous)
         {

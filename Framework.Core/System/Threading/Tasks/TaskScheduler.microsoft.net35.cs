@@ -29,7 +29,7 @@ namespace System.Threading.Tasks
     [DebuggerTypeProxy(typeof(SystemThreadingTasksTaskSchedulerDebugView))]
     public abstract partial class TaskScheduler
     {
-        private static readonly IEvent<UnobservedTaskExceptionEventArgs> _unobservedTaskException = new StrongEvent<UnobservedTaskExceptionEventArgs>();
+        private static readonly IEvent<UnobservedTaskExceptionEventArgs> _unobservedTaskException = new StrongEvent<UnobservedTaskExceptionEventArgs>(true);
 
         /// <summary>
         /// Occurs when a faulted <see cref="Task"/>'s unobserved exception is about to trigger exception escalation

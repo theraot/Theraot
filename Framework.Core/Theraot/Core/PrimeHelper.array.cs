@@ -1,4 +1,6 @@
-﻿namespace Theraot.Core
+﻿#if FAT
+
+namespace Theraot.Core
 {
     public static partial class PrimeHelper
     {
@@ -662,3 +664,5 @@
         };
     }
 }
+
+#endif

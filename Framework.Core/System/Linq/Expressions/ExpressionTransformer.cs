@@ -298,7 +298,7 @@ namespace System.Linq.Expressions
 
         private static IList<TElement> VisitList<TElement>(ReadOnlyCollection<TElement> original, Func<TElement, TElement> visit)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (visit == null)
             {

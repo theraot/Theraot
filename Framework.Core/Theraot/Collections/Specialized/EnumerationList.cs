@@ -43,20 +43,6 @@ namespace Theraot.Collections.Specialized
             _contains = wrapped.Contains;
         }
 
-        public EnumerationList(IEnumerable<T> wrapped, Func<int> count)
-        {
-            _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
-            _count = count ?? throw new ArgumentNullException(nameof(count));
-            _contains = item => _wrapped.Contains(item, EqualityComparer<T>.Default);
-        }
-
-        public EnumerationList(IEnumerable<T> wrapped, Func<T, bool> contains)
-        {
-            _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
-            _count = _wrapped.Count;
-            _contains = contains ?? throw new ArgumentNullException(nameof(contains));
-        }
-
         public EnumerationList(IEnumerable<T> wrapped, Func<int> count, Func<T, bool> contains)
         {
             _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
@@ -111,27 +97,10 @@ namespace Theraot.Collections.Specialized
             return _contains.Invoke(item);
         }
 
-        public bool Contains(T item, IEqualityComparer<T> comparer)
-        {
-            return Enumerable.Contains(this, item, comparer);
-        }
-
         public void CopyTo(T[] array, int arrayIndex)
         {
             Extensions.CanCopyTo(Count, array, arrayIndex);
             Extensions.CopyTo(this, array, arrayIndex);
-        }
-
-        public void CopyTo(T[] array)
-        {
-            Extensions.CanCopyTo(Count, array);
-            Extensions.CopyTo(this, array);
-        }
-
-        public void CopyTo(T[] array, int arrayIndex, int countLimit)
-        {
-            Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            Extensions.CopyTo(this, array, arrayIndex, countLimit);
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -162,13 +131,6 @@ namespace Theraot.Collections.Specialized
         void IList<T>.RemoveAt(int index)
         {
             throw new NotSupportedException();
-        }
-
-        public T[] ToArray()
-        {
-            var array = new T[_count.Invoke()];
-            CopyTo(array);
-            return array;
         }
     }
 }

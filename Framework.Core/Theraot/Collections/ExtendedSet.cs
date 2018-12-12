@@ -120,7 +120,7 @@ namespace Theraot.Collections
 
         public void CopyTo(T[] array)
         {
-            CopyTo(array, 0);
+            _wrapped.CopyTo(array, 0);
         }
 
         public void CopyTo(T[] array, int arrayIndex, int countLimit)

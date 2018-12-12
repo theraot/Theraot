@@ -84,7 +84,7 @@ namespace System.Linq.Expressions
             if (body == Body)
             {
                 // Ensure parameters is safe to enumerate twice.
-                // (If this means a second call to ToReadOnly it will return quickly).
+                // (If this means a second call to ToReadOnlyCollection it will return quickly).
                 ICollection<ParameterExpression> pars;
                 if (parameters == null)
                 {

@@ -16,17 +16,10 @@ namespace Theraot.Collections.ThreadSafe
     public class StrongEvent<TEventArgs> : IEvent<TEventArgs>
         where TEventArgs : EventArgs
     {
-        public StrongEvent()
-        {
-            EventHandlers = new StrongDelegateCollection(true);
-        }
-
         public StrongEvent(bool freeReentry)
         {
             EventHandlers = new StrongDelegateCollection(freeReentry);
         }
-
-        public int Count => EventHandlers.Count;
 
         protected StrongDelegateCollection EventHandlers { get; }
 
@@ -39,11 +32,6 @@ namespace Theraot.Collections.ThreadSafe
         {
             var value = method.CreateDelegate(typeof(EventHandler<TEventArgs>), target);
             EventHandlers.Add(value);
-        }
-
-        public void Clear()
-        {
-            EventHandlers.Clear();
         }
 
         public virtual void Invoke(object sender, TEventArgs eventArgs)

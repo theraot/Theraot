@@ -3,7 +3,6 @@
 using System;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
-using Theraot.Core;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
@@ -299,8 +298,9 @@ namespace Theraot.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
-            Callback = new ValueActionClosure<T>(callback, target).Invoke;
+            Callback = Action;
             Start(dueTime);
+            void Action() => callback(target);
         }
 
         public Timeout(Action<T> callback, long dueTime, CancellationToken token, T target)
@@ -320,10 +320,11 @@ namespace Theraot.Threading
             }
             else
             {
-                Callback = new ValueActionClosure<T>(callback, target).Invoke;
+                Callback = Action;
                 Start(dueTime);
                 token.Register(Cancel);
             }
+            void Action() => callback(target);
         }
 
         public Timeout(Action<T> callback, TimeSpan dueTime, T target)

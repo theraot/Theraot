@@ -1,4 +1,4 @@
-// Needed for NET40
+#if FAT
 
 using System;
 using System.Diagnostics;
@@ -49,3 +49,5 @@ namespace Theraot.Core
         }
     }
 }
+
+#endif

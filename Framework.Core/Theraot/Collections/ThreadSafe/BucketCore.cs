@@ -173,6 +173,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+#if FAT
         public IEnumerable<object> EnumerateRange(int indexFrom, int indexTo)
         {
             if (indexFrom < 0)
@@ -187,6 +188,7 @@ namespace Theraot.Collections.ThreadSafe
             var endSubIndex = SubIndex(indexTo);
             return PrivateEnumerableRange(indexFrom, indexTo, startSubIndex, endSubIndex);
         }
+#endif
 
         public IEnumerator<object> GetEnumerator()
         {
@@ -226,7 +228,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool Do(ref int use, ref object first, ref object second, DoAction callback)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (callback == null)
             {
@@ -251,7 +253,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static void DoEnsureSize(ref int use, ref object first, ref object second, Func<object> factory)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (factory == null)
             {
@@ -312,7 +314,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool DoMayDecrement(ref int use, ref object first, ref object second, DoAction callback)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (callback == null)
             {
@@ -341,7 +343,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool DoMayIncrement(ref int use, ref object first, ref object second, Func<object> factory, DoAction callback)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (callback == null)
             {
@@ -365,6 +367,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+#if FAT
         private IEnumerable<object> PrivateEnumerableRange(int indexFrom, int indexTo, int startSubIndex, int endSubIndex)
         {
             var step = endSubIndex - startSubIndex >= 0 ? 1 : -1;
@@ -402,6 +405,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
             }
         }
+#endif
 
         private int SubIndex(int index)
         {

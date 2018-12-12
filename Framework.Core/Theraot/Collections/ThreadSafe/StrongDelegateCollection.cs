@@ -3,8 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
-using Theraot.Core;
 using Theraot.Threading;
 
 namespace Theraot.Collections.ThreadSafe
@@ -15,13 +13,6 @@ namespace Theraot.Collections.ThreadSafe
         private readonly Action<object[]> _invoke;
         private readonly Action<Action<Exception>, object[]> _invokeWithException;
         private readonly SafeCollection<Delegate> _wrapped;
-
-        public StrongDelegateCollection()
-        {
-            IEqualityComparer<Delegate> comparer = EqualityComparer<Delegate>.Default;
-            _wrapped = new SafeCollection<Delegate>(comparer);
-            _invoke = InvokeExtracted;
-        }
 
         public StrongDelegateCollection(bool freeReentry)
         {
@@ -44,15 +35,6 @@ namespace Theraot.Collections.ThreadSafe
 
         bool ICollection<Delegate>.IsReadOnly => false;
 
-        public void Add(MethodInfo method, object target)
-        {
-            if (method == null)
-            {
-                throw new ArgumentNullException(nameof(method));
-            }
-            _wrapped.Add(TypeHelper.BuildDelegate(method, target));
-        }
-
         public void Add(Delegate item)
         {
             if (item != null)
@@ -64,15 +46,6 @@ namespace Theraot.Collections.ThreadSafe
         public void Clear()
         {
             _wrapped.Clear();
-        }
-
-        public bool Contains(MethodInfo method, object target)
-        {
-            if (method == null)
-            {
-                throw new ArgumentNullException(nameof(method));
-            }
-            return _wrapped.Contains(item => item.DelegateEquals(method, target));
         }
 
         public bool Contains(Delegate item)
@@ -103,20 +76,6 @@ namespace Theraot.Collections.ThreadSafe
         public void InvokeWithException(Action<Exception> onException, params object[] args)
         {
             _invokeWithException(onException, args);
-        }
-
-        public bool Remove(MethodInfo method, object target)
-        {
-            if (method == null)
-            {
-                throw new ArgumentNullException(nameof(method));
-            }
-            foreach (var item in _wrapped.RemoveWhereEnumerable(item => item.DelegateEquals(method, target)))
-            {
-                GC.KeepAlive(item);
-                return true;
-            }
-            return false;
         }
 
         public bool Remove(Delegate item)

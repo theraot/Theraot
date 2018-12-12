@@ -24,8 +24,6 @@ namespace Theraot.Collections.ThreadSafe
             EventHandlers = new WeakDelegateCollection(true, freeReentry);
         }
 
-        public int Count => EventHandlers.Count;
-
         protected WeakDelegateCollection EventHandlers { get; }
 
         public void Add(EventHandler<TEventArgs> value)
@@ -37,11 +35,6 @@ namespace Theraot.Collections.ThreadSafe
         {
             var value = method.CreateDelegate(typeof(EventHandler<TEventArgs>), target);
             EventHandlers.Add(value);
-        }
-
-        public void Clear()
-        {
-            EventHandlers.Clear();
         }
 
         public virtual void Invoke(object sender, TEventArgs eventArgs)

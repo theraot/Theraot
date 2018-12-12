@@ -116,11 +116,6 @@ namespace Theraot.Collections.ThreadSafe
             Extensions.CopyTo(this, array, arrayIndex);
         }
 
-        public bool Equals(T x, T y)
-        {
-            return _comparer.Equals(x, y);
-        }
-
         public IEnumerator<T> GetEnumerator()
         {
             foreach (var pair in _wrapped)

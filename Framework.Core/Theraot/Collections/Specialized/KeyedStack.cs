@@ -20,15 +20,6 @@ namespace Theraot.Collections.Specialized
             stack.Push(item);
         }
 
-        public int GetCount(TKey key)
-        {
-            if (_data.TryGetValue(key, out var stack))
-            {
-                return stack.Count;
-            }
-            return 0;
-        }
-
         public bool TryTake(TKey key, out TValue item)
         {
             if (_data.TryGetValue(key, out var stack))

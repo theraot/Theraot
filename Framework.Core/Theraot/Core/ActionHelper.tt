@@ -16,7 +16,7 @@ namespace Theraot.Core
             return HelperNullAction<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#>.Instance;
         }
 <#
-    }#><#
+    }#>#if FAT<#
     for (var indice = 0; indice < 17; indice++)
     {#>
 
@@ -25,7 +25,7 @@ namespace Theraot.Core
             return (<# if (indice != 0) { if (indice == 1) #>/*T*/ obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>/*T<#=subindice#>*/ arg<#=subindice#><#}}#>) => throw exception;
         }
 <#
-    }#><#
+    }#>#endif<#
     for (var indice = 0; indice < 17; indice++)
     {#>
 

@@ -681,7 +681,7 @@ namespace System.Linq.Expressions
             if (@object == Object)
             {
                 // Ensure arguments is safe to enumerate twice.
-                // (If this means a second call to ToReadOnly it will return quickly).
+                // (If this means a second call to ToReadOnlyCollection it will return quickly).
                 ICollection<Expression> args;
                 if (arguments == null)
                 {

@@ -43,12 +43,6 @@ namespace Theraot.Collections
 
         bool ICollection<T>.IsReadOnly => true;
 
-        public new static ProgressiveSet<T> Create<TSet>(Progressor<T> progressor, IEqualityComparer<T> comparer)
-            where TSet : ISet<T>, new()
-        {
-            return new ProgressiveSet<T>(progressor, new TSet(), comparer);
-        }
-
         void ICollection<T>.Add(T item)
         {
             throw new NotSupportedException();
@@ -123,5 +117,13 @@ namespace Theraot.Collections
         {
             throw new NotSupportedException();
         }
+
+#if FAT
+        internal new static ProgressiveSet<T> Create<TSet>(Progressor<T> progressor, IEqualityComparer<T> comparer)
+            where TSet : ISet<T>, new()
+        {
+            return new ProgressiveSet<T>(progressor, new TSet(), comparer);
+        }
+#endif
     }
 }

@@ -1,4 +1,4 @@
-#if NET20 || NET30 || NET35 || NET40
+#if NET20 || NET30 || NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -12,6 +12,8 @@ namespace System.Dynamic.Utils
 {
     internal static class CollectionExtensions
     {
+
+#if NET20 || NET30
         public static TrueReadOnlyCollection<T> AddFirst<T>(this ReadOnlyCollection<T> list, T item)
         {
             T[] res = new T[list.Count + 1];
@@ -19,6 +21,7 @@ namespace System.Dynamic.Utils
             list.CopyTo(res, 1);
             return new TrueReadOnlyCollection<T>(res);
         }
+#endif
 
         public static bool ListEquals<T>(this ReadOnlyCollection<T> first, ReadOnlyCollection<T> second)
         {

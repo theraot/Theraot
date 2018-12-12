@@ -64,7 +64,7 @@ namespace System.Dynamic
         public ExpandoObject()
         {
             _data = ExpandoData.Empty;
-            _propertyChanged = new StrongEvent<PropertyChangedEventArgs>();
+            _propertyChanged = new StrongEvent<PropertyChangedEventArgs>(true);
             LockObject = new object();
         }
 

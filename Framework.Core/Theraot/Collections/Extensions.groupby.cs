@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Theraot.Collections.Specialized;
+using Theraot.Core;
 
 namespace Theraot.Collections
 {
@@ -22,7 +23,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
-            return GroupBuilder<TKey, TSource, TSource>.CreateGroups(source, comparer, keySelector, item => item);
+            return GroupBuilder<TKey, TSource, TSource>.CreateGroups(source, comparer, keySelector, FuncHelper.GetIdentityFunc<TSource>());
         }
 
         public static IEnumerable<IGrouping<TKey, TElement>> GroupProgressiveBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
