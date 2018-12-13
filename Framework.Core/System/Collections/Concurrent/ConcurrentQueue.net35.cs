@@ -15,7 +15,7 @@ namespace System.Collections.Concurrent
     [HostProtection(SecurityAction.LinkDemand, Synchronization = true, ExternalThreading = true)]
     public class ConcurrentQueue<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>
     {
-        private readonly SafeQueue<T> _wrapped;
+        private SafeQueue<T> _wrapped;
 
         public ConcurrentQueue()
         {
@@ -24,6 +24,10 @@ namespace System.Collections.Concurrent
 
         public ConcurrentQueue(IEnumerable<T> collection)
         {
+            if (collection == null)
+            {
+                throw new ArgumentNullException(nameof(collection));
+            }
             _wrapped = new SafeQueue<T>(collection);
         }
 
@@ -35,10 +39,14 @@ namespace System.Collections.Concurrent
 
         object ICollection.SyncRoot => throw new NotSupportedException();
 
+        public void Clear()
+        {
+            _wrapped = new SafeQueue<T>();
+        }
+
         public void CopyTo(T[] array, int index)
         {
-            Extensions.CanCopyTo(Count, array, index);
-            Extensions.CopyTo(this, array, index);
+            _wrapped.CopyTo(array, index);
         }
 
         void ICollection.CopyTo(Array array, int index)

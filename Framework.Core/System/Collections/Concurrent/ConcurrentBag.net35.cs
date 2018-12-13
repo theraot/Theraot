@@ -1,11 +1,16 @@
 ﻿#if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
 
 namespace System.Collections.Concurrent
 {
+    [Serializable]
+    [ComVisible(false)]
+    [DebuggerDisplay("Count = {Count}")]
     public class ConcurrentBag<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>
     {
         private SafeQueue<T> _wrapped;
@@ -26,27 +31,31 @@ namespace System.Collections.Concurrent
 
         public int Count => _wrapped.Count;
 
-        int IReadOnlyCollection<T>.Count => Count;
-
         public bool IsEmpty => Count == 0;
 
         bool ICollection.IsSynchronized => false;
 
         object ICollection.SyncRoot => throw new NotSupportedException();
 
+        public void Add(T item)
+        {
+            _wrapped.Add(item);
+        }
+
         public void Clear()
         {
             _wrapped = new SafeQueue<T>();
         }
 
-        void ICollection.CopyTo(Array array, int index)
-        {
-            _wrapped.DeprecatedCopyTo(array, index);
-        }
-
         public void CopyTo(T[] array, int index)
         {
             _wrapped.CopyTo(array, index);
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            Extensions.CanCopyTo(Count, array, index);
+            _wrapped.DeprecatedCopyTo(array, index);
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -78,11 +87,6 @@ namespace System.Collections.Concurrent
         public bool TryTake(out T item)
         {
             return _wrapped.TryTake(out item);
-        }
-
-        private void Add(T item)
-        {
-            _wrapped.Add(item);
         }
     }
 }

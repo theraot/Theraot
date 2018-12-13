@@ -615,7 +615,7 @@
     </Compile>
     <Compile Include="Theraot\Core\AggregateExceptionHelper.cs" />
     <Compile Include="Theraot\Core\CharHelper.cs" />
-    <Compile Include="Theraot\Core\ConcurrentBagExtensions.cs" />
+    <Compile Include="Theraot\Core\ConcurrentExtensions.cs" />
     <Compile Include="Theraot\Core\EnvironmentHelper.cs" />
     <Compile Include="Theraot\Core\IntPtrHelper.cs" />
     <Compile Include="Theraot\Core\RamStream.cs" />
