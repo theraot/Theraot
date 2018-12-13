@@ -425,9 +425,12 @@ namespace System.Collections.Concurrent
 
         public IEnumerable<T> GetConsumingEnumerable(CancellationToken cancellationToken)
         {
-            while (TryTake(out var item, Timeout.Infinite, cancellationToken))
+            while (!IsCompleted)
             {
-                yield return item;
+                if (TryTake(out var item, Timeout.Infinite, cancellationToken))
+                {
+                    yield return item;
+                }
             }
         }
 
