@@ -239,6 +239,7 @@
     <Compile Include="System\Collections\Concurrent\OrderablePartitioner.net35.cs" />
     <Compile Include="System\Collections\Concurrent\Partitioner.net35.cs" />
     <Compile Include="System\Collections\Generic\SortedSet.net35.cs" />
+    <Compile Include="System\Collections\ObjectModel\BlockingCollection.net35.cs" />
     <Compile Include="System\Collections\ObjectModel\ObservableCollection.net20.cs" />
     <Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.ValueCollection.net40.cs" />
     <Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.KeyCollection.net40.cs" />
