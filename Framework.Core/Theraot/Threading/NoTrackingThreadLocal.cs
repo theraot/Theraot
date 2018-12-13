@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Threading;
 using Theraot.Core;
 using Theraot.Threading.Needles;
@@ -137,7 +136,7 @@ namespace Theraot.Threading
 
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
+            return Value.ToString();
         }
 
         public bool TryGetValue(out T value)
