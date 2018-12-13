@@ -28,7 +28,7 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentOutOfRangeException(nameof(boundedCapacity));
             }
-            _data = new PrivateData(new SafeQueue<T>(), boundedCapacity);
+            _data = new PrivateData(new FixedSizeQueue<T>(boundedCapacity), boundedCapacity);
         }
 
         public BlockingCollection(IProducerConsumerCollection<T> collection, int boundedCapacity)
