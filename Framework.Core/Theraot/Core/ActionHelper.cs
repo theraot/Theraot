@@ -92,159 +92,100 @@ namespace Theraot.Core
         {
             return HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>.Instance;
         }
-
+#if FAT
         public static Action GetThrowAction(Exception exception)
         {
-            return () =>
-            {
-                throw exception;
-            };
+            return () => throw exception;
         }
 
         public static Action<T> GetThrowAction<T>(Exception exception)
         {
-            return (/*T*/ obj) =>
-            {
-                throw exception;
-            };
+            return (/*T*/ obj) => throw exception;
         }
 
         public static Action<T1, T2> GetThrowAction<T1, T2>(Exception exception)
         {
-            return (/*T1*/ arg1, /*T2*/ arg2) =>
-            {
-                throw exception;
-            };
+            return (/*T1*/ arg1, /*T2*/ arg2) => throw exception;
         }
 
         public static Action<T1, T2, T3> GetThrowAction<T1, T2, T3>(Exception exception)
         {
-            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3) =>
-            {
-                throw exception;
-            };
+            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3) => throw exception;
         }
 
         public static Action<T1, T2, T3, T4> GetThrowAction<T1, T2, T3, T4>(Exception exception)
         {
-            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4) =>
-            {
-                throw exception;
-            };
+            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4) => throw exception;
         }
 
         public static Action<T1, T2, T3, T4, T5> GetThrowAction<T1, T2, T3, T4, T5>(Exception exception)
         {
-            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5) =>
-            {
-                throw exception;
-            };
+            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5) => throw exception;
         }
 
         public static Action<T1, T2, T3, T4, T5, T6> GetThrowAction<T1, T2, T3, T4, T5, T6>(Exception exception)
         {
-            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6) =>
-            {
-                throw exception;
-            };
+            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6) => throw exception;
         }
 
         public static Action<T1, T2, T3, T4, T5, T6, T7> GetThrowAction<T1, T2, T3, T4, T5, T6, T7>(Exception exception)
         {
-            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7) =>
-            {
-                throw exception;
-            };
+            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7) => throw exception;
         }
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8>(Exception exception)
         {
-            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8) =>
-            {
-                throw exception;
-            };
+            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8) => throw exception;
         }
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8, T9>(Exception exception)
         {
-            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8, /*T9*/ arg9) =>
-            {
-                throw exception;
-            };
+            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8, /*T9*/ arg9) => throw exception;
         }
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(Exception exception)
         {
-            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8, /*T9*/ arg9, /*T10*/ arg10) =>
-            {
-                throw exception;
-            };
+            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8, /*T9*/ arg9, /*T10*/ arg10) => throw exception;
         }
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(Exception exception)
         {
-            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8, /*T9*/ arg9, /*T10*/ arg10, /*T11*/ arg11) =>
-            {
-                throw exception;
-            };
+            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8, /*T9*/ arg9, /*T10*/ arg10, /*T11*/ arg11) => throw exception;
         }
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(Exception exception)
         {
-            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8, /*T9*/ arg9, /*T10*/ arg10, /*T11*/ arg11, /*T12*/ arg12) =>
-            {
-                throw exception;
-            };
+            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8, /*T9*/ arg9, /*T10*/ arg10, /*T11*/ arg11, /*T12*/ arg12) => throw exception;
         }
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(Exception exception)
         {
-            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8, /*T9*/ arg9, /*T10*/ arg10, /*T11*/ arg11, /*T12*/ arg12, /*T13*/ arg13) =>
-            {
-                throw exception;
-            };
+            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8, /*T9*/ arg9, /*T10*/ arg10, /*T11*/ arg11, /*T12*/ arg12, /*T13*/ arg13) => throw exception;
         }
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(Exception exception)
         {
-            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8, /*T9*/ arg9, /*T10*/ arg10, /*T11*/ arg11, /*T12*/ arg12, /*T13*/ arg13, /*T14*/ arg14) =>
-            {
-                throw exception;
-            };
+            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8, /*T9*/ arg9, /*T10*/ arg10, /*T11*/ arg11, /*T12*/ arg12, /*T13*/ arg13, /*T14*/ arg14) => throw exception;
         }
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(Exception exception)
         {
-            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8, /*T9*/ arg9, /*T10*/ arg10, /*T11*/ arg11, /*T12*/ arg12, /*T13*/ arg13, /*T14*/ arg14, /*T15*/ arg15) =>
-            {
-                throw exception;
-            };
+            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8, /*T9*/ arg9, /*T10*/ arg10, /*T11*/ arg11, /*T12*/ arg12, /*T13*/ arg13, /*T14*/ arg14, /*T15*/ arg15) => throw exception;
         }
 
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> GetThrowAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(Exception exception)
         {
-            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8, /*T9*/ arg9, /*T10*/ arg10, /*T11*/ arg11, /*T12*/ arg12, /*T13*/ arg13, /*T14*/ arg14, /*T15*/ arg15, /*T16*/ arg16) =>
-            {
-                throw exception;
-            };
+            return (/*T1*/ arg1, /*T2*/ arg2, /*T3*/ arg3, /*T4*/ arg4, /*T5*/ arg5, /*T6*/ arg6, /*T7*/ arg7, /*T8*/ arg8, /*T9*/ arg9, /*T10*/ arg10, /*T11*/ arg11, /*T12*/ arg12, /*T13*/ arg13, /*T14*/ arg14, /*T15*/ arg15, /*T16*/ arg16) => throw exception;
         }
-
+#endif
         private static class HelperNullAction
         {
-            private static readonly Action _instance;
-
             static HelperNullAction()
             {
-                _instance = NullAction;
+                Instance = NullAction;
             }
 
-            public static Action Instance
-            {
-                get
-                {
-                    return _instance;
-                }
-            }
+            public static Action Instance { get; }
 
             private static void NullAction()
             {
@@ -254,20 +195,12 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T>
         {
-            private static readonly Action<T> _instance;
-
             static HelperNullAction()
             {
-                _instance = NullAction;
+                Instance = NullAction;
             }
 
-            public static Action<T> Instance
-            {
-                get
-                {
-                    return _instance;
-                }
-            }
+            public static Action<T> Instance { get; }
 
 
             private static void NullAction(T obj)
@@ -278,20 +211,12 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2>
         {
-            private static readonly Action<T1, T2> _instance;
-
             static HelperNullAction()
             {
-                _instance = NullAction;
+                Instance = NullAction;
             }
 
-            public static Action<T1, T2> Instance
-            {
-                get
-                {
-                    return _instance;
-                }
-            }
+            public static Action<T1, T2> Instance { get; }
 
 
             private static void NullAction(T1 arg1, T2 arg2)
@@ -302,20 +227,12 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3>
         {
-            private static readonly Action<T1, T2, T3> _instance;
-
             static HelperNullAction()
             {
-                _instance = NullAction;
+                Instance = NullAction;
             }
 
-            public static Action<T1, T2, T3> Instance
-            {
-                get
-                {
-                    return _instance;
-                }
-            }
+            public static Action<T1, T2, T3> Instance { get; }
 
 
             private static void NullAction(T1 arg1, T2 arg2, T3 arg3)
@@ -326,20 +243,12 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4>
         {
-            private static readonly Action<T1, T2, T3, T4> _instance;
-
             static HelperNullAction()
             {
-                _instance = NullAction;
+                Instance = NullAction;
             }
 
-            public static Action<T1, T2, T3, T4> Instance
-            {
-                get
-                {
-                    return _instance;
-                }
-            }
+            public static Action<T1, T2, T3, T4> Instance { get; }
 
 
             private static void NullAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4)
@@ -350,20 +259,12 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5>
         {
-            private static readonly Action<T1, T2, T3, T4, T5> _instance;
-
             static HelperNullAction()
             {
-                _instance = NullAction;
+                Instance = NullAction;
             }
 
-            public static Action<T1, T2, T3, T4, T5> Instance
-            {
-                get
-                {
-                    return _instance;
-                }
-            }
+            public static Action<T1, T2, T3, T4, T5> Instance { get; }
 
 
             private static void NullAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
@@ -374,20 +275,12 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6> _instance;
-
             static HelperNullAction()
             {
-                _instance = NullAction;
+                Instance = NullAction;
             }
 
-            public static Action<T1, T2, T3, T4, T5, T6> Instance
-            {
-                get
-                {
-                    return _instance;
-                }
-            }
+            public static Action<T1, T2, T3, T4, T5, T6> Instance { get; }
 
 
             private static void NullAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
@@ -398,20 +291,12 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7> _instance;
-
             static HelperNullAction()
             {
-                _instance = NullAction;
+                Instance = NullAction;
             }
 
-            public static Action<T1, T2, T3, T4, T5, T6, T7> Instance
-            {
-                get
-                {
-                    return _instance;
-                }
-            }
+            public static Action<T1, T2, T3, T4, T5, T6, T7> Instance { get; }
 
 
             private static void NullAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
@@ -422,20 +307,12 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8> _instance;
-
             static HelperNullAction()
             {
-                _instance = NullAction;
+                Instance = NullAction;
             }
 
-            public static Action<T1, T2, T3, T4, T5, T6, T7, T8> Instance
-            {
-                get
-                {
-                    return _instance;
-                }
-            }
+            public static Action<T1, T2, T3, T4, T5, T6, T7, T8> Instance { get; }
 
 
             private static void NullAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
@@ -446,20 +323,12 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8, T9>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> _instance;
-
             static HelperNullAction()
             {
-                _instance = NullAction;
+                Instance = NullAction;
             }
 
-            public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> Instance
-            {
-                get
-                {
-                    return _instance;
-                }
-            }
+            public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> Instance { get; }
 
 
             private static void NullAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
@@ -470,20 +339,12 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> _instance;
-
             static HelperNullAction()
             {
-                _instance = NullAction;
+                Instance = NullAction;
             }
 
-            public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> Instance
-            {
-                get
-                {
-                    return _instance;
-                }
-            }
+            public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> Instance { get; }
 
 
             private static void NullAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
@@ -494,20 +355,12 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> _instance;
-
             static HelperNullAction()
             {
-                _instance = NullAction;
+                Instance = NullAction;
             }
 
-            public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> Instance
-            {
-                get
-                {
-                    return _instance;
-                }
-            }
+            public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> Instance { get; }
 
 
             private static void NullAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11)
@@ -518,20 +371,12 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> _instance;
-
             static HelperNullAction()
             {
-                _instance = NullAction;
+                Instance = NullAction;
             }
 
-            public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> Instance
-            {
-                get
-                {
-                    return _instance;
-                }
-            }
+            public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> Instance { get; }
 
 
             private static void NullAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12)
@@ -542,20 +387,12 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> _instance;
-
             static HelperNullAction()
             {
-                _instance = NullAction;
+                Instance = NullAction;
             }
 
-            public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> Instance
-            {
-                get
-                {
-                    return _instance;
-                }
-            }
+            public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> Instance { get; }
 
 
             private static void NullAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13)
@@ -566,20 +403,12 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> _instance;
-
             static HelperNullAction()
             {
-                _instance = NullAction;
+                Instance = NullAction;
             }
 
-            public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> Instance
-            {
-                get
-                {
-                    return _instance;
-                }
-            }
+            public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> Instance { get; }
 
 
             private static void NullAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14)
@@ -590,20 +419,12 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> _instance;
-
             static HelperNullAction()
             {
-                _instance = NullAction;
+                Instance = NullAction;
             }
 
-            public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> Instance
-            {
-                get
-                {
-                    return _instance;
-                }
-            }
+            public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> Instance { get; }
 
 
             private static void NullAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15)
@@ -614,20 +435,12 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> _instance;
-
             static HelperNullAction()
             {
-                _instance = NullAction;
+                Instance = NullAction;
             }
 
-            public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> Instance
-            {
-                get
-                {
-                    return _instance;
-                }
-            }
+            public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> Instance { get; }
 
 
             private static void NullAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15, T16 arg16)

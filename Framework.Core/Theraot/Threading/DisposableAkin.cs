@@ -61,7 +61,7 @@ namespace Theraot.Threading
             {
                 throw new ArgumentNullException(nameof(condition));
             }
-            if (ReferenceEquals(Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread), Thread.CurrentThread))
+            if (Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread) == Thread.CurrentThread)
             {
                 if (condition.Invoke())
                 {
@@ -98,7 +98,7 @@ namespace Theraot.Threading
             if
             (
                 !disposeManagedResources
-                || ReferenceEquals(Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread), Thread.CurrentThread)
+                || Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread) == Thread.CurrentThread
             )
             {
                 try

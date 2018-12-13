@@ -213,6 +213,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CLSCompliant.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="System\Action.net30.cs" />
     <Compile Include="System\Action10.net35.cs" />
     <Compile Include="System\Action11.net35.cs" />
@@ -233,7 +234,10 @@
     <Compile Include="System\Collections\Concurrent\ConcurrentDictionary.net35.cs" />
     <Compile Include="System\Collections\Concurrent\ConcurrentQueue.net35.cs" />
     <Compile Include="System\Collections\Concurrent\ConcurrentStack.net35.cs" />
+    <Compile Include="System\Collections\Concurrent\EnumerablePartitionerOptions.net35.cs" />
     <Compile Include="System\Collections\Concurrent\IProducerConsumerCollection.net35.cs" />
+    <Compile Include="System\Collections\Concurrent\OrderablePartitioner.net35.cs" />
+    <Compile Include="System\Collections\Concurrent\Partitioner.net35.cs" />
     <Compile Include="System\Collections\Generic\SortedSet.net35.cs" />
     <Compile Include="System\Collections\ObjectModel\ObservableCollection.net20.cs" />
     <Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.ValueCollection.net40.cs" />
@@ -559,6 +563,7 @@
     <Compile Include="Theraot\Collections\Specialized\ConvertedValueCollection.cs" />
     <Compile Include="Theraot\Collections\Specialized\CustomComparer.cs" />
     <Compile Include="Theraot\Collections\Specialized\CustomEqualityComparer.cs" />
+    <Compile Include="Theraot\Collections\Specialized\GroupBuilder.cs" />
     <Compile Include="Theraot\Collections\Specialized\ProxyCollection.cs" />
     <Compile Include="Theraot\Collections\Specialized\EnumCollection.cs" />
     <Compile Include="Theraot\Collections\Specialized\EnumerableFromDelegate.cs" />
@@ -751,6 +756,7 @@
     <Compile Include="Theraot\Threading\NoReentrantReadWriteLock.Status.cs" />
     <Compile Include="Theraot\Threading\NoTrackingThreadLocal.cs" />
     <Compile Include="Theraot\Threading\ReadWriteLock.cs" />
+    <Compile Include="Theraot\Threading\Timer.cs" />
     <Compile Include="Theraot\Threading\ReentrantReadWriteLock.Status.cs" />
     <Compile Include="Theraot\Threading\ReentrantReadWriteLock.disposable.cs" />
     <Compile Include="Theraot\Threading\ReentrantReadWriteLock.cs" />

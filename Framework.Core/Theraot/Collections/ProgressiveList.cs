@@ -12,41 +12,34 @@ namespace Theraot.Collections
     {
         private readonly IList<T> _cache;
 
-        public ProgressiveList(IEnumerable<T> wrapped)
-            : this(wrapped, new List<T>(), null)
+        public ProgressiveList(IEnumerable<T> enumerable)
+            : this(Progressor<T>.CreateFromIEnumerable(enumerable), new List<T>(), null)
         {
             // Empty
         }
 
-        public ProgressiveList(IObservable<T> wrapped)
-            : this(wrapped, new List<T>(), null)
+        public ProgressiveList(IObservable<T> observable)
+            : this(Progressor<T>.CreateFromIObservable(observable), new List<T>(), null)
         {
             // Empty
         }
 
-        public ProgressiveList(IEnumerable<T> wrapped, IEqualityComparer<T> comparer)
-            : this(wrapped, new List<T>(), comparer)
+        public ProgressiveList(IEnumerable<T> enumerable, IEqualityComparer<T> comparer)
+            : this(Progressor<T>.CreateFromIEnumerable(enumerable), new List<T>(), comparer)
         {
             // Empty
         }
 
-        public ProgressiveList(IObservable<T> wrapped, IEqualityComparer<T> comparer)
-            : this(wrapped, new List<T>(), comparer)
+        public ProgressiveList(IObservable<T> observable, IEqualityComparer<T> comparer)
+            : this(Progressor<T>.CreateFromIObservable(observable), new List<T>(), comparer)
         {
             // Empty
         }
 
-        protected ProgressiveList(IEnumerable<T> wrapped, IList<T> cache, IEqualityComparer<T> comparer)
-            : base(wrapped, cache, comparer)
+        protected ProgressiveList(Progressor<T> progressor, IList<T> cache, IEqualityComparer<T> comparer)
+            : base(progressor, cache, comparer)
         {
-            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            Cache = new ExtendedReadOnlyList<T>(_cache);
-        }
-
-        protected ProgressiveList(IObservable<T> wrapped, IList<T> cache, IEqualityComparer<T> comparer)
-            : base(wrapped, cache, comparer)
-        {
-            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            _cache = cache;
             Cache = new ExtendedReadOnlyList<T>(_cache);
         }
 
@@ -58,7 +51,7 @@ namespace Theraot.Collections
             {
                 if (index >= _cache.Count)
                 {
-                    Progressor.While(() => _cache.Count < index + 1).Consume();
+                    ProgressorWhile(_ => _cache.Count < index + 1).Consume();
                 }
                 return _cache[index];
             }
@@ -90,7 +83,7 @@ namespace Theraot.Collections
             }
             var index = _cache.Count - 1;
             var found = false;
-            Progressor.While
+            ProgressorWhile
             (
                 input =>
                 {
@@ -119,6 +112,14 @@ namespace Theraot.Collections
         {
             throw new NotSupportedException();
         }
+
+#if FAT
+        internal new static ProgressiveList<T> Create<TList>(Progressor<T> progressor, IEqualityComparer<T> comparer)
+                                                    where TList : IList<T>, new()
+        {
+            return new ProgressiveList<T>(progressor, new TList(), comparer);
+        }
+#endif
 
         protected override bool CacheContains(T item)
         {

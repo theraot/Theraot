@@ -77,8 +77,7 @@ namespace System
 
                 case LazyThreadSafetyMode.PublicationOnly:
                     {
-                        _valueFactory =
-                            () => PublicationOnlyMode();
+                        _valueFactory = PublicationOnlyMode;
                     }
                     break;
 
@@ -216,7 +215,7 @@ namespace System
                     thread = null;
                 }
             }
-            if (ReferenceEquals(thread, Thread.CurrentThread))
+            if (thread == Thread.CurrentThread)
             {
                 throw new InvalidOperationException();
             }
@@ -249,7 +248,7 @@ namespace System
                     thread = null;
                 }
             }
-            if (ReferenceEquals(thread, Thread.CurrentThread))
+            if (thread == Thread.CurrentThread)
             {
                 throw new InvalidOperationException();
             }

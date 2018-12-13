@@ -1008,7 +1008,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="ArgumentException">An item with the same key has already been added</exception>
         internal void AddNew(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
@@ -1052,7 +1052,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="value">The value.</param>
         internal void Set(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
@@ -1083,7 +1083,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="isNew">if set to <c>true</c> the item value was set.</param>
         internal void Set(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value, out bool isNew)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
@@ -1116,7 +1116,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         internal bool TryAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
@@ -1161,7 +1161,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool TryGetOrAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value, out TValue stored)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
@@ -1411,7 +1411,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         internal bool TryAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value, out KeyValuePair<TKey, TValue> stored)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (keyOverwriteCheck == null)
             {
@@ -1460,7 +1460,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool TryGetOrAdd(TKey key, Func<TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory, out TValue stored)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (addValueFactory == null)
             {

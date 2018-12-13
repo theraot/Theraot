@@ -525,7 +525,7 @@ namespace System.Linq.Expressions.Compiler
 
             // Define labels
             Label end = _ilg.DefineLabel();
-            Label @default = (node.DefaultBody == null) ? end : _ilg.DefineLabel();
+            Label @default = node.DefaultBody == null ? end : _ilg.DefineLabel();
 
             // Emit the case and default bodies
             EmitSwitchCases(node, labels, isGoto, @default, end, flags);
@@ -723,7 +723,7 @@ namespace System.Linq.Expressions.Compiler
 
             // Create end label, and default label if needed
             Label end = _ilg.DefineLabel();
-            Label @default = (node.DefaultBody == null) ? end : _ilg.DefineLabel();
+            Label @default = node.DefaultBody == null ? end : _ilg.DefineLabel();
 
             // Emit the switch
             var info = new SwitchInfo(node, value, @default);

@@ -12,11 +12,11 @@ namespace Theraot.Core
         {
             //Added in .NET 4.0
             var type = value.GetType();
-            if (ReferenceEquals(value, null))
+            if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
-            if (ReferenceEquals(flag, null))
+            if (flag == null)
             {
                 throw new ArgumentNullException(nameof(flag));
             }

@@ -24,18 +24,6 @@ namespace Theraot.Core
             return IdentityHelper<TReturn>.Instance;
         }
 
-        public static Predicate<T> GetNotNullPredicate<T>()
-            where T : class
-        {
-            return NotNullHelper<T>.Instance;
-        }
-
-        public static Predicate<T> GetNullPredicate<T>()
-            where T : class
-        {
-            return NullHelper<T>.Instance;
-        }
-
         private static class IdentityHelper<TReturn>
         {
             static IdentityHelper()
@@ -51,6 +39,19 @@ namespace Theraot.Core
             }
         }
 
+#if FAT
+        public static Predicate<T> GetNotNullPredicate<T>()
+            where T : class
+        {
+            return NotNullHelper<T>.Instance;
+        }
+
+        public static Predicate<T> GetNullPredicate<T>()
+            where T : class
+        {
+            return NullHelper<T>.Instance;
+        }
+
         private static class NotNullHelper<T>
         {
             static NotNullHelper()
@@ -62,7 +63,7 @@ namespace Theraot.Core
 
             private static bool NotNullPredicate(T target)
             {
-                return !ReferenceEquals(target, null);
+                return target != null;
             }
         }
 
@@ -77,8 +78,9 @@ namespace Theraot.Core
 
             private static bool NullPredicate(T target)
             {
-                return ReferenceEquals(target, null);
+                return target == null;
             }
         }
+#endif
     }
 }

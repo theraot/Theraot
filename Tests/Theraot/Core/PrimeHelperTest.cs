@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿#if FAT
+
+using NUnit.Framework;
 using System;
 using Theraot.Core;
 
@@ -108,3 +110,5 @@ namespace Tests.Theraot.Core
         }
     }
 }
+
+#endif

@@ -23,7 +23,7 @@ namespace Theraot.Threading
                 }
                 catch (Exception exception)
                 {
-                    // Catch'em all - fields may be partially collected.
+                    // Catch them all - fields may be partially collected.
                     GC.KeepAlive(exception);
                 }
             }
@@ -53,14 +53,11 @@ namespace Theraot.Threading
         {
             if (_disposeStatus == -1)
             {
-                if (!ReferenceEquals(whenDisposed, null))
-                {
-                    whenDisposed.Invoke();
-                }
+                whenDisposed?.Invoke();
             }
             else
             {
-                if (!ReferenceEquals(whenNotDisposed, null))
+                if (whenNotDisposed != null)
                 {
                     if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
                     {
@@ -75,10 +72,7 @@ namespace Theraot.Threading
                     }
                     else
                     {
-                        if (!ReferenceEquals(whenDisposed, null))
-                        {
-                            whenDisposed.Invoke();
-                        }
+                        whenDisposed?.Invoke();
                     }
                 }
             }
@@ -89,13 +83,13 @@ namespace Theraot.Threading
         {
             if (_disposeStatus == -1)
             {
-                if (ReferenceEquals(whenDisposed, null))
+                if (whenDisposed == null)
                 {
                     return default;
                 }
                 return whenDisposed.Invoke();
             }
-            if (ReferenceEquals(whenNotDisposed, null))
+            if (whenNotDisposed == null)
             {
                 return default;
             }
@@ -110,7 +104,7 @@ namespace Theraot.Threading
                     Interlocked.Decrement(ref _disposeStatus);
                 }
             }
-            if (ReferenceEquals(whenDisposed, null))
+            if (whenDisposed == null)
             {
                 return default;
             }

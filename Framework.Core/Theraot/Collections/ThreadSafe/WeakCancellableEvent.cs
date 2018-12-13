@@ -9,11 +9,6 @@ namespace Theraot.Collections.ThreadSafe
     public class StrongCancellableEvent<TCancelEventArgs> : StrongEvent<TCancelEventArgs>
         where TCancelEventArgs : CancelEventArgs
     {
-        public StrongCancellableEvent()
-        {
-            //Empty
-        }
-
         public StrongCancellableEvent(bool freeReentry)
             : base(freeReentry)
         {

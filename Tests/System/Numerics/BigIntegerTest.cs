@@ -116,8 +116,7 @@ namespace MonoTests.System.Numerics
 
                     var a = new BigInteger(values[i]);
                     var b = new BigInteger(values[j]);
-                    BigInteger d;
-                    var c = BigInteger.DivRem(a, b, out d);
+                    var c = BigInteger.DivRem(a, b, out var d);
 
                     Assert.AreEqual(values[i] / values[j], (long)c, "#a_" + i.ToString() + "_" + j.ToString());
                     Assert.AreEqual(values[i] % values[j], (long)d, "#b_" + i.ToString() + "_" + j.ToString());
@@ -130,8 +129,7 @@ namespace MonoTests.System.Numerics
         {
             var a = new BigInteger(_hugeA);
             var b = new BigInteger(_hugeB);
-            BigInteger d;
-            var c = BigInteger.DivRem(a, b, out d);
+            var c = BigInteger.DivRem(a, b, out var d);
 
             Assert.AreEqual(_hugeDiv, c.ToByteArray(), "#1");
             Assert.AreEqual(_hugeRem, d.ToByteArray(), "#2");
@@ -250,8 +248,7 @@ namespace MonoTests.System.Numerics
         {
             try
             {
-                BigInteger d;
-                GC.KeepAlive(BigInteger.DivRem(100, 0, out d));
+                GC.KeepAlive(BigInteger.DivRem(100, 0, out var d));
                 Assert.Fail("#1");
             }
             catch (DivideByZeroException ex)
@@ -1168,8 +1165,7 @@ namespace MonoTests.System.Numerics
         [Test]
         public void TryParse()
         {
-            BigInteger x;
-            Assert.IsFalse(BigInteger.TryParse(null, out x), "#1");
+            Assert.IsFalse(BigInteger.TryParse(null, out var x), "#1");
             Assert.AreEqual(0, (int)x, "#1a");
             Assert.IsFalse(BigInteger.TryParse("", out x), "#2");
             Assert.IsFalse(BigInteger.TryParse(" ", out x), "#3");
@@ -1250,15 +1246,13 @@ namespace MonoTests.System.Numerics
 
             Thread.CurrentThread.CurrentCulture = cur;
 
-            BigInteger x;
-
             try
             {
-                Assert.IsTrue(BigInteger.TryParse("%11", out x), "#1");
+                Assert.IsTrue(BigInteger.TryParse("%11", out var x), "#1");
                 Assert.AreEqual(11, (int)x, "#2");
 
-                Assert.IsTrue(BigInteger.TryParse(">11", out x), "#3");
-                Assert.AreEqual(-11, (int)x, "#4");
+                Assert.IsTrue(BigInteger.TryParse(">11", out var y), "#3");
+                Assert.AreEqual(-11, (int)y, "#4");
             }
             finally
             {

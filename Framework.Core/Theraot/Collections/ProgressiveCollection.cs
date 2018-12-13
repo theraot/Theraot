@@ -12,47 +12,44 @@ namespace Theraot.Collections
     public class ProgressiveCollection<T> : IReadOnlyCollection<T>, ICollection<T>
     {
         private readonly ICollection<T> _cache;
+        private readonly IDisposable _subscription;
 
-        public ProgressiveCollection(IEnumerable<T> wrapped)
-            : this(wrapped, new HashSet<T>(), null)
+        public ProgressiveCollection(IEnumerable<T> enumerable)
+            : this(Progressor<T>.CreateFromIEnumerable(enumerable), new List<T>(), null)
         {
             // Empty
         }
 
-        public ProgressiveCollection(IObservable<T> wrapped)
-            : this(wrapped, new HashSet<T>(), null)
+        public ProgressiveCollection(IObservable<T> observable)
+            : this(Progressor<T>.CreateFromIObservable(observable), new List<T>(), null)
         {
             // Empty
         }
 
-        public ProgressiveCollection(IEnumerable<T> wrapped, IEqualityComparer<T> comparer)
-            : this(wrapped, new HashSet<T>(comparer), comparer)
+        public ProgressiveCollection(IEnumerable<T> enumerable, IEqualityComparer<T> comparer)
+            : this(Progressor<T>.CreateFromIEnumerable(enumerable), new ExtendedList<T>(comparer), comparer)
         {
             // Empty
         }
 
-        public ProgressiveCollection(IObservable<T> wrapped, IEqualityComparer<T> comparer)
-            : this(wrapped, new HashSet<T>(comparer), comparer)
+        public ProgressiveCollection(IObservable<T> observable, IEqualityComparer<T> comparer)
+            : this(Progressor<T>.CreateFromIObservable(observable), new ExtendedList<T>(comparer), comparer)
         {
             // Empty
         }
 
-        protected ProgressiveCollection(IEnumerable<T> wrapped, ICollection<T> cache, IEqualityComparer<T> comparer)
-        {
-            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            Cache = Extensions.WrapAsIReadOnlyList(_cache);
-            Progressor = new Progressor<T>(wrapped);
-            Progressor.SubscribeAction(obj => _cache.Add(obj));
-            Comparer = comparer ?? EqualityComparer<T>.Default;
-        }
-
-        protected ProgressiveCollection(IObservable<T> wrapped, ICollection<T> cache, IEqualityComparer<T> comparer)
+        protected ProgressiveCollection(Progressor<T> progressor, ICollection<T> cache, IEqualityComparer<T> comparer)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             Cache = Extensions.WrapAsIReadOnlyCollection(_cache);
-            Progressor = new Progressor<T>(wrapped);
-            Progressor.SubscribeAction(obj => _cache.Add(obj));
+            Progressor = progressor ?? throw new ArgumentNullException(nameof(progressor));
+            _subscription = Progressor.SubscribeAction(obj => _cache.Add(obj));
             Comparer = comparer ?? EqualityComparer<T>.Default;
+        }
+
+        ~ProgressiveCollection()
+        {
+            Close();
         }
 
         public IReadOnlyCollection<T> Cache { get; }
@@ -61,18 +58,16 @@ namespace Theraot.Collections
         {
             get
             {
-                Progressor.Consume();
+                ConsumeAll();
                 return _cache.Count;
             }
         }
-
-        public bool EndOfEnumeration => Progressor.IsClosed;
 
         bool ICollection<T>.IsReadOnly => true;
 
         protected IEqualityComparer<T> Comparer { get; }
 
-        protected Progressor<T> Progressor { get; }
+        private Progressor<T> Progressor { get; }
 
         void ICollection<T>.Add(T item)
         {
@@ -86,7 +81,8 @@ namespace Theraot.Collections
 
         public void Close()
         {
-            Progressor.Close();
+            _subscription?.Dispose();
+            Progressor?.Close();
         }
 
         public bool Contains(T item)
@@ -95,19 +91,11 @@ namespace Theraot.Collections
             {
                 return true;
             }
-            while (Progressor.TryTake(out var found))
+            return ProgressorWhere(Check).Any();
+            bool Check(T found)
             {
-                if (Comparer.Equals(item, found))
-                {
-                    return true;
-                }
+                return Comparer.Equals(item, found);
             }
-            return false;
-        }
-
-        public bool Contains(T item, IEqualityComparer<T> comparer)
-        {
-            return Enumerable.Contains(this, item, comparer);
         }
 
         public void CopyTo(T[] array)
@@ -136,14 +124,12 @@ namespace Theraot.Collections
                 yield return item;
             }
             var knownCount = _cache.Count;
+            while (Progressor.TryTake(out var item))
             {
-                while (Progressor.TryTake(out var item))
+                if (_cache.Count > knownCount)
                 {
-                    if (_cache.Count > knownCount)
-                    {
-                        yield return item;
-                        knownCount = _cache.Count;
-                    }
+                    yield return item;
+                    knownCount = _cache.Count;
                 }
             }
         }
@@ -158,9 +144,68 @@ namespace Theraot.Collections
             throw new NotSupportedException();
         }
 
+        public IEnumerable<T> Where(Predicate<T> check)
+        {
+            foreach (var item in _cache)
+            {
+                yield return item;
+            }
+            foreach (var p in ProgressorWhere(check))
+            {
+                yield return p;
+            }
+        }
+
+        internal static ProgressiveCollection<T> Create<TCollection>(Progressor<T> progressor, IEqualityComparer<T> comparer)
+            where TCollection : ICollection<T>, new()
+        {
+            return new ProgressiveCollection<T>(progressor, new TCollection(), comparer);
+        }
+
         protected virtual bool CacheContains(T item)
         {
             return _cache.Contains(item, Comparer);
+        }
+
+        protected void ConsumeAll()
+        {
+            Progressor.Consume();
+        }
+
+        protected IEnumerable<T> ProgressorWhere(Predicate<T> check)
+        {
+            var knownCount = _cache.Count;
+            while (Progressor.TryTake(out var item))
+            {
+                if (_cache.Count > knownCount)
+                {
+                    if (check(item))
+                    {
+                        yield return item;
+                    }
+                    knownCount = _cache.Count;
+                }
+            }
+        }
+
+        protected IEnumerable<T> ProgressorWhile(Predicate<T> check)
+        {
+            var knownCount = _cache.Count;
+            while (Progressor.TryTake(out var item))
+            {
+                if (_cache.Count > knownCount)
+                {
+                    if (check(item))
+                    {
+                        yield return item;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    knownCount = _cache.Count;
+                }
+            }
         }
     }
 }

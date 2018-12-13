@@ -1,54 +1,34 @@
-// Permission is hereby granted, free of charge, to any person obtaining
-// a copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to
-// permit persons to whom the Software is furnished to do so, subject to
-// the following conditions:
-//
-// The above copyright notice and this permission notice shall be
-// included in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-//
-// Authors:
-//    Alejandro Serrano "Serras" (trupill@yahoo.es)
-
-#if FAT
-
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Theraot.Collections.Specialized
 {
-    internal class Grouping<TK, T> : IGrouping<TK, T>
+    internal sealed class Grouping<TKey, TElement> : IGrouping<TKey, TElement>
     {
-        private readonly IEnumerable<T> _group;
+        private readonly ICollection<TElement> _items;
 
-        public Grouping(TK key, IEnumerable<T> group)
+        internal Grouping(TKey key, ICollection<TElement> items)
         {
-            _group = group;
+            _items = items;
             Key = key;
         }
 
-        public TK Key { get; }
+        public TKey Key { get; }
 
-        public IEnumerator<T> GetEnumerator()
+        public IEnumerator<TElement> GetEnumerator()
         {
-            return _group.GetEnumerator();
+            return _items.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _group.GetEnumerator();
+            return _items.GetEnumerator();
+        }
+
+        public override string ToString()
+        {
+            return $"<Key = {Key}>";
         }
     }
 }
-
-#endif

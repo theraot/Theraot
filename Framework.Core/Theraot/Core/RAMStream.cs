@@ -229,7 +229,7 @@ namespace Theraot.Core
                 while (pair.Key > _position)
                 {
                     var left = new byte[1 << _sectorBits];
-                    contribution = (1 << _sectorBits) > count ? count : 1 << _sectorBits;
+                    contribution = 1 << _sectorBits > count ? count : 1 << _sectorBits;
                     intContribution = (int)contribution;
                     Array.Copy(buffer, offset, left, 0, intContribution);
                     if (!Add(bytes, left, out pair))

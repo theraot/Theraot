@@ -85,7 +85,7 @@ namespace System.Linq.Expressions
                 {
                     newNodes[i] = node;
                 }
-                else if (!ReferenceEquals(node, nodes[i]))
+                else if (node != nodes[i])
                 {
                     newNodes = new Expression[n];
                     for (var j = 0; j < i; j++)

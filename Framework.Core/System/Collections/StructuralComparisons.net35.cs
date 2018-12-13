@@ -124,8 +124,8 @@ namespace System.Collections
 
             private static bool NullComparison(object x, object y, out bool result)
             {
-                var xNull = ReferenceEquals(x, null);
-                var yNull = ReferenceEquals(y, null);
+                var xNull = x == null;
+                var yNull = y == null;
                 result = xNull == yNull;
                 return xNull || yNull;
             }

@@ -32,16 +32,10 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// Temporary support for disabling crashing if tasks go unobserved.
         /// </summary>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2207:InitializeValueTypeStaticFieldsInline")]
         static AsyncVoidMethodBuilder()
         {
-            try
-            {
-                PreventUnobservedTaskExceptions();
-            }
-            catch (Exception ex)
-            {
-                GC.KeepAlive(ex);
-            }
+            PreventUnobservedTaskExceptions();
         }
 
         /// <summary>
@@ -179,12 +173,18 @@ namespace System.Runtime.CompilerServices
         /// </summary>
         internal static void PreventUnobservedTaskExceptions()
         {
-            if (Interlocked.CompareExchange(ref _preventUnobservedTaskExceptionsInvoked, 1, 0) != 0)
+            try
             {
-                return;
+                if (Interlocked.CompareExchange(ref _preventUnobservedTaskExceptionsInvoked, 1, 0) != 0)
+                {
+                    return;
+                }
+                TaskScheduler.UnobservedTaskException += (s, e) => e.SetObserved();
             }
-
-            TaskScheduler.UnobservedTaskException += (s, e) => e.SetObserved();
+            catch (Exception ex)
+            {
+                GC.KeepAlive(ex);
+            }
         }
 
         /// <summary>

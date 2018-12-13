@@ -158,7 +158,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// A cached task for default(TResult).
         /// </summary>
-        internal static readonly TaskCompletionSource<TResult> DefaultResultTask;
+        internal static readonly TaskCompletionSource<TResult> DefaultResultTask = AsyncMethodTaskCache<TResult>.CreateCompleted(default);
 
         /// <summary>
         /// State related to the IAsyncStateMachine.
@@ -178,17 +178,10 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// Temporary support for disabling crashing if tasks go unobserved.
         /// </summary>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2207:InitializeValueTypeStaticFieldsInline")]
         static AsyncTaskMethodBuilder()
         {
-            DefaultResultTask = AsyncMethodTaskCache<TResult>.CreateCompleted(default);
-            try
-            {
-                AsyncVoidMethodBuilder.PreventUnobservedTaskExceptions();
-            }
-            catch (Exception ex)
-            {
-                GC.KeepAlive(ex);
-            }
+            AsyncVoidMethodBuilder.PreventUnobservedTaskExceptions();
         }
 
         /// <summary>

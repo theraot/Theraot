@@ -6,11 +6,11 @@ namespace Theraot.Threading
     [DebuggerNonUserCode]
     public static class RuntimeUniqueIdProvider
     {
-        private static int _lastId = int.MinValue;
+        private static int _lastId;
 
         public static UniqueId GetNextId()
         {
-            return new UniqueId(Interlocked.Increment(ref _lastId));
+            return new UniqueId(unchecked((uint)Interlocked.Increment(ref _lastId)));
         }
     }
 }

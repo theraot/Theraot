@@ -44,7 +44,7 @@ namespace System.Numerics
                 if (Log10(value) > precision + 1)
                 {
                     var round = value % 10 >= 5;
-                    value = (value / 10) + (round ? One : Zero);
+                    value = value / 10 + (round ? One : Zero);
                 }
 
                 ReverseStringBuilder builder;
@@ -650,7 +650,7 @@ namespace System.Numerics
             }
 
             var len = number.Digits.Length; // there is no trailing '\0'
-            var bits = new byte[(len / 2) + (len % 2)];
+            var bits = new byte[len / 2 + len % 2];
 
             var shift = false;
             var isNegative = false;

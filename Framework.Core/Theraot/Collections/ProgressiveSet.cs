@@ -11,38 +11,32 @@ namespace Theraot.Collections
     public class ProgressiveSet<T> : ProgressiveCollection<T>, ISet<T>
     {
         // Note: these constructors uses ExtendedSet because HashSet is not an ISet<T> in .NET 3.5 and base class needs an ISet<T>
-        public ProgressiveSet(IEnumerable<T> wrapped)
-            : this(wrapped, new ExtendedSet<T>(), null)
+        public ProgressiveSet(IEnumerable<T> enumerable)
+            : this(Progressor<T>.CreateFromIEnumerable(enumerable), new ExtendedSet<T>(), null)
         {
             // Empty
         }
 
-        public ProgressiveSet(IObservable<T> wrapped)
-            : this(wrapped, new ExtendedSet<T>(), null)
+        public ProgressiveSet(IObservable<T> observable)
+            : this(Progressor<T>.CreateFromIObservable(observable), new ExtendedSet<T>(), null)
         {
             // Empty
         }
 
-        public ProgressiveSet(IEnumerable<T> wrapped, IEqualityComparer<T> comparer)
-            : this(wrapped, new ExtendedSet<T>(comparer), null)
+        public ProgressiveSet(IEnumerable<T> enumerable, IEqualityComparer<T> comparer)
+            : this(Progressor<T>.CreateFromIEnumerable(enumerable), new ExtendedSet<T>(comparer), null)
         {
             // Empty
         }
 
-        public ProgressiveSet(IObservable<T> wrapped, IEqualityComparer<T> comparer)
-           : this(wrapped, new ExtendedSet<T>(comparer), null)
+        public ProgressiveSet(IObservable<T> observable, IEqualityComparer<T> comparer)
+           : this(Progressor<T>.CreateFromIObservable(observable), new ExtendedSet<T>(comparer), null)
         {
             // Empty
         }
 
-        protected ProgressiveSet(IEnumerable<T> wrapped, ISet<T> cache, IEqualityComparer<T> comparer)
-            : base(wrapped ?? throw new ArgumentNullException(nameof(wrapped)), cache, comparer)
-        {
-            // Empty
-        }
-
-        protected ProgressiveSet(IObservable<T> wrapped, ISet<T> cache, IEqualityComparer<T> comparer)
-            : base(wrapped ?? throw new ArgumentNullException(nameof(wrapped)), cache, comparer)
+        protected ProgressiveSet(Progressor<T> progressor, ISet<T> cache, IEqualityComparer<T> comparer)
+            : base(progressor, cache, comparer)
         {
             // Empty
         }
@@ -123,5 +117,13 @@ namespace Theraot.Collections
         {
             throw new NotSupportedException();
         }
+
+#if FAT
+        internal new static ProgressiveSet<T> Create<TSet>(Progressor<T> progressor, IEqualityComparer<T> comparer)
+            where TSet : ISet<T>, new()
+        {
+            return new ProgressiveSet<T>(progressor, new TSet(), comparer);
+        }
+#endif
     }
 }

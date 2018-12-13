@@ -13,7 +13,6 @@ namespace Theraot.Core
 
     class TupleEqualityComparer<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> : IEqualityComparer<Tuple<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#>>
     {
-        private static readonly TupleEqualityComparer<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> _default;
 
 <#
         if (indice == 1)
@@ -35,7 +34,7 @@ namespace Theraot.Core
 
         static TupleEqualityComparer()
         {
-            _default = new TupleEqualityComparer<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#>();
+            Default = new TupleEqualityComparer<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#>();
         }
 
         public TupleEqualityComparer(<# if (indice != 0) {#><# if (indice == 1) #>IEqualityComparer<T> comparer<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>IEqualityComparer<T<#=subindice#>> comparer<#=subindice#><#}#><#}#>)
@@ -80,13 +79,7 @@ namespace Theraot.Core
 #>
         }
 
-        public static TupleEqualityComparer<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> Default
-        {
-            get
-            {
-                return _default;
-            }
-        }
+        public static TupleEqualityComparer<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> Default { get; }
 
         public bool Equals(Tuple<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> x, Tuple<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> y)
         {
@@ -145,7 +138,8 @@ namespace Theraot.Core
             {
                 return EqualityComparer<object>.Default.GetHashCode(null);
             }
-            else unchecked
+            else <# if (indice != 1){ #>unchecked<# } #>
+
             {
                 return
 <#
@@ -177,7 +171,7 @@ namespace Theraot.Core
                         else
                         {
 #>
-                    (_comparer<#=subindice#>.GetHashCode(obj.Item<#=subindice#>) * 17) +
+                    _comparer<#=subindice#>.GetHashCode(obj.Item<#=subindice#>) * 17 +
 <#
                         }
                     }

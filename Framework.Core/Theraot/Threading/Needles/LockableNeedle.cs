@@ -14,11 +14,7 @@ namespace Theraot.Threading.Needles
         public LockableNeedle(T value, LockableContext context)
             : base(value)
         {
-            if (ReferenceEquals(context, null))
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
             _needleLock = new NeedleLock<Thread>(_context.Context);
         }
 
@@ -93,7 +89,7 @@ namespace Theraot.Threading.Needles
         private void Capture(LockableSlot slot)
         {
             var lockSlot = slot.LockSlot;
-            if (ReferenceEquals(lockSlot, null))
+            if (lockSlot == null)
             {
                 throw new InvalidOperationException("The current thread has not entered the LockableContext of this LockableNeedle.");
             }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if FAT
+
+using System;
 using System.Diagnostics;
 
 namespace Theraot.Core
@@ -38,7 +40,7 @@ namespace Theraot.Core
                     return true;
                 }
             }
-            var test = index - (index % 6) + 5;
+            var test = index - index % 6 + 5;
             while (test < max)
             {
                 if (number % test == 0 || number % (test += 2) == 0)
@@ -106,3 +108,5 @@ namespace Theraot.Core
         }
     }
 }
+
+#endif

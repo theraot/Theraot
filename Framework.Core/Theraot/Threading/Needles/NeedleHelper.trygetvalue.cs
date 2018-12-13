@@ -1,4 +1,4 @@
-﻿// Needed for NET40
+﻿#if FAT
 
 namespace Theraot.Threading.Needles
 {
@@ -20,3 +20,5 @@ namespace Theraot.Threading.Needles
         }
     }
 }
+
+#endif

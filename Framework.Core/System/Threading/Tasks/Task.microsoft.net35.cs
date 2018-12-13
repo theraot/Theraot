@@ -140,7 +140,7 @@ namespace System.Threading.Tasks
                 // Reaching this sub clause means there may be remaining active children,
                 // and we could be racing with one of them to call FinishStageTwo().
                 // So whoever does the final Interlocked.Dec is responsible to finish.
-                if ((_completionCountdown == 1 && !IsSelfReplicatingRoot) || Interlocked.Decrement(ref _completionCountdown) == 0)
+                if (_completionCountdown == 1 && !IsSelfReplicatingRoot || Interlocked.Decrement(ref _completionCountdown) == 0)
                 {
                     FinishStageTwo();
                 }
@@ -176,7 +176,7 @@ namespace System.Threading.Tasks
         {
             Action = null;
             // Notify parent if this was an attached task
-            if (_parent != null && ((_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0) && (CreationOptions & TaskCreationOptions.AttachedToParent) != 0)
+            if (_parent != null && (_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0 && (CreationOptions & TaskCreationOptions.AttachedToParent) != 0)
             {
                 _parent.ProcessChildCompletion(this);
             }
@@ -342,7 +342,7 @@ namespace System.Threading.Tasks
         /// </summary>
         internal void UpdateExceptionObservedStatus()
         {
-            if ((_parent != null) && ((CreationOptions & TaskCreationOptions.AttachedToParent) != 0) && ((_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0) && InternalCurrent == _parent)
+            if (_parent != null && (CreationOptions & TaskCreationOptions.AttachedToParent) != 0 && (_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0 && InternalCurrent == _parent)
             {
                 Volatile.Write(ref _exceptionObservedByParent, 1);
             }
@@ -435,9 +435,9 @@ namespace System.Threading.Tasks
             {
                 // If we have an exception related to our CancellationToken, then we need to subtract ourselves
                 // from our parent before throwing it.
-                if ((_parent != null)
-                    && ((CreationOptions & TaskCreationOptions.AttachedToParent) != 0)
-                    && ((_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0)
+                if (_parent != null
+                    && (CreationOptions & TaskCreationOptions.AttachedToParent) != 0
+                    && (_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0
                 )
                 {
                     _parent.DisregardChild();

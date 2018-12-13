@@ -27,7 +27,7 @@ namespace Tests.Theraot.Collections
         public void ObservableProgressorWithPause()
         {
             var source = new SlowObservable<int>(new[] { 0, 1, 2, 3, 4, 5 });
-            var progressor = new Progressor<int>(source);
+            var progressor = Progressor<int>.CreateFromIObservable(source);
             Assert.IsFalse(progressor.IsClosed);
             var data = new[] { 0, 0, 0 };
             using
@@ -68,7 +68,8 @@ namespace Tests.Theraot.Collections
         private class SlowObservable<T> : IObservable<T>
         {
             private readonly IEnumerable<T> _source;
-            private readonly SafeSet<Needle<IObserver<T>>> _observers;
+            private readonly Bucket<IObserver<T>> _observers;
+            private int _index;
             private object _last;
             private bool _done;
             private Exception _exception;
@@ -76,7 +77,8 @@ namespace Tests.Theraot.Collections
             public SlowObservable(IEnumerable<T> source)
             {
                 _source = source;
-                _observers = new SafeSet<Needle<IObserver<T>>>();
+                _observers = new Bucket<IObserver<T>>();
+                _index = -1;
             }
 
             public void Show()
@@ -108,7 +110,7 @@ namespace Tests.Theraot.Collections
             {
                 foreach (var item in _observers)
                 {
-                    item.Value.OnCompleted();
+                    item.OnCompleted();
                 }
             }
 
@@ -116,7 +118,7 @@ namespace Tests.Theraot.Collections
             {
                 foreach (var item in _observers)
                 {
-                    item.Value.OnError(error);
+                    item.OnError(error);
                 }
             }
 
@@ -124,15 +126,15 @@ namespace Tests.Theraot.Collections
             {
                 foreach (var item in _observers)
                 {
-                    item.Value.OnNext(value);
+                    item.OnNext(value);
                 }
             }
 
             public IDisposable Subscribe(IObserver<T> observer)
             {
-                var needle = new Needle<IObserver<T>>(observer);
-                _observers.AddNew(needle);
-                return Disposable.Create(() => _observers.Remove(needle));
+                var index = Interlocked.Increment(ref _index);
+                _observers.Insert(index, observer);
+                return Disposable.Create(() => _observers.RemoveAt(index));
             }
         }
     }

@@ -42,7 +42,7 @@ namespace System.Threading
         internal static readonly CancellationTokenSource NoneSource = new CancellationTokenSource(); // Leaked
         private static readonly Action<CancellationTokenSource> _timerCallback;
         private readonly ManualResetEvent _handle;
-        private SafeDictionary<CancellationTokenRegistration, Action> _callbacks;
+        private Bucket<Action> _callbacks;
         private int _cancelRequested;
         private int _currentId = int.MaxValue;
         private int _disposeRequested;
@@ -64,7 +64,7 @@ namespace System.Threading
 
         public CancellationTokenSource()
         {
-            _callbacks = new SafeDictionary<CancellationTokenRegistration, Action>();
+            _callbacks = new Bucket<Action>();
             _handle = new ManualResetEvent(false);
         }
 
@@ -167,7 +167,7 @@ namespace System.Threading
                     // Have to be careful not to create secondary background timer
                     var newTimer = new Timeout<CancellationTokenSource>(_timerCallback, Timeout.Infinite, this);
                     var oldTimer = Interlocked.CompareExchange(ref _timeout, newTimer, null);
-                    if (!ReferenceEquals(oldTimer, null))
+                    if (oldTimer != null)
                     {
                         newTimer.Cancel();
                     }
@@ -197,7 +197,7 @@ namespace System.Threading
             }
         }
 
-        internal SafeDictionary<CancellationTokenRegistration, Action> CheckDisposedGetCallbacks()
+        internal Bucket<Action> CheckDisposedGetCallbacks()
         {
             var result = _callbacks;
             if (result == null || Volatile.Read(ref _disposeRequested) == 1)
@@ -211,7 +211,8 @@ namespace System.Threading
         {
             // NOTICE this method has no null check
             var callbacks = CheckDisposedGetCallbacks();
-            var tokenReg = new CancellationTokenRegistration(Interlocked.Decrement(ref _currentId), this);
+            var id = Interlocked.Decrement(ref _currentId);
+            var tokenReg = new CancellationTokenRegistration(id, this);
             // If the source is already canceled run the callback inline.
             // if not, we try to add it to the queue and if it is currently being processed.
             // we try to execute it back ourselves to be sure the callback is ran.
@@ -228,10 +229,10 @@ namespace System.Threading
                     var originalCallback = callback;
                     callback = () => capturedSyncContext.Send(_ => originalCallback(), null);
                 }
-                callbacks.TryAdd(tokenReg, callback);
+                callbacks.Insert(id, callback);
                 // Check if the source was just canceled and if so, it may be that it executed the callbacks except the one just added...
                 // So try to inline the callback
-                if (Volatile.Read(ref _cancelRequested) == 1 && callbacks.Remove(tokenReg, out callback))
+                if (Volatile.Read(ref _cancelRequested) == 1 && callbacks.RemoveAt(id, out callback))
                 {
                     callback();
                 }
@@ -239,7 +240,7 @@ namespace System.Threading
             return tokenReg;
         }
 
-        internal bool RemoveCallback(CancellationTokenRegistration reg)
+        internal bool RemoveCallback(int reg)
         {
             // Ignore call if the source has been disposed
             if (Volatile.Read(ref _disposeRequested) == 0)
@@ -247,7 +248,7 @@ namespace System.Threading
                 var callbacks = _callbacks;
                 if (callbacks != null)
                 {
-                    return callbacks.Remove(reg, out var dummy);
+                    return callbacks.RemoveAt(reg, out var dummy);
                 }
             }
             return true;
@@ -295,7 +296,7 @@ namespace System.Threading
                 }
                 catch (Exception exception)
                 {
-                    if (ReferenceEquals(exceptions, null))
+                    if (exceptions == null)
                     {
                         exceptions = new List<Exception>();
                     }
@@ -304,7 +305,7 @@ namespace System.Threading
             }
         }
 
-        private void CancelExtracted(bool throwOnFirstException, SafeDictionary<CancellationTokenRegistration, Action> callbacks, bool ignoreDisposedException)
+        private void CancelExtracted(bool throwOnFirstException, Bucket<Action> callbacks, bool ignoreDisposedException)
         {
             if (Interlocked.CompareExchange(ref _cancelRequested, 1, 0) == 0)
             {
@@ -327,8 +328,7 @@ namespace System.Threading
                     var id = _currentId;
                     do
                     {
-                        var checkId = id;
-                        if (callbacks.Remove(id, registration => registration.Equals(checkId, this), out var callback) && callback != null)
+                        if (callbacks.RemoveAt(id, out var callback) && callback != null)
                         {
                             RunCallback(throwOnFirstException, callback, ref exceptions);
                         }
@@ -339,7 +339,7 @@ namespace System.Threading
                     // Whatever was added after the cancellation process started, it should run inline in Register... if they don't, handle then here.
                     foreach (
                         var callback in
-                            callbacks.RemoveWhereKeyEnumerable(_ => true))
+                            callbacks.RemoveWhereEnumerable(_ => true))
                     {
                         RunCallback(throwOnFirstException, callback, ref exceptions);
                     }
@@ -364,7 +364,7 @@ namespace System.Threading
         private void UnregisterLinkedTokens()
         {
             var registrations = Interlocked.Exchange(ref _linkedTokens, null);
-            if (!ReferenceEquals(registrations, null))
+            if (registrations != null)
             {
                 foreach (var linked in registrations)
                 {

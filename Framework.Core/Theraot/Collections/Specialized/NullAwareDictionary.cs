@@ -14,8 +14,8 @@ namespace Theraot.Collections.Specialized
     [DebuggerDisplay("Count={Count}")]
     public sealed class NullAwareDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
-        private readonly Dictionary<TKey, TValue> _wrapped;
         private readonly IEqualityComparer<TValue> _valueComparer;
+        private readonly Dictionary<TKey, TValue> _wrapped;
         private bool _hasNull;
         private TValue[] _valueForNull;
 
@@ -57,30 +57,6 @@ namespace Theraot.Collections.Specialized
             AsReadOnly = new ReadOnlyDictionary<TKey, TValue>(this);
         }
 
-        public NullAwareDictionary(IDictionary<TKey, TValue> dictionary)
-        {
-            if (dictionary == null)
-            {
-                throw new ArgumentNullException(nameof(dictionary), "dictionary is null.");
-            }
-            _wrapped = new Dictionary<TKey, TValue>(dictionary);
-            _hasNull = false;
-            _valueForNull = new[] { default(TValue) };
-            _valueComparer = EqualityComparer<TValue>.Default;
-            if (typeof(TKey).CanBeNull())
-            {
-                Keys = new ConditionalExtendedList<TKey>(new[] { default(TKey) }, _wrapped.Keys, () => _hasNull, null);
-                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
-                TakeValueForNull(dictionary);
-            }
-            else
-            {
-                Keys = new ProxyCollection<TKey>(() => _wrapped.Keys).AsReadOnlyICollection;
-                Values = new ProxyCollection<TValue>(() => _wrapped.Values).AsReadOnlyICollection;
-            }
-            AsReadOnly = new ReadOnlyDictionary<TKey, TValue>(this);
-        }
-
         public NullAwareDictionary(KeyValuePair<TKey, TValue>[] dictionary)
         {
             if (dictionary == null)
@@ -103,32 +79,8 @@ namespace Theraot.Collections.Specialized
             AsReadOnly = new ReadOnlyDictionary<TKey, TValue>(this);
             foreach (var pair in dictionary)
             {
-                Add(pair);
+                Add(pair.Key, pair.Value);
             }
-        }
-
-        public NullAwareDictionary(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> comparer)
-        {
-            if (dictionary == null)
-            {
-                throw new ArgumentNullException(nameof(dictionary), "dictionary is null.");
-            }
-            _wrapped = new Dictionary<TKey, TValue>(dictionary, comparer);
-            _hasNull = false;
-            _valueForNull = new[] { default(TValue) };
-            _valueComparer = EqualityComparer<TValue>.Default;
-            if (typeof(TKey).CanBeNull())
-            {
-                Keys = new ConditionalExtendedList<TKey>(new[] { default(TKey) }, _wrapped.Keys, () => _hasNull, null);
-                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
-                TakeValueForNull(dictionary);
-            }
-            else
-            {
-                Keys = new ProxyCollection<TKey>(() => _wrapped.Keys).AsReadOnlyICollection;
-                Values = new ProxyCollection<TValue>(() => _wrapped.Values).AsReadOnlyICollection;
-            }
-            AsReadOnly = new ReadOnlyDictionary<TKey, TValue>(this);
         }
 
         public IReadOnlyDictionary<TKey, TValue> AsReadOnly { get; }
@@ -148,10 +100,12 @@ namespace Theraot.Collections.Specialized
             get
             {
                 // key could be null
-                if (ReferenceEquals(key, null))
+                if (key == null)
                 {
-                    if (_hasNull) // TODO: Test coverage?
+                    if (_hasNull)
+                    // ReSharper disable once HeuristicUnreachableCode
                     {
+                        // ReSharper disable once HeuristicUnreachableCode
                         return _valueForNull[0];
                     }
                     throw new KeyNotFoundException();
@@ -161,8 +115,10 @@ namespace Theraot.Collections.Specialized
             set
             {
                 // key could  be null
-                if (ReferenceEquals(key, null))
+                if (key == null)
+                // ReSharper disable once HeuristicUnreachableCode
                 {
+                    // ReSharper disable once HeuristicUnreachableCode
                     SetForNull(value); // OK
                 }
                 else
@@ -175,11 +131,15 @@ namespace Theraot.Collections.Specialized
         public void Add(TKey key, TValue value)
         {
             // key could  be null
-            if (ReferenceEquals(key, null))
+            if (key == null)
+            // ReSharper disable once HeuristicUnreachableCode
             {
+                // ReSharper disable once HeuristicUnreachableCode
                 if (_hasNull)
+                // ReSharper disable once HeuristicUnreachableCode
                 {
-                    throw new ArgumentException(); // TODO: Test coverage?
+                    // ReSharper disable once HeuristicUnreachableCode
+                    throw new ArgumentException();
                 }
                 SetForNull(value);
             }
@@ -189,7 +149,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public void Add(KeyValuePair<TKey, TValue> item)
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
             var key = item.Key;
             var value = item.Value;
@@ -202,11 +162,11 @@ namespace Theraot.Collections.Specialized
             _wrapped.Clear();
         }
 
-        public bool Contains(KeyValuePair<TKey, TValue> item)
+        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
         {
             var key = item.Key;
             var value = item.Value;
-            if (ReferenceEquals(key, null))
+            if (key == null)
             {
                 if (_hasNull)
                 {
@@ -224,16 +184,13 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public bool Contains(KeyValuePair<TKey, TValue> item, IEqualityComparer<KeyValuePair<TKey, TValue>> comparer)
-        {
-            return Enumerable.Contains(this, item, comparer);
-        }
-
         public bool ContainsKey(TKey key)
         {
             // key could  be null
-            if (ReferenceEquals(key, null))
+            if (key == null)
+            // ReSharper disable once HeuristicUnreachableCode
             {
+                // ReSharper disable once HeuristicUnreachableCode
                 return _hasNull; // OK
             }
             return _wrapped.ContainsKey(key);
@@ -245,32 +202,15 @@ namespace Theraot.Collections.Specialized
             Extensions.CopyTo(this, array);
         }
 
-        public void CopyTo(KeyValuePair<TKey, TValue>[] array)
-        {
-            Extensions.CanCopyTo(Count, array);
-            Extensions.CopyTo(this, array);
-        }
-
-        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex, int countLimit)
-        {
-            Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            Extensions.CopyTo(this, array, countLimit);
-        }
-
         public void Deconstruct(out KeyValuePair<TKey, TValue>[] dictionary)
         {
             var result = _wrapped as IEnumerable<KeyValuePair<TKey, TValue>>;
             if (_hasNull)
             {
                 // if the dictionary has null, TKey can be null, if TKey can be null, the default of TKey is null
-                result = result.Prepend(new KeyValuePair<TKey, TValue>(default(TKey), _valueForNull[0]));
+                result = new ExtendedEnumerable<KeyValuePair<TKey, TValue>>(new []{new KeyValuePair<TKey, TValue>(default, _valueForNull[0])}, result);
             }
-            dictionary = Enumerable.ToArray(result);
-        }
-
-        public void ExceptWith(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            Extensions.ExceptWith(this, other);
+            dictionary = result.ToArray();
         }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
@@ -278,7 +218,7 @@ namespace Theraot.Collections.Specialized
             if (_hasNull)
             {
                 // if the dictionary has null, TKey can be null, if TKey can be null, the default of TKey is null
-                yield return new KeyValuePair<TKey, TValue>(default(TKey), _valueForNull[0]);
+                yield return new KeyValuePair<TKey, TValue>(default, _valueForNull[0]);
             }
             foreach (var item in _wrapped)
             {
@@ -291,43 +231,17 @@ namespace Theraot.Collections.Specialized
             return GetEnumerator();
         }
 
-        public void IntersectWith(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            Extensions.IntersectWith(this, other);
-        }
-
-        public bool IsProperSubsetOf(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            return Extensions.IsProperSubsetOf(this, other);
-        }
-
-        public bool IsProperSupersetOf(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            return Extensions.IsProperSupersetOf(this, other);
-        }
-
-        public bool IsSubsetOf(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            return Extensions.IsSubsetOf(this, other);
-        }
-
-        public bool IsSupersetOf(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            return Extensions.IsSupersetOf(this, other);
-        }
-
-        public bool Overlaps(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            return Extensions.Overlaps(this, other);
-        }
-
         public bool Remove(TKey key)
         {
             // key can be null
-            if (ReferenceEquals(key, null))
+            if (key == null)
+            // ReSharper disable once HeuristicUnreachableCode
             {
+                // ReSharper disable once HeuristicUnreachableCode
                 if (_hasNull) // OK
+                // ReSharper disable once HeuristicUnreachableCode
                 {
+                    // ReSharper disable once HeuristicUnreachableCode
                     ClearForNull();
                     return true;
                 }
@@ -336,11 +250,11 @@ namespace Theraot.Collections.Specialized
             return _wrapped.Remove(key);
         }
 
-        public bool Remove(KeyValuePair<TKey, TValue> item)
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
         {
             var key = item.Key;
             var value = item.Value;
-            if (ReferenceEquals(key, null))
+            if (key == null)
             {
                 if (_valueComparer.Equals(_valueForNull[0], value))
                 {
@@ -363,53 +277,24 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public bool Remove(KeyValuePair<TKey, TValue> item, IEqualityComparer<KeyValuePair<TKey, TValue>> comparer)
-        {
-            if (ReferenceEquals(item.Key, null))
-            {
-                if (_hasNull)
-                {
-                    ClearForNull();
-                    return true;
-                }
-                return false;
-            }
-            return _wrapped.Remove(item, comparer);
-        }
-
-        public bool SetEquals(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            return Extensions.SetEquals(this, other);
-        }
-
-        public void SymmetricExceptWith(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            Extensions.SymmetricExceptWith(this, other);
-        }
-
         public bool TryGetValue(TKey key, out TValue value)
         {
             // key can be null
-            if (ReferenceEquals(key, null))
+            if (key == null)
+            // ReSharper disable once HeuristicUnreachableCode
             {
-                if (_hasNull) // TODO: Test coverage?
+                // ReSharper disable once HeuristicUnreachableCode
+                if (_hasNull)
+                // ReSharper disable once HeuristicUnreachableCode
                 {
+                    // ReSharper disable once HeuristicUnreachableCode
                     value = _valueForNull[0];
                     return true;
                 }
-                value = default(TValue);
+                value = default;
                 return false;
             }
             return _wrapped.TryGetValue(key, out value);
-        }
-
-        public void UnionWith(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            this.AddRange(other);
         }
 
         private void ClearForNull()
@@ -422,22 +307,6 @@ namespace Theraot.Collections.Specialized
         {
             _valueForNull[0] = value;
             _hasNull = true;
-        }
-
-        private void TakeValueForNull(IDictionary<TKey, TValue> dictionary)
-        {
-            TValue valueForNull = default(TValue);
-            try
-            {
-                // if the dictionary has null, TKey can be null, if TKey can be null, the default of TKey is null
-                // ReSharper disable once AssignNullToNotNullAttribute
-                _hasNull = dictionary.TryGetValue(default(TKey), out valueForNull);
-            }
-            catch (ArgumentNullException exception)
-            {
-                GC.KeepAlive(exception);
-            }
-            _valueForNull = new[] { valueForNull };
         }
     }
 }

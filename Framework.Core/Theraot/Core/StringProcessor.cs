@@ -11,7 +11,7 @@ namespace Theraot.Core
     /// </summary>
     /// <remarks>
     /// An alternative for StringReader for all your parsing needs.
-    /// StringProcessor is NOT thread safe. Do not share intances without locking.
+    /// StringProcessor is NOT thread safe. Do not share instances without locking.
     /// </remarks>
     public class StringProcessor
     {

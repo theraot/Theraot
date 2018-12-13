@@ -14,7 +14,7 @@ namespace Theraot.Threading.Needles
             Value = target;
         }
 
-        public bool IsAlive => !ReferenceEquals(Value, null);
+        public bool IsAlive => Value != null;
 
         T INeedle<T>.Value
         {
@@ -59,22 +59,31 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            if (obj is ReadOnlyStructNeedle<T> needle)
+            if (obj is ReadOnlyStructNeedle<T> right)
             {
-                return this == needle;
+                if (!right.IsAlive)
+                {
+                    return !IsAlive;
+                }
+                obj = right.Value;
             }
-            // Keep the "is" operator
-            if (obj is T variable)
+            if (obj is T rightValue)
             {
-                var target = Value;
-                return IsAlive && EqualityComparer<T>.Default.Equals(target, variable);
+                var value = Value;
+                return IsAlive && EqualityComparer<T>.Default.Equals(value, rightValue);
             }
             return false;
         }
 
         public bool Equals(ReadOnlyStructNeedle<T> other)
         {
-            return this == other;
+            var leftValue = Value;
+            if (IsAlive)
+            {
+                var rightValue = other.Value;
+                return other.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
+            }
+            return !other.IsAlive;
         }
 
         public override int GetHashCode()

@@ -299,7 +299,7 @@ namespace System.Linq.Expressions
             {
                 if (SwitchValue.Type.IsNullableType())
                 {
-                    return (Comparison == null) ||
+                    return Comparison == null ||
                         !TypeUtils.AreEquivalent(SwitchValue.Type, Comparison.GetParameters()[0].ParameterType.GetNonRefType());
                 }
                 return false;

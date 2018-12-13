@@ -1,6 +1,5 @@
 #if FAT
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,11 +17,6 @@ namespace Theraot.Collections.Specialized
         public OrderedCollection(IComparer<T> comparer)
         {
             _data = new AVLTree<T, T>(comparer);
-        }
-
-        public OrderedCollection(Comparison<T> comparison)
-        {
-            _data = new AVLTree<T, T>(comparison);
         }
 
         public int Count { get; private set; }

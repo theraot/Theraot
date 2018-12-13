@@ -1,17 +1,15 @@
 ﻿// Needed for NET40
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+
+#if FAT
+
+using System.Collections;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
-
-#if NET20 || NET30 || NET35 || NET40
-
-using System.Runtime.CompilerServices;
 
 #endif
 
@@ -20,24 +18,6 @@ namespace Theraot.Collections
     [DebuggerNonUserCode]
     public static partial class Extensions
     {
-        public static void Add<T>(this Stack<T> stack, T item)
-        {
-            if (stack == null)
-            {
-                throw new ArgumentNullException(nameof(stack));
-            }
-            stack.Push(item);
-        }
-
-        public static void Add<T>(this Queue<T> queue, T item)
-        {
-            if (queue == null)
-            {
-                throw new ArgumentNullException(nameof(queue));
-            }
-            queue.Enqueue(item);
-        }
-
         public static T[] AddFirst<T>(this T[] array, T item)
         {
             if (array == null)
@@ -64,48 +44,6 @@ namespace Theraot.Collections
             array.CopyTo(res, 0);
             res[array.Length] = item;
             return res;
-        }
-
-        public static T[] AsArray<T>(IEnumerable<T> source)
-        {
-            if (source == null)
-            {
-                return ArrayReservoir<T>.EmptyArray;
-            }
-            if (source is T[] array)
-            {
-                return array;
-            }
-#if NET20 || NET30 || NET35 || NET40
-            if (source is TrueReadOnlyCollection<T> trueReadOnlyCollection)
-            {
-                return trueReadOnlyCollection.Wrapped;
-            }
-#endif
-            if (source is ICollection<T> collection)
-            {
-                if (collection.Count == 0)
-                {
-                    return ArrayReservoir<T>.EmptyArray;
-                }
-                var result = new T[collection.Count];
-                collection.CopyTo(result, 0);
-                return result;
-            }
-            return (new List<T>(source)).ToArray();
-        }
-
-        public static List<T> AsList<T>(IEnumerable<T> source)
-        {
-            if (source == null)
-            {
-                return new List<T>();
-            }
-            if (source is List<T> list)
-            {
-                return list;
-            }
-            return new List<T>(source);
         }
 
         public static void CanCopyTo(int count, Array array)
@@ -184,11 +122,6 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<T> Clone<T>(this IEnumerable<T> target)
-        {
-            return new List<T>(target);
-        }
-
         public static void Consume<T>(this IEnumerable<T> source)
         {
             if (source == null)
@@ -221,6 +154,670 @@ namespace Theraot.Collections
                 }
             }
             return false;
+        }
+
+        public static List<TOutput> ConvertFiltered<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (converter == null)
+            {
+                throw new ArgumentNullException(nameof(converter));
+            }
+            if (filter == null)
+            {
+                throw new ArgumentNullException(nameof(filter));
+            }
+            var result = new List<TOutput>();
+            foreach (var item in source)
+            {
+                if (filter(item))
+                {
+                    result.Add(converter(item));
+                }
+            }
+            return result;
+        }
+
+        public static IEnumerable<TOutput> ConvertProgressive<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (converter == null)
+            {
+                throw new ArgumentNullException(nameof(converter));
+            }
+            return ConvertProgressiveExtracted();
+
+            IEnumerable<TOutput> ConvertProgressiveExtracted()
+            {
+                foreach (var item in source)
+                {
+                    yield return converter(item);
+                }
+            }
+        }
+
+        public static void CopyTo<T>(this IEnumerable<T> source, T[] array)
+        {
+            CopyTo(source, array, 0);
+        }
+
+        public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array)
+        {
+            CopyTo(source.SkipItems(sourceIndex), array, 0);
+        }
+
+        public static void CopyTo<T>(this IEnumerable<T> source, T[] array, int arrayIndex)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+            try
+            {
+                var index = arrayIndex;
+                foreach (var item in source)
+                {
+                    array[index] = item;
+                    index++;
+                }
+            }
+            catch (IndexOutOfRangeException exception)
+            {
+                throw new ArgumentException(exception.Message, nameof(array));
+            }
+        }
+
+        public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array, int arrayIndex)
+        {
+            CopyTo(source.SkipItems(sourceIndex), array, arrayIndex);
+        }
+
+        public static void CopyTo<T>(this IEnumerable<T> source, T[] array, int arrayIndex, int countLimit)
+        {
+            CopyTo(source.TakeItems(countLimit), array, arrayIndex);
+        }
+
+        public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array, int arrayIndex, int countLimit)
+        {
+            CopyTo(source.SkipItems(sourceIndex).TakeItems(countLimit), array, arrayIndex);
+        }
+
+        public static void DeprecatedCopyTo<T>(this IEnumerable<T> source, Array array)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+            var index = 0;
+            foreach (var item in source)
+            {
+                array.SetValue(item, index++);
+            }
+        }
+
+        public static void DeprecatedCopyTo<T>(this IEnumerable<T> source, Array array, int index)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+            foreach (var item in source)
+            {
+                array.SetValue(item, index++);
+            }
+        }
+
+        public static int ExceptWith<T>(this ICollection<T> source, IEnumerable<T> other)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            var count = 0;
+            foreach (var item in other)
+            {
+                while (source.Remove(item))
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        public static IEnumerable<T> ExceptWithEnumerable<T>(this ICollection<T> source, IEnumerable<T> other)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            return ExceptWithEnumerableExtracted();
+
+            IEnumerable<T> ExceptWithEnumerableExtracted()
+            {
+                foreach (var item in other)
+                {
+                    while (source.Remove(item))
+                    {
+                        yield return item;
+                    }
+                }
+            }
+        }
+
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            return FlattenExtracted();
+
+            IEnumerable<T> FlattenExtracted()
+            {
+                foreach (var key in source)
+                {
+                    foreach (var item in key)
+                    {
+                        yield return item;
+                    }
+                }
+            }
+        }
+
+        public static int IndexOf<T>(this IEnumerable<T> source, T item)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            var currentIndex = 0;
+            var comparer = EqualityComparer<T>.Default;
+            using (var enumerator = source.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    if (comparer.Equals(enumerator.Current, item))
+                    {
+                        return currentIndex;
+                    }
+                    currentIndex++;
+                }
+                return -1;
+            }
+        }
+
+        public static int IndexOf<T>(this IEnumerable<T> source, T item, IEqualityComparer<T> comparer)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            var currentIndex = 0;
+            comparer = comparer ?? EqualityComparer<T>.Default;
+            using (var enumerator = source.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    if (comparer.Equals(enumerator.Current, item))
+                    {
+                        return currentIndex;
+                    }
+                    currentIndex++;
+                }
+                return -1;
+            }
+        }
+
+        public static int IntersectWith<T>(this ICollection<T> source, IEnumerable<T> other)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            var otherAsCollection = AsICollection(other);
+            return source.RemoveWhere(input => !otherAsCollection.Contains(input));
+        }
+
+        public static int IntersectWith<T>(this ICollection<T> source, IEnumerable<T> other, IEqualityComparer<T> comparer)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            comparer = comparer ?? EqualityComparer<T>.Default;
+            var otherAsCollection = AsICollection(other);
+            return source.RemoveWhere(input => !otherAsCollection.Contains(input, comparer));
+        }
+
+        public static bool IsProperSubsetOf<T>(this IEnumerable<T> source, IEnumerable<T> other)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            return IsSubsetOf(source, other, true);
+        }
+
+        public static bool IsProperSupersetOf<T>(this IEnumerable<T> source, IEnumerable<T> other)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            return IsSupersetOf(source, other, true);
+        }
+
+        public static bool IsSubsetOf<T>(this IEnumerable<T> source, IEnumerable<T> other)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            return IsSubsetOf(source, other, false);
+        }
+
+        public static bool IsSupersetOf<T>(this IEnumerable<T> source, IEnumerable<T> other)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            return IsSupersetOf(source, other, false);
+        }
+
+        public static void Move<T>(this IList<T> list, int oldIndex, int newIndex)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+            var item = list[oldIndex];
+            list.RemoveAt(oldIndex);
+            if (newIndex > oldIndex)
+            {
+                newIndex--;
+            }
+            list.Insert(newIndex, item);
+        }
+
+        public static bool Overlaps<T>(this IEnumerable<T> source, IEnumerable<T> items)
+        {
+            return ContainsAny(source, items);
+        }
+
+        public static T[] RemoveFirst<T>(this T[] array)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+            var result = new T[array.Length - 1];
+            Array.Copy(array, 1, result, 0, result.Length);
+            return result;
+        }
+
+        public static T[] RemoveLast<T>(this T[] array)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+            var result = new T[array.Length - 1];
+            Array.Copy(array, 0, result, 0, result.Length);
+            return result;
+        }
+
+        public static int RemoveWhere<T>(this ICollection<T> source, Predicate<T> predicate)
+        {
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+            return RemoveWhere(source, items => Where(items, predicate));
+        }
+
+        public static int RemoveWhere<T>(this ICollection<T> source, Func<IEnumerable<T>, IEnumerable<T>> converter)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (converter == null)
+            {
+                throw new ArgumentNullException(nameof(converter));
+            }
+            return ExceptWith
+                   (
+                       source,
+                       new List<T>(converter.Invoke(source))
+                   );
+        }
+
+        public static IEnumerable<T> RemoveWhereEnumerable<T>(this ICollection<T> source, Predicate<T> predicate)
+        {
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+            return RemoveWhereEnumerable(source, items => Where(items, predicate));
+        }
+
+        public static IEnumerable<T> RemoveWhereEnumerable<T>(this ICollection<T> source, Func<IEnumerable<T>, IEnumerable<T>> converter)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (converter == null)
+            {
+                throw new ArgumentNullException(nameof(converter));
+            }
+            return ExceptWithEnumerable
+                   (
+                       source,
+                       new List<T>(converter.Invoke(source))
+                   );
+        }
+
+        public static bool SetEquals<T>(this ICollection<T> source, IEnumerable<T> other)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            var thatAsCollection = AsICollection(other);
+            foreach (var item in thatAsCollection.Where(input => !source.Contains(input)))
+            {
+                GC.KeepAlive(item);
+                return false;
+            }
+            foreach (var item in source.Where(input => !thatAsCollection.Contains(input)))
+            {
+                GC.KeepAlive(item);
+                return false;
+            }
+            return true;
+        }
+
+        public static void Swap<T>(this IList<T> list, int indexA, int indexB)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+            if (indexA < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(indexA), "Non-negative number is required.");
+            }
+            if (indexB < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(indexB), "Non-negative number is required.");
+            }
+            var listCount = list.Count;
+            if (indexA >= listCount || indexB >= listCount)
+            {
+                throw new ArgumentException("The list does not contain the number of elements.", nameof(list));
+            }
+            if (indexA != indexB)
+            {
+                SwapExtracted(list, indexA, indexB);
+            }
+        }
+
+        public static int SymmetricExceptWith<T>(this ICollection<T> source, IEnumerable<T> other)
+        {
+            return source.AddRange(Where(other.Distinct(), input => !source.Remove(input)));
+        }
+
+        public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        {
+            if (dictionary == null)
+            {
+                throw new ArgumentNullException(nameof(dictionary));
+            }
+            try
+            {
+                dictionary.Add(key, value);
+                return true;
+            }
+            catch (ArgumentException ex)
+            {
+                GC.KeepAlive(ex);
+                return false;
+            }
+        }
+
+        public static bool TryTake<T>(this Stack<T> stack, out T item)
+        {
+            if (stack == null)
+            {
+                throw new ArgumentNullException(nameof(stack));
+            }
+            try
+            {
+                item = stack.Pop();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default;
+                return false;
+            }
+        }
+
+        public static int UnionWith<T>(this ICollection<T> source, IEnumerable<T> other)
+        {
+            return source.AddRange(other.Where(input => !source.Contains(input)));
+        }
+
+        public static IEnumerable<T> Where<T>(IEnumerable<T> source, Predicate<T> predicate)
+        {
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            return WhereExtracted();
+
+            IEnumerable<T> WhereExtracted()
+            {
+                foreach (var item in source)
+                {
+                    if (predicate(item))
+                    {
+                        yield return item;
+                    }
+                }
+            }
+        }
+
+        private static bool IsSubsetOf<T>(this IEnumerable<T> source, IEnumerable<T> other, bool proper)
+        {
+            var @this = AsDistinctICollection(source);
+            var that = AsDistinctICollection(other);
+            var elementCount = 0;
+            var matchCount = 0;
+            foreach (var item in that)
+            {
+                elementCount++;
+                if (@this.Contains(item))
+                {
+                    matchCount++;
+                }
+            }
+            if (proper)
+            {
+                return matchCount == @this.Count && elementCount > @this.Count;
+            }
+            return matchCount == @this.Count;
+        }
+
+        private static bool IsSupersetOf<T>(this IEnumerable<T> source, IEnumerable<T> other, bool proper)
+        {
+            var @this = AsDistinctICollection(source);
+            var that = AsDistinctICollection(other);
+            var elementCount = 0;
+            foreach (var item in that)
+            {
+                elementCount++;
+                if (!@this.Contains(item))
+                {
+                    return false;
+                }
+            }
+            if (proper)
+            {
+                return elementCount < @this.Count;
+            }
+            return true;
+        }
+
+        private static void SwapExtracted<T>(IList<T> list, int indexA, int indexB)
+        {
+            var itemA = list[indexA];
+            var itemB = list[indexB];
+            list[indexA] = itemB;
+            list[indexB] = itemA;
+        }
+    }
+
+    public static partial class Extensions
+    {
+#if NET35
+
+        public static bool Contains<T>(this IEnumerable<T> source, IEnumerable<T> items)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (items == null)
+            {
+                throw new ArgumentNullException("items");
+            }
+            var localComparer = EqualityComparer<T>.Default;
+            var localCollection = AsICollection(source);
+            foreach (var item in items)
+            {
+                if (!localCollection.Contains(item, localComparer))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static bool Contains<T>(this IEnumerable<T> source, IEnumerable<T> items, IEqualityComparer<T> comparer)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (items == null)
+            {
+                throw new ArgumentNullException("items");
+            }
+            var localComparer = comparer ?? EqualityComparer<T>.Default;
+            var localCollection = AsICollection(source);
+            foreach (var item in items)
+            {
+                if (!localCollection.Contains(item, localComparer))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+#endif
+    }
+
+#if FAT
+
+    public static partial class Extensions
+    {
+        public static void Add<T>(this Stack<T> stack, T item)
+        {
+            if (stack == null)
+            {
+                throw new ArgumentNullException(nameof(stack));
+            }
+            stack.Push(item);
+        }
+
+        public static void Add<T>(this Queue<T> queue, T item)
+        {
+            if (queue == null)
+            {
+                throw new ArgumentNullException(nameof(queue));
+            }
+            queue.Enqueue(item);
+        }
+
+        public static IEnumerable<T> Clone<T>(this IEnumerable<T> target)
+        {
+            return new List<T>(target);
         }
 
         public static bool ContainsAny<T>(this IEnumerable<T> source, IEnumerable<T> items, IEqualityComparer<T> comparer)
@@ -278,31 +875,6 @@ namespace Theraot.Collections
             foreach (var item in source)
             {
                 result.Add(converter(item));
-            }
-            return result;
-        }
-
-        public static List<TOutput> ConvertFiltered<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (converter == null)
-            {
-                throw new ArgumentNullException(nameof(converter));
-            }
-            if (filter == null)
-            {
-                throw new ArgumentNullException(nameof(filter));
-            }
-            var result = new List<TOutput>();
-            foreach (var item in source)
-            {
-                if (filter(item))
-                {
-                    result.Add(converter(item));
-                }
             }
             return result;
         }
@@ -498,27 +1070,6 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static IEnumerable<TOutput> ConvertProgressive<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (converter == null)
-            {
-                throw new ArgumentNullException(nameof(converter));
-            }
-            return ConvertProgressiveExtracted();
-
-            IEnumerable<TOutput> ConvertProgressiveExtracted()
-            {
-                foreach (var item in source)
-                {
-                    yield return converter(item);
-                }
-            }
-        }
-
         public static IEnumerable<TOutput> ConvertProgressiveFiltered<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)
         {
             if (source == null)
@@ -637,56 +1188,6 @@ namespace Theraot.Collections
             return copy;
         }
 
-        public static void CopyTo<T>(this IEnumerable<T> source, T[] array)
-        {
-            CopyTo(source, array, 0);
-        }
-
-        public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array)
-        {
-            CopyTo(source.SkipItems(sourceIndex), array, 0);
-        }
-
-        public static void CopyTo<T>(this IEnumerable<T> source, T[] array, int arrayIndex)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-            try
-            {
-                var index = arrayIndex;
-                foreach (var item in source)
-                {
-                    array[index] = item;
-                    index++;
-                }
-            }
-            catch (IndexOutOfRangeException exception)
-            {
-                throw new ArgumentException(exception.Message, nameof(array));
-            }
-        }
-
-        public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array, int arrayIndex)
-        {
-            CopyTo(source.SkipItems(sourceIndex), array, arrayIndex);
-        }
-
-        public static void CopyTo<T>(this IEnumerable<T> source, T[] array, int arrayIndex, int countLimit)
-        {
-            CopyTo(source.TakeItems(countLimit), array, arrayIndex);
-        }
-
-        public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array, int arrayIndex, int countLimit)
-        {
-            CopyTo(source.SkipItems(sourceIndex).TakeItems(countLimit), array, arrayIndex);
-        }
-
         public static int CountContiguousItems<T>(this IEnumerable<T> source, T item)
         {
             if (source == null)
@@ -788,39 +1289,6 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static void DeprecatedCopyTo<T>(this IEnumerable<T> source, Array array)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-            var index = 0;
-            foreach (var item in source)
-            {
-                array.SetValue(item, index++);
-            }
-        }
-
-        public static void DeprecatedCopyTo<T>(this IEnumerable<T> source, Array array, int index)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-            foreach (var item in source)
-            {
-                array.SetValue(item, index++);
-            }
-        }
-
         public static IEnumerable<T> EmptyChecked<T>(this IEnumerable<T> source, Action onEmpty)
         {
             if (source == null)
@@ -896,51 +1364,6 @@ namespace Theraot.Collections
                 onKnownSize(sourceCollection.Count);
             }
             return NullOrEmptyCheckedExtracted(source, onEmpty, onUnknownSize);
-        }
-
-        public static int ExceptWith<T>(this ICollection<T> source, IEnumerable<T> other)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            var count = 0;
-            foreach (var item in other)
-            {
-                while (source.Remove(item))
-                {
-                    count++;
-                }
-            }
-            return count;
-        }
-
-        public static IEnumerable<T> ExceptWithEnumerable<T>(this ICollection<T> source, IEnumerable<T> other)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            return ExceptWithEnumerableExtracted();
-
-            IEnumerable<T> ExceptWithEnumerableExtracted()
-            {
-                foreach (var item in other)
-                {
-                    while (source.Remove(item))
-                    {
-                        yield return item;
-                    }
-                }
-            }
         }
 
         public static bool Exists<T>(this IEnumerable<T> source, T value)
@@ -1031,7 +1454,7 @@ namespace Theraot.Collections
                     }
                     currentIndex++;
                 }
-                return default(T);
+                return default;
             }
         }
 
@@ -1064,7 +1487,7 @@ namespace Theraot.Collections
                     }
                     currentIndex++;
                 }
-                return default(T);
+                return default;
             }
         }
 
@@ -1087,7 +1510,7 @@ namespace Theraot.Collections
                         return enumerator.Current;
                     }
                 }
-                return default(T);
+                return default;
             }
         }
 
@@ -1426,26 +1849,6 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> source)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            return FlattenExtracted();
-
-            IEnumerable<T> FlattenExtracted()
-            {
-                foreach (var key in source)
-                {
-                    foreach (var item in key)
-                    {
-                        yield return item;
-                    }
-                }
-            }
-        }
-
         public static void For<T>(this IEnumerable<T> source, Action<int, T> action)
         {
             if (source == null)
@@ -1577,7 +1980,7 @@ namespace Theraot.Collections
             {
                 return value;
             }
-            var newValue = create == null ? default(TValue) : create();
+            var newValue = create == null ? default : create();
             dictionary.Add(key, newValue);
             return newValue;
         }
@@ -1712,50 +2115,6 @@ namespace Theraot.Collections
             }
         }
 
-        public static int IndexOf<T>(this IEnumerable<T> source, T item)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            var currentIndex = 0;
-            var comparer = EqualityComparer<T>.Default;
-            using (var enumerator = source.GetEnumerator())
-            {
-                while (enumerator.MoveNext())
-                {
-                    if (comparer.Equals(enumerator.Current, item))
-                    {
-                        return currentIndex;
-                    }
-                    currentIndex++;
-                }
-                return -1;
-            }
-        }
-
-        public static int IndexOf<T>(this IEnumerable<T> source, T item, IEqualityComparer<T> comparer)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            var currentIndex = 0;
-            comparer = comparer ?? EqualityComparer<T>.Default;
-            using (var enumerator = source.GetEnumerator())
-            {
-                while (enumerator.MoveNext())
-                {
-                    if (comparer.Equals(enumerator.Current, item))
-                    {
-                        return currentIndex;
-                    }
-                    currentIndex++;
-                }
-                return -1;
-            }
-        }
-
         public static IEnumerable<T> InterleaveMany<T>(this IEnumerable<IEnumerable<T>> source)
         {
             if (source == null)
@@ -1785,35 +2144,6 @@ namespace Theraot.Collections
                     }
                 }
             }
-        }
-
-        public static int IntersectWith<T>(this ICollection<T> source, IEnumerable<T> other)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            var otherAsCollection = AsICollection(other);
-            return source.RemoveWhere(input => !otherAsCollection.Contains(input));
-        }
-
-        public static int IntersectWith<T>(this ICollection<T> source, IEnumerable<T> other, IEqualityComparer<T> comparer)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            comparer = comparer ?? EqualityComparer<T>.Default;
-            var otherAsCollection = AsICollection(other);
-            return source.RemoveWhere(input => !otherAsCollection.Contains(input, comparer));
         }
 
         public static IEnumerable<T> IntersectWithEnumerable<T>(this ICollection<T> source, IEnumerable<T> other)
@@ -1848,58 +2178,6 @@ namespace Theraot.Collections
         public static bool IsEmpty<T>(this IEnumerable<T> source)
         {
             return !source.Any();
-        }
-
-        public static bool IsProperSubsetOf<T>(this IEnumerable<T> source, IEnumerable<T> other)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            return IsSubsetOf(source, other, true);
-        }
-
-        public static bool IsProperSupersetOf<T>(this IEnumerable<T> source, IEnumerable<T> other)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            return IsSupersetOf(source, other, true);
-        }
-
-        public static bool IsSubsetOf<T>(this IEnumerable<T> source, IEnumerable<T> other)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            return IsSubsetOf(source, other, false);
-        }
-
-        public static bool IsSupersetOf<T>(this IEnumerable<T> source, IEnumerable<T> other)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            return IsSupersetOf(source, other, false);
         }
 
         public static int LastIndexOf<T>(this IEnumerable<T> source, T item, int index, IEqualityComparer<T> comparer)
@@ -2140,21 +2418,6 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static void Move<T>(this IList<T> list, int oldIndex, int newIndex)
-        {
-            if (list == null)
-            {
-                throw new ArgumentNullException(nameof(list));
-            }
-            var item = list[oldIndex];
-            list.RemoveAt(oldIndex);
-            if (newIndex > oldIndex)
-            {
-                newIndex--;
-            }
-            list.Insert(newIndex, item);
-        }
-
         public static IEnumerable<T> NullOrEmptyChecked<T>(this IEnumerable<T> source, Action onEmpty)
         {
             if (onEmpty == null)
@@ -2235,11 +2498,6 @@ namespace Theraot.Collections
             return NullOrEmptyCheckedExtracted(source, onEmpty, onUnknownSize);
         }
 
-        public static bool Overlaps<T>(this IEnumerable<T> source, IEnumerable<T> items)
-        {
-            return ContainsAny(source, items);
-        }
-
         public static IEnumerable<TPackage> Pack<T, TPackage>(this IEnumerable<T> source, int size)
             where TPackage : ICollection<T>, new()
         {
@@ -2281,28 +2539,6 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<TPackage> PackExtracted<T, TPackage>(IEnumerable<T> source, int size)
-            where TPackage : ICollection<T>, new()
-        {
-            var count = 0;
-            var currentPackage = new TPackage();
-            foreach (var item in source)
-            {
-                currentPackage.Add(item);
-                count++;
-                if (count == size)
-                {
-                    yield return currentPackage;
-                    currentPackage = new TPackage();
-                    count = 0;
-                }
-            }
-            if (count > 0)
-            {
-                yield return currentPackage;
-            }
-        }
-
         public static bool Remove<T>(this ICollection<T> source, T item, IEqualityComparer<T> comparer)
         {
             if (source == null)
@@ -2314,84 +2550,6 @@ namespace Theraot.Collections
             {
                 return enumerator.MoveNext();
             }
-        }
-
-        public static T[] RemoveFirst<T>(this T[] array)
-        {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-            // Copyright (c) Microsoft. All rights reserved.
-            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
-            var result = new T[array.Length - 1];
-            Array.Copy(array, 1, result, 0, result.Length);
-            return result;
-        }
-
-        public static T[] RemoveLast<T>(this T[] array)
-        {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-            // Copyright (c) Microsoft. All rights reserved.
-            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
-            var result = new T[array.Length - 1];
-            Array.Copy(array, 0, result, 0, result.Length);
-            return result;
-        }
-
-        public static int RemoveWhere<T>(this ICollection<T> source, Predicate<T> predicate)
-        {
-            if (predicate == null)
-            {
-                throw new ArgumentNullException(nameof(predicate));
-            }
-            return RemoveWhere(source, items => Where(items, predicate));
-        }
-
-        public static int RemoveWhere<T>(this ICollection<T> source, Func<IEnumerable<T>, IEnumerable<T>> converter)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (converter == null)
-            {
-                throw new ArgumentNullException(nameof(converter));
-            }
-            return ExceptWith
-                   (
-                       source,
-                       new List<T>(converter.Invoke(source))
-                   );
-        }
-
-        public static IEnumerable<T> RemoveWhereEnumerable<T>(this ICollection<T> source, Predicate<T> predicate)
-        {
-            if (predicate == null)
-            {
-                throw new ArgumentNullException(nameof(predicate));
-            }
-            return RemoveWhereEnumerable(source, items => Where(items, predicate));
-        }
-
-        public static IEnumerable<T> RemoveWhereEnumerable<T>(this ICollection<T> source, Func<IEnumerable<T>, IEnumerable<T>> converter)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (converter == null)
-            {
-                throw new ArgumentNullException(nameof(converter));
-            }
-            return ExceptWithEnumerable
-                   (
-                       source,
-                       new List<T>(converter.Invoke(source))
-                   );
         }
 
         public static void Reverse<T>(this IList<T> list, int index, int count)
@@ -2420,30 +2578,6 @@ namespace Theraot.Collections
             }
         }
 
-        public static bool SetEquals<T>(this ICollection<T> source, IEnumerable<T> other)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            var thatAsCollection = AsICollection(other);
-            foreach (var item in thatAsCollection.Where(input => !source.Contains(input)))
-            {
-                GC.KeepAlive(item);
-                return false;
-            }
-            foreach (var item in source.Where(input => !thatAsCollection.Contains(input)))
-            {
-                GC.KeepAlive(item);
-                return false;
-            }
-            return true;
-        }
-
         public static void Sort<T>(this IList<T> list, int index, int count, IComparer<T> comparer)
         {
             if (list == null)
@@ -2467,104 +2601,9 @@ namespace Theraot.Collections
             SortExtracted(list, index, count + index, comparer);
         }
 
-        public static void Swap<T>(this IList<T> list, int indexA, int indexB)
-        {
-            if (list == null)
-            {
-                throw new ArgumentNullException(nameof(list));
-            }
-            if (indexA < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(indexA), "Non-negative number is required.");
-            }
-            if (indexB < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(indexB), "Non-negative number is required.");
-            }
-            var listCount = list.Count;
-            if (indexA >= listCount || indexB >= listCount)
-            {
-                throw new ArgumentException("The list does not contain the number of elements.", nameof(list));
-            }
-            if (indexA != indexB)
-            {
-                SwapExtracted(list, indexA, indexB);
-            }
-        }
-
-        public static int SymmetricExceptWith<T>(this ICollection<T> source, IEnumerable<T> other)
-        {
-            return source.AddRange(Where(other.Distinct(), input => !source.Remove(input)));
-        }
-
         public static IEnumerable<T> SymmetricExceptWithEnumerable<T>(this ICollection<T> source, IEnumerable<T> other)
         {
             return source.AddRangeEnumerable(Where(other.Distinct(), input => !source.Remove(input)));
-        }
-
-        public static T[] ToArray<T>(this IEnumerable<T> source, int count)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (count < 0)
-            {
-                throw new ArgumentNullException(nameof(count));
-            }
-            if (source is ICollection<T> collection && count >= collection.Count)
-            {
-                var array = new T[collection.Count];
-                collection.CopyTo(array, 0);
-                return array;
-            }
-            if (source is string str && count >= str.Length)
-            {
-                var array = new char[str.Length];
-                str.CopyTo(array, 0);
-                return (T[])(object)array;
-            }
-            var result = new List<T>(count);
-            foreach (var item in source)
-            {
-                if (result.Count == count)
-                {
-                    break;
-                }
-                result.Add(item);
-            }
-            return result.ToArray();
-        }
-
-        public static ReadOnlyCollection<TSource> ToReadOnly<TSource>(this IEnumerable<TSource> source)
-        {
-            if (source == null)
-            {
-                return new ReadOnlyCollection<TSource>(ArrayReservoir<TSource>.EmptyArray);
-            }
-            if (source is ReadOnlyCollection<TSource> sourceAsReadOnlyCollection)
-            {
-                return sourceAsReadOnlyCollection;
-            }
-            return new ReadOnlyCollection<TSource>(AsIList(source));
-        }
-
-        public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
-        {
-            if (dictionary == null)
-            {
-                throw new ArgumentNullException(nameof(dictionary));
-            }
-            try
-            {
-                dictionary.Add(key, value);
-                return true;
-            }
-            catch (ArgumentException ex)
-            {
-                GC.KeepAlive(ex);
-                return false;
-            }
         }
 
         public static bool TryFind<T>(this IEnumerable<T> source, int index, int count, Predicate<T> predicate, out T found)
@@ -2602,7 +2641,7 @@ namespace Theraot.Collections
                     }
                     currentIndex++;
                 }
-                found = default(T);
+                found = default;
                 return false;
             }
         }
@@ -2637,7 +2676,7 @@ namespace Theraot.Collections
                     }
                     currentIndex++;
                 }
-                found = default(T);
+                found = default;
                 return false;
             }
         }
@@ -2662,7 +2701,7 @@ namespace Theraot.Collections
                         return true;
                     }
                 }
-                found = default(T);
+                found = default;
                 return false;
             }
         }
@@ -2679,7 +2718,7 @@ namespace Theraot.Collections
             }
             var currentIndex = 0;
             var limit = index + count;
-            foundItem = default(T);
+            foundItem = default;
             var found = false;
             using (var enumerator = source.GetEnumerator())
             {
@@ -2719,7 +2758,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(source));
             }
             var currentIndex = 0;
-            foundItem = default(T);
+            foundItem = default;
             var found = false;
             using (var enumerator = source.GetEnumerator())
             {
@@ -2754,7 +2793,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            foundItem = default(T);
+            foundItem = default;
             var found = false;
             using (var enumerator = source.GetEnumerator())
             {
@@ -2767,24 +2806,6 @@ namespace Theraot.Collections
                     }
                 }
                 return found;
-            }
-        }
-
-        public static bool TryTake<T>(this Stack<T> stack, out T item)
-        {
-            if (stack == null)
-            {
-                throw new ArgumentNullException(nameof(stack));
-            }
-            try
-            {
-                item = stack.Pop();
-                return true;
-            }
-            catch (InvalidOperationException)
-            {
-                item = default(T);
-                return false;
             }
         }
 
@@ -2801,43 +2822,14 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default(T);
+                item = default;
                 return false;
             }
-        }
-
-        public static int UnionWith<T>(this ICollection<T> source, IEnumerable<T> other)
-        {
-            return source.AddRange(other.Where(input => !source.Contains(input)));
         }
 
         public static IEnumerable<T> UnionWithEnumerable<T>(this ICollection<T> source, IEnumerable<T> other)
         {
             return source.AddRangeEnumerable(other.Where(input => !source.Contains(input)));
-        }
-
-        public static IEnumerable<T> Where<T>(IEnumerable<T> source, Predicate<T> predicate)
-        {
-            if (predicate == null)
-            {
-                throw new ArgumentNullException(nameof(predicate));
-            }
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            return WhereExtracted();
-
-            IEnumerable<T> WhereExtracted()
-            {
-                foreach (var item in source)
-                {
-                    if (predicate(item))
-                    {
-                        yield return item;
-                    }
-                }
-            }
         }
 
         public static IEnumerable<T> Where<T>(this IEnumerable<T> source, Func<T, int, bool> predicate)
@@ -2958,47 +2950,6 @@ namespace Theraot.Collections
             }
         }
 
-        private static bool IsSubsetOf<T>(this IEnumerable<T> source, IEnumerable<T> other, bool proper)
-        {
-            var @this = AsDistinctICollection(source);
-            var that = AsDistinctICollection(other);
-            var elementCount = 0;
-            var matchCount = 0;
-            foreach (var item in that)
-            {
-                elementCount++;
-                if (@this.Contains(item))
-                {
-                    matchCount++;
-                }
-            }
-            if (proper)
-            {
-                return matchCount == @this.Count && elementCount > @this.Count;
-            }
-            return matchCount == @this.Count;
-        }
-
-        private static bool IsSupersetOf<T>(this IEnumerable<T> source, IEnumerable<T> other, bool proper)
-        {
-            var @this = AsDistinctICollection(source);
-            var that = AsDistinctICollection(other);
-            var elementCount = 0;
-            foreach (var item in that)
-            {
-                elementCount++;
-                if (!@this.Contains(item))
-                {
-                    return false;
-                }
-            }
-            if (proper)
-            {
-                return elementCount < @this.Count;
-            }
-            return true;
-        }
-
         private static IEnumerable<T> NullOrEmptyCheckedExtracted<T>(IEnumerable<T> source, Action onEmpty)
         {
             var enumerator = source.GetEnumerator();
@@ -3050,11 +3001,33 @@ namespace Theraot.Collections
             }
         }
 
+        private static IEnumerable<TPackage> PackExtracted<T, TPackage>(IEnumerable<T> source, int size)
+            where TPackage : ICollection<T>, new()
+        {
+            var count = 0;
+            var currentPackage = new TPackage();
+            foreach (var item in source)
+            {
+                currentPackage.Add(item);
+                count++;
+                if (count == size)
+                {
+                    yield return currentPackage;
+                    currentPackage = new TPackage();
+                    count = 0;
+                }
+            }
+            if (count > 0)
+            {
+                yield return currentPackage;
+            }
+        }
+
         private static void SortExtracted<T>(IList<T> list, int indexStart, int indexEnd, IComparer<T> comparer)
         {
             var low = indexStart;
             var high = indexEnd;
-            var pivot = list[low + ((high - low) / 2)];
+            var pivot = list[low + (high - low) / 2];
             while (low <= high)
             {
                 while (low < indexEnd && comparer.Compare(list[low], pivot) < 0)
@@ -3085,14 +3058,6 @@ namespace Theraot.Collections
             {
                 SortExtracted(list, low, indexEnd, comparer);
             }
-        }
-
-        private static void SwapExtracted<T>(IList<T> list, int indexA, int indexB)
-        {
-            var itemA = list[indexA];
-            var itemB = list[indexB];
-            list[indexA] = itemB;
-            list[indexB] = itemA;
         }
 
         private static IEnumerable<T> WhereExtracted<T>(IEnumerable<T> source, Func<T, int, bool> predicate)
@@ -3184,54 +3149,5 @@ namespace Theraot.Collections
         }
     }
 
-    public static partial class Extensions
-    {
-#if NET35
-
-        public static bool Contains<T>(this IEnumerable<T> source, IEnumerable<T> items)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException("source");
-            }
-            if (items == null)
-            {
-                throw new ArgumentNullException("items");
-            }
-            var localComparer = EqualityComparer<T>.Default;
-            var localCollection = AsICollection(source);
-            foreach (var item in items)
-            {
-                if (!localCollection.Contains(item, localComparer))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public static bool Contains<T>(this IEnumerable<T> source, IEnumerable<T> items, IEqualityComparer<T> comparer)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException("source");
-            }
-            if (items == null)
-            {
-                throw new ArgumentNullException("items");
-            }
-            var localComparer = comparer ?? EqualityComparer<T>.Default;
-            var localCollection = AsICollection(source);
-            foreach (var item in items)
-            {
-                if (!localCollection.Contains(item, localComparer))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
 #endif
-    }
 }

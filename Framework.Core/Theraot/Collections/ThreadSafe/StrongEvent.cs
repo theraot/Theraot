@@ -2,7 +2,12 @@
 
 using System;
 using System.Reflection;
+
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+
 using Theraot.Core;
+
+#endif
 
 namespace Theraot.Collections.ThreadSafe
 {
@@ -11,17 +16,10 @@ namespace Theraot.Collections.ThreadSafe
     public class StrongEvent<TEventArgs> : IEvent<TEventArgs>
         where TEventArgs : EventArgs
     {
-        public StrongEvent()
-        {
-            EventHandlers = new StrongDelegateCollection(true);
-        }
-
         public StrongEvent(bool freeReentry)
         {
             EventHandlers = new StrongDelegateCollection(freeReentry);
         }
-
-        public int Count => EventHandlers.Count;
 
         protected StrongDelegateCollection EventHandlers { get; }
 
@@ -34,11 +32,6 @@ namespace Theraot.Collections.ThreadSafe
         {
             var value = method.CreateDelegate(typeof(EventHandler<TEventArgs>), target);
             EventHandlers.Add(value);
-        }
-
-        public void Clear()
-        {
-            EventHandlers.Clear();
         }
 
         public virtual void Invoke(object sender, TEventArgs eventArgs)

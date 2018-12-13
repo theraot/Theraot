@@ -52,12 +52,28 @@ namespace Theraot.Threading
 
         public static bool operator !=(AtomicBoolean left, AtomicBoolean right)
         {
-            return left == null ? right != null : !left.Equals(right);
+            if (left is null)
+            {
+                return !(right is null);
+            }
+            if (right is null)
+            {
+                return true;
+            }
+            return left._value != right._value;
         }
 
         public static bool operator ==(AtomicBoolean left, AtomicBoolean right)
         {
-            return left == null ? right == null : left.Equals(right);
+            if (left is null)
+            {
+                return right is null;
+            }
+            if (right is null)
+            {
+                return false;
+            }
+            return left._value == right._value;
         }
 
         public bool CompareExchange(bool expected, bool newVal)
@@ -70,6 +86,10 @@ namespace Theraot.Threading
 
         public bool Equals(AtomicBoolean obj)
         {
+            if (obj is null)
+            {
+                return false;
+            }
             return _value == obj._value;
         }
 

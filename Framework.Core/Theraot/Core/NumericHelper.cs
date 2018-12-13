@@ -187,66 +187,6 @@ namespace Theraot.Core
             return number + 1;
         }
 
-        public static float Round(this float number, int decimals)
-        {
-            return (float)Math.Round(number, decimals);
-        }
-
-        public static double Round(this double number, int decimals)
-        {
-            return Math.Round(number, decimals);
-        }
-
-        public static decimal Round(this decimal number, int decimals)
-        {
-            return Math.Round(number, decimals);
-        }
-
-        public static float Round(this float number, int decimals, MidpointRounding mode)
-        {
-            return (float)Math.Round(number, decimals, mode);
-        }
-
-        public static double Round(this double number, int decimals, MidpointRounding mode)
-        {
-            return Math.Round(number, decimals, mode);
-        }
-
-        public static decimal Round(this decimal number, int decimals, MidpointRounding mode)
-        {
-            return Math.Round(number, decimals, mode);
-        }
-
-        public static float Round(this float number)
-        {
-            return (float)Math.Round(number);
-        }
-
-        public static double Round(this double number)
-        {
-            return Math.Round(number);
-        }
-
-        public static decimal Round(this decimal number)
-        {
-            return Math.Round(number);
-        }
-
-        public static float Round(this float number, MidpointRounding mode)
-        {
-            return (float)Math.Round(number, mode);
-        }
-
-        public static double Round(this double number, MidpointRounding mode)
-        {
-            return Math.Round(number, mode);
-        }
-
-        public static decimal Round(this decimal number, MidpointRounding mode)
-        {
-            return Math.Round(number, mode);
-        }
-
         [System.Diagnostics.DebuggerNonUserCode]
         public static int Sqrt(int number)
         {
@@ -255,7 +195,7 @@ namespace Theraot.Core
             var x = number >> 1;
             while (true)
             {
-                var xNext = (x + (number / x)) >> 1;
+                var xNext = (x + number / x) >> 1;
                 if (xNext >= x)
                 {
                     return x;

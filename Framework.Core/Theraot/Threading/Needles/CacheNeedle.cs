@@ -98,7 +98,7 @@ namespace Theraot.Threading.Needles
 
         public bool Equals(CacheNeedle<T> other)
         {
-            return !ReferenceEquals(other, null) && base.Equals(other);
+            return other != null && base.Equals(other);
         }
 
         public virtual void Initialize()
@@ -258,7 +258,7 @@ namespace Theraot.Threading.Needles
         private void ReleaseWaitHandle()
         {
             var waitHandle = _waitHandle.Value;
-            if (!ReferenceEquals(waitHandle, null))
+            if (waitHandle != null)
             {
                 // If another thread is currently waiting, awake it
                 waitHandle.Set();

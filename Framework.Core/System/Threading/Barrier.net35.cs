@@ -253,7 +253,7 @@ namespace System.Threading
                     // To know that the current phase is  the sense doesn't match the
                     // phase odd even, so that means it didn't yet change the phase count, so currentPhase +1 is returned, otherwise currentPhase is returned
                     var currentPhaseNumber = CurrentPhaseNumber;
-                    newPhase = (sense != (currentPhaseNumber % 2 == 0)) ? currentPhaseNumber + 1 : currentPhaseNumber;
+                    newPhase = sense != (currentPhaseNumber % 2 == 0) ? currentPhaseNumber + 1 : currentPhaseNumber;
 
                     // If this participant is going to join the next phase, which means the postPhaseAction is being running, this participants must wait until this done
                     // and its event is reset.
@@ -302,6 +302,8 @@ namespace System.Threading
         /// Unlike most of the members of <see cref="Barrier"/>, Dispose is not thread-safe and may not be
         /// used concurrently with other members of this instance.
         /// </remarks>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly")]
         public void Dispose()
         {
             // in case of this is called from the PHA

@@ -1,4 +1,4 @@
-// Needed for NET40
+#if FAT
 
 using System;
 using System.Collections;
@@ -11,7 +11,7 @@ namespace Theraot.Collections.ThreadSafe
     /// Represent a thread-safe lock-free hash based dictionary.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
-    public class SafeSet<T> : IEnumerable<T>, ISet<T>
+    public class SafeSet<T> : ISet<T>
     {
         private const int _defaultProbing = 1;
         private Bucket<T> _bucket;
@@ -556,3 +556,5 @@ namespace Theraot.Collections.ThreadSafe
         }
     }
 }
+
+#endif

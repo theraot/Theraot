@@ -72,17 +72,25 @@ namespace System.Threading.Tasks
         /// <param name="internalOptions">Internal options to control its execution</param>
         internal Task(Delegate action, object state, Task parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
         {
-            if (ReferenceEquals(scheduler, null))
+            if (action == null)
             {
+#pragma warning disable IDE0016
+                throw new ArgumentNullException(nameof(action));
+#pragma warning restore IDE0016
+            }
+            if (scheduler == null)
+            {
+#pragma warning disable IDE0016
                 throw new ArgumentNullException(nameof(scheduler));
+#pragma warning restore IDE0016
             }
             Contract.EndContractBlock();
             // This is readonly, and so must be set in the constructor
             // Keep a link to your parent if: (A) You are attached, or (B) you are self-replicating.
             if
                 (
-                ((creationOptions & TaskCreationOptions.AttachedToParent) != 0)
-                || ((internalOptions & InternalTaskOptions.SelfReplicating) != 0)
+                (creationOptions & TaskCreationOptions.AttachedToParent) != 0
+                || (internalOptions & InternalTaskOptions.SelfReplicating) != 0
                 )
             {
                 _parent = parent;
@@ -92,15 +100,15 @@ namespace System.Threading.Tasks
             if
             (
                 _parent != null
-                && ((creationOptions & TaskCreationOptions.AttachedToParent) != 0)
-                && ((_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0)
+                && (creationOptions & TaskCreationOptions.AttachedToParent) != 0
+                && (_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0
             )
             {
                 _parent.AddNewChild();
             }
-            Action = action ?? throw new ArgumentNullException(nameof(action));
-            State = state;
             ExecutingTaskScheduler = scheduler;
+            Action = action;
+            State = state;
             _waitHandle = new ManualResetEventSlim(false);
             if ((creationOptions &
                     ~(TaskCreationOptions.AttachedToParent |
@@ -113,8 +121,8 @@ namespace System.Threading.Tasks
                 throw new ArgumentOutOfRangeException(nameof(creationOptions));
             }
             // Throw exception if the user specifies both LongRunning and SelfReplicating
-            if (((creationOptions & TaskCreationOptions.LongRunning) != 0) &&
-                ((internalOptions & InternalTaskOptions.SelfReplicating) != 0))
+            if ((creationOptions & TaskCreationOptions.LongRunning) != 0 &&
+                (internalOptions & InternalTaskOptions.SelfReplicating) != 0)
             {
                 throw new InvalidOperationException("An attempt was made to create a LongRunning SelfReplicating task.");
             }
@@ -182,7 +190,7 @@ namespace System.Threading.Tasks
                 // Only return an exception in faulted state (skip manufactured exceptions)
                 // A "benevolent" race condition makes it possible to return null when IsFaulted is
                 // true (i.e., if IsFaulted is set just after the check to IsFaulted above).
-                Contract.Assert((e == null) || IsFaulted, "Task.Exception_get(): returning non-null value when not Faulted");
+                Contract.Assert(e == null || IsFaulted, "Task.Exception_get(): returning non-null value when not Faulted");
 
                 return e;
             }
@@ -596,6 +604,7 @@ namespace System.Threading.Tasks
             return InternalStart(scheduler, inline, true);
         }
 
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -605,7 +614,7 @@ namespace System.Threading.Tasks
                     throw new InvalidOperationException("A task may only be disposed if it is in a completion state.");
                 }
                 var waitHandle = _waitHandle.Value;
-                if (!ReferenceEquals(waitHandle, null))
+                if (waitHandle != null)
                 {
                     if (!waitHandle.IsSet)
                     {
@@ -740,7 +749,7 @@ namespace System.Threading.Tasks
             while (true)
             {
                 var lastValue = Volatile.Read(ref _status);
-                if ((preventDoubleExecution && lastValue >= 3) || lastValue == 6)
+                if (preventDoubleExecution && lastValue >= 3 || lastValue == 6)
                 {
                     return false;
                 }

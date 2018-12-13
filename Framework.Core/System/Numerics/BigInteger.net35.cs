@@ -884,7 +884,7 @@ namespace System.Numerics
             {
                 ModPowInner((uint)exponent.InternalSign, ref regRes, ref regVal, ref regMod, ref regTmp);
             }
-            return regRes.GetInteger(value.InternalSign <= 0 ? (!isEven ? -1 : 1) : 1);
+            return regRes.GetInteger(value.InternalSign <= 0 ? !isEven ? -1 : 1 : 1);
         }
 
         /// <summary>Returns the product of two <see cref="T:System.Numerics.BigInteger" /> values.</summary>

@@ -1,17 +1,16 @@
-#if FAT
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Theraot.Core;
-
 namespace Theraot.Collections
 {
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+
     [Serializable]
+#endif
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public sealed class ExtendedList<T> : IList<T>, ICloneable<ExtendedList<T>>, IEqualityComparer<T>
+    public sealed class ExtendedList<T> : IList<T>
     {
         private readonly IEqualityComparer<T> _comparer;
         private readonly List<T> _wrapped;
@@ -73,7 +72,7 @@ namespace Theraot.Collections
 
         public ExtendedList<T> Clone()
         {
-            return new ExtendedList<T>(this as IEnumerable<T>);
+            return new ExtendedList<T>(this);
         }
 
         public bool Contains(T item)
@@ -96,37 +95,17 @@ namespace Theraot.Collections
             _wrapped.CopyTo(array, arrayIndex);
         }
 
-        public void CopyTo(T[] array, int arrayIndex, int countLimit)
-        {
-            Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            Extensions.CopyTo(_wrapped, array, arrayIndex, countLimit);
-        }
-
-        public bool Equals(T x, T y)
-        {
-            return _comparer.Equals(x, y);
-        }
-
         public IEnumerator<T> GetEnumerator()
         {
             return _wrapped.GetEnumerator();
         }
 
-        public int GetHashCode(T obj)
-        {
-            return _comparer.GetHashCode(obj);
-        }
-
-#if !NETCOREAPP1_0 && !NETCOREAPP1_1
-
-        object ICloneable.Clone()
-        {
-            return Clone();
-        }
-
-#endif
-
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
@@ -144,26 +123,6 @@ namespace Theraot.Collections
         public void Move(int oldIndex, int newIndex)
         {
             _wrapped.Move(oldIndex, newIndex);
-        }
-
-        public bool Overlaps(IEnumerable<T> other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            if (Count == 0)
-            {
-                return false;
-            }
-            foreach (var item in other)
-            {
-                if (Contains(item))
-                {
-                    return true;
-                }
-            }
-            return false;
         }
 
         public bool Remove(T item)
@@ -213,26 +172,6 @@ namespace Theraot.Collections
             _wrapped.Reverse(index, count);
         }
 
-        public bool SetEquals(IEnumerable<T> other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            var that = Extensions.AsDistinctICollection(other);
-            foreach (var item in that.Where(input => !Contains(input)))
-            {
-                GC.KeepAlive(item);
-                return false;
-            }
-            foreach (var item in this.Where(input => !that.Contains(input)))
-            {
-                GC.KeepAlive(item);
-                return false;
-            }
-            return true;
-        }
-
         public void Sort(IComparer<T> comparer)
         {
             _wrapped.Sort(comparer);
@@ -247,12 +186,5 @@ namespace Theraot.Collections
         {
             _wrapped.Swap(indexA, indexB);
         }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
     }
 }
-
-#endif

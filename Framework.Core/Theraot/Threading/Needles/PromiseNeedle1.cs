@@ -29,10 +29,10 @@ namespace Theraot.Threading.Needles
             : base(true)
         {
             _target = target;
-            _hashCode = ReferenceEquals(target, null) ? base.GetHashCode() : target.GetHashCode();
+            _hashCode = target == null ? base.GetHashCode() : target.GetHashCode();
         }
 
-        public bool IsAlive => !ReferenceEquals(_target, null);
+        public bool IsAlive => _target != null;
 
         public virtual T Value
         {
@@ -68,11 +68,11 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(PromiseNeedle<T> left, PromiseNeedle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return !ReferenceEquals(right, null);
+                return !(right is null);
             }
-            if (ReferenceEquals(right, null))
+            if (right is null)
             {
                 return true;
             }
@@ -81,11 +81,11 @@ namespace Theraot.Threading.Needles
 
         public static bool operator ==(PromiseNeedle<T> left, PromiseNeedle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return ReferenceEquals(right, null);
+                return right is null;
             }
-            if (ReferenceEquals(right, null))
+            if (right is null)
             {
                 return false;
             }
@@ -94,17 +94,20 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            var needle = obj as PromiseNeedle<T>;
-            if (needle != null)
+            if (obj is PromiseNeedle<T> needle)
             {
-                return this == needle;
+                return _target.Equals(needle._target);
             }
             return IsCompleted && Value.Equals(obj);
         }
 
         public bool Equals(PromiseNeedle<T> other)
         {
-            return this == other;
+            if (other is null)
+            {
+                return false;
+            }
+            return _target.Equals(other._target);
         }
 
         public override void Free()
@@ -121,9 +124,9 @@ namespace Theraot.Threading.Needles
         public override string ToString()
         {
             return IsCompleted
-                ? (Exception == null
+                ? Exception == null
                     ? _target.ToString()
-                    : Exception.ToString())
+                    : Exception.ToString()
                 : "[Not Created]";
         }
 

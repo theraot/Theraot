@@ -152,7 +152,7 @@ namespace System.Linq.Expressions
         internal static string ElementInitializerMethodWithZeroArgs => SR.ElementInitializerMethodWithZeroArgs;
 
         /// <summary>
-        /// A string like "Enumeration has either not started or has alreExpressionTypeDoesNotMatchConstructorParameterady finished."
+        /// A string like "Enumeration has either not started or has ExpressionTypeDoesNotMatchConstructorParameter already finished."
         /// </summary>
         internal static string EnumerationIsDone => SR.EnumerationIsDone;
 
@@ -682,7 +682,7 @@ namespace System.Linq.Expressions
         internal static string MustRewriteToSameNode(object p0, object p1, object p2) => SR.Format(SR.MustRewriteToSameNode, p0, p1, p2);
 
         /// <summary>
-        /// A string like "Rewritten expression calls operator method '{0}', but the original node had no operator method. If this is intentional, override '{1}' and change it to allow this rewrite."
+        /// A string like "rewritten expression calls operator method '{0}', but the original node had no operator method. If this is intentional, override '{1}' and change it to allow this rewrite."
         /// </summary>
         internal static string MustRewriteWithoutMethod(object p0, object p1) => SR.Format(SR.MustRewriteWithoutMethod, p0, p1);
 

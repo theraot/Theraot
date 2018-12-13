@@ -22,7 +22,7 @@ namespace System.Dynamic.Utils
                 {
                     newNodes[i] = node;
                 }
-                else if (!ReferenceEquals(node, curNode))
+                else if (node != curNode)
                 {
                     newNodes = new Expression[n];
                     for (int j = 0; j < i; j++)
@@ -47,7 +47,7 @@ namespace System.Dynamic.Utils
                 {
                     newNodes[i] = node;
                 }
-                else if (!ReferenceEquals(node, curNode))
+                else if (node != curNode)
                 {
                     newNodes = new Expression[n];
                     for (int j = 0; j < i; j++)
@@ -72,7 +72,7 @@ namespace System.Dynamic.Utils
                 {
                     newNodes[i] = node;
                 }
-                else if (!ReferenceEquals(node, curNode))
+                else if (node != curNode)
                 {
                     newNodes = new ParameterExpression[n];
                     for (int j = 0; j < i; j++)

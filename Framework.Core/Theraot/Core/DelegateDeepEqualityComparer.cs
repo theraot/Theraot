@@ -22,12 +22,13 @@ namespace Theraot.Core
 
         public int GetHashCode(Delegate obj)
         {
-            if (ReferenceEquals(obj, null)) // obj can be null
+            // ReSharper disable once UseNullPropagation
+            if (obj == null) // obj can be null
             {
                 return 0; // TODO: Test coverage?
             }
             var methodBody = obj.GetMethodInfo().GetMethodBody();
-            if (ReferenceEquals(methodBody, null))
+            if (methodBody == null)
             {
                 return 0;
             }
@@ -52,7 +53,7 @@ namespace Theraot.Core
                 hash = (hash << 5) - hash + tmp;
             }
             var target = obj.Target;
-            if (!ReferenceEquals(target, null))
+            if (target != null)
             {
                 hash ^= target.GetHashCode();
             }
@@ -61,29 +62,29 @@ namespace Theraot.Core
 
         private static bool CompareInternal(Delegate x, Delegate y)
         {
-            if (ReferenceEquals(x, null))
+            if (x == null)
             {
-                return ReferenceEquals(y, null);
+                return y == null;
             }
-            if (ReferenceEquals(y, null))
+            if (y == null)
             {
                 return false;
             }
-            if (!ReferenceEquals(x.Target, y.Target))
+            if (x.Target != y.Target)
             {
                 return false;
             }
             var leftBody = x.GetMethodInfo().GetMethodBody();
             var rightBody = y.GetMethodInfo().GetMethodBody();
-            if (ReferenceEquals(leftBody, null))
+            if (leftBody == null)
             {
-                if (ReferenceEquals(rightBody, null))
+                if (rightBody == null)
                 {
                     return true;
                 }
                 return false;
             }
-            if (ReferenceEquals(rightBody, null))
+            if (rightBody == null)
             {
                 return false;
             }

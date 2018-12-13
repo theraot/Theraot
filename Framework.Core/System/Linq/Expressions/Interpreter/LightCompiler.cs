@@ -66,7 +66,7 @@ namespace System.Linq.Expressions.Interpreter
     {
         public readonly int ArgumentIndex;
 
-        public ByRefUpdater(int argumentIndex)
+        protected ByRefUpdater(int argumentIndex)
         {
             ArgumentIndex = argumentIndex;
         }
@@ -323,6 +323,20 @@ namespace System.Linq.Expressions.Interpreter
 
             throw new InvalidOperationException("MemberNotFieldOrProperty");
         }
+
+#if DEBUG
+        private static bool IsNullComparison(Expression left, Expression right)
+        {
+            return IsNullConstant(left)
+                ? !IsNullConstant(right) && right.Type.IsNullableType()
+                : IsNullConstant(right) && left.Type.IsNullableType();
+        }
+
+        private static bool IsNullConstant(Expression e)
+        {
+            return e is ConstantExpression c && c.Value == null;
+        }
+#endif
 
         private static bool ShouldWritebackNode(Expression node)
         {
@@ -1679,8 +1693,7 @@ namespace System.Linq.Expressions.Interpreter
                         EmitThisForMethodCall(from);
                     }
 
-                    if (!method.IsStatic &&
-                        (from != null && from.Type.IsNullableType()))
+                    if (!method.IsStatic && @from != null && @from.Type.IsNullableType())
                     {
                         // reflection doesn't let us call methods on Nullable<T> when the value
                         // is null...  so we get to special case those methods!
@@ -2948,19 +2961,6 @@ namespace System.Linq.Expressions.Interpreter
         }
 
 #if DEBUG
-
-        private static bool IsNullComparison(Expression left, Expression right)
-        {
-            return IsNullConstant(left)
-                ? !IsNullConstant(right) && right.Type.IsNullableType()
-                : IsNullConstant(right) && left.Type.IsNullableType();
-        }
-
-        private static bool IsNullConstant(Expression e)
-        {
-            return e is ConstantExpression c && c.Value == null;
-        }
-
 #endif
 
         private bool TryPushLabelBlock(Expression node)
@@ -3254,7 +3254,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             get
             {
-                Debug.Assert((FinallyStartIndex != Instruction.UnknownInstrIndex) == (FinallyEndIndex != Instruction.UnknownInstrIndex));
+                Debug.Assert(FinallyStartIndex != Instruction.UnknownInstrIndex == (FinallyEndIndex != Instruction.UnknownInstrIndex));
                 return FinallyStartIndex != Instruction.UnknownInstrIndex;
             }
         }

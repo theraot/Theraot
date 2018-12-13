@@ -11,7 +11,7 @@ namespace System.Collections.Concurrent
 {
     [Serializable]
     [ComVisible(false)]
-    [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
+    [DebuggerDisplay("Count = {Count}")]
     [HostProtection(SecurityAction.LinkDemand, Synchronization = true, ExternalThreading = true)]
     public class ConcurrentQueue<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>
     {
@@ -69,7 +69,7 @@ namespace System.Collections.Concurrent
 
         bool IProducerConsumerCollection<T>.TryAdd(T item)
         {
-            _wrapped.Add(item);
+            Enqueue(item);
             return true;
         }
 
@@ -85,7 +85,7 @@ namespace System.Collections.Concurrent
 
         bool IProducerConsumerCollection<T>.TryTake(out T item)
         {
-            return _wrapped.TryTake(out item);
+            return TryDequeue(out item);
         }
     }
 }

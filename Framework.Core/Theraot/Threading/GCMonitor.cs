@@ -15,9 +15,6 @@ namespace Theraot.Threading
     [DebuggerNonUserCode]
     public static partial class GCMonitor
     {
-        // ReSharper disable once UnusedMember.Local
-        private const int _statusFinished = 1;
-
         private const int _statusNotReady = -2;
         private const int _statusPending = -1;
         private const int _statusReady = 0;
@@ -25,11 +22,18 @@ namespace Theraot.Threading
 
 #if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
 
+        private const int _statusFinished = 1;
+
         static GCMonitor()
         {
             var currentAppDomain = AppDomain.CurrentDomain;
             currentAppDomain.ProcessExit += ReportApplicationDomainExit;
             currentAppDomain.DomainUnload += ReportApplicationDomainExit;
+        }
+
+        private static void ReportApplicationDomainExit(object sender, EventArgs e)
+        {
+            Volatile.Write(ref _status, _statusFinished);
         }
 
 #endif
@@ -45,7 +49,7 @@ namespace Theraot.Threading
                 }
                 catch
                 {
-                    if (ReferenceEquals(value, null))
+                    if (value == null)
                     {
                         return;
                     }
@@ -62,7 +66,7 @@ namespace Theraot.Threading
                     }
                     catch
                     {
-                        if (ReferenceEquals(value, null))
+                        if (value == null)
                         {
                             return;
                         }
@@ -100,15 +104,6 @@ namespace Theraot.Threading
                     break;
             }
         }
-
-#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
-
-        private static void ReportApplicationDomainExit(object sender, EventArgs e)
-        {
-            Volatile.Write(ref _status, _statusFinished);
-        }
-
-#endif
 
         [DebuggerNonUserCode]
         private sealed class GCProbe

@@ -291,9 +291,9 @@ namespace Theraot.Collections
             {
                 foreach (var element in source)
                 {
-                    if (!ReferenceEquals(element, null))
+                    if (element != null)
                     {
-                        if (ReferenceEquals(max, null) || comparer.Compare(element, max) > 0)
+                        if (max == null || comparer.Compare(element, max) > 0)
                         {
                             max = element;
                         }
@@ -958,9 +958,9 @@ namespace Theraot.Collections
             {
                 foreach (var element in source)
                 {
-                    if (!ReferenceEquals(element, null))
+                    if (element != null)
                     {
-                        if (ReferenceEquals(min, null) || comparer.Compare(min, element) > 0)
+                        if (min == null || comparer.Compare(min, element) > 0)
                         {
                             min = element;
                         }

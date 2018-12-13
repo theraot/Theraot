@@ -55,6 +55,7 @@ namespace System.Threading.Tasks
             // Empty
         }
 
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         public TResult Result
         {
             get

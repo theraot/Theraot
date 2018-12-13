@@ -103,7 +103,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public Instruction BoxIfIndexMatches(int index)
         {
-            return (index == Index) ? InstructionList.LoadLocalBoxed(index) : null;
+            return index == Index ? InstructionList.LoadLocalBoxed(index) : null;
         }
 
         public override int Run(InterpretedFrame frame)
@@ -149,7 +149,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public Instruction BoxIfIndexMatches(int index)
         {
-            return (index == Index) ? InstructionList.AssignLocalBoxed(index) : null;
+            return index == Index ? InstructionList.AssignLocalBoxed(index) : null;
         }
 
         public override int Run(InterpretedFrame frame)
@@ -208,7 +208,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public Instruction BoxIfIndexMatches(int index)
         {
-            return (index == Index) ? InstructionList.StoreLocalBoxed(index) : null;
+            return index == Index ? InstructionList.StoreLocalBoxed(index) : null;
         }
 
         public override int Run(InterpretedFrame frame)
@@ -299,7 +299,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public Instruction BoxIfIndexMatches(int index)
             {
-                return (index == Index) ? new ImmutableBox(index, _defaultValue) : null;
+                return index == Index ? new ImmutableBox(index, _defaultValue) : null;
             }
 
             public override int Run(InterpretedFrame frame)
@@ -355,7 +355,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public Instruction BoxIfIndexMatches(int index)
             {
-                return (index == Index) ? new MutableBox(index, _type) : null;
+                return index == Index ? new MutableBox(index, _type) : null;
             }
 
             public override int Run(InterpretedFrame frame)
@@ -426,7 +426,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public Instruction BoxIfIndexMatches(int index)
             {
-                return (index == Index) ? InstructionList.InitImmutableRefBox(index) : null;
+                return index == Index ? InstructionList.InitImmutableRefBox(index) : null;
             }
 
             public override int Run(InterpretedFrame frame)

@@ -485,7 +485,7 @@ namespace System.Runtime.CompilerServices
 
         private static bool IsCompatibleObject(object value)
         {
-            return ((value is T) || (value == null && default(T) == null));
+            return value is T || value == null && default(T) == null;
         }
 
         private static void ValidateNullValue(object value, string argument)

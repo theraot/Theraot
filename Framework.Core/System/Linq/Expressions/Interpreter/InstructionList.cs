@@ -74,13 +74,15 @@ namespace System.Linq.Expressions.Interpreter
     [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     internal sealed class InstructionList
     {
+        private readonly List<Instruction> _instructions = new List<Instruction>();
+
+        private int _currentContinuationsDepth;
+
+        private int _currentStackDepth;
+
         // list of (instruction index, cookie) sorted by instruction index:
         // Not readonly for debug
         private List<KeyValuePair<int, object>> _debugCookies;
-
-        private readonly List<Instruction> _instructions = new List<Instruction>();
-        private int _currentContinuationsDepth;
-        private int _currentStackDepth;
         private List<BranchLabel> _labels;
         private int _maxContinuationDepth;
         private int _maxStackDepth;
@@ -124,7 +126,7 @@ namespace System.Linq.Expressions.Interpreter
                     var cookieEnumerator =
                     (
                         debugCookies ??
-                        (ArrayReservoir<KeyValuePair<int, object>>.EmptyArray)
+                        ArrayReservoir<KeyValuePair<int, object>>.EmptyArray
                     )
                     .GetEnumerator()
                 )

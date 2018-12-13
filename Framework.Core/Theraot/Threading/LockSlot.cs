@@ -20,7 +20,7 @@ namespace Theraot.Threading
             Id = id;
         }
 
-        bool IReadOnlyNeedle<T>.IsAlive => !ReferenceEquals(Value, null);
+        bool IReadOnlyNeedle<T>.IsAlive => Value != null;
 
         public T Value { get; set; }
 
@@ -28,16 +28,20 @@ namespace Theraot.Threading
 
         public static bool operator !=(LockSlot<T> left, LockSlot<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return !ReferenceEquals(right, null);
+                return !(right is null);
+            }
+            if (right is null)
+            {
+                return true;
             }
             return !left.Equals(right);
         }
 
         public static bool operator <(LockSlot<T> left, LockSlot<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
                 return true;
             }
@@ -46,16 +50,20 @@ namespace Theraot.Threading
 
         public static bool operator ==(LockSlot<T> left, LockSlot<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return ReferenceEquals(right, null);
+                return right is null;
+            }
+            if (right is null)
+            {
+                return false;
             }
             return left.Equals(right);
         }
 
         public static bool operator >(LockSlot<T> left, LockSlot<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
                 return false;
             }
@@ -73,11 +81,7 @@ namespace Theraot.Threading
 
         public int CompareTo(LockSlot<T> other)
         {
-            if (ReferenceEquals(other, null))
-            {
-                return 1;
-            }
-            return _versionToken.CompareTo(other._versionToken);
+            return other is null ? 1 : _versionToken.CompareTo(other._versionToken);
         }
 
         public override bool Equals(object obj)
@@ -87,11 +91,7 @@ namespace Theraot.Threading
 
         public bool Equals(LockSlot<T> other)
         {
-            if (other == null)
-            {
-                return false;
-            }
-            return _versionToken.Equals(other._versionToken);
+            return !(other is null) && _versionToken.Equals(other._versionToken);
         }
 
         public override int GetHashCode()

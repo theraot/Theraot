@@ -900,8 +900,8 @@ namespace System.Linq.Expressions
                 bool resultIsNullable = Type.IsNullableType();
                 if (Method != null)
                 {
-                    return (operandIsNullable && !TypeUtils.AreEquivalent(Method.GetParameters()[0].ParameterType, Operand.Type)) ||
-                           (resultIsNullable && !TypeUtils.AreEquivalent(Method.ReturnType, Type));
+                    return operandIsNullable && !TypeUtils.AreEquivalent(Method.GetParameters()[0].ParameterType, Operand.Type) ||
+                           resultIsNullable && !TypeUtils.AreEquivalent(Method.ReturnType, Type);
                 }
                 return operandIsNullable || resultIsNullable;
             }

@@ -25,14 +25,6 @@ namespace Theraot.Collections.Specialized
             _enumerateAppend = enumerateAppend ?? (null == append ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc());
         }
 
-        public ConditionalExtendedList(IEnumerable<T> target, IEnumerable<T> append)
-        {
-            _target = target == null ? ArrayReservoir<T>.EmptyArray : Extensions.WrapAsIList(target);
-            _append = append == null ? ArrayReservoir<T>.EmptyArray : Extensions.WrapAsIList(append);
-            _enumerateTarget = null == target ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc();
-            _enumerateAppend = null == append ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc();
-        }
-
         public int Count => _target.Count + _append.Count;
 
         bool ICollection<T>.IsReadOnly => true;

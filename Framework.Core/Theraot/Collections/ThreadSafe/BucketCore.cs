@@ -14,25 +14,23 @@ namespace Theraot.Collections.ThreadSafe
 
     internal class BucketCore : IEnumerable<object>
     {
-        private const int _capacity = 32;
-        private const long _lvl1 = _capacity;
-        private const long _lvl2 = _lvl1 * _capacity;
-        private const long _lvl3 = _lvl2 * _capacity;
-        private const long _lvl4 = _lvl3 * _capacity;
-        private const long _lvl5 = _lvl4 * _capacity;
-        private const long _lvl6 = _lvl5 * _capacity;
-        private const long _lvl7 = _lvl6 * _capacity;
+        private const int _capacityLog2 = 8;
+        private const int _capacity = 1 << _capacityLog2;
+        private const int _mask = _capacity - 1;
+        private const int _maxLevel = 1 + 31 / _capacityLog2;
         private readonly int _level;
         private object[] _arrayFirst;
         private object[] _arraySecond;
         private int[] _arrayUse;
 
-        public BucketCore(int level)
+        public BucketCore()
+            : this (_maxLevel)
         {
-            if (level < 0 || level > 7)
-            {
-                throw new ArgumentOutOfRangeException(nameof(level), "level < 0 || level > 7");
-            }
+            // Empty
+        }
+
+        private BucketCore(int level)
+        {
             _level = level;
             _arrayFirst = ArrayReservoir<object>.GetArray(_capacity);
             _arraySecond = ArrayReservoir<object>.GetArray(_capacity);
@@ -61,39 +59,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     ArrayReservoir<int>.DonateArray(arrayUse);
                     _arrayUse = null;
-                }
-            }
-        }
-
-        public long Length
-        {
-            get
-            {
-                switch (_level)
-                {
-                    case 1:
-                        return _lvl1;
-
-                    case 2:
-                        return _lvl2;
-
-                    case 3:
-                        return _lvl3;
-
-                    case 4:
-                        return _lvl4;
-
-                    case 5:
-                        return _lvl5;
-
-                    case 6:
-                        return _lvl6;
-
-                    case 7:
-                        return _lvl7;
-
-                    default:
-                        return 0;
                 }
             }
         }
@@ -208,6 +173,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+#if FAT
         public IEnumerable<object> EnumerateRange(int indexFrom, int indexTo)
         {
             if (indexFrom < 0)
@@ -222,6 +188,7 @@ namespace Theraot.Collections.ThreadSafe
             var endSubIndex = SubIndex(indexTo);
             return PrivateEnumerableRange(indexFrom, indexTo, startSubIndex, endSubIndex);
         }
+#endif
 
         public IEnumerator<object> GetEnumerator()
         {
@@ -261,7 +228,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool Do(ref int use, ref object first, ref object second, DoAction callback)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (callback == null)
             {
@@ -286,7 +253,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static void DoEnsureSize(ref int use, ref object first, ref object second, Func<object> factory)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (factory == null)
             {
@@ -347,7 +314,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool DoMayDecrement(ref int use, ref object first, ref object second, DoAction callback)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (callback == null)
             {
@@ -376,7 +343,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool DoMayIncrement(ref int use, ref object first, ref object second, Func<object> factory, DoAction callback)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (callback == null)
             {
@@ -400,6 +367,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+#if FAT
         private IEnumerable<object> PrivateEnumerableRange(int indexFrom, int indexTo, int startSubIndex, int endSubIndex)
         {
             var step = endSubIndex - startSubIndex >= 0 ? 1 : -1;
@@ -437,11 +405,12 @@ namespace Theraot.Collections.ThreadSafe
                 }
             }
         }
+#endif
 
         private int SubIndex(int index)
         {
-            var result = (index >> (5 * (_level - 1))) & 0x1F;
-            return result;
+            var uIndex = unchecked((uint)index);
+            return (int)((uIndex >> (_capacityLog2 * (_level - 1))) & _mask);
         }
     }
 }

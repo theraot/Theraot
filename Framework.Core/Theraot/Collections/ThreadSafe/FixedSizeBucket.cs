@@ -63,24 +63,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FixedSizeBucket{T}" /> class.
-        /// </summary>
-        public FixedSizeBucket(T[] source)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            _entries = ArrayReservoir<object>.GetArray(source.Length);
-            Capacity = _entries.Length;
-            foreach (var item in source)
-            {
-                _entries[_count] = (object)item ?? BucketHelper.Null;
-                _count++;
-            }
-        }
-
         ~FixedSizeBucket()
         {
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
@@ -394,21 +376,41 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException(nameof(check));
             }
             return WhereExtracted();
-
             IEnumerable<T> WhereExtracted()
             {
                 foreach (var entry in _entries)
                 {
                     if (entry != null)
                     {
-                        var yield = default(T);
-                        if (entry != BucketHelper.Null)
+                        var castValue = entry == BucketHelper.Null ? default : (T)entry;
+                        if (check(castValue))
                         {
-                            yield = (T)entry;
+                            yield return castValue;
                         }
-                        if (check(yield))
+                    }
+                }
+            }
+        }
+
+        public IEnumerable<KeyValuePair<int, T>> WhereIndexed(Predicate<T> check)
+        {
+            if (check == null)
+            {
+                throw new ArgumentNullException(nameof(check));
+            }
+            return WhereExtracted();
+            IEnumerable<KeyValuePair<int, T>> WhereExtracted()
+            {
+                var index = 0;
+                foreach (var entry in _entries)
+                {
+                    if (entry != null)
+                    {
+                        var castValue = entry == BucketHelper.Null ? default : (T)entry;
+                        if (check(castValue))
                         {
-                            yield return yield;
+                            yield return new KeyValuePair<int, T>(index, castValue);
+                            index++;
                         }
                     }
                 }
@@ -510,7 +512,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool UpdateInternal(int index, Func<T, T> itemUpdateFactory, Predicate<T> check, out bool isEmpty)
         {
-#if FAT
+#if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
             if (check == null)
             {

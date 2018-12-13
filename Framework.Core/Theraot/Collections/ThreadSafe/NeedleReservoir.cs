@@ -40,12 +40,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal void DonateNeedle(TNeedle donation)
         {
-            if (!_pool.Donate(donation))
-            {
-                // ReSharper disable once SuspiciousTypeConversion.Global
-                var disposable = donation as IDisposable;
-                disposable?.Dispose();
-            }
+            _pool.Donate(donation);
         }
 
         internal TNeedle GetNeedle(T value)

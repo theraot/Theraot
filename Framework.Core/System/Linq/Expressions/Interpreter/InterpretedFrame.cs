@@ -132,6 +132,21 @@ namespace System.Linq.Expressions.Interpreter
 
         public InterpretedFrame Parent { get; internal set; }
 
+        internal string[] Trace
+        {
+            get
+            {
+                var trace = new List<string>();
+                InterpretedFrame frame = this;
+                do
+                {
+                    trace.Add(frame.Name);
+                    frame = frame.Parent;
+                } while (frame != null);
+                return trace.ToArray();
+            }
+        }
+
         public static InterpretedFrameInfo[] GetExceptionStackTrace(Exception exception)
         {
             return exception.Data[typeof(InterpretedFrameInfo)] as InterpretedFrameInfo[];
@@ -174,20 +189,6 @@ namespace System.Linq.Expressions.Interpreter
         }
 
 #if DEBUG
-        internal string[] Trace
-        {
-            get
-            {
-                var trace = new List<string>();
-                InterpretedFrame frame = this;
-                do
-                {
-                    trace.Add(frame.Name);
-                    frame = frame.Parent;
-                } while (frame != null);
-                return trace.ToArray();
-            }
-        }
 #endif
 
         #endregion Stack Trace
@@ -198,7 +199,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             // TODO: we know this at compile time (except for compiled loop):
             var target = Interpreter.Labels[labelIndex];
-            Debug.Assert(!gotoExceptionHandler || (gotoExceptionHandler && _continuationIndex == target.ContinuationStackDepth),
+            Debug.Assert(!gotoExceptionHandler || gotoExceptionHandler && _continuationIndex == target.ContinuationStackDepth,
                 "When it's time to jump to the exception handler, all previous finally blocks should already be processed");
 
             if (_continuationIndex == target.ContinuationStackDepth)

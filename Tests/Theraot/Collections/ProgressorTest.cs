@@ -13,57 +13,65 @@ namespace Tests.Theraot.Collections
         public void EnumerableProgressor()
         {
             var source = new[] { 0, 1, 2, 3, 4, 5 };
-            var progresor = new Progressor<int>(source);
+            var progressor = Progressor<int>.CreateFromArray(source);
             var indexA = 0;
             var indexB = 0;
-            progresor.SubscribeAction
+            using
             (
-                value =>
-                {
-                    Assert.AreEqual(value, indexB);
-                    indexB++;
-                }
-            );
-            int item;
-            while (progresor.TryTake(out item))
+                progressor.SubscribeAction
+                (
+                    value =>
+                    {
+                        Assert.AreEqual(value, indexB);
+                        indexB++;
+                    }
+                )
+            )
             {
-                Assert.AreEqual(item, indexA);
-                indexA++;
+                while (progressor.TryTake(out var item))
+                {
+                    Assert.AreEqual(item, indexA);
+                    indexA++;
+                }
+                Assert.AreEqual(6, indexA);
+                Assert.AreEqual(indexA, indexB);
             }
-            Assert.AreEqual(6, indexA);
-            Assert.AreEqual(indexA, indexB);
         }
 
         [Test]
         public void ObservableProgressor()
         {
-            var source = new Progressor<int>(new[] { 0, 1, 2, 3, 4, 5 });
-            var progresor = new Progressor<int>((IObservable<int>)source);
+            var source = Progressor<int>.CreateFromArray(new[] { 0, 1, 2, 3, 4, 5 });
+            var progressor = Progressor<int>.CreateFromIObservable(source);
             source.Consume();
             var indexA = 0;
             var indexB = 0;
-            progresor.SubscribeAction
+            using
             (
-                value =>
-                {
-                    Assert.AreEqual(value, indexB);
-                    indexB++;
-                }
-            );
-            int item;
-            while (progresor.TryTake(out item))
+                progressor.SubscribeAction
+                (
+                    value =>
+                    {
+                        Assert.AreEqual(value, indexB);
+                        indexB++;
+                    }
+                )
+            )
             {
-                Assert.AreEqual(item, indexA);
-                indexA++;
+                while (progressor.TryTake(out var item))
+                {
+                    Assert.AreEqual(item, indexA);
+                    indexA++;
+                }
+                Assert.AreEqual(6, indexA);
+                Assert.AreEqual(indexA, indexB);
             }
-            Assert.AreEqual(6, indexA);
-            Assert.AreEqual(indexA, indexB);
         }
 
         [Test]
         public void ThreadedUse()
         {
-            var source = new Progressor<int>(new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+            var source = Progressor<int>.CreateFromIList(new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
             using (var handle = new ManualResetEvent(false))
             {
                 int[] count = { 0, 0, 0 };
@@ -99,7 +107,7 @@ namespace Tests.Theraot.Collections
         [Test]
         public void ThreadedUseArray()
         {
-            var source = new Progressor<int>(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+            var source = Progressor<int>.CreateFromArray(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
             using (var handle = new ManualResetEvent(false))
             {
                 int[] count = { 0, 0, 0 };

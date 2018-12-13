@@ -18,7 +18,7 @@ namespace Theraot.Collections.Specialized
 
         private static T Conversion(TNeedle needle)
         {
-            if (ReferenceEquals(needle, null))
+            if (needle == null)
             {
                 return default;
             }

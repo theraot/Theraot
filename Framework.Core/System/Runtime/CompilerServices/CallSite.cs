@@ -165,7 +165,7 @@ namespace System.Runtime.CompilerServices
             }
 
             T[] temp;
-            if (rules.Length < (_maxRules - 1))
+            if (rules.Length < _maxRules - 1)
             {
                 temp = new T[rules.Length + 1];
                 Array.Copy(rules, 0, temp, 1, rules.Length);

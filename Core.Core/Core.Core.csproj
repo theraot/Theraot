@@ -143,6 +143,7 @@
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\ExtendedEnumerable.cs" Link="Theraot\Collections\Specialized\ExtendedEnumerable.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\ExtendedEnumerableBase.cs" Link="Theraot\Collections\Specialized\ExtendedEnumerableBase.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\FlagArray.cs" Link="Theraot\Collections\Specialized\FlagArray.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\GroupBuilder.cs" Link="Theraot\Collections\Specialized\GroupBuilder.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\Grouping.cs" Link="Theraot\Collections\Specialized\Grouping.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\KeyCollection.cs" Link="Theraot\Collections\Specialized\KeyCollection.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\Specialized\KeyedStack.cs" Link="Theraot\Collections\Specialized\KeyedStack.cs" />
@@ -300,6 +301,7 @@
         <Compile Include="..\Framework.Core\Theraot\Threading\ThreadingHelper.SpinWait.cs" Link="Theraot\Threading\ThreadingHelper.SpinWait.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\ThreadLocalHelper.cs" Link="Theraot\Threading\ThreadLocalHelper.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\Timeout.cs" Link="Theraot\Threading\Timeout.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\Timer.cs" Link="Theraot\Threading\Timer.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\TrackingThreadLocal.cs" Link="Theraot\Threading\TrackingThreadLocal.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\UniqueId.cs" Link="Theraot\Threading\UniqueId.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\VersionProvider.cs" Link="Theraot\Threading\VersionProvider.cs" />

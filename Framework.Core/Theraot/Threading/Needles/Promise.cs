@@ -117,9 +117,9 @@ namespace Theraot.Threading.Needles
         public override string ToString()
         {
             return IsCompleted
-                ? (Exception == null
+                ? Exception == null
                     ? "[Done]"
-                    : Exception.ToString())
+                    : Exception.ToString()
                 : "[Not Created]";
         }
 

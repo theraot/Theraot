@@ -1,5 +1,3 @@
-#if FAT
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,63 +6,67 @@ using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections
 {
-    [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     public class ProgressiveLookup<TKey, T> : ILookup<TKey, T>
     {
         private readonly IDictionary<TKey, IGrouping<TKey, T>> _cache;
-        private readonly ProgressiveSet<TKey> _keysReadonly;
+        private readonly IDisposable _subscription;
 
-        public ProgressiveLookup(IEnumerable<IGrouping<TKey, T>> wrapped)
-            : this(wrapped, new NullAwareDictionary<TKey, IGrouping<TKey, T>>(), null, null)
+        public ProgressiveLookup(IEnumerable<IGrouping<TKey, T>> enumerable)
+            : this(Progressor<IGrouping<TKey, T>>.CreateFromIEnumerable(enumerable), new NullAwareDictionary<TKey, IGrouping<TKey, T>>(), null, null)
         {
             // Empty
         }
 
-        public ProgressiveLookup(IEnumerable<IGrouping<TKey, T>> wrapped, IEqualityComparer<TKey> keyComparer)
-            : this(wrapped, new NullAwareDictionary<TKey, IGrouping<TKey, T>>(keyComparer), keyComparer, null)
+        public ProgressiveLookup(IEnumerable<IGrouping<TKey, T>> enumerable, IEqualityComparer<TKey> keyComparer)
+            : this(Progressor<IGrouping<TKey, T>>.CreateFromIEnumerable(enumerable), new NullAwareDictionary<TKey, IGrouping<TKey, T>>(keyComparer), keyComparer, null)
         {
             // Empty
         }
 
-        protected ProgressiveLookup(IEnumerable<IGrouping<TKey, T>> wrapped, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
+        public ProgressiveLookup(IObservable<IGrouping<TKey, T>> observable)
+            : this(Progressor<IGrouping<TKey, T>>.CreateFromIObservable(observable), new NullAwareDictionary<TKey, IGrouping<TKey, T>>(), null, null)
         {
-            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            Progressor = new Progressor<IGrouping<TKey, T>>(wrapped);
-            Progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
-            KeyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
-            ItemComparer = itemComparer ?? EqualityComparer<T>.Default;
-            _keysReadonly = new ProgressiveSet<TKey>(Progressor.ConvertProgressive(input => input.Key), keyComparer);
+            // Empty
         }
 
-        protected ProgressiveLookup(IObservable<IGrouping<TKey, T>> wrapped, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
+        public ProgressiveLookup(IObservable<IGrouping<TKey, T>> observable, IEqualityComparer<TKey> keyComparer)
+            : this(Progressor<IGrouping<TKey, T>>.CreateFromIObservable(observable), new NullAwareDictionary<TKey, IGrouping<TKey, T>>(keyComparer), keyComparer, null)
+        {
+            // Empty
+        }
+
+        protected ProgressiveLookup(Progressor<IGrouping<TKey, T>> progressor, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            Progressor = new Progressor<IGrouping<TKey, T>>(wrapped);
-            Progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
+            Progressor = progressor ?? throw new ArgumentNullException(nameof(progressor));
+            _subscription = Progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
             KeyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
             ItemComparer = itemComparer ?? EqualityComparer<T>.Default;
-            _keysReadonly = new ProgressiveSet<TKey>(Progressor.ConvertProgressive(input => input.Key), keyComparer);
+            Keys = new EnumerationList<TKey>(this.ConvertProgressive(input => input.Key));
+        }
+
+        ~ProgressiveLookup()
+        {
+            Close();
         }
 
         public int Count
         {
             get
             {
-                Progressor.AsEnumerable().Consume();
+                ConsumeAll();
                 return _cache.Count;
             }
         }
 
-        public bool EndOfEnumeration => Progressor.IsClosed;
-
-        public IReadOnlyCollection<TKey> Keys => _keysReadonly;
+        public IReadOnlyCollection<TKey> Keys { get; }
 
         protected IEqualityComparer<T> ItemComparer { get; }
 
         protected IEqualityComparer<TKey> KeyComparer { get; }
 
-        protected Progressor<IGrouping<TKey, T>> Progressor { get; }
+        private Progressor<IGrouping<TKey, T>> Progressor { get; }
 
         public IEnumerable<T> this[TKey key]
         {
@@ -103,20 +105,26 @@ namespace Theraot.Collections
             return new ProgressiveLookup<TKey, T>(source.GroupProgressiveBy(item => item.Key, item => item.Value, keyComparer), keyComparer);
         }
 
+#if FAT
+
+        internal static ProgressiveLookup<TKey, T> Create<TGroupingDictionary>(Progressor<IGrouping<TKey, T>> progressor, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
+            where TGroupingDictionary : IDictionary<TKey, IGrouping<TKey, T>>, new()
+        {
+            return new ProgressiveLookup<TKey, T>(progressor, new TGroupingDictionary(), keyComparer, itemComparer);
+        }
+#endif
+
         public bool Contains(TKey key)
         {
             if (_cache.ContainsKey(key))
             {
                 return true;
             }
-            while (Progressor.TryTake(out var item))
+            return ProgressorWhere(Check).Any();
+            bool Check(IGrouping<TKey, T> item)
             {
-                if (KeyComparer.Equals(key, item.Key))
-                {
-                    return true;
-                }
+                return KeyComparer.Equals(key, item.Key);
             }
-            return false;
         }
 
         public void CopyTo(KeyValuePair<TKey, IGrouping<TKey, T>>[] array)
@@ -163,8 +171,10 @@ namespace Theraot.Collections
             {
                 yield return item.Value;
             }
+            var knownCount = _cache.Count;
+            while (Progressor.TryTake(out var item))
             {
-                while (Progressor.TryTake(out var item))
+                if (_cache.Count > knownCount)
                 {
                     yield return item;
                 }
@@ -182,17 +192,63 @@ namespace Theraot.Collections
             {
                 return true;
             }
-            while (Progressor.TryTake(out var item))
+            foreach (var found in ProgressorWhere(Check))
             {
-                if (KeyComparer.Equals(key, item.Key))
-                {
-                    value = item;
-                    return true;
-                }
+                value = found;
+                return true;
             }
             return false;
+            bool Check(IGrouping<TKey, T> item)
+            {
+                return KeyComparer.Equals(key, item.Key);
+            }
+        }
+
+        protected void ConsumeAll()
+        {
+            Progressor.Consume();
+        }
+
+        protected IEnumerable<IGrouping<TKey, T>> ProgressorWhere(Predicate<IGrouping<TKey, T>> check)
+        {
+            var knownCount = _cache.Count;
+            while (Progressor.TryTake(out var item))
+            {
+                if (_cache.Count > knownCount)
+                {
+                    if (check(item))
+                    {
+                        yield return item;
+                    }
+                    knownCount = _cache.Count;
+                }
+            }
+        }
+
+        protected IEnumerable<IGrouping<TKey, T>> ProgressorWhile(Predicate<IGrouping<TKey, T>> check)
+        {
+            var knownCount = _cache.Count;
+            while (Progressor.TryTake(out var item))
+            {
+                if (_cache.Count > knownCount)
+                {
+                    if (check(item))
+                    {
+                        yield return item;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    knownCount = _cache.Count;
+                }
+            }
+        }
+
+        private void Close()
+        {
+            _subscription?.Dispose();
+            Progressor?.Close();
         }
     }
 }
-
-#endif

@@ -16,11 +16,6 @@ namespace Theraot.Threading
             _release = release ?? throw new ArgumentNullException(nameof(release));
         }
 
-        public static Disposable Create()
-        {
-            return new Disposable(ActionHelper.GetNoopAction());
-        }
-
         public static Disposable Create(Action release)
         {
             return new Disposable(release);

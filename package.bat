@@ -61,9 +61,9 @@ cd %mypath%
 	if EXIST version.txt (
 		SET /P version=<version.txt
 		for /f "skip=1" %%x in ('wmic os get localdatetime') do if not defined MyDate set MyDate=%%x
-		set today=!MyDate:~0,4!!MyDate:~4,2!!MyDate:~6,2!
-		REM add the date
-		SET version=!version!-pre!today!
+		set now=!MyDate:~0,4!!MyDate:~4,2!!MyDate:~6,2!!MyDate:~8,2!!MyDate:~10,2!!MyDate:~12,2!
+		REM add the date and time
+		SET version=!version!-pre!now!
 		SET version=-Version !version!
 	)
 

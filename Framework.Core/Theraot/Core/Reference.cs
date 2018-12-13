@@ -15,7 +15,7 @@ namespace Theraot.Core
         public static bool IsNull<T>(T objA)
         {
             var info = typeof(T).GetTypeInfo();
-            return info.IsValueType ? false : ReferenceEquals(objA, null);
+            return info.IsValueType ? false : objA == null;
         }
     }
 }

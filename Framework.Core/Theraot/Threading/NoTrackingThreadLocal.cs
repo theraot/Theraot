@@ -72,7 +72,7 @@ namespace Theraot.Threading
                     }
                     catch (Exception exception)
                     {
-                        if (!ReferenceEquals(exception, ThreadLocalHelper.RecursionGuardException))
+                        if (exception != ThreadLocalHelper.RecursionGuardException)
                         {
                             Thread.SetData(_slot, new ExceptionStructNeedle<T>(exception));
                         }

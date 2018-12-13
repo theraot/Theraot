@@ -174,18 +174,17 @@ namespace MonoTests.System.Threading
         [Test]
         public void Cancel_Order()
         {
+            var current = 0;
+            void Action(object x)
+            {
+                Assert.AreEqual(current, x);
+                current++;
+            }
             using (var cts = new CancellationTokenSource())
             {
-                var current = 0;
-                Action<object> a = x =>
-                {
-                    Assert.AreEqual(current, x);
-                    current++;
-                };
-
-                cts.Token.Register(a, 2);
-                cts.Token.Register(a, 1);
-                cts.Token.Register(a, 0);
+                cts.Token.Register(Action, 2);
+                cts.Token.Register(Action, 1);
+                cts.Token.Register(Action, 0);
                 cts.Cancel();
             }
         }

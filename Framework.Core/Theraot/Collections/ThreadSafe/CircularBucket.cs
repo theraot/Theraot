@@ -93,21 +93,6 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Adds the specified item. Will not overwrite existing items.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns>Returns the position where the item was added, -1 otherwise.</returns>
-        public int TryAdd(T item)
-        {
-            var index = Interlocked.Increment(ref _index) & (Capacity - 1);
-            if (_entries.InsertInternal(index, item))
-            {
-                return index;
-            }
-            return -1;
-        }
-
-        /// <summary>
         /// Tries to retrieve the item at the specified index.
         /// </summary>
         /// <param name="index">The index.</param>

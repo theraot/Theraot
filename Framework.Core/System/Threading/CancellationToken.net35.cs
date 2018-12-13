@@ -76,7 +76,7 @@ namespace System.Threading
 
         public override bool Equals(object obj)
         {
-            return (obj is CancellationToken token) && Equals(token);
+            return obj is CancellationToken token && Equals(token);
         }
 
         public override int GetHashCode()
@@ -126,7 +126,7 @@ namespace System.Threading
 
         public void ThrowIfCancellationRequested()
         {
-            if (!ReferenceEquals(_source, null) && _source.IsCancellationRequested)
+            if (_source != null && _source.IsCancellationRequested)
             {
                 throw new NewOperationCanceledException(this);
             }

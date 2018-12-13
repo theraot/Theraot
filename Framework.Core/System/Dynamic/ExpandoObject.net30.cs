@@ -64,7 +64,7 @@ namespace System.Dynamic
         public ExpandoObject()
         {
             _data = ExpandoData.Empty;
-            _propertyChanged = new StrongEvent<PropertyChangedEventArgs>();
+            _propertyChanged = new StrongEvent<PropertyChangedEventArgs>(true);
             LockObject = new object();
         }
 
@@ -1118,7 +1118,7 @@ namespace System.Dynamic
                 const int DataArrayAlignment = 8;
 
                 // round up and then mask off lower bits
-                return (len + (DataArrayAlignment - 1)) & (~(DataArrayAlignment - 1));
+                return (len + (DataArrayAlignment - 1)) & ~(DataArrayAlignment - 1);
             }
         }
 
@@ -1126,7 +1126,9 @@ namespace System.Dynamic
 
         #region INotifyPropertyChanged
 
+#pragma warning disable IDE0051 // Remove unused private members
         event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+#pragma warning restore IDE0051 // Remove unused private members
         {
             add => _propertyChanged.Add(value.Method, value.Target);
             remove => _propertyChanged.Remove(value.Method, value.Target);

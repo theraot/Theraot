@@ -21,28 +21,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public Bucket()
         {
-            _bucketCore = new BucketCore(7);
-        }
-
-        public Bucket(IEnumerable<T> source)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            _bucketCore = new BucketCore(7);
-            var index = 0;
-            foreach (var item in source)
-            {
-                var copy = item;
-                _bucketCore.DoMayIncrement
-                    (
-                        index,
-                        (ref object target) => Interlocked.Exchange(ref target, (object)copy ?? BucketHelper.Null) == null
-                    );
-                index++;
-                _count++;
-            }
+            _bucketCore = new BucketCore();
         }
 
         public int Count => _count;
@@ -53,6 +32,7 @@ namespace Theraot.Collections.ThreadSafe
             Extensions.CopyTo(this, array, arrayIndex);
         }
 
+#if FAT
         public IEnumerable<T> EnumerateRange(int indexFrom, int indexTo)
         {
             foreach (var value in _bucketCore.EnumerateRange(indexFrom, indexTo))
@@ -60,6 +40,7 @@ namespace Theraot.Collections.ThreadSafe
                 yield return value == BucketHelper.Null ? default : (T)value;
             }
         }
+#endif
 
         public bool Exchange(int index, T item, out T previous)
         {
@@ -296,7 +277,6 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException(nameof(check));
             }
             return WhereExtracted();
-
             IEnumerable<T> WhereExtracted()
             {
                 foreach (var value in _bucketCore)
@@ -305,6 +285,28 @@ namespace Theraot.Collections.ThreadSafe
                     if (check(castValue))
                     {
                         yield return castValue;
+                    }
+                }
+            }
+        }
+
+        public IEnumerable<KeyValuePair<int, T>> WhereIndexed(Predicate<T> check)
+        {
+            if (check == null)
+            {
+                throw new ArgumentNullException(nameof(check));
+            }
+            return WhereExtracted();
+            IEnumerable<KeyValuePair<int, T>> WhereExtracted()
+            {
+                var index = 0;
+                foreach (var value in _bucketCore)
+                {
+                    var castValue = value == BucketHelper.Null ? default : (T)value;
+                    if (check(castValue))
+                    {
+                        yield return new KeyValuePair<int, T>(index, castValue);
+                        index++;
                     }
                 }
             }

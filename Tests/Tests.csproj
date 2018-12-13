@@ -339,6 +339,7 @@
     <Compile Include="System\Threading\Tasks\TaskTestEx.cs" />
     <Compile Include="System\Threading\Tasks\TaskTest.cs" />
     <Compile Include="TaskPerfTest.cs" />
+    <Compile Include="Theraot\Collections\ExtensionsGroupProgressiveBy.cs" />
     <Compile Include="Theraot\Collections\ExtensionsTest.cs" />
     <Compile Include="Theraot\Collections\ProgressiveLookupTestEx.cs" />
     <Compile Include="Theraot\Collections\ProgressiveLookupTest.cs">

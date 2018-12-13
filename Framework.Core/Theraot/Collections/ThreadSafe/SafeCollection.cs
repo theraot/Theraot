@@ -13,7 +13,7 @@ namespace Theraot.Collections.ThreadSafe
     public sealed class SafeCollection<T> : ICollection<T>
     {
         private int _maxIndex;
-        private SafeDictionary<int, T> _wrapped;
+        private Bucket<T> _wrapped;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SafeCollection{T}" /> class.
@@ -32,7 +32,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             _maxIndex = -1;
             Comparer = comparer ?? EqualityComparer<T>.Default;
-            _wrapped = new SafeDictionary<int, T>();
+            _wrapped = new Bucket<T>();
         }
 
         public IEqualityComparer<T> Comparer { get; }
@@ -51,7 +51,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public void Clear()
         {
-            _wrapped = new SafeDictionary<int, T>();
+            _wrapped = new Bucket<T>();
         }
 
         /// <summary>
@@ -60,9 +60,9 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>Returns the removed pairs.</returns>
         public IEnumerable<T> ClearEnumerable()
         {
-            var replacement = new SafeDictionary<int, T>();
+            var replacement = new Bucket<T>();
             Interlocked.Exchange(ref _wrapped, replacement);
-            return Enumerable(replacement);
+            return replacement;
         }
 
         /// <summary>
@@ -74,30 +74,13 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Contains(T item)
         {
-            foreach (var input in this)
-            {
-                if (Comparer.Equals(input, item))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return _wrapped.Where(Check).Any();
+            bool Check(T input) => Comparer.Equals(input, item);
         }
 
         public bool Contains(Predicate<T> itemCheck)
         {
-            if (itemCheck == null)
-            {
-                throw new ArgumentNullException(nameof(itemCheck));
-            }
-            foreach (var input in this)
-            {
-                if (itemCheck(input))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return _wrapped.Where(itemCheck).Any();
         }
 
         /// <summary>
@@ -111,7 +94,7 @@ namespace Theraot.Collections.ThreadSafe
         public void CopyTo(T[] array, int arrayIndex)
         {
             Extensions.CanCopyTo(Count, array, arrayIndex);
-            Extensions.CopyTo(Enumerable(_wrapped), array, arrayIndex);
+            Extensions.CopyTo(_wrapped, array, arrayIndex);
         }
 
         /// <summary>
@@ -122,10 +105,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            foreach (var p in Enumerable(_wrapped))
-            {
-                yield return p;
-            }
+            return _wrapped.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -142,7 +122,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(T item)
         {
-            return _wrapped.RemoveWhereValueEnumerable(Check).Any();
+            return _wrapped.RemoveWhereEnumerable(Check).Any();
             bool Check(T input) => Comparer.Equals(input, item);
         }
 
@@ -158,20 +138,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public int RemoveWhere(Predicate<T> check)
         {
-            if (check == null)
-            {
-                throw new ArgumentNullException(nameof(check));
-            }
-            var matches = _wrapped.WhereValue(check);
-            var count = 0;
-            foreach (var value in matches)
-            {
-                if (Remove(value))
-                {
-                    count++;
-                }
-            }
-            return count;
+            return _wrapped.RemoveWhere(check);
         }
 
         /// <summary>
@@ -186,23 +153,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public IEnumerable<T> RemoveWhereEnumerable(Predicate<T> check)
         {
-            if (check == null)
-            {
-                throw new ArgumentNullException(nameof(check));
-            }
-            return RemoveWhereEnumerableExtracted();
-
-            IEnumerable<T> RemoveWhereEnumerableExtracted()
-            {
-                var matches = _wrapped.WhereValue(check);
-                foreach (var value in matches)
-                {
-                    if (Remove(value))
-                    {
-                        yield return value;
-                    }
-                }
-            }
+            return _wrapped.RemoveWhereEnumerable(check);
         }
 
         /// <summary>
@@ -217,19 +168,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public IEnumerable<T> Where(Predicate<T> check)
         {
-            if (check == null)
-            {
-                throw new ArgumentNullException(nameof(check));
-            }
-            return _wrapped.WhereValue(check);
-        }
-
-        private static IEnumerable<T> Enumerable(SafeDictionary<int, T> wrapped)
-        {
-            foreach (var pair in wrapped)
-            {
-                yield return pair.Value;
-            }
+            return _wrapped.Where(check);
         }
     }
 }

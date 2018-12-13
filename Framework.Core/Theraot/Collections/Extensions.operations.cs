@@ -3,11 +3,47 @@
 using System;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
+using Theraot.Collections.ThreadSafe;
+
+#if NET20 || NET30 || NET35
+
+using System.Runtime.CompilerServices;
+
+#endif
 
 namespace Theraot.Collections
 {
     public static partial class Extensions
     {
+        public static T[] AsArray<T>(IEnumerable<T> source)
+        {
+            if (source == null)
+            {
+                return ArrayReservoir<T>.EmptyArray;
+            }
+            if (source is T[] array)
+            {
+                return array;
+            }
+#if NET20 || NET30 || NET35
+            if (source is TrueReadOnlyCollection<T> trueReadOnlyCollection)
+            {
+                return trueReadOnlyCollection.Wrapped;
+            }
+#endif
+            if (source is ICollection<T> collection)
+            {
+                if (collection.Count == 0)
+                {
+                    return ArrayReservoir<T>.EmptyArray;
+                }
+                var result = new T[collection.Count];
+                collection.CopyTo(result, 0);
+                return result;
+            }
+            return new List<T>(source).ToArray();
+        }
+
         public static ICollection<T> AsDistinctICollection<T>(IEnumerable<T> source)
         {
 #if NET35
@@ -75,17 +111,6 @@ namespace Theraot.Collections
         public static IEnumerable<T> AsUnaryIEnumerable<T>(T source)
         {
             yield return source;
-        }
-
-        public static IList<T> AsUnaryIList<T>(T source)
-        {
-            return new[] { source };
-        }
-
-        public static ISet<T> AsUnaryISet<T>(T source)
-        {
-            var result = new ExtendedSet<T> { source };
-            return result;
         }
 
         public static bool HasAtLeast<TSource>(this IEnumerable<TSource> source, int count)
@@ -182,59 +207,67 @@ namespace Theraot.Collections
             return predicateCount == null ? TakeItemsExtracted(source, takeCount) : TakeItemsExtracted(source, predicateCount, takeCount);
         }
 
-        public static ICollection<T> WrapAsICollection<T>(IEnumerable<T> source)
+        public static T[] ToArray<T>(this IEnumerable<T> source, int count)
         {
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            var result = source as ICollection<T>;
-            return result ?? new EnumerationList<T>(source);
+            if (count < 0)
+            {
+                throw new ArgumentNullException(nameof(count));
+            }
+            if (source is ICollection<T> collection && count >= collection.Count)
+            {
+                var array = new T[collection.Count];
+                collection.CopyTo(array, 0);
+                return array;
+            }
+            if (source is string str && count >= str.Length)
+            {
+                var array = new char[str.Length];
+                str.CopyTo(array, 0);
+                return (T[])(object)array;
+            }
+            var result = new List<T>(count);
+            foreach (var item in source)
+            {
+                if (result.Count == count)
+                {
+                    break;
+                }
+                result.Add(item);
+            }
+            return result.ToArray();
         }
 
         public static IList<T> WrapAsIList<T>(IEnumerable<T> source)
         {
-            if (source == null)
+            switch (source)
             {
-                throw new ArgumentNullException(nameof(source));
+                case null:
+                    throw new ArgumentNullException(nameof(source));
+                case IList<T> result:
+                    return result;
+                default:
+                    return new EnumerationList<T>(source);
             }
-            var result = source as IList<T>;
-            return result ?? new EnumerationList<T>(source);
         }
 
         public static IReadOnlyCollection<T> WrapAsIReadOnlyCollection<T>(IEnumerable<T> source)
         {
-            if (source == null)
+            switch (source)
             {
-                throw new ArgumentNullException(nameof(source));
-            }
-            var result = source as IReadOnlyCollection<T>;
-            return result ?? new EnumerationList<T>(source);
-        }
-
-        public static IReadOnlyList<T> WrapAsIReadOnlyList<T>(IEnumerable<T> source)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            var result = source as IReadOnlyList<T>;
-            return result ?? new EnumerationList<T>(source);
-        }
-
-        private static IEnumerable<T> SkipItemsExtracted<T>(IEnumerable<T> source, int skipCount)
-        {
-            var count = 0;
-            foreach (var item in source)
-            {
-                if (count < skipCount)
-                {
-                    count++;
-                }
-                else
-                {
-                    yield return item;
-                }
+                case null:
+                    throw new ArgumentNullException(nameof(source));
+                case T[] array:
+                    return new EnumerationList<T>(array);
+                case ICollection<T> collection:
+                    return new EnumerationList<T>(collection);
+                case IReadOnlyCollection<T> result:
+                    return result;
+                default:
+                    return new EnumerationList<T>(source);
             }
         }
 
@@ -249,6 +282,22 @@ namespace Theraot.Collections
                     {
                         count++;
                     }
+                }
+                else
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        private static IEnumerable<T> SkipItemsExtracted<T>(IEnumerable<T> source, int skipCount)
+        {
+            var count = 0;
+            foreach (var item in source)
+            {
+                if (count < skipCount)
+                {
+                    count++;
                 }
                 else
                 {

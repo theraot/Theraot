@@ -1,4 +1,4 @@
-// Needed for NET40
+#if FAT
 
 using System;
 using System.Diagnostics;
@@ -19,7 +19,7 @@ namespace Theraot.Threading.Needles
 
         public Needle(T target)
         {
-            if (ReferenceEquals(target, null))
+            if (target == null)
             {
                 _target = null;
                 _hashCode = base.GetHashCode();
@@ -81,11 +81,11 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(Needle<T> left, Needle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return !ReferenceEquals(right, null);
+                return !(right is null);
             }
-            if (ReferenceEquals(right, null))
+            if (right is null)
             {
                 return true;
             }
@@ -104,11 +104,11 @@ namespace Theraot.Threading.Needles
 
         public static bool operator ==(Needle<T> left, Needle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return ReferenceEquals(right, null);
+                return right is null;
             }
-            if (ReferenceEquals(right, null))
+            if (right is null)
             {
                 return false;
             }
@@ -127,8 +127,7 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            var needle = obj as Needle<T>;
-            if (needle != null)
+            if (obj is Needle<T> needle)
             {
                 return this == needle;
             }
@@ -146,16 +145,21 @@ namespace Theraot.Threading.Needles
 
         public bool Equals(Needle<T> other)
         {
-            if (other == null)
+            if (other is null)
             {
                 return false;
             }
-            var target = _target;
-            if (target == null)
+            var leftTarget = _target;
+            var rightTarget = other._target;
+            if (leftTarget == null)
             {
-                return other._target == null;
+                return rightTarget == null;
             }
-            return this == other;
+            if (rightTarget == null)
+            {
+                return false;
+            }
+            return leftTarget.Equals(rightTarget);
         }
 
         public virtual void Free()
@@ -202,3 +206,5 @@ namespace Theraot.Threading.Needles
         }
     }
 }
+
+#endif

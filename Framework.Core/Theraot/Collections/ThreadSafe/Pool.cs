@@ -12,13 +12,6 @@ namespace Theraot.Collections.ThreadSafe
         private readonly UniqueId _id;
         private readonly Action<T> _recycler;
 
-        public Pool(int capacity)
-        {
-            _id = RuntimeUniqueIdProvider.GetNextId();
-            _entries = new FixedSizeQueue<T>(capacity);
-            _recycler = GC.KeepAlive;
-        }
-
         public Pool(int capacity, Action<T> recycler)
         {
             _id = RuntimeUniqueIdProvider.GetNextId();
@@ -40,7 +33,11 @@ namespace Theraot.Collections.ThreadSafe
                         recycler.Invoke(entry);
                         return entries.TryAdd(entry);
                     }
-                    return false;
+                    return true;
+                }
+                catch (ObjectDisposedException exception)
+                {
+                    GC.KeepAlive(exception);
                 }
                 catch (InvalidOperationException exception)
                 {
@@ -53,6 +50,10 @@ namespace Theraot.Collections.ThreadSafe
                 finally
                 {
                     ReentryGuardHelper.Leave(_id);
+                }
+                if (entry is IDisposable disposable)
+                {
+                    disposable.Dispose();
                 }
             }
             return false;

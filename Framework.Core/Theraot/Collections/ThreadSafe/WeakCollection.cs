@@ -116,11 +116,6 @@ namespace Theraot.Collections.ThreadSafe
             Extensions.CopyTo(this, array, arrayIndex);
         }
 
-        public bool Equals(T x, T y)
-        {
-            return _comparer.Equals(x, y);
-        }
-
         public IEnumerator<T> GetEnumerator()
         {
             foreach (var pair in _wrapped)
@@ -240,7 +235,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             var result = false;
             EventHandler eventHandler;
-            if (ReferenceEquals(_eventHandler.Value, null))
+            if (_eventHandler.Value == null)
             {
                 eventHandler = GarbageCollected;
                 _eventHandler = new WeakNeedle<EventHandler>(eventHandler);

@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections.Specialized
@@ -45,11 +44,6 @@ namespace Theraot.Collections.Specialized
         public bool Contains(T item)
         {
             return Instance.Contains(item);
-        }
-
-        public bool Contains(T item, IEqualityComparer<T> comparer)
-        {
-            return Enumerable.Contains(Instance, item, comparer);
         }
 
         public void CopyTo(T[] array, int arrayIndex)

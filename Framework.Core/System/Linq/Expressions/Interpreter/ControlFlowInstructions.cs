@@ -14,17 +14,7 @@ namespace System.Linq.Expressions.Interpreter
     {
         private static Instruction[] _cache;
 
-        public override Instruction[] Cache
-        {
-            get
-            {
-                if (_cache == null)
-                {
-                    _cache = new Instruction[CacheSize];
-                }
-                return _cache;
-            }
-        }
+        public override Instruction[] Cache => _cache ?? (_cache = new Instruction[CacheSize]);
 
         public override int ConsumedStack => 1;
         public override string InstructionName => "BranchFalse";
@@ -357,7 +347,7 @@ namespace System.Linq.Expressions.Interpreter
                     // In the second path, the continuation mechanism is not involved and frame.InstructionIndex is not updated
 #if DEBUG
                     bool isFromJump = frame.IsJumpHappened();
-                    Debug.Assert(!isFromJump || (isFromJump && _tryHandler.FinallyStartIndex == frame.InstructionIndex), "we should already jump to the first instruction of the finally");
+                    Debug.Assert(!isFromJump || isFromJump && _tryHandler.FinallyStartIndex == frame.InstructionIndex, "we should already jump to the first instruction of the finally");
 #endif
                     // run the finally block
                     // we cannot jump out of the finally block, and we cannot have an immediate rethrow in it
@@ -794,7 +784,7 @@ namespace System.Linq.Expressions.Interpreter
         }
 
         private static Exception WrapThrownObject(object thrown) =>
-            thrown == null ? null : (thrown as Exception ?? new /*RuntimeWrappedException(thrown)*/ Exception());
+            thrown == null ? null : thrown as Exception ?? new /*RuntimeWrappedException(thrown)*/ Exception();
     }
 }
 

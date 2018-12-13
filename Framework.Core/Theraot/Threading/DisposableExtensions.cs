@@ -10,7 +10,7 @@ namespace Theraot.Threading
         public static void DisposableSafeWith<T>(this T disposable, Action<T> action)
             where T : IExtendedDisposable
         {
-            if (!ReferenceEquals(disposable, null))
+            if (disposable != null)
             {
                 disposable.DisposedConditional
                     (
@@ -25,7 +25,7 @@ namespace Theraot.Threading
         public static TReturn DisposableSafeWith<T, TReturn>(this T disposable, Func<T, TReturn> action, TReturn def)
             where T : IExtendedDisposable
         {
-            if (!ReferenceEquals(disposable, null))
+            if (disposable != null)
             {
                 return disposable.DisposedConditional
                     (
@@ -46,7 +46,7 @@ namespace Theraot.Threading
         public static TReturn DisposableSafeWith<T, TReturn>(this T disposable, Func<T, TReturn> action, Func<TReturn> alternative, TReturn def)
             where T : IExtendedDisposable
         {
-            if (!ReferenceEquals(disposable, null))
+            if (disposable != null)
             {
                 return disposable.DisposedConditional
                     (
@@ -117,7 +117,7 @@ namespace Theraot.Threading
                         resource = allocationCode.Invoke();
                     }
                 }
-                if ((bodyCode != null) && (resource != null))
+                if (bodyCode != null && resource != null)
                 {
                     bodyCode.Invoke(resource);
                 }
@@ -130,7 +130,7 @@ namespace Theraot.Threading
 
         public static void SafeWith<T>(this T obj, Action<T> action)
         {
-            if ((action != null) && !ReferenceEquals(obj, null))
+            if (action != null && obj != null)
             {
                 action.Invoke(obj);
             }
@@ -138,7 +138,7 @@ namespace Theraot.Threading
 
         public static TReturn SafeWith<T, TReturn>(this T obj, Func<T, TReturn> action, TReturn def)
         {
-            if (!ReferenceEquals(obj, null))
+            if (obj != null)
             {
                 if (action == null)
                 {
@@ -151,7 +151,7 @@ namespace Theraot.Threading
 
         public static TReturn SafeWith<T, TReturn>(this T obj, Func<T, TReturn> action, Func<TReturn> alternative, TReturn def)
         {
-            if (!ReferenceEquals(obj, null))
+            if (obj != null)
             {
                 if (action == null)
                 {

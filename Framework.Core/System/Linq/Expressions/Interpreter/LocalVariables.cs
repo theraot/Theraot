@@ -51,7 +51,7 @@ namespace System.Linq.Expressions.Interpreter
         internal LocalVariable(int index, bool closure)
         {
             Index = index;
-            _flags = (closure ? _inClosureFlag : 0);
+            _flags = closure ? _inClosureFlag : 0;
         }
 
         public bool InClosure => (_flags & _inClosureFlag) != 0;

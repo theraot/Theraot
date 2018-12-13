@@ -30,14 +30,9 @@ namespace System.Linq.Expressions
         /// <summary>
         /// Gets a value that indicates whether the expression tree node can be reduced.
         /// </summary>
-        public override bool CanReduce
-        {
-            get
-            {
-                // Only OpAssignments are reducible.
-                return IsOpAssignment(NodeType);
-            }
-        }
+        public override bool CanReduce =>
+            // Only OpAssignments are reducible.
+            IsOpAssignment(NodeType);
 
         /// <summary>
         /// Gets the type conversion function that is used by a coalescing or compound assignment operation.
@@ -1275,13 +1270,13 @@ namespace System.Linq.Expressions
                 if (method != null)
                 {
                     ValidateUserDefinedConditionalLogicOperator(ExpressionType.AndAlso, left.Type, right.Type, method);
-                    returnType = (left.Type.IsNullableType() && TypeUtils.AreEquivalent(method.ReturnType, left.Type.GetNonNullableType())) ? left.Type : method.ReturnType;
+                    returnType = left.Type.IsNullableType() && TypeUtils.AreEquivalent(method.ReturnType, left.Type.GetNonNullableType()) ? left.Type : method.ReturnType;
                     return new MethodBinaryExpression(ExpressionType.AndAlso, left, right, returnType, method);
                 }
                 throw Error.BinaryOperatorNotDefined(ExpressionType.AndAlso, left.Type, right.Type);
             }
             ValidateUserDefinedConditionalLogicOperator(ExpressionType.AndAlso, left.Type, right.Type, method);
-            returnType = (left.Type.IsNullableType() && TypeUtils.AreEquivalent(method.ReturnType, left.Type.GetNonNullableType())) ? left.Type : method.ReturnType;
+            returnType = left.Type.IsNullableType() && TypeUtils.AreEquivalent(method.ReturnType, left.Type.GetNonNullableType()) ? left.Type : method.ReturnType;
             return new MethodBinaryExpression(ExpressionType.AndAlso, left, right, returnType, method);
         }
 
@@ -1329,13 +1324,13 @@ namespace System.Linq.Expressions
                 if (method != null)
                 {
                     ValidateUserDefinedConditionalLogicOperator(ExpressionType.OrElse, left.Type, right.Type, method);
-                    returnType = (left.Type.IsNullableType() && method.ReturnType == left.Type.GetNonNullableType()) ? left.Type : method.ReturnType;
+                    returnType = left.Type.IsNullableType() && method.ReturnType == left.Type.GetNonNullableType() ? left.Type : method.ReturnType;
                     return new MethodBinaryExpression(ExpressionType.OrElse, left, right, returnType, method);
                 }
                 throw Error.BinaryOperatorNotDefined(ExpressionType.OrElse, left.Type, right.Type);
             }
             ValidateUserDefinedConditionalLogicOperator(ExpressionType.OrElse, left.Type, right.Type, method);
-            returnType = (left.Type.IsNullableType() && method.ReturnType == left.Type.GetNonNullableType()) ? left.Type : method.ReturnType;
+            returnType = left.Type.IsNullableType() && method.ReturnType == left.Type.GetNonNullableType() ? left.Type : method.ReturnType;
             return new MethodBinaryExpression(ExpressionType.OrElse, left, right, returnType, method);
         }
 

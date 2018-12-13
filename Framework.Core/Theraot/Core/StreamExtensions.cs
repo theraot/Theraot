@@ -13,11 +13,11 @@ namespace Theraot.Core
         public static void CopyTo(this Stream input, Stream output)
         {
             //Added in .NET 4.0
-            if (ReferenceEquals(input, null))
+            if (input == null)
             {
                 throw new ArgumentNullException(nameof(input));
             }
-            if (ReferenceEquals(output, null))
+            if (output == null)
             {
                 throw new ArgumentNullException(nameof(output));
             }
@@ -46,11 +46,11 @@ namespace Theraot.Core
         public static void CopyTo(this Stream input, Stream output, int bufferSize)
         {
             //Added in .NET 4.0
-            if (ReferenceEquals(input, null))
+            if (input == null)
             {
                 throw new ArgumentNullException(nameof(input));
             }
-            if (ReferenceEquals(output, null))
+            if (output == null)
             {
                 throw new ArgumentNullException(nameof(output));
             }
@@ -89,7 +89,7 @@ namespace Theraot.Core
 
         public static void ReadComplete(this Stream stream, byte[] buffer, int offset, int length)
         {
-            if (ReferenceEquals(stream, null))
+            if (stream == null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -107,7 +107,7 @@ namespace Theraot.Core
 
         public static byte[] ToArray(this Stream stream)
         {
-            if (ReferenceEquals(stream, null))
+            if (stream == null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }

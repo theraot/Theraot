@@ -112,7 +112,7 @@ namespace System
             while (true)
             {
                 Exception item;
-                if (result.InnerExceptions.Count != 1 || ReferenceEquals(null, item = result.InnerExceptions[0]))
+                if (result.InnerExceptions.Count != 1 || (item = result.InnerExceptions[0]) == null)
                 {
                     return result;
                 }

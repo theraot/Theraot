@@ -36,7 +36,7 @@ namespace System.Runtime.CompilerServices
                 get
                 {
                     index = _indexes[index];
-                    return (index >= 0) ? _first[index] : _second[-1 - index];
+                    return index >= 0 ? _first[index] : _second[-1 - index];
                 }
                 set
                 {

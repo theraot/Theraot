@@ -139,20 +139,20 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(WeakNeedle<T> left, WeakNeedle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return !ReferenceEquals(right, null);
+                return !(right is null);
             }
-            return ReferenceEquals(right, null) || NotEqualsExtractedExtracted(left, right);
+            return right is null || NotEqualsExtractedExtracted(left, right);
         }
 
         public static bool operator ==(WeakNeedle<T> left, WeakNeedle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return ReferenceEquals(right, null);
+                return right is null;
             }
-            return !ReferenceEquals(right, null) && EqualsExtractedExtracted(left, right);
+            return !(right is null) && EqualsExtractedExtracted(left, right);
         }
 
         public sealed override bool Equals(object obj)
@@ -172,7 +172,7 @@ namespace Theraot.Threading.Needles
 
         public bool Equals(WeakNeedle<T> other)
         {
-            return !ReferenceEquals(other, null) && EqualsExtractedExtracted(this, other);
+            return !(other is null) && EqualsExtractedExtracted(this, other);
         }
 
         public void Free()

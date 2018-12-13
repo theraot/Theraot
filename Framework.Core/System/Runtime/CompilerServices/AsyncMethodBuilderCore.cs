@@ -42,7 +42,7 @@ namespace System.Runtime.CompilerServices
         [DebuggerStepThrough]
         internal static void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
         {
-            if (ReferenceEquals(stateMachine, null))
+            if (stateMachine == null)
             {
                 throw new ArgumentNullException(nameof(stateMachine));
             }

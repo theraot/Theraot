@@ -1,11 +1,9 @@
-using System.Collections.Generic;
-using Theraot.Collections.Specialized;
-
 #if FAT
 
 using System;
+using System.Collections.Generic;
+using Theraot.Collections.Specialized;
 
-#endif
 
 namespace Theraot.Collections
 {
@@ -31,8 +29,6 @@ namespace Theraot.Collections
             return new ExtendedEnumerable<T>(AsUnaryIEnumerable(prepend), target);
         }
 
-#if FAT
-
         public static IEnumerable<T> Cycle<T>(this IEnumerable<T> source)
         {
             if (source == null)
@@ -55,7 +51,7 @@ namespace Theraot.Collections
                 // ReSharper disable once IteratorNeverReturns
             }
         }
-
-#endif
     }
 }
+
+#endif

@@ -296,7 +296,7 @@ namespace System.Linq
                 foreach (var item in source)
                 {
                     // item might be null
-                    if (ReferenceEquals(item, null))
+                    if (item == null)
                     {
                         if (foundNull)
                         {

@@ -1006,14 +1006,14 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WaitAllTest()
         {
-            Action action = () =>
+            void Action()
             {
                 var achieved = 0;
                 InitWithDelegate(() => Interlocked.Increment(ref achieved));
                 Task.WaitAll(_tasks);
                 Assert.AreEqual(_max, achieved, "#1");
-            };
-            ParallelTestHelper.Repeat(action, 1000);
+            }
+            ParallelTestHelper.Repeat(Action, 1000);
         }
 
         [Test]
@@ -1515,11 +1515,7 @@ namespace MonoTests.System.Threading.Tasks
             protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
             {
                 var handler = TryExecuteTaskInlineHandler;
-                if (handler != null)
-                {
-                    handler(task, taskWasPreviouslyQueued);
-                }
-
+                handler?.Invoke(task, taskWasPreviouslyQueued);
                 return TryExecuteTask(task);
             }
         }
@@ -2365,9 +2361,9 @@ namespace MonoTests.System.Threading.Tasks
         public void WhenAny()
         {
             // On high load, this test will result in attempting to dispose a non completed task
-            // How? It is beyond me
+            // How?
             // As you can see, if the task didn't complete, wait would have been false, and the task faulted, but that didn't happen
-            // I suspect this is a problem with reordering
+            // Here is is how: the fact that the task has completed was not visible to the thread that is disposing
             using (var t1 = new Task(ActionHelper.GetNoopAction()))
             {
                 using (var t2 = new Task(t1.Start))
@@ -2378,7 +2374,7 @@ namespace MonoTests.System.Threading.Tasks
                     Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1a");
                     t2.Start();
                     Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1b");
-                    Assert.IsTrue(t.Wait(1000), "#2a");
+                    Assert.IsTrue(t.Wait(2000), "#2a");
                     Assert.IsTrue(t2.Wait(1000), "#2b");
                     Assert.IsNotNull(t.Result, "#3");
                 }

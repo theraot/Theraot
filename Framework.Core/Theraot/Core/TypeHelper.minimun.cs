@@ -46,20 +46,20 @@ namespace Theraot.Core
 
         public static Delegate BuildDelegate(MethodInfo methodInfo, object target)
         {
-            if (ReferenceEquals(methodInfo, null))
+            if (methodInfo == null)
             {
                 throw new ArgumentNullException(nameof(methodInfo));
             }
-            if (methodInfo.IsStatic != ReferenceEquals(null, target))
+            if (methodInfo.IsStatic != (target == null))
             {
-                if (ReferenceEquals(target, null))
+                if (target == null)
                 {
                     throw new ArgumentNullException(nameof(target), "target is null and the method is not static.");
                 }
                 throw new ArgumentException("target is not null and the method is static", nameof(target));
             }
             var type = methodInfo.DeclaringType;
-            if (ReferenceEquals(type, null))
+            if (type == null)
             {
                 throw new ArgumentException("methodInfo.DeclaringType is null", nameof(methodInfo));
             }
@@ -73,7 +73,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(type));
             }
             var info = type.GetTypeInfo();
-            return !info.IsValueType || !ReferenceEquals(Nullable.GetUnderlyingType(type), null);
+            return !info.IsValueType || Nullable.GetUnderlyingType(type) != null;
         }
 
         public static TTarget Cast<TTarget>(object source)
@@ -126,7 +126,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(@delegate));
             }
-            return @delegate.GetMethodInfo().Equals(method) && ReferenceEquals(@delegate.Target, target);
+            return @delegate.GetMethodInfo().Equals(method) && @delegate.Target == target;
         }
 
         public static MethodInfo FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly)
@@ -211,11 +211,11 @@ namespace Theraot.Core
         {
 #if NETCOREAPP1_0 || NETCOREAPP1_1
             var info = typeof(T).GetTypeInfo();
-            return info.IsClass || (info.IsPrimitive && Marshal.SizeOf<T>() <= IntPtr.Size);
+            return info.IsClass || info.IsPrimitive && Marshal.SizeOf<T>() <= IntPtr.Size;
 #else
             var type = typeof(T);
             var info = type.GetTypeInfo();
-            return info.IsClass || (info.IsPrimitive && Marshal.SizeOf(type) <= IntPtr.Size);
+            return info.IsClass || info.IsPrimitive && Marshal.SizeOf(type) <= IntPtr.Size;
 #endif
         }
 

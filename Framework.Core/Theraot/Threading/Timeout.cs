@@ -3,7 +3,6 @@
 using System;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
-using Theraot.Core;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
@@ -189,7 +188,7 @@ namespace Theraot.Threading
                 else
                 {
                     _targetTime = _startTime + dueTime;
-                    wrapped.Change(TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
+                    wrapped.Change(Finish, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
                 }
                 Volatile.Write(ref _status, _created);
                 return true;
@@ -211,7 +210,7 @@ namespace Theraot.Threading
             var remaining = _targetTime - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
             if (remaining <= 0)
             {
-                Finish(null);
+                Finish();
                 return 0;
             }
             return remaining;
@@ -261,20 +260,18 @@ namespace Theraot.Threading
             {
                 _targetTime = _startTime + dueTime;
             }
-            _wrapped = new Timer(Finish, null, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
+            _wrapped = Timer.GetTimer(Finish, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
         }
 
         private void Close()
         {
-            var wrapped = Interlocked.Exchange(ref _wrapped, null);
-            wrapped?.Dispose();
+            Timer.Donate(_wrapped);
             Volatile.Write(ref Callback, null);
             GC.SuppressFinalize(this);
         }
 
-        private void Finish(object state)
+        private void Finish()
         {
-            GC.KeepAlive(state);
             ThreadingHelper.SpinWaitWhile(ref _status, _changing);
             if (Interlocked.CompareExchange(ref _status, _executing, _created) == _created)
             {
@@ -301,8 +298,9 @@ namespace Theraot.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
-            Callback = new ValueActionClosure<T>(callback, target).Invoke;
+            Callback = Action;
             Start(dueTime);
+            void Action() => callback(target);
         }
 
         public Timeout(Action<T> callback, long dueTime, CancellationToken token, T target)
@@ -322,10 +320,11 @@ namespace Theraot.Threading
             }
             else
             {
-                Callback = new ValueActionClosure<T>(callback, target).Invoke;
+                Callback = Action;
                 Start(dueTime);
                 token.Register(Cancel);
             }
+            void Action() => callback(target);
         }
 
         public Timeout(Action<T> callback, TimeSpan dueTime, T target)

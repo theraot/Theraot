@@ -41,7 +41,7 @@ namespace System.Linq
                 foreach (var element in outer)
                 {
                     var outerKey = outerKeySelector(element);
-                    if (!ReferenceEquals(outerKey, null) && innerKeys.Contains(outerKey))
+                    if (outerKey != null && innerKeys.Contains(outerKey))
                     {
                         foreach (var innerElement in innerKeys[outerKey])
                         {

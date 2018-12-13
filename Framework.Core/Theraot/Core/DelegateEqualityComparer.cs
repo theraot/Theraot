@@ -23,12 +23,12 @@ namespace Theraot.Core
         public int GetHashCode(Delegate obj)
         {
             // obj can be null
-            return ReferenceEquals(obj, null) ? 0 : ReferenceEquals(obj.Target, null) ? obj.GetMethodInfo().GetHashCode() : obj.GetMethodInfo().GetHashCode() ^ obj.Target.GetHashCode();
+            return obj == null ? 0 : obj.Target == null ? obj.GetMethodInfo().GetHashCode() : obj.GetMethodInfo().GetHashCode() ^ obj.Target.GetHashCode();
         }
 
         private static bool CompareInternal(Delegate x, Delegate y)
         {
-            return ReferenceEquals(x, null) ? ReferenceEquals(y, null) : !ReferenceEquals(y, null) && ReferenceEquals(x.Target, y.Target) && x.GetMethodInfo() == y.GetMethodInfo();
+            return x == null ? y == null : y != null && x.Target == y.Target && x.GetMethodInfo() == y.GetMethodInfo();
         }
     }
 }

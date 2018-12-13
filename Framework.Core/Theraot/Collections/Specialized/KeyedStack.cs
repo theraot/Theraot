@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using Theraot.Collections;
-using Theraot.Collections.Specialized;
 
-namespace Theraot.Core.Theraot.Collections.Specialized
+namespace Theraot.Collections.Specialized
 {
     public sealed class KeyedStack<TKey, TValue>
     {
@@ -20,15 +18,6 @@ namespace Theraot.Core.Theraot.Collections.Specialized
                 _data.Add(key, stack = new Stack<TValue>());
             }
             stack.Push(item);
-        }
-
-        public int GetCount(TKey key)
-        {
-            if (_data.TryGetValue(key, out var stack))
-            {
-                return stack.Count;
-            }
-            return 0;
         }
 
         public bool TryTake(TKey key, out TValue item)

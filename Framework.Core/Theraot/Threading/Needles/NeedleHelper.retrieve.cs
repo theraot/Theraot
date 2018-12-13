@@ -2,12 +2,16 @@
 
 namespace Theraot.Threading.Needles
 {
-    public static partial class NeedleHelper
+    public static 
+#if FAT
+        partial
+#endif
+        class NeedleHelper
     {
         public static bool Retrieve<T, TNeedle>(this TNeedle needle, out T target)
             where TNeedle : IRecyclableNeedle<T>
         {
-            if (ReferenceEquals(needle, null))
+            if (needle == null)
             {
                 target = default;
                 return false;

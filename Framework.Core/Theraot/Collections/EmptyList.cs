@@ -10,7 +10,7 @@ namespace Theraot.Collections
         private EmptyList()
             : base(BuildEmptyEnumerable())
         {
-            Progressor.Consume();
+            ConsumeAll();
         }
 
         public static EmptyList<T> Instance { get; } = new EmptyList<T>();

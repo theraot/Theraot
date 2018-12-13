@@ -1,9 +1,8 @@
-﻿#if FAT
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Theraot.Collections.Specialized;
+using Theraot.Core;
 
 namespace Theraot.Collections
 {
@@ -24,58 +23,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
-            return CreateGroupByIterator();
-
-            IEnumerable<IGrouping<TKey, TSource>> CreateGroupByIterator()
-            {
-                var groups = new Dictionary<TKey, List<TSource>>(comparer);
-                var nullList = new List<TSource>();
-                var counter = 0;
-                var nullCounter = -1;
-
-                foreach (var element in source)
-                {
-                    var key = keySelector(element);
-                    if (ReferenceEquals(key, null))
-                    {
-                        nullList.Add(element);
-                        if (nullCounter == -1)
-                        {
-                            nullCounter = counter;
-                            counter++;
-                        }
-                    }
-                    else
-                    {
-                        if (!groups.TryGetValue(key, out var group))
-                        {
-                            group = new List<TSource>();
-                            groups.Add(key, group);
-                            counter++;
-                        }
-                        group.Add(element);
-                    }
-                }
-
-                counter = 0;
-                foreach (var group in groups)
-                {
-                    if (counter == nullCounter)
-                    {
-                        yield return new Grouping<TKey, TSource>(default, nullList);
-                        counter++;
-                    }
-
-                    yield return new Grouping<TKey, TSource>(group.Key, group.Value);
-                    counter++;
-                }
-
-                if (counter == nullCounter)
-                {
-                    yield return new Grouping<TKey, TSource>(default, nullList);
-                    // counter++;
-                }
-            }
+            return GroupBuilder<TKey, TSource, TSource>.CreateGroups(source, comparer, keySelector, FuncHelper.GetIdentityFunc<TSource>());
         }
 
         public static IEnumerable<IGrouping<TKey, TElement>> GroupProgressiveBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
@@ -97,59 +45,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
-            return CreateGroupByIterator();
-
-            IEnumerable<IGrouping<TKey, TElement>> CreateGroupByIterator()
-            {
-                var groups = new Dictionary<TKey, List<TElement>>(comparer);
-                var nullList = new List<TElement>();
-                var counter = 0;
-                var nullCounter = -1;
-
-                foreach (var item in source)
-                {
-                    var key = keySelector(item);
-                    var element = resultSelector(item);
-                    if (ReferenceEquals(key, null))
-                    {
-                        nullList.Add(element);
-                        if (nullCounter == -1)
-                        {
-                            nullCounter = counter;
-                            counter++;
-                        }
-                    }
-                    else
-                    {
-                        if (!groups.TryGetValue(key, out var group))
-                        {
-                            group = new List<TElement>();
-                            groups.Add(key, group);
-                            counter++;
-                        }
-                        group.Add(element);
-                    }
-                }
-
-                counter = 0;
-                foreach (var group in groups)
-                {
-                    if (counter == nullCounter)
-                    {
-                        yield return new Grouping<TKey, TElement>(default, nullList);
-                        counter++;
-                    }
-
-                    yield return new Grouping<TKey, TElement>(group.Key, group.Value);
-                    counter++;
-                }
-
-                if (counter == nullCounter)
-                {
-                    yield return new Grouping<TKey, TElement>(default, nullList);
-                    // counter++;
-                }
-            }
+            return GroupBuilder<TKey, TSource, TElement>.CreateGroups(source, comparer, keySelector, resultSelector);
         }
 
         public static IEnumerable<TResult> GroupProgressiveBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
@@ -176,7 +72,6 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(resultSelector));
             }
             return CreateGroupByIterator();
-
             IEnumerable<TResult> CreateGroupByIterator()
             {
                 var groups = GroupProgressiveBy(source, keySelector, elementSelector, comparer);
@@ -221,5 +116,3 @@ namespace Theraot.Collections
         }
     }
 }
-
-#endif

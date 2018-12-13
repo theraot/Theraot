@@ -118,7 +118,7 @@ namespace Tests.Theraot.Threading.Needles
         [Category("RaceToDeadLock")] // This test creates a race condition, that when resolved sequentially will be stuck
         public void Progressor_ThreadedUse() // TODO: Review
         {
-            var source = new Progressor<int>(new List<int>
+            var source = Progressor<int>.CreateFromIList(new List<int>
             {
                 0,
                 1,
@@ -134,7 +134,7 @@ namespace Tests.Theraot.Threading.Needles
             using (var handle = new ManualResetEvent(false))
             {
                 int[] count = { 0, 0, 0 };
-                Action work = () =>
+                void Work()
                 {
                     Interlocked.Increment(ref count[0]);
                     handle.WaitOne();
@@ -143,10 +143,11 @@ namespace Tests.Theraot.Threading.Needles
                         GC.KeepAlive(item);
                         Interlocked.Increment(ref count[2]);
                     }
+
                     Interlocked.Increment(ref count[1]);
-                };
-                Task.Factory.StartNew(work);
-                Task.Factory.StartNew(work);
+                }
+                Task.Factory.StartNew(Work);
+                Task.Factory.StartNew(Work);
                 while (Volatile.Read(ref count[0]) != 2)
                 {
                     Thread.Sleep(0);

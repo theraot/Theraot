@@ -83,7 +83,7 @@ namespace System.Threading.Tasks
         {
             return
                 _task != null ? _task.GetHashCode() :
-                !ReferenceEquals(_result, null) ? _result.GetHashCode() :
+                _result != null ? _result.GetHashCode() :
                 0;
         }
 
@@ -161,11 +161,11 @@ namespace System.Threading.Tasks
         {
             if (_task != null)
             {
-                return _task.Status == TaskStatus.RanToCompletion && !ReferenceEquals(_task.Result, null) ?
+                return _task.Status == TaskStatus.RanToCompletion && _task.Result != null ?
                     _task.Result.ToString() :
                     string.Empty;
             }
-            return !ReferenceEquals(_result, null) ?
+            return _result != null ?
                 _result.ToString() :
                 string.Empty;
         }

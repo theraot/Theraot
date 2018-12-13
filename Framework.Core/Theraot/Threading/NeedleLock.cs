@@ -27,7 +27,7 @@ namespace Theraot.Threading
         internal NeedleLock(LockContext<T> context, T target)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
-            if (ReferenceEquals(target, null))
+            if (target == null)
             {
                 _hashCode = base.GetHashCode();
             }
@@ -40,7 +40,7 @@ namespace Theraot.Threading
             _owner = -1;
         }
 
-        bool IReadOnlyNeedle<T>.IsAlive => !ReferenceEquals(_target, null);
+        bool IReadOnlyNeedle<T>.IsAlive => _target != null;
 
         public T Value
         {
@@ -65,11 +65,11 @@ namespace Theraot.Threading
 
         public static bool operator !=(NeedleLock<T> left, NeedleLock<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return !ReferenceEquals(right, null);
+                return !(right is null);
             }
-            if (ReferenceEquals(right, null))
+            if (right is null)
             {
                 return true;
             }
@@ -78,11 +78,11 @@ namespace Theraot.Threading
 
         public static bool operator ==(NeedleLock<T> left, NeedleLock<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return ReferenceEquals(right, null);
+                return right is null;
             }
-            if (ReferenceEquals(right, null))
+            if (right is null)
             {
                 return false;
             }
@@ -101,7 +101,11 @@ namespace Theraot.Threading
 
         public bool Equals(NeedleLock<T> other)
         {
-            return this == other;
+            if (other is null)
+            {
+                return false;
+            }
+            return _target.Equals(other._target);
         }
 
         public override int GetHashCode()

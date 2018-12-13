@@ -2,7 +2,6 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
@@ -11,17 +10,17 @@ namespace System.Linq
 {
     public class Lookup<TKey, TElement> : ILookup<TKey, TElement>
     {
-        private readonly IDictionary<TKey, Grouping> _groupings;
+        private readonly IDictionary<TKey, Grouping<TKey, TElement>> _groupings;
 
         internal Lookup(IEqualityComparer<TKey> comparer)
         {
             if (typeof(TKey).CanBeNull())
             {
-                _groupings = new NullAwareDictionary<TKey, Grouping>(comparer);
+                _groupings = new NullAwareDictionary<TKey, Grouping<TKey, TElement>>(comparer);
             }
             else
             {
-                _groupings = new Dictionary<TKey, Grouping>(comparer);
+                _groupings = new Dictionary<TKey, Grouping<TKey, TElement>>(comparer);
             }
         }
 
@@ -31,7 +30,7 @@ namespace System.Linq
         {
             get
             {
-                if (_groupings.TryGetValue(key, out Grouping grouping))
+                if (_groupings.TryGetValue(key, out Grouping<TKey, TElement> grouping))
                 {
                     return grouping;
                 }
@@ -81,46 +80,23 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(keySelector));
             }
             var result = new Lookup<TKey, TElement>(comparer);
+            var collections = new NullAwareDictionary<TKey, List<TElement>>(comparer);
             foreach (var item in source)
             {
-                result.GetOrCreateGrouping(keySelector(item)).Add(elementSelector(item));
+                var key = keySelector(item);
+                if (!collections.TryGetValue(key, out var collection))
+                {
+                    collection = new List<TElement>();
+                    collections.Add(key, collection);
+                }
+                if (!result._groupings.TryGetValue(key, out var grouping))
+                {
+                    grouping = new Grouping<TKey, TElement>(key, collection);
+                    result._groupings.Add(key, grouping);
+                }
+                collection.Add(elementSelector(item));
             }
             return result;
-        }
-
-        private ICollection<TElement> GetOrCreateGrouping(TKey key)
-        {
-            if (!_groupings.TryGetValue(key, out Grouping grouping))
-            {
-                grouping = new Grouping(key);
-                _groupings.Add(key, grouping);
-            }
-            return grouping.Items;
-        }
-
-        internal sealed class Grouping : IGrouping<TKey, TElement>
-        {
-            private readonly Collection<TElement> _items;
-
-            internal Grouping(TKey key)
-            {
-                _items = new Collection<TElement>();
-                Key = key;
-            }
-
-            public Collection<TElement> Items => _items;
-
-            public TKey Key { get; }
-
-            public IEnumerator<TElement> GetEnumerator()
-            {
-                return _items.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return _items.GetEnumerator();
-            }
         }
     }
 }
