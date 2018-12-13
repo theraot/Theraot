@@ -295,12 +295,12 @@
         <Compile Include="..\Framework.Core\Theraot\Threading\ReentrantReadWriteLock.disposable.cs" Link="Theraot\Threading\ReentrantReadWriteLock.disposable.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\ReentrantReadWriteLock.Status.cs" Link="Theraot\Threading\ReentrantReadWriteLock.Status.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\ReentryGuard.cs" Link="Theraot\Threading\ReentryGuard.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Threading\RootedTimeout.cs" Link="Theraot\Threading\RootedTimeout.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\RuntimeUniqueIdProvider.cs" Link="Theraot\Threading\RuntimeUniqueIdProvider.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\ThreadingHelper.cs" Link="Theraot\Threading\ThreadingHelper.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\ThreadingHelper.extra.cs" Link="Theraot\Threading\ThreadingHelper.extra.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\ThreadingHelper.SpinWait.cs" Link="Theraot\Threading\ThreadingHelper.SpinWait.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\ThreadLocalHelper.cs" Link="Theraot\Threading\ThreadLocalHelper.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Threading\Timeout.cs" Link="Theraot\Threading\Timeout.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\Timer.cs" Link="Theraot\Threading\Timer.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\TrackingThreadLocal.cs" Link="Theraot\Threading\TrackingThreadLocal.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\UniqueId.cs" Link="Theraot\Threading\UniqueId.cs" />

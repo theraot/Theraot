@@ -11,7 +11,7 @@ namespace Theraot.Threading
         {
             again:
             var value = new[] { 0 };
-            var timeout = new Timeout(() => value[0] = 1, 1000);
+            var timeout = RootedTimeout.Launch(() => value[0] = 1, 1000);
             Assert.IsFalse(timeout.IsCanceled);
             timeout.Cancel();
             if (timeout.IsCompleted)
@@ -29,7 +29,7 @@ namespace Theraot.Threading
         {
             again:
             var value = new[] { 0 };
-            var timeout = new Timeout(() => value[0] = 1, 100);
+            var timeout = RootedTimeout.Launch(() => value[0] = 1, 100);
             Assert.IsFalse(timeout.IsCanceled);
             timeout.Cancel();
             if (timeout.IsCompleted)
@@ -51,7 +51,7 @@ namespace Theraot.Threading
             again:
             var now = DateTime.Now;
             var value = new[] { now };
-            var timeout = new Timeout(() => value[0] = DateTime.Now, 100);
+            var timeout = RootedTimeout.Launch(() => value[0] = DateTime.Now, 100);
             if (!timeout.Change(1000))
             {
                 goto again;
@@ -67,7 +67,7 @@ namespace Theraot.Threading
         {
             var value = new[] { 0 };
             var token = new CancellationToken(true);
-            var timeout = new Timeout(() => value[0] = 1, 0, token);
+            var timeout = RootedTimeout.Launch(() => value[0] = 1, 0, token);
             Assert.IsTrue(timeout.IsCanceled);
             Assert.IsFalse(timeout.IsCompleted);
             Assert.AreEqual(0, value[0]);
@@ -77,7 +77,7 @@ namespace Theraot.Threading
         public static void TimeoutConstructorCancellationToken()
         {
             var value = new[] { 0 };
-            var timeout = new Timeout(() => value[0] = 1, 0, CancellationToken.None);
+            var timeout = RootedTimeout.Launch(() => value[0] = 1, 0, CancellationToken.None);
             Assert.IsFalse(timeout.IsCanceled);
         }
 
@@ -85,7 +85,7 @@ namespace Theraot.Threading
         public static void TimeoutConstructorZeroDueTime()
         {
             var value = new[] { 0 };
-            var timeout = new Timeout(() => value[0] = 1, 0);
+            var timeout = RootedTimeout.Launch(() => value[0] = 1, 0);
             ThreadingHelper.SpinWaitUntil(() => timeout.IsCompleted);
             Assert.AreEqual(1, value[0]);
         }
@@ -94,7 +94,7 @@ namespace Theraot.Threading
         public static void TimeoutFinishAndChange()
         {
             var value = new[] { 0 };
-            var timeout = new Timeout(() => value[0] = 1, 100);
+            var timeout = RootedTimeout.Launch(() => value[0] = 1, 100);
             Assert.IsFalse(timeout.IsCanceled);
             ThreadingHelper.SpinWaitUntil(() => timeout.IsCompleted);
             Assert.IsFalse(timeout.IsCanceled);
@@ -111,7 +111,7 @@ namespace Theraot.Threading
             again:
             var now = DateTime.Now;
             var value = new[] { now };
-            var timeout = new Timeout(() => value[0] = DateTime.Now, 500);
+            var timeout = RootedTimeout.Launch(() => value[0] = DateTime.Now, 500);
             var remaining = timeout.CheckRemaining();
             if (timeout.IsCompleted)
             {

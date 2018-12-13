@@ -763,7 +763,7 @@
     <Compile Include="Theraot\Threading\ReentrantReadWriteLock.cs" />
     <Compile Include="Theraot\Threading\ReentryGuard.cs" />
     <Compile Include="Theraot\Threading\RuntimeUniqueIdProvider.cs" />
-    <Compile Include="Theraot\Threading\Timeout.cs" />
+    <Compile Include="Theraot\Threading\RootedTimeout.cs" />
     <Compile Include="Theraot\Threading\Needles\LockableNeedle.cs" />
     <Compile Include="Theraot\Threading\ThreadingHelper.cs" />
     <Compile Include="Theraot\Threading\ThreadingHelper.extra.cs" />

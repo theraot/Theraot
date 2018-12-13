@@ -7,7 +7,6 @@ using System.Security.Permissions;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
-using Timeout = System.Threading.Timeout;
 
 namespace System.Collections.Concurrent
 {
