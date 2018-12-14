@@ -875,7 +875,6 @@
     <Compile Include="Theraot\Threading\VersionProvider.Target.cs" />
     <Compile Include="Theraot\Threading\VersionProvider.VersionToken.cs" />
     <Compile Include="Theraot\VoidStruct.cs" />
-    <None Include="packages.config" />
     <None Include="Theraot\Collections\Extensions.interleave.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Extensions.interleave.cs</LastGenOutput>

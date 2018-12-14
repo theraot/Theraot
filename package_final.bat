@@ -38,19 +38,14 @@ cd %mypath%
 		SET nuget="%FOUND_B%"
 	) ELSE (
 		echo NuGet.exe is in not in PATH
-		echo Fallback to NuGet.CommandLine
-		REM get nuget from .\packages\NuGet.CommandLine.*\tools\NuGet.exe
+		echo Fallback to repository copy
+		REM get nuget from .\nuget\nuget.exe
 		pushd %~dp0
 		cd /D %mypath:~0,3%
-		cd %mypath:~0,-1%\packages\
-		for /D %%s in (.\*) do (
-			SET folder=%%s
-			SET folder=!folder:~2,17!
-			if "!folder!" == "NuGet.CommandLine" (
-				SET folder=%%s
-				SET nuget="%mypath:~0,-1%\packages\!folder:~2!\tools\NuGet.exe"
-				SET dst_folder=%mypath:~0,-1%\packages\!folder:~2!\tools\
-			)
+		cd %mypath:~0,-1%\nuget\
+		if EXIST nuget.exe (
+			SET nuget="%mypath:~0,-1%\nuget\nuget.exe"
+			SET dst_folder=%mypath:~0,-1%\nuget\
 		)
 		popd
 		echo Looking for NuGet.exe in: !nuget!
