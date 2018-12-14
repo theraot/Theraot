@@ -744,6 +744,147 @@ namespace Theraot.Collections
 
     public static partial class Extensions
     {
+        public static int CountContiguousItems<T>(this IEnumerable<T> source, T item)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            var result = 0;
+            var equalityComparer = EqualityComparer<T>.Default;
+            foreach (var value in source)
+            {
+                if (equalityComparer.Equals(value, item))
+                {
+                    result++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return result;
+        }
+
+        public static int CountContiguousItemsWhere<T>(this IEnumerable<T> source, Predicate<T> predicate)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+            var result = 0;
+            foreach (var item in source)
+            {
+                if (predicate(item))
+                {
+                    result++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return result;
+        }
+
+        public static int CountItems<T>(this IEnumerable<T> source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            var result = 0;
+            foreach (var value in source)
+            {
+                result++;
+                GC.KeepAlive(value);
+            }
+            return result;
+        }
+
+        public static int CountItems<T>(this IEnumerable<T> source, T item)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            var result = 0;
+            var equalityComparer = EqualityComparer<T>.Default;
+            foreach (var value in source)
+            {
+                if (equalityComparer.Equals(value, item))
+                {
+                    result++;
+                }
+            }
+            return result;
+        }
+
+        public static int CountItemsWhere<T>(this IEnumerable<T> source, Predicate<T> predicate)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+            var result = 0;
+            foreach (var item in source)
+            {
+                if (predicate(item))
+                {
+                    result++;
+                }
+            }
+            return result;
+        }
+
+        public static List<TOutput> ConvertAll<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (converter == null)
+            {
+                throw new ArgumentNullException(nameof(converter));
+            }
+            var result = new List<TOutput>();
+            foreach (var item in source)
+            {
+                result.Add(converter(item));
+            }
+            return result;
+        }
+
+        public static TList ConvertAll<T, TOutput, TList>(this IEnumerable<T> source, Func<T, TOutput> converter)
+            where TList : ICollection<TOutput>, new()
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (converter == null)
+            {
+                throw new ArgumentNullException(nameof(converter));
+            }
+            var result = new TList();
+            foreach (var item in source)
+            {
+                result.Add(converter(item));
+            }
+            return result;
+        }
+    }
+
+    public static partial class Extensions
+    {
 #if NET35
 
         public static bool Contains<T>(this IEnumerable<T> source, IEnumerable<T> items)
@@ -840,43 +981,6 @@ namespace Theraot.Collections
                 }
             }
             return false;
-        }
-
-        public static List<TOutput> ConvertAll<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (converter == null)
-            {
-                throw new ArgumentNullException(nameof(converter));
-            }
-            var result = new List<TOutput>();
-            foreach (var item in source)
-            {
-                result.Add(converter(item));
-            }
-            return result;
-        }
-
-        public static TList ConvertAll<T, TOutput, TList>(this IEnumerable<T> source, Func<T, TOutput> converter)
-            where TList : ICollection<TOutput>, new()
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (converter == null)
-            {
-                throw new ArgumentNullException(nameof(converter));
-            }
-            var result = new TList();
-            foreach (var item in source)
-            {
-                result.Add(converter(item));
-            }
-            return result;
         }
 
         public static List<TOutput> ConvertFiltered<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Func<T, int, bool> filter)
@@ -1188,106 +1292,6 @@ namespace Theraot.Collections
             return copy;
         }
 
-        public static int CountContiguousItems<T>(this IEnumerable<T> source, T item)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            var result = 0;
-            var equalityComparer = EqualityComparer<T>.Default;
-            foreach (var value in source)
-            {
-                if (equalityComparer.Equals(value, item))
-                {
-                    result++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            return result;
-        }
-
-        public static int CountContiguousItemsWhere<T>(this IEnumerable<T> source, Predicate<T> predicate)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (predicate == null)
-            {
-                throw new ArgumentNullException(nameof(predicate));
-            }
-            var result = 0;
-            foreach (var item in source)
-            {
-                if (predicate(item))
-                {
-                    result++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            return result;
-        }
-
-        public static int CountItems<T>(this IEnumerable<T> source)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            var result = 0;
-            foreach (var value in source)
-            {
-                result++;
-                GC.KeepAlive(value);
-            }
-            return result;
-        }
-
-        public static int CountItems<T>(this IEnumerable<T> source, T item)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            var result = 0;
-            var equalityComparer = EqualityComparer<T>.Default;
-            foreach (var value in source)
-            {
-                if (equalityComparer.Equals(value, item))
-                {
-                    result++;
-                }
-            }
-            return result;
-        }
-
-        public static int CountItemsWhere<T>(this IEnumerable<T> source, Predicate<T> predicate)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (predicate == null)
-            {
-                throw new ArgumentNullException(nameof(predicate));
-            }
-            var result = 0;
-            foreach (var item in source)
-            {
-                if (predicate(item))
-                {
-                    result++;
-                }
-            }
-            return result;
-        }
 
         public static IEnumerable<T> EmptyChecked<T>(this IEnumerable<T> source, Action onEmpty)
         {
