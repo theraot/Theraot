@@ -222,11 +222,12 @@ namespace System.Threading.Tasks
             //
             List<Exception> exceptions = null;
             List<Task> waitedOnTaskList = null;
-            List<Task> notificationTasks = null;
             // If any of the waited-upon tasks end as Faulted or Canceled, set these to true.
             var exceptionSeen = false;
             var cancellationSeen = false;
             var allCompleted = true;
+            // try inlining the task only if we have an infinite timeout and an empty cancellation token
+            var canInline = millisecondsTimeout == Timeout.Infinite && !cancellationToken.CanBeCanceled;
             // Collects incomplete tasks in "waitedOnTaskList"
             for (var taskIndex = tasks.Length - 1; taskIndex >= 0; taskIndex--)
             {
@@ -236,27 +237,47 @@ namespace System.Threading.Tasks
                     throw new ArgumentException("The tasks array included at least one null element.");
                 }
                 var taskIsCompleted = task.IsCompleted;
+                if (canInline && !taskIsCompleted)
+                {
+                    // We are eligible for inlining.  If it doesn't work, we'll do a full wait.
+                    // A successful TryStart doesn't guarantee completion
+                    taskIsCompleted = task.TryStart(task.ExecutingTaskScheduler, true) && task.IsCompleted;
+                }
                 if (!taskIsCompleted)
                 {
-                    // try inlining the task only if we have an infinite timeout and an empty cancellation token
-                    if (millisecondsTimeout != Timeout.Infinite || cancellationToken.CanBeCanceled)
+                    if (waitedOnTaskList == null)
                     {
-                        // We either didn't attempt inline execution because we had a non-infinite timeout or we had a cancellable token.
-                        // In all cases we need to do a full wait on the task (=> add its event into the list.)
-                        AddToList(task, ref waitedOnTaskList, /*initSize:*/ tasks.Length);
+                        waitedOnTaskList = new List<Task>(tasks.Length);
                     }
-                    else
+                    waitedOnTaskList.Add(task);
+                }
+            }
+            if (waitedOnTaskList != null)
+            {
+                // Block waiting for the tasks to complete.
+                allCompleted = WaitAllBlockingCore(waitedOnTaskList, millisecondsTimeout, cancellationToken);
+            }
+            if (allCompleted)
+            {
+                for (var taskIndex = tasks.Length - 1; taskIndex >= 0; taskIndex--)
+                {
+                    var task = tasks[taskIndex];
+                    if (task.IsFaulted || task.IsCanceled)
                     {
-                        // We are eligible for inlining.  If it doesn't work, we'll do a full wait.
-                        taskIsCompleted = task.TryStart(task.ExecutingTaskScheduler, true) && task.IsCompleted; // A successful TryRunInline doesn't guarantee completion
-                        if (!taskIsCompleted)
+                        var exception = task.GetExceptions(true);
+                        if (exception != null)
                         {
-                            AddToList(task, ref waitedOnTaskList, /*initSize:*/ tasks.Length);
+                            // make sure the task's exception observed status is set appropriately
+                            // it's possible that WaitAll was called by the parent of an attached child,
+                            // this will make sure it won't throw again in the implicit wait
+                            task.UpdateExceptionObservedStatus();
+                            if (exceptions == null)
+                            {
+                                exceptions = new List<Exception>(exception.InnerExceptions.Count);
+                            }
+                            exceptions.AddRange(exception.InnerExceptions);
                         }
                     }
-                }
-                if (taskIsCompleted)
-                {
                     if (task.IsFaulted)
                     {
                         exceptionSeen = true;
@@ -265,80 +286,24 @@ namespace System.Threading.Tasks
                     {
                         cancellationSeen |= task.IsCanceled;
                     }
-
                     if (task.IsWaitNotificationEnabled)
                     {
-                        AddToList(task, ref notificationTasks, /*initSize:*/ 1);
-                    }
-                }
-            }
-            if (waitedOnTaskList != null)
-            {
-                // Block waiting for the tasks to complete.
-                allCompleted = WaitAllBlockingCore(waitedOnTaskList, millisecondsTimeout, cancellationToken);
-                // If the wait didn't time out, ensure exceptions are propagated, and if a debugger is
-                // attached and one of these tasks requires it, that we notify the debugger of a wait completion.
-                if (allCompleted)
-                {
-                    // Add any exceptions for this task to the collection, and if it's wait
-                    // notification bit is set, store it to operate on at the end.
-                    foreach (var task in waitedOnTaskList)
-                    {
-                        if (task.IsFaulted)
+                        if (task.NotifyDebuggerOfWaitCompletionIfNecessary())
                         {
-                            exceptionSeen = true;
-                        }
-                        else
-                        {
-                            cancellationSeen |= task.IsCanceled;
-                        }
-
-                        if (task.IsWaitNotificationEnabled)
-                        {
-                            AddToList(task, ref notificationTasks, /*initSize:*/ 1);
+                            break;
                         }
                     }
                 }
-                // We need to prevent the tasks array from being garbage collected until we come out of the wait.
-                // This is necessary so that the Parallel Debugger can traverse it during the long wait and
-                // deduce waiter/waitee relationships
-                GC.KeepAlive(tasks);
-            }
-            // Now that we're done and about to exit, if the wait completed and if we have
-            // any tasks with a notification bit set, signal the debugger if any requires it.
-            if (allCompleted && notificationTasks != null)
-            {
-                // Loop through each task tha that had its bit set, and notify the debugger
-                // about the first one that requires it.  The debugger will reset the bit
-                // for any tasks we don't notify of as soon as we break, so we only need to notify
-                // for one.
-                foreach (var task in notificationTasks)
-                {
-                    if (task.NotifyDebuggerOfWaitCompletionIfNecessary())
-                    {
-                        break;
-                    }
-                }
-            }
-            // If one or more threw exceptions, aggregate and throw them.
-            if (allCompleted && (exceptionSeen || cancellationSeen))
-            {
-                // If the WaitAll was canceled and tasks were canceled but not faulted,
-                // prioritize throwing an OCE for canceling the WaitAll over throwing an
-                // AggregateException for all of the canceled Tasks.  This helps
-                // to bring determinism to an otherwise non-deterministic case of using
-                // the same token to cancel both the WaitAll and the Tasks.
-                if (!exceptionSeen)
+                if (cancellationSeen && !exceptionSeen)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                 }
-                // Now gather up and throw all of the exceptions.
-                foreach (var task in tasks)
+                // If one or more threw exceptions, aggregate and throw them.
+                if (exceptionSeen || cancellationSeen)
                 {
-                    AddExceptionsForCompletedTask(ref exceptions, task);
+                    Contract.Assert(exceptions != null, "Should have seen at least one exception");
+                    throw new AggregateException(exceptions);
                 }
-                Contract.Assert(exceptions != null, "Should have seen at least one exception");
-                throw new AggregateException(exceptions);
             }
             return allCompleted;
         }
@@ -529,60 +494,6 @@ namespace System.Threading.Tasks
             return signaledTaskIndex;
         }
 
-        internal static void AddExceptionsForCompletedTask(ref List<Exception> exceptions, Task t)
-        {
-            var ex = t.GetExceptions(true);
-            if (ex != null)
-            {
-                // make sure the task's exception observed status is set appropriately
-                // it's possible that WaitAll was called by the parent of an attached child,
-                // this will make sure it won't throw again in the implicit wait
-                t.UpdateExceptionObservedStatus();
-
-                if (exceptions == null)
-                {
-                    exceptions = new List<Exception>(ex.InnerExceptions.Count);
-                }
-
-                exceptions.AddRange(ex.InnerExceptions);
-            }
-        }
-
-        internal static void FastWaitAll(Task[] tasks)
-        {
-            Contract.Requires(tasks != null);
-            List<Exception> exceptions = null;
-            // Collects incomplete tasks in "waitedOnTaskList" and their cooperative events in "cooperativeEventList"
-            for (var taskIndex = tasks.Length - 1; taskIndex >= 0; taskIndex--)
-            {
-                ref var current = ref tasks[taskIndex];
-                if (!current.IsCompleted)
-                {
-                    // Just attempting to inline here... result doesn't matter.
-                    // We'll do a second pass to do actual wait on each task, and to aggregate their exceptions.
-                    // If the task is inlined here, it will register as IsCompleted in the second pass
-                    // and will just give us the exception.
-                    current.TryStart(current.ExecutingTaskScheduler, true);
-                }
-            }
-            // Wait on the tasks.
-            for (var taskIndex = tasks.Length - 1; taskIndex >= 0; taskIndex--)
-            {
-                ref var current = ref tasks[taskIndex];
-                current.Wait();
-                AddExceptionsForCompletedTask(ref exceptions, current);
-                // Note that unlike other wait code paths, we do not check
-                // task.NotifyDebuggerOfWaitCompletionIfNecessary() here, because this method is currently
-                // only used from contexts where the tasks couldn't have that bit set, namely
-                // Parallel.Invoke.  If that ever changes, such checks should be added here.
-            }
-            // If one or more threw exceptions, aggregate them.
-            if (exceptions != null)
-            {
-                throw new AggregateException(exceptions);
-            }
-        }
-
         /// <summary>
         /// Calls the debugger notification method if the right bit is set and if
         /// the task itself allows for the notification to proceed.
@@ -611,21 +522,6 @@ namespace System.Threading.Tasks
         {
             Contract.Assert(IsPromiseTask, "Should only be used for promise-style tasks"); // hasn't been vetted on other kinds as there hasn't been a need
             Volatile.Write(ref _waitNotificationEnabled, enabled ? 1 : 0);
-        }
-
-        /// <summary>Adds an element to the list, initializing the list if it's null.</summary>
-        /// <typeparam name="T">Specifies the type of data stored in the list.</typeparam>
-        /// <param name="item">The item to add.</param>
-        /// <param name="list">The list.</param>
-        /// <param name="initSize">The size to which to initialize the list if the list is null.</param>
-        private static void AddToList<T>(T item, ref List<T> list, int initSize)
-        {
-            if (list == null)
-            {
-                list = new List<T>(initSize);
-            }
-
-            list.Add(item);
         }
 
         private static void PrivateWaitAny(Task[] tasks, int millisecondsTimeout, CancellationToken cancellationToken, ref int signaledTaskIndex)
