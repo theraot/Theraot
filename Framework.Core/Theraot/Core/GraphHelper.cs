@@ -7,13 +7,13 @@ namespace Theraot.Core
 {
     public static partial class GraphHelper
     {
-        public static IEnumerable<TOutput> ExploreBreadthFirstGraph<TInput, TOutput>(TInput initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
+        public static IEnumerable<TOutput> ExploreBreadthFirstGraph<TInput, TOutput>(TInput initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector, IEqualityComparer<TInput> comparer)
         {
             var branches = new[] { initial };
-            return ExploreBreadthFirstGraphExtracted(branches, next, resultSelector);
+            return ExploreBreadthFirstGraphExtracted(branches, next, resultSelector, comparer ?? EqualityComparer<TInput>.Default);
         }
 
-        public static IEnumerable<TOutput> ExploreBreadthFirstGraph<TInput, TOutput>(IEnumerable<TInput> initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
+        public static IEnumerable<TOutput> ExploreBreadthFirstGraph<TInput, TOutput>(IEnumerable<TInput> initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector, IEqualityComparer<TInput> comparer)
         {
             if (next == null)
             {
@@ -24,27 +24,27 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(resultSelector));
             }
             var branches = initial;
-            return ExploreBreadthFirstGraphExtracted(branches, next, resultSelector);
+            return ExploreBreadthFirstGraphExtracted(branches, next, resultSelector, comparer ?? EqualityComparer<TInput>.Default);
         }
 
-        public static IEnumerable<T> ExploreBreadthFirstGraph<T>(T initial, Func<T, IEnumerable<T>> next)
+        public static IEnumerable<T> ExploreBreadthFirstGraph<T>(T initial, Func<T, IEnumerable<T>> next, IEqualityComparer<T> comparer)
         {
             if (next == null)
             {
                 throw new ArgumentNullException(nameof(next));
             }
             var branches = new[] { initial };
-            return ExploreBreadthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
+            return ExploreBreadthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>(), comparer ?? EqualityComparer<T>.Default);
         }
 
-        public static IEnumerable<T> ExploreBreadthFirstGraph<T>(IEnumerable<T> initial, Func<T, IEnumerable<T>> next)
+        public static IEnumerable<T> ExploreBreadthFirstGraph<T>(IEnumerable<T> initial, Func<T, IEnumerable<T>> next, IEqualityComparer<T> comparer)
         {
             if (next == null)
             {
                 throw new ArgumentNullException(nameof(next));
             }
             var branches = initial;
-            return ExploreBreadthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
+            return ExploreBreadthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>(), comparer ?? EqualityComparer<T>.Default);
         }
 
         public static IEnumerable<TOutput> ExploreBreadthFirstTree<TInput, TOutput>(TInput initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
@@ -95,10 +95,10 @@ namespace Theraot.Core
             return ExploreBreadthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
-        private static IEnumerable<TOutput> ExploreBreadthFirstGraphExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
+        private static IEnumerable<TOutput> ExploreBreadthFirstGraphExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector, IEqualityComparer<TInput> comparer)
         {
             // NOTICE this method has no null check
-            var known = new HashSet<TInput>();
+            var known = new HashSet<TInput>(comparer);
             var queue = new Queue<TInput>();
             while (true)
             {
@@ -122,8 +122,8 @@ namespace Theraot.Core
                         {
                             known.Add(found);
                             yield return resultSelector(found);
+                            queue.Enqueue(found);
                         }
-                        queue.Enqueue(found);
                     }
                     branches = null;
                 }
@@ -163,7 +163,7 @@ namespace Theraot.Core
 
     public static partial class GraphHelper
     {
-        public static IEnumerable<TOutput> ExploreDepthFirstGraph<TInput, TOutput>(TInput initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
+        public static IEnumerable<TOutput> ExploreDepthFirstGraph<TInput, TOutput>(TInput initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector, IEqualityComparer<TInput> comparer)
         {
             if (next == null)
             {
@@ -174,10 +174,10 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(resultSelector));
             }
             var branches = new[] { initial };
-            return ExploreDepthFirstGraphExtracted(branches, next, resultSelector);
+            return ExploreDepthFirstGraphExtracted(branches, next, resultSelector, comparer ?? EqualityComparer<TInput>.Default);
         }
 
-        public static IEnumerable<TOutput> ExploreDepthFirstGraph<TInput, TOutput>(IEnumerable<TInput> initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
+        public static IEnumerable<TOutput> ExploreDepthFirstGraph<TInput, TOutput>(IEnumerable<TInput> initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector, IEqualityComparer<TInput> comparer)
         {
             if (next == null)
             {
@@ -188,27 +188,27 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(resultSelector));
             }
             var branches = initial;
-            return ExploreDepthFirstGraphExtracted(branches, next, resultSelector);
+            return ExploreDepthFirstGraphExtracted(branches, next, resultSelector, comparer ?? EqualityComparer<TInput>.Default);
         }
 
-        public static IEnumerable<T> ExploreDepthFirstGraph<T>(T initial, Func<T, IEnumerable<T>> next)
+        public static IEnumerable<T> ExploreDepthFirstGraph<T>(T initial, Func<T, IEnumerable<T>> next, IEqualityComparer<T> comparer)
         {
             if (next == null)
             {
                 throw new ArgumentNullException(nameof(next));
             }
             var branches = new[] { initial };
-            return ExploreDepthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
+            return ExploreDepthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>(), comparer ?? EqualityComparer<T>.Default);
         }
 
-        public static IEnumerable<T> ExploreDepthFirstGraph<T>(IEnumerable<T> initial, Func<T, IEnumerable<T>> next)
+        public static IEnumerable<T> ExploreDepthFirstGraph<T>(IEnumerable<T> initial, Func<T, IEnumerable<T>> next, IEqualityComparer<T> comparer)
         {
             if (next == null)
             {
                 throw new ArgumentNullException(nameof(next));
             }
             var branches = initial;
-            return ExploreDepthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
+            return ExploreDepthFirstGraphExtracted(branches, next, FuncHelper.GetIdentityFunc<T>(), comparer ?? EqualityComparer<T>.Default);
         }
 
         public static IEnumerable<TOutput> ExploreDepthFirstTree<TInput, TOutput>(TInput initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
@@ -259,10 +259,10 @@ namespace Theraot.Core
             return ExploreDepthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
-        private static IEnumerable<TOutput> ExploreDepthFirstGraphExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
+        private static IEnumerable<TOutput> ExploreDepthFirstGraphExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector, IEqualityComparer<TInput> comparer)
         {
             // NOTICE this method has no null check
-            var known = new HashSet<TInput>();
+            var known = new HashSet<TInput>(comparer);
             var stack = new Stack<TInput>();
             while (true)
             {
@@ -286,8 +286,8 @@ namespace Theraot.Core
                         {
                             known.Add(found);
                             yield return resultSelector(found);
+                            stack.Push(found);
                         }
-                        stack.Push(found);
                     }
                     branches = null;
                 }
