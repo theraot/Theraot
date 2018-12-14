@@ -47,7 +47,7 @@ namespace System.Threading
         private int _currentId = int.MaxValue;
         private int _disposeRequested;
         private CancellationTokenRegistration[] _linkedTokens;
-        private Timeout<CancellationTokenSource> _timeout;
+        private RootedTimeout _timeout;
 
         static CancellationTokenSource()
         {
@@ -77,7 +77,7 @@ namespace System.Threading
             }
             if (millisecondsDelay != Timeout.Infinite)
             {
-                _timeout = new Timeout<CancellationTokenSource>(_timerCallback, millisecondsDelay, this);
+                _timeout = RootedTimeout.Launch(Callback, millisecondsDelay);
             }
         }
 
@@ -165,7 +165,7 @@ namespace System.Threading
                 if (_timeout == null)
                 {
                     // Have to be careful not to create secondary background timer
-                    var newTimer = new Timeout<CancellationTokenSource>(_timerCallback, Timeout.Infinite, this);
+                    var newTimer = RootedTimeout.Launch(Callback, Timeout.Infinite);
                     var oldTimer = Interlocked.CompareExchange(ref _timeout, newTimer, null);
                     if (oldTimer != null)
                     {
@@ -304,6 +304,8 @@ namespace System.Threading
                 }
             }
         }
+
+        private void Callback() => _timerCallback(this);
 
         private void CancelExtracted(bool throwOnFirstException, Bucket<Action> callbacks, bool ignoreDisposedException)
         {

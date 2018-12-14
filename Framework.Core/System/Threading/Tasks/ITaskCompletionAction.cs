@@ -42,10 +42,11 @@ namespace System.Threading.Tasks
                     foreach (var task in _tasks)
                     {
                         // if an element was erroneously nulled out concurrently, just skip it; worst case is we don't remove a continuation
-                        if (task != null && !task.IsCompleted)
+                        if (task == null || task.IsCompleted)
                         {
-                            task.RemoveContinuation(this);
+                            continue;
                         }
+                        task.RemoveContinuation(this);
                     }
                     _tasks = null;
                 }
@@ -56,6 +57,7 @@ namespace System.Threading.Tasks
         {
             private int _count;
             private Action _done;
+            private int _index;
             private int _ready;
             private Task[] _tasks;
 
@@ -65,8 +67,7 @@ namespace System.Threading.Tasks
                 Contract.Requires(tasks.Count > 0, "Expected a non-zero length task array");
                 _done = done;
                 _tasks = new Task[tasks.Count];
-                // Making sure _done and _tasks are set before we start adding tasks
-                Thread.MemoryBarrier();
+                _index = -1;
                 // Add all tasks (this should increment _count, and add continuations)
                 foreach (var task in tasks)
                 {
@@ -93,11 +94,7 @@ namespace System.Threading.Tasks
                 var complete = true;
                 foreach (var task in tasks)
                 {
-                    if (task == null)
-                    {
-                        continue;
-                    }
-                    if (task.IsCompleted)
+                    if (task == null || task.IsCompleted)
                     {
                         continue;
                     }
@@ -160,12 +157,9 @@ namespace System.Threading.Tasks
                 if (awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ true))
                 {
                     // Find a spot in the tasks
-                    var index = Array.IndexOf(tasks, null);
-                    // Try to add the task
-                    while (Interlocked.CompareExchange(ref tasks[index], awaitedTask, null) != null)
-                    {
-                        index = (index + 1) % tasks.Length;
-                    }
+                    var index = Interlocked.Increment(ref _index);
+                    // Add the task
+                    tasks[index] = awaitedTask;
                     // Check again if the task has completed, it may have completed while we were adding it
                     if (awaitedTask.Status == TaskStatus.RanToCompletion)
                     {
@@ -174,7 +168,7 @@ namespace System.Threading.Tasks
                         // - After adding the continuation before adding the task -> We have an orphan task to remove
                         // - After adding the continuation and the task -> nothing to do
                         // Remove the orphan task if it is there
-                        Interlocked.CompareExchange(ref tasks[index], null, awaitedTask);
+                        tasks[index] = null;
                         // Note: we let the continuation decrement _count
                     }
                 }
@@ -230,11 +224,14 @@ namespace System.Threading.Tasks
                 Contract.Requires(tasks != null, "Expected a non-null task array");
                 Contract.Requires(tasks.Length > 0, "Expected a non-zero length task array");
                 _tasks = tasks;
+                // Add all tasks (this should increment _count, and add continuations)
                 foreach (var task in _tasks)
                 {
                     AddTask(task);
                 }
-                Ready();
+                // Report we finished adding all tasks
+                Volatile.Write(ref _ready, 1);
+                CheckCount();
             }
 
             /// <summary>
@@ -245,29 +242,44 @@ namespace System.Threading.Tasks
 
             public void Invoke(Task completingTask)
             {
-                var count = Interlocked.Decrement(ref _count);
-                if (count == 0)
-                {
-                    if (Volatile.Read(ref _ready) == 1)
-                    {
-                        Done();
-                    }
-                }
+                // Decrement count
+                Interlocked.Decrement(ref _count);
+                CheckCount();
             }
 
             private void AddTask(Task awaitedTask)
             {
                 Contract.Requires(Volatile.Read(ref _ready) == 0);
+                // Only add tasks that has not completed
+                if (awaitedTask.Status == TaskStatus.RanToCompletion)
+                {
+                    return;
+                }
+                // Preemptively increment _count
+                // So that is has already been incremented when the continuation runs
                 Interlocked.Increment(ref _count);
+                // Add the continuation
                 if (!awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ true))
                 {
+                    // We failed to add the continuation
+                    // Decrement the _count
                     Interlocked.Decrement(ref _count);
+                }
+            }
+
+            private void CheckCount()
+            {
+                var count = Volatile.Read(ref _count);
+                // If count reached zero and we have finished adding all tasks, call done
+                if (count == 0 && Volatile.Read(ref _ready) == 1)
+                {
+                    Done();
                 }
             }
 
             private void Done()
             {
-                var done = Interlocked.Exchange(ref _done, 1);
+                var done = Interlocked.CompareExchange(ref _done, 1, 0);
                 if (done == 0)
                 {
                     PrivateDone();
@@ -332,15 +344,6 @@ namespace System.Threading.Tasks
                     TrySetResult(default);
                 }
             }
-
-            private void Ready()
-            {
-                Volatile.Write(ref _ready, 1);
-                if (Volatile.Read(ref _count) == 0)
-                {
-                    Done();
-                }
-            }
         }
 
         // A Task<T> that gets completed when all of its constituent tasks complete.
@@ -360,11 +363,14 @@ namespace System.Threading.Tasks
                 Contract.Requires(tasks != null, "Expected a non-null task array");
                 Contract.Requires(tasks.Length > 0, "Expected a non-zero length task array");
                 _tasks = tasks;
+                // Add all tasks (this should increment _count, and add continuations)
                 foreach (var task in _tasks)
                 {
                     AddTask(task);
                 }
-                Ready();
+                // Report we finished adding all tasks
+                Volatile.Write(ref _ready, 1);
+                CheckCount();
             }
 
             /// <summary>
@@ -375,29 +381,44 @@ namespace System.Threading.Tasks
 
             public void Invoke(Task completingTask)
             {
-                var count = Interlocked.Decrement(ref _count);
-                if (count == 0)
-                {
-                    if (Volatile.Read(ref _ready) == 1)
-                    {
-                        Done();
-                    }
-                }
+                // Decrement count
+                Interlocked.Decrement(ref _count);
+                CheckCount();
             }
 
             private void AddTask(Task awaitedTask)
             {
                 Contract.Requires(Volatile.Read(ref _ready) == 0);
+                // Only add tasks that has not completed
+                if (awaitedTask.Status == TaskStatus.RanToCompletion)
+                {
+                    return;
+                }
+                // Preemptively increment _count
+                // So that is has already been incremented when the continuation runs
                 Interlocked.Increment(ref _count);
+                // Add the continuation
                 if (!awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ true))
                 {
+                    // We failed to add the continuation
+                    // Decrement the _count
                     Interlocked.Decrement(ref _count);
+                }
+            }
+
+            private void CheckCount()
+            {
+                var count = Volatile.Read(ref _count);
+                // If count reached zero and we have finished adding all tasks, call done
+                if (count == 0 && Volatile.Read(ref _ready) == 1)
+                {
+                    Done();
                 }
             }
 
             private void Done()
             {
-                var done = Interlocked.Exchange(ref _done, 1);
+                var done = Interlocked.CompareExchange(ref _done, 1, 0);
                 if (done == 0)
                 {
                     PrivateDone();
@@ -456,9 +477,7 @@ namespace System.Threading.Tasks
                 if (observedExceptions != null)
                 {
                     Contract.Assert(observedExceptions.Count > 0, "Expected at least one exception");
-
                     //We don't need to TraceOperationCompleted here because TrySetException will call Finish and we'll log it there
-
                     TrySetException(observedExceptions);
                 }
                 else if (canceledTask != null)
@@ -468,15 +487,6 @@ namespace System.Threading.Tasks
                 else
                 {
                     TrySetResult(results);
-                }
-            }
-
-            private void Ready()
-            {
-                Volatile.Write(ref _ready, 1);
-                if (Volatile.Read(ref _count) == 0)
-                {
-                    Done();
                 }
             }
         }

@@ -231,6 +231,7 @@
     <Compile Include="System\Action8.net35.cs" />
     <Compile Include="System\Action9.net35.cs" />
     <Compile Include="System\Collections\ArrayBuilder.cs" />
+    <Compile Include="System\Collections\Concurrent\ConcurrentBag.net35.cs" />
     <Compile Include="System\Collections\Concurrent\ConcurrentDictionary.net35.cs" />
     <Compile Include="System\Collections\Concurrent\ConcurrentQueue.net35.cs" />
     <Compile Include="System\Collections\Concurrent\ConcurrentStack.net35.cs" />
@@ -239,6 +240,7 @@
     <Compile Include="System\Collections\Concurrent\OrderablePartitioner.net35.cs" />
     <Compile Include="System\Collections\Concurrent\Partitioner.net35.cs" />
     <Compile Include="System\Collections\Generic\SortedSet.net35.cs" />
+    <Compile Include="System\Collections\Concurrent\BlockingCollection.net35.cs" />
     <Compile Include="System\Collections\ObjectModel\ObservableCollection.net20.cs" />
     <Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.ValueCollection.net40.cs" />
     <Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.KeyCollection.net40.cs" />
@@ -613,6 +615,7 @@
     </Compile>
     <Compile Include="Theraot\Core\AggregateExceptionHelper.cs" />
     <Compile Include="Theraot\Core\CharHelper.cs" />
+    <Compile Include="Theraot\Core\ConcurrentExtensions.cs" />
     <Compile Include="Theraot\Core\EnvironmentHelper.cs" />
     <Compile Include="Theraot\Core\IntPtrHelper.cs" />
     <Compile Include="Theraot\Core\RamStream.cs" />
@@ -762,7 +765,7 @@
     <Compile Include="Theraot\Threading\ReentrantReadWriteLock.cs" />
     <Compile Include="Theraot\Threading\ReentryGuard.cs" />
     <Compile Include="Theraot\Threading\RuntimeUniqueIdProvider.cs" />
-    <Compile Include="Theraot\Threading\Timeout.cs" />
+    <Compile Include="Theraot\Threading\RootedTimeout.cs" />
     <Compile Include="Theraot\Threading\Needles\LockableNeedle.cs" />
     <Compile Include="Theraot\Threading\ThreadingHelper.cs" />
     <Compile Include="Theraot\Threading\ThreadingHelper.extra.cs" />

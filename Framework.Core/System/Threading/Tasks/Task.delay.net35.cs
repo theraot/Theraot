@@ -1,6 +1,7 @@
 #if NET20 || NET30 || NET35
 
 using System.Diagnostics.Contracts;
+using Theraot.Threading;
 
 namespace System.Threading.Tasks
 {
@@ -123,8 +124,7 @@ namespace System.Threading.Tasks
             var source = new TaskCompletionSource<bool>();
             if (millisecondsDelay > 0)
             {
-                var timeout =
-                    new Theraot.Threading.Timeout
+                var timeout = RootedTimeout.Launch
                     (
                         () =>
                         {

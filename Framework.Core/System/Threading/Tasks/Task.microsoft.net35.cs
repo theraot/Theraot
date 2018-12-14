@@ -527,32 +527,13 @@ namespace System.Threading.Tasks
             //
             // WARNING: The Task/Task<TResult>/TaskCompletionSource classes
             // have all been carefully crafted to insure that GetExceptions()
-            // is never called while AddException() is being called.  There
-            // are locks taken on m_contingentProperties in several places:
-            //
-            // -- Task<TResult>.TrySetException(): The lock allows the
-            //    task to be set to Faulted state, and all exceptions to
-            //    be recorded, in one atomic action.
-            //
-            // -- Task.Exception_get(): The lock ensures that Task<TResult>.TrySetException()
-            //    is allowed to complete its operation before Task.Exception_get()
-            //    can access GetExceptions().
-            //
-            // -- Task.ThrowIfExceptional(): The lock insures that Wait() will
-            //    not attempt to call GetExceptions() while Task<TResult>.TrySetException()
-            //    is in the process of calling AddException().
+            // is never called while AddException() is being called.
             //
             // For "regular" tasks, we effectively keep AddException() and GetException()
             // from being called concurrently by the way that the state flows.  Until
             // a Task is marked Faulted, Task.Exception_get() returns null.  And
             // a Task is not marked Faulted until it and all of its children have
             // completed, which means that all exceptions have been recorded.
-            //
-            // It might be a lot easier to follow all of this if we just required
-            // that all calls to GetExceptions() and AddExceptions() were made
-            // under a lock on m_contingentProperties.  But that would also
-            // increase our lock occupancy time and the frequency with which we
-            // would need to take the lock.
             //
             // If you add a call to GetExceptions() anywhere in the code,
             // please continue to maintain the invariant that it can't be

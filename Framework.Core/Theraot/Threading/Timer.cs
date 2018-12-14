@@ -61,7 +61,7 @@ namespace Theraot.Threading
             {
                 throw new ObjectDisposedException(nameof(Timer));
             }
-            timer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+            timer.Change(Timeout.Infinite, Timeout.Infinite);
             _callback = null;
         }
 

@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Security.Permissions;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
 
@@ -12,17 +11,16 @@ namespace System.Collections.Concurrent
     [Serializable]
     [ComVisible(false)]
     [DebuggerDisplay("Count = {Count}")]
-    [HostProtection(SecurityAction.LinkDemand, Synchronization = true, ExternalThreading = true)]
-    public class ConcurrentQueue<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>
+    public class ConcurrentBag<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>
     {
         private SafeQueue<T> _wrapped;
 
-        public ConcurrentQueue()
+        public ConcurrentBag()
         {
             _wrapped = new SafeQueue<T>();
         }
 
-        public ConcurrentQueue(IEnumerable<T> collection)
+        public ConcurrentBag(IEnumerable<T> collection)
         {
             if (collection == null)
             {
@@ -33,11 +31,16 @@ namespace System.Collections.Concurrent
 
         public int Count => _wrapped.Count;
 
-        public bool IsEmpty => _wrapped.Count == 0;
+        public bool IsEmpty => Count == 0;
 
         bool ICollection.IsSynchronized => false;
 
         object ICollection.SyncRoot => throw new NotSupportedException();
+
+        public void Add(T item)
+        {
+            _wrapped.Add(item);
+        }
 
         public void Clear()
         {
@@ -52,12 +55,7 @@ namespace System.Collections.Concurrent
         void ICollection.CopyTo(Array array, int index)
         {
             Extensions.CanCopyTo(Count, array, index);
-            this.DeprecatedCopyTo(array, index);
-        }
-
-        public void Enqueue(T item)
-        {
-            _wrapped.Add(item);
+            _wrapped.DeprecatedCopyTo(array, index);
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -77,13 +75,8 @@ namespace System.Collections.Concurrent
 
         bool IProducerConsumerCollection<T>.TryAdd(T item)
         {
-            Enqueue(item);
+            Add(item);
             return true;
-        }
-
-        public bool TryDequeue(out T result)
-        {
-            return _wrapped.TryTake(out result);
         }
 
         public bool TryPeek(out T result)
@@ -91,9 +84,9 @@ namespace System.Collections.Concurrent
             return _wrapped.TryPeek(out result);
         }
 
-        bool IProducerConsumerCollection<T>.TryTake(out T item)
+        public bool TryTake(out T item)
         {
-            return TryDequeue(out item);
+            return _wrapped.TryTake(out item);
         }
     }
 }
