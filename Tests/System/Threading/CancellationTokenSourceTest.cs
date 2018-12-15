@@ -330,8 +330,10 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        [Category("NotDotNet")]
         public void Dispose()
         {
+            // Failing in .NET 4.0 and .NET 4.5
             var cts = new CancellationTokenSource();
             var token = cts.Token;
 

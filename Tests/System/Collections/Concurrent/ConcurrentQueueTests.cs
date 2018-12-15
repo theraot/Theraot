@@ -1,6 +1,4 @@
-﻿#define NET_4_0
-#if NET_4_0
-// ConcurrentQueueTest.cs
+﻿// ConcurrentQueueTest.cs
 //
 // Copyright (c) 2008 Jérémie "Garuma" Laval
 //
@@ -261,8 +259,10 @@ namespace MonoTests.System.Collections.Concurrent
         }
 
         [Test]
+        [Category("NotDotNet")]
         public void TryDequeueReferenceTest()
         {
+            // Failing .NET 4.0 and .NET 4.5
             var obj = new object();
             var weakReference = CreateWeakReference(obj);
             var queue = new ConcurrentQueue<object>();
@@ -279,5 +279,3 @@ namespace MonoTests.System.Collections.Concurrent
         }
     }
 }
-
-#endif
