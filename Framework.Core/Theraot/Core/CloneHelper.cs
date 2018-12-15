@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
-#if !NETCOREAPP1_0 && !NETCOREAPP1_1
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
 
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -19,13 +19,13 @@ namespace Theraot.Core
             var type = typeof(T);
             return GetStructCloner(type)
                    ?? GetGenericCloner(type)
-#if !NETCOREAPP1_0 && !NETCOREAPP1_1
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
                    ?? GetObjectCloner(type)
 #endif
                    ?? GetMockCloner(type)
                    ?? GetConstructorCloner(type)
                    ?? GetDeconstructCloner(type)
-#if !NETCOREAPP1_0 && !NETCOREAPP1_1
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
                    ?? GetSerializerCloner(type)
 #endif
                 ;
@@ -70,7 +70,7 @@ namespace Theraot.Core
             return null;
         }
 
-#if !NETCOREAPP1_0 && !NETCOREAPP1_1
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
 
         private static ICloner<T> GetObjectCloner(Type type)
         {
@@ -101,7 +101,7 @@ namespace Theraot.Core
             return null;
         }
 
-#if !NETCOREAPP1_0 && !NETCOREAPP1_1
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
 
         private class Cloner : ICloner<T>
         {
@@ -221,7 +221,7 @@ namespace Theraot.Core
             }
         }
 
-#if !NETCOREAPP1_0 && !NETCOREAPP1_1
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
 
         private class SerializerCloner : ICloner<T>
         {

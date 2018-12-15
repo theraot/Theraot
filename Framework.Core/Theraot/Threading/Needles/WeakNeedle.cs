@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Security.Permissions;
 using System.Threading;
 
 namespace Theraot.Threading.Needles
@@ -31,14 +30,18 @@ namespace Theraot.Threading.Needles
             _hashCode = base.GetHashCode();
         }
 
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
+        [System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand, UnmanagedCode = true)]
+#endif
         public WeakNeedle(T target)
             : this(target, false)
         {
             // Empty
         }
 
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
+        [System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand, UnmanagedCode = true)]
+#endif
         public WeakNeedle(T target, bool trackResurrection)
         {
             if (target == null)
@@ -106,7 +109,9 @@ namespace Theraot.Threading.Needles
 
         public virtual T Value
         {
-            [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
+        [System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand, UnmanagedCode = true)]
+#endif
             get
             {
                 if (ReadTarget(out var target))
@@ -119,7 +124,9 @@ namespace Theraot.Threading.Needles
                 return null;
             }
 
-            [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
+        [System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand, UnmanagedCode = true)]
+#endif
             set => SetTargetValue(value);
         }
 
@@ -195,7 +202,9 @@ namespace Theraot.Threading.Needles
             return "<Dead Needle>";
         }
 
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
+        [System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand, UnmanagedCode = true)]
+#endif
         public virtual bool TryGetValue(out T value)
         {
             value = null;
@@ -210,14 +219,18 @@ namespace Theraot.Threading.Needles
             return false;
         }
 
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
+        [System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand, UnmanagedCode = true)]
+#endif
         protected void SetTargetError(Exception error)
         {
             _faultExpected = true;
             WriteTarget(error);
         }
 
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
+        [System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand, UnmanagedCode = true)]
+#endif
         protected void SetTargetValue(T value)
         {
             _faultExpected = false;
@@ -264,7 +277,9 @@ namespace Theraot.Threading.Needles
             return false;
         }
 
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
+        [System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand, UnmanagedCode = true)]
+#endif
         private void ReleaseExtracted()
         {
             if (_handle.IsAllocated)

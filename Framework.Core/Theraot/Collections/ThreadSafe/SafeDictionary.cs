@@ -18,8 +18,7 @@ namespace Theraot.Collections.ThreadSafe
     /// <remarks>
     /// Consider wrapping this class to implement <see cref="IDictionary{TKey,TValue}" /> or any other desired interface.
     /// </remarks>
-#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
-
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
     [Serializable]
 #endif
 
@@ -30,7 +29,7 @@ namespace Theraot.Collections.ThreadSafe
         private Bucket<KeyValuePair<TKey, TValue>> _bucket;
         private int _probing;
 
-#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
 
         [NonSerialized]
         private KeyCollection<TKey, TValue> _keyCollection;
