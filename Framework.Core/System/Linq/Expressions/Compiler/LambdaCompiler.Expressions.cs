@@ -11,7 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Reflection.Emit;
-using Theraot.Core;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Compiler
 {

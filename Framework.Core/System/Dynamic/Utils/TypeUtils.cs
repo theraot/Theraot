@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Theraot.Core;
+using Theraot.Reflection;
 
 namespace System.Dynamic.Utils
 {

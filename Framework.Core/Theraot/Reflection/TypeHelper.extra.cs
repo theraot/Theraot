@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Theraot.Collections;
 
-namespace Theraot.Core
+namespace Theraot.Reflection
 {
     public static partial class TypeHelper
     {

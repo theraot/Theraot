@@ -4,12 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using Theraot.Collections.ThreadSafe;
 
-namespace Theraot.Core
+namespace Theraot.Reflection
 {
     [DebuggerNonUserCode]
     public static partial class TypeHelper
     {
+        private static readonly CacheDict<Type, bool> _binaryPortableCache = new CacheDict<Type, bool>(256);
+        private static readonly CacheDict<Type, bool> _blittableCache = new CacheDict<Type, bool>(256);
+        private static readonly CacheDict<Type, bool> _valueTypeRecursiveCache = new CacheDict<Type, bool>(256);
+
         public static bool CanBe<T>(this Type type, T value)
         {
             if (value == null)
@@ -354,13 +359,17 @@ namespace Theraot.Core
             {
                 return false;
             }
-            if (CanCache(type))
+            var canCache = CanCache(type);
+            if (canCache && _binaryPortableCache.TryGetValue(type, out var result))
             {
-                var property = typeof(BinaryPortableInfo<>).MakeGenericType(type).GetProperty("Result", BindingFlags.Public | BindingFlags.Static);
-                // ReSharper disable once PossibleNullReferenceException
-                return (bool)property.GetValue(null, null);
+                return result;
             }
-            return GetBinaryPortableResult(type);
+            result = GetBinaryPortableResult(type);
+            if (canCache)
+            {
+                _binaryPortableCache[type] = result;
+            }
+            return result;
         }
 
         private static bool IsBlittableExtracted(Type type)
@@ -370,13 +379,17 @@ namespace Theraot.Core
             {
                 return false;
             }
-            if (CanCache(type))
+            var canCache = CanCache(type);
+            if (canCache && _blittableCache.TryGetValue(type, out var result))
             {
-                var property = typeof(BlittableInfo<>).MakeGenericType(type).GetProperty("Result", BindingFlags.Public | BindingFlags.Static);
-                // ReSharper disable once PossibleNullReferenceException
-                return (bool)property.GetValue(null, null);
+                return result;
             }
-            return GetBlittableResult(type);
+            result = GetBlittableResult(type);
+            if (canCache)
+            {
+                _binaryPortableCache[type] = result;
+            }
+            return result;
         }
 
         private static bool IsValueTypeRecursiveExtracted(Type type)
@@ -386,55 +399,17 @@ namespace Theraot.Core
             {
                 return false;
             }
-            if (CanCache(type))
+            var canCache = CanCache(type);
+            if (canCache && _valueTypeRecursiveCache.TryGetValue(type, out var result))
             {
-                var property = typeof(ValueTypeRecursiveInfo<>).MakeGenericType(type).GetProperty("Result", BindingFlags.Public | BindingFlags.Static);
-                // ReSharper disable once PossibleNullReferenceException
-                return (bool)property.GetValue(null, null);
+                return result;
             }
-            return GetValueTypeRecursiveResult(type);
-        }
-
-        private static class BinaryPortableInfo<T>
-        {
-            static BinaryPortableInfo()
+            result = GetValueTypeRecursiveResult(type);
+            if (canCache)
             {
-                Result = GetBinaryPortableResult(typeof(T));
+                _binaryPortableCache[type] = result;
             }
-
-            // Used via reflection
-            // ReSharper disable once StaticMemberInGenericType
-            // ReSharper disable once UnusedAutoPropertyAccessor.Local
-            // ReSharper disable once MemberCanBePrivate.Local
-            public static bool Result { get; }
-        }
-
-        private static class BlittableInfo<T>
-        {
-            static BlittableInfo()
-            {
-                Result = GetBlittableResult(typeof(T));
-            }
-
-            // Used via reflection
-            // ReSharper disable once StaticMemberInGenericType
-            // ReSharper disable once UnusedAutoPropertyAccessor.Local
-            // ReSharper disable once MemberCanBePrivate.Local
-            public static bool Result { get; }
-        }
-
-        private static class ValueTypeRecursiveInfo<T>
-        {
-            static ValueTypeRecursiveInfo()
-            {
-                Result = GetValueTypeRecursiveResult(typeof(T));
-            }
-
-            // Used via reflection
-            // ReSharper disable once StaticMemberInGenericType
-            // ReSharper disable once UnusedAutoPropertyAccessor.Local
-            // ReSharper disable once MemberCanBePrivate.Local
-            public static bool Result { get; }
+            return result;
         }
     }
 

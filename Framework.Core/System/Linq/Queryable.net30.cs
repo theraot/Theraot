@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using Theraot.Core;
+using Theraot.Reflection;
 
 namespace System.Linq
 {

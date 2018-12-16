@@ -17,7 +17,7 @@ using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Theraot.Core
+namespace Theraot.Reflection
 {
     public static partial class TypeHelper
     {

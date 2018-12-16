@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using Theraot.Core;
+using Theraot.Reflection;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading

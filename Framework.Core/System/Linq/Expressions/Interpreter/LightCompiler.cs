@@ -14,7 +14,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
-using Theraot.Core;
+using Theraot.Reflection;
 using static System.Linq.Expressions.CachedReflectionInfo;
 
 using AstUtils = System.Linq.Expressions.Utils;

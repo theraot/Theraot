@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
-using Theraot.Core;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Interpreter
 {

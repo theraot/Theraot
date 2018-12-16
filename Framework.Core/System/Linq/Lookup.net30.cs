@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
-using Theraot.Core;
+using Theraot.Reflection;
 
 namespace System.Linq
 {

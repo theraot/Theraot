@@ -5,7 +5,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Dynamic.Utils;
-using Theraot.Core;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Interpreter
 {

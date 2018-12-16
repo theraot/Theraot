@@ -3,7 +3,7 @@ using System.Reflection;
 
 #if NET20 || NET30 || NET35 || NET40
 
-using Theraot.Core;
+using Theraot.Reflection;
 
 #endif
 

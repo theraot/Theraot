@@ -6,7 +6,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
-using Theraot.Core;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Interpreter
 {
