@@ -34,7 +34,7 @@ namespace System
         }
 
         public Lazy(LazyThreadSafetyMode mode)
-            : this(TypeHelper.GetCreateOrFail<T>(), mode, false)
+            : this(ConstructorHelper.Create<T>, mode, false)
         {
             //Empty
         }

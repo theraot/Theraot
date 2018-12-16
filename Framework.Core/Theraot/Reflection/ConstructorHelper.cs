@@ -6,7 +6,7 @@ using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Reflection
 {
-    public static partial class TypeHelper
+    public static class ConstructorHelper
     {
         private static readonly CacheDict<Type, bool> _hasConstructorCache = new CacheDict<Type, bool>(256);
         private static readonly CacheDict<Type, object> _constructorCache = new CacheDict<Type, object>(256);
