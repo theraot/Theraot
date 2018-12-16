@@ -13,7 +13,11 @@ namespace Theraot.Reflection
 
         public static TReturn Create<TReturn>()
         {
-            return GetCreate<TReturn>()();
+            if (TryGetCreate<TReturn>(out var result))
+            {
+                return result();
+            }
+            throw new InvalidOperationException($"There is no constructor for {typeof(TReturn)} with no type arguments.");
         }
 
         public static TReturn CreateOrDefault<TReturn>()
@@ -23,15 +27,6 @@ namespace Theraot.Reflection
                 return result();
             }
             return default;
-        }
-
-        public static Func<TReturn> GetCreate<TReturn>()
-        {
-            if (TryGetCreate<TReturn>(out var result))
-            {
-                return result;
-            }
-            throw new InvalidOperationException($"There is no constructor for {typeof(TReturn)} with no type arguments.");
         }
 
         public static bool TryGetCreate<TReturn>(out Func<TReturn> create)
