@@ -112,19 +112,6 @@ namespace Theraot.Reflection
             return (TAttribute[])info.GetCustomAttributes(typeof(TAttribute), inherit);
         }
 
-        public static MethodInfo[] GetMethodsIgnoreCase(this Type type, BindingFlags flags, string name)
-        {
-            var list = new List<MethodInfo>();
-            foreach (var method in type.GetMethods(flags))
-            {
-                if (method.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase))
-                {
-                    list.Add(method);
-                }
-            }
-            return list.ToArray();
-        }
-
         public static Type GetNonNullableType(this Type type)
         {
             if (type.IsNullable())
