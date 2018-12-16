@@ -81,8 +81,8 @@ namespace Theraot.Reflection
 
         public static MethodInfo GetUserDefinedConversionMethod(Type source, Type target, bool implicitOnly)
         {
-            var nonNullableSource = source.GetNonNullableType();
-            var nonNullableTarget = target.GetNonNullableType();
+            var nonNullableSource = source.GetNonNullable();
+            var nonNullableTarget = target.GetNonNullable();
             MethodInfo[] sourceStaticMethods;
             MethodInfo[] targetStaticMethods;
             if (nonNullableSource == source)
@@ -137,95 +137,9 @@ namespace Theraot.Reflection
             {
                 return false;
             }
-            var notNullable = left.GetNonNullableType();
+            var notNullable = left.GetNonNullable();
             var info = notNullable.GetTypeInfo();
             if (notNullable == typeof(bool) || notNullable.IsNumeric() || info.IsEnum)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public static bool HasIdentityPrimitiveOrNullableConversion(Type source, Type target)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (target == null)
-            {
-                throw new ArgumentNullException(nameof(target));
-            }
-
-            // Identity conversion
-            if (source == target)
-            {
-                return true;
-            }
-
-            // Nullable conversions
-            if (source.IsNullable() && target == source.GetNonNullableType())
-            {
-                return true;
-            }
-            if (target.IsNullable() && source == target.GetNonNullableType())
-            {
-                return true;
-            }
-            // Primitive runtime conversions
-            // All conversions amongst enum, bool, char, integer and float types
-            // (and their corresponding nullable types) are legal except for
-            // nonbool==>bool and nonbool==>bool?
-            // Since we have already covered bool==>bool, bool==>bool?, etc, above,
-            // we can just disallow having a bool or bool? target type here.
-            if (IsConvertible(source) && IsConvertible(target) && target.GetNonNullableType() != typeof(bool))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public static bool HasReferenceConversion(Type source, Type target)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (target == null)
-            {
-                throw new ArgumentNullException(nameof(target));
-            }
-            // void -> void is  an identity conversion, not a reference conversion
-            if (source == typeof(void) || target == typeof(void))
-            {
-                return false;
-            }
-            var nonNullableSource = source.GetNonNullableType();
-            var nonNullableTarget = target.GetNonNullableType();
-            // Down conversion
-            if (nonNullableSource.IsAssignableFrom(nonNullableTarget))
-            {
-                return true;
-            }
-            // Up conversion
-            if (nonNullableTarget.IsAssignableFrom(nonNullableSource))
-            {
-                return true;
-            }
-            // Interface conversion
-            var sourceInfo = source.GetTypeInfo();
-            var targetInfo = target.GetTypeInfo();
-            if (sourceInfo.IsInterface || targetInfo.IsInterface)
-            {
-                return true;
-            }
-            // Variant delegate conversion
-            if (IsLegalExplicitVariantDelegateConversion(source, target))
-            {
-                return true;
-            }
-            // Object conversion
-            if (source == typeof(object) || target == typeof(object))
             {
                 return true;
             }
@@ -252,7 +166,7 @@ namespace Theraot.Reflection
 
         public static bool IsConvertible(Type type)
         {
-            type = type.GetNonNullableType();
+            type = type.GetNonNullable();
             var info = type.GetTypeInfo();
             if (info.IsEnum)
             {
@@ -292,7 +206,7 @@ namespace Theraot.Reflection
         {
             if (target.IsNullable())
             {
-                return IsImplicitlyConvertible(source.GetNonNullableType(), target.GetNonNullableType());
+                return IsImplicitlyConvertible(source.GetNonNullable(), target.GetNonNullable());
             }
             return false;
         }
@@ -312,7 +226,6 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(target));
             }
-
             // There *might* be a legal conversion from a generic delegate type S to generic delegate type  T,
             // provided all of the follow are true:
             //   o Both types are constructed generic types of the same generic delegate type, D<X1,... Xk>.
@@ -329,15 +242,13 @@ namespace Theraot.Reflection
                 return false;
             }
             var genericDelegate = source.GetGenericTypeDefinition();
-            if (target.GetGenericTypeDefinition() != genericDelegate || genericDelegate == null /* Can this happen? */)
+            if (target.GetGenericTypeDefinition() != genericDelegate)
             {
                 return false;
             }
-
             var genericParameters = genericDelegate.GetGenericArguments();
             var sourceArguments = source.GetGenericArguments();
             var destArguments = target.GetGenericArguments();
-
             for (var index = 0; index < genericParameters.Length; index++)
             {
                 var sourceArgument = sourceArguments[index];
@@ -351,10 +262,9 @@ namespace Theraot.Reflection
                 {
                     return false;
                 }
-
                 if (PrivateIsCovariant(genericParameter))
                 {
-                    if (!HasReferenceConversion(sourceArgument, destArgument))
+                    if (!sourceArgument.HasReferenceConversionTo(destArgument))
                     {
                         return false;
                     }
@@ -414,19 +324,6 @@ namespace Theraot.Reflection
                 }
             }
             return false;
-        }
-
-        // Expression trees/compiler just use IsByRef, why do we need this?
-        // (see LambdaCompiler.EmitArguments for usage in the compiler)
-        internal static bool IsByRefParameter(this ParameterInfo pi)
-        {
-            // not using IsIn/IsOut properties as they are not available in Silverlight:
-            if (pi.ParameterType.IsByRef)
-            {
-                return true;
-            }
-
-            return (pi.Attributes & ParameterAttributes.Out) == ParameterAttributes.Out;
         }
 
         internal static void ValidateType(Type type)

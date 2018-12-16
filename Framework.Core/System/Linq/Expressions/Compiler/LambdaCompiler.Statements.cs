@@ -254,7 +254,7 @@ namespace System.Linq.Expressions.Compiler
             Type result = node.Comparison.GetParameters()[1].ParameterType.GetNonRefType();
             if (node.IsLifted)
             {
-                result = result.GetNullableType();
+                result = result.GetNullable();
             }
             return result;
         }

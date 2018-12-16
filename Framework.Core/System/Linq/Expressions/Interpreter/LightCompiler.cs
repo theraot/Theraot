@@ -328,8 +328,8 @@ namespace System.Linq.Expressions.Interpreter
         private static bool IsNullComparison(Expression left, Expression right)
         {
             return IsNullConstant(left)
-                ? !IsNullConstant(right) && right.Type.IsNullableType()
-                : IsNullConstant(right) && left.Type.IsNullableType();
+                ? !IsNullConstant(right) && right.Type.IsNullable()
+                : IsNullConstant(right) && left.Type.IsNullable();
         }
 
         private static bool IsNullConstant(Expression e)
@@ -708,7 +708,7 @@ namespace System.Linq.Expressions.Interpreter
                         default:
                             var loadDefault = _instructions.MakeLabel();
 
-                            if (node.Left.Type.IsNullableOrReferenceType())
+                            if (node.Left.Type.CanBeNull())
                             {
                                 _instructions.EmitLoadLocal(leftTemp.Index);
                                 _instructions.EmitLoad(null, typeof(object));
@@ -716,7 +716,7 @@ namespace System.Linq.Expressions.Interpreter
                                 _instructions.EmitBranchTrue(loadDefault);
                             }
 
-                            if (node.Right.Type.IsNullableOrReferenceType())
+                            if (node.Right.Type.CanBeNull())
                             {
                                 _instructions.EmitLoadLocal(rightTemp.Index);
                                 _instructions.EmitLoad(null, typeof(object));
@@ -896,7 +896,7 @@ namespace System.Linq.Expressions.Interpreter
 
             var hasConversion = node.Conversion != null;
             var hasImplicitConversion = false;
-            if (!hasConversion && node.Left.Type.IsNullableType())
+            if (!hasConversion && node.Left.Type.IsNullable())
             {
                 // reference types don't need additional conversions (the interpreter operates on Object
                 // anyway); non-nullable value types can't occur on the left side; all that's left is
@@ -904,9 +904,9 @@ namespace System.Linq.Expressions.Interpreter
                 // factory methods
 
                 var typeToCompare = node.Left.Type;
-                if (!node.Type.IsNullableType())
+                if (!node.Type.IsNullable())
                 {
-                    typeToCompare = typeToCompare.GetNonNullableType();
+                    typeToCompare = typeToCompare.GetNonNullable();
                 }
 
                 if (!TypeUtils.AreEquivalent(node.Type, typeToCompare))
@@ -934,7 +934,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 // The right hand side may need to be widened to either the left hand side's type
                 // if the right hand side is nullable, or the left hand side's underlying type otherwise
-                CompileConvertToType(node.Right.Type, node.Type, isChecked: true, isLiftedToNull: node.Type.IsNullableType());
+                CompileConvertToType(node.Right.Type, node.Type, isChecked: true, isLiftedToNull: node.Type.IsNullable());
             }
 
             _instructions.MarkLabel(leftNotNull);
@@ -953,7 +953,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else if (hasImplicitConversion)
             {
-                var nnLeftType = node.Left.Type.GetNonNullableType();
+                var nnLeftType = node.Left.Type.GetNonNullable();
                 CompileConvertToType(nnLeftType, node.Type, isChecked: true, isLiftedToNull: false);
             }
 
@@ -1031,24 +1031,24 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             if (typeFrom.IsValueType &&
-                typeTo.IsNullableType() &&
-                typeTo.GetNonNullableType() == typeFrom)
+                typeTo.IsNullable() &&
+                typeTo.GetNonNullable() == typeFrom)
             {
                 // VT -> vt?, no conversion necessary
                 return;
             }
 
             if (typeTo.IsValueType &&
-                typeFrom.IsNullableType() &&
-                typeFrom.GetNonNullableType() == typeTo)
+                typeFrom.IsNullable() &&
+                typeFrom.GetNonNullable() == typeTo)
             {
                 // VT? -> vt, call get_Value
                 _instructions.Emit(NullableMethodCallInstruction.CreateGetValue());
                 return;
             }
 
-            var nonNullableFrom = typeFrom.GetNonNullableType();
-            var nonNullableTo = typeTo.GetNonNullableType();
+            var nonNullableFrom = typeFrom.GetNonNullable();
+            var nonNullableTo = typeTo.GetNonNullable();
 
             // use numeric conversions for both numeric types and enums
             if ((nonNullableFrom.IsNumericOrBool() || nonNullableFrom.IsEnum)
@@ -1076,7 +1076,7 @@ namespace System.Linq.Expressions.Interpreter
                         // If casting between enums of the same underlying type or to enum from the underlying
                         // type, there's no need for the numeric conversion, so just include a null-check if
                         // appropriate.
-                        if (typeFrom.IsNullableType() && !typeTo.IsNullableType())
+                        if (typeFrom.IsNullable() && !typeTo.IsNullable())
                         {
                             _instructions.Emit(NullableMethodCallInstruction.CreateGetValue());
                         }
@@ -1162,7 +1162,7 @@ namespace System.Linq.Expressions.Interpreter
 
                 _instructions.EmitStoreLocal(opTemp.Index);
 
-                if (!operandType.IsValueType || operandType.IsNullableType() && node.IsLiftedToNull)
+                if (!operandType.IsValueType || operandType.IsNullable() && node.IsLiftedToNull)
                 {
                     _instructions.EmitLoadLocal(opTemp.Index);
                     _instructions.EmitLoad(null, typeof(object));
@@ -1171,7 +1171,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
 
                 _instructions.EmitLoadLocal(opTemp.Index);
-                if (operandType.IsNullableType() && parameterType == operandType.GetNonNullableType())
+                if (operandType.IsNullable() && parameterType == operandType.GetNonNullable())
                 {
                     _instructions.Emit(NullableMethodCallInstruction.CreateGetValue());
                 }
@@ -1230,7 +1230,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (type != typeof(void))
             {
-                if (type.IsNullableOrReferenceType())
+                if (type.CanBeNull())
                 {
                     _instructions.EmitLoad(value: null);
                 }
@@ -1693,7 +1693,7 @@ namespace System.Linq.Expressions.Interpreter
                         EmitThisForMethodCall(from);
                     }
 
-                    if (!method.IsStatic && @from != null && @from.Type.IsNullableType())
+                    if (!method.IsStatic && @from != null && @from.Type.IsNullable())
                     {
                         // reflection doesn't let us call methods on Nullable<T> when the value
                         // is null...  so we get to special case those methods!
@@ -1882,7 +1882,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             if (!method.IsStatic &&
-                @object.Type.IsNullableType())
+                @object.Type.IsNullable())
             {
                 // reflection doesn't let us call methods on Nullable<T> when the value
                 // is null...  so we get to special case those methods!
@@ -2031,7 +2031,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 var type = node.Type;
                 Debug.Assert(type.IsValueType);
-                if (type.IsNullableType())
+                if (type.IsNullable())
                 {
                     _instructions.EmitLoad(value: null);
                 }
@@ -2609,7 +2609,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else
             {
-                _instructions.EmitLoad(node.TypeOperand.GetNonNullableType());
+                _instructions.EmitLoad(node.TypeOperand.GetNonNullable());
                 _instructions.EmitTypeEquals();
             }
         }
@@ -2649,7 +2649,7 @@ namespace System.Linq.Expressions.Interpreter
                 default:
                     if (node.TypeOperand.IsValueType)
                     {
-                        _instructions.EmitLoad(node.TypeOperand.GetNonNullableType());
+                        _instructions.EmitLoad(node.TypeOperand.GetNonNullable());
                         _instructions.EmitTypeEquals();
                     }
                     else
@@ -2727,7 +2727,7 @@ namespace System.Linq.Expressions.Interpreter
 
             Compile(node.Operand);
 
-            if (node.Type.IsValueType && !node.Type.IsNullableType())
+            if (node.Type.IsValueType && !node.Type.IsNullable())
             {
                 _instructions.Emit(NullCheckInstruction.Instance);
             }

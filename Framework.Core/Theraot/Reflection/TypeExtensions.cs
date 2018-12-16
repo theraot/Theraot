@@ -74,20 +74,12 @@ namespace Theraot.Reflection
 
         public static bool CanBeNull(this Type type)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
             var info = type.GetTypeInfo();
             return !info.IsValueType || Nullable.GetUnderlyingType(type) != null;
         }
 
         public static bool DelegateEquals(this Delegate @delegate, MethodInfo method, object target)
         {
-            if (@delegate == null)
-            {
-                throw new ArgumentNullException(nameof(@delegate));
-            }
             return @delegate.GetMethodInfo().Equals(method) && @delegate.Target == target;
         }
 
@@ -104,15 +96,11 @@ namespace Theraot.Reflection
         public static TAttribute[] GetAttributes<TAttribute>(this Type type, bool inherit)
             where TAttribute : Attribute
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
             var info = type.GetTypeInfo();
             return (TAttribute[])info.GetCustomAttributes(typeof(TAttribute), inherit);
         }
 
-        public static Type GetNonNullableType(this Type type)
+        public static Type GetNonNullable(this Type type)
         {
             if (type.IsNullable())
             {
@@ -123,11 +111,19 @@ namespace Theraot.Reflection
 
         public static Type GetNonRefType(this Type type)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
             return type.IsByRef ? type.GetElementType() : type;
         }
 
         public static Type GetNonRefType(this ParameterInfo parameterInfo)
         {
+            if (parameterInfo == null)
+            {
+                throw new ArgumentNullException(nameof(parameterInfo));
+            }
             var parameterType = parameterInfo.ParameterType;
             if (parameterType.IsByRef)
             {
@@ -136,22 +132,14 @@ namespace Theraot.Reflection
             return parameterType;
         }
 
-        public static Type GetNotNullableType(this Type type)
+        public static Type GetNotNullable(this Type type)
         {
             var underlying = Nullable.GetUnderlyingType(type);
-            if (underlying == null)
-            {
-                return type;
-            }
-            return underlying;
+            return underlying ?? type;
         }
 
-        public static Type GetNullableType(this Type type)
+        public static Type GetNullable(this Type type)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
             var info = type.GetTypeInfo();
             if (info.IsValueType && !IsNullable(type))
             {
@@ -160,10 +148,21 @@ namespace Theraot.Reflection
             return type;
         }
 
-        public static Type GetReturnType(this MethodBase mi) => mi.IsConstructor ? mi.DeclaringType : ((MethodInfo)mi).ReturnType;
+        public static Type GetReturnType(this MethodBase methodInfo)
+        {
+            if (methodInfo == null)
+            {
+                throw new ArgumentNullException(nameof(methodInfo));
+            }
+            return methodInfo.IsConstructor ? methodInfo.DeclaringType : ((MethodInfo) methodInfo).ReturnType;
+        }
 
         public static MethodInfo GetStaticMethod(this Type type, string name)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
             // Don't use BindingFlags.Static
             foreach (var method in type.GetMethods())
             {
@@ -177,6 +176,10 @@ namespace Theraot.Reflection
 
         public static MethodInfo GetStaticMethod(this Type type, string name, Type[] types)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
             // Don't use BindingFlags.Static
             foreach (var method in type.GetMethods())
             {
@@ -190,8 +193,13 @@ namespace Theraot.Reflection
 
         public static MethodInfo[] GetStaticMethods(this Type type)
         {
-            var list = new List<MethodInfo>();
-            foreach (var method in type.GetMethods())
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+            var methods = type.GetMethods();
+            var list = new List<MethodInfo>(methods.Length);
+            foreach (var method in methods)
             {
                 if (method.IsStatic)
                 {
@@ -285,11 +293,15 @@ namespace Theraot.Reflection
         public static object GetValue(this PropertyInfo info, object obj)
         {
             //Added in .NET 4.5
+#if NET45
+            return info.GetValue(obj);
+#else
             return info.GetValue(obj, null);
+#endif
         }
 
         public static bool HasAttribute<TAttribute>(this Type item)
-                    where TAttribute : Attribute
+            where TAttribute : Attribute
         {
             var attributes = item.GetAttributes<TAttribute>(true);
             if (attributes != null)
@@ -310,91 +322,88 @@ namespace Theraot.Reflection
             return false;
         }
 
-        public static bool HasConstructor(this Type type, params Type[] typeArguments)
+        public static bool HasIdentityPrimitiveOrNullableConversionTo(this Type source, Type target)
         {
-            var constructorInfo = type.GetConstructor(typeArguments);
-            return constructorInfo == null;
-        }
-
-        public static bool HasIdentityPrimitiveOrNullableConversionTo(this Type source, Type dest)
-        {
-            Debug.Assert(source != null && dest != null);
-
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
             // Identity conversion
-            if (source == dest)
+            if (source == target)
             {
                 return true;
             }
-
             // Nullable conversions
-            if (source.IsNullable() && dest == source.GetNonNullableType())
+            if (source.IsNullable() && target == source.GetNonNullable())
             {
                 return true;
             }
-
-            if (IsNullableType(dest) && source == dest.GetNonNullableType())
+            if (IsNullable(target) && source == target.GetNonNullable())
             {
                 return true;
             }
-
             // Primitive runtime conversions
             // All conversions amongst enum, bool, char, integer and float types
             // (and their corresponding nullable types) are legal except for
             // nonbool==>bool and nonbool==>bool? which are only legal from
             // bool-backed enums.
-            return IsConvertible(source) && IsConvertible(dest)
-                   && (dest.GetNonNullableType() != typeof(bool)
+            return IsConvertible(source) && IsConvertible(target)
+                   && (target.GetNonNullable() != typeof(bool)
                    || source.GetTypeInfo().IsEnum && source.GetTypeInfo().UnderlyingSystemType == typeof(bool));
         }
 
-        public static bool HasReferenceConversionTo(this Type source, Type dest)
+        public static bool HasReferenceConversionTo(this Type source, Type target)
         {
-            Debug.Assert(source != null && dest != null);
-
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
             // void -> void conversion is handled elsewhere
             // (it's an identity conversion)
             // All other void conversions are disallowed.
-            if (source == typeof(void) || dest == typeof(void))
+            if (source == typeof(void) || target == typeof(void))
             {
                 return false;
             }
-
-            Type nnSourceType = source.GetNonNullableType();
-            Type nnDestType = dest.GetNonNullableType();
-
+            var nonNullableSource = source.GetNonNullable();
+            var nonNullableTarget = target.GetNonNullable();
             // Down conversion
-            if (nnSourceType.IsAssignableFrom(nnDestType))
+            if (nonNullableSource.IsAssignableFrom(nonNullableTarget))
             {
                 return true;
             }
-
             // Up conversion
-            if (nnDestType.IsAssignableFrom(nnSourceType))
+            if (nonNullableTarget.IsAssignableFrom(nonNullableSource))
             {
                 return true;
             }
-
             // Interface conversion
-            if (source.GetTypeInfo().IsInterface || dest.GetTypeInfo().IsInterface)
+            var sourceInfo = source.GetTypeInfo();
+            var targetInfo = target.GetTypeInfo();
+            if (sourceInfo.IsInterface || targetInfo.IsInterface)
             {
                 return true;
             }
-
             // Variant delegate conversion
-            if (IsLegalExplicitVariantDelegateConversion(source, dest))
+            if (TypeHelper.IsLegalExplicitVariantDelegateConversion(source, target))
             {
                 return true;
             }
-
             // Object conversion handled by assignable above.
-            Debug.Assert(source != typeof(object) && dest != typeof(object));
-
-            return (source.IsArray || dest.IsArray) && StrictHasReferenceConversionTo(source, dest, true);
+            return (source.IsArray || target.IsArray) && StrictHasReferenceConversionTo(source, target, true);
         }
 
         public static bool IsArithmetic(this Type type)
         {
-            type = GetNonNullableType(type);
+            type = GetNonNullable(type);
             if
             (
                 type == typeof(short)
@@ -414,6 +423,14 @@ namespace Theraot.Reflection
 
         public static bool IsAssignableTo(this Type type, Type target)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
             return target.IsAssignableFrom(type)
                 || TypeHelper.IsArrayTypeAssignableTo(type, target)
                 || TypeHelper.IsArrayTypeAssignableToInterface(type, target);
@@ -421,7 +438,7 @@ namespace Theraot.Reflection
 
         public static bool IsAssignableTo(this Type type, ParameterInfo parameterInfo)
         {
-            return IsAssignableTo(type.GetNotNullableType(), parameterInfo.GetNonRefType());
+            return IsAssignableTo(type.GetNotNullable(), parameterInfo.GetNonRefType());
         }
 
         public static bool IsBinaryPortable(this Type type)
@@ -431,6 +448,19 @@ namespace Theraot.Reflection
                 throw new ArgumentNullException(nameof(type));
             }
             return IsBinaryPortableExtracted(type);
+        }
+
+        internal static bool IsByRefParameter(this ParameterInfo parameterInfo)
+        {
+            if (parameterInfo == null)
+            {
+                throw new ArgumentNullException(nameof(parameterInfo));
+            }
+            if (parameterInfo.ParameterType.IsByRef)
+            {
+                return true;
+            }
+            return (parameterInfo.Attributes & ParameterAttributes.Out) == ParameterAttributes.Out;
         }
 
         public static bool IsBlittable(this Type type)
@@ -444,7 +474,7 @@ namespace Theraot.Reflection
 
         public static bool IsBool(this Type type)
         {
-            return GetNonNullableType(type) == typeof(bool);
+            return GetNonNullable(type) == typeof(bool);
         }
 
         public static bool IsConstructedGenericType(this Type type)
@@ -455,12 +485,11 @@ namespace Theraot.Reflection
 
         public static bool IsConvertible(this Type type)
         {
-            type = type.GetNonNullableType();
+            type = type.GetNonNullable();
             if (type.GetTypeInfo().IsEnum)
             {
                 return true;
             }
-
             switch (type.GetTypeCode())
             {
                 case TypeCode.Boolean:
@@ -476,7 +505,6 @@ namespace Theraot.Reflection
                 case TypeCode.Double:
                 case TypeCode.Char:
                     return true;
-
                 default:
                     return false;
             }
@@ -484,6 +512,10 @@ namespace Theraot.Reflection
 
         public static bool IsGenericImplementationOf(this Type type, Type interfaceGenericTypeDefinition)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
             foreach (var currentInterface in type.GetInterfaces())
             {
                 if (currentInterface.IsGenericInstanceOf(interfaceGenericTypeDefinition))
@@ -496,6 +528,10 @@ namespace Theraot.Reflection
 
         public static bool IsGenericImplementationOf(this Type type, params Type[] interfaceGenericTypeDefinitions)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
             foreach (var currentInterface in type.GetInterfaces())
             {
                 var info = currentInterface.GetTypeInfo();
@@ -513,6 +549,10 @@ namespace Theraot.Reflection
 
         public static bool IsGenericImplementationOf(this Type type, out Type interfaceType, Type interfaceGenericTypeDefinition)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
             foreach (var currentInterface in type.GetInterfaces())
             {
                 if (currentInterface.IsGenericInstanceOf(interfaceGenericTypeDefinition))
@@ -527,6 +567,10 @@ namespace Theraot.Reflection
 
         public static bool IsGenericImplementationOf(this Type type, out Type interfaceType, params Type[] interfaceGenericTypeDefinitions)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
             var implementedInterfaces = type.GetInterfaces();
             foreach (var currentInterface in interfaceGenericTypeDefinitions)
             {
@@ -553,6 +597,10 @@ namespace Theraot.Reflection
 
         public static bool IsImplementationOf(this Type type, Type interfaceType)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
             foreach (var currentInterface in type.GetInterfaces())
             {
                 if (currentInterface == interfaceType)
@@ -565,6 +613,10 @@ namespace Theraot.Reflection
 
         public static bool IsImplementationOf(this Type type, params Type[] interfaceTypes)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
             foreach (var currentInterface in type.GetInterfaces())
             {
                 if (Array.Exists(interfaceTypes, item => currentInterface == item))
@@ -577,6 +629,10 @@ namespace Theraot.Reflection
 
         public static bool IsImplementationOf(this Type type, out Type interfaceType, params Type[] interfaceTypes)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
             var implementedInterfaces = type.GetInterfaces();
             foreach (var currentInterface in interfaceTypes)
             {
@@ -591,24 +647,32 @@ namespace Theraot.Reflection
             return false;
         }
 
-        public static bool IsImplicitlyConvertibleTo(this Type source, Type destination)
+        public static bool IsImplicitlyConvertibleTo(this Type source, Type target)
         {
-            return source == destination
-            || IsImplicitNumericConversion(source, destination)
-            || IsImplicitReferenceConversion(source, destination)
-            || IsImplicitBoxingConversion(source, destination)
-            || IsImplicitNullableConversion(source, destination);
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
+            return source == target
+            || IsImplicitNumericConversion(source, target)
+            || IsImplicitReferenceConversion(source, target)
+            || IsImplicitBoxingConversion(source, target)
+            || IsImplicitNullableConversion(source, target);
         }
 
         public static bool IsInteger(this Type type)
         {
-            type = GetNonNullableType(type);
+            type = GetNonNullable(type);
             return type.IsPrimitiveInteger();
         }
 
         public static bool IsInteger64(this Type type)
         {
-            type = GetNonNullableType(type);
+            type = GetNonNullable(type);
             if (!type.IsSameOrSubclassOf(typeof(Enum)))
             {
                 switch (type.GetTypeCode())
@@ -618,13 +682,12 @@ namespace Theraot.Reflection
                         return true;
                 }
             }
-
             return false;
         }
 
         public static bool IsIntegerOrBool(this Type type)
         {
-            type = GetNonNullableType(type);
+            type = GetNonNullable(type);
             if
             (
                 type == typeof(bool)
@@ -643,92 +706,14 @@ namespace Theraot.Reflection
             return false;
         }
 
-        public static bool IsLegalExplicitVariantDelegateConversion(Type source, Type dest)
-        {
-            Debug.Assert(source != null && dest != null);
-
-            // There *might* be a legal conversion from a generic delegate type S to generic delegate type  T,
-            // provided all of the follow are true:
-            //   o Both types are constructed generic types of the same generic delegate type, D<X1,... Xk>.
-            //     That is, S = D<S1...>, T = D<T1...>.
-            //   o If type parameter Xi is declared to be invariant then Si must be identical to Ti.
-            //   o If type parameter Xi is declared to be covariant ("out") then Si must be convertible
-            //     to Ti via an identify conversion,  implicit reference conversion, or explicit reference conversion.
-            //   o If type parameter Xi is declared to be contravariant ("in") then either Si must be identical to Ti,
-            //     or Si and Ti must both be reference types.
-
-            if (!IsDelegate(source) || !IsDelegate(dest) || !source.GetTypeInfo().IsGenericType || !dest.GetTypeInfo().IsGenericType)
-            {
-                return false;
-            }
-
-            Type genericDelegate = source.GetGenericTypeDefinition();
-
-            if (dest.GetGenericTypeDefinition() != genericDelegate)
-            {
-                return false;
-            }
-
-            Type[] genericParameters = genericDelegate.GetGenericArguments();
-            Type[] sourceArguments = source.GetGenericArguments();
-            Type[] destArguments = dest.GetGenericArguments();
-
-            Debug.Assert(genericParameters != null);
-            Debug.Assert(sourceArguments != null);
-            Debug.Assert(destArguments != null);
-            Debug.Assert(genericParameters.Length == sourceArguments.Length);
-            Debug.Assert(genericParameters.Length == destArguments.Length);
-
-            for (int iParam = 0; iParam < genericParameters.Length; ++iParam)
-            {
-                Type sourceArgument = sourceArguments[iParam];
-                Type destArgument = destArguments[iParam];
-
-                Debug.Assert(sourceArgument != null && destArgument != null);
-
-                // If the arguments are identical then this one is automatically good, so skip it.
-                if (sourceArgument == destArgument)
-                {
-                    continue;
-                }
-
-                Type genericParameter = genericParameters[iParam];
-
-                Debug.Assert(genericParameter != null);
-
-                if (IsInvariant(genericParameter))
-                {
-                    return false;
-                }
-
-                if (IsCovariant(genericParameter))
-                {
-                    if (!sourceArgument.HasReferenceConversionTo(destArgument))
-                    {
-                        return false;
-                    }
-                }
-                else if (IsContravariant(genericParameter) && (sourceArgument.GetTypeInfo().IsValueType || destArgument.GetTypeInfo().IsValueType))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         public static bool IsNullable(this Type type)
         {
             return Nullable.GetUnderlyingType(type) != null;
         }
 
-        public static bool IsNullableOrReferenceType(this Type type) => !type.GetTypeInfo().IsValueType || IsNullableType(type);
-
-        public static bool IsNullableType(this Type type) => type.IsConstructedGenericType() && type.GetGenericTypeDefinition() == typeof(Nullable<>);
-
         public static bool IsNumeric(this Type type)
         {
-            type = GetNonNullableType(type);
+            type = GetNonNullable(type);
             if
                 (
                     type == typeof(char)
@@ -781,19 +766,20 @@ namespace Theraot.Reflection
             }
             var info = type.GetTypeInfo();
             var sourceInfo = source.GetTypeInfo();
-            if (
-                !info.IsValueType
-                && !sourceInfo.IsValueType
-                && type.IsAssignableFrom(source)
-                )
-            {
-                return true;
-            }
-            return false;
+            return !info.IsValueType
+                   && !sourceInfo.IsValueType
+                   && type.IsAssignableFrom(source);
         }
 
         public static bool IsSafeArray(this Type type)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+#if NETCOREAPP2_0 || NETCOREAPP2_1
+            return type.IsSZArray;
+#else
             try
             {
                 // GetArrayRank could throw - should not, but could.
@@ -811,6 +797,7 @@ namespace Theraot.Reflection
                 GC.KeepAlive(exception);
                 return false;
             }
+#endif
         }
 
         public static bool IsSameOrSubclassOf(this Type type, Type baseType)
@@ -840,7 +827,7 @@ namespace Theraot.Reflection
             return IsValueTypeRecursiveExtracted(type);
         }
 
-        public static Type MakeNullableType(this Type self)
+        public static Type MakeNullable(this Type self)
         {
             return typeof(Nullable<>).MakeGenericType(self);
         }
@@ -869,7 +856,11 @@ namespace Theraot.Reflection
         public static void SetValue(this PropertyInfo info, object obj, object value)
         {
             //Added in .NET 4.5
+#if NET45
+            info.SetValue(obj, value);
+#else
             info.SetValue(obj, value, null);
+#endif
         }
 
         internal static bool CanCache(Type type)
@@ -900,7 +891,6 @@ namespace Theraot.Reflection
                 case TypeCode.Single:
                 case TypeCode.Double:
                     return true;
-
                 default:
                     return false;
             }
@@ -908,7 +898,7 @@ namespace Theraot.Reflection
 
         internal static bool IsFloatingPoint(this Type type)
         {
-            type = GetNonNullableType(type);
+            type = GetNonNullable(type);
             if
             (
                 type == typeof(float)
@@ -930,7 +920,6 @@ namespace Theraot.Reflection
                 case TypeCode.UInt32:
                 case TypeCode.UInt64:
                     return true;
-
                 default:
                     return false;
             }
@@ -939,7 +928,7 @@ namespace Theraot.Reflection
         internal static bool IsUnsigned(this Type type)
         {
             // Including byte and char
-            type = GetNonNullableType(type);
+            type = GetNonNullable(type);
             if
             (
                 type == typeof(byte)
@@ -957,7 +946,7 @@ namespace Theraot.Reflection
         internal static bool IsUnsignedInteger(this Type type)
         {
             // Not including byte or char, by design - use IsUnsigned instead
-            type = GetNonNullableType(type);
+            type = GetNonNullable(type);
             if
             (
                 type == typeof(ushort)
@@ -1045,57 +1034,47 @@ namespace Theraot.Reflection
             return false;
         }
 
-        private static bool HasArrayToInterfaceConversion(Type source, Type dest)
+        private static bool HasArrayToInterfaceConversion(Type source, Type target)
         {
-            Debug.Assert(source.IsArray);
-            if (!source.IsSafeArray() || !dest.GetTypeInfo().IsInterface || !dest.GetTypeInfo().IsGenericType)
+            if (!source.IsSafeArray() || !target.GetTypeInfo().IsInterface || !target.GetTypeInfo().IsGenericType)
             {
                 return false;
             }
-
-            Type[] destParams = dest.GetGenericArguments();
-            if (destParams.Length != 1)
+            var targetParams = target.GetGenericArguments();
+            if (targetParams.Length != 1)
             {
                 return false;
             }
-
-            Type destGen = dest.GetGenericTypeDefinition();
-
-            foreach (Type currentInterface in _arrayAssignableInterfaces)
+            var targetGen = target.GetGenericTypeDefinition();
+            foreach (var currentInterface in _arrayAssignableInterfaces)
             {
-                if (destGen == currentInterface)
+                if (targetGen == currentInterface)
                 {
-                    return StrictHasReferenceConversionTo(source.GetElementType(), destParams[0], false);
+                    return StrictHasReferenceConversionTo(source.GetElementType(), targetParams[0], false);
                 }
             }
-
             return false;
         }
 
-        private static bool HasInterfaceToArrayConversion(Type source, Type dest)
+        private static bool HasInterfaceToArrayConversion(Type source, Type target)
         {
-            /*Debug.Assert(dest.IsSZArray);*/
-            if (!dest.IsSafeArray() || !source.GetTypeInfo().IsInterface || !source.GetTypeInfo().IsGenericType)
+            if (!target.IsSafeArray() || !source.GetTypeInfo().IsInterface || !source.GetTypeInfo().IsGenericType)
             {
                 return false;
             }
-
-            Type[] sourceParams = source.GetGenericArguments();
+            var sourceParams = source.GetGenericArguments();
             if (sourceParams.Length != 1)
             {
                 return false;
             }
-
-            Type sourceGen = source.GetGenericTypeDefinition();
-
-            foreach (Type currentInterface in _arrayAssignableInterfaces)
+            var sourceGen = source.GetGenericTypeDefinition();
+            foreach (var currentInterface in _arrayAssignableInterfaces)
             {
                 if (sourceGen == currentInterface)
                 {
-                    return StrictHasReferenceConversionTo(sourceParams[0], dest.GetElementType(), false);
+                    return StrictHasReferenceConversionTo(sourceParams[0], target.GetElementType(), false);
                 }
             }
-
             return false;
         }
 
@@ -1139,35 +1118,16 @@ namespace Theraot.Reflection
             return result;
         }
 
-        private static bool IsContravariant(Type t)
+        private static bool IsImplicitBoxingConversion(Type source, Type target) =>
+            source.GetTypeInfo().IsValueType && (target == typeof(object) || target == typeof(ValueType)) || source.GetTypeInfo().IsEnum && target == typeof(Enum);
+
+        private static bool IsImplicitNullableConversion(Type source, Type target) =>
+            target.IsNullable() && IsImplicitlyConvertibleTo(source.GetNonNullable(), target.GetNonNullable());
+
+        private static bool IsImplicitNumericConversion(Type source, Type target)
         {
-            Debug.Assert(t != null);
-            return 0 != (t.GetTypeInfo().GenericParameterAttributes & GenericParameterAttributes.Contravariant);
-        }
-
-        private static bool IsCovariant(Type t)
-        {
-            Debug.Assert(t != null);
-            return 0 != (t.GetTypeInfo().GenericParameterAttributes & GenericParameterAttributes.Covariant);
-        }
-
-        private static bool IsDelegate(Type t)
-        {
-            Debug.Assert(t != null);
-            return t.GetTypeInfo().IsSubclassOf(typeof(MulticastDelegate));
-        }
-
-        private static bool IsImplicitBoxingConversion(Type source, Type destination) =>
-            source.GetTypeInfo().IsValueType && (destination == typeof(object) || destination == typeof(ValueType)) || source.GetTypeInfo().IsEnum && destination == typeof(Enum);
-
-        private static bool IsImplicitNullableConversion(Type source, Type destination) =>
-            destination.IsNullable() && IsImplicitlyConvertibleTo(source.GetNonNullableType(), destination.GetNonNullableType());
-
-        private static bool IsImplicitNumericConversion(Type source, Type destination)
-        {
-            TypeCode tcSource = source.GetTypeCode();
-            TypeCode tcDest = destination.GetTypeCode();
-
+            var tcSource = source.GetTypeCode();
+            var tcDest = target.GetTypeCode();
             switch (tcSource)
             {
                 case TypeCode.SByte:
@@ -1181,9 +1141,7 @@ namespace Theraot.Reflection
                         case TypeCode.Decimal:
                             return true;
                     }
-
                     break;
-
                 case TypeCode.Byte:
                     switch (tcDest)
                     {
@@ -1198,9 +1156,7 @@ namespace Theraot.Reflection
                         case TypeCode.Decimal:
                             return true;
                     }
-
                     break;
-
                 case TypeCode.Int16:
                     switch (tcDest)
                     {
@@ -1226,9 +1182,7 @@ namespace Theraot.Reflection
                         case TypeCode.Decimal:
                             return true;
                     }
-
                     break;
-
                 case TypeCode.Int32:
                     switch (tcDest)
                     {
@@ -1238,9 +1192,7 @@ namespace Theraot.Reflection
                         case TypeCode.Decimal:
                             return true;
                     }
-
                     break;
-
                 case TypeCode.UInt32:
                     switch (tcDest)
                     {
@@ -1263,9 +1215,7 @@ namespace Theraot.Reflection
                         case TypeCode.Decimal:
                             return true;
                     }
-
                     break;
-
                 case TypeCode.Char:
                     switch (tcDest)
                     {
@@ -1279,24 +1229,15 @@ namespace Theraot.Reflection
                         case TypeCode.Decimal:
                             return true;
                     }
-
                     break;
-
                 case TypeCode.Single:
                     return tcDest == TypeCode.Double;
             }
-
             return false;
         }
 
-        private static bool IsImplicitReferenceConversion(Type source, Type destination) =>
-            destination.IsAssignableFrom(source);
-
-        private static bool IsInvariant(Type t)
-        {
-            Debug.Assert(t != null);
-            return 0 == (t.GetTypeInfo().GenericParameterAttributes & GenericParameterAttributes.VarianceMask);
-        }
+        private static bool IsImplicitReferenceConversion(Type source, Type target) =>
+            target.IsAssignableFrom(source);
 
         private static bool IsValueTypeRecursiveExtracted(Type type)
         {
@@ -1318,8 +1259,16 @@ namespace Theraot.Reflection
             return result;
         }
 
-        private static bool StrictHasReferenceConversionTo(this Type source, Type dest, bool skipNonArray)
+        private static bool StrictHasReferenceConversionTo(this Type source, Type target, bool skipNonArray)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
             // HasReferenceConversionTo was both too strict and too lax. It was too strict in prohibiting
             // some valid conversions involving arrays, and too lax in allowing casts between interfaces
             // and sealed classes that don't implement them. Unfortunately fixing the lax cases would be
@@ -1327,8 +1276,7 @@ namespace Theraot.Reflection
             // arguments.
             // This method catches the cases that were incorrectly disallowed, but when it needs to
             // examine possible conversions of element or type parameters it applies stricter rules.
-
-            for (; ; )
+            while(true)
             {
                 if (!skipNonArray) // Skip if we just came from HasReferenceConversionTo and have just tested these
                 {
@@ -1338,25 +1286,23 @@ namespace Theraot.Reflection
                         return false;
                     }
                     // ReSharper disable once PossibleNullReferenceException
-                    if (dest.GetTypeInfo().IsValueType)
+                    if (target.GetTypeInfo().IsValueType)
                     {
                         return false;
                     }
-
                     // Includes to case of either being typeof(object)
-                    if (source.IsAssignableFrom(dest) || dest.IsAssignableFrom(source))
+                    if (source.IsAssignableFrom(target) || target.IsAssignableFrom(source))
                     {
                         return true;
                     }
-
                     if (source.GetTypeInfo().IsInterface)
                     {
-                        if (dest.GetTypeInfo().IsInterface || dest.GetTypeInfo().IsClass && !dest.GetTypeInfo().IsSealed)
+                        if (target.GetTypeInfo().IsInterface || target.GetTypeInfo().IsClass && !target.GetTypeInfo().IsSealed)
                         {
                             return true;
                         }
                     }
-                    else if (dest.GetTypeInfo().IsInterface)
+                    else if (target.GetTypeInfo().IsInterface)
                     {
                         if (source.GetTypeInfo().IsClass && !source.GetTypeInfo().IsSealed)
                         {
@@ -1364,37 +1310,34 @@ namespace Theraot.Reflection
                         }
                     }
                 }
-
                 if (source.IsArray)
                 {
-                    if (dest.IsArray)
+                    if (target.IsArray)
                     {
-                        if (source.GetArrayRank() != dest.GetArrayRank() || source.IsSafeArray() != dest.IsSafeArray())
+                        if (source.GetArrayRank() != target.GetArrayRank() || source.IsSafeArray() != target.IsSafeArray())
                         {
                             return false;
                         }
-
                         source = source.GetElementType();
-                        dest = dest.GetElementType();
+                        target = target.GetElementType();
                         skipNonArray = false;
                     }
                     else
                     {
-                        return HasArrayToInterfaceConversion(source, dest);
+                        return HasArrayToInterfaceConversion(source, target);
                     }
                 }
-                else if (dest.IsArray)
+                else if (target.IsArray)
                 {
-                    if (HasInterfaceToArrayConversion(source, dest))
+                    if (HasInterfaceToArrayConversion(source, target))
                     {
                         return true;
                     }
-
                     return IsImplicitReferenceConversion(typeof(Array), source);
                 }
                 else
                 {
-                    return IsLegalExplicitVariantDelegateConversion(source, dest);
+                    return TypeHelper.IsLegalExplicitVariantDelegateConversion(source, target);
                 }
             }
         }

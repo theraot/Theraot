@@ -23,7 +23,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public static Instruction Create(Type type)
         {
-            switch (type.GetNonNullableType().GetTypeCode())
+            switch (type.GetNonNullable().GetTypeCode())
             {
                 case TypeCode.Boolean: return Boolean ?? (Boolean = new NotBoolean());
                 case TypeCode.Int64: return Int64 ?? (Int64 = new NotInt64());

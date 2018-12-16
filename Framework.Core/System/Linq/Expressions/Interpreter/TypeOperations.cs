@@ -58,7 +58,7 @@ namespace System.Linq.Expressions.Interpreter
             // ReSharper disable once MemberHidesStaticFromOuterClass
             public new static CastInstruction Create(Type t)
             {
-                if (t.IsValueType && !t.IsNullableType())
+                if (t.IsValueType && !t.IsNullable())
                 {
                     return new Value(t);
                 }

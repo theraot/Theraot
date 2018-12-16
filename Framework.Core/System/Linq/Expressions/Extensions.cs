@@ -41,7 +41,7 @@ namespace System.Linq.Expressions
             return self.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance);
         }
 
-        public static Type GetNotNullableType(this Type self)
+        public static Type GetNotNullable(this Type self)
         {
             return self.IsNullable() ? self.GetGenericArguments()[0] : self;
         }

@@ -164,7 +164,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 Type type = node.Type;
                 Debug.Assert(type == node.Operand.Type);
-                if (type.IsNullableType())
+                if (type.IsNullable())
                 {
                     Label nullOrZero = _ilg.DefineLabel();
                     Label end = _ilg.DefineLabel();
@@ -178,7 +178,7 @@ namespace System.Linq.Expressions.Compiler
                     _ilg.Emit(OpCodes.Brfalse_S, nullOrZero);
 
                     // calculate 0 - operand
-                    Type nnType = type.GetNonNullableType();
+                    Type nnType = type.GetNonNullable();
                     _ilg.EmitDefault(nnType, locals: null); // locals won't be used.
                     _ilg.Emit(OpCodes.Ldloca, loc);
                     _ilg.EmitGetValueOrDefault(type);
@@ -218,10 +218,10 @@ namespace System.Linq.Expressions.Compiler
         {
             if (node.IsLifted)
             {
-                ParameterExpression v = Expression.Variable(node.Operand.Type.GetNonNullableType(), name: null);
+                ParameterExpression v = Expression.Variable(node.Operand.Type.GetNonNullable(), name: null);
                 MethodCallExpression mc = Expression.Call(node.Method, v);
 
-                Type resultType = mc.Type.GetNullableType();
+                Type resultType = mc.Type.GetNullable();
                 EmitLift(node.NodeType, resultType, mc, new[] { v }, new[] { node.Operand });
                 _ilg.EmitConvertToType(resultType, node.Type, isChecked: false, locals: this);
             }
@@ -234,7 +234,7 @@ namespace System.Linq.Expressions.Compiler
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void EmitUnaryOperator(ExpressionType op, Type operandType, Type resultType)
         {
-            bool operandIsNullable = operandType.IsNullableType();
+            bool operandIsNullable = operandType.IsNullable();
 
             if (op == ExpressionType.ArrayLength)
             {
@@ -254,7 +254,7 @@ namespace System.Linq.Expressions.Compiler
                         {
                             _ilg.Emit(OpCodes.Box, operandType);
                             _ilg.Emit(OpCodes.Isinst, resultType);
-                            if (resultType.IsNullableType())
+                            if (resultType.IsNullable())
                             {
                                 _ilg.Emit(OpCodes.Unbox_Any, resultType);
                             }
@@ -277,7 +277,7 @@ namespace System.Linq.Expressions.Compiler
                         // apply operator to non-null value
                         _ilg.Emit(OpCodes.Ldloca, loc);
                         _ilg.EmitGetValueOrDefault(operandType);
-                        Type nnOperandType = resultType.GetNonNullableType();
+                        Type nnOperandType = resultType.GetNonNullable();
                         EmitUnaryOperator(op, nnOperandType, nnOperandType);
 
                         // construct result
@@ -347,7 +347,7 @@ namespace System.Linq.Expressions.Compiler
                         }
 
                         _ilg.Emit(OpCodes.Isinst, resultType);
-                        if (resultType.IsNullableType())
+                        if (resultType.IsNullable())
                         {
                             _ilg.Emit(OpCodes.Unbox_Any, resultType);
                         }

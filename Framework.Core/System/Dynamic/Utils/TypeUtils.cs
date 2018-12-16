@@ -90,7 +90,7 @@ namespace System.Dynamic.Utils
 
             // Equality between struct types is only defined for numerics, bools, enums,
             // and their nullable equivalents.
-            Type nnType = left.GetNonNullableType();
+            Type nnType = left.GetNonNullable();
             return nnType == typeof(bool) || nnType.IsNumeric() || nnType.IsEnum;
         }
 

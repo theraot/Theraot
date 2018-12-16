@@ -25,7 +25,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             Debug.Assert(!type.IsEnum);
-            switch (type.GetNonNullableType().GetTypeCode())
+            switch (type.GetNonNullable().GetTypeCode())
             {
                 case TypeCode.Int16: return _int16 ?? (_int16 = new ModuloInt16());
                 case TypeCode.Int32: return _int32 ?? (_int32 = new ModuloInt32());

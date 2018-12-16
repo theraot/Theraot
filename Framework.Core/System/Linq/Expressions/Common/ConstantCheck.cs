@@ -4,7 +4,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Dynamic.Utils;
 using Theraot.Reflection;
 
 namespace System.Linq.Expressions
@@ -40,7 +39,7 @@ namespace System.Linq.Expressions
                     return ((ConstantExpression)e).Value == null;
 
                 case ExpressionType.Default:
-                    return e.Type.IsNullableOrReferenceType();
+                    return e.Type.CanBeNull();
             }
 
             return false;
@@ -74,8 +73,8 @@ namespace System.Linq.Expressions
             // underlying type. The reason is when you box a nullable it
             // becomes a boxed value of the underlying type, or null.
             //
-            Type nnOperandType = operandType.GetNonNullableType();
-            Type nnTestType = testType.GetNonNullableType();
+            Type nnOperandType = operandType.GetNonNullable();
+            Type nnTestType = testType.GetNonNullable();
 
             //
             // See if we can determine the answer based on the static types
@@ -88,7 +87,7 @@ namespace System.Linq.Expressions
             {
                 // If the operand is a value type (other than nullable), we
                 // know the result is always true.
-                if (operandType.IsValueType && !operandType.IsNullableType())
+                if (operandType.IsValueType && !operandType.IsNullable())
                 {
                     return AnalyzeTypeIsResult.KnownTrue;
                 }

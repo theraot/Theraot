@@ -6,7 +6,6 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Dynamic.Utils;
 using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Interpreter
@@ -31,7 +30,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (liftedToNull)
             {
-                switch (type.GetNonNullableType().GetTypeCode())
+                switch (type.GetNonNullable().GetTypeCode())
                 {
                     case TypeCode.Boolean: return _booleanLiftedToNull ?? (_booleanLiftedToNull = new EqualBooleanLiftedToNull());
                     case TypeCode.SByte: return _sByteLiftedToNull ?? (_sByteLiftedToNull = new EqualSByteLiftedToNull());
@@ -45,12 +44,12 @@ namespace System.Linq.Expressions.Interpreter
                     case TypeCode.UInt64: return _uInt64LiftedToNull ?? (_uInt64LiftedToNull = new EqualUInt64LiftedToNull());
                     case TypeCode.Single: return _singleLiftedToNull ?? (_singleLiftedToNull = new EqualSingleLiftedToNull());
                     default:
-                        Debug.Assert(type.GetNonNullableType().GetTypeCode() == TypeCode.Double);
+                        Debug.Assert(type.GetNonNullable().GetTypeCode() == TypeCode.Double);
                         return _doubleLiftedToNull ?? (_doubleLiftedToNull = new EqualDoubleLiftedToNull());
                 }
             }
 
-            switch (type.GetNonNullableType().GetTypeCode())
+            switch (type.GetNonNullable().GetTypeCode())
             {
                 case TypeCode.Boolean: return _boolean ?? (_boolean = new EqualBoolean());
                 case TypeCode.SByte: return _sByte ?? (_sByte = new EqualSByte());
@@ -66,7 +65,7 @@ namespace System.Linq.Expressions.Interpreter
                 case TypeCode.Double: return _double ?? (_double = new EqualDouble());
                 default:
                     // Nullable only valid if one operand is constant null, so this assert is slightly too broad.
-                    Debug.Assert(type.IsNullableOrReferenceType());
+                    Debug.Assert(type.CanBeNull());
                     return _reference ?? (_reference = new EqualReference());
             }
         }

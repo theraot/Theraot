@@ -6,6 +6,7 @@
 
 using System.Diagnostics;
 using System.Dynamic.Utils;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -95,7 +96,7 @@ namespace System.Linq.Expressions
                     return new ConstantExpression(null);
                 }
 
-                if (!type.IsValueType || type.IsNullableType())
+                if (!type.IsValueType || type.IsNullable())
                 {
                     return new TypedConstantExpression(null, type);
                 }

@@ -95,12 +95,12 @@ namespace System.Linq.Expressions
 
             if (cType.IsValueType || TypeOperand.IsPointer)
             {
-                if (cType.IsNullableType())
+                if (cType.IsNullable())
                 {
                     // If the expression type is a nullable type, it will match if
                     // the value is not null and the type operand
                     // either matches or is its type argument (T to its T?).
-                    if (cType.GetNonNullableType() != TypeOperand.GetNonNullableType())
+                    if (cType.GetNonNullable() != TypeOperand.GetNonNullable())
                     {
                         return Block(Expression, Utils.Constant(value: false));
                     }
@@ -110,7 +110,7 @@ namespace System.Linq.Expressions
 
                 // For other value types (including Void), we can
                 // determine the result now
-                return Block(Expression, Utils.Constant(cType == TypeOperand.GetNonNullableType()));
+                return Block(Expression, Utils.Constant(cType == TypeOperand.GetNonNullable()));
             }
 
             Debug.Assert(TypeUtils.AreReferenceAssignable(typeof(object), Expression.Type), "Expecting reference types only after this point.");
@@ -168,7 +168,7 @@ namespace System.Linq.Expressions
                 ReferenceNotEqual(value, Utils.Null),
                 ReferenceEqual(
                     getType,
-                    Constant(TypeOperand.GetNonNullableType(), typeof(Type))
+                    Constant(TypeOperand.GetNonNullable(), typeof(Type))
                 )
             );
         }
@@ -183,7 +183,7 @@ namespace System.Linq.Expressions
                 return Utils.Constant(value: false);
             }
 
-            return Utils.Constant(TypeOperand.GetNonNullableType() == ce.Value.GetType());
+            return Utils.Constant(TypeOperand.GetNonNullable() == ce.Value.GetType());
         }
 
         #endregion Reduce TypeEqual

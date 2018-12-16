@@ -25,7 +25,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             Debug.Assert(type.IsArithmetic());
-            switch (type.GetNonNullableType().GetTypeCode())
+            switch (type.GetNonNullable().GetTypeCode())
             {
                 case TypeCode.Int16: return _int16 ?? (_int16 = new SubInt16());
                 case TypeCode.Int32: return _int32 ?? (_int32 = new SubInt32());
@@ -200,7 +200,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             Debug.Assert(type.IsArithmetic());
-            switch (type.GetNonNullableType().GetTypeCode())
+            switch (type.GetNonNullable().GetTypeCode())
             {
                 case TypeCode.Int16: return _int16 ?? (_int16 = new SubOvfInt16());
                 case TypeCode.Int32: return _int32 ?? (_int32 = new SubOvfInt32());

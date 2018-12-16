@@ -25,7 +25,7 @@ namespace System.Linq.Expressions.Interpreter
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         public static Instruction Create(Type type)
         {
-            switch (type.GetNonNullableType().GetTypeCode())
+            switch (type.GetNonNullable().GetTypeCode())
             {
                 case TypeCode.SByte: return _sByte ?? (_sByte = new AndSByte());
                 case TypeCode.Int16: return _int16 ?? (_int16 = new AndInt16());
