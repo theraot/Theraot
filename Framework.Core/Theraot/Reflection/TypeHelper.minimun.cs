@@ -4,15 +4,12 @@ using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 
 namespace Theraot.Reflection
 {
     public static partial class TypeHelper
     {
-        public static object[] EmptyObjects => ArrayReservoir<object>.EmptyArray;
-
         public static TTarget As<TTarget>(object source)
             where TTarget : class
         {
