@@ -31,9 +31,9 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         internal static Type MakeCallSiteDelegate(Expression[] types, Type returnType)
         {
-            lock (_DelegateCache)
+            lock (_delegateCache)
             {
-                TypeInfo curTypeInfo = _DelegateCache;
+                TypeInfo curTypeInfo = _delegateCache;
 
                 // CallSite
                 curTypeInfo = NextTypeInfo(typeof(CallSite), curTypeInfo);
@@ -65,9 +65,9 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         internal static Type MakeDeferredSiteDelegate(DynamicMetaObject[] args, Type returnType)
         {
-            lock (_DelegateCache)
+            lock (_delegateCache)
             {
-                TypeInfo curTypeInfo = _DelegateCache;
+                TypeInfo curTypeInfo = _delegateCache;
 
                 // CallSite
                 curTypeInfo = NextTypeInfo(typeof(CallSite), curTypeInfo);
