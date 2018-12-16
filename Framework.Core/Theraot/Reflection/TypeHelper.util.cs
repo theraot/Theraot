@@ -4,61 +4,12 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Reflection;
-using System.Resources;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.Security.Principal;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Theraot.Reflection
 {
     public static partial class TypeHelper
     {
-        private static readonly Type[] _known = {
-            typeof(object),
-            typeof(BitConverter),
-            typeof(StructuralComparisons),
-            typeof(Debug),
-            typeof(IStrongBox),
-            typeof(BarrierPostPhaseException),
-            typeof(TaskExtensions),
-            typeof(Uri),
-            typeof(TypeHelper),
-            typeof(CancelEventArgs),
-            typeof(Console),
-            typeof(BufferedStream),
-            typeof(File),
-            typeof(FileAccess),
-            typeof(ResourceReader),
-            typeof(AsnEncodedData),
-            typeof(AsymmetricAlgorithm),
-            typeof(IIdentity)
-        };
-
-        private static readonly Assembly[] _knownAssemblies;
-
-        static TypeHelper()
-        {
-            var assemblies = new List<Assembly>();
-            foreach (var type in _known)
-            {
-                var info = type.GetTypeInfo();
-                var assembly = info.Assembly;
-                if (!assemblies.Contains(assembly))
-                {
-                    assemblies.Add(assembly);
-                }
-            }
-            _knownAssemblies = assemblies.ToArray();
-        }
-
         public static bool AreReferenceAssignable(Type target, Type source)
         {
             // This actually implements "Is this identity assignable and/or reference assignable?"
@@ -79,7 +30,7 @@ namespace Theraot.Reflection
         {
             while (type != null && type != typeof(object))
             {
-                if (IsConstructedGenericType(type) && type.GetGenericTypeDefinition() == definition)
+                if (type.IsConstructedGenericType() && type.GetGenericTypeDefinition() == definition)
                 {
                     return type;
                 }
@@ -128,154 +79,10 @@ namespace Theraot.Reflection
             return null;
         }
 
-        public static MethodInfo[] GetMethodsIgnoreCase(this Type type, BindingFlags flags, string name)
-        {
-            var list = new List<MethodInfo>();
-            foreach (var method in type.GetMethods(flags))
-            {
-                if (method.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase))
-                {
-                    list.Add(method);
-                }
-            }
-            return list.ToArray();
-        }
-
-        public static Type GetNonNullableType(this Type type)
-        {
-            if (IsNullable(type))
-            {
-                return type.GetGenericArguments()[0];
-            }
-            return type;
-        }
-
-        public static Type GetReturnType(this MethodBase mi) => mi.IsConstructor ? mi.DeclaringType : ((MethodInfo)mi).ReturnType;
-
-        public static MethodInfo GetStaticMethod(this Type type, string name)
-        {
-            // Don't use BindingFlags.Static
-            foreach (var method in type.GetMethods())
-            {
-                if (method.Name == name && method.IsStatic)
-                {
-                    return method;
-                }
-            }
-            return null;
-        }
-
-        public static MethodInfo GetStaticMethod(this Type type, string name, Type[] types)
-        {
-            // Don't use BindingFlags.Static
-            foreach (var method in type.GetMethods())
-            {
-                if (method.Name == name && method.IsStatic && method.MatchesArgumentTypes(types))
-                {
-                    return method;
-                }
-            }
-            return null;
-        }
-
-        public static MethodInfo[] GetStaticMethods(this Type type)
-        {
-            var list = new List<MethodInfo>();
-            foreach (var method in type.GetMethods())
-            {
-                if (method.IsStatic)
-                {
-                    list.Add(method);
-                }
-            }
-            return list.ToArray();
-        }
-
-        public static TypeCode GetTypeCode(this Type type)
-        {
-            if (type == null)
-            {
-                return TypeCode.Empty;
-            }
-            while (true)
-            {
-                var info = type.GetTypeInfo();
-                if (info.IsEnum)
-                {
-                    type = Enum.GetUnderlyingType(type);
-                }
-                else
-                {
-                    break;
-                }
-            }
-            if (type == typeof(bool))
-            {
-                return TypeCode.Boolean;
-            }
-            if (type == typeof(char))
-            {
-                return TypeCode.Char;
-            }
-            if (type == typeof(sbyte))
-            {
-                return TypeCode.SByte;
-            }
-            if (type == typeof(byte))
-            {
-                return TypeCode.Byte;
-            }
-            if (type == typeof(short))
-            {
-                return TypeCode.Int16;
-            }
-            if (type == typeof(ushort))
-            {
-                return TypeCode.UInt16;
-            }
-            if (type == typeof(int))
-            {
-                return TypeCode.Int32;
-            }
-            if (type == typeof(uint))
-            {
-                return TypeCode.UInt32;
-            }
-            if (type == typeof(long))
-            {
-                return TypeCode.Int64;
-            }
-            if (type == typeof(ulong))
-            {
-                return TypeCode.UInt64;
-            }
-            if (type == typeof(float))
-            {
-                return TypeCode.Single;
-            }
-            if (type == typeof(double))
-            {
-                return TypeCode.Double;
-            }
-            if (type == typeof(decimal))
-            {
-                return TypeCode.Decimal;
-            }
-            if (type == typeof(DateTime))
-            {
-                return TypeCode.DateTime;
-            }
-            if (type == typeof(string))
-            {
-                return TypeCode.String;
-            }
-            return TypeCode.Object;
-        }
-
         public static MethodInfo GetUserDefinedConversionMethod(Type source, Type target, bool implicitOnly)
         {
-            var nonNullableSource = GetNonNullableType(source);
-            var nonNullableTarget = GetNonNullableType(target);
+            var nonNullableSource = source.GetNonNullableType();
+            var nonNullableTarget = target.GetNonNullableType();
             MethodInfo[] sourceStaticMethods;
             MethodInfo[] targetStaticMethods;
             if (nonNullableSource == source)
@@ -321,7 +128,7 @@ namespace Theraot.Reflection
             }
             if (!leftInfo.IsValueType && !rightInfo.IsValueType)
             {
-                if (IsReferenceAssignableFrom(left, right) || IsReferenceAssignableFrom(right, left))
+                if (left.IsReferenceAssignableFrom(right) || right.IsReferenceAssignableFrom(left))
                 {
                     return true;
                 }
@@ -330,9 +137,9 @@ namespace Theraot.Reflection
             {
                 return false;
             }
-            var notNullable = GetNonNullableType(left);
+            var notNullable = left.GetNonNullableType();
             var info = notNullable.GetTypeInfo();
-            if (notNullable == typeof(bool) || IsNumeric(notNullable) || info.IsEnum)
+            if (notNullable == typeof(bool) || notNullable.IsNumeric() || info.IsEnum)
             {
                 return true;
             }
@@ -357,11 +164,11 @@ namespace Theraot.Reflection
             }
 
             // Nullable conversions
-            if (IsNullable(source) && target == GetNonNullableType(source))
+            if (source.IsNullable() && target == source.GetNonNullableType())
             {
                 return true;
             }
-            if (IsNullable(target) && source == GetNonNullableType(target))
+            if (target.IsNullable() && source == target.GetNonNullableType())
             {
                 return true;
             }
@@ -371,7 +178,7 @@ namespace Theraot.Reflection
             // nonbool==>bool and nonbool==>bool?
             // Since we have already covered bool==>bool, bool==>bool?, etc, above,
             // we can just disallow having a bool or bool? target type here.
-            if (IsConvertible(source) && IsConvertible(target) && GetNonNullableType(target) != typeof(bool))
+            if (IsConvertible(source) && IsConvertible(target) && target.GetNonNullableType() != typeof(bool))
             {
                 return true;
             }
@@ -393,8 +200,8 @@ namespace Theraot.Reflection
             {
                 return false;
             }
-            var nonNullableSource = GetNonNullableType(source);
-            var nonNullableTarget = GetNonNullableType(target);
+            var nonNullableSource = source.GetNonNullableType();
+            var nonNullableTarget = target.GetNonNullableType();
             // Down conversion
             if (nonNullableSource.IsAssignableFrom(nonNullableTarget))
             {
@@ -439,38 +246,13 @@ namespace Theraot.Reflection
             // other then we can do reference equality.
             return leftInfo.IsInterface
                 || rightInfo.IsInterface
-                || IsReferenceAssignableFrom(left, right)
-                || IsReferenceAssignableFrom(right, left);
-        }
-
-        public static bool IsArithmetic(this Type type)
-        {
-            type = GetNonNullableType(type);
-            if
-                (
-                    type == typeof(short)
-                    || type == typeof(int)
-                    || type == typeof(long)
-                    || type == typeof(double)
-                    || type == typeof(float)
-                    || type == typeof(ushort)
-                    || type == typeof(uint)
-                    || type == typeof(ulong)
-                )
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public static bool IsBool(this Type type)
-        {
-            return GetNonNullableType(type) == typeof(bool);
+                || left.IsReferenceAssignableFrom(right)
+                || right.IsReferenceAssignableFrom(left);
         }
 
         public static bool IsConvertible(Type type)
         {
-            type = GetNonNullableType(type);
+            type = type.GetNonNullableType();
             var info = type.GetTypeInfo();
             if (info.IsEnum)
             {
@@ -508,9 +290,9 @@ namespace Theraot.Reflection
 
         public static bool IsImplicitNullableConversion(Type source, Type target)
         {
-            if (IsNullable(target))
+            if (target.IsNullable())
             {
-                return IsImplicitlyConvertible(GetNonNullableType(source), GetNonNullableType(target));
+                return IsImplicitlyConvertible(source.GetNonNullableType(), target.GetNonNullableType());
             }
             return false;
         }
@@ -518,49 +300,6 @@ namespace Theraot.Reflection
         public static bool IsImplicitReferenceConversion(Type source, Type target)
         {
             return target.IsAssignableFrom(source);
-        }
-
-        public static bool IsInteger(this Type type)
-        {
-            type = GetNonNullableType(type);
-            return type.IsPrimitiveInteger();
-        }
-
-        public static bool IsInteger64(this Type type)
-        {
-            type = GetNonNullableType(type);
-            if (!type.IsSameOrSubclassOf(typeof(Enum)))
-            {
-                switch (type.GetTypeCode())
-                {
-                    case TypeCode.Int64:
-                    case TypeCode.UInt64:
-                        return true;
-                }
-            }
-
-            return false;
-        }
-
-        public static bool IsIntegerOrBool(this Type type)
-        {
-            type = GetNonNullableType(type);
-            if
-                (
-                    type == typeof(bool)
-                    || type == typeof(sbyte)
-                    || type == typeof(byte)
-                    || type == typeof(short)
-                    || type == typeof(int)
-                    || type == typeof(long)
-                    || type == typeof(ushort)
-                    || type == typeof(uint)
-                    || type == typeof(ulong)
-                )
-            {
-                return true;
-            }
-            return false;
         }
 
         public static bool IsLegalExplicitVariantDelegateConversion(Type source, Type target)
@@ -633,53 +372,6 @@ namespace Theraot.Reflection
             return true;
         }
 
-        public static bool IsNumeric(this Type type)
-        {
-            type = GetNonNullableType(type);
-            if
-                (
-                    type == typeof(char)
-                    || type == typeof(sbyte)
-                    || type == typeof(byte)
-                    || type == typeof(short)
-                    || type == typeof(int)
-                    || type == typeof(long)
-                    || type == typeof(double)
-                    || type == typeof(float)
-                    || type == typeof(ushort)
-                    || type == typeof(uint)
-                    || type == typeof(ulong)
-                )
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public static bool IsNumericOrBool(this Type type)
-        {
-            return IsNumeric(type) || IsBool(type);
-        }
-
-        public static bool IsReferenceAssignableFrom(this Type type, Type source)
-        {
-            if (type == source)
-            {
-                return true;
-            }
-            var info = type.GetTypeInfo();
-            var sourceInfo = source.GetTypeInfo();
-            if (
-                !info.IsValueType
-                && !sourceInfo.IsValueType
-                && type.IsAssignableFrom(source)
-                )
-            {
-                return true;
-            }
-            return false;
-        }
-
         public static bool IsValidInstanceType(MemberInfo member, Type instanceType)
         {
             var targetType = member.DeclaringType;
@@ -688,22 +380,22 @@ namespace Theraot.Reflection
                 // Can this happen?
                 return false;
             }
-            if (IsReferenceAssignableFrom(targetType, instanceType))
+            if (targetType.IsReferenceAssignableFrom(instanceType))
             {
                 return true;
             }
             var instanceInfo = instanceType.GetTypeInfo();
             if (instanceInfo.IsValueType)
             {
-                if (IsReferenceAssignableFrom(targetType, typeof(object)))
+                if (targetType.IsReferenceAssignableFrom(typeof(object)))
                 {
                     return true;
                 }
-                if (IsReferenceAssignableFrom(targetType, typeof(ValueType)))
+                if (targetType.IsReferenceAssignableFrom(typeof(ValueType)))
                 {
                     return true;
                 }
-                if (instanceInfo.IsEnum && IsReferenceAssignableFrom(targetType, typeof(Enum)))
+                if (instanceInfo.IsEnum && targetType.IsReferenceAssignableFrom(typeof(Enum)))
                 {
                     return true;
                 }
@@ -714,7 +406,7 @@ namespace Theraot.Reflection
                 {
                     foreach (var interfaceType in instanceType.GetInterfaces())
                     {
-                        if (IsReferenceAssignableFrom(targetType, interfaceType))
+                        if (targetType.IsReferenceAssignableFrom(interfaceType))
                         {
                             return true;
                         }
@@ -722,27 +414,6 @@ namespace Theraot.Reflection
                 }
             }
             return false;
-        }
-
-        public static bool MatchesArgumentTypes(this MethodInfo method, Type[] argTypes)
-        {
-            if (method == null || argTypes == null)
-            {
-                return false;
-            }
-            var parameters = method.GetParameters();
-            if (parameters.Length != argTypes.Length)
-            {
-                return false;
-            }
-            for (var index = 0; index < parameters.Length; index++)
-            {
-                if (!IsReferenceAssignableFrom(parameters[index].ParameterType, argTypes[index]))
-                {
-                    return false;
-                }
-            }
-            return true;
         }
 
         // Expression trees/compiler just use IsByRef, why do we need this?
@@ -756,54 +427,6 @@ namespace Theraot.Reflection
             }
 
             return (pi.Attributes & ParameterAttributes.Out) == ParameterAttributes.Out;
-        }
-
-        internal static bool IsFloatingPoint(this Type type)
-        {
-            type = GetNonNullableType(type);
-            if
-                (
-                    type == typeof(float)
-                    || type == typeof(double)
-                )
-            {
-                return true;
-            }
-            return false;
-        }
-
-        internal static bool IsUnsigned(this Type type)
-        {
-            // Including byte and char
-            type = GetNonNullableType(type);
-            if
-                (
-                    type == typeof(byte)
-                    || type == typeof(char)
-                    || type == typeof(ushort)
-                    || type == typeof(uint)
-                    || type == typeof(ulong)
-                )
-            {
-                return true;
-            }
-            return false;
-        }
-
-        internal static bool IsUnsignedInteger(this Type type)
-        {
-            // Not including byte or char, by design - use IsUnsigned instead
-            type = GetNonNullableType(type);
-            if
-                (
-                    type == typeof(ushort)
-                    || type == typeof(uint)
-                    || type == typeof(ulong)
-                )
-            {
-                return true;
-            }
-            return false;
         }
 
         internal static void ValidateType(Type type)
