@@ -20,9 +20,6 @@ namespace Theraot.Collections.ThreadSafe
         private const int _poolSize = 16;
         private static readonly Pool<T[]>[] _pools;
 
-        // ReSharper disable once StaticMemberInGenericType
-        private static int _done;
-
         static ArrayReservoir()
         {
             if (typeof(T) == typeof(Type))
@@ -47,7 +44,6 @@ namespace Theraot.Collections.ThreadSafe
                         }
                     );
             }
-            Volatile.Write(ref _done, 1);
         }
 
         public static T[] EmptyArray { get; }
@@ -55,7 +51,7 @@ namespace Theraot.Collections.ThreadSafe
         internal static void DonateArray(T[] donation)
         {
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
-            if (donation == null || Volatile.Read(ref _done) == 0)
+            if (donation == null)
             {
                 return;
             }
@@ -86,11 +82,11 @@ namespace Theraot.Collections.ThreadSafe
                 capacity = _minCapacity;
             }
             capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
-            if (capacity <= _maxCapacity && Volatile.Read(ref _done) == 1)
+            if (capacity <= _maxCapacity)
             {
                 var index = NumericHelper.Log2(capacity) - _minCapacityLog2;
                 var currentPool = _pools[index];
-                if (currentPool.TryGet(out var result))
+                if (currentPool != null && currentPool.TryGet(out var result))
                 {
                     return result;
                 }
