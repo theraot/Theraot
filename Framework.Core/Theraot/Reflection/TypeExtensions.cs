@@ -82,11 +82,6 @@ namespace Theraot.Reflection
             return !info.IsValueType || Nullable.GetUnderlyingType(type) != null;
         }
 
-        public static object Create(this Type type, params object[] arguments)
-        {
-            return Activator.CreateInstance(type, arguments);
-        }
-
         public static bool DelegateEquals(this Delegate @delegate, MethodInfo method, object target)
         {
             if (@delegate == null)
