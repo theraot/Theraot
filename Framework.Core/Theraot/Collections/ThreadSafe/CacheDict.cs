@@ -1,43 +1,44 @@
-#if NET20 || NET30 || NET35 || NET40
-
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Threading;
+using Theraot.Core;
 
-namespace System.Dynamic.Utils
+namespace Theraot.Collections.ThreadSafe
 {
     /// <summary>
     /// Provides a dictionary-like object used for caches which holds onto a maximum
     /// number of elements specified at construction time.
     /// </summary>
-    internal sealed class CacheDict<TKey, TValue>
+    public sealed class CacheDict<TKey, TValue>
     {
         private readonly Entry[] _entries;
-
-        // cache size is always ^2.
-        // items are placed at [hash ^ mask]
-        // new item will displace previous one at the same location.
-        private readonly int _mask;
 
         /// <summary>
         /// Creates a dictionary-like object used for caches.
         /// </summary>
         /// <param name="size">The maximum number of elements to store will be this number aligned to next ^2.</param>
-        internal CacheDict(int size)
+        public CacheDict(int capacity)
         {
-            int alignedSize = AlignSize(size);
-            _mask = alignedSize - 1;
-            _entries = new Entry[alignedSize];
+            capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
+            _entries = new Entry[capacity];
         }
 
         /// <summary>
-        /// Sets the value associated with the given key.
+        /// Gets or sets the value associated with the given key.
         /// </summary>
-        internal TValue this[TKey key]
+        public TValue this[TKey key]
         {
+            get
+            {
+                if (TryGetValue(key, out var value))
+                {
+                    return value;
+                }
+                throw new KeyNotFoundException();
+            }
             set => Add(key, value);
         }
 
@@ -45,15 +46,14 @@ namespace System.Dynamic.Utils
         /// Adds a new element to the cache, possibly replacing some
         /// element that is already present.
         /// </summary>
-        internal void Add(TKey key, TValue value)
+        public void Add(TKey key, TValue value)
         {
             int hash = key.GetHashCode();
-            int idx = hash & _mask;
-
-            Entry entry = Volatile.Read(ref _entries[idx]);
+            int index = hash & (_entries.Length - 1);
+            var entry = Volatile.Read(ref _entries[index]);
             if (entry == null || entry.Hash != hash || !entry.Key.Equals(key))
             {
-                Volatile.Write(ref _entries[idx], new Entry(hash, key, value));
+                Volatile.Write(ref _entries[index], new Entry(hash, key, value));
             }
         }
 
@@ -61,36 +61,18 @@ namespace System.Dynamic.Utils
         /// Tries to get the value associated with 'key', returning true if it's found and
         /// false if it's not present.
         /// </summary>
-        internal bool TryGetValue(TKey key, out TValue value)
+        public bool TryGetValue(TKey key, out TValue value)
         {
             int hash = key.GetHashCode();
-            int idx = hash & _mask;
-
-            Entry entry = Volatile.Read(ref _entries[idx]);
+            int idx = hash & (_entries.Length - 1);
+            var entry = Volatile.Read(ref _entries[idx]);
             if (entry != null && entry.Hash == hash && entry.Key.Equals(key))
             {
                 value = entry.Value;
                 return true;
             }
-
             value = default;
             return false;
-        }
-
-        private static int AlignSize(int size)
-        {
-            Debug.Assert(size > 0);
-
-            size--;
-            size |= size >> 1;
-            size |= size >> 2;
-            size |= size >> 4;
-            size |= size >> 8;
-            size |= size >> 16;
-            size++;
-
-            Debug.Assert((size & (~size + 1)) == size, "aligned size should be a power of 2");
-            return size;
         }
 
         // class, to ensure atomic updates.
@@ -109,5 +91,3 @@ namespace System.Dynamic.Utils
         }
     }
 }
-
-#endif
