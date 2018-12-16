@@ -20,7 +20,7 @@ namespace Theraot.Threading
         private Func<T> _valueFactory;
 
         public NoTrackingThreadLocal()
-            : this(TypeHelper.GetCreateOrDefault<T>())
+            : this(TypeHelper.CreateOrDefault<T>)
         {
             // Empty
         }
