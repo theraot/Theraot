@@ -518,7 +518,7 @@ namespace System.Linq.Expressions.Compiler
                     // stack as the switch. This simplifies spilling.
                     EmitExpression(test);
                     _scope.EmitSet(testValue);
-                    Debug.Assert(TypeUtils.AreReferenceAssignable(testValue.Type, test.Type));
+                    Debug.Assert(testValue.Type.IsReferenceAssignableFrom(test.Type));
                     EmitExpressionAndBranch(true, Expression.Equal(switchValue, testValue, false, node.Comparison), labels[i]);
                 }
             }

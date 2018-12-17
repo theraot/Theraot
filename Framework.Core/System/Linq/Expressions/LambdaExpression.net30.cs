@@ -602,7 +602,7 @@ namespace System.Linq.Expressions
                         }
                         pType = pType.GetElementType();
                     }
-                    if (!TypeUtils.AreReferenceAssignable(pex.Type, pType))
+                    if (!pex.Type.IsReferenceAssignableFrom(pType))
                     {
                         throw Error.ParameterExpressionNotValidAsDelegate(pex.Type, pType);
                     }
@@ -616,7 +616,7 @@ namespace System.Linq.Expressions
             {
                 throw Error.IncorrectNumberOfLambdaDeclarationParameters();
             }
-            if (mi.ReturnType != typeof(void) && !TypeUtils.AreReferenceAssignable(mi.ReturnType, body.Type))
+            if (mi.ReturnType != typeof(void) && !mi.ReturnType.IsReferenceAssignableFrom(body.Type))
             {
                 if (!TryQuote(mi.ReturnType, ref body))
                 {

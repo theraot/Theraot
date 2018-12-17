@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -105,13 +106,13 @@ namespace System.Linq.Expressions
             {
                 if (type != typeof(void))
                 {
-                    if (!TypeUtils.AreReferenceAssignable(type, tryBody.Type))
+                    if (!type.IsReferenceAssignableFrom(tryBody.Type))
                     {
                         throw Error.ArgumentTypesMustMatch();
                     }
                     foreach (CatchBlock cb in handlers)
                     {
-                        if (!TypeUtils.AreReferenceAssignable(type, cb.Body.Type))
+                        if (!type.IsReferenceAssignableFrom(cb.Body.Type))
                         {
                             throw Error.ArgumentTypesMustMatch();
                         }

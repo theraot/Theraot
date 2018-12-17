@@ -14,6 +14,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -386,7 +387,7 @@ comparand: null
                 throw Error.MustReduceToDifferent();
             }
 
-            if (!TypeUtils.AreReferenceAssignable(Type, newNode.Type))
+            if (!Type.IsReferenceAssignableFrom(newNode.Type))
             {
                 throw Error.ReducedNotCompatible();
             }

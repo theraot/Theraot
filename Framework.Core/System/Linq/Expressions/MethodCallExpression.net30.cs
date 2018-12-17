@@ -11,6 +11,7 @@ using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Theraot.Collections.ThreadSafe;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -505,9 +506,9 @@ namespace System.Linq.Expressions
                 {
                     pType = pType.GetElementType();
                 }
-                if (!TypeUtils.AreReferenceAssignable(pType, argType) &&
+                if (!pType.IsReferenceAssignableFrom(argType) &&
                     // ReSharper disable once PossibleNullReferenceException
-                    !(TypeUtils.IsSameOrSubclass(typeof(LambdaExpression), pType) && pType.IsInstanceOfType(arg)))
+                    !(pType.IsSameOrSubclassOf(typeof(LambdaExpression)) && pType.IsInstanceOfType(arg)))
                 {
                     return false;
                 }
@@ -533,7 +534,7 @@ namespace System.Linq.Expressions
 
         private static void ValidateCallInstanceType(Type instanceType, MethodInfo method)
         {
-            if (!TypeUtils.IsValidInstanceType(method, instanceType))
+            if (!TypeHelper.IsValidInstanceType(method, instanceType))
             {
                 throw Error.InstanceAndMethodTypeMismatch(method, method.DeclaringType, instanceType);
             }

@@ -312,7 +312,7 @@ namespace Theraot.Reflection
         }
 
         public static T LazyCreate<T>(ref T target)
-                                                                                                                                                                            where T : class
+            where T : class
         {
             var found = target;
             if (found == null)

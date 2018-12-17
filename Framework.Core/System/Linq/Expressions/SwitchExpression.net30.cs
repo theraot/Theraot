@@ -225,7 +225,7 @@ namespace System.Linq.Expressions
             {
                 if (resultType != typeof(void))
                 {
-                    if (!TypeUtils.AreReferenceAssignable(resultType, @case.Type))
+                    if (!resultType.IsReferenceAssignableFrom(@case.Type))
                     {
                         throw Error.ArgumentTypesMustMatch(parameterName);
                     }
@@ -233,7 +233,7 @@ namespace System.Linq.Expressions
             }
             else
             {
-                if (!TypeUtils.AreEquivalent(resultType, @case.Type))
+                if (resultType != @case.Type)
                 {
                     throw Error.AllCaseBodiesMustHaveSameType(parameterName);
                 }

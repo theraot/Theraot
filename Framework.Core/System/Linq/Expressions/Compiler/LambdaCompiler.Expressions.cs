@@ -168,7 +168,7 @@ namespace System.Linq.Expressions.Compiler
                 if (!TypeUtils.AreEquivalent(node.Type, type))
                 {
                     EmitExpression(node);
-                    Debug.Assert(TypeUtils.AreReferenceAssignable(type, node.Type));
+                    Debug.Assert(type.IsReferenceAssignableFrom(node.Type));
                     _ilg.Emit(OpCodes.Castclass, type);
                 }
                 else

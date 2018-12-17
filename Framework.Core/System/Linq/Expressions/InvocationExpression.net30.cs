@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -105,7 +106,7 @@ namespace System.Linq.Expressions
             var delegateType = expression.Type;
             if (!expression.Type.IsSubclassOf(typeof(MulticastDelegate)))
             {
-                var exprType = TypeUtils.FindGenericType(typeof(Expression<>), expression.Type);
+                var exprType = TypeHelper.FindGenericType(typeof(Expression<>), expression.Type);
                 if (exprType == null)
                 {
                     throw Error.ExpressionTypeNotInvocable(expression.Type, nameof(expression));

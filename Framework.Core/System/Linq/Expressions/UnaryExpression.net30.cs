@@ -765,7 +765,6 @@ namespace System.Linq.Expressions
             {
                 return new UnaryExpression(coercionType, expression, convertToType, method);
             }
-
             return null;
         }
 
@@ -842,7 +841,7 @@ namespace System.Linq.Expressions
                 result = GetMethodBasedUnaryOperator(kind, expression, method);
             }
             // return type must be assignable back to the operand type
-            if (!TypeUtils.AreReferenceAssignable(expression.Type, result.Type))
+            if (!expression.Type.IsReferenceAssignableFrom(result.Type))
             {
                 // ReSharper disable once PossibleNullReferenceException
                 throw Error.UserDefinedOpMustHaveValidReturnType(kind, method.Name);

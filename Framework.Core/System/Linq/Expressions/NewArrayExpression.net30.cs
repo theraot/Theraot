@@ -52,7 +52,7 @@ namespace System.Linq.Expressions
                 var expr = initializerList[i];
                 ExpressionUtils.RequiresCanRead(expr, nameof(initializers), i);
 
-                if (!TypeUtils.AreReferenceAssignable(type, expr.Type))
+                if (!type.IsReferenceAssignableFrom(expr.Type))
                 {
                     if (!TryQuote(type, ref expr))
                     {

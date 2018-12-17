@@ -113,7 +113,7 @@ namespace System.Linq.Expressions
                 return Block(Expression, Utils.Constant(cType == TypeOperand.GetNonNullable()));
             }
 
-            Debug.Assert(TypeUtils.AreReferenceAssignable(typeof(object), Expression.Type), "Expecting reference types only after this point.");
+            Debug.Assert(typeof(object).IsReferenceAssignableFrom(Expression.Type), "Expecting reference types only after this point.");
 
             // Can check the value right now for constants.
             if (Expression.NodeType == ExpressionType.Constant)

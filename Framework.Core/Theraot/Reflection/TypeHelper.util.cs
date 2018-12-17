@@ -10,22 +10,6 @@ namespace Theraot.Reflection
 {
     public static partial class TypeHelper
     {
-        public static bool AreReferenceAssignable(Type target, Type source)
-        {
-            // This actually implements "Is this identity assignable and/or reference assignable?"
-            if (target == source)
-            {
-                return true;
-            }
-            var targetInfo = target.GetTypeInfo();
-            var sourceInfo = source.GetTypeInfo();
-            if (!targetInfo.IsValueType && !sourceInfo.IsValueType && target.IsAssignableFrom(source))
-            {
-                return true;
-            }
-            return false;
-        }
-
         public static Type FindGenericType(Type definition, Type type)
         {
             while (type != null && type != typeof(object))
@@ -164,49 +148,11 @@ namespace Theraot.Reflection
                 || right.IsReferenceAssignableFrom(left);
         }
 
-        public static bool IsConvertible(Type type)
-        {
-            type = type.GetNonNullable();
-            var info = type.GetTypeInfo();
-            if (info.IsEnum)
-            {
-                return true;
-            }
-            if
-                (
-                    type == typeof(bool)
-                    || type == typeof(byte)
-                    || type == typeof(sbyte)
-                    || type == typeof(short)
-                    || type == typeof(int)
-                    || type == typeof(long)
-                    || type == typeof(ushort)
-                    || type == typeof(uint)
-                    || type == typeof(ulong)
-                    || type == typeof(float)
-                    || type == typeof(double)
-                    || type == typeof(char)
-                )
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public static bool IsImplicitlyConvertible(Type source, Type target)
-        {
-            return source == target
-                || IsImplicitNumericConversion(source, target)
-                || IsImplicitReferenceConversion(source, target)
-                || IsImplicitBoxingConversion(source, target)
-                || IsImplicitNullableConversion(source, target);
-        }
-
         public static bool IsImplicitNullableConversion(Type source, Type target)
         {
             if (target.IsNullable())
             {
-                return IsImplicitlyConvertible(source.GetNonNullable(), target.GetNonNullable());
+                return source.GetNonNullable().IsImplicitlyConvertibleTo(target.GetNonNullable());
             }
             return false;
         }
@@ -325,23 +271,6 @@ namespace Theraot.Reflection
             }
             return false;
         }
-
-        internal static void ValidateType(Type type)
-        {
-            if (type != typeof(void))
-            {
-                // A check to avoid a bunch of reflection (currently not supported) during cctor
-                var info = type.GetTypeInfo();
-                if (info.IsGenericTypeDefinition)
-                {
-                    throw new ArgumentException("type is Generic");
-                }
-                if (info.ContainsGenericParameters)
-                {
-                    throw new ArgumentException("type contains generic parameters.");
-                }
-            }
-        }
     }
 
     public static partial class TypeHelper
@@ -353,7 +282,7 @@ namespace Theraot.Reflection
         /// </summary>
         /// <param name="methodInfo">The MethodInfo for the target method.</param>
         /// <param name="delegateType">Delegate type with a matching signature.</param>
-        public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType)
+        internal static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType)
         {
             if (methodInfo is System.Reflection.Emit.DynamicMethod dynamicMethod)
             {
@@ -368,7 +297,7 @@ namespace Theraot.Reflection
         /// <param name="methodInfo">The MethodInfo for the target method.</param>
         /// <param name="delegateType">Delegate type with a matching signature.</param>
         /// <param name="target">The object to which the delegate is bound, or null to treat method as static.</param>
-        public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
+        internal static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
         {
             if (methodInfo is System.Reflection.Emit.DynamicMethod dynamicMethod)
             {

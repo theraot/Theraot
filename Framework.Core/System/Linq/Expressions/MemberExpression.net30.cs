@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Reflection;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -41,7 +42,7 @@ namespace System.Linq.Expressions
                 }
 
                 ExpressionUtils.RequiresCanRead(expression, nameof(expression));
-                if (!TypeUtils.AreReferenceAssignable(field.DeclaringType, expression.Type))
+                if (!field.DeclaringType.IsReferenceAssignableFrom(expression.Type))
                 {
                     throw Error.FieldInfoNotDefinedForType(field.DeclaringType, field.Name, expression.Type);
                 }
@@ -185,7 +186,7 @@ namespace System.Linq.Expressions
                 }
 
                 ExpressionUtils.RequiresCanRead(expression, nameof(expression));
-                if (!TypeUtils.IsValidInstanceType(property, expression.Type))
+                if (!TypeHelper.IsValidInstanceType(property, expression.Type))
                 {
                     throw Error.PropertyNotDefinedForType(property, expression.Type, nameof(property));
                 }

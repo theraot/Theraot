@@ -481,7 +481,7 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             TypeUtils.ValidateType(left.Type, nameof(left), allowByRef: true, allowPointer: true);
             TypeUtils.ValidateType(right.Type, nameof(right), allowByRef: true, allowPointer: true);
-            if (!TypeUtils.AreReferenceAssignable(left.Type, right.Type))
+            if (!left.Type.IsReferenceAssignableFrom(right.Type))
             {
                 throw Error.ExpressionTypeDoesNotMatchAssignment(right.Type, left.Type);
             }
@@ -661,8 +661,7 @@ namespace System.Linq.Expressions
             {
                 pType = pType.GetElementType();
             }
-
-            return TypeUtils.AreReferenceAssignable(pType, argType);
+            return pType.IsReferenceAssignableFrom(argType);
         }
 
         private static BinaryExpression GetMethodBasedAssignOperator(ExpressionType binaryType, Expression left, Expression right, MethodInfo method, LambdaExpression conversion, bool liftToNull)
@@ -671,7 +670,7 @@ namespace System.Linq.Expressions
             if (conversion == null)
             {
                 // return type must be assignable back to the left type
-                if (!TypeUtils.AreReferenceAssignable(left.Type, b.Type))
+                if (!left.Type.IsReferenceAssignableFrom(b.Type))
                 {
                     throw Error.UserDefinedOpMustHaveValidReturnType(binaryType, b.Method.Name);
                 }
@@ -723,7 +722,7 @@ namespace System.Linq.Expressions
             if (conversion == null)
             {
                 // return type must be assignable back to the left type
-                if (!TypeUtils.AreReferenceAssignable(left.Type, b.Type))
+                if (!left.Type.IsReferenceAssignableFrom(b.Type))
                 {
                     throw Error.UserDefinedOpMustHaveValidReturnType(binaryType, b.Method.Name);
                 }
@@ -1012,7 +1011,7 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (TypeUtils.HasReferenceEquality(left.Type, right.Type))
+            if (TypeHelper.HasReferenceEquality(left.Type, right.Type))
             {
                 return new LogicalBinaryExpression(ExpressionType.Equal, left, right);
             }
@@ -1031,7 +1030,7 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (TypeUtils.HasReferenceEquality(left.Type, right.Type))
+            if (TypeHelper.HasReferenceEquality(left.Type, right.Type))
             {
                 return new LogicalBinaryExpression(ExpressionType.NotEqual, left, right);
             }
@@ -1059,7 +1058,7 @@ namespace System.Linq.Expressions
             {
                 return b;
             }
-            if (TypeUtils.HasBuiltInEqualityOperator(left.Type, right.Type) || IsNullComparison(left, right))
+            if (TypeHelper.HasBuiltInEqualityOperator(left.Type, right.Type) || IsNullComparison(left, right))
             {
                 if (left.Type.IsNullable() && liftToNull)
                 {

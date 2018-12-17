@@ -450,19 +450,6 @@ namespace Theraot.Reflection
             return IsBinaryPortableExtracted(type);
         }
 
-        internal static bool IsByRefParameter(this ParameterInfo parameterInfo)
-        {
-            if (parameterInfo == null)
-            {
-                throw new ArgumentNullException(nameof(parameterInfo));
-            }
-            if (parameterInfo.ParameterType.IsByRef)
-            {
-                return true;
-            }
-            return (parameterInfo.Attributes & ParameterAttributes.Out) == ParameterAttributes.Out;
-        }
-
         public static bool IsBlittable(this Type type)
         {
             if (type == null)
@@ -486,28 +473,30 @@ namespace Theraot.Reflection
         public static bool IsConvertible(this Type type)
         {
             type = type.GetNonNullable();
-            if (type.GetTypeInfo().IsEnum)
+            var info = type.GetTypeInfo();
+            if (info.IsEnum)
             {
                 return true;
             }
-            switch (type.GetTypeCode())
+            if
+            (
+                type == typeof(bool)
+                || type == typeof(byte)
+                || type == typeof(sbyte)
+                || type == typeof(short)
+                || type == typeof(int)
+                || type == typeof(long)
+                || type == typeof(ushort)
+                || type == typeof(uint)
+                || type == typeof(ulong)
+                || type == typeof(float)
+                || type == typeof(double)
+                || type == typeof(char)
+            )
             {
-                case TypeCode.Boolean:
-                case TypeCode.Byte:
-                case TypeCode.SByte:
-                case TypeCode.Int16:
-                case TypeCode.Int32:
-                case TypeCode.Int64:
-                case TypeCode.UInt16:
-                case TypeCode.UInt32:
-                case TypeCode.UInt64:
-                case TypeCode.Single:
-                case TypeCode.Double:
-                case TypeCode.Char:
-                    return true;
-                default:
-                    return false;
+                return true;
             }
+            return false;
         }
 
         public static bool IsGenericImplementationOf(this Type type, Type interfaceGenericTypeDefinition)
@@ -658,10 +647,10 @@ namespace Theraot.Reflection
                 throw new ArgumentNullException(nameof(target));
             }
             return source == target
-            || IsImplicitNumericConversion(source, target)
-            || IsImplicitReferenceConversion(source, target)
-            || IsImplicitBoxingConversion(source, target)
-            || IsImplicitNullableConversion(source, target);
+            || TypeHelper.IsImplicitNumericConversion(source, target)
+            || TypeHelper.IsImplicitReferenceConversion(source, target)
+            || TypeHelper.IsImplicitBoxingConversion(source, target)
+            || TypeHelper.IsImplicitNullableConversion(source, target);
         }
 
         public static bool IsInteger(this Type type)
@@ -760,6 +749,15 @@ namespace Theraot.Reflection
 
         public static bool IsReferenceAssignableFrom(this Type type, Type source)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            // This actually implements "Is this identity assignable and/or reference assignable?"
             if (type == source)
             {
                 return true;
@@ -802,9 +800,31 @@ namespace Theraot.Reflection
 
         public static bool IsSameOrSubclassOf(this Type type, Type baseType)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+            if (baseType == null)
+            {
+                throw new ArgumentNullException(nameof(baseType));
+            }
             if (type == baseType)
             {
                 return true;
+            }
+            return type.IsSubclassOf(baseType);
+        }
+
+        public static bool IsSubclassOf(this Type type, Type baseType)
+        {
+#if NETCOREAPP1_0 || NETCOREAPP1_1
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+            if (baseType == null)
+            {
+                throw new ArgumentNullException(nameof(baseType));
             }
             while (type != null)
             {
@@ -816,6 +836,9 @@ namespace Theraot.Reflection
                 }
             }
             return false;
+#else
+            return type.IsSubclassOf(baseType);
+#endif
         }
 
         public static bool IsValueTypeRecursive(this Type type)
@@ -882,6 +905,19 @@ namespace Theraot.Reflection
                 }
             }
             return true;
+        }
+
+        internal static bool IsByRefParameter(this ParameterInfo parameterInfo)
+        {
+            if (parameterInfo == null)
+            {
+                throw new ArgumentNullException(nameof(parameterInfo));
+            }
+            if (parameterInfo.ParameterType.IsByRef)
+            {
+                return true;
+            }
+            return (parameterInfo.Attributes & ParameterAttributes.Out) == ParameterAttributes.Out;
         }
 
         internal static bool IsFloatingPoint(this TypeCode typeCode)
@@ -1118,127 +1154,6 @@ namespace Theraot.Reflection
             return result;
         }
 
-        private static bool IsImplicitBoxingConversion(Type source, Type target) =>
-            source.GetTypeInfo().IsValueType && (target == typeof(object) || target == typeof(ValueType)) || source.GetTypeInfo().IsEnum && target == typeof(Enum);
-
-        private static bool IsImplicitNullableConversion(Type source, Type target) =>
-            target.IsNullable() && IsImplicitlyConvertibleTo(source.GetNonNullable(), target.GetNonNullable());
-
-        private static bool IsImplicitNumericConversion(Type source, Type target)
-        {
-            var tcSource = source.GetTypeCode();
-            var tcDest = target.GetTypeCode();
-            switch (tcSource)
-            {
-                case TypeCode.SByte:
-                    switch (tcDest)
-                    {
-                        case TypeCode.Int16:
-                        case TypeCode.Int32:
-                        case TypeCode.Int64:
-                        case TypeCode.Single:
-                        case TypeCode.Double:
-                        case TypeCode.Decimal:
-                            return true;
-                    }
-                    break;
-                case TypeCode.Byte:
-                    switch (tcDest)
-                    {
-                        case TypeCode.Int16:
-                        case TypeCode.UInt16:
-                        case TypeCode.Int32:
-                        case TypeCode.UInt32:
-                        case TypeCode.Int64:
-                        case TypeCode.UInt64:
-                        case TypeCode.Single:
-                        case TypeCode.Double:
-                        case TypeCode.Decimal:
-                            return true;
-                    }
-                    break;
-                case TypeCode.Int16:
-                    switch (tcDest)
-                    {
-                        case TypeCode.Int32:
-                        case TypeCode.Int64:
-                        case TypeCode.Single:
-                        case TypeCode.Double:
-                        case TypeCode.Decimal:
-                            return true;
-                    }
-
-                    break;
-
-                case TypeCode.UInt16:
-                    switch (tcDest)
-                    {
-                        case TypeCode.Int32:
-                        case TypeCode.UInt32:
-                        case TypeCode.Int64:
-                        case TypeCode.UInt64:
-                        case TypeCode.Single:
-                        case TypeCode.Double:
-                        case TypeCode.Decimal:
-                            return true;
-                    }
-                    break;
-                case TypeCode.Int32:
-                    switch (tcDest)
-                    {
-                        case TypeCode.Int64:
-                        case TypeCode.Single:
-                        case TypeCode.Double:
-                        case TypeCode.Decimal:
-                            return true;
-                    }
-                    break;
-                case TypeCode.UInt32:
-                    switch (tcDest)
-                    {
-                        case TypeCode.Int64:
-                        case TypeCode.UInt64:
-                        case TypeCode.Single:
-                        case TypeCode.Double:
-                        case TypeCode.Decimal:
-                            return true;
-                    }
-
-                    break;
-
-                case TypeCode.Int64:
-                case TypeCode.UInt64:
-                    switch (tcDest)
-                    {
-                        case TypeCode.Single:
-                        case TypeCode.Double:
-                        case TypeCode.Decimal:
-                            return true;
-                    }
-                    break;
-                case TypeCode.Char:
-                    switch (tcDest)
-                    {
-                        case TypeCode.UInt16:
-                        case TypeCode.Int32:
-                        case TypeCode.UInt32:
-                        case TypeCode.Int64:
-                        case TypeCode.UInt64:
-                        case TypeCode.Single:
-                        case TypeCode.Double:
-                        case TypeCode.Decimal:
-                            return true;
-                    }
-                    break;
-                case TypeCode.Single:
-                    return tcDest == TypeCode.Double;
-            }
-            return false;
-        }
-
-        private static bool IsImplicitReferenceConversion(Type source, Type target) =>
-            target.IsAssignableFrom(source);
-
         private static bool IsValueTypeRecursiveExtracted(Type type)
         {
             var info = type.GetTypeInfo();
@@ -1333,7 +1248,7 @@ namespace Theraot.Reflection
                     {
                         return true;
                     }
-                    return IsImplicitReferenceConversion(typeof(Array), source);
+                    return TypeHelper.IsImplicitReferenceConversion(typeof(Array), source);
                 }
                 else
                 {

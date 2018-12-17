@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Theraot.Collections;
+using Theraot.Reflection;
 
 namespace System.Dynamic.Utils
 {
@@ -142,7 +143,7 @@ namespace System.Dynamic.Utils
             // works consistently for lambdas
             Type quoteable = typeof(LambdaExpression);
 
-            if (TypeUtils.IsSameOrSubclass(quoteable, parameterType) && parameterType.IsInstanceOfType(argument))
+            if (parameterType.IsSameOrSubclassOf(quoteable) && parameterType.IsInstanceOfType(argument))
             {
                 argument = Expression.Quote(argument);
                 return true;
@@ -221,9 +222,8 @@ namespace System.Dynamic.Utils
             {
                 pType = pType.GetElementType();
             }
-
             TypeUtils.ValidateType(pType, methodParamName, allowByRef: true, allowPointer: true);
-            if (!TypeUtils.AreReferenceAssignable(pType, arguments.Type))
+            if (!pType.IsReferenceAssignableFrom(arguments.Type))
             {
                 if (!TryQuote(pType, ref arguments))
                 {
