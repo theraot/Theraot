@@ -8,7 +8,6 @@ namespace Theraot.Reflection
 {
     public static class ConstructorHelper
     {
-        private static readonly CacheDict<Type, bool> _hasConstructorCache = new CacheDict<Type, bool>(256);
         private static readonly CacheDict<Type, object> _constructorCache = new CacheDict<Type, object>(256);
 
         public static TReturn Create<TReturn>()
@@ -49,19 +48,12 @@ namespace Theraot.Reflection
                 create = (Func<TReturn>)result;
                 return true;
             }
-            if (canCache && _hasConstructorCache.TryGetValue(type, out var has) && !has)
-            {
-                _constructorCache[type] = null;
-                create = null;
-                return false;
-            }
             var typeArguments = Type.EmptyTypes;
             var constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
             if (constructorInfo == null)
             {
                 if (canCache)
                 {
-                    _hasConstructorCache[type] = false;
                     _constructorCache[type] = null;
                 }
                 create = null;
@@ -70,39 +62,9 @@ namespace Theraot.Reflection
             TReturn Create() => (TReturn) constructorInfo.Invoke(ArrayReservoir<object>.EmptyArray);
             if (canCache)
             {
-                _hasConstructorCache[type] = true;
                 _constructorCache[type] = (Func<TReturn>) Create;
             }
             create = Create;
-            return true;
-        }
-
-        public static bool HasConstructor<TReturn>()
-        {
-            var type = typeof(TReturn);
-            var canCache = TypeExtensions.CanCache(type);
-            if (canCache && _constructorCache.TryGetValue(type, out _))
-            {
-                return true;
-            }
-            if (canCache && _hasConstructorCache.TryGetValue(type, out var has))
-            {
-                return has;
-            }
-            var typeArguments = Type.EmptyTypes;
-            var constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-            if (constructorInfo == null)
-            {
-                if (canCache)
-                {
-                    _hasConstructorCache[type] = false;
-                }
-                return false;
-            }
-            if (canCache)
-            {
-                _hasConstructorCache[type] = true;
-            }
             return true;
         }
     }
