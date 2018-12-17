@@ -302,7 +302,7 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(value, paramName);
             if (expectedType != typeof(void))
             {
-                if (!expectedType.IsReferenceAssignableFrom(value.Type))
+                if (!expectedType.IsReferenceAssignableFromInternal(value.Type))
                 {
                     // C# auto-quotes return values, so we'll do that here
                     if (!TryQuote(expectedType, ref value))

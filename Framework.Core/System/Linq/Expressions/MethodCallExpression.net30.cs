@@ -506,9 +506,9 @@ namespace System.Linq.Expressions
                 {
                     pType = pType.GetElementType();
                 }
-                if (!pType.IsReferenceAssignableFrom(argType) &&
+                if (!pType.IsReferenceAssignableFromInternal(argType) &&
                     // ReSharper disable once PossibleNullReferenceException
-                    !(pType.IsSameOrSubclassOf(typeof(LambdaExpression)) && pType.IsInstanceOfType(arg)))
+                    !(pType.IsSameOrSubclassOfInternal(typeof(LambdaExpression)) && pType.IsInstanceOfType(arg)))
                 {
                     return false;
                 }

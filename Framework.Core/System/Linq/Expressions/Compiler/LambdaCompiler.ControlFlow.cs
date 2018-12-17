@@ -34,7 +34,7 @@ namespace System.Linq.Expressions.Compiler
                         // Found the label. We can directly return from this place
                         // only if the label type is reference assignable to the lambda return type.
                         LabelTarget label = ((LabelExpression)expression).Target;
-                        _labelInfo.Add(label, new LabelInfo(_ilg, label, lambda.ReturnType.IsReferenceAssignableFrom(label.Type)));
+                        _labelInfo.Add(label, new LabelInfo(_ilg, label, lambda.ReturnType.IsReferenceAssignableFromInternal(label.Type)));
                         return;
 
                     case ExpressionType.Block:

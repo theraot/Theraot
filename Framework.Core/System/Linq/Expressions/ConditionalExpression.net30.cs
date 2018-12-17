@@ -154,8 +154,8 @@ namespace System.Linq.Expressions
 
             if (type != typeof(void))
             {
-                if (!type.IsReferenceAssignableFrom(ifTrue.Type) ||
-                    !type.IsReferenceAssignableFrom(ifFalse.Type))
+                if (!type.IsReferenceAssignableFromInternal(ifTrue.Type) ||
+                    !type.IsReferenceAssignableFromInternal(ifFalse.Type))
                 {
                     throw Error.ArgumentTypesMustMatch();
                 }

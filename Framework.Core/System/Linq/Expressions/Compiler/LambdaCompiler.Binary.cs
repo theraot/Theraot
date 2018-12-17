@@ -89,8 +89,8 @@ namespace System.Linq.Expressions.Compiler
                     resultType = typeof(bool);
                 }
 
-                Debug.Assert(p1.Type.IsReferenceAssignableFrom(b.Left.Type.GetNonNullable()));
-                Debug.Assert(p2.Type.IsReferenceAssignableFrom(b.Right.Type.GetNonNullable()));
+                Debug.Assert(p1.Type.IsReferenceAssignableFromInternal(b.Left.Type.GetNonNullable()));
+                Debug.Assert(p2.Type.IsReferenceAssignableFromInternal(b.Right.Type.GetNonNullable()));
                 EmitLift(b.NodeType, resultType, mc, new[] { p1, p2 }, new[] { b.Left, b.Right });
             }
             else

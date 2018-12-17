@@ -168,7 +168,7 @@ namespace System.Linq.Expressions.Compiler
                 if (!TypeUtils.AreEquivalent(node.Type, type))
                 {
                     EmitExpression(node);
-                    Debug.Assert(type.IsReferenceAssignableFrom(node.Type));
+                    Debug.Assert(type.IsReferenceAssignableFromInternal(node.Type));
                     _ilg.Emit(OpCodes.Castclass, type);
                 }
                 else
@@ -432,7 +432,7 @@ namespace System.Linq.Expressions.Compiler
         {
             foreach (ParameterInfo pi in mi.GetParameters())
             {
-                if (pi.IsByRefParameter())
+                if (pi.IsByRefParameterInternal())
                 {
                     return true;
                 }

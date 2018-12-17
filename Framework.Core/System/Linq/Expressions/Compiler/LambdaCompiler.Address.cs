@@ -325,7 +325,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitExpressionAddress(Expression node, Type type)
         {
-            Debug.Assert(type.IsReferenceAssignableFrom(node.Type));
+            Debug.Assert(type.IsReferenceAssignableFromInternal(node.Type));
             EmitExpression(node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
             LocalBuilder tmp = GetLocal(type);
             _ilg.Emit(OpCodes.Stloc, tmp);

@@ -143,7 +143,7 @@ namespace System.Dynamic.Utils
             // works consistently for lambdas
             Type quoteable = typeof(LambdaExpression);
 
-            if (parameterType.IsSameOrSubclassOf(quoteable) && parameterType.IsInstanceOfType(argument))
+            if (parameterType.IsSameOrSubclassOfInternal(quoteable) && parameterType.IsInstanceOfType(argument))
             {
                 argument = Expression.Quote(argument);
                 return true;
@@ -223,7 +223,7 @@ namespace System.Dynamic.Utils
                 pType = pType.GetElementType();
             }
             TypeUtils.ValidateType(pType, methodParamName, allowByRef: true, allowPointer: true);
-            if (!pType.IsReferenceAssignableFrom(arguments.Type))
+            if (!pType.IsReferenceAssignableFromInternal(arguments.Type))
             {
                 if (!TryQuote(pType, ref arguments))
                 {

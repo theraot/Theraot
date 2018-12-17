@@ -52,7 +52,7 @@ namespace Theraot.Reflection
         {
             do
             {
-                var result = type.GetStaticMethod(name, new[] { type });
+                var result = type.GetStaticMethodInternal(name, new[] { type });
                 if (result != null && result.IsSpecialName && !result.ContainsGenericParameters)
                 {
                     return result;
@@ -73,23 +73,23 @@ namespace Theraot.Reflection
             {
                 if (nonNullableTarget == target)
                 {
-                    return FindConversionOperator(nonNullableSource.GetStaticMethods(), source, target, implicitOnly)
-                        ?? FindConversionOperator(nonNullableTarget.GetStaticMethods(), source, target, implicitOnly);
+                    return FindConversionOperator(nonNullableSource.GetStaticMethodsInternal(), source, target, implicitOnly)
+                        ?? FindConversionOperator(nonNullableTarget.GetStaticMethodsInternal(), source, target, implicitOnly);
                 }
-                return FindConversionOperator(sourceStaticMethods = nonNullableSource.GetStaticMethods(), source, target, implicitOnly)
-                    ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethods(), source, target, implicitOnly)
+                return FindConversionOperator(sourceStaticMethods = nonNullableSource.GetStaticMethodsInternal(), source, target, implicitOnly)
+                    ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethodsInternal(), source, target, implicitOnly)
                     ?? FindConversionOperator(sourceStaticMethods, source, nonNullableTarget, implicitOnly)
                     ?? FindConversionOperator(targetStaticMethods, source, nonNullableTarget, implicitOnly);
             }
             if (nonNullableTarget == target)
             {
-                return FindConversionOperator(sourceStaticMethods = nonNullableSource.GetStaticMethods(), source, target, implicitOnly)
-                    ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethods(), source, target, implicitOnly)
+                return FindConversionOperator(sourceStaticMethods = nonNullableSource.GetStaticMethodsInternal(), source, target, implicitOnly)
+                    ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethodsInternal(), source, target, implicitOnly)
                     ?? FindConversionOperator(sourceStaticMethods, nonNullableSource, target, implicitOnly)
                     ?? FindConversionOperator(targetStaticMethods, nonNullableSource, target, implicitOnly);
             }
-            return FindConversionOperator(sourceStaticMethods = nonNullableSource.GetStaticMethods(), source, target, implicitOnly)
-                ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethods(), source, target, implicitOnly)
+            return FindConversionOperator(sourceStaticMethods = nonNullableSource.GetStaticMethodsInternal(), source, target, implicitOnly)
+                ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethodsInternal(), source, target, implicitOnly)
                 ?? FindConversionOperator(sourceStaticMethods, nonNullableSource, target, implicitOnly)
                 ?? FindConversionOperator(targetStaticMethods, nonNullableSource, target, implicitOnly)
                 ?? FindConversionOperator(sourceStaticMethods, source, nonNullableTarget, implicitOnly)
@@ -112,7 +112,7 @@ namespace Theraot.Reflection
             }
             if (!leftInfo.IsValueType && !rightInfo.IsValueType)
             {
-                if (left.IsReferenceAssignableFrom(right) || right.IsReferenceAssignableFrom(left))
+                if (left.IsReferenceAssignableFromInternal(right) || right.IsReferenceAssignableFromInternal(left))
                 {
                     return true;
                 }
@@ -144,15 +144,15 @@ namespace Theraot.Reflection
             // other then we can do reference equality.
             return leftInfo.IsInterface
                 || rightInfo.IsInterface
-                || left.IsReferenceAssignableFrom(right)
-                || right.IsReferenceAssignableFrom(left);
+                || left.IsReferenceAssignableFromInternal(right)
+                || right.IsReferenceAssignableFromInternal(left);
         }
 
         public static bool IsImplicitNullableConversion(Type source, Type target)
         {
             if (target.IsNullable())
             {
-                return source.GetNonNullable().IsImplicitlyConvertibleTo(target.GetNonNullable());
+                return source.GetNonNullable().IsImplicitlyConvertibleToInternal(target.GetNonNullable());
             }
             return false;
         }
@@ -210,7 +210,7 @@ namespace Theraot.Reflection
                 }
                 if (PrivateIsCovariant(genericParameter))
                 {
-                    if (!sourceArgument.HasReferenceConversionTo(destArgument))
+                    if (!sourceArgument.HasReferenceConversionToInternal(destArgument))
                     {
                         return false;
                     }
@@ -236,22 +236,22 @@ namespace Theraot.Reflection
                 // Can this happen?
                 return false;
             }
-            if (targetType.IsReferenceAssignableFrom(instanceType))
+            if (targetType.IsReferenceAssignableFromInternal(instanceType))
             {
                 return true;
             }
             var instanceInfo = instanceType.GetTypeInfo();
             if (instanceInfo.IsValueType)
             {
-                if (targetType.IsReferenceAssignableFrom(typeof(object)))
+                if (targetType.IsReferenceAssignableFromInternal(typeof(object)))
                 {
                     return true;
                 }
-                if (targetType.IsReferenceAssignableFrom(typeof(ValueType)))
+                if (targetType.IsReferenceAssignableFromInternal(typeof(ValueType)))
                 {
                     return true;
                 }
-                if (instanceInfo.IsEnum && targetType.IsReferenceAssignableFrom(typeof(Enum)))
+                if (instanceInfo.IsEnum && targetType.IsReferenceAssignableFromInternal(typeof(Enum)))
                 {
                     return true;
                 }
@@ -262,7 +262,7 @@ namespace Theraot.Reflection
                 {
                     foreach (var interfaceType in instanceType.GetInterfaces())
                     {
-                        if (targetType.IsReferenceAssignableFrom(interfaceType))
+                        if (targetType.IsReferenceAssignableFromInternal(interfaceType))
                         {
                             return true;
                         }

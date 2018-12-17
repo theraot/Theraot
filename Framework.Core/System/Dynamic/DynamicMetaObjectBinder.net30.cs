@@ -83,7 +83,7 @@ namespace System.Dynamic
                 expectedResult = ReturnType;
 
                 if (returnLabel.Type != typeof(void) &&
-                    !returnLabel.Type.IsReferenceAssignableFrom(expectedResult))
+                    !returnLabel.Type.IsReferenceAssignableFromInternal(expectedResult))
                 {
                     throw Error.BinderNotCompatibleWithCallSite(expectedResult, this, returnLabel.Type);
                 }
@@ -110,7 +110,7 @@ namespace System.Dynamic
 
             // Ensure the result matches the expected result type.
             if (expectedResult != typeof(void) &&
-                !expectedResult.IsReferenceAssignableFrom(body.Type))
+                !expectedResult.IsReferenceAssignableFromInternal(body.Type))
             {
                 //
                 // Blame the last person that handled the result: assume it's

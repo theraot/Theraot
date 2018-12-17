@@ -49,7 +49,7 @@ namespace Theraot.Reflection
             {
                 return false;
             }
-            return type.GetElementType().IsAssignableTo(target.GetElementType());
+            return type.GetElementType().IsAssignableToInternal(target.GetElementType());
         }
 
         public static bool IsArrayTypeAssignableToInterface(Type type, Type target)

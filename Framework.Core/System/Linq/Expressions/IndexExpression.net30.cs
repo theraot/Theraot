@@ -209,7 +209,7 @@ namespace System.Linq.Expressions
                 {
                     return false;
                 }
-                if (!parameters[i].ParameterType.IsReferenceAssignableFrom(args[i].Type))
+                if (!parameters[i].ParameterType.IsReferenceAssignableFromInternal(args[i].Type))
                 {
                     return false;
                 }
@@ -301,7 +301,7 @@ namespace System.Linq.Expressions
 
                     TypeUtils.ValidateType(pType, nameof(indexes), i);
 
-                    if (!pType.IsReferenceAssignableFrom(arg.Type))
+                    if (!pType.IsReferenceAssignableFromInternal(arg.Type))
                     {
                         if (!TryQuote(pType, ref arg))
                         {

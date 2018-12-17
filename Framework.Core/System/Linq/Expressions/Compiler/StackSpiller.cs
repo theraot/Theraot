@@ -213,7 +213,7 @@ namespace System.Linq.Expressions.Compiler
             // (our rewrites preserve type exactly, but the rules for rewriting
             // an extension node are more lenient, see Expression.ReduceAndCheck())
             Debug.Assert(
-                node.Type.IsReferenceAssignableFrom(result.Node.Type),
+                node.Type.IsReferenceAssignableFromInternal(result.Node.Type),
                 "rewritten object must be reference assignable to the original type"
             );
         }

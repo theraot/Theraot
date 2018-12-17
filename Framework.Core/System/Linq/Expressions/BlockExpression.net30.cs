@@ -1058,7 +1058,7 @@ namespace System.Linq.Expressions
                 var last = expressions.Last();
                 if (type != typeof(void))
                 {
-                    if (!type.IsReferenceAssignableFrom(last.Type))
+                    if (!type.IsReferenceAssignableFromInternal(last.Type))
                     {
                         throw Error.ArgumentTypesMustMatch();
                     }

@@ -251,7 +251,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // Otherwise, get the type from the method.
-            Type result = node.Comparison.GetParameters()[1].ParameterType.GetNonRefType();
+            Type result = node.Comparison.GetParameters()[1].ParameterType.GetNonRefTypeInternal();
             if (node.IsLifted)
             {
                 result = result.GetNullable();
@@ -518,7 +518,7 @@ namespace System.Linq.Expressions.Compiler
                     // stack as the switch. This simplifies spilling.
                     EmitExpression(test);
                     _scope.EmitSet(testValue);
-                    Debug.Assert(testValue.Type.IsReferenceAssignableFrom(test.Type));
+                    Debug.Assert(testValue.Type.IsReferenceAssignableFromInternal(test.Type));
                     EmitExpressionAndBranch(true, Expression.Equal(switchValue, testValue, false, node.Comparison), labels[i]);
                 }
             }

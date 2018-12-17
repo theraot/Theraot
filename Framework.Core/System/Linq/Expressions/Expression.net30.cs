@@ -387,7 +387,7 @@ comparand: null
                 throw Error.MustReduceToDifferent();
             }
 
-            if (!Type.IsReferenceAssignableFrom(newNode.Type))
+            if (!Type.IsReferenceAssignableFromInternal(newNode.Type))
             {
                 throw Error.ReducedNotCompatible();
             }

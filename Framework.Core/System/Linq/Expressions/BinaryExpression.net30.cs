@@ -54,7 +54,7 @@ namespace System.Linq.Expressions
                 {
                     var method = GetMethod();
                     return method == null ||
-                        !TypeUtils.AreEquivalent(method.GetParameters()[0].ParameterType.GetNonRefType(), Left.Type);
+                        !TypeUtils.AreEquivalent(method.GetParameters()[0].ParameterType.GetNonRefTypeInternal(), Left.Type);
                 }
                 return false;
             }
@@ -481,7 +481,7 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             TypeUtils.ValidateType(left.Type, nameof(left), allowByRef: true, allowPointer: true);
             TypeUtils.ValidateType(right.Type, nameof(right), allowByRef: true, allowPointer: true);
-            if (!left.Type.IsReferenceAssignableFrom(right.Type))
+            if (!left.Type.IsReferenceAssignableFromInternal(right.Type))
             {
                 throw Error.ExpressionTypeDoesNotMatchAssignment(right.Type, left.Type);
             }
@@ -661,7 +661,7 @@ namespace System.Linq.Expressions
             {
                 pType = pType.GetElementType();
             }
-            return pType.IsReferenceAssignableFrom(argType);
+            return pType.IsReferenceAssignableFromInternal(argType);
         }
 
         private static BinaryExpression GetMethodBasedAssignOperator(ExpressionType binaryType, Expression left, Expression right, MethodInfo method, LambdaExpression conversion, bool liftToNull)
@@ -670,7 +670,7 @@ namespace System.Linq.Expressions
             if (conversion == null)
             {
                 // return type must be assignable back to the left type
-                if (!left.Type.IsReferenceAssignableFrom(b.Type))
+                if (!left.Type.IsReferenceAssignableFromInternal(b.Type))
                 {
                     throw Error.UserDefinedOpMustHaveValidReturnType(binaryType, b.Method.Name);
                 }
@@ -722,7 +722,7 @@ namespace System.Linq.Expressions
             if (conversion == null)
             {
                 // return type must be assignable back to the left type
-                if (!left.Type.IsReferenceAssignableFrom(b.Type))
+                if (!left.Type.IsReferenceAssignableFromInternal(b.Type))
                 {
                     throw Error.UserDefinedOpMustHaveValidReturnType(binaryType, b.Method.Name);
                 }
@@ -770,10 +770,10 @@ namespace System.Linq.Expressions
             Type[] types = { leftType, rightType };
             var nnLeftType = leftType.GetNonNullable();
             var nnRightType = rightType.GetNonNullable();
-            var method = nnLeftType.GetStaticMethod(name, types);
+            var method = nnLeftType.GetStaticMethodInternal(name, types);
             if (method == null && !TypeUtils.AreEquivalent(leftType, rightType))
             {
-                method = nnRightType.GetStaticMethod(name, types);
+                method = nnRightType.GetStaticMethodInternal(name, types);
             }
 
             if (IsLiftingConditionalLogicalOperator(leftType, rightType, method, binaryType))
@@ -1413,17 +1413,17 @@ namespace System.Linq.Expressions
                 throw Error.CoalesceUsedOnNonNullType();
             }
 
-            if (left.IsNullable() && right.IsImplicitlyConvertibleTo(leftStripped))
+            if (left.IsNullable() && right.IsImplicitlyConvertibleToInternal(leftStripped))
             {
                 return leftStripped;
             }
 
-            if (right.IsImplicitlyConvertibleTo(left))
+            if (right.IsImplicitlyConvertibleToInternal(left))
             {
                 return left;
             }
 
-            if (leftStripped.IsImplicitlyConvertibleTo(right))
+            if (leftStripped.IsImplicitlyConvertibleToInternal(right))
             {
                 return right;
             }

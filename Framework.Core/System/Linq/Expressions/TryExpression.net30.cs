@@ -106,13 +106,13 @@ namespace System.Linq.Expressions
             {
                 if (type != typeof(void))
                 {
-                    if (!type.IsReferenceAssignableFrom(tryBody.Type))
+                    if (!type.IsReferenceAssignableFromInternal(tryBody.Type))
                     {
                         throw Error.ArgumentTypesMustMatch();
                     }
                     foreach (CatchBlock cb in handlers)
                     {
-                        if (!type.IsReferenceAssignableFrom(cb.Body.Type))
+                        if (!type.IsReferenceAssignableFromInternal(cb.Body.Type))
                         {
                             throw Error.ArgumentTypesMustMatch();
                         }

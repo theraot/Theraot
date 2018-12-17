@@ -438,7 +438,7 @@ namespace System.Linq.Expressions.Compiler
             if (expression.NodeType == ExpressionType.Convert)
             {
                 var convert = (UnaryExpression)expression;
-                if (convert.Type.IsReferenceAssignableFrom(convert.Operand.Type))
+                if (convert.Type.IsReferenceAssignableFromInternal(convert.Operand.Type))
                 {
                     return convert.Operand;
                 }

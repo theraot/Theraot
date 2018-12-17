@@ -192,7 +192,7 @@ namespace System.Linq.Expressions
                     }
 
                     ValidateAnonymousTypeMember(ref member, out var memberType, nameof(members), i);
-                    if (!memberType.IsReferenceAssignableFrom(arg.Type))
+                    if (!memberType.IsReferenceAssignableFromInternal(arg.Type))
                     {
                         if (!TryQuote(memberType, ref arg))
                         {
@@ -205,7 +205,7 @@ namespace System.Linq.Expressions
                     {
                         pType = pType.GetElementType();
                     }
-                    if (!pType.IsReferenceAssignableFrom(arg.Type))
+                    if (!pType.IsReferenceAssignableFromInternal(arg.Type))
                     {
                         if (!TryQuote(pType, ref arg))
                         {

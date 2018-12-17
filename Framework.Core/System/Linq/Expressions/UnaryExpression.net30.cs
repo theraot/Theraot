@@ -67,8 +67,8 @@ namespace System.Linq.Expressions
             TypeUtils.ValidateType(type, nameof(type));
             if (method == null)
             {
-                if (expression.Type.HasIdentityPrimitiveOrNullableConversionTo(type) ||
-                    expression.Type.HasReferenceConversionTo(type))
+                if (expression.Type.HasIdentityPrimitiveOrNullableConversionToInternal(type) ||
+                    expression.Type.HasReferenceConversionToInternal(type))
                 {
                     return new UnaryExpression(ExpressionType.Convert, expression, type, null);
                 }
@@ -107,11 +107,11 @@ namespace System.Linq.Expressions
             TypeUtils.ValidateType(type, nameof(type));
             if (method == null)
             {
-                if (expression.Type.HasIdentityPrimitiveOrNullableConversionTo(type))
+                if (expression.Type.HasIdentityPrimitiveOrNullableConversionToInternal(type))
                 {
                     return new UnaryExpression(ExpressionType.ConvertChecked, expression, type, null);
                 }
-                if (expression.Type.HasReferenceConversionTo(type))
+                if (expression.Type.HasReferenceConversionToInternal(type))
                 {
                     return new UnaryExpression(ExpressionType.Convert, expression, type, null);
                 }
@@ -783,7 +783,7 @@ namespace System.Linq.Expressions
             Type operandType = operand.Type;
             Type[] types = { operandType };
             Type nnOperandType = operandType.GetNonNullable();
-            MethodInfo method = nnOperandType.GetStaticMethod(name, types);
+            MethodInfo method = nnOperandType.GetStaticMethodInternal(name, types);
             if (method != null)
             {
                 return new UnaryExpression(unaryType, operand, method.ReturnType, method);
@@ -792,7 +792,7 @@ namespace System.Linq.Expressions
             if (operandType.IsNullable())
             {
                 types[0] = nnOperandType;
-                method = nnOperandType.GetStaticMethod(name, types);
+                method = nnOperandType.GetStaticMethodInternal(name, types);
                 if (method != null && method.ReturnType.IsValueType && !method.ReturnType.IsNullable())
                 {
                     return new UnaryExpression(unaryType, operand, method.ReturnType.GetNullable(), method);
@@ -841,7 +841,7 @@ namespace System.Linq.Expressions
                 result = GetMethodBasedUnaryOperator(kind, expression, method);
             }
             // return type must be assignable back to the operand type
-            if (!expression.Type.IsReferenceAssignableFrom(result.Type))
+            if (!expression.Type.IsReferenceAssignableFromInternal(result.Type))
             {
                 // ReSharper disable once PossibleNullReferenceException
                 throw Error.UserDefinedOpMustHaveValidReturnType(kind, method.Name);

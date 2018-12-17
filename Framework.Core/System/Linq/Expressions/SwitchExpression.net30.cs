@@ -225,7 +225,7 @@ namespace System.Linq.Expressions
             {
                 if (resultType != typeof(void))
                 {
-                    if (!resultType.IsReferenceAssignableFrom(@case.Type))
+                    if (!resultType.IsReferenceAssignableFromInternal(@case.Type))
                     {
                         throw Error.ArgumentTypesMustMatch(parameterName);
                     }
@@ -300,7 +300,7 @@ namespace System.Linq.Expressions
                 if (SwitchValue.Type.IsNullable())
                 {
                     return Comparison == null ||
-                        !TypeUtils.AreEquivalent(SwitchValue.Type, Comparison.GetParameters()[0].ParameterType.GetNonRefType());
+                        !TypeUtils.AreEquivalent(SwitchValue.Type, Comparison.GetParameters()[0].ParameterType.GetNonRefTypeInternal());
                 }
                 return false;
             }
