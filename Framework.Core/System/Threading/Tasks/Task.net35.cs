@@ -230,7 +230,7 @@ namespace System.Threading.Tasks
             get
             {
                 PromiseCheck();
-                return (TaskStatus)Volatile.Read(ref _status);
+                return (TaskStatus)Interlocked.CompareExchange(ref _status, 0, 0);
             }
         }
 
