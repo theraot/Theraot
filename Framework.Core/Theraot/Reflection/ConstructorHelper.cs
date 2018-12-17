@@ -16,7 +16,7 @@ namespace Theraot.Reflection
             {
                 return result();
             }
-            throw new InvalidOperationException($"There is no constructor for {typeof(TReturn)} with no type arguments.");
+            throw new MissingMemberException($"There is no constructor for {typeof(TReturn)} with no type arguments.");
         }
 
         public static TReturn CreateOrDefault<TReturn>()
