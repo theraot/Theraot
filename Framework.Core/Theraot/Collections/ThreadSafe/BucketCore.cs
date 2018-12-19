@@ -91,17 +91,7 @@ namespace Theraot.Collections.ThreadSafe
                         ref arrayUse[subIndex],
                         ref arrayFirst[subIndex],
                         ref arraySecond[subIndex],
-                        (ref object target) =>
-                        {
-                            try
-                            {
-                                return ((BucketCore)target).Do(index, callback);
-                            }
-                            catch (NullReferenceException)
-                            {
-                                return false;
-                            }
-                        }
+                        (ref object target) => target is BucketCore core && core.Do(index, callback)
                     );
             }
         }
@@ -135,17 +125,7 @@ namespace Theraot.Collections.ThreadSafe
                         ref arrayUse[subIndex],
                         ref arrayFirst[subIndex],
                         ref arraySecond[subIndex],
-                        (ref object target) =>
-                        {
-                            try
-                            {
-                                return ((BucketCore)target).DoMayDecrement(index, callback);
-                            }
-                            catch (NullReferenceException)
-                            {
-                                return false;
-                            }
-                        }
+                        (ref object target) => target is BucketCore core && core.DoMayDecrement(index, callback)
                     );
             }
         }
@@ -181,17 +161,7 @@ namespace Theraot.Collections.ThreadSafe
                         ref arrayFirst[subIndex],
                         ref arraySecond[subIndex],
                         () => new BucketCore(_level - 1),
-                        (ref object target) =>
-                        {
-                            try
-                            {
-                                return ((BucketCore)target).DoMayIncrement(index, callback);
-                            }
-                            catch (NullReferenceException)
-                            {
-                                return false;
-                            }
-                        }
+                        (ref object target) => target is BucketCore core && core.DoMayIncrement(index, callback)
                     );
             }
         }
