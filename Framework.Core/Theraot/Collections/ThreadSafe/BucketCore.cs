@@ -64,14 +64,22 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Do(int index, DoAction callback)
         {
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            var arrayFirst = Volatile.Read(ref _arrayFirst);
+            var arraySecond = Volatile.Read(ref _arraySecond);
+            var arrayUse = Volatile.Read(ref _arrayUse);
+            if (arrayFirst == null || arraySecond == null || arrayUse == null)
+            {
+                return false;
+            }
             if (_level == 1)
             {
                 var subIndex = SubIndex(index);
                 return Do
                     (
-                        ref _arrayUse[subIndex],
-                        ref _arrayFirst[subIndex],
-                        ref _arraySecond[subIndex],
+                        ref arrayUse[subIndex],
+                        ref arrayFirst[subIndex],
+                        ref arraySecond[subIndex],
                         callback
                     );
             }
@@ -80,9 +88,9 @@ namespace Theraot.Collections.ThreadSafe
                 var subIndex = SubIndex(index);
                 return Do
                     (
-                        ref _arrayUse[subIndex],
-                        ref _arrayFirst[subIndex],
-                        ref _arraySecond[subIndex],
+                        ref arrayUse[subIndex],
+                        ref arrayFirst[subIndex],
+                        ref arraySecond[subIndex],
                         (ref object target) =>
                         {
                             try
@@ -100,14 +108,22 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool DoMayDecrement(int index, DoAction callback)
         {
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            var arrayFirst = Volatile.Read(ref _arrayFirst);
+            var arraySecond = Volatile.Read(ref _arraySecond);
+            var arrayUse = Volatile.Read(ref _arrayUse);
+            if (arrayFirst == null || arraySecond == null || arrayUse == null)
+            {
+                return false;
+            }
             if (_level == 1)
             {
                 var subIndex = SubIndex(index);
                 return DoMayDecrement
                     (
-                        ref _arrayUse[subIndex],
-                        ref _arrayFirst[subIndex],
-                        ref _arraySecond[subIndex],
+                        ref arrayUse[subIndex],
+                        ref arrayFirst[subIndex],
+                        ref arraySecond[subIndex],
                         callback
                     );
             }
@@ -116,9 +132,9 @@ namespace Theraot.Collections.ThreadSafe
                 var subIndex = SubIndex(index);
                 return DoMayDecrement
                     (
-                        ref _arrayUse[subIndex],
-                        ref _arrayFirst[subIndex],
-                        ref _arraySecond[subIndex],
+                        ref arrayUse[subIndex],
+                        ref arrayFirst[subIndex],
+                        ref arraySecond[subIndex],
                         (ref object target) =>
                         {
                             try
@@ -136,14 +152,22 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool DoMayIncrement(int index, DoAction callback)
         {
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            var arrayFirst = Volatile.Read(ref _arrayFirst);
+            var arraySecond = Volatile.Read(ref _arraySecond);
+            var arrayUse = Volatile.Read(ref _arrayUse);
+            if (arrayFirst == null || arraySecond == null || arrayUse == null)
+            {
+                return false;
+            }
             if (_level == 1)
             {
                 var subIndex = SubIndex(index);
                 return DoMayIncrement
                     (
-                        ref _arrayUse[subIndex],
-                        ref _arrayFirst[subIndex],
-                        ref _arraySecond[subIndex],
+                        ref arrayUse[subIndex],
+                        ref arrayFirst[subIndex],
+                        ref arraySecond[subIndex],
                         FuncHelper.GetDefaultFunc<object>(),
                         callback
                     );
@@ -153,9 +177,9 @@ namespace Theraot.Collections.ThreadSafe
                 var subIndex = SubIndex(index);
                 return DoMayIncrement
                     (
-                        ref _arrayUse[subIndex],
-                        ref _arrayFirst[subIndex],
-                        ref _arraySecond[subIndex],
+                        ref arrayUse[subIndex],
+                        ref arrayFirst[subIndex],
+                        ref arraySecond[subIndex],
                         () => new BucketCore(_level - 1),
                         (ref object target) =>
                         {
@@ -191,31 +215,47 @@ namespace Theraot.Collections.ThreadSafe
 
         public IEnumerator<object> GetEnumerator()
         {
-            for (var subIndex = 0; subIndex < _capacity; subIndex++)
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            var arrayFirst = Volatile.Read(ref _arrayFirst);
+            var arraySecond = Volatile.Read(ref _arraySecond);
+            var arrayUse = Volatile.Read(ref _arrayUse);
+            if (arrayFirst == null || arraySecond == null || arrayUse == null)
             {
-                var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subIndex], null, null);
-                if (foundFirst == null)
+                return Empty();
+            }
+            return GetEnumeratorExtracted();
+            IEnumerator<object> Empty()
+            {
+                yield break;
+            }
+            IEnumerator<object> GetEnumeratorExtracted()
+            {
+                for (var subIndex = 0; subIndex < _capacity; subIndex++)
                 {
-                    continue;
-                }
-                try
-                {
-                    Interlocked.Increment(ref _arrayUse[subIndex]);
-                    if (_level == 1)
+                    var foundFirst = Interlocked.CompareExchange(ref arrayFirst[subIndex], null, null);
+                    if (foundFirst == null)
                     {
-                        yield return foundFirst;
+                        continue;
                     }
-                    else
+                    try
                     {
-                        foreach (var item in (BucketCore)foundFirst)
+                        Interlocked.Increment(ref arrayUse[subIndex]);
+                        if (_level == 1)
                         {
-                            yield return item;
+                            yield return foundFirst;
+                        }
+                        else
+                        {
+                            foreach (var item in (BucketCore)foundFirst)
+                            {
+                                yield return item;
+                            }
                         }
                     }
-                }
-                finally
-                {
-                    DoLeave(ref _arrayUse[subIndex], ref _arrayFirst[subIndex], ref _arraySecond[subIndex]);
+                    finally
+                    {
+                        DoLeave(ref arrayUse[subIndex], ref arrayFirst[subIndex], ref arraySecond[subIndex]);
+                    }
                 }
             }
         }
