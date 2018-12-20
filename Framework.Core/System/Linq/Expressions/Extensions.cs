@@ -30,7 +30,6 @@
 
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -39,11 +38,6 @@ namespace System.Linq.Expressions
         public static MethodInfo GetInvokeMethod(this Type self)
         {
             return self.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance);
-        }
-
-        public static Type GetNotNullable(this Type self)
-        {
-            return self.IsNullable() ? self.GetGenericArguments()[0] : self;
         }
 
         public static Type[] GetParameterTypes(this MethodBase self)

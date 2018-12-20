@@ -703,7 +703,7 @@ namespace System.Linq.Expressions.Compiler
                typeTo == typeof(object) ||
                typeFrom == typeof(Enum) ||
                typeFrom == typeof(ValueType) ||
-               TypeHelper.IsLegalExplicitVariantDelegateConversion(typeFrom, typeTo))
+               TypeUtils.IsLegalExplicitVariantDelegateConversion(typeFrom, typeTo))
             {
                 il.EmitCastToType(typeFrom, typeTo);
             }
@@ -728,26 +728,26 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        internal static void EmitGetValue(this ILGenerator il, Type Nullable)
+        internal static void EmitGetValue(this ILGenerator il, Type nullable)
         {
-            MethodInfo mi = Nullable.GetMethod("get_Value", BindingFlags.Instance | BindingFlags.Public);
-            Debug.Assert(Nullable.IsValueType);
+            MethodInfo mi = nullable.GetMethod("get_Value", BindingFlags.Instance | BindingFlags.Public);
+            Debug.Assert(nullable.IsValueType);
             // ReSharper disable once AssignNullToNotNullAttribute
             il.Emit(OpCodes.Call, mi);
         }
 
-        internal static void EmitGetValueOrDefault(this ILGenerator il, Type Nullable)
+        internal static void EmitGetValueOrDefault(this ILGenerator il, Type nullable)
         {
-            MethodInfo mi = Nullable.GetMethod("GetValueOrDefault", Type.EmptyTypes);
-            Debug.Assert(Nullable.IsValueType);
+            MethodInfo mi = nullable.GetMethod("GetValueOrDefault", Type.EmptyTypes);
+            Debug.Assert(nullable.IsValueType);
             // ReSharper disable once AssignNullToNotNullAttribute
             il.Emit(OpCodes.Call, mi);
         }
 
-        internal static void EmitHasValue(this ILGenerator il, Type Nullable)
+        internal static void EmitHasValue(this ILGenerator il, Type nullable)
         {
-            MethodInfo mi = Nullable.GetMethod("get_HasValue", BindingFlags.Instance | BindingFlags.Public);
-            Debug.Assert(Nullable.IsValueType);
+            MethodInfo mi = nullable.GetMethod("get_HasValue", BindingFlags.Instance | BindingFlags.Public);
+            Debug.Assert(nullable.IsValueType);
             // ReSharper disable once AssignNullToNotNullAttribute
             il.Emit(OpCodes.Call, mi);
         }

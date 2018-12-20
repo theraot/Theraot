@@ -130,45 +130,6 @@ namespace Theraot.Reflection
             return FuncHelper.GetDefaultFunc<TReturn>();
         }
 
-        public static bool IsAtomic<T>()
-        {
-#if NETCOREAPP1_0 || NETCOREAPP1_1
-            var info = typeof(T).GetTypeInfo();
-            return info.IsClass || info.IsPrimitive && Marshal.SizeOf<T>() <= IntPtr.Size;
-#else
-            var type = typeof(T);
-            var info = type.GetTypeInfo();
-            return info.IsClass || info.IsPrimitive && Marshal.SizeOf(type) <= IntPtr.Size;
-#endif
-        }
-
-        public static bool IsContravariant(Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            return PrivateIsContravariant(type);
-        }
-
-        public static bool IsCovariant(Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            return PrivateIsCovariant(type);
-        }
-
-        public static bool IsDelegate(Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            return PrivateIsDelegate(type);
-        }
-
         public static bool IsImplicitBoxingConversion(Type source, Type target)
         {
             var info = source.GetTypeInfo();
@@ -302,15 +263,6 @@ namespace Theraot.Reflection
             return false;
         }
 
-        public static bool IsInvariant(Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            return PrivateIsInvariant(type);
-        }
-
         public static T LazyCreate<T>(ref T target)
             where T : class
         {
@@ -427,30 +379,6 @@ namespace Theraot.Reflection
                 }
             }
             return found;
-        }
-
-        private static bool PrivateIsContravariant(Type type)
-        {
-            var info = type.GetTypeInfo();
-            return 0 != (info.GenericParameterAttributes & GenericParameterAttributes.Contravariant);
-        }
-
-        private static bool PrivateIsCovariant(Type type)
-        {
-            var info = type.GetTypeInfo();
-            return 0 != (info.GenericParameterAttributes & GenericParameterAttributes.Covariant);
-        }
-
-        private static bool PrivateIsDelegate(Type type)
-        {
-            var info = type.GetTypeInfo();
-            return info.IsSubclassOf(typeof(MulticastDelegate));
-        }
-
-        private static bool PrivateIsInvariant(Type type)
-        {
-            var info = type.GetTypeInfo();
-            return 0 == (info.GenericParameterAttributes & GenericParameterAttributes.VarianceMask);
         }
     }
 }

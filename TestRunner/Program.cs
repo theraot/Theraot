@@ -135,7 +135,7 @@ namespace TestRunner
                     new ExtendedEnumerable<string>(Extensions.AsUnaryIEnumerable("== Reconstructed StackTrace ==\r\n"), extendedStackTrace.SkipItems(4))
                 )
             );
-            Console.WriteLine(report.ToString());
+            Debug.WriteLine(report.ToString());
         }
 
         public static void Main()
@@ -160,7 +160,7 @@ namespace TestRunner
                         ExceptionReport(exception);
                     }
                     stopwatch.Stop();
-                    Console.WriteLine(stopwatch.Elapsed);
+                    Debug.WriteLine(stopwatch.Elapsed);
                 }
             }
         }
@@ -169,7 +169,7 @@ namespace TestRunner
         {
             return GetAllTypes()
                 .Where(IsTestType)
-                .SelectMany(t => t.GetMethods())
+                .SelectMany(t => t.GetTypeInfo().GetMethods())
                 .Where(IsTestMethod)
                 .Select(method => new CategorizedMethod(method))
                 .Where(categorizedMethod => !categorizedMethod.Categories.Overlaps(ignoredCategories))

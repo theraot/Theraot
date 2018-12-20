@@ -37,8 +37,7 @@ namespace Theraot.Reflection
                 create = () => default;
                 return true;
             }
-            var canCache = TypeExtensions.CanCache(type);
-            if (canCache && _constructorCache.TryGetValue(type, out var result))
+            if (_constructorCache.TryGetValue(type, out var result))
             {
                 if (result == null)
                 {
@@ -48,22 +47,16 @@ namespace Theraot.Reflection
                 create = (Func<TReturn>)result;
                 return true;
             }
-            var typeArguments = Type.EmptyTypes;
-            var constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+            var typeArguments = ArrayReservoir<Type>.EmptyArray;
+            var constructorInfo = typeof(TReturn).GetTypeInfo().GetConstructor(typeArguments);
             if (constructorInfo == null)
             {
-                if (canCache)
-                {
-                    _constructorCache[type] = null;
-                }
+                _constructorCache[type] = null;
                 create = null;
                 return false;
             }
             TReturn Create() => (TReturn) constructorInfo.Invoke(ArrayReservoir<object>.EmptyArray);
-            if (canCache)
-            {
-                _constructorCache[type] = (Func<TReturn>) Create;
-            }
+            _constructorCache[type] = (Func<TReturn>) Create;
             create = Create;
             return true;
         }

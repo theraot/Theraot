@@ -225,7 +225,7 @@ namespace System.Linq.Expressions
             var left = Parameter(Left.Type, "left");
             var right = Parameter(Right.Type, "right");
             var opName = NodeType == ExpressionType.AndAlso ? "op_False" : "op_True";
-            var opTrueFalse = TypeHelper.GetBooleanOperator(Method.DeclaringType, opName);
+            var opTrueFalse = TypeUtils.GetBooleanOperator(Method.DeclaringType, opName);
             Debug.Assert(opTrueFalse != null);
 
             return Block(
@@ -903,8 +903,8 @@ namespace System.Linq.Expressions
             {
                 throw Error.LogicalOperatorMustHaveBooleanOperators(nodeType, method.Name);
             }
-            var opTrue = TypeHelper.GetBooleanOperator(declaringType, "op_True");
-            var opFalse = TypeHelper.GetBooleanOperator(declaringType, "op_False");
+            var opTrue = TypeUtils.GetBooleanOperator(declaringType, "op_True");
+            var opFalse = TypeUtils.GetBooleanOperator(declaringType, "op_False");
             if (opTrue == null || opTrue.ReturnType != typeof(bool) ||
                 opFalse == null || opFalse.ReturnType != typeof(bool))
             {
@@ -1011,7 +1011,7 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (TypeHelper.HasReferenceEquality(left.Type, right.Type))
+            if (TypeUtils.HasReferenceEquality(left.Type, right.Type))
             {
                 return new LogicalBinaryExpression(ExpressionType.Equal, left, right);
             }
@@ -1030,7 +1030,7 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (TypeHelper.HasReferenceEquality(left.Type, right.Type))
+            if (TypeUtils.HasReferenceEquality(left.Type, right.Type))
             {
                 return new LogicalBinaryExpression(ExpressionType.NotEqual, left, right);
             }
@@ -1058,7 +1058,7 @@ namespace System.Linq.Expressions
             {
                 return b;
             }
-            if (TypeHelper.HasBuiltInEqualityOperator(left.Type, right.Type) || IsNullComparison(left, right))
+            if (TypeUtils.HasBuiltInEqualityOperator(left.Type, right.Type) || IsNullComparison(left, right))
             {
                 if (left.Type.IsNullable() && liftToNull)
                 {

@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Reflection;
-using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -186,7 +185,7 @@ namespace System.Linq.Expressions
                 }
 
                 ExpressionUtils.RequiresCanRead(expression, nameof(expression));
-                if (!TypeHelper.IsValidInstanceType(property, expression.Type))
+                if (!TypeUtils.IsValidInstanceType(property, expression.Type))
                 {
                     throw Error.PropertyNotDefinedForType(property, expression.Type, nameof(property));
                 }

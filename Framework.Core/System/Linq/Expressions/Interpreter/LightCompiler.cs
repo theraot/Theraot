@@ -1912,7 +1912,7 @@ namespace System.Linq.Expressions.Interpreter
             Compile(expr.Left);
             _instructions.EmitDup();
 
-            var opTrue = TypeHelper.GetBooleanOperator(expr.Method.DeclaringType, andAlso ? "op_False" : "op_True");
+            var opTrue = TypeUtils.GetBooleanOperator(expr.Method.DeclaringType, andAlso ? "op_False" : "op_True");
             Debug.Assert(opTrue != null, "factory should check that the method exists");
             _instructions.EmitCall(opTrue);
             _instructions.EmitBranchTrue(labEnd);

@@ -46,12 +46,12 @@ namespace Theraot.Core
             {
                 return (_keySelector(item), keySelector(item));
             }
-            int Compare((TKey key, TNewKey newKey) x, (TKey key, TNewKey newKey) y)
+            int Compare((TKey, TNewKey) x, (TKey, TNewKey) y)
             {
-                var check = _comparer.Compare(x.key, y.key);
+                var check = _comparer.Compare(x.Item1, y.Item1);
                 if (check == 0)
                 {
-                    return comparer.Compare(x.newKey, y.newKey);
+                    return comparer.Compare(x.Item2, y.Item2);
                 }
                 return check;
             }
@@ -70,19 +70,19 @@ namespace Theraot.Core
         private IEnumerable<TElement> Sort(IEnumerable<TElement> source)
         {
             var array = Extensions.AsArray(source);
-            var keys = new (TKey key, int index)[array.Length];
+            var keys = new (TKey, int)[array.Length];
             for (int index = 0; index < array.Length; index++)
             {
                 keys[index] = (_keySelector.Invoke(array[index]), index);
             }
             Array.Sort(keys, Compare);
             return Enumerable();
-            int Compare((TKey key, int index) x, (TKey key, int index) y)
+            int Compare((TKey, int) x, (TKey, int) y)
             {
-                var check = _comparer.Compare(x.key, y.key);
+                var check = _comparer.Compare(x.Item1, y.Item1);
                 if (check == 0)
                 {
-                    return x.index - y.index;
+                    return x.Item2 - y.Item2;
                 }
                 return check;
             }

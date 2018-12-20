@@ -1,76 +1,15 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Resources;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.Security.Principal;
-using System.Threading;
-using System.Threading.Tasks;
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Reflection
 {
-    public static class TypeExtensions
+    public static partial class TypeExtensions
     {
-        private static readonly Type[] _arrayAssignableInterfaces = typeof(int[]).GetInterfaces()
-            .Where(i => i.GetTypeInfo().IsGenericType)
-            .Select(i => i.GetGenericTypeDefinition())
-            .ToArray();
-
-        private static readonly Assembly[] _assemblies;
         private static readonly CacheDict<Type, bool> _binaryPortableCache = new CacheDict<Type, bool>(256);
         private static readonly CacheDict<Type, bool> _blittableCache = new CacheDict<Type, bool>(256);
         private static readonly CacheDict<Type, bool> _valueTypeRecursiveCache = new CacheDict<Type, bool>(256);
-
-        static TypeExtensions()
-        {
-            Type[] known = {
-                        typeof(object),
-                        typeof(BitConverter),
-                        typeof(StructuralComparisons),
-                        typeof(Debug),
-                        typeof(IStrongBox),
-                        typeof(BarrierPostPhaseException),
-                        typeof(TaskExtensions),
-                        typeof(Uri),
-                        typeof(TypeHelper),
-                        typeof(CancelEventArgs),
-                        typeof(Console),
-                        typeof(BufferedStream),
-                        typeof(File),
-                        typeof(FileAccess),
-                        typeof(ResourceReader),
-                        typeof(AsnEncodedData),
-                        typeof(AsymmetricAlgorithm),
-                        typeof(IIdentity)
-                    };
-            var assemblies = new List<Assembly>();
-            foreach (var type in known)
-            {
-                var info = type.GetTypeInfo();
-                var assembly = info.Assembly;
-                if (!assemblies.Contains(assembly))
-                {
-                    assemblies.Add(assembly);
-                }
-            }
-            _assemblies = assemblies.ToArray();
-        }
-
-        public static bool CanBe<T>(this Type type, T value)
-        {
-            if (value == null)
-            {
-                return type.CanBeNull();
-            }
-            return value.GetType().IsAssignableTo(type);
-        }
 
         public static bool CanBeNull(this Type type)
         {
@@ -83,7 +22,45 @@ namespace Theraot.Reflection
             return @delegate.GetMethodInfo().Equals(method) && @delegate.Target == target;
         }
 
-        public static TAttribute[] GetAttributes<TAttribute>(this ICustomAttributeProvider item, bool inherit)
+        public static TAttribute[] GetAttributes<TAttribute>(this Assembly item)
+            where TAttribute : Attribute
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NET46 ||NET47
+            return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute), true);
+#else
+            return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute));
+#endif
+        }
+
+        public static TAttribute[] GetAttributes<TAttribute>(this MemberInfo item, bool inherit)
+            where TAttribute : Attribute
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+            return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute), inherit);
+        }
+
+        public static TAttribute[] GetAttributes<TAttribute>(this Module item)
+            where TAttribute : Attribute
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NET46 ||NET47
+            return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute), true);
+#else
+            return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute));
+#endif
+        }
+
+        public static TAttribute[] GetAttributes<TAttribute>(this ParameterInfo item, bool inherit)
             where TAttribute : Attribute
         {
             if (item == null)
@@ -104,7 +81,7 @@ namespace Theraot.Reflection
         {
             if (type.IsNullable())
             {
-                return type.GetGenericArguments()[0];
+                return Nullable.GetUnderlyingType(type);
             }
             return type;
         }
@@ -157,27 +134,6 @@ namespace Theraot.Reflection
             return methodInfo.IsConstructor ? methodInfo.DeclaringType : ((MethodInfo)methodInfo).ReturnType;
         }
 
-        public static MethodInfo GetStaticMethod(this Type type, string name, Type[] types)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            if (types == null)
-            {
-                throw new ArgumentNullException(nameof(types));
-            }
-            // Don't use BindingFlags.Static
-            foreach (var method in type.GetMethods())
-            {
-                if (method.Name == name && method.IsStatic && method.MatchesArgumentTypes(types))
-                {
-                    return method;
-                }
-            }
-            return null;
-        }
-
         public static MethodInfo GetStaticMethod(this Type type, string name)
         {
             if (type == null)
@@ -200,6 +156,7 @@ namespace Theraot.Reflection
             return type.GetStaticMethodsInternal();
         }
 
+#if NET20 || NET30 || NET35
         public static TypeCode GetTypeCode(this Type type)
         {
             if (type == null)
@@ -280,6 +237,7 @@ namespace Theraot.Reflection
             }
             return TypeCode.Object;
         }
+#endif
 
         public static object GetValue(this PropertyInfo info, object obj)
         {
@@ -291,7 +249,18 @@ namespace Theraot.Reflection
 #endif
         }
 
-        public static bool HasAttribute<TAttribute>(this Type item)
+        public static bool HasAttribute<TAttribute>(this Assembly item)
+            where TAttribute : Attribute
+        {
+            var attributes = item.GetAttributes<TAttribute>();
+            if (attributes != null)
+            {
+                return attributes.Length > 0;
+            }
+            return false;
+        }
+
+        public static bool HasAttribute<TAttribute>(this MemberInfo item)
             where TAttribute : Attribute
         {
             var attributes = item.GetAttributes<TAttribute>(true);
@@ -302,7 +271,29 @@ namespace Theraot.Reflection
             return false;
         }
 
-        public static bool HasAttribute<TAttribute>(this ICustomAttributeProvider item)
+        public static bool HasAttribute<TAttribute>(this Module item)
+            where TAttribute : Attribute
+        {
+            var attributes = item.GetAttributes<TAttribute>();
+            if (attributes != null)
+            {
+                return attributes.Length > 0;
+            }
+            return false;
+        }
+
+        public static bool HasAttribute<TAttribute>(this ParameterInfo item)
+            where TAttribute : Attribute
+        {
+            var attributes = item.GetAttributes<TAttribute>(true);
+            if (attributes != null)
+            {
+                return attributes.Length > 0;
+            }
+            return false;
+        }
+
+        public static bool HasAttribute<TAttribute>(this Type item)
             where TAttribute : Attribute
         {
             var attributes = item.GetAttributes<TAttribute>(true);
@@ -349,52 +340,7 @@ namespace Theraot.Reflection
             // bool-backed enums.
             return IsConvertible(source) && IsConvertible(target)
                                          && (target.GetNonNullable() != typeof(bool)
-                                         || source.GetTypeInfo().IsEnum && source.GetTypeInfo().UnderlyingSystemType == typeof(bool));
-        }
-
-        public static bool HasReferenceConversionTo(this Type source, Type target)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (target == null)
-            {
-                throw new ArgumentNullException(nameof(target));
-            }
-            // void -> void conversion is handled elsewhere
-            // (it's an identity conversion)
-            // All other void conversions are disallowed.
-            if (source == typeof(void) || target == typeof(void))
-            {
-                return false;
-            }
-            var nonNullableSource = source.GetNonNullable();
-            var nonNullableTarget = target.GetNonNullable();
-            // Down conversion
-            if (nonNullableSource.IsAssignableFrom(nonNullableTarget))
-            {
-                return true;
-            }
-            // Up conversion
-            if (nonNullableTarget.IsAssignableFrom(nonNullableSource))
-            {
-                return true;
-            }
-            // Interface conversion
-            var sourceInfo = source.GetTypeInfo();
-            var targetInfo = target.GetTypeInfo();
-            if (sourceInfo.IsInterface || targetInfo.IsInterface)
-            {
-                return true;
-            }
-            // Variant delegate conversion
-            if (TypeHelper.IsLegalExplicitVariantDelegateConversion(source, target))
-            {
-                return true;
-            }
-            // Object conversion handled by assignable above.
-            return (source.IsArray || target.IsArray) && StrictHasReferenceConversionTo(source, target, true);
+                                         || source.GetTypeInfo().IsEnum && source.GetUnderlyingSystemType() == typeof(bool));
         }
 
         public static bool IsArithmetic(this Type type)
@@ -415,24 +361,6 @@ namespace Theraot.Reflection
                 return true;
             }
             return false;
-        }
-
-        public static bool IsAssignableTo(this Type type, ParameterInfo parameterInfo)
-        {
-            return IsAssignableTo(type.GetNotNullable(), parameterInfo.GetNonRefType());
-        }
-
-        public static bool IsAssignableTo(this Type type, Type target)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            if (target == null)
-            {
-                throw new ArgumentNullException(nameof(target));
-            }
-            return type.IsAssignableToInternal(target);
         }
 
         public static bool IsBinaryPortable(this Type type)
@@ -502,81 +430,6 @@ namespace Theraot.Reflection
             return false;
         }
 
-        public static bool IsGenericImplementationOf(this Type type, Type interfaceGenericTypeDefinition)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            foreach (var currentInterface in type.GetInterfaces())
-            {
-                if (currentInterface.IsGenericInstanceOf(interfaceGenericTypeDefinition))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static bool IsGenericImplementationOf(this Type type, params Type[] interfaceGenericTypeDefinitions)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            foreach (var currentInterface in type.GetInterfaces())
-            {
-                var info = currentInterface.GetTypeInfo();
-                if (info.IsGenericTypeDefinition)
-                {
-                    var match = currentInterface.GetGenericTypeDefinition();
-                    if (Array.Exists(interfaceGenericTypeDefinitions, item => item == match))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        public static bool IsGenericImplementationOf(this Type type, out Type interfaceType, Type interfaceGenericTypeDefinition)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            foreach (var currentInterface in type.GetInterfaces())
-            {
-                if (currentInterface.IsGenericInstanceOf(interfaceGenericTypeDefinition))
-                {
-                    interfaceType = currentInterface;
-                    return true;
-                }
-            }
-            interfaceType = null;
-            return false;
-        }
-
-        public static bool IsGenericImplementationOf(this Type type, out Type interfaceType, params Type[] interfaceGenericTypeDefinitions)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            var implementedInterfaces = type.GetInterfaces();
-            foreach (var currentInterface in interfaceGenericTypeDefinitions)
-            {
-                var index = Array.FindIndex(implementedInterfaces, item => item.IsGenericInstanceOf(currentInterface));
-                if (index != -1)
-                {
-                    interfaceType = implementedInterfaces[index];
-                    return true;
-                }
-            }
-            interfaceType = null;
-            return false;
-        }
-
         public static bool IsGenericInstanceOf(this Type type, Type genericTypeDefinition)
         {
             var info = type.GetTypeInfo();
@@ -585,71 +438,6 @@ namespace Theraot.Reflection
                 return false;
             }
             return type.GetGenericTypeDefinition() == genericTypeDefinition;
-        }
-
-        public static bool IsImplementationOf(this Type type, Type interfaceType)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            foreach (var currentInterface in type.GetInterfaces())
-            {
-                if (currentInterface == interfaceType)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static bool IsImplementationOf(this Type type, params Type[] interfaceTypes)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            foreach (var currentInterface in type.GetInterfaces())
-            {
-                if (Array.Exists(interfaceTypes, item => currentInterface == item))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static bool IsImplementationOf(this Type type, out Type interfaceType, params Type[] interfaceTypes)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            var implementedInterfaces = type.GetInterfaces();
-            foreach (var currentInterface in interfaceTypes)
-            {
-                var index = Array.FindIndex(implementedInterfaces, item => item == currentInterface);
-                if (index != -1)
-                {
-                    interfaceType = implementedInterfaces[index];
-                    return true;
-                }
-            }
-            interfaceType = null;
-            return false;
-        }
-
-        public static bool IsImplicitlyConvertibleTo(this Type source, Type target)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (target == null)
-            {
-                throw new ArgumentNullException(nameof(target));
-            }
-            return source.IsImplicitlyConvertibleToInternal(target);
         }
 
         public static bool IsInteger(this Type type)
@@ -663,12 +451,7 @@ namespace Theraot.Reflection
             type = GetNonNullable(type);
             if (!type.IsSameOrSubclassOfInternal(typeof(Enum)))
             {
-                switch (type.GetTypeCode())
-                {
-                    case TypeCode.Int64:
-                    case TypeCode.UInt64:
-                        return true;
-                }
+                if (type == typeof(long) || type == typeof(ulong)) return true;
             }
             return false;
         }
@@ -746,19 +529,6 @@ namespace Theraot.Reflection
             return false;
         }
 
-        public static bool IsReferenceAssignableFrom(this Type type, Type source)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            return type.IsReferenceAssignableFromInternal(source);
-        }
-
         public static bool IsSafeArray(this Type type)
         {
             if (type == null)
@@ -774,11 +544,12 @@ namespace Theraot.Reflection
                 // We are not checking the lower bound of the array type, there is no API for that.
                 // However, the type of arrays that can have a different lower index other than zero...
                 // ... have two constructors, one taking only the size, and one taking the lower and upper bounds.
+                var typeInfo = type.GetTypeInfo();
                 return type.IsArray
-                       && typeof(Array).IsAssignableFrom(type)
+                       && typeof(Array).GetTypeInfo().IsAssignableFrom(typeInfo)
                        && type.GetArrayRank() == 1
                        && type.GetElementType() != null
-                       && type.GetConstructors().Length == 1;
+                       && typeInfo.GetConstructors().Length == 1;
             }
             catch (Exception exception)
             {
@@ -846,27 +617,6 @@ namespace Theraot.Reflection
             return typeof(Nullable<>).MakeGenericType(self);
         }
 
-        public static bool MatchesArgumentTypes(this MethodInfo method, Type[] argTypes)
-        {
-            if (method == null || argTypes == null)
-            {
-                return false;
-            }
-            var parameters = method.GetParameters();
-            if (parameters.Length != argTypes.Length)
-            {
-                return false;
-            }
-            for (var index = 0; index < parameters.Length; index++)
-            {
-                if (!IsReferenceAssignableFromInternal(parameters[index].ParameterType, argTypes[index]))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
         public static void SetValue(this PropertyInfo info, object obj, object value)
         {
             //Added in .NET 4.5
@@ -877,27 +627,6 @@ namespace Theraot.Reflection
 #endif
         }
 
-        internal static bool CanCache(Type type)
-        {
-            var info = type.GetTypeInfo();
-            var assembly = info.Assembly;
-            if (Array.IndexOf(_assemblies, assembly) == -1)
-            {
-                return false;
-            }
-            if (info.IsGenericType)
-            {
-                foreach (var genericArgument in type.GetGenericArguments())
-                {
-                    if (!CanCache(genericArgument))
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
         internal static Type GetNonRefTypeInternal(this Type type)
         {
             return type.IsByRef ? type.GetElementType() : type;
@@ -906,7 +635,7 @@ namespace Theraot.Reflection
         internal static MethodInfo GetStaticMethodInternal(this Type type, string name)
         {
             // Don't use BindingFlags.Static
-            foreach (var method in type.GetMethods())
+            foreach (var method in type.GetTypeInfo().GetMethods())
             {
                 if (method.Name == name && method.IsStatic)
                 {
@@ -916,22 +645,9 @@ namespace Theraot.Reflection
             return null;
         }
 
-        internal static MethodInfo GetStaticMethodInternal(this Type type, string name, Type[] types)
-        {
-            // Don't use BindingFlags.Static
-            foreach (var method in type.GetMethods())
-            {
-                if (method.Name == name && method.IsStatic && method.MatchesArgumentTypes(types))
-                {
-                    return method;
-                }
-            }
-            return null;
-        }
-
         internal static MethodInfo[] GetStaticMethodsInternal(this Type type)
         {
-            var methods = type.GetMethods();
+            var methods = type.GetTypeInfo().GetMethods();
             var list = new List<MethodInfo>(methods.Length);
             foreach (var method in methods)
             {
@@ -943,50 +659,6 @@ namespace Theraot.Reflection
             return list.ToArray();
         }
 
-        internal static bool HasReferenceConversionToInternal(this Type source, Type target)
-        {
-            // void -> void conversion is handled elsewhere
-            // (it's an identity conversion)
-            // All other void conversions are disallowed.
-            if (source == typeof(void) || target == typeof(void))
-            {
-                return false;
-            }
-            var nonNullableSource = source.GetNonNullable();
-            var nonNullableTarget = target.GetNonNullable();
-            // Down conversion
-            if (nonNullableSource.IsAssignableFrom(nonNullableTarget))
-            {
-                return true;
-            }
-            // Up conversion
-            if (nonNullableTarget.IsAssignableFrom(nonNullableSource))
-            {
-                return true;
-            }
-            // Interface conversion
-            var sourceInfo = source.GetTypeInfo();
-            var targetInfo = target.GetTypeInfo();
-            if (sourceInfo.IsInterface || targetInfo.IsInterface)
-            {
-                return true;
-            }
-            // Variant delegate conversion
-            if (TypeHelper.IsLegalExplicitVariantDelegateConversion(source, target))
-            {
-                return true;
-            }
-            // Object conversion handled by assignable above.
-            return (source.IsArray || target.IsArray) && StrictHasReferenceConversionToInternal(source, target, true);
-        }
-
-        internal static bool IsAssignableToInternal(this Type type, Type target)
-        {
-            return target.IsAssignableFrom(type)
-                || TypeHelper.IsArrayTypeAssignableTo(type, target)
-                || TypeHelper.IsArrayTypeAssignableToInterface(type, target);
-        }
-
         internal static bool IsByRefParameterInternal(this ParameterInfo parameterInfo)
         {
             if (parameterInfo.ParameterType.IsByRef)
@@ -994,19 +666,6 @@ namespace Theraot.Reflection
                 return true;
             }
             return (parameterInfo.Attributes & ParameterAttributes.Out) == ParameterAttributes.Out;
-        }
-
-        internal static bool IsFloatingPoint(this TypeCode typeCode)
-        {
-            switch (typeCode)
-            {
-                case TypeCode.Single:
-                case TypeCode.Double:
-                    return true;
-
-                default:
-                    return false;
-            }
         }
 
         internal static bool IsFloatingPoint(this Type type)
@@ -1023,29 +682,6 @@ namespace Theraot.Reflection
             return false;
         }
 
-        internal static bool IsImplicitlyConvertibleToInternal(this Type source, Type target)
-        {
-            return source == target
-            || TypeHelper.IsImplicitNumericConversion(source, target)
-            || TypeHelper.IsImplicitReferenceConversion(source, target)
-            || TypeHelper.IsImplicitBoxingConversion(source, target)
-            || TypeHelper.IsImplicitNullableConversion(source, target);
-        }
-
-        internal static bool IsReferenceAssignableFromInternal(this Type type, Type source)
-        {
-            // This actually implements "Is this identity assignable and/or reference assignable?"
-            if (type == source)
-            {
-                return true;
-            }
-            var info = type.GetTypeInfo();
-            var sourceInfo = source.GetTypeInfo();
-            return !info.IsValueType
-                   && !sourceInfo.IsValueType
-                   && type.IsAssignableFrom(source);
-        }
-
         internal static bool IsSameOrSubclassOfInternal(this Type type, Type baseType)
         {
             if (type == baseType)
@@ -1053,22 +689,6 @@ namespace Theraot.Reflection
                 return true;
             }
             return type.IsSubclassOfInternal(baseType);
-        }
-
-        internal static bool IsUnsigned(this TypeCode typeCode)
-        {
-            switch (typeCode)
-            {
-                case TypeCode.Byte:
-                case TypeCode.UInt16:
-                case TypeCode.Char:
-                case TypeCode.UInt32:
-                case TypeCode.UInt64:
-                    return true;
-
-                default:
-                    return false;
-            }
         }
 
         internal static bool IsUnsigned(this Type type)
@@ -1117,7 +737,7 @@ namespace Theraot.Reflection
             }
             if (info.IsValueType)
             {
-                foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+                foreach (var field in info.GetFields())
                 {
                     if (!IsBinaryPortableExtracted(field.FieldType))
                     {
@@ -1125,7 +745,7 @@ namespace Theraot.Reflection
                     }
                 }
                 // ReSharper disable once PossibleNullReferenceException
-                return !info.IsAutoLayout && info.StructLayoutAttribute.Pack > 0;
+                return !info.IsAutoLayout && type.GetStructLayoutAttribute().Pack > 0;
             }
             return false;
         }
@@ -1147,7 +767,7 @@ namespace Theraot.Reflection
             }
             if (info.IsValueType)
             {
-                foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+                foreach (var field in type.GetTypeInfo().GetFields())
                 {
                     if (!IsBlittableExtracted(field.FieldType))
                     {
@@ -1168,7 +788,7 @@ namespace Theraot.Reflection
             }
             if (info.IsValueType)
             {
-                foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+                foreach (var field in type.GetTypeInfo().GetFields())
                 {
                     if (!IsValueTypeRecursiveExtracted(field.FieldType))
                     {
@@ -1180,50 +800,6 @@ namespace Theraot.Reflection
             return false;
         }
 
-        private static bool HasArrayToInterfaceConversion(Type source, Type target)
-        {
-            if (!source.IsSafeArray() || !target.GetTypeInfo().IsInterface || !target.GetTypeInfo().IsGenericType)
-            {
-                return false;
-            }
-            var targetParams = target.GetGenericArguments();
-            if (targetParams.Length != 1)
-            {
-                return false;
-            }
-            var targetGen = target.GetGenericTypeDefinition();
-            foreach (var currentInterface in _arrayAssignableInterfaces)
-            {
-                if (targetGen == currentInterface)
-                {
-                    return StrictHasReferenceConversionToInternal(source.GetElementType(), targetParams[0], false);
-                }
-            }
-            return false;
-        }
-
-        private static bool HasInterfaceToArrayConversion(Type source, Type target)
-        {
-            if (!target.IsSafeArray() || !source.GetTypeInfo().IsInterface || !source.GetTypeInfo().IsGenericType)
-            {
-                return false;
-            }
-            var sourceParams = source.GetGenericArguments();
-            if (sourceParams.Length != 1)
-            {
-                return false;
-            }
-            var sourceGen = source.GetGenericTypeDefinition();
-            foreach (var currentInterface in _arrayAssignableInterfaces)
-            {
-                if (sourceGen == currentInterface)
-                {
-                    return StrictHasReferenceConversionToInternal(sourceParams[0], target.GetElementType(), false);
-                }
-            }
-            return false;
-        }
-
         private static bool IsBinaryPortableExtracted(Type type)
         {
             var info = type.GetTypeInfo();
@@ -1231,16 +807,12 @@ namespace Theraot.Reflection
             {
                 return false;
             }
-            var canCache = CanCache(type);
-            if (canCache && _binaryPortableCache.TryGetValue(type, out var result))
+            if (_binaryPortableCache.TryGetValue(type, out var result))
             {
                 return result;
             }
             result = GetBinaryPortableResult(type);
-            if (canCache)
-            {
-                _binaryPortableCache[type] = result;
-            }
+            _binaryPortableCache[type] = result;
             return result;
         }
 
@@ -1251,16 +823,12 @@ namespace Theraot.Reflection
             {
                 return false;
             }
-            var canCache = CanCache(type);
-            if (canCache && _blittableCache.TryGetValue(type, out var result))
+            if (_blittableCache.TryGetValue(type, out var result))
             {
                 return result;
             }
             result = GetBlittableResult(type);
-            if (canCache)
-            {
-                _binaryPortableCache[type] = result;
-            }
+            _binaryPortableCache[type] = result;
             return result;
         }
 
@@ -1271,119 +839,131 @@ namespace Theraot.Reflection
             {
                 return false;
             }
-            var canCache = CanCache(type);
-            if (canCache && _valueTypeRecursiveCache.TryGetValue(type, out var result))
+            if (_valueTypeRecursiveCache.TryGetValue(type, out var result))
             {
                 return result;
             }
             result = GetValueTypeRecursiveResult(type);
-            if (canCache)
-            {
-                _binaryPortableCache[type] = result;
-            }
+            _binaryPortableCache[type] = result;
             return result;
         }
+    }
 
-        private static bool StrictHasReferenceConversionTo(this Type source, Type target, bool skipNonArray)
+    public static partial class TypeExtensions
+    {
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
+        public static ConstructorInfo[] GetConstructors(this TypeInfo typeInfo)
         {
-            if (source == null)
+            var members = typeInfo.DeclaredMembers;
+            var result = new List<ConstructorInfo>();
+            foreach (var member in members)
             {
-                throw new ArgumentNullException(nameof(source));
+                if (member is ConstructorInfo constructorInfo)
+                {
+                    result.Add(constructorInfo);
+                }
             }
-            if (target == null)
-            {
-                throw new ArgumentNullException(nameof(target));
-            }
-            return source.StrictHasReferenceConversionToInternal(target, skipNonArray);
+            return result.ToArray();
         }
 
-        private static bool StrictHasReferenceConversionToInternal(this Type source, Type target, bool skipNonArray)
+        public static FieldInfo[] GetFields(this TypeInfo typeInfo)
         {
-            if (source == null)
+            var members = typeInfo.DeclaredMembers;
+            var result = new List<FieldInfo>();
+            foreach (var member in members)
             {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (target == null)
-            {
-                throw new ArgumentNullException(nameof(target));
-            }
-            // HasReferenceConversionTo was both too strict and too lax. It was too strict in prohibiting
-            // some valid conversions involving arrays, and too lax in allowing casts between interfaces
-            // and sealed classes that don't implement them. Unfortunately fixing the lax cases would be
-            // a breaking change, especially since such expressions will even work if only given null
-            // arguments.
-            // This method catches the cases that were incorrectly disallowed, but when it needs to
-            // examine possible conversions of element or type parameters it applies stricter rules.
-            while (true)
-            {
-                if (!skipNonArray) // Skip if we just came from HasReferenceConversionTo and have just tested these
+                if (member is FieldInfo fieldInfo)
                 {
-                    // ReSharper disable once PossibleNullReferenceException
-                    if (source.GetTypeInfo().IsValueType)
-                    {
-                        return false;
-                    }
-                    // ReSharper disable once PossibleNullReferenceException
-                    if (target.GetTypeInfo().IsValueType)
-                    {
-                        return false;
-                    }
-                    // Includes to case of either being typeof(object)
-                    if
-                    (
-                        // ReSharper disable once PossibleNullReferenceException
-                        source.IsAssignableFrom(target)
-                        // ReSharper disable once PossibleNullReferenceException
-                        || target.IsAssignableFrom(source)
-                    )
-                    {
-                        return true;
-                    }
-                    if (source.GetTypeInfo().IsInterface)
-                    {
-                        if (target.GetTypeInfo().IsInterface || target.GetTypeInfo().IsClass && !target.GetTypeInfo().IsSealed)
-                        {
-                            return true;
-                        }
-                    }
-                    else if (target.GetTypeInfo().IsInterface)
-                    {
-                        if (source.GetTypeInfo().IsClass && !source.GetTypeInfo().IsSealed)
-                        {
-                            return true;
-                        }
-                    }
-                }
-                if (source.IsArray)
-                {
-                    if (target.IsArray)
-                    {
-                        if (source.GetArrayRank() != target.GetArrayRank() || source.IsSafeArray() != target.IsSafeArray())
-                        {
-                            return false;
-                        }
-                        source = source.GetElementType();
-                        target = target.GetElementType();
-                        skipNonArray = false;
-                    }
-                    else
-                    {
-                        return HasArrayToInterfaceConversion(source, target);
-                    }
-                }
-                else if (target.IsArray)
-                {
-                    if (HasInterfaceToArrayConversion(source, target))
-                    {
-                        return true;
-                    }
-                    return TypeHelper.IsImplicitReferenceConversion(typeof(Array), source);
-                }
-                else
-                {
-                    return TypeHelper.IsLegalExplicitVariantDelegateConversion(source, target);
+                    result.Add(fieldInfo);
                 }
             }
+            return result.ToArray();
+        }
+
+        public static ConstructorInfo GetConstructor(this TypeInfo typeInfo, Type[] typeArguments)
+        {
+            var members = typeInfo.DeclaredMembers;
+            foreach (var member in members)
+            {
+                if (!(member is ConstructorInfo constructorInfo))
+                {
+                    continue;
+                }
+                var parameters = constructorInfo.GetParameters();
+                if (parameters.Length != typeArguments.Length)
+                {
+                    continue;
+                }
+                bool ok = true;
+                for (int index = 0; index < typeArguments.Length; index++)
+			    {
+                    if (parameters[index].GetType() != typeArguments[index])
+                    {
+                        ok = false;
+                        break;
+                    }
+			    }
+                if (!ok)
+                {
+                    continue;
+                }
+                return constructorInfo;
+            }
+            return null;
+        }
+
+        public static MethodInfo[] GetMethods(this TypeInfo typeInfo)
+        {
+            var members = typeInfo.DeclaredMembers;
+            var result = new List<MethodInfo>();
+            foreach (var member in members)
+            {
+                if (member is MethodInfo methodInfo)
+                {
+                    result.Add(methodInfo);
+                }
+            }
+            return result.ToArray();
+        }
+
+        public static MethodInfo GetMethod(this TypeInfo typeInfo, string name)
+        {
+            var members = typeInfo.DeclaredMembers;
+            foreach (var member in members)
+            {
+                if (member is MethodInfo methodInfo)
+                {
+                    if (member.Name == name)
+                    {
+                        return methodInfo;
+                    }
+                }
+            }
+            return null;
+        }
+#endif
+
+        public static System.Runtime.InteropServices.StructLayoutAttribute GetStructLayoutAttribute(this Type type)
+        {
+#if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+            var attributes = type.GetAttributes<System.Runtime.InteropServices.StructLayoutAttribute>(false);
+            foreach (var attribute in attributes)
+            {
+                return attribute;
+            }
+            return null;
+#else
+            return type.StructLayoutAttribute;
+#endif
+        }
+
+        public static Type GetUnderlyingSystemType(this Type type)
+        {
+#if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+            return type;
+#else
+            return type.UnderlyingSystemType;
+#endif
         }
     }
 }
