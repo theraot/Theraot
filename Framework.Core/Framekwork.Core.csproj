@@ -42,34 +42,4 @@
     <Prefer32Bit>False</Prefer32Bit>
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
-  <ItemGroup Condition="'$(TargetFrameworks)' == 'net20'">
-    <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFrameworks)' == 'net30'">
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFrameworks)' == 'net35'">
-    <Reference Include="WindowsBase" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFrameworks)' == 'net40'">
-    <Reference Include="WindowsBase" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFrameworks)' == 'net45'">
-    <Reference Include="WindowsBase" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFrameworks)' == 'net46'">
-    <Reference Include="WindowsBase" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFrameworks)' == 'net47'">
-    <Reference Include="WindowsBase" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-    <Folder Include="System\Runtime\InteropServices\" />
-  </ItemGroup>
 </Project>
