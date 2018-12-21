@@ -1,7 +1,7 @@
 ﻿#if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
-using Theraot.Core;
+using Theraot.Collections.ThreadSafe;
 
 namespace System.Collections
 {
@@ -48,7 +48,7 @@ namespace System.Collections
                             // should never happen
                             throw new ArgumentException("Valid arrays required");
                         }
-                        if ((int)xLengthInfo.GetValue(x, TypeHelper.EmptyObjects) != (int)yLengthInfo.GetValue(y, TypeHelper.EmptyObjects))
+                        if ((int)xLengthInfo.GetValue(x, ArrayReservoir<object>.EmptyArray) != (int)yLengthInfo.GetValue(y, ArrayReservoir<object>.EmptyArray))
                         {
                             return false;
                         }
@@ -61,9 +61,9 @@ namespace System.Collections
                         {
                             // If there comes the day when an array has no enumerator, let this code fail
                             // ReSharper disable once PossibleNullReferenceException
-                            firstEnumerator = (IEnumerator)xEnumeratorInfo.Invoke(x, TypeHelper.EmptyObjects);
+                            firstEnumerator = (IEnumerator)xEnumeratorInfo.Invoke(x, ArrayReservoir<object>.EmptyArray);
                             // ReSharper disable once PossibleNullReferenceException
-                            secondEnumerator = (IEnumerator)yEnumeratorInfo.Invoke(y, TypeHelper.EmptyObjects);
+                            secondEnumerator = (IEnumerator)yEnumeratorInfo.Invoke(y, ArrayReservoir<object>.EmptyArray);
                             while (firstEnumerator.MoveNext())
                             {
                                 if (!secondEnumerator.MoveNext())
@@ -112,11 +112,11 @@ namespace System.Collections
                     // should never happen
                     throw new ArgumentException("Valid arrays required");
                 }
-                if ((int)xRankInfo.GetValue(x, TypeHelper.EmptyObjects) != 1)
+                if ((int)xRankInfo.GetValue(x, ArrayReservoir<object>.EmptyArray) != 1)
                 {
                     throw new ArgumentException("Only one-dimensional arrays are supported", nameof(x));
                 }
-                if ((int)yRankInfo.GetValue(y, TypeHelper.EmptyObjects) != 1)
+                if ((int)yRankInfo.GetValue(y, ArrayReservoir<object>.EmptyArray) != 1)
                 {
                     throw new ArgumentException("Only one-dimensional arrays are supported", nameof(y));
                 }

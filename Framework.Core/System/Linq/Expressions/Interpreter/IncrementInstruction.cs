@@ -6,7 +6,7 @@
 
 using System.Diagnostics;
 using System.Dynamic.Utils;
-using Theraot.Core;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -25,7 +25,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             Debug.Assert(!type.IsEnum);
-            switch (type.GetNonNullableType().GetTypeCode())
+            switch (type.GetNonNullable().GetTypeCode())
             {
                 case TypeCode.Int16: return _int16 ?? (_int16 = new IncrementInt16());
                 case TypeCode.Int32: return _int32 ?? (_int32 = new IncrementInt32());

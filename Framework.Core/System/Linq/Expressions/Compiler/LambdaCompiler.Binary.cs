@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Reflection.Emit;
-using Theraot.Core;
+using Theraot.Reflection;
 using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Linq.Expressions.Compiler
@@ -38,12 +38,12 @@ namespace System.Linq.Expressions.Compiler
                 // If we have x==null, x!=null, null==x or null!=x where x is
                 // nullable but not null, then generate a call to x.HasValue.
                 Debug.Assert(!b.IsLiftedToNull || b.Type == typeof(bool?));
-                if (ConstantCheck.IsNull(b.Left) && !ConstantCheck.IsNull(b.Right) && b.Right.Type.IsNullableType())
+                if (ConstantCheck.IsNull(b.Left) && !ConstantCheck.IsNull(b.Right) && b.Right.Type.IsNullable())
                 {
                     EmitNullEquality(b.NodeType, b.Right, b.IsLiftedToNull);
                     return;
                 }
-                if (ConstantCheck.IsNull(b.Right) && !ConstantCheck.IsNull(b.Left) && b.Left.Type.IsNullableType())
+                if (ConstantCheck.IsNull(b.Right) && !ConstantCheck.IsNull(b.Left) && b.Left.Type.IsNullable())
                 {
                     EmitNullEquality(b.NodeType, b.Left, b.IsLiftedToNull);
                     return;
@@ -68,13 +68,13 @@ namespace System.Linq.Expressions.Compiler
         {
             if (b.IsLifted)
             {
-                ParameterExpression p1 = Expression.Variable(b.Left.Type.GetNonNullableType(), name: null);
-                ParameterExpression p2 = Expression.Variable(b.Right.Type.GetNonNullableType(), name: null);
+                ParameterExpression p1 = Expression.Variable(b.Left.Type.GetNonNullable(), name: null);
+                ParameterExpression p2 = Expression.Variable(b.Right.Type.GetNonNullable(), name: null);
                 MethodCallExpression mc = Expression.Call(null, b.Method, p1, p2);
                 Type resultType;
                 if (b.IsLiftedToNull)
                 {
-                    resultType = mc.Type.GetNullableType();
+                    resultType = mc.Type.GetNullable();
                 }
                 else
                 {
@@ -89,8 +89,8 @@ namespace System.Linq.Expressions.Compiler
                     resultType = typeof(bool);
                 }
 
-                Debug.Assert(TypeUtils.AreReferenceAssignable(p1.Type, b.Left.Type.GetNonNullableType()));
-                Debug.Assert(TypeUtils.AreReferenceAssignable(p2.Type, b.Right.Type.GetNonNullableType()));
+                Debug.Assert(p1.Type.IsReferenceAssignableFromInternal(b.Left.Type.GetNonNullable()));
+                Debug.Assert(p2.Type.IsReferenceAssignableFromInternal(b.Right.Type.GetNonNullable()));
                 EmitLift(b.NodeType, resultType, mc, new[] { p1, p2 }, new[] { b.Left, b.Right });
             }
             else
@@ -107,7 +107,7 @@ namespace System.Linq.Expressions.Compiler
                 Debug.Assert(rightType == typeof(int));
                 EmitGetArrayElement(leftType);
             }
-            else if (leftType.IsNullableType() || rightType.IsNullableType())
+            else if (leftType.IsNullable() || rightType.IsNullable())
             {
                 EmitLiftedBinaryOp(op, leftType, rightType, resultType, liftedToNull);
             }
@@ -123,7 +123,7 @@ namespace System.Linq.Expressions.Compiler
         // checked conversion if the original operator was convert
         private void EmitConvertArithmeticResult(ExpressionType op, Type resultType)
         {
-            Debug.Assert(!resultType.IsNullableType());
+            Debug.Assert(!resultType.IsNullable());
 
             switch (resultType.GetTypeCode())
             {
@@ -147,8 +147,8 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitLiftedBinaryArithmetic(ExpressionType op, Type leftType, Type rightType, Type resultType)
         {
-            bool leftIsNullable = leftType.IsNullableType();
-            bool rightIsNullable = rightType.IsNullableType();
+            bool leftIsNullable = leftType.IsNullable();
+            bool rightIsNullable = rightType.IsNullable();
 
             Debug.Assert(leftIsNullable || rightIsNullable);
 
@@ -207,10 +207,10 @@ namespace System.Linq.Expressions.Compiler
             FreeLocal(locLeft);
             FreeLocal(locRight);
 
-            EmitBinaryOperator(op, leftType.GetNonNullableType(), rightType.GetNonNullableType(), resultType.GetNonNullableType(), liftedToNull: false);
+            EmitBinaryOperator(op, leftType.GetNonNullable(), rightType.GetNonNullable(), resultType.GetNonNullable(), liftedToNull: false);
 
             // construct result type
-            ConstructorInfo ci = resultType.GetConstructor(new[] { resultType.GetNonNullableType() });
+            ConstructorInfo ci = resultType.GetConstructor(new[] { resultType.GetNonNullable() });
             // ReSharper disable once AssignNullToNotNullAttribute
             _ilg.Emit(OpCodes.Newobj, ci);
             _ilg.Emit(OpCodes.Stloc, locResult);
@@ -232,7 +232,7 @@ namespace System.Linq.Expressions.Compiler
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void EmitLiftedBinaryOp(ExpressionType op, Type leftType, Type rightType, Type resultType, bool liftedToNull)
         {
-            Debug.Assert(leftType.IsNullableType() || rightType.IsNullableType());
+            Debug.Assert(leftType.IsNullable() || rightType.IsNullable());
             switch (op)
             {
                 case ExpressionType.And:
@@ -373,7 +373,7 @@ namespace System.Linq.Expressions.Compiler
             _ilg.EmitGetValueOrDefault(type);
             _ilg.Emit(OpCodes.Ldloca, locRight);
             _ilg.EmitGetValueOrDefault(type);
-            Type unnullable = type.GetNonNullableType();
+            Type unnullable = type.GetNonNullable();
             EmitUnliftedBinaryOp(op, unnullable, unnullable);
             _ilg.Emit(OpCodes.Ldloca, locLeft);
             _ilg.EmitHasValue(type);
@@ -416,7 +416,7 @@ namespace System.Linq.Expressions.Compiler
             _ilg.EmitGetValueOrDefault(type);
             FreeLocal(locLeft);
             FreeLocal(locRight);
-            Type unnullable = type.GetNonNullableType();
+            Type unnullable = type.GetNonNullable();
             EmitUnliftedBinaryOp(op, unnullable, unnullable);
             _ilg.Emit(OpCodes.Newobj, NullableBooleanCtor);
             _ilg.MarkLabel(end);
@@ -424,7 +424,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitNullEquality(ExpressionType op, Expression e, bool isLiftedToNull)
         {
-            Debug.Assert(e.Type.IsNullableType());
+            Debug.Assert(e.Type.IsNullable());
             Debug.Assert(op == ExpressionType.Equal || op == ExpressionType.NotEqual);
             // If we are lifted to null then just evaluate the expression for its side effects, discard,
             // and generate null.  If we are not lifted to null then generate a call to HasValue.
@@ -458,8 +458,8 @@ namespace System.Linq.Expressions.Compiler
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void EmitUnliftedBinaryOp(ExpressionType op, Type leftType, Type rightType)
         {
-            Debug.Assert(!leftType.IsNullableType());
-            Debug.Assert(!rightType.IsNullableType());
+            Debug.Assert(!leftType.IsNullable());
+            Debug.Assert(!rightType.IsNullable());
             Debug.Assert(leftType.IsPrimitive || (op == ExpressionType.Equal || op == ExpressionType.NotEqual) && (!leftType.IsValueType || leftType.IsEnum));
 
             switch (op)

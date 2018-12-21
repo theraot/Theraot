@@ -10,7 +10,8 @@ using System.Dynamic.Utils;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
-using Theraot.Core;
+using Theraot.Collections.ThreadSafe;
+using Theraot.Reflection;
 
 namespace System.Runtime.CompilerServices
 {

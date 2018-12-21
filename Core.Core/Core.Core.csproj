@@ -156,6 +156,7 @@
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\Bucket.cs" Link="Theraot\Collections\ThreadSafe\Bucket.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\BucketCore.cs" Link="Theraot\Collections\ThreadSafe\BucketCore.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\BucketHelper.cs" Link="Theraot\Collections\ThreadSafe\BucketHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\CacheDict.cs" Link="Theraot\Collections\ThreadSafe\CacheDict.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\CircularBucket.cs" Link="Theraot\Collections\ThreadSafe\CircularBucket.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\DoAction.cs" Link="Theraot\Collections\ThreadSafe\DoAction.cs" />
         <Compile Include="..\Framework.Core\Theraot\Collections\ThreadSafe\FixedSizeBucket.cs" Link="Theraot\Collections\ThreadSafe\FixedSizeBucket.cs" />
@@ -182,12 +183,15 @@
         <Compile Include="..\Framework.Core\Theraot\Collections\TryTake.cs" Link="Theraot\Collections\TryTake.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\ActionHelper.cs" Link="Theraot\Core\ActionHelper.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\AggregateExceptionHelper.cs" Link="Theraot\Core\AggregateExceptionHelper.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Core\CancellationTokenHelper.cs" Link="Theraot\Core\CancellationTokenHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\CancellationTokenExtensions.cs" Link="Theraot\Core\CancellationTokenExtensions.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\CancellationTokenSourceExtensions.cs" Link="Theraot\Core\CancellationTokenSourceExtensions.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\CharHelper.cs" Link="Theraot\Core\CharHelper.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\Check.cs" Link="Theraot\Core\Check.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\CloneHelper.cs" Link="Theraot\Core\CloneHelper.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\ComparerExtensions.cs" Link="Theraot\Core\ComparerExtensions.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\ConcurrentExtensions.cs" Link="Theraot\Core\ConcurrentExtensions.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\DebugHelper.cs" Link="Theraot\Core\DebugHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\DelegateDeepEqualityComparer.cs" Link="Theraot\Core\DelegateDeepEqualityComparer.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\DelegateEqualityComparer.cs" Link="Theraot\Core\DelegateEqualityComparer.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\DelegateExtensions.cs" Link="Theraot\Core\DelegateExtensions.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\EnumerableHelper.cs" Link="Theraot\Core\EnumerableHelper.cs" />
@@ -203,6 +207,8 @@
         <Compile Include="..\Framework.Core\Theraot\Core\ICloner.cs" Link="Theraot\Core\ICloner.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\IntPtrHelper.cs" Link="Theraot\Core\IntPtrHelper.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\MonitorHelper.cs" Link="Theraot\Core\MonitorHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\NewEventHandler.cs" Link="Theraot\Core\NewEventHandler.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\NewOperationCanceledException.cs" Link="Theraot\Core\NewOperationCanceledException.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\NumericHelper.Binary.cs" Link="Theraot\Core\NumericHelper.Binary.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\NumericHelper.build.cs" Link="Theraot\Core\NumericHelper.build.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\NumericHelper.checked.cs" Link="Theraot\Core\NumericHelper.checked.cs" />
@@ -213,7 +219,7 @@
         <Compile Include="..\Framework.Core\Theraot\Core\PathHelper.cs" Link="Theraot\Core\PathHelper.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\PrimeHelper.array.cs" Link="Theraot\Core\PrimeHelper.array.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\PrimeHelper.cs" Link="Theraot\Core\PrimeHelper.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Core\RamStream.cs" Link="Theraot\Core\RamStream.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\RAMStream.cs" Link="Theraot\Core\RAMStream.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\Range.cs" Link="Theraot\Core\Range.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\RangeExtensions.cs" Link="Theraot\Core\RangeExtensions.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\RangeSet.cs" Link="Theraot\Core\RangeSet.cs" />
@@ -225,14 +231,17 @@
         <Compile Include="..\Framework.Core\Theraot\Core\StringBuilderExtensions.cs" Link="Theraot\Core\StringBuilderExtensions.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\StringHelper.cs" Link="Theraot\Core\StringHelper.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\StringProcessor.cs" Link="Theraot\Core\StringProcessor.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\TraceRoute.cs" Link="Theraot\Core\TraceRoute.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Core\TracertNode.cs" Link="Theraot\Core\TracertNode.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\TupleEqualityComparer.cs" Link="Theraot\Core\TupleEqualityComparer.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Core\TypeHelper.ConstructorHelper.cs" Link="Theraot\Core\TypeHelper.ConstructorHelper.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Core\TypeHelper.cs" Link="Theraot\Core\TypeHelper.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Core\TypeHelper.extra.cs" Link="Theraot\Core\TypeHelper.extra.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Core\TypeHelper.minimun.cs" Link="Theraot\Core\TypeHelper.minimun.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Core\TypeHelper.util.cs" Link="Theraot\Core\TypeHelper.util.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\ValueActionClosure.cs" Link="Theraot\Core\ValueActionClosure.cs" />
         <Compile Include="..\Framework.Core\Theraot\Core\ValueFuncClosure.cs" Link="Theraot\Core\ValueFuncClosure.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Reflection\ConstructorHelper.cs" Link="Theraot\Reflection\ConstructorHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Reflection\TypeExtensions.cs" Link="Theraot\Reflection\TypeExtensions.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Reflection\TypeHelper.cs" Link="Theraot\Reflection\TypeHelper.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Reflection\TypeHelper.extra.cs" Link="Theraot\Reflection\TypeHelper.extra.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Reflection\TypeHelper.minimun.cs" Link="Theraot\Reflection\TypeHelper.minimun.cs" />
+        <Compile Include="..\Framework.Core\Theraot\Reflection\TypeHelper.util.cs" Link="Theraot\Reflection\TypeHelper.util.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\AtomicBoolean.cs" Link="Theraot\Threading\AtomicBoolean.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\CriticalDisposable.cs" Link="Theraot\Threading\CriticalDisposable.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\CriticalDisposable.disposable.cs" Link="Theraot\Threading\CriticalDisposable.disposable.cs" />
@@ -285,8 +294,6 @@
         <Compile Include="..\Framework.Core\Theraot\Threading\Needles\Transact.Needle.cs" Link="Theraot\Threading\Needles\Transact.Needle.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\Needles\WeakDelegateNeedle.cs" Link="Theraot\Threading\Needles\WeakDelegateNeedle.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\Needles\WeakNeedle.cs" Link="Theraot\Threading\Needles\WeakNeedle.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\WeakNeedle.disposable.cs" Link="Theraot\Threading\Needles\WeakNeedle.disposable.cs" />
-        <Compile Include="..\Framework.Core\Theraot\Threading\Needles\WeakNeedle.extended.cs" Link="Theraot\Threading\Needles\WeakNeedle.extended.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\NoReentrantReadWriteLock.cs" Link="Theraot\Threading\NoReentrantReadWriteLock.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\NoReentrantReadWriteLock.disposable.cs" Link="Theraot\Threading\NoReentrantReadWriteLock.disposable.cs" />
         <Compile Include="..\Framework.Core\Theraot\Threading\NoReentrantReadWriteLock.Status.cs" Link="Theraot\Threading\NoReentrantReadWriteLock.Status.cs" />
@@ -397,6 +404,8 @@
         <Folder Include="System\Numerics\" />
         <Folder Include="System\Runtime\CompilerService\" />
         <Folder Include="Theraot\Collections\Specialized\" />
+        <Folder Include="Theraot\Core\" />
+        <Folder Include="Theraot\Reflection\" />
         <Folder Include="Theraot\Threading\Needles\" />
     </ItemGroup>
 </Project>

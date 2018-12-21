@@ -6,23 +6,11 @@
 
 using System.Dynamic;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace System.Linq.Expressions
 {
     internal static partial class CachedReflectionInfo
     {
-        private static MethodInfo _callSiteOpsAddRule;
-        private static MethodInfo _callSiteOpsBind;
-        private static MethodInfo _callSiteOpsClearMatch;
-        private static MethodInfo _callSiteOpsCreateMatchmaker;
-        private static MethodInfo _callSiteOpsGetCachedRules;
-        private static MethodInfo _callSiteOpsGetMatch;
-        private static MethodInfo _callSiteOpsGetRuleCache;
-        private static MethodInfo _callSiteOpsGetRules;
-        private static MethodInfo _callSiteOpsMoveRule;
-        private static MethodInfo _callSiteOpsSetNotMatched;
-        private static MethodInfo _callSiteOpsUpdateRules;
         private static MethodInfo _dynamicObjectTryBinaryOperation;
         private static MethodInfo _dynamicObjectTryConvert;
         private static MethodInfo _dynamicObjectTryCreateInstance;
@@ -37,50 +25,6 @@ namespace System.Linq.Expressions
         private static MethodInfo _dynamicObjectTryUnaryOperation;
         private static ConstructorInfo _invalidCastExceptionCtorString;
         private static MethodInfo _stringFormatStringObjectArray;
-
-        public static MethodInfo CallSiteOpsAddRule =>
-                                  _callSiteOpsAddRule ??
-                                 (_callSiteOpsAddRule = typeof(CallSiteOps).GetMethod(nameof(CallSiteOps.AddRule)));
-
-        public static MethodInfo CallSiteOpsBind =>
-                                  _callSiteOpsBind ??
-                                 (_callSiteOpsBind = typeof(CallSiteOps).GetMethod(nameof(CallSiteOps.Bind)));
-
-        public static MethodInfo CallSiteOpsClearMatch =>
-                                  _callSiteOpsClearMatch ??
-                                 (_callSiteOpsClearMatch = typeof(CallSiteOps).GetMethod(nameof(CallSiteOps.ClearMatch)));
-
-        public static MethodInfo CallSiteOpsCreateMatchmaker =>
-                                  _callSiteOpsCreateMatchmaker ??
-                                 (_callSiteOpsCreateMatchmaker = typeof(CallSiteOps).GetMethod(nameof(CallSiteOps.CreateMatchmaker)));
-
-        public static MethodInfo CallSiteOpsGetCachedRules =>
-                                  _callSiteOpsGetCachedRules ??
-                                 (_callSiteOpsGetCachedRules = typeof(CallSiteOps).GetMethod(nameof(CallSiteOps.GetCachedRules)));
-
-        public static MethodInfo CallSiteOpsGetMatch =>
-                                  _callSiteOpsGetMatch ??
-                                 (_callSiteOpsGetMatch = typeof(CallSiteOps).GetMethod(nameof(CallSiteOps.GetMatch)));
-
-        public static MethodInfo CallSiteOpsGetRuleCache =>
-                                  _callSiteOpsGetRuleCache ??
-                                 (_callSiteOpsGetRuleCache = typeof(CallSiteOps).GetMethod(nameof(CallSiteOps.GetRuleCache)));
-
-        public static MethodInfo CallSiteOpsGetRules =>
-                                  _callSiteOpsGetRules ??
-                                 (_callSiteOpsGetRules = typeof(CallSiteOps).GetMethod(nameof(CallSiteOps.GetRules)));
-
-        public static MethodInfo CallSiteOpsMoveRule =>
-                                  _callSiteOpsMoveRule ??
-                                 (_callSiteOpsMoveRule = typeof(CallSiteOps).GetMethod(nameof(CallSiteOps.MoveRule)));
-
-        public static MethodInfo CallSiteOpsSetNotMatched =>
-                                  _callSiteOpsSetNotMatched ??
-                                 (_callSiteOpsSetNotMatched = typeof(CallSiteOps).GetMethod(nameof(CallSiteOps.SetNotMatched)));
-
-        public static MethodInfo CallSiteOpsUpdateRules =>
-                                  _callSiteOpsUpdateRules ??
-                                 (_callSiteOpsUpdateRules = typeof(CallSiteOps).GetMethod(nameof(CallSiteOps.UpdateRules)));
 
         public static MethodInfo DynamicObjectTryBinaryOperation =>
                                   _dynamicObjectTryBinaryOperation ??

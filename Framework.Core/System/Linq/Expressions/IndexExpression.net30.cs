@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Theraot.Collections;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -194,25 +195,21 @@ namespace System.Linq.Expressions
                 }
                 parameters = parameters.RemoveLast();
             }
-
             if (args == null)
             {
                 return parameters.Length == 0;
             }
-
             if (parameters.Length != args.Length)
             {
                 return false;
             }
-
             for (var i = 0; i < args.Length; i++)
             {
                 if (args[i] == null)
                 {
                     return false;
                 }
-
-                if (!TypeUtils.AreReferenceAssignable(parameters[i].ParameterType, args[i].Type))
+                if (!parameters[i].ParameterType.IsReferenceAssignableFromInternal(args[i].Type))
                 {
                     return false;
                 }
@@ -304,7 +301,7 @@ namespace System.Linq.Expressions
 
                     TypeUtils.ValidateType(pType, nameof(indexes), i);
 
-                    if (!TypeUtils.AreReferenceAssignable(pType, arg.Type))
+                    if (!pType.IsReferenceAssignableFromInternal(arg.Type))
                     {
                         if (!TryQuote(pType, ref arg))
                         {

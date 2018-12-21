@@ -67,7 +67,6 @@ namespace System
                     GC.KeepAlive(exception);
                 }
             }
-            _handle = GetNewHandle(value, _trackResurrection);
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]

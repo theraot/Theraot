@@ -6,6 +6,10 @@ namespace System.Reflection
     {
         public static Type GetTypeInfo(this Type type)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
             return type;
         }
     }

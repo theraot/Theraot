@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Reflection.Emit;
-using Theraot.Core;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -90,7 +90,7 @@ namespace System.Linq.Expressions.Compiler
             BinaryExpression b = (BinaryExpression)expr;
             Debug.Assert(b.Method == null);
 
-            if (b.Left.Type.IsNullableType())
+            if (b.Left.Type.IsNullable())
             {
                 EmitNullableCoalesce(b);
             }
@@ -150,7 +150,7 @@ namespace System.Linq.Expressions.Compiler
             _ilg.EmitHasValue(b.Left.Type);
             _ilg.Emit(OpCodes.Brfalse, labIfNull);
 
-            Type nnLeftType = b.Left.Type.GetNonNullableType();
+            Type nnLeftType = b.Left.Type.GetNonNullable();
             if (b.Conversion != null)
             {
                 Debug.Assert(b.Conversion.ParameterCount == 1);
@@ -304,7 +304,7 @@ namespace System.Linq.Expressions.Compiler
             Label labEnd = _ilg.DefineLabel();
             EmitExpression(b.Left);
             _ilg.Emit(OpCodes.Dup);
-            MethodInfo opFalse = TypeHelper.GetBooleanOperator(b.Method.DeclaringType, "op_False");
+            MethodInfo opFalse = TypeUtils.GetBooleanOperator(b.Method.DeclaringType, "op_False");
             Debug.Assert(opFalse != null, "factory should check that the method exists");
             _ilg.Emit(OpCodes.Call, opFalse);
             _ilg.Emit(OpCodes.Brtrue, labEnd);
@@ -373,7 +373,7 @@ namespace System.Linq.Expressions.Compiler
             Label labEnd = _ilg.DefineLabel();
             EmitExpression(b.Left);
             _ilg.Emit(OpCodes.Dup);
-            MethodInfo opTrue = TypeHelper.GetBooleanOperator(b.Method.DeclaringType, "op_True");
+            MethodInfo opTrue = TypeUtils.GetBooleanOperator(b.Method.DeclaringType, "op_True");
             Debug.Assert(opTrue != null, "factory should check that the method exists");
 
             _ilg.Emit(OpCodes.Call, opTrue);
@@ -438,7 +438,7 @@ namespace System.Linq.Expressions.Compiler
             if (expression.NodeType == ExpressionType.Convert)
             {
                 var convert = (UnaryExpression)expression;
-                if (TypeUtils.AreReferenceAssignable(convert.Type, convert.Operand.Type))
+                if (convert.Type.IsReferenceAssignableFromInternal(convert.Operand.Type))
                 {
                     return convert.Operand;
                 }
@@ -491,7 +491,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else if (ConstantCheck.IsNull(node.Left))
             {
-                if (node.Right.Type.IsNullableType())
+                if (node.Right.Type.IsNullable())
                 {
                     EmitAddress(node.Right, node.Right.Type);
                     _ilg.EmitHasValue(node.Right.Type);
@@ -505,7 +505,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else if (ConstantCheck.IsNull(node.Right))
             {
-                if (node.Left.Type.IsNullableType())
+                if (node.Left.Type.IsNullable())
                 {
                     EmitAddress(node.Left, node.Left.Type);
                     _ilg.EmitHasValue(node.Left.Type);
@@ -517,7 +517,7 @@ namespace System.Linq.Expressions.Compiler
                 }
                 EmitBranchOp(!branchWhenEqual, label);
             }
-            else if (node.Left.Type.IsNullableType() || node.Right.Type.IsNullableType())
+            else if (node.Left.Type.IsNullable() || node.Right.Type.IsNullable())
             {
                 EmitBinaryExpression(node);
                 // EmitBinaryExpression takes into account the Equal/NotEqual

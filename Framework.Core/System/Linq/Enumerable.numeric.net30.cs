@@ -1,7 +1,7 @@
 ﻿#if NET20 || NET30
 
 using System.Collections.Generic;
-using Theraot.Core;
+using Theraot.Reflection;
 
 namespace System.Linq
 {

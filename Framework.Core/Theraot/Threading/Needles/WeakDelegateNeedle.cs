@@ -3,7 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
-using Theraot.Core;
+using Theraot.Reflection;
 
 namespace Theraot.Threading.Needles
 {

@@ -11,7 +11,8 @@ using System.Dynamic.Utils;
 using System.Linq.Expressions.Compiler;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Theraot.Core;
+using Theraot.Collections.ThreadSafe;
+using Theraot.Reflection;
 using DelegateHelpers = System.Linq.Expressions.Compiler.DelegateHelpers;
 
 namespace System.Linq.Expressions
@@ -601,7 +602,7 @@ namespace System.Linq.Expressions
                         }
                         pType = pType.GetElementType();
                     }
-                    if (!TypeUtils.AreReferenceAssignable(pex.Type, pType))
+                    if (!pex.Type.IsReferenceAssignableFromInternal(pType))
                     {
                         throw Error.ParameterExpressionNotValidAsDelegate(pex.Type, pType);
                     }
@@ -615,7 +616,7 @@ namespace System.Linq.Expressions
             {
                 throw Error.IncorrectNumberOfLambdaDeclarationParameters();
             }
-            if (mi.ReturnType != typeof(void) && !TypeUtils.AreReferenceAssignable(mi.ReturnType, body.Type))
+            if (mi.ReturnType != typeof(void) && !mi.ReturnType.IsReferenceAssignableFromInternal(body.Type))
             {
                 if (!TryQuote(mi.ReturnType, ref body))
                 {

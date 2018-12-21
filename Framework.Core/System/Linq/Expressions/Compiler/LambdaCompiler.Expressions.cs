@@ -11,7 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Reflection.Emit;
-using Theraot.Core;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -168,7 +168,7 @@ namespace System.Linq.Expressions.Compiler
                 if (!TypeUtils.AreEquivalent(node.Type, type))
                 {
                     EmitExpression(node);
-                    Debug.Assert(TypeUtils.AreReferenceAssignable(type, node.Type));
+                    Debug.Assert(type.IsReferenceAssignableFromInternal(node.Type));
                     _ilg.Emit(OpCodes.Castclass, type);
                 }
                 else
@@ -432,7 +432,7 @@ namespace System.Linq.Expressions.Compiler
         {
             foreach (ParameterInfo pi in mi.GetParameters())
             {
-                if (pi.IsByRefParameter())
+                if (pi.IsByRefParameterInternal())
                 {
                     return true;
                 }
@@ -837,7 +837,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 // We know the type can be assigned, but still need to check
                 // for null at runtime
-                if (type.IsNullableType())
+                if (type.IsNullable())
                 {
                     EmitAddress(node.Expression, type);
                     _ilg.EmitHasValue(type);
@@ -1102,7 +1102,7 @@ namespace System.Linq.Expressions.Compiler
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void EmitLift(ExpressionType nodeType, Type resultType, MethodCallExpression mc, ParameterExpression[] paramList, Expression[] argList)
         {
-            Debug.Assert(TypeUtils.AreEquivalent(resultType.GetNonNullableType(), mc.Type.GetNonNullableType()));
+            Debug.Assert(TypeUtils.AreEquivalent(resultType.GetNonNullable(), mc.Type.GetNonNullable()));
 
             switch (nodeType)
             {
@@ -1119,7 +1119,7 @@ namespace System.Linq.Expressions.Compiler
                         {
                             ParameterExpression v = paramList[i];
                             Expression arg = argList[i];
-                            if (arg.Type.IsNullableType())
+                            if (arg.Type.IsNullable())
                             {
                                 _scope.AddLocal(this, v);
                                 EmitAddress(arg, arg.Type);
@@ -1148,7 +1148,7 @@ namespace System.Linq.Expressions.Compiler
                             _ilg.Emit(OpCodes.Brtrue, exitNull);
                         }
                         EmitMethodCallExpression(mc);
-                        if (resultType.IsNullableType() && !TypeUtils.AreEquivalent(resultType, mc.Type))
+                        if (resultType.IsNullable() && !TypeUtils.AreEquivalent(resultType, mc.Type))
                         {
                             ConstructorInfo ci = resultType.GetConstructor(new[] { mc.Type });
                             // ReSharper disable once AssignNullToNotNullAttribute
@@ -1156,7 +1156,7 @@ namespace System.Linq.Expressions.Compiler
                         }
                         _ilg.Emit(OpCodes.Br_S, exit);
                         _ilg.MarkLabel(exitNull);
-                        if (TypeUtils.AreEquivalent(resultType, mc.Type.GetNullableType()))
+                        if (TypeUtils.AreEquivalent(resultType, mc.Type.GetNullable()))
                         {
                             if (resultType.IsValueType)
                             {
@@ -1187,7 +1187,7 @@ namespace System.Linq.Expressions.Compiler
                 case ExpressionType.Equal:
                 case ExpressionType.NotEqual:
                     {
-                        if (TypeUtils.AreEquivalent(resultType, mc.Type.GetNullableType()))
+                        if (TypeUtils.AreEquivalent(resultType, mc.Type.GetNullable()))
                         {
                             goto default;
                         }
@@ -1207,7 +1207,7 @@ namespace System.Linq.Expressions.Compiler
                             ParameterExpression v = paramList[i];
                             Expression arg = argList[i];
                             _scope.AddLocal(this, v);
-                            if (arg.Type.IsNullableType())
+                            if (arg.Type.IsNullable())
                             {
                                 EmitAddress(arg, arg.Type);
                                 _ilg.Emit(OpCodes.Dup);
@@ -1253,7 +1253,7 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.Emit(OpCodes.Brtrue, exitAnyNull);
 
                         EmitMethodCallExpression(mc);
-                        if (resultType.IsNullableType() && !TypeUtils.AreEquivalent(resultType, mc.Type))
+                        if (resultType.IsNullable() && !TypeUtils.AreEquivalent(resultType, mc.Type))
                         {
                             ConstructorInfo ci = resultType.GetConstructor(new[] { mc.Type });
                             // ReSharper disable once AssignNullToNotNullAttribute

@@ -15,6 +15,15 @@ namespace Theraot.Collections
             return observable.Subscribe(listener.ToObserver());
         }
 
+        public static IDisposable SubscribeProgress<T>(this IObservable<T> observable, IProgress<T> listener)
+        {
+            if (observable == null)
+            {
+                throw new ArgumentNullException(nameof(observable));
+            }
+            return observable.Subscribe(listener.ToObserver());
+        }
+
         public static IObserver<T> ToObserver<T>(this Action<T> listener)
         {
             if (listener == null)
@@ -22,6 +31,15 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(listener));
             }
             return new CustomObserver<T>(listener);
+        }
+
+        public static IObserver<T> ToObserver<T>(this IProgress<T> listener)
+        {
+            if (listener == null)
+            {
+                throw new ArgumentNullException(nameof(listener));
+            }
+            return new CustomObserver<T>(listener.Report);
         }
     }
 }

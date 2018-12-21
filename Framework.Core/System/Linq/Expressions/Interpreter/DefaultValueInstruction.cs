@@ -5,7 +5,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
-using System.Dynamic.Utils;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -16,7 +16,7 @@ namespace System.Linq.Expressions.Interpreter
         internal DefaultValueInstruction(Type type)
         {
             Debug.Assert(type.IsValueType);
-            Debug.Assert(!type.IsNullableType());
+            Debug.Assert(!type.IsNullable());
             _type = type;
         }
 

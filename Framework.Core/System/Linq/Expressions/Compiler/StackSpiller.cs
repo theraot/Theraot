@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Theraot.Core;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -213,7 +213,7 @@ namespace System.Linq.Expressions.Compiler
             // (our rewrites preserve type exactly, but the rules for rewriting
             // an extension node are more lenient, see Expression.ReduceAndCheck())
             Debug.Assert(
-                TypeUtils.AreReferenceAssignable(node.Type, result.Node.Type),
+                node.Type.IsReferenceAssignableFromInternal(result.Node.Type),
                 "rewritten object must be reference assignable to the original type"
             );
         }

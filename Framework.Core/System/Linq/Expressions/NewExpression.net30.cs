@@ -12,6 +12,7 @@ using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Theraot.Collections.ThreadSafe;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -191,7 +192,7 @@ namespace System.Linq.Expressions
                     }
 
                     ValidateAnonymousTypeMember(ref member, out var memberType, nameof(members), i);
-                    if (!TypeUtils.AreReferenceAssignable(memberType, arg.Type))
+                    if (!memberType.IsReferenceAssignableFromInternal(arg.Type))
                     {
                         if (!TryQuote(memberType, ref arg))
                         {
@@ -204,7 +205,7 @@ namespace System.Linq.Expressions
                     {
                         pType = pType.GetElementType();
                     }
-                    if (!TypeUtils.AreReferenceAssignable(pType, arg.Type))
+                    if (!pType.IsReferenceAssignableFromInternal(arg.Type))
                     {
                         if (!TryQuote(pType, ref arg))
                         {

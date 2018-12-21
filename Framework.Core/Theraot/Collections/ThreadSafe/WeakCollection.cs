@@ -90,7 +90,7 @@ namespace Theraot.Collections.ThreadSafe
             var displaced = _wrapped.ClearEnumerable();
             foreach (var item in displaced)
             {
-                item.Dispose();
+                item.Free();
             }
         }
 
@@ -137,7 +137,7 @@ namespace Theraot.Collections.ThreadSafe
             var check = Check(item);
             foreach (var removed in _wrapped.RemoveWhereEnumerable(check))
             {
-                removed.Dispose();
+                removed.Free();
                 return true;
             }
             return false;
@@ -163,7 +163,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     yield return value;
                 }
-                removed.Dispose();
+                removed.Free();
             }
         }
 
@@ -190,7 +190,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     yield return value;
                 }
-                removed.Dispose();
+                removed.Free();
             }
         }
 

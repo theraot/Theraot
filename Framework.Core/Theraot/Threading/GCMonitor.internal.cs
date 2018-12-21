@@ -17,7 +17,7 @@ namespace Theraot.Threading
             static Internal()
             {
                 _work = RaiseCollected;
-                _collectedEventHandlers = new WeakDelegateCollection(false, false);
+                CollectedEventHandlers = new WeakDelegateCollection(false, false);
             }
 
             public static void Invoke()
@@ -33,14 +33,14 @@ namespace Theraot.Threading
                 CollectedEventHandlers = new WeakDelegateCollection(false, false);
             }
 
-            public static WeakDelegateCollection CollectedEventHandlers { get; }
-
             public static void Invoke()
             {
                 ThreadPool.QueueUserWorkItem(_work);
             }
 
 #endif
+
+            public static WeakDelegateCollection CollectedEventHandlers { get; }
 
             private static void RaiseCollected()
             {

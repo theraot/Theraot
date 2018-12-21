@@ -11,6 +11,7 @@ using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Theraot.Collections.ThreadSafe;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -505,9 +506,9 @@ namespace System.Linq.Expressions
                 {
                     pType = pType.GetElementType();
                 }
-                if (!TypeUtils.AreReferenceAssignable(pType, argType) &&
+                if (!pType.IsReferenceAssignableFromInternal(argType) &&
                     // ReSharper disable once PossibleNullReferenceException
-                    !(TypeUtils.IsSameOrSubclass(typeof(LambdaExpression), pType) && pType.IsInstanceOfType(arg)))
+                    !(pType.IsSameOrSubclassOfInternal(typeof(LambdaExpression)) && pType.IsInstanceOfType(arg)))
                 {
                     return false;
                 }

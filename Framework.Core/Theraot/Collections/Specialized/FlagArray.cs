@@ -256,9 +256,6 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-#if !NETCOREAPP1_0 && !NETCOREAPP1_1
-#endif
-
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using Theraot.Core;
+using Theraot.Reflection;
 
 namespace System
 {
@@ -33,7 +34,7 @@ namespace System
         }
 
         public Lazy(LazyThreadSafetyMode mode)
-            : this(TypeHelper.GetCreateOrFail<T>(), mode, false)
+            : this(ConstructorHelper.Create<T>, mode, false)
         {
             //Empty
         }
