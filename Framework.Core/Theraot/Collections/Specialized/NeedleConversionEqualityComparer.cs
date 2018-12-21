@@ -22,6 +22,10 @@ namespace Theraot.Collections.Specialized
             {
                 return default;
             }
+            if (needle is ICacheNeedle<T> cacheNeedle && cacheNeedle.TryGetValue(out var value))
+            {
+                return value;
+            }
             return needle.Value;
         }
     }
