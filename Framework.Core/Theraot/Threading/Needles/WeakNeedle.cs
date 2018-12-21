@@ -3,21 +3,16 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Security.Permissions;
-using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
     [DebuggerNonUserCode]
-    public partial class WeakNeedle<T> : IEquatable<WeakNeedle<T>>, IRecyclableNeedle<T>, ICacheNeedle<T>
+    public class WeakNeedle<T> : IEquatable<WeakNeedle<T>>, IRecyclableNeedle<T>, ICacheNeedle<T>
         where T : class
     {
         private readonly int _hashCode;
         private readonly bool _trackResurrection;
-        private volatile bool _faultExpected;
-        private GCHandle _handle;
-        private int _managedDisposal;
+        private WeakReference<T> _handle;
 
         public WeakNeedle()
             : this(false)
@@ -31,14 +26,12 @@ namespace Theraot.Threading.Needles
             _hashCode = base.GetHashCode();
         }
 
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         public WeakNeedle(T target)
             : this(target, false)
         {
             // Empty
         }
 
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         public WeakNeedle(T target, bool trackResurrection)
         {
             if (target == null)
@@ -53,31 +46,15 @@ namespace Theraot.Threading.Needles
             _trackResurrection = trackResurrection;
         }
 
-        public Exception Exception
-        {
-            get
-            {
-                if (ReadTarget(out var target))
-                {
-                    if (target is Exception exception && _faultExpected)
-                    {
-                        return exception;
-                    }
-                }
-                return null;
-            }
-        }
+        public Exception Exception { get; private set; }
 
         public bool IsAlive
         {
             get
             {
-                if (ReadTarget(out var target))
+                if (Exception != null && _handle.TryGetTarget(out _))
                 {
-                    if (target is T && !_faultExpected)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
                 return false;
             }
@@ -87,39 +64,20 @@ namespace Theraot.Threading.Needles
 
         bool IPromise.IsCompleted => true;
 
-        public bool IsFaulted
-        {
-            get
-            {
-                if (ReadTarget(out var target))
-                {
-                    if (target is Exception && _faultExpected)
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        }
+        public bool IsFaulted => Exception != null;
 
         public virtual bool TrackResurrection => _trackResurrection;
 
         public virtual T Value
         {
-            [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
             get
             {
-                if (ReadTarget(out var target))
+                if (Exception != null && _handle.TryGetTarget(out var target))
                 {
-                    if (target is T inner && !_faultExpected)
-                    {
-                        return inner;
-                    }
+                    return target;
                 }
                 return null;
             }
-
-            [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
             set => SetTargetValue(value);
         }
 
@@ -177,7 +135,7 @@ namespace Theraot.Threading.Needles
 
         public void Free()
         {
-            Dispose();
+            SetTargetValue(null);
         }
 
         public sealed override int GetHashCode()
@@ -195,33 +153,29 @@ namespace Theraot.Threading.Needles
             return "<Dead Needle>";
         }
 
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         public virtual bool TryGetValue(out T value)
         {
             value = null;
-            if (ReadTarget(out var target))
-            {
-                if (target is T inner)
-                {
-                    value = inner;
-                    return true;
-                }
-            }
-            return false;
+            return Exception == null && _handle.TryGetTarget(out value);
         }
 
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         protected void SetTargetError(Exception error)
         {
-            _faultExpected = true;
-            WriteTarget(error);
+            Exception = error;
+            _handle.SetTarget(null);
         }
 
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         protected void SetTargetValue(T value)
         {
-            _faultExpected = false;
-            WriteTarget(value);
+            if (_handle == null)
+            {
+                _handle = new WeakReference<T>(value, _trackResurrection);
+            }
+            else
+            {
+                _handle.SetTarget(value);
+            }
+            Exception = null;
         }
 
         private static bool EqualsExtractedExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
@@ -244,98 +198,6 @@ namespace Theraot.Threading.Needles
                 return !right.IsAlive || !EqualityComparer<T>.Default.Equals(leftValue, rightValue);
             }
             return right.IsAlive;
-        }
-
-        private bool ReadTarget(out object target)
-        {
-            target = null;
-            if (_handle.IsAllocated)
-            {
-                try
-                {
-                    target = _handle.Target; // Throws InvalidOperationException
-                }
-                catch (InvalidOperationException)
-                {
-                    return false;
-                }
-                return true;
-            }
-            return false;
-        }
-
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        private void ReleaseExtracted()
-        {
-            if (_handle.IsAllocated)
-            {
-                try
-                {
-                    _handle.Free(); // Throws InvalidOperationException
-                }
-                catch (InvalidOperationException)
-                {
-                    // Empty
-                }
-            }
-        }
-
-        private void ReportManagedDisposal()
-        {
-            Volatile.Write(ref _managedDisposal, 1);
-        }
-
-        private void WriteTarget(object target)
-        {
-            if (_disposeStatus == -1 || !ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
-            {
-                ReleaseExtracted();
-                _handle = GCHandle.Alloc(target, _trackResurrection ? GCHandleType.Weak : GCHandleType.WeakTrackResurrection);
-                if (Interlocked.CompareExchange(ref _managedDisposal, 0, 1) == 1)
-                {
-                    GC.ReRegisterForFinalize(this);
-                }
-                UnDispose();
-            }
-            else
-            {
-                try
-                {
-                    var oldHandle = _handle;
-                    if (oldHandle.IsAllocated)
-                    {
-                        try
-                        {
-                            oldHandle.Target = target;
-                            return;
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            _handle = GCHandle.Alloc(target, _trackResurrection ? GCHandleType.Weak : GCHandleType.WeakTrackResurrection);
-                        }
-                    }
-                    else
-                    {
-                        _handle = GCHandle.Alloc(target, _trackResurrection ? GCHandleType.Weak : GCHandleType.WeakTrackResurrection);
-                    }
-                    if (oldHandle.IsAllocated)
-                    {
-                        oldHandle.Free();
-                        try
-                        {
-                            oldHandle.Free();
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            // Empty
-                        }
-                    }
-                }
-                finally
-                {
-                    Interlocked.Decrement(ref _disposeStatus);
-                }
-            }
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿// Needed for Workaround
+﻿#if NET20 || NET30 || NET35 || NET40 || NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+
+// Needed for Workaround
 
 using System;
 using System.IO;
@@ -207,3 +209,5 @@ namespace Theraot.Core
         }
     }
 }
+
+#endif

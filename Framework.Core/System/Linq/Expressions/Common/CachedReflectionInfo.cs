@@ -167,14 +167,9 @@ namespace System.Linq.Expressions
                                   _methodBaseGetMethodFromHandleRuntimeMethodHandleRuntimeTypeHandle ??
                                  (_methodBaseGetMethodFromHandleRuntimeMethodHandleRuntimeTypeHandle = typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle), new[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) }));
 
-        public static ConstructorInfo NullableBooleanCtor
-                                                                                                                                                                                                                                                                                                            => _nullableBooleanCtor ?? (_nullableBooleanCtor = typeof(bool?).GetConstructor(new[] { typeof(bool) }));
-
-        /*private static MethodInfo _methodInfoCreateDelegateTypeObject;
-
-        public static MethodInfo MethodInfo_CreateDelegate_Type_Object =>
-                                  s_MethodInfo_CreateDelegate_Type_Object ??
-                                 (s_MethodInfo_CreateDelegate_Type_Object = typeof(MethodInfo).GetMethod(nameof(MethodInfo.CreateDelegate), new[] { typeof(Type), typeof(object) }));*/
+        public static ConstructorInfo NullableBooleanCtor =>
+                                  _nullableBooleanCtor ??
+                                 (_nullableBooleanCtor = typeof(bool?).GetConstructor(new[] { typeof(bool) }));
 
         public static MethodInfo ObjectGetType =>
                                   _objectGetType ??

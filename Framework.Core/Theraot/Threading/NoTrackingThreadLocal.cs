@@ -1,10 +1,12 @@
 ﻿// Needed for NET35 (ThreadLocal)
 
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using Theraot.Core;
+using Theraot.Reflection;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
@@ -18,7 +20,7 @@ namespace Theraot.Threading
         private Func<T> _valueFactory;
 
         public NoTrackingThreadLocal()
-            : this(TypeHelper.GetCreateOrDefault<T>())
+            : this(ConstructorHelper.CreateOrDefault<T>)
         {
             // Empty
         }
@@ -157,3 +159,5 @@ namespace Theraot.Threading
         }
     }
 }
+
+#endif

@@ -1,4 +1,4 @@
-﻿#if NET40 || NET45
+﻿#if NET40 || NET45 || NET46 || NET47 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
 
 using System.Collections.Generic;
 using System.Linq;
@@ -453,13 +453,12 @@ namespace System.Threading.Tasks
         /// <param name="targetList">The list to which to add the exception and initialize if the list is null.</param><param name="exception">The exception to add, and unwrap if it's an aggregate.</param>
         private static void AddPotentiallyUnwrappedExceptions(ref List<Exception> targetList, Exception exception)
         {
-            var aggregateException = exception as AggregateException;
             if (targetList == null)
             {
                 targetList = new List<Exception>();
             }
 
-            if (aggregateException != null)
+            if (exception is AggregateException aggregateException)
             {
                 targetList.Add(aggregateException.InnerExceptions.Count == 1 ? exception.InnerException : exception);
             }

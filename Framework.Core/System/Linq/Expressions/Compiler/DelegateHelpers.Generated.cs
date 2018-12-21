@@ -15,7 +15,7 @@ namespace System.Linq.Expressions.Compiler
     {
         private const int MaximumArity = 17;
 
-        private static TypeInfo _DelegateCache = new TypeInfo();
+        private static TypeInfo _delegateCache = new TypeInfo();
 
         internal static Type GetActionType(Type[] types)
         {
@@ -139,7 +139,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal static TypeInfo GetNextTypeInfo(Type initialArg, TypeInfo curTypeInfo)
         {
-            lock (_DelegateCache)
+            lock (_delegateCache)
             {
                 return NextTypeInfo(initialArg, curTypeInfo);
             }
@@ -152,9 +152,9 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         internal static Type MakeDelegateType(Type[] types)
         {
-            lock (_DelegateCache)
+            lock (_delegateCache)
             {
-                TypeInfo curTypeInfo = _DelegateCache;
+                TypeInfo curTypeInfo = _delegateCache;
 
                 // arguments & return type
                 for (int i = 0; i < types.Length; i++)
@@ -226,9 +226,9 @@ namespace System.Linq.Expressions.Compiler
 
         internal static TypeInfo NextTypeInfo(Type initialArg)
         {
-            lock (_DelegateCache)
+            lock (_delegateCache)
             {
-                return NextTypeInfo(initialArg, _DelegateCache);
+                return NextTypeInfo(initialArg, _delegateCache);
             }
         }
 

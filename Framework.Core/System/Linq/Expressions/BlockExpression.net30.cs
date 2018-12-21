@@ -12,6 +12,7 @@ using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -1057,13 +1058,12 @@ namespace System.Linq.Expressions
                 var last = expressions.Last();
                 if (type != typeof(void))
                 {
-                    if (!TypeUtils.AreReferenceAssignable(type, last.Type))
+                    if (!type.IsReferenceAssignableFromInternal(last.Type))
                     {
                         throw Error.ArgumentTypesMustMatch();
                     }
                 }
-
-                if (!TypeUtils.AreEquivalent(type, last.Type))
+                if (type != last.Type)
                 {
                     return new ScopeWithType(variables, expressions, type);
                 }

@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using Theraot.Core;
+using Theraot.Reflection;
 using Theraot.Threading;
 
 namespace System.Threading

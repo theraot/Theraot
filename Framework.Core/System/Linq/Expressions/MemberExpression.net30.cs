@@ -41,7 +41,7 @@ namespace System.Linq.Expressions
                 }
 
                 ExpressionUtils.RequiresCanRead(expression, nameof(expression));
-                if (!TypeUtils.AreReferenceAssignable(field.DeclaringType, expression.Type))
+                if (!field.DeclaringType.IsReferenceAssignableFromInternal(expression.Type))
                 {
                     throw Error.FieldInfoNotDefinedForType(field.DeclaringType, field.Name, expression.Type);
                 }

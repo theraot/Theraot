@@ -9,7 +9,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
-using Theraot.Core;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -52,7 +52,7 @@ namespace System.Linq.Expressions
                 var expr = initializerList[i];
                 ExpressionUtils.RequiresCanRead(expr, nameof(initializers), i);
 
-                if (!TypeUtils.AreReferenceAssignable(type, expr.Type))
+                if (!type.IsReferenceAssignableFromInternal(expr.Type))
                 {
                     if (!TryQuote(type, ref expr))
                     {

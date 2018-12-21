@@ -4,14 +4,12 @@ using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Theraot.Collections.ThreadSafe;
+using Theraot.Core;
 
-namespace Theraot.Core
+namespace Theraot.Reflection
 {
     public static partial class TypeHelper
     {
-        public static object[] EmptyObjects => ArrayReservoir<object>.EmptyArray;
-
         public static TTarget As<TTarget>(object source)
             where TTarget : class
         {
@@ -66,16 +64,6 @@ namespace Theraot.Core
             return methodInfo.CreateDelegate(type, target);
         }
 
-        public static bool CanBeNull(this Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            var info = type.GetTypeInfo();
-            return !info.IsValueType || Nullable.GetUnderlyingType(type) != null;
-        }
-
         public static TTarget Cast<TTarget>(object source)
         {
             return Cast
@@ -110,23 +98,9 @@ namespace Theraot.Core
             }
         }
 
-        public static object Create(this Type type, params object[] arguments)
-        {
-            return Activator.CreateInstance(type, arguments);
-        }
-
         public static TReturn Default<TReturn>()
         {
             return FuncHelper.GetDefaultFunc<TReturn>().Invoke();
-        }
-
-        public static bool DelegateEquals(this Delegate @delegate, MethodInfo method, object target)
-        {
-            if (@delegate == null)
-            {
-                throw new ArgumentNullException(nameof(@delegate));
-            }
-            return @delegate.GetMethodInfo().Equals(method) && @delegate.Target == target;
         }
 
         public static MethodInfo FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly)
@@ -151,115 +125,9 @@ namespace Theraot.Core
             return null;
         }
 
-        public static TAttribute[] GetAttributes<TAttribute>(this Type type, bool inherit)
-                    where TAttribute : Attribute
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            var info = type.GetTypeInfo();
-            return (TAttribute[])info.GetCustomAttributes(typeof(TAttribute), inherit);
-        }
-
         public static Func<TReturn> GetDefault<TReturn>()
         {
             return FuncHelper.GetDefaultFunc<TReturn>();
-        }
-
-        public static Type GetNonRefType(this Type type)
-        {
-            return type.IsByRef ? type.GetElementType() : type;
-        }
-
-        public static Type GetNotNullableType(this Type type)
-        {
-            var underlying = Nullable.GetUnderlyingType(type);
-            if (underlying == null)
-            {
-                return type;
-            }
-            return underlying;
-        }
-
-        public static Type GetNullableType(this Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            var info = type.GetTypeInfo();
-            if (info.IsValueType && !IsNullable(type))
-            {
-                return typeof(Nullable<>).MakeGenericType(type);
-            }
-            return type;
-        }
-
-        public static bool HasAttribute<TAttribute>(this Type item)
-                    where TAttribute : Attribute
-        {
-            var attributes = item.GetAttributes<TAttribute>(true);
-            if (attributes != null)
-            {
-                return attributes.Length > 0;
-            }
-            return false;
-        }
-
-        public static bool IsAtomic<T>()
-        {
-#if NETCOREAPP1_0 || NETCOREAPP1_1
-            var info = typeof(T).GetTypeInfo();
-            return info.IsClass || info.IsPrimitive && Marshal.SizeOf<T>() <= IntPtr.Size;
-#else
-            var type = typeof(T);
-            var info = type.GetTypeInfo();
-            return info.IsClass || info.IsPrimitive && Marshal.SizeOf(type) <= IntPtr.Size;
-#endif
-        }
-
-        public static bool IsConstructedGenericType(this Type type)
-        {
-            var info = type.GetTypeInfo();
-            return info.IsGenericType && !info.IsGenericTypeDefinition;
-        }
-
-        public static bool IsContravariant(Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            return PrivateIsContravariant(type);
-        }
-
-        public static bool IsCovariant(Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            return PrivateIsCovariant(type);
-        }
-
-        public static bool IsDelegate(Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            return PrivateIsDelegate(type);
-        }
-
-        public static bool IsGenericInstanceOf(this Type type, Type genericTypeDefinition)
-        {
-            var info = type.GetTypeInfo();
-            if (!info.IsGenericType)
-            {
-                return false;
-            }
-            return type.GetGenericTypeDefinition() == genericTypeDefinition;
         }
 
         public static bool IsImplicitBoxingConversion(Type source, Type target)
@@ -395,80 +263,8 @@ namespace Theraot.Core
             return false;
         }
 
-        public static bool IsInvariant(Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            return PrivateIsInvariant(type);
-        }
-
-        public static bool IsNullable(this Type type)
-        {
-            return Nullable.GetUnderlyingType(type) != null;
-        }
-
-        public static bool IsPrimitiveInteger(this Type type)
-        {
-            if
-                (
-                    type == typeof(sbyte)
-                    || type == typeof(byte)
-                    || type == typeof(short)
-                    || type == typeof(int)
-                    || type == typeof(long)
-                    || type == typeof(ushort)
-                    || type == typeof(uint)
-                    || type == typeof(ulong)
-                )
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public static bool IsSafeArray(this Type type)
-        {
-            try
-            {
-                // GetArrayRank could throw - should not, but could.
-                // We are not checking the lower bound of the array type, there is no API for that.
-                // However, the type of arrays that can have a different lower index other than zero...
-                // ... have two constructors, one taking only the size, and one taking the lower and upper bounds.
-                return type.IsArray
-                       && typeof(Array).IsAssignableFrom(type)
-                       && type.GetArrayRank() == 1
-                       && type.GetElementType() != null
-                       && type.GetConstructors().Length == 1;
-            }
-            catch (Exception exception)
-            {
-                GC.KeepAlive(exception);
-                return false;
-            }
-        }
-
-        public static bool IsSameOrSubclassOf(this Type type, Type baseType)
-        {
-            if (type == baseType)
-            {
-                return true;
-            }
-            while (type != null)
-            {
-                var info = type.GetTypeInfo();
-                type = info.BaseType;
-                if (type == baseType)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         public static T LazyCreate<T>(ref T target)
-                                                                                                                                                                            where T : class
+            where T : class
         {
             var found = target;
             if (found == null)
@@ -583,35 +379,6 @@ namespace Theraot.Core
                 }
             }
             return found;
-        }
-
-        public static Type MakeNullableType(this Type self)
-        {
-            return typeof(Nullable<>).MakeGenericType(self);
-        }
-
-        private static bool PrivateIsContravariant(Type type)
-        {
-            var info = type.GetTypeInfo();
-            return 0 != (info.GenericParameterAttributes & GenericParameterAttributes.Contravariant);
-        }
-
-        private static bool PrivateIsCovariant(Type type)
-        {
-            var info = type.GetTypeInfo();
-            return 0 != (info.GenericParameterAttributes & GenericParameterAttributes.Covariant);
-        }
-
-        private static bool PrivateIsDelegate(Type type)
-        {
-            var info = type.GetTypeInfo();
-            return info.IsSubclassOf(typeof(MulticastDelegate));
-        }
-
-        private static bool PrivateIsInvariant(Type type)
-        {
-            var info = type.GetTypeInfo();
-            return 0 == (info.GenericParameterAttributes & GenericParameterAttributes.VarianceMask);
         }
     }
 }

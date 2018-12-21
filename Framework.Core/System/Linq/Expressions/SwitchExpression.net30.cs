@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Theraot.Core;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -134,7 +134,7 @@ namespace System.Linq.Expressions
                 bool liftedCall = false;
                 if (!ParameterIsAssignable(leftParam, switchValue.Type))
                 {
-                    liftedCall = ParameterIsAssignable(leftParam, switchValue.Type.GetNonNullableType());
+                    liftedCall = ParameterIsAssignable(leftParam, switchValue.Type.GetNonNullable());
                     if (!liftedCall)
                     {
                         throw Error.SwitchValueTypeDoesNotMatchComparisonMethodParameter(switchValue.Type, leftParam.ParameterType);
@@ -153,11 +153,11 @@ namespace System.Linq.Expressions
                         Type rightOperandType = c.TestValues[i].Type;
                         if (liftedCall)
                         {
-                            if (!rightOperandType.IsNullableType())
+                            if (!rightOperandType.IsNullable())
                             {
                                 throw Error.TestValueTypeDoesNotMatchComparisonMethodParameter(rightOperandType, rightParam.ParameterType);
                             }
-                            rightOperandType = rightOperandType.GetNonNullableType();
+                            rightOperandType = rightOperandType.GetNonNullable();
                         }
                         if (!ParameterIsAssignable(rightParam, rightOperandType))
                         {
@@ -225,7 +225,7 @@ namespace System.Linq.Expressions
             {
                 if (resultType != typeof(void))
                 {
-                    if (!TypeUtils.AreReferenceAssignable(resultType, @case.Type))
+                    if (!resultType.IsReferenceAssignableFromInternal(@case.Type))
                     {
                         throw Error.ArgumentTypesMustMatch(parameterName);
                     }
@@ -233,7 +233,7 @@ namespace System.Linq.Expressions
             }
             else
             {
-                if (!TypeUtils.AreEquivalent(resultType, @case.Type))
+                if (resultType != @case.Type)
                 {
                     throw Error.AllCaseBodiesMustHaveSameType(parameterName);
                 }
@@ -297,10 +297,10 @@ namespace System.Linq.Expressions
         {
             get
             {
-                if (SwitchValue.Type.IsNullableType())
+                if (SwitchValue.Type.IsNullable())
                 {
                     return Comparison == null ||
-                        !TypeUtils.AreEquivalent(SwitchValue.Type, Comparison.GetParameters()[0].ParameterType.GetNonRefType());
+                        !TypeUtils.AreEquivalent(SwitchValue.Type, Comparison.GetParameters()[0].ParameterType.GetNonRefTypeInternal());
                 }
                 return false;
             }

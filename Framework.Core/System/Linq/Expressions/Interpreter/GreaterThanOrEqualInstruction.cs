@@ -6,7 +6,7 @@
 
 using System.Diagnostics;
 using System.Dynamic.Utils;
-using Theraot.Core;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -30,7 +30,7 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(!type.IsEnum);
             if (liftedToNull)
             {
-                switch (type.GetNonNullableType().GetTypeCode())
+                switch (type.GetNonNullable().GetTypeCode())
                 {
                     case TypeCode.SByte: return _liftedToNullSByte ?? (_liftedToNullSByte = new GreaterThanOrEqualSByte(null));
                     case TypeCode.Int16: return _liftedToNullInt16 ?? (_liftedToNullInt16 = new GreaterThanOrEqualInt16(null));
@@ -48,7 +48,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            switch (type.GetNonNullableType().GetTypeCode())
+            switch (type.GetNonNullable().GetTypeCode())
             {
                 case TypeCode.SByte: return _sByte ?? (_sByte = new GreaterThanOrEqualSByte(Utils.BoxedFalse));
                 case TypeCode.Int16: return _int16 ?? (_int16 = new GreaterThanOrEqualInt16(Utils.BoxedFalse));

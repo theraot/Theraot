@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Security.Permissions;
 using System.Threading;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
@@ -13,7 +12,6 @@ namespace System.Collections.Concurrent
     [Serializable]
     [ComVisible(false)]
     [DebuggerDisplay("Count = {Count}")]
-    [HostProtection(SecurityAction.LinkDemand, Synchronization = true, ExternalThreading = true)]
     public class ConcurrentStack<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>
     {
         private SafeStack<T> _wrapped;

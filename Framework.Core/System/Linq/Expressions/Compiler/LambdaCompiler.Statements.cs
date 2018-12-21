@@ -11,7 +11,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
-using Theraot.Core;
+using Theraot.Reflection;
 using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Linq.Expressions.Compiler
@@ -251,10 +251,10 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // Otherwise, get the type from the method.
-            Type result = node.Comparison.GetParameters()[1].ParameterType.GetNonRefType();
+            Type result = node.Comparison.GetParameters()[1].ParameterType.GetNonRefTypeInternal();
             if (node.IsLifted)
             {
-                result = result.GetNullableType();
+                result = result.GetNullable();
             }
             return result;
         }
@@ -518,7 +518,7 @@ namespace System.Linq.Expressions.Compiler
                     // stack as the switch. This simplifies spilling.
                     EmitExpression(test);
                     _scope.EmitSet(testValue);
-                    Debug.Assert(TypeUtils.AreReferenceAssignable(testValue.Type, test.Type));
+                    Debug.Assert(testValue.Type.IsReferenceAssignableFromInternal(test.Type));
                     EmitExpressionAndBranch(true, Expression.Equal(switchValue, testValue, false, node.Comparison), labels[i]);
                 }
             }

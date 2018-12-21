@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35
+﻿#if NET20 || NET30 || NET35 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1
 
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;

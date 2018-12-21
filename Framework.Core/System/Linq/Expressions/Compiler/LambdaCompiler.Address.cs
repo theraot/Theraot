@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Reflection.Emit;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -324,8 +325,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitExpressionAddress(Expression node, Type type)
         {
-            Debug.Assert(TypeUtils.AreReferenceAssignable(type, node.Type));
-
+            Debug.Assert(type.IsReferenceAssignableFromInternal(node.Type));
             EmitExpression(node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
             LocalBuilder tmp = GetLocal(type);
             _ilg.Emit(OpCodes.Stloc, tmp);

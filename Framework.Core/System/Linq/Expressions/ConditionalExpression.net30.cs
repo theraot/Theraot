@@ -6,6 +6,7 @@
 
 using System.Diagnostics;
 using System.Dynamic.Utils;
+using Theraot.Reflection;
 using AstUtils = System.Linq.Expressions.Utils;
 
 namespace System.Linq.Expressions
@@ -153,8 +154,8 @@ namespace System.Linq.Expressions
 
             if (type != typeof(void))
             {
-                if (!TypeUtils.AreReferenceAssignable(type, ifTrue.Type) ||
-                    !TypeUtils.AreReferenceAssignable(type, ifFalse.Type))
+                if (!type.IsReferenceAssignableFromInternal(ifTrue.Type) ||
+                    !type.IsReferenceAssignableFromInternal(ifFalse.Type))
                 {
                     throw Error.ArgumentTypesMustMatch();
                 }

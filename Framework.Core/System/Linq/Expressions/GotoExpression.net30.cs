@@ -6,6 +6,7 @@
 
 using System.Diagnostics;
 using System.Dynamic.Utils;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -301,7 +302,7 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(value, paramName);
             if (expectedType != typeof(void))
             {
-                if (!TypeUtils.AreReferenceAssignable(expectedType, value.Type))
+                if (!expectedType.IsReferenceAssignableFromInternal(value.Type))
                 {
                     // C# auto-quotes return values, so we'll do that here
                     if (!TryQuote(expectedType, ref value))

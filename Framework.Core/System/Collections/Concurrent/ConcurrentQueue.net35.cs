@@ -1,18 +1,18 @@
-﻿#if NET20 || NET30 || NET35
+﻿#if NET20 || NET30 || NET35 || NETSTANDARD1_0
 
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Security.Permissions;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
 
 namespace System.Collections.Concurrent
 {
+#if NET20 || NET30 || NET35
     [Serializable]
+#endif
     [ComVisible(false)]
     [DebuggerDisplay("Count = {Count}")]
-    [HostProtection(SecurityAction.LinkDemand, Synchronization = true, ExternalThreading = true)]
     public class ConcurrentQueue<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>
     {
         private SafeQueue<T> _wrapped;
