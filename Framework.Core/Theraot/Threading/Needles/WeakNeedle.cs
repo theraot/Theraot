@@ -101,7 +101,7 @@ namespace Theraot.Threading.Needles
             {
                 return !(right is null);
             }
-            return right is null || NotEqualsExtractedExtracted(left, right);
+            return right is null || !EqualsExtractedExtracted(left, right);
         }
 
         public static bool operator ==(WeakNeedle<T> left, WeakNeedle<T> right)
@@ -120,10 +120,9 @@ namespace Theraot.Threading.Needles
             {
                 return EqualsExtractedExtracted(this, needle);
             }
-            if (obj is T value)
+            if (obj is T value && TryGetValue(out var target))
             {
-                var target = Value;
-                return IsAlive && EqualityComparer<T>.Default.Equals(target, value);
+                return EqualityComparer<T>.Default.Equals(target, value);
             }
             return false;
         }
@@ -145,8 +144,11 @@ namespace Theraot.Threading.Needles
 
         public override string ToString()
         {
-            var target = Value;
-            if (IsAlive)
+            if (Exception != null)
+            {
+                return $"<Faulted: {Exception}>";
+            }
+            if (_handle.TryGetTarget(out var target))
             {
                 return target.ToString();
             }
@@ -180,24 +182,17 @@ namespace Theraot.Threading.Needles
 
         private static bool EqualsExtractedExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
         {
-            var leftValue = left.Value;
-            if (left.IsAlive)
+            var leftException = left.Exception;
+            var rightException = right.Exception;
+            if (left.Exception != null || right.Exception != null)
             {
-                var rightValue = right.Value;
-                return right.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
+                return EqualityComparer<Exception>.Default.Equals(leftException, rightException);
             }
-            return !right.IsAlive;
-        }
-
-        private static bool NotEqualsExtractedExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
-        {
-            var leftValue = left.Value;
-            if (left.IsAlive)
+            if (left._handle.TryGetTarget(out var leftValue) && right._handle.TryGetTarget(out var rightValue))
             {
-                var rightValue = right.Value;
-                return !right.IsAlive || !EqualityComparer<T>.Default.Equals(leftValue, rightValue);
+                return EqualityComparer<T>.Default.Equals(leftValue, rightValue);
             }
-            return right.IsAlive;
+            return false;
         }
     }
 }
