@@ -135,7 +135,7 @@ namespace TestRunner
                     new ExtendedEnumerable<string>(Extensions.AsUnaryIEnumerable("== Reconstructed StackTrace ==\r\n"), extendedStackTrace.SkipItems(4))
                 )
             );
-            Debug.WriteLine(report.ToString());
+            Console.WriteLine(report.ToString());
         }
 
         public static void Main()
@@ -160,7 +160,7 @@ namespace TestRunner
                         ExceptionReport(exception);
                     }
                     stopwatch.Stop();
-                    Debug.WriteLine(stopwatch.Elapsed);
+                    Console.WriteLine(stopwatch.Elapsed);
                 }
             }
         }
@@ -209,6 +209,7 @@ namespace TestRunner
         {
             private Delegate _delegate;
             private object _instance;
+
             public Test(MethodInfo methodInfo)
             {
                 var type = methodInfo.DeclaringType;
@@ -224,7 +225,7 @@ namespace TestRunner
                 {
                     _instance = Activator.CreateInstance(type);
                 }
-                _delegate = TypeHelper.BuildDelegate(methodInfo, type);
+                _delegate = TypeHelper.BuildDelegate(typeof(Action), methodInfo, _instance);
             }
 
             public void Dispose()
