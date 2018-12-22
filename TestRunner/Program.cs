@@ -154,15 +154,26 @@ namespace TestRunner
                     try
                     {
                         test.Invoke();
+                        stopwatch.Stop();
+                        Console.WriteLine(test.Name + ": ok");
                     }
                     catch (Exception exception)
                     {
+                        Console.WriteLine(test.Name + ": error");
                         ExceptionReport(exception);
                     }
-                    stopwatch.Stop();
                     Console.WriteLine(stopwatch.Elapsed);
                 }
+                Console.WriteLine();
             }
+            Exit();
+        }
+
+        [Conditional("DEBUG")]
+        private static void Exit()
+        {
+            Console.WriteLine("[Press any key to exit]");
+            Console.ReadKey();
         }
 
         private static IEnumerable<Test> GetAllTests(string[] ignoredCategories)
@@ -226,7 +237,10 @@ namespace TestRunner
                     _instance = Activator.CreateInstance(type);
                 }
                 _delegate = TypeHelper.BuildDelegate(typeof(Action), methodInfo, _instance);
+                Name = methodInfo.Name;
             }
+
+            public string Name { get; }
 
             public void Dispose()
             {
