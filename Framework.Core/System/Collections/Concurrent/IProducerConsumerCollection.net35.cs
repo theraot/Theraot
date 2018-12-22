@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35 || NETSTANDARD1_0
+﻿#if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
 
