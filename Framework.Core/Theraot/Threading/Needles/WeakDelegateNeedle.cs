@@ -21,12 +21,6 @@ namespace Theraot.Threading.Needles
             // Empty
         }
 
-        public WeakDelegateNeedle(MethodInfo methodInfo, object target)
-            : base(TypeHelper.BuildDelegate(methodInfo, target))
-        {
-            // Empty
-        }
-
         public MethodInfo Method
         {
             get

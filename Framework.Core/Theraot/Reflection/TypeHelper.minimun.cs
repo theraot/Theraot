@@ -42,7 +42,7 @@ namespace Theraot.Reflection
             return sourceAsTarget;
         }
 
-        public static Delegate BuildDelegate(MethodInfo methodInfo, object target)
+        public static Delegate BuildDelegate(Type delegateType, MethodInfo methodInfo, object target)
         {
             if (methodInfo == null)
             {
@@ -56,12 +56,11 @@ namespace Theraot.Reflection
                 }
                 throw new ArgumentException("target is not null and the method is static", nameof(target));
             }
-            var type = methodInfo.DeclaringType;
-            if (type == null)
+            if (delegateType == null)
             {
-                throw new ArgumentException("methodInfo.DeclaringType is null", nameof(methodInfo));
+                throw new ArgumentNullException(nameof(delegateType));
             }
-            return methodInfo.CreateDelegate(type, target);
+            return methodInfo.CreateDelegate(delegateType, target);
         }
 
         public static TTarget Cast<TTarget>(object source)
