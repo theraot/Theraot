@@ -153,13 +153,13 @@ namespace TestRunner
                 {
                     try
                     {
-                        test.Invoke();
+                        var result = test.Invoke();
                         stopwatch.Stop();
-                        Console.WriteLine(test.Name + ": ok");
+                        Console.WriteLine($"{test.Name}: ok {result}");
                     }
                     catch (Exception exception)
                     {
-                        Console.WriteLine(test.Name + ": error");
+                        Console.WriteLine($"{test.Name}: error");
                         ExceptionReport(exception);
                     }
                     Console.WriteLine(stopwatch.Elapsed);
@@ -236,7 +236,7 @@ namespace TestRunner
                 {
                     _instance = Activator.CreateInstance(type);
                 }
-                _delegate = TypeHelper.BuildDelegate(typeof(Action), methodInfo, _instance);
+                _delegate = TypeHelper.BuildDelegate(methodInfo, _instance);
                 Name = methodInfo.Name;
             }
 
@@ -252,14 +252,14 @@ namespace TestRunner
                 Interlocked.Exchange(ref _delegate, null);
             }
 
-            public void Invoke()
+            public object Invoke()
             {
                 var @delegate = Volatile.Read(ref _delegate);
                 if (@delegate == null)
                 {
                     throw new ObjectDisposedException(nameof(Test));
                 }
-                _delegate.DynamicInvoke(ArrayReservoir<object>.EmptyArray);
+                return _delegate.DynamicInvoke(ArrayReservoir<object>.EmptyArray);
             }
         }
     }
