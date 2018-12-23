@@ -75,8 +75,8 @@ namespace System.Threading
 
         private readonly WeakReference<object> _probe;
         private readonly ParameterizedThreadStart _start;
+        private string _name;
         private Task _task;
-
         public Thread(ParameterizedThreadStart start)
         {
             _start = start == null
@@ -166,7 +166,18 @@ namespace System.Threading
 
         public int ManagedThreadId { get; }
 
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (_name != null)
+                {
+                    throw new InvalidOperationException();
+                }
+                _name = value;
+            }
+        }
 
         public ThreadState ThreadState
         {
