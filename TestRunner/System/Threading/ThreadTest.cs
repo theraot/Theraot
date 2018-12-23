@@ -6,11 +6,11 @@ namespace TestRunner.System.Threading
     public static class ThreadTest
     {
         [Test]
-        public static void NameCurrentThread()
+        public static void NameCurrentThread(string name)
         {
             var thread = Thread.CurrentThread;
-            thread.Name = "threadName";
-            Assert.AreEqual("threadName", thread.Name);
+            thread.Name = name;
+            Assert.AreEqual(name, thread.Name);
             Assert.IsTrue(thread.IsAlive);
         }
     }
