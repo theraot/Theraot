@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace TestRunner.System.Threading
@@ -49,6 +50,17 @@ namespace TestRunner.System.Threading
             thread.Start(sent);
             thread.Join();
             Assert.AreEqual(sent, found);
+        }
+
+        [Test]
+        public static void SleepSleeps()
+        {
+            Assert.IsTrue(Thread.CurrentThread.IsAlive);
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            Thread.Sleep(1000);
+            Assert.IsTrue(stopWatch.Elapsed.TotalMilliseconds > 1000);
+            Assert.IsTrue(Thread.CurrentThread.IsAlive);
         }
     }
 }
