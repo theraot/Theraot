@@ -6,7 +6,7 @@ namespace TestRunner.System.Threading
     [TestFixture]
     public static class ThreadTest
     {
-        [Test]
+        [Test(IsolatedThread = true)]
         public static void NameCurrentThread(string name, string secondName)
         {
             var thread = Thread.CurrentThread;
