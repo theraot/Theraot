@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 using Theraot.Reflection;
 
@@ -214,6 +213,7 @@ namespace TestRunner
 
         private sealed class Test : IDisposable
         {
+            private readonly Type[] _parameterTypes;
             private Delegate _delegate;
             private object _instance;
 
@@ -236,9 +236,6 @@ namespace TestRunner
                 _parameterTypes = methodInfo.GetParameters().Select(parameterInfo => parameterInfo.ParameterType).ToArray();
                 Name = methodInfo.Name;
             }
-
-            private Type[] _parameterTypes;
-
             public string Name { get; }
 
             public void Dispose()
