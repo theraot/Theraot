@@ -152,21 +152,31 @@ namespace TestRunner
             var stopwatch = new Stopwatch();
             foreach (var test in tests)
             {
-                stopwatch.Reset();
                 using (test)
                 {
+                    object capturedResult = null;
+                    Exception capturedException = null;
                     try
                     {
-                        var result = test.Invoke();
+                        stopwatch.Restart();
+                        capturedResult = test.Invoke();
                         stopwatch.Stop();
-                        Console.WriteLine($"{test.Name}: ok {result}");
                     }
                     catch (Exception exception)
                     {
-                        Console.WriteLine($"{test.Name}: error");
-                        ExceptionReport(exception);
+                        stopwatch.Stop();
+                        capturedException = exception;
                     }
                     Console.WriteLine(stopwatch.Elapsed);
+                    if (capturedException == null)
+                    {
+                        Console.WriteLine($"{test.Name}: ok {capturedResult}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{test.Name}: error");
+                        ExceptionReport(capturedException);
+                    }
                 }
                 Console.WriteLine();
             }
