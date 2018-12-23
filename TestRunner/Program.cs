@@ -147,7 +147,6 @@ namespace TestRunner
         {
             var ignoredCategories = new string[]
             {
-                
             };
             var tests = GetAllTests(ignoredCategories);
             var stopwatch = new Stopwatch();
@@ -189,9 +188,9 @@ namespace TestRunner
                 .Where(IsTestType)
                 .SelectMany(t => t.GetTypeInfo().GetMethods())
                 .Where(IsTestMethod)
-                .Select(method => new CategorizedMethod(method))
-                .Where(categorizedMethod => !categorizedMethod.Categories.Overlaps(ignoredCategories))
-                .Select(categorizedMethod => new Test(categorizedMethod.Method));
+                .Select(method => new TestMethod(method))
+                .Where(testMethod => !testMethod.Categories.Overlaps(ignoredCategories))
+                .Select(testMethod => new Test(testMethod));
         }
 
         private static bool IsTestMethod(MethodInfo methodInfo)
@@ -204,32 +203,22 @@ namespace TestRunner
             return type.HasAttribute<TestFixtureAttribute>() && !type.HasAttribute<IgnoreAttribute>();
         }
 
-        private sealed class CategorizedMethod
-        {
-            public CategorizedMethod(MethodInfo method)
-            {
-                Method = method;
-                Categories = method.GetAttributes<CategoryAttribute>(false).Select(category => category.Name);
-            }
-
-            public IEnumerable<string> Categories { get; }
-            public MethodInfo Method { get; }
-        }
-
         private sealed class Test : IDisposable
         {
+            private readonly bool _isolatedThread;
             private readonly Type[] _parameterTypes;
             private Delegate _delegate;
             private object _instance;
 
-            public Test(MethodInfo methodInfo)
+            public Test(TestMethod testMethod)
             {
-                var type = methodInfo.DeclaringType;
+                var method = testMethod.Method;
+                var type = method.DeclaringType;
                 if (type == null)
                 {
                     throw new ArgumentException();
                 }
-                if (methodInfo.IsStatic)
+                if (method.IsStatic)
                 {
                     _instance = null;
                 }
@@ -237,10 +226,12 @@ namespace TestRunner
                 {
                     _instance = Activator.CreateInstance(type);
                 }
-                _delegate = TypeHelper.BuildDelegate(methodInfo, _instance);
-                _parameterTypes = methodInfo.GetParameters().Select(parameterInfo => parameterInfo.ParameterType).ToArray();
-                Name = methodInfo.Name;
+                _delegate = TypeHelper.BuildDelegate(method, _instance);
+                _parameterTypes = method.GetParameters().Select(parameterInfo => parameterInfo.ParameterType).ToArray();
+                _isolatedThread = testMethod.TestAttribute.IsolatedThread;
+                Name = method.Name;
             }
+
             public string Name { get; }
 
             public void Dispose()
@@ -265,6 +256,32 @@ namespace TestRunner
                 {
                     parameters[index] = DataGenerator.Get(_parameterTypes[index]);
                 }
+                if (_isolatedThread)
+                {
+                    Exception capturedException = null;
+                    object capturedResult = null;
+                    var thread = new Thread
+                    (
+                        () =>
+                        {
+                            try
+                            {
+                                capturedResult = _delegate.DynamicInvoke(parameters);
+                            }
+                            catch (TargetInvocationException exception)
+                            {
+                                capturedException = exception.InnerException ?? exception;
+                            }
+                        }
+                    );
+                    thread.Start();
+                    thread.Join();
+                    if (capturedException != null)
+                    {
+                        throw capturedException;
+                    }
+                    return capturedResult;
+                }
                 try
                 {
                     return _delegate.DynamicInvoke(parameters);
@@ -279,11 +296,24 @@ namespace TestRunner
                 }
             }
         }
+
+        private sealed class TestMethod
+        {
+            public TestMethod(MethodInfo method)
+            {
+                Method = method;
+                Categories = method.GetAttributes<CategoryAttribute>(false).Select(category => category.Name);
+                TestAttribute = method.GetAttributes<TestAttribute>(false).First();
+            }
+
+            public IEnumerable<string> Categories { get; }
+            public MethodInfo Method { get; }
+            public TestAttribute TestAttribute { get; }
+        }
     }
 
     public sealed class AssertionFailedException : Exception
     {
-
         public AssertionFailedException()
         {
         }
@@ -319,7 +349,7 @@ namespace TestRunner
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public sealed class TestAttribute : Attribute
     {
-        // Empty
+        public bool IsolatedThread { get; set; }
     }
 
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
