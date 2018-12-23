@@ -178,20 +178,15 @@ namespace TestRunner
 
         private static IEnumerable<Test> GetAllTests(string[] ignoredCategories)
         {
-            return GetAllTypes()
+            var programType = typeof(Program);
+            var assembly = programType.GetTypeInfo().Assembly;
+            return assembly.GetExportedTypes()
                 .Where(IsTestType)
                 .SelectMany(t => t.GetTypeInfo().GetMethods())
                 .Where(IsTestMethod)
                 .Select(method => new CategorizedMethod(method))
                 .Where(categorizedMethod => !categorizedMethod.Categories.Overlaps(ignoredCategories))
                 .Select(categorizedMethod => new Test(categorizedMethod.Method));
-        }
-
-        private static IEnumerable<Type> GetAllTypes()
-        {
-            var programType = typeof(Program);
-            var assembly = programType.GetTypeInfo().Assembly;
-            return assembly.GetExportedTypes();
         }
 
         private static bool IsTestMethod(MethodInfo methodInfo)
@@ -237,8 +232,11 @@ namespace TestRunner
                     _instance = Activator.CreateInstance(type);
                 }
                 _delegate = TypeHelper.BuildDelegate(methodInfo, _instance);
+                _parameterTypes = methodInfo.GetParameters().Select(parameterInfo => parameterInfo.ParameterType).ToArray();
                 Name = methodInfo.Name;
             }
+
+            private Type[] _parameterTypes;
 
             public string Name { get; }
 
@@ -259,7 +257,12 @@ namespace TestRunner
                 {
                     throw new ObjectDisposedException(nameof(Test));
                 }
-                return _delegate.DynamicInvoke(ArrayReservoir<object>.EmptyArray);
+                var parameters = new object[_parameterTypes.Length];
+                for (int index = 0; index < parameters.Length; index++)
+                {
+                    parameters[index] = DataGenerator.Get(_parameterTypes[index]);
+                }
+                return _delegate.DynamicInvoke(parameters);
             }
         }
     }
