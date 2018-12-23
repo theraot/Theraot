@@ -1,6 +1,7 @@
 ﻿#if NETSTANDARD1_5 || NETSTANDARD1_6
 
 using System.Threading.Tasks;
+using Theraot;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 using Theraot.Threading;
@@ -25,36 +26,16 @@ namespace System
 
 namespace System.Threading
 {
+    [Runtime.InteropServices.ComVisible(false)]
+    public delegate void ParameterizedThreadStart(object obj);
+
     [Runtime.InteropServices.ComVisible(true)]
-    public class ThreadStateException : SystemException
-    {
-        public ThreadStateException()
-        {
-        }
-
-        public ThreadStateException(string message) : base(message)
-        {
-        }
-
-        public ThreadStateException(string message, Exception inner) : base(message, inner)
-        {
-        }
-    }
-
-    public sealed class LocalDataStoreSlot
-    {
-        internal TrackingThreadLocal<object> ThreadLocal;
-
-        internal LocalDataStoreSlot(TrackingThreadLocal<object> threadLocal)
-        {
-            ThreadLocal = threadLocal;
-        }
-    }
+    public delegate void ThreadStart();
 
     [Flags]
     [Runtime.InteropServices.ComVisible(true)]
     public enum ThreadState
-    {   
+    {
         Running = 0,
         StopRequested = 1,
         SuspendRequested = 2,
@@ -67,52 +48,34 @@ namespace System.Threading
         Aborted = 256
     }
 
-    [Runtime.InteropServices.ComVisible(false)]
-    public delegate void ParameterizedThreadStart(object obj);
+    public sealed class LocalDataStoreSlot
+    {
+        internal TrackingThreadLocal<object> ThreadLocal;
 
-    [Runtime.InteropServices.ComVisible(true)]
-    public delegate void ThreadStart();
+        internal LocalDataStoreSlot(TrackingThreadLocal<object> threadLocal)
+        {
+            ThreadLocal = threadLocal;
+        }
+    }
 
     public class Thread
     {
-        [ThreadStatic]
-        private static Thread _currentThread;
-        private static int _lastId;
         private static readonly SafeCollection<LocalDataStoreSlot> _dataStoreSlots = new SafeCollection<LocalDataStoreSlot>();
+
         private static readonly SafeDictionary<string, LocalDataStoreSlot> _namedDataStoreSlots = new SafeDictionary<string, LocalDataStoreSlot>();
 
-        private Task _task;
+        [ThreadStatic]
+        private static Thread _currentThread;
 
+        private static int _lastId;
+
+        [ThreadStatic]
+        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
+        private static object _threadProbe;
+
+        private readonly WeakReference<object> _probe;
         private readonly ParameterizedThreadStart _start;
-
-        ~Thread()
-        {
-            try
-            {
-                // Empty
-            }
-            finally
-            {
-                try
-                {
-                    var task = Volatile.Read(ref _task);
-                    if (task != null && !task.IsCompleted)
-                    {
-                        GC.ReRegisterForFinalize(this);
-                    }
-                }
-                catch (Exception exception)
-                {
-                    // Catch them all - there shouldn't be exceptions here, yet we really don't want them
-                    GC.KeepAlive(exception);
-                }
-            }
-        }
-
-        private Thread()
-        {
-            _task = null;
-        }
+        private Task _task;
 
         public Thread(ParameterizedThreadStart start)
         {
@@ -145,18 +108,53 @@ namespace System.Threading
         }
 
         public Thread(ParameterizedThreadStart start, int maxStackSize)
-            :this (start)
+            : this(start)
         {
             GC.KeepAlive(maxStackSize);
         }
 
         public Thread(ThreadStart start, int maxStackSize)
-            :this (start)
+            : this(start)
         {
             GC.KeepAlive(maxStackSize);
         }
 
-        public bool IsAlive => _start == null || _task != null && !_task.IsCompleted;
+        private Thread()
+        {
+            _start = null;
+            _task = null;
+            _currentThread = this;
+            _threadProbe = new object();
+            _probe = new WeakReference<object>(_threadProbe);
+        }
+
+        ~Thread()
+        {
+            try
+            {
+                // Empty
+            }
+            finally
+            {
+                try
+                {
+                    var task = Volatile.Read(ref _task);
+                    if (task != null && !task.IsCompleted)
+                    {
+                        GC.ReRegisterForFinalize(this);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    // Catch them all - there shouldn't be exceptions here, yet we really don't want them
+                    GC.KeepAlive(exception);
+                }
+            }
+        }
+
+        public static Thread CurrentThread => _currentThread ?? (_currentThread = new Thread());
+
+        public bool IsAlive => _start == null && _probe.TryGetTarget(out _) || _task != null && !_task.IsCompleted;
 
         public bool IsBackground
         {
@@ -176,7 +174,11 @@ namespace System.Threading
             {
                 if (_start == null)
                 {
-                    return ThreadState.Background;
+                    if (_probe.TryGetTarget(out _))
+                    {
+                        return ThreadState.Background;
+                    }
+                    return ThreadState.Stopped;
                 }
                 if (_task == null)
                 {
@@ -187,34 +189,17 @@ namespace System.Threading
                     case TaskStatus.Canceled:
                     case TaskStatus.Faulted:
                         return ThreadState.Aborted;
+
                     case TaskStatus.RanToCompletion:
                         return ThreadState.Stopped;
+
                     case TaskStatus.Running:
                         return ThreadState.Running;
+
                     default:
                         return ThreadState.Unstarted;
                 }
             }
-        }
-
-        public static void Sleep(int millisecondsTimeout)
-        {
-            Task.Delay(millisecondsTimeout).Wait();
-        }
-
-        public static void Sleep(TimeSpan timeout)
-        {
-            Task.Delay(timeout).Wait();
-        }
-
-        public void Abort()
-        {
-            throw new PlatformNotSupportedException();
-        }
-
-        public void Abort(object stateInfo)
-        {
-            throw new PlatformNotSupportedException();
         }
 
         public static LocalDataStoreSlot AllocateDataSlot()
@@ -248,8 +233,6 @@ namespace System.Threading
             _namedDataStoreSlots.Remove(name);
         }
 
-        public static Thread CurrentThread => _currentThread ?? (_currentThread = new Thread());
-
         public static object GetData(LocalDataStoreSlot slot)
         {
             return slot.ThreadLocal.Value;
@@ -260,11 +243,60 @@ namespace System.Threading
             slot.ThreadLocal.Value = data;
         }
 
+        public static void Sleep(int millisecondsTimeout)
+        {
+            Task.Delay(millisecondsTimeout).Wait();
+        }
+
+        public static void Sleep(TimeSpan timeout)
+        {
+            Task.Delay(timeout).Wait();
+        }
+
         public static void SpinWait(int iterations)
         {
             for (int index = 0; index < iterations; index++)
             {
                 GC.KeepAlive(index);
+            }
+        }
+
+        public void Abort()
+        {
+            throw new PlatformNotSupportedException();
+        }
+
+        public void Abort(object stateInfo)
+        {
+            throw new PlatformNotSupportedException();
+        }
+
+        public void Join()
+        {
+            if (this == CurrentThread)
+            {
+                // This is by definition a DeadLock
+                var source = new TaskCompletionSource<VoidStruct>();
+                source.Task.Wait();
+            }
+            if (_task != null)
+            {
+                _task.Wait();
+            }
+            else
+            {
+                var source = new TaskCompletionSource<VoidStruct>();
+                var probe = _probe;
+                GCMonitor.Collected += Handler;
+                source.Task.Wait();
+                void Handler(object sender, EventArgs args)
+                {
+                    if (!probe.TryGetTarget(out _))
+                    {
+                        source.SetResult(default);
+                        GCMonitor.Collected -= Handler;
+                    }
+                }
             }
         }
 
@@ -276,7 +308,8 @@ namespace System.Threading
             }
             try
             {
-                _task = new Task(() => _start(null));
+                _task = new Task(() => _start(null), TaskCreationOptions.LongRunning);
+                _task.Start();
             }
             catch (InvalidOperationException)
             {
@@ -284,7 +317,7 @@ namespace System.Threading
             }
         }
 
-        public void Start (object parameter)
+        public void Start(object parameter)
         {
             if (_task == null)
             {
@@ -292,12 +325,29 @@ namespace System.Threading
             }
             try
             {
+                _task = new Task(() => _start(parameter), TaskCreationOptions.LongRunning);
                 _task.Start();
             }
             catch (InvalidOperationException)
             {
                 throw new ThreadStateException();
             }
+        }
+    }
+
+    [Runtime.InteropServices.ComVisible(true)]
+    public class ThreadStateException : SystemException
+    {
+        public ThreadStateException()
+        {
+        }
+
+        public ThreadStateException(string message) : base(message)
+        {
+        }
+
+        public ThreadStateException(string message, Exception inner) : base(message, inner)
+        {
         }
     }
 }
