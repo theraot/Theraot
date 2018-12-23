@@ -87,9 +87,9 @@ namespace TestRunner
             {
                 if (message != null)
                 {
-                    throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found: {exception} - Message: {message}");
+                    throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found: {exception} - Message: {message}", exception);
                 }
-                throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found: {exception}");
+                throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found: {exception}", exception);
             }
             if (message != null)
             {
@@ -103,6 +103,11 @@ namespace TestRunner
     {
         public static void ExceptionReport(Exception exception)
         {
+            if (exception is AssertionFailedException)
+            {
+                Console.WriteLine(exception.Message);
+                return;
+            }
             var report = new StringBuilder();
             report.Append("Exception");
             report.Append("\r\n\r\n");
@@ -124,8 +129,8 @@ namespace TestRunner
                         current.StackTrace
                     )
                 );
+                report.Append("\r\n\r\n");
             }
-            report.Append("\r\n\r\n");
             var extendedStackTrace = Environment.StackTrace.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             report.Append
             (
@@ -260,7 +265,18 @@ namespace TestRunner
                 {
                     parameters[index] = DataGenerator.Get(_parameterTypes[index]);
                 }
-                return _delegate.DynamicInvoke(parameters);
+                try
+                {
+                    return _delegate.DynamicInvoke(parameters);
+                }
+                catch (TargetInvocationException exception)
+                {
+                    if (exception.InnerException != null)
+                    {
+                        throw exception.InnerException;
+                    }
+                    throw;
+                }
             }
         }
     }
