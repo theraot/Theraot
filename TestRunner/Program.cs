@@ -82,6 +82,7 @@ namespace TestRunner
             catch (TException exception)
             {
                 GC.KeepAlive(exception);
+                return;
             }
             catch (Exception exception)
             {
