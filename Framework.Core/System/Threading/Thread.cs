@@ -77,6 +77,7 @@ namespace System.Threading
         private readonly ParameterizedThreadStart _start;
         private string _name;
         private Task _task;
+
         public Thread(ParameterizedThreadStart start)
         {
             _start = start == null
@@ -313,36 +314,24 @@ namespace System.Threading
 
         public void Start()
         {
-            if (_start == null)
+            if (_start == null || _task != null)
             {
                 throw new ThreadStateException();
             }
-            try
-            {
-                _task = new Task(() => _start(null), TaskCreationOptions.LongRunning);
-                _task.Start();
-            }
-            catch (InvalidOperationException)
-            {
-                throw new ThreadStateException();
-            }
+            var task = new Task(() => _start(null), TaskCreationOptions.LongRunning);
+            task.Start();
+            _task = task;
         }
 
         public void Start(object parameter)
         {
-            if (_task == null)
+            if (_start == null || _task != null)
             {
                 throw new ThreadStateException();
             }
-            try
-            {
-                _task = new Task(() => _start(parameter), TaskCreationOptions.LongRunning);
-                _task.Start();
-            }
-            catch (InvalidOperationException)
-            {
-                throw new ThreadStateException();
-            }
+            var task = new Task(() => _start(parameter), TaskCreationOptions.LongRunning);
+            task.Start();
+            _task = task;
         }
     }
 
