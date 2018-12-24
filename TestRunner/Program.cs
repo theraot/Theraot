@@ -156,6 +156,7 @@ namespace TestRunner
                 {
                     object capturedResult = null;
                     Exception capturedException = null;
+                    Console.Write($"{test.Name}");
                     try
                     {
                         stopwatch.Restart();
@@ -167,14 +168,14 @@ namespace TestRunner
                         stopwatch.Stop();
                         capturedException = exception;
                     }
-                    Console.WriteLine(stopwatch.Elapsed);
+                    Console.Write($"({stopwatch.Elapsed}): ");
                     if (capturedException == null)
                     {
-                        Console.WriteLine($"{test.Name}: ok {capturedResult}");
+                        Console.WriteLine($"ok {capturedResult}");
                     }
                     else
                     {
-                        Console.WriteLine($"{test.Name}: error");
+                        Console.WriteLine("error");
                         ExceptionReport(capturedException);
                     }
                 }
