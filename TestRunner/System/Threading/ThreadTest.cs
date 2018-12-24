@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using Theraot.Threading;
 
 namespace TestRunner.System.Threading
 {
@@ -52,6 +53,30 @@ namespace TestRunner.System.Threading
             thread.Start(sent);
             thread.Join();
             Assert.AreEqual(sent, found);
+        }
+
+        [Test]
+        public static void SimpleSync()
+        {
+            var control = new int[3];
+            var thread = new Thread
+            (
+                () =>
+                {
+                    var spinWait = new SpinWait();
+                    Volatile.Write(ref control[0], 1);
+                    while (Volatile.Read(ref control[1]) == 0)
+                    {
+                        spinWait.SpinOnce();
+                    }
+                    Volatile.Write(ref control[2], 1);
+                }
+            );
+            thread.Start();
+            ThreadingHelper.SpinWaitUntil(ref control[0], 1);
+            Volatile.Write(ref control[1], 1);
+            thread.Join();
+            Assert.AreEqual(1, Volatile.Read(ref control[2]));
         }
 
         [Test]
