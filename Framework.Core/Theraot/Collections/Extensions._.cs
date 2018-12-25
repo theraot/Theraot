@@ -627,24 +627,6 @@ namespace Theraot.Collections
             return source.AddRange(Where(other.Distinct(), input => !source.Remove(input)));
         }
 
-        public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
-        {
-            if (dictionary == null)
-            {
-                throw new ArgumentNullException(nameof(dictionary));
-            }
-            try
-            {
-                dictionary.Add(key, value);
-                return true;
-            }
-            catch (ArgumentException ex)
-            {
-                GC.KeepAlive(ex);
-                return false;
-            }
-        }
-
         public static bool TryTake<T>(this Stack<T> stack, out T item)
         {
             if (stack == null)
