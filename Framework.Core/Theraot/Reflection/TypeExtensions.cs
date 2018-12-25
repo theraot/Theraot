@@ -449,11 +449,7 @@ namespace Theraot.Reflection
         public static bool IsInteger64(this Type type)
         {
             type = GetNonNullable(type);
-            if (!type.IsSameOrSubclassOfInternal(typeof(Enum)))
-            {
-                if (type == typeof(long) || type == typeof(ulong)) return true;
-            }
-            return false;
+            return !type.IsSameOrSubclassOfInternal(typeof(Enum)) && (type == typeof(long) || type == typeof(ulong));
         }
 
         public static bool IsIntegerOrBool(this Type type)
