@@ -2,8 +2,6 @@
 
 using System.Threading.Tasks;
 using Theraot;
-using Theraot.Collections.ThreadSafe;
-using Theraot.Core;
 using Theraot.Threading;
 
 namespace System
@@ -48,22 +46,8 @@ namespace System.Threading
         Aborted = 256
     }
 
-    public sealed class LocalDataStoreSlot
-    {
-        internal TrackingThreadLocal<object> ThreadLocal;
-
-        internal LocalDataStoreSlot(TrackingThreadLocal<object> threadLocal)
-        {
-            ThreadLocal = threadLocal;
-        }
-    }
-
     public class Thread
     {
-        private static readonly SafeCollection<LocalDataStoreSlot> _dataStoreSlots = new SafeCollection<LocalDataStoreSlot>();
-
-        private static readonly SafeDictionary<string, LocalDataStoreSlot> _namedDataStoreSlots = new SafeDictionary<string, LocalDataStoreSlot>();
-
         [ThreadStatic]
         private static Thread _currentThread;
 
@@ -200,47 +184,6 @@ namespace System.Threading
                         return ThreadState.Unstarted;
                 }
             }
-        }
-
-        public static LocalDataStoreSlot AllocateDataSlot()
-        {
-            var slot = new LocalDataStoreSlot
-            (
-                new TrackingThreadLocal<object>
-                (
-                    FuncHelper.GetDefaultFunc<object>()
-                )
-            );
-            _dataStoreSlots.Add(slot);
-            return slot;
-        }
-
-        public static LocalDataStoreSlot AllocateNamedDataSlot(string name)
-        {
-            var slot = new LocalDataStoreSlot
-            (
-                new TrackingThreadLocal<object>
-                (
-                    FuncHelper.GetDefaultFunc<object>()
-                )
-            );
-            _namedDataStoreSlots.AddNew(name, slot);
-            return slot;
-        }
-
-        public static void FreeNamedDataSlot(string name)
-        {
-            _namedDataStoreSlots.Remove(name);
-        }
-
-        public static object GetData(LocalDataStoreSlot slot)
-        {
-            return slot.ThreadLocal.Value;
-        }
-
-        public static void SetData(LocalDataStoreSlot slot, object data)
-        {
-            slot.ThreadLocal.Value = data;
         }
 
         public static void Sleep(int millisecondsTimeout)
