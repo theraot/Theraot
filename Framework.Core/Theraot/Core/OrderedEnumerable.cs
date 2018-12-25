@@ -40,18 +40,18 @@ namespace Theraot.Core
             {
                 comparer = comparer.Reverse();
             }
-            var compoundComparer = new CustomComparer<(TKey, TNewKey)>(Compare);
-            return new OrderedEnumerable<TElement, (TKey, TNewKey)>(_source, CompoundKeySelector, compoundComparer);
-            (TKey, TNewKey) CompoundKeySelector(TElement item)
+            var compoundComparer = new CustomComparer<KeyValuePair<TKey, TNewKey>>(Compare);
+            return new OrderedEnumerable<TElement, KeyValuePair<TKey, TNewKey>>(_source, CompoundKeySelector, compoundComparer);
+            KeyValuePair<TKey, TNewKey> CompoundKeySelector(TElement item)
             {
-                return (_keySelector(item), keySelector(item));
+                return new KeyValuePair<TKey, TNewKey>(_keySelector(item), keySelector(item));
             }
-            int Compare((TKey, TNewKey) x, (TKey, TNewKey) y)
+            int Compare(KeyValuePair<TKey, TNewKey> x, KeyValuePair<TKey, TNewKey> y)
             {
-                var check = _comparer.Compare(x.Item1, y.Item1);
+                var check = _comparer.Compare(x.Key, y.Key);
                 if (check == 0)
                 {
-                    return comparer.Compare(x.Item2, y.Item2);
+                    return comparer.Compare(x.Value, y.Value);
                 }
                 return check;
             }
@@ -70,27 +70,27 @@ namespace Theraot.Core
         private IEnumerable<TElement> Sort(IEnumerable<TElement> source)
         {
             var array = Extensions.AsArray(source);
-            var keys = new (TKey, int)[array.Length];
+            var keys = new KeyValuePair<TKey, int>[array.Length];
             for (int index = 0; index < array.Length; index++)
             {
-                keys[index] = (_keySelector.Invoke(array[index]), index);
+                keys[index] = new KeyValuePair<TKey, int>(_keySelector.Invoke(array[index]), index);
             }
             Array.Sort(keys, Compare);
             return Enumerable();
-            int Compare((TKey, int) x, (TKey, int) y)
+            int Compare(KeyValuePair<TKey, int> x, KeyValuePair<TKey, int> y)
             {
-                var check = _comparer.Compare(x.Item1, y.Item1);
+                var check = _comparer.Compare(x.Key, y.Key);
                 if (check == 0)
                 {
-                    return x.Item2 - y.Item2;
+                    return x.Value - y.Value;
                 }
                 return check;
             }
             IEnumerable<TElement> Enumerable()
             {
-                foreach (var (_, index) in keys)
+                foreach (var pair in keys)
                 {
-                    yield return array[index];
+                    yield return array[pair.Value];
                 }
             }
         }
