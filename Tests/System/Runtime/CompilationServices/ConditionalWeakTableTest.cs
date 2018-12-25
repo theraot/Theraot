@@ -77,9 +77,8 @@ namespace MonoTests.System.Runtime.CompilerServices
 
             GC.Collect(0);
 
-            object r1, r2;
-            Assert.IsTrue(cwt.TryGetValue(handles[0].Target, out r1), "#1");
-            Assert.IsTrue(cwt.TryGetValue(handles[1].Target, out r2), "#2");
+            Assert.IsTrue(cwt.TryGetValue(handles[0].Target, out _), "#1");
+            Assert.IsTrue(cwt.TryGetValue(handles[1].Target, out _), "#2");
 
             GC.Collect();
             GC.KeepAlive(cwt.GetHashCode());
@@ -129,8 +128,8 @@ namespace MonoTests.System.Runtime.CompilerServices
             lock (_lock1)
             {
                 var cwt = new ConditionalWeakTable<object, object>();
-                ThreadStart dele = () => FillWithFinalizable(cwt);
-                var th = new Thread(dele);
+                void Start() => FillWithFinalizable(cwt);
+                var th = new Thread(Start);
                 th.Start();
                 th.Join();
                 GC.Collect();
@@ -236,8 +235,8 @@ namespace MonoTests.System.Runtime.CompilerServices
             cwt.Add(b, new object());
 
             List<WeakReference> res = null;
-            ThreadStart dele = () => res = FillWithNetwork(cwt);
-            var th = new Thread(dele);
+            void Start() => res = FillWithNetwork(cwt);
+            var th = new Thread(Start);
             th.Start();
             th.Join();
 
@@ -281,10 +280,9 @@ namespace MonoTests.System.Runtime.CompilerServices
                 }
 
                 // Look up all keys to verify that they are still there
-                Val val;
                 foreach (var key in keys)
                 {
-                    Assert.IsTrue(table.TryGetValue(key, out val), "#1-" + i.ToString() + "-k-" + key);
+                    Assert.IsTrue(table.TryGetValue(key, out _), "#1-" + i.ToString() + "-k-" + key);
                 }
 
                 // Remove all keys from the ConditionalWeakTable
@@ -311,15 +309,15 @@ namespace MonoTests.System.Runtime.CompilerServices
             List<WeakReference> res = null;
             List<WeakReference> res2 = null;
 
-            ThreadStart dele = () =>
+            void Start()
             {
                 res = FillWithNetwork2(cwt);
                 ForcePromotion();
                 k = FillReachable(cwt);
                 res2 = FillWithNetwork2(cwt);
-            };
+            }
 
-            var th = new Thread(dele);
+            var th = new Thread(Start);
             th.Start();
             th.Join();
 
@@ -337,8 +335,7 @@ namespace MonoTests.System.Runtime.CompilerServices
 
             for (var i = 0; i < k.Count; ++i)
             {
-                object val;
-                Assert.IsTrue(cwt[0].TryGetValue(k[i], out val), "k0-" + i.ToString());
+                Assert.IsTrue(cwt[0].TryGetValue(k[i], out var val), "k0-" + i.ToString());
                 Assert.AreEqual(i, val, "k1-" + i.ToString());
             }
         }
@@ -365,8 +362,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             Assert.IsFalse(keys[1].IsAlive, "r1");
             Assert.IsTrue(keys[2].IsAlive, "r2");
 
-            object res;
-            Assert.IsTrue(cwt.TryGetValue(keepAlive[0], out res), "ka0");
+            Assert.IsTrue(cwt.TryGetValue(keepAlive[0], out var res), "ka0");
             Assert.IsTrue(res is Link, "ka1");
 
             var link = res as Link;
@@ -583,8 +579,7 @@ namespace MonoTests.System.Runtime.CompilerServices
                 {
                     // Empty
                 }
-                object obj;
-                var res = _cwt.TryGetValue(this, out obj);
+                var res = _cwt.TryGetValue(this, out _);
                 if (res)
                 {
                     _reachable++;
