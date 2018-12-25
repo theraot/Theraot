@@ -108,18 +108,6 @@ namespace System.Threading
             ManagedThreadId = Interlocked.Increment(ref _lastId);
         }
 
-        public Thread(ParameterizedThreadStart start, int maxStackSize)
-            : this(start)
-        {
-            GC.KeepAlive(maxStackSize);
-        }
-
-        public Thread(ThreadStart start, int maxStackSize)
-            : this(start)
-        {
-            GC.KeepAlive(maxStackSize);
-        }
-
         private Thread()
         {
             _start = null;
