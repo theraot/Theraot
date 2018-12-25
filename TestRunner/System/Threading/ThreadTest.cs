@@ -8,26 +8,15 @@ namespace TestRunner.System.Threading
     [TestFixture]
     public static class ThreadTest
     {
-        [Test(IsolatedThread = true)]
-        public static void NameCurrentThread(string name, string secondName)
+        [Test]
+        public static void CurrentThreadIsAlive()
         {
-            var thread = Thread.CurrentThread;
-            thread.Name = null;
-            Assert.IsNull(thread.Name);
-            thread.Name = name;
-            Assert.AreEqual(name, thread.Name);
-            Assert.Throws<InvalidOperationException>(() => { thread.Name = null; });
-            Assert.Throws<InvalidOperationException>(() => { thread.Name = secondName; });
-            Assert.IsTrue(thread.IsAlive);
+            Assert.IsTrue(Thread.CurrentThread.IsAlive);
         }
 
         [Test]
-        public static void NewThreadNullDelegate()
+        public static void NewThreadWithNullParametrizedThreadStartThrows()
         {
-            ThreadStart start = null;
-            // ReSharper disable once ExpressionIsAlwaysNull
-            // ReSharper disable once AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(new Thread(start)));
             ParameterizedThreadStart parameterizedStart = null;
             // ReSharper disable once ExpressionIsAlwaysNull
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -35,17 +24,16 @@ namespace TestRunner.System.Threading
         }
 
         [Test]
-        public static void NewThreadRuns()
+        public static void NewThreadWithNullThreadStartThrows()
         {
-            var value = 0;
-            var thread = new Thread(() => value = 1);
-            thread.Start();
-            thread.Join();
-            Assert.AreEqual(1, value);
+            ThreadStart start = null;
+            // ReSharper disable once ExpressionIsAlwaysNull
+            // ReSharper disable once AssignNullToNotNullAttribute
+            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(new Thread(start)));
         }
 
         [Test]
-        public static void ParametrizedThreadStart()
+        public static void NewThreadWithParametrizedThreadStartRespectsParameter()
         {
             object found = null;
             var thread = new Thread(param => found = param);
@@ -53,6 +41,26 @@ namespace TestRunner.System.Threading
             thread.Start(sent);
             thread.Join();
             Assert.AreEqual(sent, found);
+        }
+
+        [Test]
+        public static void NewThreadWithParametrizedThreadStartRuns()
+        {
+            var value = 0;
+            var thread = new Thread(obj => value = 1);
+            thread.Start(new object());
+            thread.Join();
+            Assert.AreEqual(1, value);
+        }
+
+        [Test]
+        public static void NewThreadWithThreadStartRuns()
+        {
+            var value = 0;
+            var thread = new Thread(() => value = 1);
+            thread.Start();
+            thread.Join();
+            Assert.AreEqual(1, value);
         }
 
         [Test]
@@ -80,14 +88,59 @@ namespace TestRunner.System.Threading
         }
 
         [Test]
-        public static void SleepSleeps()
+        public static void SleepDurationIsAtLeastMillisecondsTimeout
+        (
+            [UseGenerator(typeof(SmallNumericGenerator))] int millisecondsTimeout
+        )
         {
-            Assert.IsTrue(Thread.CurrentThread.IsAlive);
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            Thread.Sleep(1000);
-            Assert.IsTrue(stopWatch.Elapsed.TotalMilliseconds > 1000);
-            Assert.IsTrue(Thread.CurrentThread.IsAlive);
+            Thread.Sleep(millisecondsTimeout);
+            Assert.IsTrue(stopWatch.Elapsed.TotalMilliseconds > millisecondsTimeout);
+        }
+
+        [Test(IsolatedThread = true)]
+        public static void ThreadNameCanBeNull()
+        {
+            var thread = Thread.CurrentThread;
+            thread.Name = null;
+            Assert.IsNull(thread.Name);
+        }
+
+        [Test(IsolatedThread = true)]
+        public static void ThreadNameCanBeSet(string name)
+        {
+            var thread = Thread.CurrentThread;
+            thread.Name = name;
+            Assert.AreEqual(name, thread.Name);
+        }
+
+        [Test(IsolatedThread = true)]
+        public static void ThreadNameCanBeSetAfterBeingNull(string name)
+        {
+            var thread = Thread.CurrentThread;
+            thread.Name = null;
+            Assert.IsNull(thread.Name);
+            thread.Name = name;
+            Assert.AreEqual(name, thread.Name);
+        }
+
+        [Test(IsolatedThread = true)]
+        public static void ThreadNameCannotBeSetAfterNotNull(string name, string secondName)
+        {
+            var thread = Thread.CurrentThread;
+            thread.Name = name;
+            Assert.AreEqual(name, thread.Name);
+            Assert.Throws<InvalidOperationException>(() => { thread.Name = secondName; });
+        }
+
+        [Test(IsolatedThread = true)]
+        public static void ThreadNameCannotBeSetToNullAfterNotNull(string name)
+        {
+            var thread = Thread.CurrentThread;
+            thread.Name = name;
+            Assert.AreEqual(name, thread.Name);
+            Assert.Throws<InvalidOperationException>(() => { thread.Name = null; });
         }
     }
 }
