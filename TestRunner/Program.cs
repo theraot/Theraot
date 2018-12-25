@@ -217,7 +217,8 @@ namespace TestRunner
         private sealed class Test : IDisposable
         {
             private readonly bool _isolatedThread;
-            private readonly Type[] _parameterTypes;
+            private readonly ParameterInfo[] _parameterInfos;
+            private readonly Type[] _preferredGenerators;
             private Delegate _delegate;
             private object _instance;
 
@@ -238,8 +239,9 @@ namespace TestRunner
                     _instance = Activator.CreateInstance(type);
                 }
                 _delegate = TypeHelper.BuildDelegate(method, _instance);
-                _parameterTypes = method.GetParameters().Select(parameterInfo => parameterInfo.ParameterType).ToArray();
+                _parameterInfos = method.GetParameters();
                 _isolatedThread = testMethod.TestAttribute.IsolatedThread;
+                _preferredGenerators = testMethod.PreferredGenerators;
                 Name = method.Name;
             }
 
@@ -262,10 +264,13 @@ namespace TestRunner
                 {
                     throw new ObjectDisposedException(nameof(Test));
                 }
-                var parameters = new object[_parameterTypes.Length];
-                for (int index = 0; index < parameters.Length; index++)
+                var parameters = new object[_parameterInfos.Length];
+                for (var index = 0; index < parameters.Length; index++)
                 {
-                    parameters[index] = DataGenerator.Get(_parameterTypes[index]);
+                    var parameterInfo = _parameterInfos[index];
+                    var preferredGenerator = parameterInfo.GetAttributes<UseGeneratorAttribute>(false).FirstOrDefault();
+                    var preferredGenerators = preferredGenerator == null ? _preferredGenerators : new[] {preferredGenerator.GeneratorType};
+                    parameters[index] = DataGenerator.Get(parameterInfo.ParameterType, preferredGenerators);
                 }
                 if (_isolatedThread)
                 {
@@ -315,10 +320,12 @@ namespace TestRunner
                 Method = method;
                 Categories = method.GetAttributes<CategoryAttribute>(false).Select(category => category.Name);
                 TestAttribute = method.GetAttributes<TestAttribute>(false).First();
+                PreferredGenerators = method.GetAttributes<UseGeneratorAttribute>(false).Select(attribute => attribute.GeneratorType).ToArray();
             }
 
             public IEnumerable<string> Categories { get; }
             public MethodInfo Method { get; }
+            public Type[] PreferredGenerators { get; }
             public TestAttribute TestAttribute { get; }
         }
     }

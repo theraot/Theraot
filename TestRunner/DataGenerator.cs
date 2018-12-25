@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Theraot.Collections;
+using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Reflection;
 
@@ -12,34 +12,60 @@ namespace TestRunner
     [AttributeUsage(AttributeTargets.Method)]
     public sealed class DataGeneratorAttribute : Attribute {}
 
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter)]
+    public sealed class UseGeneratorAttribute : Attribute
+    {
+        public UseGeneratorAttribute(Type type)
+        {
+            GeneratorType = type;
+        }
+
+        public Type GeneratorType { get; }
+    }
+
     public static class DataGenerator
     {
-        private static readonly Dictionary<Type, Delegate> _dataGenerators = FindAllGenerators();
+        private static readonly Dictionary<Type, SortedDictionary<Type, Delegate>> _dataGenerators = FindAllGenerators();
         private static readonly Dictionary<Type, object> _instances = new Dictionary<Type, object>();
 
-        private static Dictionary<Type, Delegate> FindAllGenerators()
+        private static Dictionary<Type, SortedDictionary<Type, Delegate>> FindAllGenerators()
         {
-            var result = new Dictionary<Type, Delegate>();
+            var result = new Dictionary<Type, SortedDictionary<Type, Delegate>>();
             var dataGeneratorsType = typeof(DataGenerator);
             var assembly = dataGeneratorsType.GetTypeInfo().Assembly;
-            var pairs = assembly.GetExportedTypes()
+            var generators = assembly.GetExportedTypes()
                 .SelectMany(t => t.GetTypeInfo().GetMethods())
                 .Where(IsGeneratorMethod)
-                .Select(GetPair);
-            foreach (var pair in pairs)
+                .Select(GetGenerators);
+            var typeComparer = new CustomComparer<Type>
+                (
+                    (left, right) => string.Compare(left.Name, right.Name, StringComparison.Ordinal)
+                );
+            foreach (var generator in generators)
             {
-                var type = pair.Key;
-                var @delegate = pair.Value;
+                var type = generator.ReturnType;
+                var @delegate = generator.Delegate;
                 if (@delegate == null)
                 {
                     continue;
                 }
-                result.TryAdd(type, @delegate);
+                if (result.TryGetValue(type, out var dictionary))
+                {
+                    dictionary.TryAdd(generator.GeneratorType, @delegate);
+                }
+                else
+                {
+                    dictionary = new SortedDictionary<Type, Delegate>(typeComparer)
+                    {
+                        {generator.GeneratorType, @delegate}
+                    };
+                    result.Add(type, dictionary);
+                }
             }
             return result;
         }
 
-        private static KeyValuePair<Type, Delegate> GetPair(MethodInfo methodInfo)
+        private static (Type ReturnType, Type GeneratorType, Delegate Delegate) GetGenerators(MethodInfo methodInfo)
         {
             Delegate @delegate;
             if (methodInfo.IsStatic)
@@ -74,7 +100,7 @@ namespace TestRunner
                     @delegate = TypeHelper.BuildDelegate(methodInfo, instance);
                 }
             }
-            return new KeyValuePair<Type, Delegate>(methodInfo.GetReturnType(), @delegate);
+            return (methodInfo.GetReturnType(), methodInfo.DeclaringType, @delegate);
         }
 
         private static bool IsGeneratorMethod(MethodInfo methodInfo)
@@ -83,17 +109,27 @@ namespace TestRunner
                    methodInfo.GetParameters().Length == 0;
         }
 
-        public static object Get(Type type)
+        public static object Get(Type type, IEnumerable<Type> preferredTypes)
         {
-            if (_dataGenerators.TryGetValue(type, out var generator))
+            if (_dataGenerators.TryGetValue(type, out var dictionary))
             {
-                return generator.DynamicInvoke(ArrayReservoir<object>.EmptyArray);
+                Delegate @delegate = null;
+                foreach (var preferredType in preferredTypes)
+                {
+                    if (!dictionary.TryGetValue(preferredType, out var found))
+                    {
+                        continue;
+                    }
+                    @delegate = found;
+                    break;
+                }
+                if (@delegate == null)
+                {
+                    @delegate = dictionary.First().Value;
+                }
+                return @delegate.DynamicInvoke(ArrayReservoir<object>.EmptyArray);
             }
-            if (type.GetTypeInfo().IsValueType)
-            {
-                return Activator.CreateInstance(type);
-            }
-            return null;
+            return type.GetTypeInfo().IsValueType ? Activator.CreateInstance(type) : null;
         }
     }
 
@@ -112,6 +148,46 @@ namespace TestRunner
                 stringBuilder.Append(_chars[random.Next(0, _chars.Length)]);
             }
             return stringBuilder.ToString();
+        }
+    }
+
+    public static class NumericGenerator
+    {
+        [DataGenerator]
+        public static int GenerateInt()
+        {
+            var random = new Random();
+            var buffer = new byte[4];
+            random.NextBytes(buffer);
+            return BitConverter.ToInt32(buffer, 0);
+        }
+
+        [DataGenerator]
+        public static byte GenerateByte()
+        {
+            var random = new Random();
+            var buffer = new byte[1];
+            random.NextBytes(buffer);
+            return buffer[0];
+        }
+    }
+
+    public static class SmallNumericGenerator
+    {
+        [DataGenerator]
+        public static int GenerateInt()
+        {
+            var random = new Random();
+            return random.Next(0, 2000);
+        }
+
+        [DataGenerator]
+        public static byte GenerateByte()
+        {
+            var random = new Random();
+            var buffer = new byte[1];
+            random.NextBytes(buffer);
+            return buffer[0];
         }
     }
 }
