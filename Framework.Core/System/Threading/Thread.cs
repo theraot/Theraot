@@ -177,11 +177,8 @@ namespace System.Threading
                     case TaskStatus.RanToCompletion:
                         return ThreadState.Stopped;
 
-                    case TaskStatus.Running:
-                        return ThreadState.Running;
-
                     default:
-                        return ThreadState.Unstarted;
+                        return ThreadState.Running;
                 }
             }
         }
@@ -211,6 +208,7 @@ namespace System.Threading
 
         public void Abort(object stateInfo)
         {
+            GC.KeepAlive(stateInfo);
             throw new PlatformNotSupportedException();
         }
 
@@ -222,11 +220,30 @@ namespace System.Threading
                 var source = new TaskCompletionSource<VoidStruct>();
                 source.Task.Wait();
             }
-            if (_task != null)
+            if (_start == null)
             {
-                _task.Wait();
+                if (_probe.TryGetTarget(out _))
+                {
+                    Wait();
+                }
+                return;
             }
-            else
+            if (_task == null)
+            {
+                throw new ThreadStateException("Unable to Join not started Thread.");
+            }
+            switch (_task.Status)
+            {
+                case TaskStatus.Canceled:
+                case TaskStatus.Faulted:
+                case TaskStatus.RanToCompletion:
+                    return;
+
+                default:
+                    _task.Wait();
+                    return;
+            }
+            void Wait()
             {
                 var source = new TaskCompletionSource<VoidStruct>();
                 var probe = _probe;
@@ -247,7 +264,7 @@ namespace System.Threading
         {
             if (_start == null || _task != null)
             {
-                throw new ThreadStateException();
+                throw new ThreadStateException($"Unable to Start started Thread (Internal Task: {_task}) (Internal Delegate: {_start}).");
             }
             var task = new Task(() => _start(null), TaskCreationOptions.LongRunning);
             task.Start();
@@ -258,7 +275,7 @@ namespace System.Threading
         {
             if (_start == null || _task != null)
             {
-                throw new ThreadStateException();
+                throw new ThreadStateException($"Unable to Start started Thread (Internal Task: {_task}) (Internal Delegate: {_start}).");
             }
             var task = new Task(() => _start(parameter), TaskCreationOptions.LongRunning);
             task.Start();
