@@ -219,6 +219,7 @@ namespace TestRunner
             private readonly bool _isolatedThread;
             private readonly ParameterInfo[] _parameterInfos;
             private readonly Type[] _preferredGenerators;
+            private readonly int _repeat;
             private Delegate _delegate;
             private object _instance;
 
@@ -243,6 +244,7 @@ namespace TestRunner
                 _isolatedThread = testMethod.TestAttribute.IsolatedThread;
                 _preferredGenerators = testMethod.PreferredGenerators;
                 Name = method.Name;
+                _repeat = testMethod.TestAttribute.Repeat;
             }
 
             public string Name { get; }
@@ -269,7 +271,7 @@ namespace TestRunner
                 {
                     var parameterInfo = _parameterInfos[index];
                     var preferredGenerator = parameterInfo.GetAttributes<UseGeneratorAttribute>(false).FirstOrDefault();
-                    var preferredGenerators = preferredGenerator == null ? _preferredGenerators : new[] {preferredGenerator.GeneratorType};
+                    var preferredGenerators = preferredGenerator == null ? _preferredGenerators : new[] { preferredGenerator.GeneratorType };
                     parameters[index] = DataGenerator.Get(parameterInfo.ParameterType, preferredGenerators);
                 }
                 if (_isolatedThread)
@@ -282,7 +284,10 @@ namespace TestRunner
                         {
                             try
                             {
-                                capturedResult = _delegate.DynamicInvoke(parameters);
+                                for (var iteration = 0; iteration < _repeat; iteration++)
+                                {
+                                    capturedResult = _delegate.DynamicInvoke(parameters);
+                                }
                             }
                             catch (TargetInvocationException exception)
                             {
@@ -300,7 +305,12 @@ namespace TestRunner
                 }
                 try
                 {
-                    return _delegate.DynamicInvoke(parameters);
+                    object capturedResult = null;
+                    for (var iteration = 0; iteration < _repeat; iteration++)
+                    {
+                        capturedResult = _delegate.DynamicInvoke(parameters);
+                    }
+                    return capturedResult;
                 }
                 catch (TargetInvocationException exception)
                 {
@@ -367,7 +377,14 @@ namespace TestRunner
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public sealed class TestAttribute : Attribute
     {
+        public TestAttribute()
+        {
+            Repeat = 1;
+        }
+
         public bool IsolatedThread { get; set; }
+
+        public int Repeat { get; set; }
     }
 
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
