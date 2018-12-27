@@ -109,7 +109,7 @@ namespace System.Linq.Expressions
                     {
                         throw Error.ArgumentTypesMustMatch();
                     }
-                    foreach (CatchBlock cb in handlers)
+                    foreach (var cb in handlers)
                     {
                         if (!type.IsReferenceAssignableFromInternal(cb.Body.Type))
                         {
@@ -121,7 +121,7 @@ namespace System.Linq.Expressions
             else if (tryBody.Type == typeof(void))
             {
                 //The body of every try block must be null or have void type.
-                foreach (CatchBlock cb in handlers)
+                foreach (var cb in handlers)
                 {
                     Debug.Assert(cb.Body != null);
                     if (cb.Body.Type != typeof(void))
@@ -134,7 +134,7 @@ namespace System.Linq.Expressions
             {
                 //Body of every catch must have the same type of body of try.
                 type = tryBody.Type;
-                foreach (CatchBlock cb in handlers)
+                foreach (var cb in handlers)
                 {
                     Debug.Assert(cb.Body != null);
                     if (!TypeUtils.AreEquivalent(cb.Body.Type, type))

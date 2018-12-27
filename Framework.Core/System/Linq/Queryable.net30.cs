@@ -141,7 +141,7 @@ namespace System.Linq
                 return queryable;
             }
 
-            if (!source.GetType().IsGenericImplementationOf(out Type iEnumerable, typeof(IEnumerable<>)))
+            if (!source.GetType().IsGenericImplementationOf(out var iEnumerable, typeof(IEnumerable<>)))
             {
                 throw new ArgumentException("source is not IEnumerable<>");
             }

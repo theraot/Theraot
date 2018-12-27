@@ -596,7 +596,7 @@ namespace System.Numerics
             }
             var sign = 1;
             var bigIntegerBuilder = new BigIntegerBuilder(value, ref sign);
-            bigIntegerBuilder.GetApproxParts(out int exp, out ulong man);
+            bigIntegerBuilder.GetApproxParts(out var exp, out var man);
             return NumericHelper.BuildDouble(sign, man, exp);
         }
 
@@ -1229,7 +1229,7 @@ namespace System.Numerics
             }
             var digitShift = shift / 32;
             var smallShift = shift - digitShift * 32;
-            var partsForBitManipulation = GetPartsForBitManipulation(ref value, out uint[] xd, out int xl);
+            var partsForBitManipulation = GetPartsForBitManipulation(ref value, out var xd, out var xl);
             var zd = new uint[xl + digitShift + 1];
             if (smallShift != 0)
             {
@@ -1462,7 +1462,7 @@ namespace System.Numerics
             }
             var digitShift = shift / 32;
             var smallShift = shift - digitShift * 32;
-            var negative = GetPartsForBitManipulation(ref value, out uint[] xd, out int xl);
+            var negative = GetPartsForBitManipulation(ref value, out var xd, out var xl);
             if (negative)
             {
                 if (shift >= 32 * xl)
@@ -1720,7 +1720,7 @@ namespace System.Numerics
                 if (length <= 2)
                 {
                     var magnitude = other >= 0 ? (ulong)other : (ulong)-other;
-                    ulong unsigned = ULong(length, InternalBits);
+                    var unsigned = ULong(length, InternalBits);
                     return InternalSign * unsigned.CompareTo(magnitude);
                 }
             }
@@ -2161,7 +2161,7 @@ namespace System.Numerics
         {
             sign = 0;
             bits = null;
-            NumericHelper.GetDoubleParts(value, out int valueSign, out int valueExp, out ulong valueMan, out _);
+            NumericHelper.GetDoubleParts(value, out var valueSign, out var valueExp, out var valueMan, out _);
             if (valueMan == 0)
             {
                 return;

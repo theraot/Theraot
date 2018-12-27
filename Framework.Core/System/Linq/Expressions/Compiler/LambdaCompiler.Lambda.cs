@@ -31,25 +31,25 @@ namespace System.Linq.Expressions.Compiler
             {
                 // store into field in our type builder, we will initialize
                 // the value only once.
-                FieldBuilder fb = CreateStaticField("ConstantArray", typeof(T[]));
-                Label l = _ilg.DefineLabel();
-                _ilg.Emit(OpCodes.Ldsfld, fb);
-                _ilg.Emit(OpCodes.Ldnull);
-                _ilg.Emit(OpCodes.Bne_Un, l);
-                _ilg.EmitArray(array, this);
-                _ilg.Emit(OpCodes.Stsfld, fb);
-                _ilg.MarkLabel(l);
-                _ilg.Emit(OpCodes.Ldsfld, fb);
+                var fb = CreateStaticField("ConstantArray", typeof(T[]));
+                var l = IL.DefineLabel();
+                IL.Emit(OpCodes.Ldsfld, fb);
+                IL.Emit(OpCodes.Ldnull);
+                IL.Emit(OpCodes.Bne_Un, l);
+                IL.EmitArray(array, this);
+                IL.Emit(OpCodes.Stsfld, fb);
+                IL.MarkLabel(l);
+                IL.Emit(OpCodes.Ldsfld, fb);
             }
             else
             {
-                _ilg.EmitArray(array, this);
+                IL.EmitArray(array, this);
             }
         }
 
         private static Type[] GetParameterTypes(LambdaExpression lambda, Type firstType)
         {
-            int count = lambda.ParameterCount;
+            var count = lambda.ParameterCount;
 
             Type[] result;
             int i;
@@ -68,7 +68,7 @@ namespace System.Linq.Expressions.Compiler
 
             for (var j = 0; j < count; j++, i++)
             {
-                ParameterExpression p = lambda.GetParameter(j);
+                var p = lambda.GetParameter(j);
                 result[i] = p.IsByRef ? p.Type.MakeByRefType() : p.Type;
             }
 
@@ -82,12 +82,12 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitClosureCreation(LambdaCompiler inner)
         {
-            bool closure = inner._scope.NeedsClosure;
-            bool boundConstants = inner._boundConstants.Count > 0;
+            var closure = inner._scope.NeedsClosure;
+            var boundConstants = inner._boundConstants.Count > 0;
 
             if (!closure && !boundConstants)
             {
-                _ilg.EmitNull();
+                IL.EmitNull();
                 return;
             }
 
@@ -98,7 +98,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
-                _ilg.EmitNull();
+                IL.EmitNull();
             }
             if (closure)
             {
@@ -106,9 +106,9 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
-                _ilg.EmitNull();
+                IL.EmitNull();
             }
-            _ilg.EmitNew(ClosureObjectArrayObjectArray);
+            IL.EmitNew(ClosureObjectArrayObjectArray);
         }
 
         /// <summary>
@@ -119,23 +119,23 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         private void EmitDelegateConstruction(LambdaCompiler inner)
         {
-            Type delegateType = inner._lambda.Type;
+            var delegateType = inner._lambda.Type;
             if (inner._method is DynamicMethod dynamicMethod)
             {
                 // dynamicMethod.CreateDelegate(delegateType, closure)
                 _boundConstants.EmitConstant(this, dynamicMethod, typeof(DynamicMethod));
-                _ilg.EmitType(delegateType);
+                IL.EmitType(delegateType);
                 EmitClosureCreation(inner);
                 // ReSharper disable once AssignNullToNotNullAttribute
-                _ilg.Emit(OpCodes.Callvirt, typeof(DynamicMethod).GetMethod(nameof(DynamicMethod.CreateDelegate), new[] { typeof(Type), typeof(object) }));
-                _ilg.Emit(OpCodes.Castclass, delegateType);
+                IL.Emit(OpCodes.Callvirt, typeof(DynamicMethod).GetMethod(nameof(DynamicMethod.CreateDelegate), new[] { typeof(Type), typeof(object) }));
+                IL.Emit(OpCodes.Castclass, delegateType);
             }
             else
             {
                 // new DelegateType(closure)
                 EmitClosureCreation(inner);
-                _ilg.Emit(OpCodes.Ldftn, inner._method);
-                _ilg.Emit(OpCodes.Newobj, (ConstructorInfo)delegateType.GetMember(".ctor")[0]);
+                IL.Emit(OpCodes.Ldftn, inner._method);
+                IL.Emit(OpCodes.Newobj, (ConstructorInfo)delegateType.GetMember(".ctor")[0]);
             }
         }
 
@@ -156,8 +156,8 @@ namespace System.Linq.Expressions.Compiler
             else
             {
                 // When the lambda does not have a name or the name is empty, generate a unique name for it.
-                string name = string.IsNullOrEmpty(lambda.Name) ? GetUniqueMethodName() : lambda.Name;
-                MethodBuilder mb = _typeBuilder.DefineMethod(name, MethodAttributes.Private | MethodAttributes.Static);
+                var name = string.IsNullOrEmpty(lambda.Name) ? GetUniqueMethodName() : lambda.Name;
+                var mb = _typeBuilder.DefineMethod(name, MethodAttributes.Private | MethodAttributes.Static);
                 impl = new LambdaCompiler(_tree, lambda, mb);
             }
 
@@ -172,7 +172,7 @@ namespace System.Linq.Expressions.Compiler
         private void EmitLambdaBody()
         {
             // The lambda body is the "last" expression of the lambda
-            CompilationFlags tailCallFlag = _lambda.TailCall ? CompilationFlags.EmitAsTail : CompilationFlags.EmitAsNoTail;
+            var tailCallFlag = _lambda.TailCall ? CompilationFlags.EmitAsTail : CompilationFlags.EmitAsNoTail;
             EmitLambdaBody(null, false, tailCallFlag);
         }
 
@@ -196,7 +196,7 @@ namespace System.Linq.Expressions.Compiler
                 //
                 // If any arguments were ByRef, the address is on the stack and
                 // we'll be storing it into the variable, which has a ref type.
-                for (int i = _lambda.ParameterCount - 1; i >= 0; i--)
+                for (var i = _lambda.ParameterCount - 1; i >= 0; i--)
                 {
                     _scope.EmitSet(_lambda.GetParameter(i));
                 }
@@ -218,14 +218,14 @@ namespace System.Linq.Expressions.Compiler
             // value on the IL stack.
             if (!inlined)
             {
-                _ilg.Emit(OpCodes.Ret);
+                IL.Emit(OpCodes.Ret);
             }
 
             _scope.Exit();
 
             // Validate labels
             Debug.Assert(_labelBlock.Parent == null && _labelBlock.Kind == LabelScopeKind.Lambda);
-            foreach (LabelInfo label in _labelInfo.Values)
+            foreach (var label in _labelInfo.Values)
             {
                 label.ValidateFinish();
             }

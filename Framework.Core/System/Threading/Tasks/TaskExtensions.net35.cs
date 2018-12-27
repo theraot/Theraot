@@ -138,7 +138,7 @@ namespace System.Threading.Tasks
                     var innerCallback = callback[0];
                     callback[0] = null;
 
-                    bool result = false;
+                    var result = false;
                     switch (outer.Status)
                     {
                         case TaskStatus.Canceled:

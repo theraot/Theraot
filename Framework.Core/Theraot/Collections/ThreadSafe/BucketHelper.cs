@@ -1,8 +1,8 @@
 ﻿// Needed for NET40
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Theraot.Collections.ThreadSafe
 {
@@ -171,7 +171,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-    #if FAT
+#if FAT
 
         /// <summary>
         /// Inserts or replaces the item at the specified index.
@@ -193,7 +193,7 @@ namespace Theraot.Collections.ThreadSafe
             return InsertOrUpdateChecked(bucket, index, item, itemUpdateFactory, check, out _);
         }
 
-    #endif
+#endif
 
         /// <summary>
         /// Inserts or replaces the item at the specified index.
@@ -263,7 +263,7 @@ namespace Theraot.Collections.ThreadSafe
             return InsertOrUpdateChecked(bucket, index, item, check, out _);
         }
 
-    #endif
+#endif
 
         /// <summary>
         /// Inserts or replaces the item at the specified index.

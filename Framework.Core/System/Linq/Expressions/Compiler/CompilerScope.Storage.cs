@@ -76,7 +76,7 @@ namespace System.Linq.Expressions.Compiler
 
             internal override void EmitStore()
             {
-                LocalBuilder value = Compiler.GetLocal(Variable.Type);
+                var value = Compiler.GetLocal(Variable.Type);
                 Compiler.IL.Emit(OpCodes.Stloc, value);
                 EmitLoadBox();
                 Compiler.IL.Emit(OpCodes.Ldloc, value);
@@ -100,7 +100,7 @@ namespace System.Linq.Expressions.Compiler
             internal LocalBoxStorage(LambdaCompiler compiler, ParameterExpression variable)
                 : base(compiler, variable)
             {
-                Type boxType = typeof(StrongBox<>).MakeGenericType(variable.Type);
+                var boxType = typeof(StrongBox<>).MakeGenericType(variable.Type);
                 _boxValueField = boxType.GetField("Value");
 
                 // Set name if DebugInfoGenerator support is brought back.
@@ -121,7 +121,7 @@ namespace System.Linq.Expressions.Compiler
 
             internal override void EmitStore()
             {
-                LocalBuilder value = Compiler.GetLocal(Variable.Type);
+                var value = Compiler.GetLocal(Variable.Type);
                 Compiler.IL.Emit(OpCodes.Stloc, value);
                 Compiler.IL.Emit(OpCodes.Ldloc, _boxLocal);
                 Compiler.IL.Emit(OpCodes.Ldloc, value);

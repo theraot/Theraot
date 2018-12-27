@@ -5,9 +5,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Linq;
 using Theraot.Reflection;
 
 namespace System.Dynamic.Utils
@@ -746,8 +746,6 @@ namespace System.Dynamic.Utils
             {
                 throw new ArgumentNullException(nameof(target));
             }
-            var sourceTypeInfo = source.GetTypeInfo();
-            var targetTypeInfo = target.GetTypeInfo();
             // HasReferenceConversionTo was both too strict and too lax. It was too strict in prohibiting
             // some valid conversions involving arrays, and too lax in allowing casts between interfaces
             // and sealed classes that don't implement them. Unfortunately fixing the lax cases would be
@@ -757,6 +755,8 @@ namespace System.Dynamic.Utils
             // examine possible conversions of element or type parameters it applies stricter rules.
             while (true)
             {
+                var sourceTypeInfo = source.GetTypeInfo();
+                var targetTypeInfo = target.GetTypeInfo();
                 if (!skipNonArray) // Skip if we just came from HasReferenceConversionTo and have just tested these
                 {
                     // ReSharper disable once PossibleNullReferenceException
@@ -795,16 +795,16 @@ namespace System.Dynamic.Utils
                         }
                     }
                 }
-                if (source.IsArray)
+                if (sourceTypeInfo.IsArray)
                 {
-                    if (target.IsArray)
+                    if (targetTypeInfo.IsArray)
                     {
-                        if (source.GetArrayRank() != target.GetArrayRank() || source.IsSafeArray() != target.IsSafeArray())
+                        if (sourceTypeInfo.GetArrayRank() != targetTypeInfo.GetArrayRank() || sourceTypeInfo.IsSafeArray() != target.IsSafeArray())
                         {
                             return false;
                         }
-                        source = source.GetElementType();
-                        target = target.GetElementType();
+                        source = sourceTypeInfo.GetElementType();
+                        target = targetTypeInfo.GetElementType();
                         skipNonArray = false;
                     }
                     else
@@ -812,7 +812,7 @@ namespace System.Dynamic.Utils
                         return HasArrayToInterfaceConversion(source, target);
                     }
                 }
-                else if (target.IsArray)
+                else if (targetTypeInfo.IsArray)
                 {
                     if (HasInterfaceToArrayConversion(source, target))
                     {

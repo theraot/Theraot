@@ -57,24 +57,24 @@ namespace System.Dynamic.Utils
         {
             if (!_thunks.TryGetValue(delegateType, out var thunkMethod))
             {
-                MethodInfo delegateInvokeMethod = delegateType.GetInvokeMethod();
+                var delegateInvokeMethod = delegateType.GetInvokeMethod();
 
-                Type returnType = delegateInvokeMethod.ReturnType;
-                bool hasReturnValue = returnType != typeof(void);
+                var returnType = delegateInvokeMethod.ReturnType;
+                var hasReturnValue = returnType != typeof(void);
 
-                ParameterInfo[] parameters = delegateInvokeMethod.GetParameters();
-                Type[] paramTypes = new Type[parameters.Length + 1];
+                var parameters = delegateInvokeMethod.GetParameters();
+                var paramTypes = new Type[parameters.Length + 1];
                 paramTypes[0] = typeof(Func<object[], object>);
-                for (int i = 0; i < parameters.Length; i++)
+                for (var i = 0; i < parameters.Length; i++)
                 {
                     paramTypes[i + 1] = parameters[i].ParameterType;
                 }
 
                 thunkMethod = new DynamicMethod("Thunk", returnType, paramTypes);
-                ILGenerator ilGenerator = thunkMethod.GetILGenerator();
+                var ilGenerator = thunkMethod.GetILGenerator();
 
-                LocalBuilder argArray = ilGenerator.DeclareLocal(typeof(object[]));
-                LocalBuilder retValue = ilGenerator.DeclareLocal(typeof(object));
+                var argArray = ilGenerator.DeclareLocal(typeof(object[]));
+                var retValue = ilGenerator.DeclareLocal(typeof(object));
 
                 // create the argument array
                 if (parameters.Length == 0)
@@ -89,11 +89,11 @@ namespace System.Dynamic.Utils
                 ilGenerator.Emit(OpCodes.Stloc, argArray);
 
                 // populate object array
-                bool hasRefArgs = false;
-                for (int i = 0; i < parameters.Length; i++)
+                var hasRefArgs = false;
+                for (var i = 0; i < parameters.Length; i++)
                 {
-                    bool paramIsByReference = parameters[i].ParameterType.IsByRef;
-                    Type paramType = parameters[i].ParameterType;
+                    var paramIsByReference = parameters[i].ParameterType.IsByRef;
+                    var paramType = parameters[i].ParameterType;
                     if (paramIsByReference)
                     {
                         paramType = paramType.GetElementType();
@@ -110,7 +110,7 @@ namespace System.Dynamic.Utils
                         // ReSharper disable once AssignNullToNotNullAttribute
                         ilGenerator.Emit(OpCodes.Ldobj, paramType);
                     }
-                    Type boxType = ConvertToBoxableType(paramType);
+                    var boxType = ConvertToBoxableType(paramType);
                     ilGenerator.Emit(OpCodes.Box, boxType);
                     ilGenerator.Emit(OpCodes.Stelem_Ref);
                 }
@@ -134,11 +134,11 @@ namespace System.Dynamic.Utils
                 {
                     // copy back ref/out args
                     ilGenerator.BeginFinallyBlock();
-                    for (int i = 0; i < parameters.Length; i++)
+                    for (var i = 0; i < parameters.Length; i++)
                     {
                         if (parameters[i].ParameterType.IsByRef)
                         {
-                            Type byrefToType = parameters[i].ParameterType.GetElementType();
+                            var byrefToType = parameters[i].ParameterType.GetElementType();
 
                             // update parameter
                             ilGenerator.Emit(OpCodes.Ldarg, i + 1);

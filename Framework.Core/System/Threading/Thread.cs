@@ -195,7 +195,7 @@ namespace System.Threading
 
         public static void SpinWait(int iterations)
         {
-            for (int index = 0; index < iterations; index++)
+            for (var index = 0; index < iterations; index++)
             {
                 GC.KeepAlive(index);
             }

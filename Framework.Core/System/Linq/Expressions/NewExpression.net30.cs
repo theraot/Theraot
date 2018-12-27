@@ -69,7 +69,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(constructor.DeclaringType, nameof(constructor) + "." + nameof(constructor.DeclaringType));
             TypeUtils.ValidateType(constructor.DeclaringType, nameof(constructor), allowByRef: true, allowPointer: true);
             ValidateConstructor(constructor, nameof(constructor));
-            ReadOnlyCollection<MemberInfo> memberList = members.ToTrueReadOnly();
+            var memberList = members.ToTrueReadOnly();
             var argList = Theraot.Collections.Extensions.AsArray(arguments);
             ValidateNewArgs(constructor, ref argList, ref memberList);
             return new NewExpression(constructor, argList, memberList);
@@ -103,7 +103,7 @@ namespace System.Linq.Expressions
 
             if (!type.IsValueType)
             {
-                ConstructorInfo ci = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SingleOrDefault(c => c.GetParameters().Length == 0);
+                var ci = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SingleOrDefault(c => c.GetParameters().Length == 0);
                 if (ci == null)
                 {
                     throw Error.TypeMissingDefaultConstructor(type, nameof(type));
@@ -146,7 +146,7 @@ namespace System.Linq.Expressions
                     throw Error.ArgumentMustBeInstanceMember(paramName, index);
                 }
 
-                PropertyInfo prop = GetProperty(method, paramName, index);
+                var prop = GetProperty(method, paramName, index);
                 member = prop;
                 memberType = prop.PropertyType;
                 return;
@@ -180,9 +180,9 @@ namespace System.Linq.Expressions
                 MemberInfo[] newMembers = null;
                 for (int i = 0, n = arguments.Length; i < n; i++)
                 {
-                    Expression arg = arguments[i];
+                    var arg = arguments[i];
                     ExpressionUtils.RequiresCanRead(arg, nameof(arguments), i);
-                    MemberInfo member = members[i];
+                    var member = members[i];
                     ContractUtils.RequiresNotNull(member, nameof(members), i);
                     if (!TypeUtils.AreEquivalent(member.DeclaringType, constructor.DeclaringType))
                     {
@@ -198,8 +198,8 @@ namespace System.Linq.Expressions
                             throw Error.ArgumentTypeDoesNotMatchMember(arg.Type, memberType, nameof(arguments), i);
                         }
                     }
-                    ParameterInfo pi = pis[i];
-                    Type pType = pi.ParameterType;
+                    var pi = pis[i];
+                    var pType = pi.ParameterType;
                     if (pType.IsByRef)
                     {
                         pType = pType.GetElementType();
@@ -214,7 +214,7 @@ namespace System.Linq.Expressions
                     if (newArguments == null && arg != arguments[i])
                     {
                         newArguments = new Expression[arguments.Length];
-                        for (int j = 0; j < i; j++)
+                        for (var j = 0; j < i; j++)
                         {
                             newArguments[j] = arguments[j];
                         }
@@ -227,7 +227,7 @@ namespace System.Linq.Expressions
                     if (newMembers == null && member != members[i])
                     {
                         newMembers = new MemberInfo[members.Count];
-                        for (int j = 0; j < i; j++)
+                        for (var j = 0; j < i; j++)
                         {
                             newMembers[j] = members[j];
                         }

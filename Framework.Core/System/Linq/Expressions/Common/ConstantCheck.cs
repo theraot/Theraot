@@ -55,7 +55,7 @@ namespace System.Linq.Expressions
         /// </summary>
         private static AnalyzeTypeIsResult AnalyzeTypeIs(Expression operand, Type testType)
         {
-            Type operandType = operand.Type;
+            var operandType = operand.Type;
 
             // An expression is either of type void, or it isn't.
             if (operandType == typeof(void))
@@ -73,8 +73,8 @@ namespace System.Linq.Expressions
             // underlying type. The reason is when you box a nullable it
             // becomes a boxed value of the underlying type, or null.
             //
-            Type nnOperandType = operandType.GetNonNullable();
-            Type nnTestType = testType.GetNonNullable();
+            var nnOperandType = operandType.GetNonNullable();
+            var nnTestType = testType.GetNonNullable();
 
             //
             // See if we can determine the answer based on the static types

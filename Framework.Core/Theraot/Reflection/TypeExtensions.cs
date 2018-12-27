@@ -890,8 +890,8 @@ namespace Theraot.Reflection
                 {
                     continue;
                 }
-                bool ok = true;
-                for (int index = 0; index < typeArguments.Length; index++)
+                var ok = true;
+                for (var index = 0; index < typeArguments.Length; index++)
 			    {
                     if (parameters[index].GetType() != typeArguments[index])
                     {

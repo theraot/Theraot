@@ -433,7 +433,7 @@ namespace System.Linq.Expressions
                 {
                     return new UnaryExpression(ExpressionType.Not, expression, expression.Type, null);
                 }
-                UnaryExpression u = GetUserDefinedUnaryOperator(ExpressionType.Not, "op_LogicalNot", expression);
+                var u = GetUserDefinedUnaryOperator(ExpressionType.Not, "op_LogicalNot", expression);
                 if (u != null)
                 {
                     return u;
@@ -712,7 +712,7 @@ namespace System.Linq.Expressions
         {
             Debug.Assert(method != null);
             ValidateOperator(method);
-            ParameterInfo[] pms = method.GetParameters();
+            var pms = method.GetParameters();
             if (pms.Length != 1)
             {
                 throw Error.IncorrectNumberOfMethodCallArguments(method, nameof(method));
@@ -736,7 +736,7 @@ namespace System.Linq.Expressions
         {
             Debug.Assert(method != null);
             ValidateOperator(method);
-            ParameterInfo[] pms = method.GetParameters();
+            var pms = method.GetParameters();
             if (pms.Length != 1)
             {
                 throw Error.IncorrectNumberOfMethodCallArguments(method, nameof(method));
@@ -760,7 +760,7 @@ namespace System.Linq.Expressions
 
         private static UnaryExpression GetUserDefinedCoercion(ExpressionType coercionType, Expression expression, Type convertToType)
         {
-            MethodInfo method = TypeHelper.GetUserDefinedConversionMethod(expression.Type, convertToType, false);
+            var method = TypeHelper.GetUserDefinedConversionMethod(expression.Type, convertToType, false);
             if (method != null)
             {
                 return new UnaryExpression(coercionType, expression, convertToType, method);
@@ -770,7 +770,7 @@ namespace System.Linq.Expressions
 
         private static UnaryExpression GetUserDefinedCoercionOrThrow(ExpressionType coercionType, Expression expression, Type convertToType)
         {
-            UnaryExpression u = GetUserDefinedCoercion(coercionType, expression, convertToType);
+            var u = GetUserDefinedCoercion(coercionType, expression, convertToType);
             if (u != null)
             {
                 return u;
@@ -780,10 +780,10 @@ namespace System.Linq.Expressions
 
         private static UnaryExpression GetUserDefinedUnaryOperator(ExpressionType unaryType, string name, Expression operand)
         {
-            Type operandType = operand.Type;
+            var operandType = operand.Type;
             Type[] types = { operandType };
-            Type nnOperandType = operandType.GetNonNullable();
-            MethodInfo method = nnOperandType.GetStaticMethodInternal(name, types);
+            var nnOperandType = operandType.GetNonNullable();
+            var method = nnOperandType.GetStaticMethodInternal(name, types);
             if (method != null)
             {
                 return new UnaryExpression(unaryType, operand, method.ReturnType, method);
@@ -803,7 +803,7 @@ namespace System.Linq.Expressions
 
         private static UnaryExpression GetUserDefinedUnaryOperatorOrThrow(ExpressionType unaryType, string name, Expression operand)
         {
-            UnaryExpression u = GetUserDefinedUnaryOperator(unaryType, name, operand);
+            var u = GetUserDefinedUnaryOperator(unaryType, name, operand);
             if (u != null)
             {
                 ValidateParamsWithOperandsOrThrow(u.Method.GetParameters()[0].ParameterType, operand.Type, unaryType, name);
@@ -895,8 +895,8 @@ namespace System.Linq.Expressions
                 {
                     return false;
                 }
-                bool operandIsNullable = Operand.Type.IsNullable();
-                bool resultIsNullable = Type.IsNullable();
+                var operandIsNullable = Operand.Type.IsNullable();
+                var resultIsNullable = Type.IsNullable();
                 if (Method != null)
                 {
                     return operandIsNullable && !TypeUtils.AreEquivalent(Method.GetParameters()[0].ParameterType, Operand.Type) ||
@@ -1018,20 +1018,20 @@ namespace System.Linq.Expressions
             // tempObj[tempArg0, ... tempArgN] = op(tempValue)
             // tempValue
 
-            bool prefix = IsPrefix;
+            var prefix = IsPrefix;
             var index = (IndexExpression)Operand;
-            int count = index.ArgumentCount;
+            var count = index.ArgumentCount;
             var block = new Expression[count + (prefix ? 2 : 4)];
             var temps = new ParameterExpression[count + (prefix ? 1 : 2)];
             var args = new Expression[count];
 
-            int i = 0;
+            var i = 0;
             temps[i] = Parameter(index.Object.Type, name: null);
             block[i] = Assign(temps[i], index.Object);
             i++;
             while (i <= count)
             {
-                Expression arg = index.GetArgument(i - 1);
+                var arg = index.GetArgument(i - 1);
                 args[i - 1] = temps[i] = Parameter(arg.Type, name: null);
                 block[i] = Assign(temps[i], arg);
                 i++;
@@ -1039,7 +1039,7 @@ namespace System.Linq.Expressions
             index = MakeIndex(temps[0], index.Indexer, new TrueReadOnlyCollection<Expression>(args));
             if (!prefix)
             {
-                ParameterExpression lastTemp = temps[i] = Parameter(index.Type, name: null);
+                var lastTemp = temps[i] = Parameter(index.Type, name: null);
                 block[i] = Assign(temps[i], index);
                 i++;
                 Debug.Assert(i == temps.Length);
@@ -1064,8 +1064,8 @@ namespace System.Linq.Expressions
                 return ReduceVariable();
             }
 
-            ParameterExpression temp1 = Parameter(member.Expression.Type, name: null);
-            BinaryExpression initTemp1 = Assign(temp1, member.Expression);
+            var temp1 = Parameter(member.Expression.Type, name: null);
+            var initTemp1 = Assign(temp1, member.Expression);
             member = MakeMemberAccess(temp1, member.Member);
 
             if (IsPrefix)
@@ -1089,7 +1089,7 @@ namespace System.Linq.Expressions
             // temp2 = temp1.member
             // temp1.member = op(temp2)
             // temp2
-            ParameterExpression temp2 = Parameter(member.Type, name: null);
+            var temp2 = Parameter(member.Type, name: null);
             return Block(
                 new TrueReadOnlyCollection<ParameterExpression>(temp1, temp2),
                 new TrueReadOnlyCollection<Expression>(
@@ -1115,7 +1115,7 @@ namespace System.Linq.Expressions
             // temp = var
             // var = op(var)
             // temp
-            ParameterExpression temp = Parameter(Operand.Type, name: null);
+            var temp = Parameter(Operand.Type, name: null);
             return Block(
                 new TrueReadOnlyCollection<ParameterExpression>(temp),
                 new TrueReadOnlyCollection<Expression>

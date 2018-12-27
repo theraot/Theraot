@@ -2,7 +2,7 @@
 
 namespace Theraot.Threading.Needles
 {
-    public static 
+    public static
 #if FAT
         partial
 #endif

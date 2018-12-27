@@ -26,9 +26,6 @@ namespace System.Linq.Expressions
         private readonly Stack<int> _stack = new Stack<int>();
 
         private int _column;
-
-        private int _delta;
-
         private Flow _flow;
 
         // Associate every unique anonymous LabelTarget in the tree with an integer.
@@ -67,7 +64,7 @@ namespace System.Linq.Expressions
 
         private int Base => _stack.Count > 0 ? _stack.Peek() : 0;
 
-        private int Delta => _delta;
+        private int Delta { get; set; }
 
         private int Depth => Base + Delta;
 
@@ -101,7 +98,7 @@ namespace System.Linq.Expressions
 
         private void Dedent()
         {
-            _delta -= _tab;
+            Delta -= _tab;
         }
 
         private int GetLabelTargetId(LabelTarget target)
@@ -124,7 +121,7 @@ namespace System.Linq.Expressions
 
         private void Indent()
         {
-            _delta += _tab;
+            Delta += _tab;
         }
 
         private void NewLine()

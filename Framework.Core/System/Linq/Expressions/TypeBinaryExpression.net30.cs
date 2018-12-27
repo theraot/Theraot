@@ -91,7 +91,7 @@ namespace System.Linq.Expressions
 
         internal Expression ReduceTypeEqual()
         {
-            Type cType = Expression.Type;
+            var cType = Expression.Type;
 
             if (cType.IsValueType || TypeOperand.IsPointer)
             {
@@ -151,7 +151,7 @@ namespace System.Linq.Expressions
             // if TypeOperand is an interface.
             if (TypeOperand.IsInterface)
             {
-                ParameterExpression temp = Parameter(typeof(Type));
+                var temp = Parameter(typeof(Type));
                 getType = Block(
                     new TrueReadOnlyCollection<ParameterExpression>(temp),
                     new TrueReadOnlyCollection<Expression>(
@@ -175,7 +175,7 @@ namespace System.Linq.Expressions
 
         private Expression ReduceConstantTypeEqual()
         {
-            ConstantExpression ce = Expression as ConstantExpression;
+            var ce = Expression as ConstantExpression;
             //TypeEqual(null, T) always returns false.
             // ReSharper disable once PossibleNullReferenceException
             if (ce.Value == null)

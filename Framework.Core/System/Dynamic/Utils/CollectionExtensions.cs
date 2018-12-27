@@ -12,15 +12,16 @@ namespace System.Dynamic.Utils
 {
     internal static class CollectionExtensions
     {
-
 #if NET20 || NET30
+
         public static TrueReadOnlyCollection<T> AddFirst<T>(this ReadOnlyCollection<T> list, T item)
         {
-            T[] res = new T[list.Count + 1];
+            var res = new T[list.Count + 1];
             res[0] = item;
             list.CopyTo(res, 1);
             return new TrueReadOnlyCollection<T>(res);
         }
+
 #endif
 
         public static bool ListEquals<T>(this ReadOnlyCollection<T> first, ReadOnlyCollection<T> second)
@@ -30,15 +31,15 @@ namespace System.Dynamic.Utils
                 return true;
             }
 
-            int count = first.Count;
+            var count = first.Count;
 
             if (count != second.Count)
             {
                 return false;
             }
 
-            EqualityComparer<T> cmp = EqualityComparer<T>.Default;
-            for (int i = 0; i != count; ++i)
+            var cmp = EqualityComparer<T>.Default;
+            for (var i = 0; i != count; ++i)
             {
                 if (!cmp.Equals(first[i], second[i]))
                 {
@@ -52,9 +53,9 @@ namespace System.Dynamic.Utils
         // We could probably improve the hashing here
         public static int ListHashCode<T>(this ReadOnlyCollection<T> list)
         {
-            EqualityComparer<T> cmp = EqualityComparer<T>.Default;
-            int h = 6551;
-            foreach (T t in list)
+            var cmp = EqualityComparer<T>.Default;
+            var h = 6551;
+            foreach (var t in list)
             {
                 h ^= (h << 5) ^ cmp.GetHashCode(t);
             }

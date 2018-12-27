@@ -264,7 +264,6 @@ namespace System.Linq.Expressions.Interpreter
         private readonly List<DebugInfo> _debugInfos = new List<DebugInfo>();
         private readonly Stack<ParameterExpression> _exceptionForRethrowStack = new Stack<ParameterExpression>();
         private readonly StackGuard _guard = new StackGuard();
-        private readonly InstructionList _instructions;
         private readonly LocalVariables _locals = new LocalVariables();
         private readonly LightCompiler _parent;
         private readonly HybridReferenceDictionary<LabelTarget, LabelInfo> _treeLabels = new HybridReferenceDictionary<LabelTarget, LabelInfo>();
@@ -272,7 +271,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public LightCompiler()
         {
-            _instructions = new InstructionList();
+            Instructions = new InstructionList();
         }
 
         private LightCompiler(LightCompiler parent)
@@ -281,7 +280,7 @@ namespace System.Linq.Expressions.Interpreter
             _parent = parent;
         }
 
-        public InstructionList Instructions => _instructions;
+        public InstructionList Instructions { get; }
 
         public LightDelegateCreator CompileTop(LambdaExpression node)
         {
@@ -292,7 +291,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 var p = node.GetParameter(i);
                 var local = _locals.DefineLocal(p, 0);
-                _instructions.EmitInitializeParameter(local.Index);
+                Instructions.EmitInitializeParameter(local.Index);
             }
 
             Compile(node.Body);
@@ -300,10 +299,10 @@ namespace System.Linq.Expressions.Interpreter
             // pop the result of the last expression:
             if (node.Body.Type != typeof(void) && node.ReturnType == typeof(void))
             {
-                _instructions.EmitPop();
+                Instructions.EmitPop();
             }
 
-            Debug.Assert(_instructions.CurrentStackDepth == (node.ReturnType != typeof(void) ? 1 : 0));
+            Debug.Assert(Instructions.CurrentStackDepth == (node.ReturnType != typeof(void) ? 1 : 0));
 
             return new LightDelegateCreator(MakeInterpreter(node.Name), node);
         }
@@ -324,6 +323,7 @@ namespace System.Linq.Expressions.Interpreter
         }
 
 #if DEBUG
+
         private static bool IsNullComparison(Expression left, Expression right)
         {
             return IsNullConstant(left)
@@ -335,6 +335,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             return e is ConstantExpression c && c.Value == null;
         }
+
 #endif
 
         private static bool ShouldWritebackNode(Expression node)
@@ -428,10 +429,10 @@ namespace System.Linq.Expressions.Interpreter
                             LocalDefinition? objTmp = null;
                             if (indexNode.Object != null)
                             {
-                                objTmp = _locals.DefineLocal(Expression.Parameter(indexNode.Object.Type), _instructions.Count);
+                                objTmp = _locals.DefineLocal(Expression.Parameter(indexNode.Object.Type), Instructions.Count);
                                 EmitThisForMethodCall(indexNode.Object);
-                                _instructions.EmitDup();
-                                _instructions.EmitStoreLocal(objTmp.GetValueOrDefault().Index);
+                                Instructions.EmitDup();
+                                Instructions.EmitStoreLocal(objTmp.GetValueOrDefault().Index);
                             }
 
                             var count = indexNode.ArgumentCount;
@@ -441,9 +442,9 @@ namespace System.Linq.Expressions.Interpreter
                                 var arg = indexNode.GetArgument(i);
                                 Compile(arg);
 
-                                var argTmp = _locals.DefineLocal(Expression.Parameter(arg.Type), _instructions.Count);
-                                _instructions.EmitDup();
-                                _instructions.EmitStoreLocal(argTmp.Index);
+                                var argTmp = _locals.DefineLocal(Expression.Parameter(arg.Type), Instructions.Count);
+                                Instructions.EmitDup();
+                                Instructions.EmitStoreLocal(argTmp.Index);
 
                                 indexLocals[i] = argTmp;
                             }
@@ -466,15 +467,15 @@ namespace System.Linq.Expressions.Interpreter
                         LocalDefinition? memberTemp = null;
                         if (member.Expression != null)
                         {
-                            memberTemp = _locals.DefineLocal(Expression.Parameter(member.Expression.Type, "member"), _instructions.Count);
+                            memberTemp = _locals.DefineLocal(Expression.Parameter(member.Expression.Type, "member"), Instructions.Count);
                             EmitThisForMethodCall(member.Expression);
-                            _instructions.EmitDup();
-                            _instructions.EmitStoreLocal(memberTemp.GetValueOrDefault().Index);
+                            Instructions.EmitDup();
+                            Instructions.EmitStoreLocal(memberTemp.GetValueOrDefault().Index);
                         }
 
                         if (member.Member is FieldInfo field)
                         {
-                            _instructions.EmitLoadField(field);
+                            Instructions.EmitLoadField(field);
                             if (!field.IsLiteral && !field.IsInitOnly)
                             {
                                 return new FieldByRefUpdater(memberTemp, field, index);
@@ -483,7 +484,7 @@ namespace System.Linq.Expressions.Interpreter
                         }
                         Debug.Assert(member.Member is PropertyInfo);
                         var property = (PropertyInfo)member.Member;
-                        _instructions.EmitCall(property.GetGetMethod(nonPublic: true));
+                        Instructions.EmitCall(property.GetGetMethod(nonPublic: true));
                         if (property.CanWrite)
                         {
                             return new PropertyByRefUpdater(memberTemp, property, index);
@@ -527,30 +528,30 @@ namespace System.Linq.Expressions.Interpreter
             Compile(right);
             switch (nodeType)
             {
-                case ExpressionType.Add: _instructions.EmitAdd(left.Type, @checked: false); break;
-                case ExpressionType.AddChecked: _instructions.EmitAdd(left.Type, @checked: true); break;
-                case ExpressionType.Subtract: _instructions.EmitSub(left.Type, @checked: false); break;
-                case ExpressionType.SubtractChecked: _instructions.EmitSub(left.Type, @checked: true); break;
-                case ExpressionType.Multiply: _instructions.EmitMul(left.Type, @checked: false); break;
-                case ExpressionType.MultiplyChecked: _instructions.EmitMul(left.Type, @checked: true); break;
-                case ExpressionType.Divide: _instructions.EmitDiv(left.Type); break;
-                case ExpressionType.Modulo: _instructions.EmitModulo(left.Type); break;
+                case ExpressionType.Add: Instructions.EmitAdd(left.Type, @checked: false); break;
+                case ExpressionType.AddChecked: Instructions.EmitAdd(left.Type, @checked: true); break;
+                case ExpressionType.Subtract: Instructions.EmitSub(left.Type, @checked: false); break;
+                case ExpressionType.SubtractChecked: Instructions.EmitSub(left.Type, @checked: true); break;
+                case ExpressionType.Multiply: Instructions.EmitMul(left.Type, @checked: false); break;
+                case ExpressionType.MultiplyChecked: Instructions.EmitMul(left.Type, @checked: true); break;
+                case ExpressionType.Divide: Instructions.EmitDiv(left.Type); break;
+                case ExpressionType.Modulo: Instructions.EmitModulo(left.Type); break;
                 default: throw ContractUtils.Unreachable;
             }
         }
 
         private ByRefUpdater CompileArrayIndexAddress(Expression array, Expression index, int argumentIndex)
         {
-            var left = _locals.DefineLocal(Expression.Parameter(array.Type, nameof(array)), _instructions.Count);
-            var right = _locals.DefineLocal(Expression.Parameter(index.Type, nameof(index)), _instructions.Count);
+            var left = _locals.DefineLocal(Expression.Parameter(array.Type, nameof(array)), Instructions.Count);
+            var right = _locals.DefineLocal(Expression.Parameter(index.Type, nameof(index)), Instructions.Count);
             Compile(array);
-            _instructions.EmitStoreLocal(left.Index);
+            Instructions.EmitStoreLocal(left.Index);
             Compile(index);
-            _instructions.EmitStoreLocal(right.Index);
+            Instructions.EmitStoreLocal(right.Index);
 
-            _instructions.EmitLoadLocal(left.Index);
-            _instructions.EmitLoadLocal(right.Index);
-            _instructions.EmitGetArrayItem();
+            Instructions.EmitLoadLocal(left.Index);
+            Instructions.EmitLoadLocal(right.Index);
+            Instructions.EmitGetArrayItem();
 
             return new ArrayByRefUpdater(left, right, argumentIndex);
         }
@@ -583,7 +584,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             var pushLabelBlock = TryPushLabelBlock(expr);
             // ReSharper disable once RedundantAssignment
-            var startingStackDepth = _instructions.CurrentStackDepth;
+            var startingStackDepth = Instructions.CurrentStackDepth;
             switch (expr.NodeType)
             {
                 case ExpressionType.Assign:
@@ -608,11 +609,11 @@ namespace System.Linq.Expressions.Interpreter
                     CompileNoLabelPush(expr);
                     if (expr.Type != typeof(void))
                     {
-                        _instructions.EmitPop();
+                        Instructions.EmitPop();
                     }
                     break;
             }
-            Debug.Assert(_instructions.CurrentStackDepth == startingStackDepth);
+            Debug.Assert(Instructions.CurrentStackDepth == startingStackDepth);
             if (pushLabelBlock)
             {
                 PopLabelBlock(_labelBlock.Kind);
@@ -633,15 +634,15 @@ namespace System.Linq.Expressions.Interpreter
 
                     // INCOMPAT: The DLR binder short circuits on comparisons other than equal and not equal,
                     // but C# doesn't.
-                    var end = _instructions.MakeLabel();
+                    var end = Instructions.MakeLabel();
 
-                    var leftTemp = _locals.DefineLocal(Expression.Parameter(node.Left.Type), _instructions.Count);
+                    var leftTemp = _locals.DefineLocal(Expression.Parameter(node.Left.Type), Instructions.Count);
                     Compile(node.Left);
-                    _instructions.EmitStoreLocal(leftTemp.Index);
+                    Instructions.EmitStoreLocal(leftTemp.Index);
 
-                    var rightTemp = _locals.DefineLocal(Expression.Parameter(node.Right.Type), _instructions.Count);
+                    var rightTemp = _locals.DefineLocal(Expression.Parameter(node.Right.Type), Instructions.Count);
                     Compile(node.Right);
-                    _instructions.EmitStoreLocal(rightTemp.Index);
+                    Instructions.EmitStoreLocal(rightTemp.Index);
 
                     switch (node.NodeType)
                     {
@@ -661,74 +662,74 @@ namespace System.Linq.Expressions.Interpreter
                                 goto default;
                             }
 
-                            var testRight = _instructions.MakeLabel();
-                            var callMethod = _instructions.MakeLabel();
+                            var testRight = Instructions.MakeLabel();
+                            var callMethod = Instructions.MakeLabel();
 
-                            _instructions.EmitLoadLocal(leftTemp.Index);
-                            _instructions.EmitLoad(null, typeof(object));
-                            _instructions.EmitEqual(typeof(object));
-                            _instructions.EmitBranchFalse(testRight);
+                            Instructions.EmitLoadLocal(leftTemp.Index);
+                            Instructions.EmitLoad(null, typeof(object));
+                            Instructions.EmitEqual(typeof(object));
+                            Instructions.EmitBranchFalse(testRight);
 
                             // left is null
-                            _instructions.EmitLoadLocal(rightTemp.Index);
-                            _instructions.EmitLoad(null, typeof(object));
+                            Instructions.EmitLoadLocal(rightTemp.Index);
+                            Instructions.EmitLoad(null, typeof(object));
                             if (node.NodeType == ExpressionType.Equal)
                             {
-                                _instructions.EmitEqual(typeof(object));
+                                Instructions.EmitEqual(typeof(object));
                             }
                             else
                             {
-                                _instructions.EmitNotEqual(typeof(object));
+                                Instructions.EmitNotEqual(typeof(object));
                             }
-                            _instructions.EmitBranch(end, hasResult: false, hasValue: true);
+                            Instructions.EmitBranch(end, hasResult: false, hasValue: true);
 
-                            _instructions.MarkLabel(testRight);
+                            Instructions.MarkLabel(testRight);
 
                             // left is not null, check right
-                            _instructions.EmitLoadLocal(rightTemp.Index);
-                            _instructions.EmitLoad(null, typeof(object));
-                            _instructions.EmitEqual(typeof(object));
-                            _instructions.EmitBranchFalse(callMethod);
+                            Instructions.EmitLoadLocal(rightTemp.Index);
+                            Instructions.EmitLoad(null, typeof(object));
+                            Instructions.EmitEqual(typeof(object));
+                            Instructions.EmitBranchFalse(callMethod);
 
                             // right null, left not, false
                             // right null, left not, true
-                            _instructions.EmitLoad(
+                            Instructions.EmitLoad(
                                 node.NodeType == ExpressionType.Equal ? AstUtils.BoxedFalse : AstUtils.BoxedTrue,
                                 typeof(bool));
-                            _instructions.EmitBranch(end, hasResult: false, hasValue: true);
+                            Instructions.EmitBranch(end, hasResult: false, hasValue: true);
 
                             // both are not null
-                            _instructions.MarkLabel(callMethod);
-                            _instructions.EmitLoadLocal(leftTemp.Index);
-                            _instructions.EmitLoadLocal(rightTemp.Index);
-                            _instructions.EmitCall(node.Method);
+                            Instructions.MarkLabel(callMethod);
+                            Instructions.EmitLoadLocal(leftTemp.Index);
+                            Instructions.EmitLoadLocal(rightTemp.Index);
+                            Instructions.EmitCall(node.Method);
                             break;
 
                         default:
-                            var loadDefault = _instructions.MakeLabel();
+                            var loadDefault = Instructions.MakeLabel();
 
                             if (node.Left.Type.CanBeNull())
                             {
-                                _instructions.EmitLoadLocal(leftTemp.Index);
-                                _instructions.EmitLoad(null, typeof(object));
-                                _instructions.EmitEqual(typeof(object));
-                                _instructions.EmitBranchTrue(loadDefault);
+                                Instructions.EmitLoadLocal(leftTemp.Index);
+                                Instructions.EmitLoad(null, typeof(object));
+                                Instructions.EmitEqual(typeof(object));
+                                Instructions.EmitBranchTrue(loadDefault);
                             }
 
                             if (node.Right.Type.CanBeNull())
                             {
-                                _instructions.EmitLoadLocal(rightTemp.Index);
-                                _instructions.EmitLoad(null, typeof(object));
-                                _instructions.EmitEqual(typeof(object));
-                                _instructions.EmitBranchTrue(loadDefault);
+                                Instructions.EmitLoadLocal(rightTemp.Index);
+                                Instructions.EmitLoad(null, typeof(object));
+                                Instructions.EmitEqual(typeof(object));
+                                Instructions.EmitBranchTrue(loadDefault);
                             }
 
-                            _instructions.EmitLoadLocal(leftTemp.Index);
-                            _instructions.EmitLoadLocal(rightTemp.Index);
-                            _instructions.EmitCall(node.Method);
-                            _instructions.EmitBranch(end, hasResult: false, hasValue: true);
+                            Instructions.EmitLoadLocal(leftTemp.Index);
+                            Instructions.EmitLoadLocal(rightTemp.Index);
+                            Instructions.EmitCall(node.Method);
+                            Instructions.EmitBranch(end, hasResult: false, hasValue: true);
 
-                            _instructions.MarkLabel(loadDefault);
+                            Instructions.MarkLabel(loadDefault);
                             switch (node.NodeType)
                             {
                                 case ExpressionType.LessThan:
@@ -739,26 +740,26 @@ namespace System.Linq.Expressions.Interpreter
                                     {
                                         goto default;
                                     }
-                                    _instructions.EmitLoad(AstUtils.BoxedFalse, typeof(object));
+                                    Instructions.EmitLoad(AstUtils.BoxedFalse, typeof(object));
                                     break;
 
                                 default:
-                                    _instructions.EmitLoad(null, typeof(object));
+                                    Instructions.EmitLoad(null, typeof(object));
                                     break;
                             }
                             break;
                     }
 
-                    _instructions.MarkLabel(end);
+                    Instructions.MarkLabel(end);
 
-                    _locals.UndefineLocal(leftTemp, _instructions.Count);
-                    _locals.UndefineLocal(rightTemp, _instructions.Count);
+                    _locals.UndefineLocal(leftTemp, Instructions.Count);
+                    _locals.UndefineLocal(rightTemp, Instructions.Count);
                 }
                 else
                 {
                     Compile(node.Left);
                     Compile(node.Right);
-                    _instructions.EmitCall(node.Method);
+                    Instructions.EmitCall(node.Method);
                 }
             }
             else
@@ -769,7 +770,7 @@ namespace System.Linq.Expressions.Interpreter
                         Debug.Assert(node.Right.Type == typeof(int));
                         Compile(node.Left);
                         Compile(node.Right);
-                        _instructions.EmitGetArrayItem();
+                        Instructions.EmitGetArrayItem();
                         return;
 
                     case ExpressionType.Add:
@@ -786,19 +787,19 @@ namespace System.Linq.Expressions.Interpreter
                     case ExpressionType.ExclusiveOr:
                         Compile(node.Left);
                         Compile(node.Right);
-                        _instructions.EmitExclusiveOr(node.Left.Type);
+                        Instructions.EmitExclusiveOr(node.Left.Type);
                         break;
 
                     case ExpressionType.Or:
                         Compile(node.Left);
                         Compile(node.Right);
-                        _instructions.EmitOr(node.Left.Type);
+                        Instructions.EmitOr(node.Left.Type);
                         break;
 
                     case ExpressionType.And:
                         Compile(node.Left);
                         Compile(node.Right);
-                        _instructions.EmitAnd(node.Left.Type);
+                        Instructions.EmitAnd(node.Left.Type);
                         break;
 
                     case ExpressionType.Equal:
@@ -819,13 +820,13 @@ namespace System.Linq.Expressions.Interpreter
                     case ExpressionType.LeftShift:
                         Compile(node.Left);
                         Compile(node.Right);
-                        _instructions.EmitLeftShift(node.Left.Type);
+                        Instructions.EmitLeftShift(node.Left.Type);
                         break;
 
                     case ExpressionType.RightShift:
                         Compile(node.Left);
                         Compile(node.Right);
-                        _instructions.EmitRightShift(node.Left.Type);
+                        Instructions.EmitRightShift(node.Left.Type);
                         break;
 
                     default:
@@ -838,7 +839,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             foreach (var local in locals)
             {
-                _locals.UndefineLocal(local, _instructions.Count);
+                _locals.UndefineLocal(local, Instructions.Count);
             }
         }
 
@@ -858,7 +859,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private LocalDefinition[] CompileBlockStart(BlockExpression node)
         {
-            var start = _instructions.Count;
+            var start = Instructions.Count;
 
             LocalDefinition[] locals;
             var variables = node.Variables;
@@ -873,8 +874,8 @@ namespace System.Linq.Expressions.Interpreter
                     var local = _locals.DefineLocal(variable, start);
                     locals[localCnt++] = local;
 
-                    _instructions.EmitInitializeLocal(local.Index, variable.Type);
-                    _instructions.SetDebugCookie(variable.Name);
+                    Instructions.EmitInitializeLocal(local.Index, variable.Type);
+                    Instructions.SetDebugCookie(variable.Name);
                 }
             }
             else
@@ -915,19 +916,19 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            var leftNotNull = _instructions.MakeLabel();
+            var leftNotNull = Instructions.MakeLabel();
             BranchLabel end = null;
 
             Compile(node.Left);
-            _instructions.EmitCoalescingBranch(leftNotNull);
-            _instructions.EmitPop();
+            Instructions.EmitCoalescingBranch(leftNotNull);
+            Instructions.EmitPop();
             Compile(node.Right);
 
             if (hasConversion)
             {
                 // skip over conversion on RHS
-                end = _instructions.MakeLabel();
-                _instructions.EmitBranch(end);
+                end = Instructions.MakeLabel();
+                Instructions.EmitBranch(end);
             }
             else if (node.Right.Type.IsValueType && !TypeUtils.AreEquivalent(node.Type, node.Right.Type))
             {
@@ -936,19 +937,19 @@ namespace System.Linq.Expressions.Interpreter
                 CompileConvertToType(node.Right.Type, node.Type, isChecked: true, isLiftedToNull: node.Type.IsNullable());
             }
 
-            _instructions.MarkLabel(leftNotNull);
+            Instructions.MarkLabel(leftNotNull);
 
             if (node.Conversion != null)
             {
                 var temp = Expression.Parameter(node.Left.Type, "temp");
-                var local = _locals.DefineLocal(temp, _instructions.Count);
-                _instructions.EmitStoreLocal(local.Index);
+                var local = _locals.DefineLocal(temp, Instructions.Count);
+                Instructions.EmitStoreLocal(local.Index);
 
                 CompileMethodCallExpression(
                     Expression.Call(node.Conversion, node.Conversion.Type.GetInvokeMethod(), new Expression[] { temp })
                 );
 
-                _locals.UndefineLocal(local, _instructions.Count);
+                _locals.UndefineLocal(local, Instructions.Count);
             }
             else if (hasImplicitConversion)
             {
@@ -958,7 +959,7 @@ namespace System.Linq.Expressions.Interpreter
 
             if (hasConversion)
             {
-                _instructions.MarkLabel(end);
+                Instructions.MarkLabel(end);
             }
         }
 
@@ -973,10 +974,10 @@ namespace System.Linq.Expressions.Interpreter
 
             switch (node.NodeType)
             {
-                case ExpressionType.LessThan: _instructions.EmitLessThan(left.Type, node.IsLiftedToNull); break;
-                case ExpressionType.LessThanOrEqual: _instructions.EmitLessThanOrEqual(left.Type, node.IsLiftedToNull); break;
-                case ExpressionType.GreaterThan: _instructions.EmitGreaterThan(left.Type, node.IsLiftedToNull); break;
-                case ExpressionType.GreaterThanOrEqual: _instructions.EmitGreaterThanOrEqual(left.Type, node.IsLiftedToNull); break;
+                case ExpressionType.LessThan: Instructions.EmitLessThan(left.Type, node.IsLiftedToNull); break;
+                case ExpressionType.LessThanOrEqual: Instructions.EmitLessThanOrEqual(left.Type, node.IsLiftedToNull); break;
+                case ExpressionType.GreaterThan: Instructions.EmitGreaterThan(left.Type, node.IsLiftedToNull); break;
+                case ExpressionType.GreaterThanOrEqual: Instructions.EmitGreaterThanOrEqual(left.Type, node.IsLiftedToNull); break;
                 default: throw ContractUtils.Unreachable;
             }
         }
@@ -988,28 +989,28 @@ namespace System.Linq.Expressions.Interpreter
 
             if (node.IfTrue == AstUtils.Empty)
             {
-                var endOfFalse = _instructions.MakeLabel();
-                _instructions.EmitBranchTrue(endOfFalse);
+                var endOfFalse = Instructions.MakeLabel();
+                Instructions.EmitBranchTrue(endOfFalse);
                 Compile(node.IfFalse, asVoid);
-                _instructions.MarkLabel(endOfFalse);
+                Instructions.MarkLabel(endOfFalse);
             }
             else
             {
-                var endOfTrue = _instructions.MakeLabel();
-                _instructions.EmitBranchFalse(endOfTrue);
+                var endOfTrue = Instructions.MakeLabel();
+                Instructions.EmitBranchFalse(endOfTrue);
                 Compile(node.IfTrue, asVoid);
 
                 if (node.IfFalse != AstUtils.Empty)
                 {
-                    var endOfFalse = _instructions.MakeLabel();
-                    _instructions.EmitBranch(endOfFalse, false, !asVoid);
-                    _instructions.MarkLabel(endOfTrue);
+                    var endOfFalse = Instructions.MakeLabel();
+                    Instructions.EmitBranch(endOfFalse, false, !asVoid);
+                    Instructions.MarkLabel(endOfTrue);
                     Compile(node.IfFalse, asVoid);
-                    _instructions.MarkLabel(endOfFalse);
+                    Instructions.MarkLabel(endOfFalse);
                 }
                 else
                 {
-                    _instructions.MarkLabel(endOfTrue);
+                    Instructions.MarkLabel(endOfTrue);
                 }
             }
         }
@@ -1017,7 +1018,7 @@ namespace System.Linq.Expressions.Interpreter
         private void CompileConstantExpression(Expression expr)
         {
             var node = (ConstantExpression)expr;
-            _instructions.EmitLoad(node.Value, node.Type);
+            Instructions.EmitLoad(node.Value, node.Type);
         }
 
         private void CompileConvertToType(Type typeFrom, Type typeTo, bool isChecked, bool isLiftedToNull)
@@ -1042,7 +1043,7 @@ namespace System.Linq.Expressions.Interpreter
                 typeFrom.GetNonNullable() == typeTo)
             {
                 // VT? -> vt, call get_Value
-                _instructions.Emit(NullableMethodCallInstruction.CreateGetValue());
+                Instructions.Emit(NullableMethodCallInstruction.CreateGetValue());
                 return;
             }
 
@@ -1077,7 +1078,7 @@ namespace System.Linq.Expressions.Interpreter
                         // appropriate.
                         if (typeFrom.IsNullable() && !typeTo.IsNullable())
                         {
-                            _instructions.Emit(NullableMethodCallInstruction.CreateGetValue());
+                            Instructions.Emit(NullableMethodCallInstruction.CreateGetValue());
                         }
                     }
                     else
@@ -1085,25 +1086,25 @@ namespace System.Linq.Expressions.Interpreter
                         // Casting to the underlying check still needs a numeric conversion to force the type
                         // change that EmitCastToEnum provides for enums, but needs only one cast. Checked can
                         // also never throw, so always be unchecked.
-                        _instructions.EmitConvertToUnderlying(to, isLiftedToNull);
+                        Instructions.EmitConvertToUnderlying(to, isLiftedToNull);
                     }
                 }
                 else
                 {
                     if (isChecked)
                     {
-                        _instructions.EmitNumericConvertChecked(from, to, isLiftedToNull);
+                        Instructions.EmitNumericConvertChecked(from, to, isLiftedToNull);
                     }
                     else
                     {
-                        _instructions.EmitNumericConvertUnchecked(from, to, isLiftedToNull);
+                        Instructions.EmitNumericConvertUnchecked(from, to, isLiftedToNull);
                     }
                 }
 
                 if (enumTypeTo != null)
                 {
                     // Convert from underlying to the enum
-                    _instructions.EmitCastToEnum(enumTypeTo);
+                    Instructions.EmitCastToEnum(enumTypeTo);
                 }
 
                 return;
@@ -1111,8 +1112,8 @@ namespace System.Linq.Expressions.Interpreter
 
             if (typeTo.IsEnum)
             {
-                _instructions.Emit(NullCheckInstruction.Instance);
-                _instructions.EmitCastReferenceToEnum(typeTo);
+                Instructions.Emit(NullCheckInstruction.Instance);
+                Instructions.EmitCastReferenceToEnum(typeTo);
                 return;
             }
 
@@ -1123,7 +1124,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             // A conversion to a non-implemented interface or an unrelated class, etc. should fail.
-            _instructions.EmitCast(typeTo);
+            Instructions.EmitCast(typeTo);
         }
 
         private void CompileConvertUnaryExpression(Expression expr)
@@ -1131,15 +1132,15 @@ namespace System.Linq.Expressions.Interpreter
             var node = (UnaryExpression)expr;
             if (node.Method != null)
             {
-                var end = _instructions.MakeLabel();
-                var loadDefault = _instructions.MakeLabel();
+                var end = Instructions.MakeLabel();
+                var loadDefault = Instructions.MakeLabel();
                 var method = node.Method;
                 var parameters = method.GetParameters();
                 Debug.Assert(parameters.Length == 1);
                 var parameter = parameters[0];
                 var operand = node.Operand;
                 var operandType = operand.Type;
-                var opTemp = _locals.DefineLocal(Expression.Parameter(operandType), _instructions.Count);
+                var opTemp = _locals.DefineLocal(Expression.Parameter(operandType), Instructions.Count);
                 ByRefUpdater updater = null;
                 var parameterType = parameter.ParameterType;
                 if (parameterType.IsByRef)
@@ -1159,40 +1160,40 @@ namespace System.Linq.Expressions.Interpreter
                     Compile(node.Operand);
                 }
 
-                _instructions.EmitStoreLocal(opTemp.Index);
+                Instructions.EmitStoreLocal(opTemp.Index);
 
                 if (!operandType.IsValueType || operandType.IsNullable() && node.IsLiftedToNull)
                 {
-                    _instructions.EmitLoadLocal(opTemp.Index);
-                    _instructions.EmitLoad(null, typeof(object));
-                    _instructions.EmitEqual(typeof(object));
-                    _instructions.EmitBranchTrue(loadDefault);
+                    Instructions.EmitLoadLocal(opTemp.Index);
+                    Instructions.EmitLoad(null, typeof(object));
+                    Instructions.EmitEqual(typeof(object));
+                    Instructions.EmitBranchTrue(loadDefault);
                 }
 
-                _instructions.EmitLoadLocal(opTemp.Index);
+                Instructions.EmitLoadLocal(opTemp.Index);
                 if (operandType.IsNullable() && parameterType == operandType.GetNonNullable())
                 {
-                    _instructions.Emit(NullableMethodCallInstruction.CreateGetValue());
+                    Instructions.Emit(NullableMethodCallInstruction.CreateGetValue());
                 }
 
                 if (updater == null)
                 {
-                    _instructions.EmitCall(method);
+                    Instructions.EmitCall(method);
                 }
                 else
                 {
-                    _instructions.EmitByRefCall(method, parameters, new[] { updater });
-                    updater.UndefineTemps(_instructions, _locals);
+                    Instructions.EmitByRefCall(method, parameters, new[] { updater });
+                    updater.UndefineTemps(Instructions, _locals);
                 }
 
-                _instructions.EmitBranch(end, hasResult: false, hasValue: true);
+                Instructions.EmitBranch(end, hasResult: false, hasValue: true);
 
-                _instructions.MarkLabel(loadDefault);
-                _instructions.EmitLoad(null, typeof(object));
+                Instructions.MarkLabel(loadDefault);
+                Instructions.EmitLoad(null, typeof(object));
 
-                _instructions.MarkLabel(end);
+                Instructions.MarkLabel(end);
 
-                _locals.UndefineLocal(opTemp, _instructions.Count);
+                _locals.UndefineLocal(opTemp, Instructions.Count);
             }
             else if (node.Type == typeof(void))
             {
@@ -1208,7 +1209,7 @@ namespace System.Linq.Expressions.Interpreter
         private void CompileDebugInfoExpression(Expression expr)
         {
             var node = (DebugInfoExpression)expr;
-            var start = _instructions.Count;
+            var start = Instructions.Count;
             var info = new DebugInfo
             {
                 Index = start,
@@ -1231,18 +1232,18 @@ namespace System.Linq.Expressions.Interpreter
             {
                 if (type.CanBeNull())
                 {
-                    _instructions.EmitLoad(value: null);
+                    Instructions.EmitLoad(value: null);
                 }
                 else
                 {
                     var value = ScriptingRuntimeHelpers.GetPrimitiveDefaultValue(type);
                     if (value != null)
                     {
-                        _instructions.EmitLoad(value);
+                        Instructions.EmitLoad(value);
                     }
                     else
                     {
-                        _instructions.EmitDefaultValue(type);
+                        Instructions.EmitDefaultValue(type);
                     }
                 }
             }
@@ -1255,7 +1256,7 @@ namespace System.Linq.Expressions.Interpreter
 #endif
             Compile(left);
             Compile(right);
-            _instructions.EmitEqual(left.Type, liftedToNull);
+            Instructions.EmitEqual(left.Type, liftedToNull);
         }
 
         private void CompileGetBoxedVariable(ParameterExpression variable)
@@ -1264,22 +1265,22 @@ namespace System.Linq.Expressions.Interpreter
 
             if (local.InClosure)
             {
-                _instructions.EmitLoadLocalFromClosureBoxed(local.Index);
+                Instructions.EmitLoadLocalFromClosureBoxed(local.Index);
             }
             else
             {
                 Debug.Assert(local.IsBoxed);
-                _instructions.EmitLoadLocal(local.Index);
+                Instructions.EmitLoadLocal(local.Index);
             }
 
-            _instructions.SetDebugCookie(variable.Name);
+            Instructions.SetDebugCookie(variable.Name);
         }
 
         private void CompileGetVariable(ParameterExpression variable)
         {
             LoadLocalNoValueTypeCopy(variable);
 
-            _instructions.SetDebugCookie(variable.Name);
+            Instructions.SetDebugCookie(variable.Name);
 
             EmitCopyValueType(variable.Type);
         }
@@ -1294,7 +1295,7 @@ namespace System.Linq.Expressions.Interpreter
                 Compile(node.Value);
             }
 
-            _instructions.EmitGoto(labelInfo.GetLabel(this),
+            Instructions.EmitGoto(labelInfo.GetLabel(this),
                 node.Type != typeof(void),
                 node.Value != null && node.Value.Type != typeof(void),
                 node.Target.Type != typeof(void));
@@ -1321,28 +1322,28 @@ namespace System.Linq.Expressions.Interpreter
             LocalDefinition local = default;
             if (!asVoid)
             {
-                local = _locals.DefineLocal(Expression.Parameter(node.Right.Type), _instructions.Count);
-                _instructions.EmitAssignLocal(local.Index);
+                local = _locals.DefineLocal(Expression.Parameter(node.Right.Type), Instructions.Count);
+                Instructions.EmitAssignLocal(local.Index);
             }
 
             if (index.Indexer != null)
             {
-                _instructions.EmitCall(index.Indexer.GetSetMethod(nonPublic: true));
+                Instructions.EmitCall(index.Indexer.GetSetMethod(nonPublic: true));
             }
             else if (index.ArgumentCount != 1)
             {
                 // ReSharper disable once PossibleNullReferenceException
-                _instructions.EmitCall(index.Object.Type.GetMethod("Set", BindingFlags.Public | BindingFlags.Instance));
+                Instructions.EmitCall(index.Object.Type.GetMethod("Set", BindingFlags.Public | BindingFlags.Instance));
             }
             else
             {
-                _instructions.EmitSetArrayItem();
+                Instructions.EmitSetArrayItem();
             }
 
             if (!asVoid)
             {
-                _instructions.EmitLoadLocal(local.Index);
-                _locals.UndefineLocal(local, _instructions.Count);
+                Instructions.EmitLoadLocal(local.Index);
+                _locals.UndefineLocal(local, Instructions.Count);
             }
         }
 
@@ -1372,8 +1373,8 @@ namespace System.Linq.Expressions.Interpreter
 
             Compile(node.SwitchValue);
             var caseDict = new Dictionary<T, int>();
-            var switchIndex = _instructions.Count;
-            _instructions.EmitIntSwitch(caseDict);
+            var switchIndex = Instructions.Count;
+            Instructions.EmitIntSwitch(caseDict);
 
             if (node.DefaultBody != null)
             {
@@ -1383,13 +1384,13 @@ namespace System.Linq.Expressions.Interpreter
             {
                 Debug.Assert(!hasValue);
             }
-            _instructions.EmitBranch(end.GetLabel(this), false, hasValue);
+            Instructions.EmitBranch(end.GetLabel(this), false, hasValue);
 
             for (var i = 0; i < node.Cases.Count; i++)
             {
                 var switchCase = node.Cases[i];
 
-                var caseOffset = _instructions.Count - switchIndex;
+                var caseOffset = Instructions.Count - switchIndex;
                 // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
                 foreach (ConstantExpression testValue in switchCase.TestValues)
                 {
@@ -1401,11 +1402,11 @@ namespace System.Linq.Expressions.Interpreter
 
                 if (i < node.Cases.Count - 1)
                 {
-                    _instructions.EmitBranch(end.GetLabel(this), false, hasValue);
+                    Instructions.EmitBranch(end.GetLabel(this), false, hasValue);
                 }
             }
 
-            _instructions.MarkLabel(end.GetLabel(this));
+            Instructions.MarkLabel(end.GetLabel(this));
         }
 
         private void CompileInvocationExpression(Expression expr)
@@ -1473,7 +1474,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            _instructions.MarkLabel(label.GetLabel(this));
+            Instructions.MarkLabel(label.GetLabel(this));
         }
 
         private void CompileLambdaExpression(Expression expr)
@@ -1490,103 +1491,103 @@ namespace System.Linq.Expressions.Interpreter
                     CompileGetBoxedVariable(variable);
                 }
             }
-            _instructions.EmitCreateDelegate(creator);
+            Instructions.EmitCreateDelegate(creator);
         }
 
         private void CompileLiftedLogicalBinaryExpression(BinaryExpression node, bool andAlso)
         {
-            var computeRight = _instructions.MakeLabel();
-            var returnFalse = _instructions.MakeLabel();
-            var returnNull = _instructions.MakeLabel();
-            var returnValue = _instructions.MakeLabel();
-            var result = _locals.DefineLocal(Expression.Parameter(node.Left.Type), _instructions.Count);
-            var leftTemp = _locals.DefineLocal(Expression.Parameter(node.Left.Type), _instructions.Count);
+            var computeRight = Instructions.MakeLabel();
+            var returnFalse = Instructions.MakeLabel();
+            var returnNull = Instructions.MakeLabel();
+            var returnValue = Instructions.MakeLabel();
+            var result = _locals.DefineLocal(Expression.Parameter(node.Left.Type), Instructions.Count);
+            var leftTemp = _locals.DefineLocal(Expression.Parameter(node.Left.Type), Instructions.Count);
 
             Compile(node.Left);
-            _instructions.EmitStoreLocal(leftTemp.Index);
+            Instructions.EmitStoreLocal(leftTemp.Index);
 
-            _instructions.EmitLoadLocal(leftTemp.Index);
-            _instructions.EmitLoad(null, typeof(object));
-            _instructions.EmitEqual(typeof(object));
+            Instructions.EmitLoadLocal(leftTemp.Index);
+            Instructions.EmitLoad(null, typeof(object));
+            Instructions.EmitEqual(typeof(object));
 
-            _instructions.EmitBranchTrue(computeRight);
+            Instructions.EmitBranchTrue(computeRight);
 
-            _instructions.EmitLoadLocal(leftTemp.Index);
+            Instructions.EmitLoadLocal(leftTemp.Index);
 
             if (andAlso)
             {
-                _instructions.EmitBranchFalse(returnFalse);
+                Instructions.EmitBranchFalse(returnFalse);
             }
             else
             {
-                _instructions.EmitBranchTrue(returnFalse);
+                Instructions.EmitBranchTrue(returnFalse);
             }
 
             // compute right
-            _instructions.MarkLabel(computeRight);
-            var rightTemp = _locals.DefineLocal(Expression.Parameter(node.Right.Type), _instructions.Count);
+            Instructions.MarkLabel(computeRight);
+            var rightTemp = _locals.DefineLocal(Expression.Parameter(node.Right.Type), Instructions.Count);
             Compile(node.Right);
-            _instructions.EmitStoreLocal(rightTemp.Index);
+            Instructions.EmitStoreLocal(rightTemp.Index);
 
-            _instructions.EmitLoadLocal(rightTemp.Index);
-            _instructions.EmitLoad(null, typeof(object));
-            _instructions.EmitEqual(typeof(object));
-            _instructions.EmitBranchTrue(returnNull);
+            Instructions.EmitLoadLocal(rightTemp.Index);
+            Instructions.EmitLoad(null, typeof(object));
+            Instructions.EmitEqual(typeof(object));
+            Instructions.EmitBranchTrue(returnNull);
 
-            _instructions.EmitLoadLocal(rightTemp.Index);
+            Instructions.EmitLoadLocal(rightTemp.Index);
             if (andAlso)
             {
-                _instructions.EmitBranchFalse(returnFalse);
+                Instructions.EmitBranchFalse(returnFalse);
             }
             else
             {
-                _instructions.EmitBranchTrue(returnFalse);
+                Instructions.EmitBranchTrue(returnFalse);
             }
 
             // check left for null again
-            _instructions.EmitLoadLocal(leftTemp.Index);
-            _instructions.EmitLoad(null, typeof(object));
-            _instructions.EmitEqual(typeof(object));
-            _instructions.EmitBranchTrue(returnNull);
+            Instructions.EmitLoadLocal(leftTemp.Index);
+            Instructions.EmitLoad(null, typeof(object));
+            Instructions.EmitEqual(typeof(object));
+            Instructions.EmitBranchTrue(returnNull);
 
             // return true
-            _instructions.EmitLoad(andAlso ? AstUtils.BoxedTrue : AstUtils.BoxedFalse, typeof(object));
-            _instructions.EmitStoreLocal(result.Index);
-            _instructions.EmitBranch(returnValue);
+            Instructions.EmitLoad(andAlso ? AstUtils.BoxedTrue : AstUtils.BoxedFalse, typeof(object));
+            Instructions.EmitStoreLocal(result.Index);
+            Instructions.EmitBranch(returnValue);
 
             // return false
-            _instructions.MarkLabel(returnFalse);
-            _instructions.EmitLoad(andAlso ? AstUtils.BoxedFalse : AstUtils.BoxedTrue, typeof(object));
-            _instructions.EmitStoreLocal(result.Index);
-            _instructions.EmitBranch(returnValue);
+            Instructions.MarkLabel(returnFalse);
+            Instructions.EmitLoad(andAlso ? AstUtils.BoxedFalse : AstUtils.BoxedTrue, typeof(object));
+            Instructions.EmitStoreLocal(result.Index);
+            Instructions.EmitBranch(returnValue);
 
             // return null
-            _instructions.MarkLabel(returnNull);
-            _instructions.EmitLoad(null, typeof(object));
-            _instructions.EmitStoreLocal(result.Index);
+            Instructions.MarkLabel(returnNull);
+            Instructions.EmitLoad(null, typeof(object));
+            Instructions.EmitStoreLocal(result.Index);
 
-            _instructions.MarkLabel(returnValue);
-            _instructions.EmitLoadLocal(result.Index);
+            Instructions.MarkLabel(returnValue);
+            Instructions.EmitLoadLocal(result.Index);
 
-            _locals.UndefineLocal(leftTemp, _instructions.Count);
-            _locals.UndefineLocal(rightTemp, _instructions.Count);
-            _locals.UndefineLocal(result, _instructions.Count);
+            _locals.UndefineLocal(leftTemp, Instructions.Count);
+            _locals.UndefineLocal(rightTemp, Instructions.Count);
+            _locals.UndefineLocal(result, Instructions.Count);
         }
 
         private void CompileListInit(ReadOnlyCollection<ElementInit> initializers)
         {
             foreach (var initializer in initializers)
             {
-                _instructions.EmitDup();
+                Instructions.EmitDup();
                 foreach (var arg in initializer.Arguments)
                 {
                     Compile(arg);
                 }
                 var add = initializer.AddMethod;
-                _instructions.EmitCall(add);
+                Instructions.EmitCall(add);
                 if (add.ReturnType != typeof(void))
                 {
-                    _instructions.EmitPop();
+                    Instructions.EmitPop();
                 }
             }
         }
@@ -1627,15 +1628,15 @@ namespace System.Linq.Expressions.Interpreter
             var breakLabel = DefineLabel(node.BreakLabel);
             var continueLabel = DefineLabel(node.ContinueLabel);
 
-            _instructions.MarkLabel(continueLabel.GetLabel(this));
+            Instructions.MarkLabel(continueLabel.GetLabel(this));
 
             // emit loop body:
             CompileAsVoid(node.Body);
 
             // emit loop branch:
-            _instructions.EmitBranch(continueLabel.GetLabel(this), node.Type != typeof(void), hasValue: false);
+            Instructions.EmitBranch(continueLabel.GetLabel(this), node.Type != typeof(void), hasValue: false);
 
-            _instructions.MarkLabel(breakLabel.GetLabel(this));
+            Instructions.MarkLabel(breakLabel.GetLabel(this));
 
             PopLabelBlock(LabelScopeKind.Statement);
         }
@@ -1647,7 +1648,7 @@ namespace System.Linq.Expressions.Interpreter
                 if (fi.IsLiteral)
                 {
                     Debug.Assert(!forBinding);
-                    _instructions.EmitLoad(fi.GetValue(obj: null), fi.FieldType);
+                    Instructions.EmitLoad(fi.GetValue(obj: null), fi.FieldType);
                 }
                 else if (fi.IsStatic)
                 {
@@ -1658,11 +1659,11 @@ namespace System.Linq.Expressions.Interpreter
 
                     if (fi.IsInitOnly)
                     {
-                        _instructions.EmitLoad(fi.GetValue(obj: null), fi.FieldType);
+                        Instructions.EmitLoad(fi.GetValue(obj: null), fi.FieldType);
                     }
                     else
                     {
-                        _instructions.EmitLoadField(fi);
+                        Instructions.EmitLoadField(fi);
                     }
                 }
                 else
@@ -1672,7 +1673,7 @@ namespace System.Linq.Expressions.Interpreter
                         EmitThisForMethodCall(from);
                     }
 
-                    _instructions.EmitLoadField(fi);
+                    Instructions.EmitLoadField(fi);
                 }
             }
             else
@@ -1692,15 +1693,15 @@ namespace System.Linq.Expressions.Interpreter
                         EmitThisForMethodCall(from);
                     }
 
-                    if (!method.IsStatic && @from != null && @from.Type.IsNullable())
+                    if (!method.IsStatic && from != null && from.Type.IsNullable())
                     {
                         // reflection doesn't let us call methods on Nullable<T> when the value
                         // is null...  so we get to special case those methods!
-                        _instructions.EmitNullableCall(method, ArrayReservoir<ParameterInfo>.EmptyArray);
+                        Instructions.EmitNullableCall(method, ArrayReservoir<ParameterInfo>.EmptyArray);
                     }
                     else
                     {
-                        _instructions.EmitCall(method);
+                        Instructions.EmitCall(method);
                     }
                 }
             }
@@ -1730,18 +1731,18 @@ namespace System.Linq.Expressions.Interpreter
 
                 EmitThisForMethodCall(value);
 
-                var start = _instructions.Count;
+                var start = Instructions.Count;
                 if (!asVoid)
                 {
                     var local = _locals.DefineLocal(Expression.Parameter(value.Type), start);
-                    _instructions.EmitAssignLocal(local.Index);
-                    _instructions.EmitCall(method);
-                    _instructions.EmitLoadLocal(local.Index);
-                    _locals.UndefineLocal(local, _instructions.Count);
+                    Instructions.EmitAssignLocal(local.Index);
+                    Instructions.EmitCall(method);
+                    Instructions.EmitLoadLocal(local.Index);
+                    _locals.UndefineLocal(local, Instructions.Count);
                 }
                 else
                 {
-                    _instructions.EmitCall(method);
+                    Instructions.EmitCall(method);
                 }
             }
             else
@@ -1756,23 +1757,23 @@ namespace System.Linq.Expressions.Interpreter
 
                 if (forBinding && fi.IsStatic)
                 {
-                    _instructions.UnEmit(); // Undo having pushed the instance to the stack.
+                    Instructions.UnEmit(); // Undo having pushed the instance to the stack.
                 }
 
                 EmitThisForMethodCall(value);
 
-                var start = _instructions.Count;
+                var start = Instructions.Count;
                 if (!asVoid)
                 {
                     var local = _locals.DefineLocal(Expression.Parameter(value.Type), start);
-                    _instructions.EmitAssignLocal(local.Index);
-                    _instructions.EmitStoreField(fi);
-                    _instructions.EmitLoadLocal(local.Index);
-                    _locals.UndefineLocal(local, _instructions.Count);
+                    Instructions.EmitAssignLocal(local.Index);
+                    Instructions.EmitStoreField(fi);
+                    Instructions.EmitLoadLocal(local.Index);
+                    _locals.UndefineLocal(local, Instructions.Count);
                 }
                 else
                 {
-                    _instructions.EmitStoreField(fi);
+                    Instructions.EmitStoreField(fi);
                 }
             }
         }
@@ -1791,7 +1792,7 @@ namespace System.Linq.Expressions.Interpreter
                 switch (binding.BindingType)
                 {
                     case MemberBindingType.Assignment:
-                        _instructions.EmitDup();
+                        Instructions.EmitDup();
                         CompileMemberAssignment(
                             true,
                             ((MemberAssignment)binding).Member,
@@ -1802,15 +1803,15 @@ namespace System.Linq.Expressions.Interpreter
 
                     case MemberBindingType.ListBinding:
                         var memberList = (MemberListBinding)binding;
-                        _instructions.EmitDup();
+                        Instructions.EmitDup();
                         CompileMember(null, memberList.Member, forBinding: true);
                         CompileListInit(memberList.Initializers);
-                        _instructions.EmitPop();
+                        Instructions.EmitPop();
                         break;
 
                     case MemberBindingType.MemberBinding:
                         var memberMember = (MemberMemberBinding)binding;
-                        _instructions.EmitDup();
+                        Instructions.EmitDup();
                         var type = GetMemberType(memberMember.Member);
                         if (memberMember.Member is PropertyInfo && type.IsValueType)
                         {
@@ -1819,7 +1820,7 @@ namespace System.Linq.Expressions.Interpreter
 
                         CompileMember(null, memberMember.Member, forBinding: true);
                         CompileMemberInit(memberMember.Bindings);
-                        _instructions.EmitPop();
+                        Instructions.EmitPop();
                         break;
                 }
             }
@@ -1885,21 +1886,21 @@ namespace System.Linq.Expressions.Interpreter
             {
                 // reflection doesn't let us call methods on Nullable<T> when the value
                 // is null...  so we get to special case those methods!
-                _instructions.EmitNullableCall(method, parameters);
+                Instructions.EmitNullableCall(method, parameters);
             }
             else
             {
                 if (updaters == null)
                 {
-                    _instructions.EmitCall(method, parameters);
+                    Instructions.EmitCall(method, parameters);
                 }
                 else
                 {
-                    _instructions.EmitByRefCall(method, parameters, updaters.ToArray());
+                    Instructions.EmitByRefCall(method, parameters, updaters.ToArray());
 
                     foreach (var updater in updaters)
                     {
-                        updater.UndefineTemps(_instructions, _locals);
+                        updater.UndefineTemps(Instructions, _locals);
                     }
                 }
             }
@@ -1907,29 +1908,29 @@ namespace System.Linq.Expressions.Interpreter
 
         private void CompileMethodLogicalBinaryExpression(BinaryExpression expr, bool andAlso)
         {
-            var labEnd = _instructions.MakeLabel();
+            var labEnd = Instructions.MakeLabel();
             Compile(expr.Left);
-            _instructions.EmitDup();
+            Instructions.EmitDup();
 
             var opTrue = TypeUtils.GetBooleanOperator(expr.Method.DeclaringType, andAlso ? "op_False" : "op_True");
             Debug.Assert(opTrue != null, "factory should check that the method exists");
-            _instructions.EmitCall(opTrue);
-            _instructions.EmitBranchTrue(labEnd);
+            Instructions.EmitCall(opTrue);
+            Instructions.EmitBranchTrue(labEnd);
 
             Compile(expr.Right);
 
             Debug.Assert(expr.Method.IsStatic);
-            _instructions.EmitCall(expr.Method);
+            Instructions.EmitCall(expr.Method);
 
-            _instructions.MarkLabel(labEnd);
+            Instructions.MarkLabel(labEnd);
         }
 
         private ByRefUpdater CompileMultiDimArrayAccess(Expression array, IArgumentProvider arguments, int index)
         {
             Compile(array);
-            var objTmp = _locals.DefineLocal(Expression.Parameter(array.Type), _instructions.Count);
-            _instructions.EmitDup();
-            _instructions.EmitStoreLocal(objTmp.Index);
+            var objTmp = _locals.DefineLocal(Expression.Parameter(array.Type), Instructions.Count);
+            Instructions.EmitDup();
+            Instructions.EmitStoreLocal(objTmp.Index);
 
             var count = arguments.ArgumentCount;
             var indexLocals = new LocalDefinition[count];
@@ -1938,14 +1939,14 @@ namespace System.Linq.Expressions.Interpreter
                 var arg = arguments.GetArgument(i);
                 Compile(arg);
 
-                var argTmp = _locals.DefineLocal(Expression.Parameter(arg.Type), _instructions.Count);
-                _instructions.EmitDup();
-                _instructions.EmitStoreLocal(argTmp.Index);
+                var argTmp = _locals.DefineLocal(Expression.Parameter(arg.Type), Instructions.Count);
+                Instructions.EmitDup();
+                Instructions.EmitStoreLocal(argTmp.Index);
 
                 indexLocals[i] = argTmp;
             }
 
-            _instructions.EmitCall(array.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance));
+            Instructions.EmitCall(array.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance));
 
             return new IndexMethodByRefUpdater(objTmp, indexLocals, array.Type.GetMethod("Set", BindingFlags.Public | BindingFlags.Instance), index);
         }
@@ -1964,18 +1965,18 @@ namespace System.Linq.Expressions.Interpreter
 
             if (node.NodeType == ExpressionType.NewArrayInit)
             {
-                _instructions.EmitNewArrayInit(elementType, rank);
+                Instructions.EmitNewArrayInit(elementType, rank);
             }
             else
             {
                 Debug.Assert(node.NodeType == ExpressionType.NewArrayBounds);
                 if (rank == 1)
                 {
-                    _instructions.EmitNewArray(elementType);
+                    Instructions.EmitNewArray(elementType);
                 }
                 else
                 {
-                    _instructions.EmitNewArrayBounds(elementType, rank);
+                    Instructions.EmitNewArrayBounds(elementType, rank);
                 }
             }
         }
@@ -2019,11 +2020,11 @@ namespace System.Linq.Expressions.Interpreter
 
                 if (updaters != null)
                 {
-                    _instructions.EmitByRefNew(node.Constructor, parameters, updaters.ToArray());
+                    Instructions.EmitByRefNew(node.Constructor, parameters, updaters.ToArray());
                 }
                 else
                 {
-                    _instructions.EmitNew(node.Constructor, parameters);
+                    Instructions.EmitNew(node.Constructor, parameters);
                 }
             }
             else
@@ -2032,11 +2033,11 @@ namespace System.Linq.Expressions.Interpreter
                 Debug.Assert(type.IsValueType);
                 if (type.IsNullable())
                 {
-                    _instructions.EmitLoad(value: null);
+                    Instructions.EmitLoad(value: null);
                 }
                 else
                 {
-                    _instructions.EmitDefaultValue(type);
+                    Instructions.EmitDefaultValue(type);
                 }
             }
         }
@@ -2054,7 +2055,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             // ReSharper disable once RedundantAssignment
-            var startingStackDepth = _instructions.CurrentStackDepth;
+            var startingStackDepth = Instructions.CurrentStackDepth;
             switch (expr.NodeType)
             {
                 case ExpressionType.Add:
@@ -2126,8 +2127,8 @@ namespace System.Linq.Expressions.Interpreter
                     Compile(expr.ReduceAndCheck());
                     break;
             }
-            Debug.Assert(_instructions.CurrentStackDepth == startingStackDepth + (expr.Type == typeof(void) ? 0 : 1),
-                $"{_instructions.CurrentStackDepth} vs {startingStackDepth + (expr.Type == typeof(void) ? 0 : 1)} for {expr.NodeType}");
+            Debug.Assert(Instructions.CurrentStackDepth == startingStackDepth + (expr.Type == typeof(void) ? 0 : 1),
+                $"{Instructions.CurrentStackDepth} vs {startingStackDepth + (expr.Type == typeof(void) ? 0 : 1)} for {expr.NodeType}");
         }
 
         private void CompileNotEqual(Expression left, Expression right, bool liftedToNull)
@@ -2137,13 +2138,13 @@ namespace System.Linq.Expressions.Interpreter
 #endif
             Compile(left);
             Compile(right);
-            _instructions.EmitNotEqual(left.Type, liftedToNull);
+            Instructions.EmitNotEqual(left.Type, liftedToNull);
         }
 
         private void CompileNotExpression(UnaryExpression node)
         {
             Compile(node.Operand);
-            _instructions.EmitNot(node.Operand.Type);
+            Instructions.EmitNot(node.Operand.Type);
         }
 
         private void CompileOrElseBinaryExpression(Expression expr)
@@ -2172,7 +2173,7 @@ namespace System.Linq.Expressions.Interpreter
                 mapping[local] = ResolveLocal(local);
             }
 
-            _instructions.Emit(new QuoteInstruction(unary.Operand, mapping.Count > 0 ? mapping : null));
+            Instructions.Emit(new QuoteInstruction(unary.Operand, mapping.Count > 0 ? mapping : null));
         }
 
         private void CompileRuntimeVariablesExpression(Expression expr)
@@ -2185,7 +2186,7 @@ namespace System.Linq.Expressions.Interpreter
                 CompileGetBoxedVariable(variable);
             }
 
-            _instructions.EmitNewRuntimeVariables(node.Variables.Count);
+            Instructions.EmitNewRuntimeVariables(node.Variables.Count);
         }
 
         private void CompileSetVariable(ParameterExpression variable, bool isVoid)
@@ -2196,37 +2197,37 @@ namespace System.Linq.Expressions.Interpreter
             {
                 if (isVoid)
                 {
-                    _instructions.EmitStoreLocalToClosure(local.Index);
+                    Instructions.EmitStoreLocalToClosure(local.Index);
                 }
                 else
                 {
-                    _instructions.EmitAssignLocalToClosure(local.Index);
+                    Instructions.EmitAssignLocalToClosure(local.Index);
                 }
             }
             else if (local.IsBoxed)
             {
                 if (isVoid)
                 {
-                    _instructions.EmitStoreLocalBoxed(local.Index);
+                    Instructions.EmitStoreLocalBoxed(local.Index);
                 }
                 else
                 {
-                    _instructions.EmitAssignLocalBoxed(local.Index);
+                    Instructions.EmitAssignLocalBoxed(local.Index);
                 }
             }
             else
             {
                 if (isVoid)
                 {
-                    _instructions.EmitStoreLocal(local.Index);
+                    Instructions.EmitStoreLocal(local.Index);
                 }
                 else
                 {
-                    _instructions.EmitAssignLocal(local.Index);
+                    Instructions.EmitAssignLocal(local.Index);
                 }
             }
 
-            _instructions.SetDebugCookie(variable.Name);
+            Instructions.SetDebugCookie(variable.Name);
         }
 
         private void CompileStringSwitchExpression(SwitchExpression node)
@@ -2236,10 +2237,10 @@ namespace System.Linq.Expressions.Interpreter
 
             Compile(node.SwitchValue);
             var caseDict = new Dictionary<string, int>();
-            var switchIndex = _instructions.Count;
+            var switchIndex = Instructions.Count;
             // by default same as default
             var nullCase = new StrongBox<int>(1);
-            _instructions.EmitStringSwitch(caseDict, nullCase);
+            Instructions.EmitStringSwitch(caseDict, nullCase);
 
             if (node.DefaultBody != null)
             {
@@ -2249,13 +2250,13 @@ namespace System.Linq.Expressions.Interpreter
             {
                 Debug.Assert(!hasValue);
             }
-            _instructions.EmitBranch(end.GetLabel(this), false, hasValue);
+            Instructions.EmitBranch(end.GetLabel(this), false, hasValue);
 
             for (var i = 0; i < node.Cases.Count; i++)
             {
                 var switchCase = node.Cases[i];
 
-                var caseOffset = _instructions.Count - switchIndex;
+                var caseOffset = Instructions.Count - switchIndex;
                 // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
                 foreach (ConstantExpression testValue in switchCase.TestValues)
                 {
@@ -2277,11 +2278,11 @@ namespace System.Linq.Expressions.Interpreter
 
                 if (i < node.Cases.Count - 1)
                 {
-                    _instructions.EmitBranch(end.GetLabel(this), false, hasValue);
+                    Instructions.EmitBranch(end.GetLabel(this), false, hasValue);
                 }
             }
 
-            _instructions.MarkLabel(end.GetLabel(this));
+            Instructions.MarkLabel(end.GetLabel(this));
         }
 
         private void CompileSwitchExpression(Expression expr)
@@ -2356,9 +2357,9 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            var temp = _locals.DefineLocal(Expression.Parameter(node.SwitchValue.Type), _instructions.Count);
+            var temp = _locals.DefineLocal(Expression.Parameter(node.SwitchValue.Type), Instructions.Count);
             Compile(node.SwitchValue);
-            _instructions.EmitStoreLocal(temp.Index);
+            Instructions.EmitStoreLocal(temp.Index);
 
             var doneLabel = Expression.Label(node.Type, "done");
 
@@ -2382,7 +2383,7 @@ namespace System.Linq.Expressions.Interpreter
             // doneLabel(DefaultBody):
             CompileLabelExpression(Expression.Label(doneLabel, node.DefaultBody));
 
-            _locals.UndefineLocal(temp, _instructions.Count);
+            _locals.UndefineLocal(temp, Instructions.Count);
         }
 
         private void CompileThrowUnaryExpression(Expression expr, bool asVoid)
@@ -2396,11 +2397,11 @@ namespace System.Linq.Expressions.Interpreter
                 CompileParameterExpression(_exceptionForRethrowStack.Peek());
                 if (asVoid)
                 {
-                    _instructions.EmitRethrowVoid();
+                    Instructions.EmitRethrowVoid();
                 }
                 else
                 {
-                    _instructions.EmitRethrow();
+                    Instructions.EmitRethrow();
                 }
             }
             else
@@ -2408,11 +2409,11 @@ namespace System.Linq.Expressions.Interpreter
                 Compile(node.Operand);
                 if (asVoid)
                 {
-                    _instructions.EmitThrowVoid();
+                    Instructions.EmitThrowVoid();
                 }
                 else
                 {
-                    _instructions.EmitThrow();
+                    Instructions.EmitThrow();
                 }
             }
         }
@@ -2426,23 +2427,23 @@ namespace System.Linq.Expressions.Interpreter
             }
             else
             {
-                var end = _instructions.MakeLabel();
-                var gotoEnd = _instructions.MakeLabel();
-                var tryStart = _instructions.Count;
+                var end = Instructions.MakeLabel();
+                var gotoEnd = Instructions.MakeLabel();
+                var tryStart = Instructions.Count;
 
                 BranchLabel startOfFinally = null;
                 if (node.Finally != null)
                 {
-                    startOfFinally = _instructions.MakeLabel();
-                    _instructions.EmitEnterTryFinally(startOfFinally);
+                    startOfFinally = Instructions.MakeLabel();
+                    Instructions.EmitEnterTryFinally(startOfFinally);
                 }
                 else
                 {
-                    _instructions.EmitEnterTryCatch();
+                    Instructions.EmitEnterTryCatch();
                 }
 
                 List<ExceptionHandler> exHandlers = null;
-                var enterTryInstr = _instructions.GetInstruction(tryStart) as EnterTryCatchFinallyInstruction;
+                var enterTryInstr = Instructions.GetInstruction(tryStart) as EnterTryCatchFinallyInstruction;
                 Debug.Assert(enterTryInstr != null);
 
                 PushLabelBlock(LabelScopeKind.Try);
@@ -2450,11 +2451,11 @@ namespace System.Linq.Expressions.Interpreter
 
                 Compile(node.Body, !hasValue);
 
-                var tryEnd = _instructions.Count;
+                var tryEnd = Instructions.Count;
 
                 // handlers jump here:
-                _instructions.MarkLabel(gotoEnd);
-                _instructions.EmitGoto(end, hasValue, hasValue, hasValue);
+                Instructions.MarkLabel(gotoEnd);
+                Instructions.EmitGoto(end, hasValue, hasValue, hasValue);
 
                 // keep the result on the stack:
                 if (node.Handlers.Count > 0)
@@ -2464,7 +2465,7 @@ namespace System.Linq.Expressions.Interpreter
                     {
                         var parameter = handler.Variable ?? Expression.Parameter(handler.Test);
 
-                        var local = _locals.DefineLocal(parameter, _instructions.Count);
+                        var local = _locals.DefineLocal(parameter, Instructions.Count);
                         _exceptionForRethrowStack.Push(parameter);
 
                         ExceptionFilter filter = null;
@@ -2473,20 +2474,20 @@ namespace System.Linq.Expressions.Interpreter
                         {
                             PushLabelBlock(LabelScopeKind.Filter);
 
-                            _instructions.EmitEnterExceptionFilter();
+                            Instructions.EmitEnterExceptionFilter();
 
                             // at this point the stack balance is prepared for the hidden exception variable:
-                            var filterLabel = _instructions.MarkRuntimeLabel();
-                            var filterStart = _instructions.Count;
+                            var filterLabel = Instructions.MarkRuntimeLabel();
+                            var filterStart = Instructions.Count;
 
                             CompileSetVariable(parameter, isVoid: true);
                             Compile(handler.Filter);
                             CompileGetVariable(parameter);
 
-                            filter = new ExceptionFilter(filterLabel, filterStart, _instructions.Count);
+                            filter = new ExceptionFilter(filterLabel, filterStart, Instructions.Count);
 
                             // keep the value of the body on the stack:
-                            _instructions.EmitLeaveExceptionFilter();
+                            Instructions.EmitLeaveExceptionFilter();
 
                             PopLabelBlock(LabelScopeKind.Filter);
                         }
@@ -2496,16 +2497,16 @@ namespace System.Linq.Expressions.Interpreter
                         // add a stack balancing nop instruction (exception handling pushes the current exception):
                         if (hasValue)
                         {
-                            _instructions.EmitEnterExceptionHandlerNonVoid();
+                            Instructions.EmitEnterExceptionHandlerNonVoid();
                         }
                         else
                         {
-                            _instructions.EmitEnterExceptionHandlerVoid();
+                            Instructions.EmitEnterExceptionHandlerVoid();
                         }
 
                         // at this point the stack balance is prepared for the hidden exception variable:
-                        var handlerLabel = _instructions.MarkRuntimeLabel();
-                        var handlerStart = _instructions.Count;
+                        var handlerLabel = Instructions.MarkRuntimeLabel();
+                        var handlerStart = Instructions.Count;
 
                         CompileSetVariable(parameter, isVoid: true);
                         Compile(handler.Body, !hasValue);
@@ -2513,12 +2514,12 @@ namespace System.Linq.Expressions.Interpreter
                         _exceptionForRethrowStack.Pop();
 
                         // keep the value of the body on the stack:
-                        _instructions.EmitLeaveExceptionHandler(hasValue, gotoEnd);
+                        Instructions.EmitLeaveExceptionHandler(hasValue, gotoEnd);
 
-                        exHandlers.Add(new ExceptionHandler(handlerLabel, handlerStart, _instructions.Count, handler.Test, filter));
+                        exHandlers.Add(new ExceptionHandler(handlerLabel, handlerStart, Instructions.Count, handler.Test, filter));
                         PopLabelBlock(LabelScopeKind.Catch);
 
-                        _locals.UndefineLocal(local, _instructions.Count);
+                        _locals.UndefineLocal(local, Instructions.Count);
                     }
                 }
 
@@ -2527,16 +2528,16 @@ namespace System.Linq.Expressions.Interpreter
                     Debug.Assert(startOfFinally != null);
                     PushLabelBlock(LabelScopeKind.Finally);
 
-                    _instructions.MarkLabel(startOfFinally);
-                    _instructions.EmitEnterFinally(startOfFinally);
+                    Instructions.MarkLabel(startOfFinally);
+                    Instructions.EmitEnterFinally(startOfFinally);
                     CompileAsVoid(node.Finally);
-                    _instructions.EmitLeaveFinally();
+                    Instructions.EmitLeaveFinally();
 
                     // ReSharper disable once PossibleNullReferenceException
                     enterTryInstr.SetTryHandler(
                         new TryCatchFinallyHandler(tryStart, tryEnd, gotoEnd.TargetIndex,
                             // ReSharper disable once PossibleNullReferenceException
-                            startOfFinally.TargetIndex, _instructions.Count,
+                            startOfFinally.TargetIndex, Instructions.Count,
                             exHandlers?.ToArray()));
                     PopLabelBlock(LabelScopeKind.Finally);
                 }
@@ -2549,7 +2550,7 @@ namespace System.Linq.Expressions.Interpreter
                         new TryCatchFinallyHandler(tryStart, tryEnd, gotoEnd.TargetIndex, exHandlers.ToArray()));
                 }
 
-                _instructions.MarkLabel(end);
+                Instructions.MarkLabel(end);
 
                 PopLabelBlock(LabelScopeKind.Try);
             }
@@ -2561,39 +2562,39 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(expr.Handlers.Count == 0);
 
             // Mark where we begin.
-            var tryStart = _instructions.Count;
-            var end = _instructions.MakeLabel();
-            var enterTryInstr = _instructions.EmitEnterTryFault(end);
-            Debug.Assert(enterTryInstr == _instructions.GetInstruction(tryStart));
+            var tryStart = Instructions.Count;
+            var end = Instructions.MakeLabel();
+            var enterTryInstr = Instructions.EmitEnterTryFault(end);
+            Debug.Assert(enterTryInstr == Instructions.GetInstruction(tryStart));
 
             // Emit the try block.
             PushLabelBlock(LabelScopeKind.Try);
             var hasValue = expr.Type != typeof(void);
             Compile(expr.Body, !hasValue);
-            var tryEnd = _instructions.Count;
+            var tryEnd = Instructions.Count;
 
             // Jump out of the try block to the end of the finally. If we got
             // This far, then the fault block shouldn't be run.
-            _instructions.EmitGoto(end, hasValue, hasValue, hasValue);
+            Instructions.EmitGoto(end, hasValue, hasValue, hasValue);
 
             // Emit the fault block. The scope kind used is the same as for finally
             // blocks, which matches the Compiler.LambdaCompiler.EmitTryExpression approach.
             PushLabelBlock(LabelScopeKind.Finally);
-            var startOfFault = _instructions.MakeLabel();
-            _instructions.MarkLabel(startOfFault);
-            _instructions.EmitEnterFault(startOfFault);
+            var startOfFault = Instructions.MakeLabel();
+            Instructions.MarkLabel(startOfFault);
+            Instructions.EmitEnterFault(startOfFault);
             CompileAsVoid(expr.Fault);
-            _instructions.EmitLeaveFault();
-            enterTryInstr.SetTryHandler(new TryFaultHandler(tryStart, tryEnd, startOfFault.TargetIndex, _instructions.Count));
+            Instructions.EmitLeaveFault();
+            enterTryInstr.SetTryHandler(new TryFaultHandler(tryStart, tryEnd, startOfFault.TargetIndex, Instructions.Count));
             PopLabelBlock(LabelScopeKind.Finally);
             PopLabelBlock(LabelScopeKind.Try);
-            _instructions.MarkLabel(end);
+            Instructions.MarkLabel(end);
         }
 
         private void CompileTypeAsExpression(UnaryExpression node)
         {
             Compile(node.Operand);
-            _instructions.EmitTypeAs(node.Type);
+            Instructions.EmitTypeAs(node.Type);
         }
 
         private void CompileTypeEqualExpression(Expression expr)
@@ -2604,12 +2605,12 @@ namespace System.Linq.Expressions.Interpreter
             Compile(node.Expression);
             if (node.Expression.Type == typeof(void))
             {
-                _instructions.EmitLoad(node.TypeOperand == typeof(void), typeof(bool));
+                Instructions.EmitLoad(node.TypeOperand == typeof(void), typeof(bool));
             }
             else
             {
-                _instructions.EmitLoad(node.TypeOperand.GetNonNullable());
-                _instructions.EmitTypeEquals();
+                Instructions.EmitLoad(node.TypeOperand.GetNonNullable());
+                Instructions.EmitTypeEquals();
             }
         }
 
@@ -2631,29 +2632,29 @@ namespace System.Linq.Expressions.Interpreter
                     // its side effects and return the result
                     if (node.Expression.Type != typeof(void))
                     {
-                        _instructions.EmitPop();
+                        Instructions.EmitPop();
                     }
 
-                    _instructions.EmitLoad(result == AnalyzeTypeIsResult.KnownTrue);
+                    Instructions.EmitLoad(result == AnalyzeTypeIsResult.KnownTrue);
                     break;
 
                 case AnalyzeTypeIsResult.KnownAssignable:
 
                     // Either the value is of the type or it is null
                     // so emit test for not-null.
-                    _instructions.EmitLoad(null);
-                    _instructions.EmitNotEqual(typeof(object));
+                    Instructions.EmitLoad(null);
+                    Instructions.EmitNotEqual(typeof(object));
                     break;
 
                 default:
                     if (node.TypeOperand.IsValueType)
                     {
-                        _instructions.EmitLoad(node.TypeOperand.GetNonNullable());
-                        _instructions.EmitTypeEquals();
+                        Instructions.EmitLoad(node.TypeOperand.GetNonNullable());
+                        Instructions.EmitTypeEquals();
                     }
                     else
                     {
-                        _instructions.EmitTypeIs(node.TypeOperand);
+                        Instructions.EmitTypeIs(node.TypeOperand);
                     }
                     break;
             }
@@ -2682,27 +2683,27 @@ namespace System.Linq.Expressions.Interpreter
 
                     case ExpressionType.ArrayLength:
                         Compile(node.Operand);
-                        _instructions.EmitArrayLength();
+                        Instructions.EmitArrayLength();
                         break;
 
                     case ExpressionType.NegateChecked:
                         Compile(node.Operand);
-                        _instructions.EmitNegateChecked(node.Type);
+                        Instructions.EmitNegateChecked(node.Type);
                         break;
 
                     case ExpressionType.Negate:
                         Compile(node.Operand);
-                        _instructions.EmitNegate(node.Type);
+                        Instructions.EmitNegate(node.Type);
                         break;
 
                     case ExpressionType.Increment:
                         Compile(node.Operand);
-                        _instructions.EmitIncrement(node.Type);
+                        Instructions.EmitIncrement(node.Type);
                         break;
 
                     case ExpressionType.Decrement:
                         Compile(node.Operand);
-                        _instructions.EmitDecrement(node.Type);
+                        Instructions.EmitDecrement(node.Type);
                         break;
 
                     case ExpressionType.UnaryPlus:
@@ -2728,29 +2729,29 @@ namespace System.Linq.Expressions.Interpreter
 
             if (node.Type.IsValueType && !node.Type.IsNullable())
             {
-                _instructions.Emit(NullCheckInstruction.Instance);
+                Instructions.Emit(NullCheckInstruction.Instance);
             }
         }
 
         private void CompileUnliftedLogicalBinaryExpression(BinaryExpression expr, bool andAlso)
         {
-            var elseLabel = _instructions.MakeLabel();
-            var endLabel = _instructions.MakeLabel();
+            var elseLabel = Instructions.MakeLabel();
+            var endLabel = Instructions.MakeLabel();
             Compile(expr.Left);
 
             if (andAlso)
             {
-                _instructions.EmitBranchFalse(elseLabel);
+                Instructions.EmitBranchFalse(elseLabel);
             }
             else
             {
-                _instructions.EmitBranchTrue(elseLabel);
+                Instructions.EmitBranchTrue(elseLabel);
             }
             Compile(expr.Right);
-            _instructions.EmitBranch(endLabel, hasResult: false, hasValue: true);
-            _instructions.MarkLabel(elseLabel);
-            _instructions.EmitLoad(!andAlso);
-            _instructions.MarkLabel(endLabel);
+            Instructions.EmitBranch(endLabel, hasResult: false, hasValue: true);
+            Instructions.MarkLabel(elseLabel);
+            Instructions.EmitLoad(!andAlso);
+            Instructions.MarkLabel(endLabel);
         }
 
         private void CompileVariableAssignment(BinaryExpression node, bool asVoid)
@@ -2797,7 +2798,7 @@ namespace System.Linq.Expressions.Interpreter
                 // loading a value type on the stack has copy semantics unless
                 // we are specifically loading the address of the object, so we
                 // emit a copy here if we don't know the type is immutable.
-                _instructions.Emit(ValueTypeCopyInstruction.Instruction);
+                Instructions.Emit(ValueTypeCopyInstruction.Instruction);
             }
         }
 
@@ -2805,15 +2806,15 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (index.Indexer != null)
             {
-                _instructions.EmitCall(index.Indexer.GetGetMethod(nonPublic: true));
+                Instructions.EmitCall(index.Indexer.GetGetMethod(nonPublic: true));
             }
             else if (index.ArgumentCount != 1)
             {
-                _instructions.EmitCall(index.Object.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance));
+                Instructions.EmitCall(index.Object.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance));
             }
             else
             {
-                _instructions.EmitGetArrayItem();
+                Instructions.EmitGetArrayItem();
             }
         }
 
@@ -2827,22 +2828,22 @@ namespace System.Linq.Expressions.Interpreter
             Compile(node.Operand);
             if (node.IsLifted)
             {
-                var notNull = _instructions.MakeLabel();
-                var computed = _instructions.MakeLabel();
+                var notNull = Instructions.MakeLabel();
+                var computed = Instructions.MakeLabel();
 
-                _instructions.EmitCoalescingBranch(notNull);
-                _instructions.EmitBranch(computed);
+                Instructions.EmitCoalescingBranch(notNull);
+                Instructions.EmitBranch(computed);
 
-                _instructions.MarkLabel(notNull);
-                _instructions.EmitLoad(node.NodeType == ExpressionType.IsTrue);
-                _instructions.EmitEqual(typeof(bool));
+                Instructions.MarkLabel(notNull);
+                Instructions.EmitLoad(node.NodeType == ExpressionType.IsTrue);
+                Instructions.EmitEqual(typeof(bool));
 
-                _instructions.MarkLabel(computed);
+                Instructions.MarkLabel(computed);
             }
             else
             {
-                _instructions.EmitLoad(node.NodeType == ExpressionType.IsTrue);
-                _instructions.EmitEqual(typeof(bool));
+                Instructions.EmitLoad(node.NodeType == ExpressionType.IsTrue);
+                Instructions.EmitEqual(typeof(bool));
             }
         }
 
@@ -2851,20 +2852,20 @@ namespace System.Linq.Expressions.Interpreter
             Compile(node.Operand);
             if (node.IsLifted)
             {
-                var notNull = _instructions.MakeLabel();
-                var computed = _instructions.MakeLabel();
+                var notNull = Instructions.MakeLabel();
+                var computed = Instructions.MakeLabel();
 
-                _instructions.EmitCoalescingBranch(notNull);
-                _instructions.EmitBranch(computed);
+                Instructions.EmitCoalescingBranch(notNull);
+                Instructions.EmitBranch(computed);
 
-                _instructions.MarkLabel(notNull);
-                _instructions.EmitCall(node.Method);
+                Instructions.MarkLabel(notNull);
+                Instructions.EmitCall(node.Method);
 
-                _instructions.MarkLabel(computed);
+                Instructions.MarkLabel(computed);
             }
             else
             {
-                _instructions.EmitCall(node.Method);
+                Instructions.EmitCall(node.Method);
             }
         }
 
@@ -2874,7 +2875,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 if (!local.InClosure && !local.IsBoxed)
                 {
-                    _locals.Box(expr, _instructions);
+                    _locals.Box(expr, Instructions);
                 }
                 return local;
             }
@@ -2903,15 +2904,15 @@ namespace System.Linq.Expressions.Interpreter
 
             if (local.InClosure)
             {
-                _instructions.EmitLoadLocalFromClosure(local.Index);
+                Instructions.EmitLoadLocalFromClosure(local.Index);
             }
             else if (local.IsBoxed)
             {
-                _instructions.EmitLoadLocalBoxed(local.Index);
+                Instructions.EmitLoadLocalBoxed(local.Index);
             }
             else
             {
-                _instructions.EmitLoadLocal(local.Index);
+                Instructions.EmitLoadLocal(local.Index);
             }
         }
 
@@ -2922,7 +2923,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 kvp.Value.ValidateFinish();
             }
-            return new Interpreter(lambdaName, _locals, _instructions.ToArray(), debugInfos);
+            return new Interpreter(lambdaName, _locals, Instructions.ToArray(), debugInfos);
         }
 
         private bool MaybeMutableValueType(Type type)
@@ -3221,7 +3222,6 @@ namespace System.Linq.Expressions.Interpreter
         internal readonly int GotoEndTargetIndex;
         internal readonly int TryEndIndex;
         internal readonly int TryStartIndex;
-        private readonly ExceptionHandler[] _handlers;
 
         /// <summary>
         /// No finally block
@@ -3242,12 +3242,12 @@ namespace System.Linq.Expressions.Interpreter
             FinallyStartIndex = finallyStart;
             FinallyEndIndex = finallyEnd;
             GotoEndTargetIndex = gotoEndLabelIndex;
-            _handlers = handlers;
+            Handlers = handlers;
         }
 
-        internal ExceptionHandler[] Handlers => _handlers;
+        internal ExceptionHandler[] Handlers { get; }
 
-        internal bool IsCatchBlockExist => _handlers != null;
+        internal bool IsCatchBlockExist => Handlers != null;
 
         internal bool IsFinallyBlockExist
         {
@@ -3277,7 +3277,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 unwrappedException = exception is RuntimeWrappedException rwe ? rwe.WrappedException : exception;
                 var exceptionType = unwrappedException.GetType();
-                foreach (var candidate in _handlers)
+                foreach (var candidate in Handlers)
                 {
                     if (candidate.Matches(exceptionType) && (candidate.Filter == null || FilterPasses(frame, ref unwrappedException, candidate.Filter)))
                     {

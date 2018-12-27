@@ -13,7 +13,7 @@ namespace System.Numerics
     {
         internal static string FormatBigInteger(BigInteger value, string format, NumberFormatInfo info)
         {
-            var fmt = ParseFormatSpecifier(format, out int digits);
+            var fmt = ParseFormatSpecifier(format, out var digits);
             if (fmt == 'x' || fmt == 'X')
             {
                 return FormatBigIntegerToHexString(value, fmt, digits, info);
@@ -209,11 +209,11 @@ namespace System.Numerics
             {
                 throw new ArgumentNullException(nameof(value));
             }
-            if (!TryValidateParseStyleInteger(style, out ArgumentException argumentException))
+            if (!TryValidateParseStyleInteger(style, out var argumentException))
             {
                 throw argumentException;
             }
-            if (!TryParseBigInteger(value, style, info, out BigInteger zero))
+            if (!TryParseBigInteger(value, style, info, out var zero))
             {
                 throw new FormatException("The value could not be parsed.");
             }
@@ -461,7 +461,7 @@ namespace System.Numerics
         internal static bool TryParseBigInteger(string value, NumberStyles style, NumberFormatInfo info, out BigInteger result)
         {
             result = Zero;
-            if (!TryValidateParseStyleInteger(style, out ArgumentException e))
+            if (!TryValidateParseStyleInteger(style, out var e))
             {
                 throw e; // TryParse still throws ArgumentException on invalid NumberStyles
             }

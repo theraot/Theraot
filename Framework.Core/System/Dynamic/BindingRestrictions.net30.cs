@@ -45,10 +45,10 @@ namespace System.Dynamic
         /// <returns>The new set of binding restrictions.</returns>
         public static BindingRestrictions Combine(IList<DynamicMetaObject> contributingObjects)
         {
-            BindingRestrictions res = Empty;
+            var res = Empty;
             if (contributingObjects != null)
             {
-                foreach (DynamicMetaObject mo in contributingObjects)
+                foreach (var mo in contributingObjects)
                 {
                     if (mo != null)
                     {
@@ -212,7 +212,7 @@ namespace System.Dynamic
                     );
                 }
 
-                ParameterExpression temp = Expression.Parameter(typeof(object), null);
+                var temp = Expression.Parameter(typeof(object), null);
                 return Expression.Block(
                     new TrueReadOnlyCollection<ParameterExpression>(temp),
                     new TrueReadOnlyCollection<Expression>(
@@ -309,7 +309,7 @@ namespace System.Dynamic
 
             internal Expression ToExpression()
             {
-                Expression result = _tests.Pop().Node;
+                var result = _tests.Pop().Node;
                 while (_tests.Count > 0)
                 {
                     result = Expression.AndAlso(_tests.Pop().Node, result);

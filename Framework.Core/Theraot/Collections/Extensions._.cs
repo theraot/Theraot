@@ -1274,7 +1274,6 @@ namespace Theraot.Collections
             return copy;
         }
 
-
         public static IEnumerable<T> EmptyChecked<T>(this IEnumerable<T> source, Action onEmpty)
         {
             if (source == null)

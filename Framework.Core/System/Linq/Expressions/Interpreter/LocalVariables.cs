@@ -81,21 +81,19 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed class LocalVariables
     {
         private readonly HybridReferenceDictionary<ParameterExpression, VariableScope> _variables = new HybridReferenceDictionary<ParameterExpression, VariableScope>();
-        private Dictionary<ParameterExpression, LocalVariable> _closureVariables;
+        private int _localCount;
 
-        private int _localCount, _maxLocalCount;
-
-        public int LocalCount => _maxLocalCount;
+        public int LocalCount { get; private set; }
 
         /// <summary>
         /// Gets the variables which are defined in an outer scope and available within the current scope.
         /// </summary>
-        internal Dictionary<ParameterExpression, LocalVariable> ClosureVariables => _closureVariables;
+        internal Dictionary<ParameterExpression, LocalVariable> ClosureVariables { get; private set; }
 
         public LocalDefinition DefineLocal(ParameterExpression variable, int start)
         {
             var result = new LocalVariable(_localCount++, closure: false);
-            _maxLocalCount = Math.Max(_localCount, _maxLocalCount);
+            LocalCount = Math.Max(_localCount, LocalCount);
 
             VariableScope newScope;
             if (_variables.TryGetValue(variable, out var existing))
@@ -123,7 +121,7 @@ namespace System.Linq.Expressions.Interpreter
                 local = scope.Variable;
                 return true;
             }
-            if (_closureVariables != null && _closureVariables.TryGetValue(var, out local))
+            if (ClosureVariables != null && ClosureVariables.TryGetValue(var, out local))
             {
                 return true;
             }
@@ -150,12 +148,12 @@ namespace System.Linq.Expressions.Interpreter
 
         internal LocalVariable AddClosureVariable(ParameterExpression variable)
         {
-            if (_closureVariables == null)
+            if (ClosureVariables == null)
             {
-                _closureVariables = new Dictionary<ParameterExpression, LocalVariable>();
+                ClosureVariables = new Dictionary<ParameterExpression, LocalVariable>();
             }
-            var result = new LocalVariable(_closureVariables.Count, true);
-            _closureVariables.Add(variable, result);
+            var result = new LocalVariable(ClosureVariables.Count, true);
+            ClosureVariables.Add(variable, result);
             return result;
         }
 

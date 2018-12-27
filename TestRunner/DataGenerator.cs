@@ -10,7 +10,7 @@ using Theraot.Reflection;
 namespace TestRunner
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public sealed class DataGeneratorAttribute : Attribute {}
+    public sealed class DataGeneratorAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter)]
     public sealed class UseGeneratorAttribute : Attribute
@@ -143,7 +143,7 @@ namespace TestRunner
             var random = new Random();
             var length = random.Next(1, 16);
             var stringBuilder = new StringBuilder(length);
-            for (int index = 0; index < length; index++)
+            for (var index = 0; index < length; index++)
             {
                 stringBuilder.Append(_chars[random.Next(0, _chars.Length)]);
             }

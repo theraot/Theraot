@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 
-
 namespace Theraot.Collections
 {
     public static partial class Extensions

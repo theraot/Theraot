@@ -119,7 +119,7 @@ namespace System.Dynamic.Utils
                 throw LinqError.ArgumentOutOfRange(nameof(index));
             }
 
-            int n = ElementCount;
+            var n = ElementCount;
             Debug.Assert(n > 0);
             if (index + n > array.Length)
             {
@@ -127,7 +127,7 @@ namespace System.Dynamic.Utils
             }
 
             array[index++] = First;
-            for (int i = 1; i < n; i++)
+            for (var i = 1; i < n; i++)
             {
                 array[index++] = GetElement(i);
             }

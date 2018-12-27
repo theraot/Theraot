@@ -31,7 +31,7 @@ namespace System.Linq.Expressions
         public static ParameterExpression Parameter(Type type, string name)
         {
             Validate(type, allowByRef: true);
-            bool byref = type.IsByRef;
+            var byref = type.IsByRef;
             if (byref)
             {
                 type = type.GetElementType();

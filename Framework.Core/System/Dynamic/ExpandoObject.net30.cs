@@ -135,7 +135,7 @@ namespace System.Dynamic
                     return false;
                 }
 
-                object oldValue = data[index];
+                var oldValue = data[index];
                 if (oldValue == Uninitialized)
                 {
                     return false;
@@ -199,7 +199,7 @@ namespace System.Dynamic
 
             // Capture the value into a temp, so it doesn't get mutated after we check
             // for Uninitialized.
-            object temp = data[index];
+            var temp = data[index];
             if (temp == Uninitialized)
             {
                 value = null;
@@ -240,7 +240,7 @@ namespace System.Dynamic
                         // Before creating a new class with the new member, need to check
                         // if there is the exact same member but is deleted. We should reuse
                         // the class if there is such a member.
-                        int exactMatch = ignoreCase ?
+                        var exactMatch = ignoreCase ?
                             data.Class.GetValueIndexCaseSensitive(name, LockObject) :
                             index;
                         if (exactMatch != NoMatch)
@@ -250,7 +250,7 @@ namespace System.Dynamic
                         }
                         else
                         {
-                            ExpandoClass newClass = data.Class.FindNewClass(name, LockObject);
+                            var newClass = data.Class.FindNewClass(name, LockObject);
                             _data = PromoteClassCore(data.Class, newClass);
                             // After the class promotion, there must be an exact match,
                             // so we can do case-sensitive search here.
@@ -400,8 +400,8 @@ namespace System.Dynamic
                 lock (_expando.LockObject)
                 {
                     CheckVersion();
-                    ExpandoData data = _expando._data;
-                    for (int i = 0; i < data.Class.Keys.Length; i++)
+                    var data = _expando._data;
+                    for (var i = 0; i < data.Class.Keys.Length; i++)
                     {
                         if (data[i] != Uninitialized)
                         {
@@ -465,7 +465,7 @@ namespace System.Dynamic
             {
                 get
                 {
-                    string[] items = new string[_collection.Count];
+                    var items = new string[_collection.Count];
                     _collection.CopyTo(items, 0);
                     return items;
                 }
@@ -530,8 +530,8 @@ namespace System.Dynamic
                 {
                     CheckVersion();
 
-                    ExpandoData data = _expando._data;
-                    for (int i = 0; i < data.Class.Keys.Length; i++)
+                    var data = _expando._data;
+                    for (var i = 0; i < data.Class.Keys.Length; i++)
                     {
                         // See comment in TryDeleteValue; it's okay to call
                         // object.Equals with the lock held.
@@ -551,8 +551,8 @@ namespace System.Dynamic
                 lock (_expando.LockObject)
                 {
                     CheckVersion();
-                    ExpandoData data = _expando._data;
-                    for (int i = 0; i < data.Class.Keys.Length; i++)
+                    var data = _expando._data;
+                    for (var i = 0; i < data.Class.Keys.Length; i++)
                     {
                         if (data[i] != Uninitialized)
                         {
@@ -573,13 +573,13 @@ namespace System.Dynamic
 
             public IEnumerator<object> GetEnumerator()
             {
-                ExpandoData data = _expando._data;
-                for (int i = 0; i < data.Class.Keys.Length; i++)
+                var data = _expando._data;
+                for (var i = 0; i < data.Class.Keys.Length; i++)
                 {
                     CheckVersion();
                     // Capture the value into a temp so we don't inadvertently
                     // return Uninitialized.
-                    object temp = data[i];
+                    var temp = data[i];
                     if (temp != Uninitialized)
                     {
                         yield return temp;
@@ -620,7 +620,7 @@ namespace System.Dynamic
             {
                 get
                 {
-                    object[] items = new object[_collection.Count];
+                    var items = new object[_collection.Count];
                     _collection.CopyTo(items, 0);
                     return items;
                 }
@@ -662,8 +662,8 @@ namespace System.Dynamic
         {
             ContractUtils.RequiresNotNull(key, nameof(key));
 
-            ExpandoData data = _data;
-            int index = data.Class.GetValueIndexCaseSensitive(key, LockObject);
+            var data = _data;
+            var index = data.Class.GetValueIndexCaseSensitive(key, LockObject);
             return index >= 0 && data[index] != Uninitialized;
         }
 
@@ -731,7 +731,7 @@ namespace System.Dynamic
             lock (LockObject)
             {
                 ContractUtils.RequiresArrayRange(array, arrayIndex, _count, nameof(arrayIndex), nameof(ICollection<KeyValuePair<string, object>>.Count));
-                foreach (KeyValuePair<string, object> item in this)
+                foreach (var item in this)
                 {
                     array[arrayIndex++] = item;
                 }
@@ -749,13 +749,13 @@ namespace System.Dynamic
 
         IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
         {
-            ExpandoData data = _data;
+            var data = _data;
             return GetExpandoEnumerator(data, data.Version);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            ExpandoData data = _data;
+            var data = _data;
             return GetExpandoEnumerator(data, data.Version);
         }
 
@@ -763,7 +763,7 @@ namespace System.Dynamic
         // captured before the first call to MoveNext().
         private IEnumerator<KeyValuePair<string, object>> GetExpandoEnumerator(ExpandoData data, int version)
         {
-            for (int i = 0; i < data.Class.Keys.Length; i++)
+            for (var i = 0; i < data.Class.Keys.Length; i++)
             {
                 if (_data.Version != version || data != _data)
                 {
@@ -774,7 +774,7 @@ namespace System.Dynamic
                 }
                 // Capture the value into a temp so we don't inadvertently
                 // return Uninitialized.
-                object temp = data[i];
+                var temp = data[i];
                 if (temp != Uninitialized)
                 {
                     yield return new KeyValuePair<string, object>(data.Class.Keys[i], temp);
@@ -799,7 +799,7 @@ namespace System.Dynamic
             {
                 ContractUtils.RequiresNotNull(binder, nameof(binder));
 
-                int index = Value.Class.GetValueIndex(binder.Name, binder.IgnoreCase, Value);
+                var index = Value.Class.GetValueIndex(binder.Name, binder.IgnoreCase, Value);
 
                 Expression tryDelete = Expression.Call(
                     _expandoTryDeleteValue,
@@ -809,9 +809,9 @@ namespace System.Dynamic
                     Expression.Constant(binder.Name),
                     AstUtils.Constant(binder.IgnoreCase)
                 );
-                DynamicMetaObject fallback = binder.FallbackDeleteMember(this);
+                var fallback = binder.FallbackDeleteMember(this);
 
-                DynamicMetaObject target = new DynamicMetaObject(
+                var target = new DynamicMetaObject(
                     Expression.IfThen(Expression.Not(tryDelete), fallback.Expression),
                     fallback.Restrictions
                 );
@@ -848,7 +848,7 @@ namespace System.Dynamic
                 ContractUtils.RequiresNotNull(binder, nameof(binder));
                 ContractUtils.RequiresNotNull(value, nameof(value));
 
-                ExpandoClass originalClass = GetClassEnsureIndex(binder.Name, binder.IgnoreCase, Value, out var @class, out var index);
+                var originalClass = GetClassEnsureIndex(binder.Name, binder.IgnoreCase, Value, out var @class, out var index);
 
                 return AddDynamicTestAndDefer(
                     binder,
@@ -873,9 +873,9 @@ namespace System.Dynamic
             {
                 var expandoData = Value._data;
                 var @class = expandoData.Class;
-                for (int i = 0; i < @class.Keys.Length; i++)
+                for (var i = 0; i < @class.Keys.Length; i++)
                 {
-                    object val = expandoData[i];
+                    var val = expandoData[i];
                     if (val != Uninitialized)
                     {
                         yield return @class.Keys[i];
@@ -889,7 +889,7 @@ namespace System.Dynamic
             /// </summary>
             private DynamicMetaObject AddDynamicTestAndDefer(DynamicMetaObjectBinder binder, ExpandoClass @class, ExpandoClass originalClass, DynamicMetaObject succeeds)
             {
-                Expression ifTestSucceeds = succeeds.Expression;
+                var ifTestSucceeds = succeeds.Expression;
                 if (originalClass != null)
                 {
                     // we are accessing a member which has not yet been defined on this class.
@@ -927,12 +927,12 @@ namespace System.Dynamic
 
             private DynamicMetaObject BindGetOrInvokeMember(DynamicMetaObjectBinder binder, string name, bool ignoreCase, DynamicMetaObject fallback, Func<DynamicMetaObject, DynamicMetaObject> fallbackInvoke)
             {
-                ExpandoClass @class = Value.Class;
+                var @class = Value.Class;
 
                 //try to find the member, including the deleted members
-                int index = @class.GetValueIndex(name, ignoreCase, Value);
+                var index = @class.GetValueIndex(name, ignoreCase, Value);
 
-                ParameterExpression value = Expression.Parameter(typeof(object), "value");
+                var value = Expression.Parameter(typeof(object), "value");
 
                 Expression tryGetValue = Expression.Call(
                     _expandoTryGetValue,
@@ -975,7 +975,7 @@ namespace System.Dynamic
             /// </summary>
             private ExpandoClass GetClassEnsureIndex(string name, bool caseInsensitive, ExpandoObject obj, out ExpandoClass @class, out int index)
             {
-                ExpandoClass originalClass = Value.Class;
+                var originalClass = Value.Class;
 
                 index = originalClass.GetValueIndex(name, caseInsensitive, obj);
                 if (index == AmbiguousMatchFound)
@@ -986,7 +986,7 @@ namespace System.Dynamic
                 if (index == NoMatch)
                 {
                     // go ahead and find a new class now...
-                    ExpandoClass newClass = originalClass.FindNewClass(name, obj.LockObject);
+                    var newClass = originalClass.FindNewClass(name, obj.LockObject);
 
                     @class = newClass;
                     index = newClass.GetValueIndexCaseSensitive(name, obj.LockObject);
@@ -1050,18 +1050,13 @@ namespace System.Dynamic
             private readonly object[] _dataArray;
 
             /// <summary>
-            /// the version of the ExpandoObject that tracks set and delete operations
-            /// </summary>
-            private int _version;
-
-            /// <summary>
             /// Constructs a new ExpandoData object with the specified class and data.
             /// </summary>
             private ExpandoData(ExpandoClass @class, object[] data, int version)
             {
                 Class = @class;
                 _dataArray = data;
-                _version = version;
+                Version = version;
             }
 
             /// <summary>
@@ -1075,7 +1070,7 @@ namespace System.Dynamic
 
             internal int Length => _dataArray.Length;
 
-            internal int Version => _version;
+            internal int Version { get; private set; }
 
             /// <summary>
             /// Indexer for getting/setting the data
@@ -1087,7 +1082,7 @@ namespace System.Dynamic
                 {
                     //when the array is updated, version increases, even the new value is the same
                     //as previous. Dictionary type has the same behavior.
-                    _version++;
+                    Version++;
                     _dataArray[index] = value;
                 }
             }
@@ -1101,14 +1096,14 @@ namespace System.Dynamic
                 {
                     // we have extra space in our buffer, just initialize it to Uninitialized.
                     this[newClass.Keys.Length - 1] = Uninitialized;
-                    return new ExpandoData(newClass, _dataArray, _version);
+                    return new ExpandoData(newClass, _dataArray, Version);
                 }
 
                 // we've grown too much - we need a new object array
-                int oldLength = _dataArray.Length;
-                object[] arr = new object[GetAlignedSize(newClass.Keys.Length)];
+                var oldLength = _dataArray.Length;
+                var arr = new object[GetAlignedSize(newClass.Keys.Length)];
                 Array.Copy(_dataArray, 0, arr, 0, _dataArray.Length);
-                ExpandoData newData = new ExpandoData(newClass, arr, _version) { [oldLength] = Uninitialized };
+                var newData = new ExpandoData(newClass, arr, Version) { [oldLength] = Uninitialized };
                 return newData;
             }
 
@@ -1127,6 +1122,7 @@ namespace System.Dynamic
         #region INotifyPropertyChanged
 
 #pragma warning disable IDE0051 // Remove unused private members
+
         event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
 #pragma warning restore IDE0051 // Remove unused private members
         {

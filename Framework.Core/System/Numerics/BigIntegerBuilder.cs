@@ -337,7 +337,7 @@ namespace System.Numerics
 
         public BigInteger GetInteger(int sign)
         {
-            GetIntegerParts(sign, out sign, out uint[] numArray);
+            GetIntegerParts(sign, out sign, out var numArray);
             return new BigInteger(sign, numArray);
         }
 

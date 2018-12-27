@@ -32,7 +32,7 @@ namespace System.Linq.Expressions.Compiler
         {
             get
             {
-                foreach (CompilerScope scope in _scopes)
+                foreach (var scope in _scopes)
                 {
                     if (scope.Node is LambdaExpression lambda)
                     {
@@ -97,7 +97,7 @@ namespace System.Linq.Expressions.Compiler
 
         protected internal override Expression VisitInvocation(InvocationExpression node)
         {
-            LambdaExpression lambda = node.LambdaOperand;
+            var lambda = node.LambdaOperand;
 
             // optimization: inline code for literal lambda's directly
             if (lambda != null)
@@ -136,7 +136,7 @@ namespace System.Linq.Expressions.Compiler
             // it is used a lot.
             //
             CompilerScope referenceScope = null;
-            foreach (CompilerScope scope in _scopes)
+            foreach (var scope in _scopes)
             {
                 //
                 // There are two times we care about references:
@@ -166,7 +166,7 @@ namespace System.Linq.Expressions.Compiler
 
         protected internal override Expression VisitRuntimeVariables(RuntimeVariablesExpression node)
         {
-            foreach (ParameterExpression v in node.Variables)
+            foreach (var v in node.Variables)
             {
                 // Force hoisting of these variables
                 Reference(v, VariableStorageKind.Hoisted);
@@ -178,7 +178,7 @@ namespace System.Linq.Expressions.Compiler
         {
             if (node.NodeType == ExpressionType.Quote)
             {
-                bool savedInQuote = _inQuote;
+                var savedInQuote = _inQuote;
                 _inQuote = true;
                 Visit(node.Operand);
                 _inQuote = savedInQuote;
@@ -220,7 +220,7 @@ namespace System.Linq.Expressions.Compiler
                 body = ((BlockExpression)node).Expressions;
             }
 
-            CompilerScope currentScope = _scopes.Peek();
+            var currentScope = _scopes.Peek();
 
             // A block body is mergeable if the body only contains one single block node containing variables,
             // and the child block has the same type as the parent block.
@@ -232,7 +232,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     // Make sure none of the variables are shadowed. If any
                     // are, we can't merge it.
-                    foreach (ParameterExpression v in block.Variables)
+                    foreach (var v in block.Variables)
                     {
                         if (currentScope.Definitions.ContainsKey(v))
                         {
@@ -246,7 +246,7 @@ namespace System.Linq.Expressions.Compiler
                         currentScope.MergedScopes = new HashSet<BlockExpression>(ReferenceEqualityComparer<BlockExpression>.Instance);
                     }
                     currentScope.MergedScopes.Add(block);
-                    foreach (ParameterExpression v in block.Variables)
+                    foreach (var v in block.Variables)
                     {
                         currentScope.Definitions.Add(v, VariableStorageKind.Local);
                     }
@@ -259,7 +259,7 @@ namespace System.Linq.Expressions.Compiler
         private void Reference(ParameterExpression node, VariableStorageKind storage)
         {
             CompilerScope definition = null;
-            foreach (CompilerScope scope in _scopes)
+            foreach (var scope in _scopes)
             {
                 if (scope.Definitions.ContainsKey(node))
                 {

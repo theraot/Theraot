@@ -71,7 +71,7 @@ namespace Theraot.Core
         {
             var array = Extensions.AsArray(source);
             var keys = new KeyValuePair<TKey, int>[array.Length];
-            for (int index = 0; index < array.Length; index++)
+            for (var index = 0; index < array.Length; index++)
             {
                 keys[index] = new KeyValuePair<TKey, int>(_keySelector.Invoke(array[index]), index);
             }

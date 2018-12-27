@@ -22,7 +22,7 @@ namespace System.Linq.Expressions.Compiler
                 EmitExpression(node.Left);
                 EmitExpression(node.Right);
                 Debug.Assert(node.Right.Type == typeof(int));
-                _ilg.Emit(OpCodes.Ldelema, node.Type);
+                IL.Emit(OpCodes.Ldelema, node.Type);
             }
             else
             {
@@ -87,7 +87,7 @@ namespace System.Linq.Expressions.Compiler
                 node.Object.Type.IsArray &&
                 node.Method == node.Object.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance))
             {
-                MethodInfo mi = node.Object.Type.GetMethod("Address", BindingFlags.Public | BindingFlags.Instance);
+                var mi = node.Object.Type.GetMethod("Address", BindingFlags.Public | BindingFlags.Instance);
 
                 EmitMethodCall(node.Object, mi, node);
             }
@@ -109,11 +109,11 @@ namespace System.Linq.Expressions.Compiler
             {
                 EmitExpression(node.Object);
                 EmitExpression(node.GetArgument(0));
-                _ilg.Emit(OpCodes.Ldelema, node.Type);
+                IL.Emit(OpCodes.Ldelema, node.Type);
             }
             else
             {
-                MethodInfo address = node.Object.Type.GetMethod("Address", BindingFlags.Public | BindingFlags.Instance);
+                var address = node.Object.Type.GetMethod("Address", BindingFlags.Public | BindingFlags.Instance);
                 EmitMethodCall(node.Object, address, node);
             }
         }
@@ -125,7 +125,7 @@ namespace System.Linq.Expressions.Compiler
 
             // Unbox leaves a pointer to the boxed value on the stack
             EmitExpression(node.Operand);
-            _ilg.Emit(OpCodes.Unbox, type);
+            IL.Emit(OpCodes.Unbox, type);
         }
 
         private WriteBack AddressOfWriteBack(MemberExpression node)
@@ -158,19 +158,19 @@ namespace System.Linq.Expressions.Compiler
                 EmitInstance(node.Expression, out instanceType);
 
                 // store in local
-                _ilg.Emit(OpCodes.Dup);
-                _ilg.Emit(OpCodes.Stloc, instanceLocal = GetInstanceLocal(instanceType));
+                IL.Emit(OpCodes.Dup);
+                IL.Emit(OpCodes.Stloc, instanceLocal = GetInstanceLocal(instanceType));
             }
 
-            PropertyInfo pi = (PropertyInfo)node.Member;
+            var pi = (PropertyInfo)node.Member;
 
             // emit the get
             EmitCall(instanceType, pi.GetGetMethod(nonPublic: true));
 
             // emit the address of the value
-            LocalBuilder valueLocal = GetLocal(node.Type);
-            _ilg.Emit(OpCodes.Stloc, valueLocal);
-            _ilg.Emit(OpCodes.Ldloca, valueLocal);
+            var valueLocal = GetLocal(node.Type);
+            IL.Emit(OpCodes.Stloc, valueLocal);
+            IL.Emit(OpCodes.Ldloca, valueLocal);
 
             // Set the property after the method call
             // don't re-evaluate anything
@@ -178,10 +178,10 @@ namespace System.Linq.Expressions.Compiler
             {
                 if (instanceLocal != null)
                 {
-                    @this._ilg.Emit(OpCodes.Ldloc, instanceLocal);
+                    @this.IL.Emit(OpCodes.Ldloc, instanceLocal);
                     @this.FreeLocal(instanceLocal);
                 }
-                @this._ilg.Emit(OpCodes.Ldloc, valueLocal);
+                @this.IL.Emit(OpCodes.Ldloc, valueLocal);
                 @this.FreeLocal(valueLocal);
                 @this.EmitCall(instanceLocal?.LocalType, pi.GetSetMethod(nonPublic: true));
             };
@@ -197,22 +197,22 @@ namespace System.Linq.Expressions.Compiler
                 EmitInstance(node.Object, out instanceType);
 
                 // store in local
-                _ilg.Emit(OpCodes.Dup);
-                _ilg.Emit(OpCodes.Stloc, instanceLocal = GetInstanceLocal(instanceType));
+                IL.Emit(OpCodes.Dup);
+                IL.Emit(OpCodes.Stloc, instanceLocal = GetInstanceLocal(instanceType));
             }
 
             // Emit indexes. We don't allow byref args, so no need to worry
             // about writebacks or EmitAddress
-            int n = node.ArgumentCount;
+            var n = node.ArgumentCount;
             var args = new LocalBuilder[n];
             for (var i = 0; i < n; i++)
             {
-                Expression arg = node.GetArgument(i);
+                var arg = node.GetArgument(i);
                 EmitExpression(arg);
 
-                LocalBuilder argLocal = GetLocal(arg.Type);
-                _ilg.Emit(OpCodes.Dup);
-                _ilg.Emit(OpCodes.Stloc, argLocal);
+                var argLocal = GetLocal(arg.Type);
+                IL.Emit(OpCodes.Dup);
+                IL.Emit(OpCodes.Stloc, argLocal);
                 args[i] = argLocal;
             }
 
@@ -220,9 +220,9 @@ namespace System.Linq.Expressions.Compiler
             EmitGetIndexCall(node, instanceType);
 
             // emit the address of the value
-            LocalBuilder valueLocal = GetLocal(node.Type);
-            _ilg.Emit(OpCodes.Stloc, valueLocal);
-            _ilg.Emit(OpCodes.Ldloca, valueLocal);
+            var valueLocal = GetLocal(node.Type);
+            IL.Emit(OpCodes.Stloc, valueLocal);
+            IL.Emit(OpCodes.Ldloca, valueLocal);
 
             // Set the property after the method call
             // don't re-evaluate anything
@@ -230,15 +230,15 @@ namespace System.Linq.Expressions.Compiler
             {
                 if (instanceLocal != null)
                 {
-                    @this._ilg.Emit(OpCodes.Ldloc, instanceLocal);
+                    @this.IL.Emit(OpCodes.Ldloc, instanceLocal);
                     @this.FreeLocal(instanceLocal);
                 }
-                foreach (LocalBuilder arg in args)
+                foreach (var arg in args)
                 {
-                    @this._ilg.Emit(OpCodes.Ldloc, arg);
+                    @this.IL.Emit(OpCodes.Ldloc, arg);
                     @this.FreeLocal(arg);
                 }
-                @this._ilg.Emit(OpCodes.Ldloc, valueLocal);
+                @this.IL.Emit(OpCodes.Ldloc, valueLocal);
                 @this.FreeLocal(valueLocal);
 
                 @this.EmitSetIndexCall(node, instanceLocal?.LocalType);
@@ -252,8 +252,8 @@ namespace System.Linq.Expressions.Compiler
         private void EmitAddress(Expression node, Type type, CompilationFlags flags = CompilationFlags.EmitExpressionStart)
         {
             Debug.Assert(node != null);
-            bool emitStart = (flags & CompilationFlags.EmitExpressionStartMask) == CompilationFlags.EmitExpressionStart;
-            CompilationFlags startEmitted = emitStart ? EmitExpressionStart(node) : CompilationFlags.EmitNoExpressionStart;
+            var emitStart = (flags & CompilationFlags.EmitExpressionStartMask) == CompilationFlags.EmitExpressionStart;
+            var startEmitted = emitStart ? EmitExpressionStart(node) : CompilationFlags.EmitNoExpressionStart;
 
             switch (node.NodeType)
             {
@@ -298,7 +298,7 @@ namespace System.Linq.Expressions.Compiler
         // passed byref.
         private WriteBack EmitAddressWriteBack(Expression node, Type type)
         {
-            CompilationFlags startEmitted = EmitExpressionStart(node);
+            var startEmitted = EmitExpressionStart(node);
 
             WriteBack result = null;
             if (TypeUtils.AreEquivalent(type, node.Type))
@@ -326,9 +326,9 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(type.IsReferenceAssignableFromInternal(node.Type));
             EmitExpression(node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
-            LocalBuilder tmp = GetLocal(type);
-            _ilg.Emit(OpCodes.Stloc, tmp);
-            _ilg.Emit(OpCodes.Ldloca, tmp);
+            var tmp = GetLocal(type);
+            IL.Emit(OpCodes.Stloc, tmp);
+            IL.Emit(OpCodes.Ldloca, tmp);
         }
 
         // assumes the instance is already on the stack
@@ -354,20 +354,20 @@ namespace System.Linq.Expressions.Compiler
                 // The same goes for literal fields.
                 if (!field.IsLiteral && !field.IsInitOnly)
                 {
-                    _ilg.EmitFieldAddress(field);
+                    IL.EmitFieldAddress(field);
                     return;
                 }
             }
 
             EmitMemberGet(member, objectType);
-            LocalBuilder temp = GetLocal(GetMemberType(member));
-            _ilg.Emit(OpCodes.Stloc, temp);
-            _ilg.Emit(OpCodes.Ldloca, temp);
+            var temp = GetLocal(GetMemberType(member));
+            IL.Emit(OpCodes.Stloc, temp);
+            IL.Emit(OpCodes.Ldloca, temp);
         }
 
         private LocalBuilder GetInstanceLocal(Type type)
         {
-            Type instanceLocalType = type.IsValueType ? type.MakeByRefType() : type;
+            var instanceLocalType = type.IsValueType ? type.MakeByRefType() : type;
             return GetLocal(instanceLocalType);
         }
     }

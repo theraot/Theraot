@@ -208,7 +208,7 @@ namespace Theraot.Collections.Specialized
             if (_hasNull)
             {
                 // if the dictionary has null, TKey can be null, if TKey can be null, the default of TKey is null
-                result = new ExtendedEnumerable<KeyValuePair<TKey, TValue>>(new []{new KeyValuePair<TKey, TValue>(default, _valueForNull[0])}, result);
+                result = new ExtendedEnumerable<KeyValuePair<TKey, TValue>>(new[] { new KeyValuePair<TKey, TValue>(default, _valueForNull[0]) }, result);
             }
             dictionary = result.ToArray();
         }
