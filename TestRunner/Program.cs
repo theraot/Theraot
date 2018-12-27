@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using Theraot.Collections;
-using Theraot.Collections.Specialized;
 using Theraot.Core;
 using Theraot.Reflection;
 
@@ -131,15 +130,6 @@ namespace TestRunner
                 );
                 report.Append("\r\n\r\n");
             }
-            var extendedStackTrace = Environment.StackTrace.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-            report.Append
-            (
-                StringHelper.Join
-                (
-                    "\r\n",
-                    new ExtendedEnumerable<string>(Extensions.AsUnaryIEnumerable("== Reconstructed StackTrace ==\r\n"), extendedStackTrace.SkipItems(4))
-                )
-            );
             Console.WriteLine(report.ToString());
         }
 
