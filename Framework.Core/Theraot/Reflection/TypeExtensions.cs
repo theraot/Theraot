@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Theraot.Collections.ThreadSafe;
@@ -534,24 +534,7 @@ namespace Theraot.Reflection
 #if NETCOREAPP2_0 || NETCOREAPP2_1
                     return type.IsSZArray;
 #else
-            try
-            {
-                // GetArrayRank could throw - should not, but could.
-                // We are not checking the lower bound of the array type, there is no API for that.
-                // However, the type of arrays that can have a different lower index other than zero...
-                // ... have two constructors, one taking only the size, and one taking the lower and upper bounds.
-                var typeInfo = type.GetTypeInfo();
-                return type.IsArray
-                       && typeof(Array).GetTypeInfo().IsAssignableFrom(typeInfo)
-                       && type.GetArrayRank() == 1
-                       && type.GetElementType() != null
-                       && typeInfo.GetConstructors().Length == 1;
-            }
-            catch (Exception exception)
-            {
-                GC.KeepAlive(exception);
-                return false;
-            }
+            return type.GetElementType().MakeArrayType() == type;
 #endif
         }
 
