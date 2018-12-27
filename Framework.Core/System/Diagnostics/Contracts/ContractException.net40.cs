@@ -16,8 +16,6 @@ namespace System.Diagnostics.Contracts
     {
         public ContractFailureKind Kind { get; }
 
-        public string Failure => Message;
-
         public string UserMessage { get; }
 
         public string Condition { get; }
