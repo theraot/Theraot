@@ -21,6 +21,7 @@
 #else
             types = new []
 			{
+				typeof(System.Reflection.IntrospectionExtensionsTest),
 				typeof(System.Threading.ThreadTest),
 			};
 #endif
