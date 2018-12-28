@@ -23,6 +23,7 @@
 			{
 				typeof(System.Reflection.IntrospectionExtensionsTest),
 				typeof(System.Threading.ThreadTest),
+				typeof(System.Threading.TimerTest),
 			};
 #endif
 		}
