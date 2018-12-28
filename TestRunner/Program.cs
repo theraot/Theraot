@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using Theraot.Collections;
+using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 using Theraot.Reflection;
 
@@ -146,7 +147,7 @@ namespace TestRunner
                 {
                     object capturedResult = null;
                     Exception capturedException = null;
-                    Console.Write($"{test.Name}");
+                    Console.WriteLine($"{test.Name}");
                     try
                     {
                         stopwatch.Restart();
@@ -158,7 +159,7 @@ namespace TestRunner
                         stopwatch.Stop();
                         capturedException = exception;
                     }
-                    Console.Write($"({stopwatch.Elapsed}): ");
+                    Console.WriteLine($"({stopwatch.Elapsed}): ");
                     if (capturedException == null)
                     {
                         Console.WriteLine($"ok {capturedResult}");
@@ -178,14 +179,13 @@ namespace TestRunner
         private static void Exit()
         {
             Console.WriteLine("[Press any key to exit]");
-            Console.ReadKey();
+            var readKey = typeof(Console).GetTypeInfo().GetMethod("ReadKey");
+            readKey?.Invoke(null, ArrayReservoir<object>.EmptyArray);
         }
 
         private static IEnumerable<Test> GetAllTests(string[] ignoredCategories)
         {
-            var programType = typeof(Program);
-            var assembly = programType.GetTypeInfo().Assembly;
-            return assembly.GetExportedTypes()
+            return TypeDiscoverer.GetAllTypes()
                 .Where(IsTestType)
                 .SelectMany(t => t.GetTypeInfo().GetMethods())
                 .Where(IsTestMethod)

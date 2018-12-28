@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Theraot.Collections.ThreadSafe;
@@ -157,6 +157,7 @@ namespace Theraot.Reflection
         }
 
 #if NET20 || NET30 || NET35
+
         public static TypeCode GetTypeCode(this Type type)
         {
             if (type == null)
@@ -237,6 +238,7 @@ namespace Theraot.Reflection
             }
             return TypeCode.Object;
         }
+
 #endif
 
         public static object GetValue(this PropertyInfo info, object obj)
@@ -830,7 +832,7 @@ namespace Theraot.Reflection
 
     public static partial class TypeExtensions
     {
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
         public static ConstructorInfo[] GetConstructors(this TypeInfo typeInfo)
         {
             var members = typeInfo.DeclaredMembers;
@@ -875,13 +877,13 @@ namespace Theraot.Reflection
                 }
                 var ok = true;
                 for (var index = 0; index < typeArguments.Length; index++)
-			    {
+                {
                     if (parameters[index].GetType() != typeArguments[index])
                     {
                         ok = false;
                         break;
                     }
-			    }
+                }
                 if (!ok)
                 {
                     continue;
@@ -924,7 +926,7 @@ namespace Theraot.Reflection
 
         public static System.Runtime.InteropServices.StructLayoutAttribute GetStructLayoutAttribute(this Type type)
         {
-#if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_5 || NETSTANDARD1_6
+#if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_5 || NETSTANDARD1_6 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
             var attributes = type.GetAttributes<System.Runtime.InteropServices.StructLayoutAttribute>(false);
             foreach (var attribute in attributes)
             {
@@ -938,7 +940,7 @@ namespace Theraot.Reflection
 
         public static Type GetUnderlyingSystemType(this Type type)
         {
-#if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_5 || NETSTANDARD1_6
+#if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_5 || NETSTANDARD1_6 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
             return type;
 #else
             return type.UnderlyingSystemType;

@@ -21,6 +21,9 @@ namespace Theraot.Collections.ThreadSafe
 
         static ArrayReservoir()
         {
+#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
+            EmptyArray = new T[0];
+#else
             if (typeof(T) == typeof(Type))
             {
                 EmptyArray = (T[])(object)Type.EmptyTypes;
@@ -29,6 +32,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 EmptyArray = new T[0];
             }
+#endif
             _pools = new Pool<T[]>[_capacityCount];
             for (var index = 0; index < _capacityCount; index++)
             {

@@ -31,9 +31,7 @@ namespace TestRunner
         private static Dictionary<Type, SortedDictionary<Type, Delegate>> FindAllGenerators()
         {
             var result = new Dictionary<Type, SortedDictionary<Type, Delegate>>();
-            var dataGeneratorsType = typeof(DataGenerator);
-            var assembly = dataGeneratorsType.GetTypeInfo().Assembly;
-            var generators = assembly.GetExportedTypes()
+            var generators = TypeDiscoverer.GetAllTypes()
                 .SelectMany(t => t.GetTypeInfo().GetMethods())
                 .Where(IsGeneratorMethod)
                 .Select(GetGenerators);

@@ -1,0 +1,118 @@
+﻿<#@ template language="C#" hostspecific="true" #>
+using System;
+using System.Collections.Generic;
+
+namespace TestRunner
+{
+    public static class TypeDiscoverer
+    {
+        private static Type[] _types;
+
+        public static IEnumerable<Type> GetAllTypes()
+        {
+            GetAllTypesPrivate(ref _types);
+            return _types;
+        }
+
+        private static void GetAllTypesPrivate(ref Type[] types)
+        {
+            if (_types != null)
+            {
+                return;
+            }
+#if NET20 || NET30 || NET40 || NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_5 || NETSTANDARD1_6
+            types = typeof(TypeDiscoverer).GetTypeInfo().Assembly.GetTypes();
+#else
+            types =  new Type[]
+			{
+<#
+
+	var projectPath = Host.ResolveAssemblyReference("$(ProjectDir)");
+	var files = this.DirSearch(projectPath);
+	foreach (var file in files)
+	{
+		if (file.StartsWith(projectPath + "bin"))
+		{
+			continue;
+		}
+		if (file.StartsWith(projectPath + "obj"))
+		{
+			continue;
+		}
+		if (!file.EndsWith(".cs"))
+		{
+			continue;
+		}
+		var lines = System.IO.File.ReadAllLines(file);
+		var n = string.Empty;
+		bool next = false;
+		foreach (var line in lines)
+		{
+			var index = line.IndexOf("namespace");
+			if (index != -1)
+			{
+				n = line.Substring(index + "namespace".Length).Trim();
+				continue;
+			}
+			if (next)
+			{
+				index = line.IndexOf("class");
+				if (index == -1)
+				{
+					index = line.IndexOf("struct");
+				}
+				if (index == -1)
+				{
+					continue;
+				}
+				var typeName = line.Substring(index);
+				index = typeName.IndexOf(" ");
+				if (index == -1)
+				{
+					continue;
+				}
+				typeName = typeName.Substring(index).Trim();
+				index = typeName.IndexOf(" ");
+				if (index != -1)
+				{
+					typeName = typeName.Substring(0, index);
+				}
+#>
+				typeof(<#=n+"."+typeName #>),
+<#	
+			}
+			if (line.Trim() == "[TestFixture]")
+			{
+				next = true;
+			}
+			else
+			{
+				next = false;
+			}
+		}
+	}
+#>
+			};
+#endif
+		}
+    }
+}
+<#+
+	public System.Collections.Generic.IEnumerable<string> DirSearch(string dir)
+	{
+		var queue = new System.Collections.Generic.Queue<string>();
+		queue.Enqueue(dir);
+		while(queue.Count > 0)
+		{
+			var current = queue.Dequeue();
+			foreach (var currentDir in System.IO.Directory.GetDirectories(current))
+			{
+				foreach (var file in System.IO.Directory.GetFiles(currentDir))
+				{
+					yield return file;
+				}
+				queue.Enqueue(currentDir);
+			}
+		}
+	}
+#>
