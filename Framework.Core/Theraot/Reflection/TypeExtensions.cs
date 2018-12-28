@@ -916,7 +916,7 @@ namespace Theraot.Reflection
                 {
                     if (member.Name != name)
                     {
-                        return methodInfo;
+                        continue;
                     }
                     var parameters = methodInfo.GetParameters();
                     if (parameters.Length != typeArguments.Length)
