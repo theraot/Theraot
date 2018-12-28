@@ -179,7 +179,7 @@ namespace TestRunner
         private static void Exit()
         {
             Console.WriteLine("[Press any key to exit]");
-            var readKey = typeof(Console).GetTypeInfo().GetMethod("ReadKey");
+            var readKey = typeof(Console).GetTypeInfo().GetMethod("ReadKey", ArrayReservoir<Type>.EmptyArray);
             readKey?.Invoke(null, ArrayReservoir<object>.EmptyArray);
         }
 
