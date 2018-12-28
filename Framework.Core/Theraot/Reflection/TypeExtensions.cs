@@ -907,20 +907,61 @@ namespace Theraot.Reflection
             return result.ToArray();
         }
 
-        public static MethodInfo GetMethod(this TypeInfo typeInfo, string name)
+        public static MethodInfo GetMethod(this TypeInfo typeInfo, string name, Type[] typeArguments)
         {
             var members = typeInfo.DeclaredMembers;
             foreach (var member in members)
             {
                 if (member is MethodInfo methodInfo)
                 {
-                    if (member.Name == name)
+                    if (member.Name != name)
                     {
                         return methodInfo;
                     }
+                    var parameters = methodInfo.GetParameters();
+                    if (parameters.Length != typeArguments.Length)
+                    {
+                        continue;
+                    }
+                    var ok = true;
+                    for (var index = 0; index < typeArguments.Length; index++)
+                    {
+                        if (parameters[index].GetType() != typeArguments[index])
+                        {
+                            ok = false;
+                            break;
+                        }
+                    }
+                    if (!ok)
+                    {
+                        continue;
+                    }
+                    return methodInfo;
                 }
             }
             return null;
+        }
+
+        public static MethodInfo GetMethod(this TypeInfo typeInfo, string name)
+        {
+            var members = typeInfo.DeclaredMembers;
+            MethodInfo found = null;
+            foreach (var member in members)
+            {
+                if (member is MethodInfo methodInfo)
+                {
+                    if (member.Name != name)
+                    {
+                        continue;
+                    }
+                    if (found != null)
+                    {
+                        throw new AmbiguousMatchException();
+                    }
+                    found = methodInfo;
+                }
+            }
+            return found;
         }
 #endif
 
