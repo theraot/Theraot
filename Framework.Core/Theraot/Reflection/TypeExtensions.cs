@@ -536,7 +536,7 @@ namespace Theraot.Reflection
 #if NETCOREAPP2_0 || NETCOREAPP2_1
                     return type.IsSZArray;
 #else
-            return type.GetElementType().MakeArrayType() == type;
+            return type.IsArray && type.GetElementType()?.MakeArrayType() == type;
 #endif
         }
 
