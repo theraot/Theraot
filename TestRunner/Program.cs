@@ -149,10 +149,11 @@ namespace TestRunner
                     object capturedResult = null;
                     Exception capturedException = null;
                     Console.Write($"{test.Name}");
+                    var parameters = test.GenerateParameters();
                     try
                     {
                         stopwatch.Restart();
-                        capturedResult = test.Invoke();
+                        capturedResult = test.Invoke(parameters);
                         stopwatch.Stop();
                     }
                     catch (Exception exception)
@@ -250,20 +251,16 @@ namespace TestRunner
                 Interlocked.Exchange(ref _delegate, null);
             }
 
-            public object Invoke()
+            public object Invoke(object[] parameters)
             {
+                if (parameters == null)
+                {
+                    throw new ArgumentNullException(nameof(parameters));
+                }
                 var @delegate = Volatile.Read(ref _delegate);
                 if (@delegate == null)
                 {
                     throw new ObjectDisposedException(nameof(Test));
-                }
-                var parameters = new object[_parameterInfos.Length];
-                for (var index = 0; index < parameters.Length; index++)
-                {
-                    var parameterInfo = _parameterInfos[index];
-                    var preferredGenerator = parameterInfo.GetAttributes<UseGeneratorAttribute>(false).FirstOrDefault();
-                    var preferredGenerators = preferredGenerator == null ? _preferredGenerators : new[] { preferredGenerator.GeneratorType };
-                    parameters[index] = DataGenerator.Get(parameterInfo.ParameterType, preferredGenerators);
                 }
                 if (_isolatedThread)
                 {
@@ -311,6 +308,21 @@ namespace TestRunner
                     }
                     throw;
                 }
+            }
+
+            public object[] GenerateParameters()
+            {
+                var parameterInfos = _parameterInfos;
+                var preferredGenerators = _preferredGenerators;
+                var parameters = new object[parameterInfos.Length];
+                for (var index = 0; index < parameters.Length; index++)
+                {
+                    var parameterInfo = parameterInfos[index];
+                    var preferredGenerator = parameterInfo.GetAttributes<UseGeneratorAttribute>(false).FirstOrDefault();
+                    var generators = preferredGenerator == null ? preferredGenerators : new[] { preferredGenerator.GeneratorType };
+                    parameters[index] = DataGenerator.Get(parameterInfo.ParameterType, generators);
+                }
+                return parameters;
             }
         }
 
