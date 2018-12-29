@@ -150,6 +150,7 @@ namespace TestRunner
                     Exception capturedException = null;
                     Console.Write($"{test.Name}");
                     var parameters = test.GenerateParameters();
+                    Console.Write($"({StringHelper.Implode(", ", parameters)})");
                     try
                     {
                         stopwatch.Restart();
@@ -161,14 +162,13 @@ namespace TestRunner
                         stopwatch.Stop();
                         capturedException = exception;
                     }
-                    Console.Write($"({stopwatch.Elapsed}): ");
                     if (capturedException == null)
                     {
-                        Console.Write($"ok {capturedResult}");
+                        Console.Write($"-> ok {capturedResult} ({stopwatch.Elapsed})");
                     }
                     else
                     {
-                        Console.WriteLine("error");
+                        Console.WriteLine($"-> error ({stopwatch.Elapsed})");
                         ExceptionReport(capturedException);
                     }
                 }
