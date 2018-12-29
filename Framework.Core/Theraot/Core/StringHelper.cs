@@ -241,7 +241,7 @@ namespace Theraot.Core
             var index = 0;
             foreach (var item in values)
             {
-                array[index++] = item.ToString();
+                array[index++] = item?.ToString();
             }
             return ImplodeExtracted(separator, array, 0, array.Length);
         }
@@ -390,7 +390,7 @@ namespace Theraot.Core
             var stringList = new List<string>();
             foreach (var item in values)
             {
-                stringList.Add(item.ToString());
+                stringList.Add(item?.ToString());
             }
             return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
         }
@@ -412,7 +412,7 @@ namespace Theraot.Core
             var stringList = new List<string>();
             foreach (var item in values)
             {
-                stringList.Add(item.ToString());
+                stringList.Add(item?.ToString());
             }
             return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
         }
@@ -454,7 +454,7 @@ namespace Theraot.Core
             var stringList = new List<string>();
             foreach (var item in values)
             {
-                stringList.Add(item.ToString());
+                stringList.Add(item?.ToString());
             }
             if (stringList.Count > 0)
             {
@@ -482,7 +482,7 @@ namespace Theraot.Core
             var stringList = new List<string>();
             foreach (var item in values)
             {
-                stringList.Add(item.ToString());
+                stringList.Add(item?.ToString());
             }
             if (stringList.Count > 0)
             {
@@ -854,6 +854,10 @@ namespace Theraot.Core
             var length = 0;
             foreach (var item in values)
             {
+                if (item == null)
+                {
+                    continue;
+                }
                 var itemToString = item.ToString();
                 stringList.Add(itemToString);
                 length += itemToString.Length;
@@ -897,10 +901,14 @@ namespace Theraot.Core
             }
             var stringList = new List<string>();
             var length = 0;
-            var separatorLength = separator.Length;
+            var separatorLength = separator?.Length ?? 0;
             foreach (var item in values)
             {
-                if (length != 0)
+                if (item == null)
+                {
+                    continue;
+                }
+                if (length != 0 && separatorLength != 0)
                 {
                     stringList.Add(separator);
                     length += separatorLength;
@@ -923,10 +931,14 @@ namespace Theraot.Core
             }
             var stringList = new List<string>();
             var length = 0;
-            var separatorLength = separator.Length;
+            var separatorLength = separator?.Length ?? 0;
             foreach (var item in values)
             {
-                if (length != 0)
+                if (item == null)
+                {
+                    continue;
+                }
+                if (length != 0 && separatorLength != 0)
                 {
                     stringList.Add(separator);
                     length += separatorLength;
@@ -950,10 +962,14 @@ namespace Theraot.Core
             }
             var stringList = new List<string>();
             var length = 0;
-            var separatorLength = separator.Length;
+            var separatorLength = separator?.Length ?? 0;
             foreach (var item in values)
             {
-                if (length != 0)
+                if (item == null)
+                {
+                    continue;
+                }
+                if (length != 0 && separatorLength != 0)
                 {
                     stringList.Add(separator);
                     length += separatorLength;
