@@ -141,13 +141,14 @@ namespace TestRunner
             };
             var tests = GetAllTests(ignoredCategories);
             var stopwatch = new Stopwatch();
+            Console.WriteLine();
             foreach (var test in tests)
             {
                 using (test)
                 {
                     object capturedResult = null;
                     Exception capturedException = null;
-                    Console.WriteLine($"{test.Name}");
+                    Console.Write($"{test.Name}");
                     try
                     {
                         stopwatch.Restart();
@@ -159,10 +160,10 @@ namespace TestRunner
                         stopwatch.Stop();
                         capturedException = exception;
                     }
-                    Console.WriteLine($"({stopwatch.Elapsed}): ");
+                    Console.Write($"({stopwatch.Elapsed}): ");
                     if (capturedException == null)
                     {
-                        Console.WriteLine($"ok {capturedResult}");
+                        Console.Write($"ok {capturedResult}");
                     }
                     else
                     {
