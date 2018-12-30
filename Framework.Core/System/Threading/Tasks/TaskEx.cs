@@ -18,6 +18,60 @@ namespace System.Threading.Tasks
     /// </remarks>
     public static class TaskEx
     {
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
+
+        /// <summary>A task that's already been completed successfully.</summary>
+        private static Task _completedTask;
+
+#endif
+
+        /// <summary>Gets a task that's already been completed successfully.</summary>
+        /// <remarks>May not always return the same instance.</remarks>
+        public static Task CompletedTask
+        {
+            get
+            {
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
+                var completedTask = _completedTask;
+                if (completedTask == null)
+                {
+                    _completedTask = completedTask = CreateCompletedTask();
+                }
+                return completedTask;
+#else
+                return Task.CompletedTask;
+#endif
+            }
+        }
+
+        public static Task FromCanceled(CancellationToken cancellationToken)
+        {
+            // Microsoft says Task.FromCancellation throws ArgumentOutOfRangeException when cancellation has not been requested for cancellationToken
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                throw new ArgumentOutOfRangeException("cancellationToken");
+            }
+#if NET20 || NET30 || NET35
+            var task = new Task<Theraot.VoidStruct>();
+            var value = task.TrySetCanceled(cancellationToken);
+            if (!value && !task.IsCompleted)
+            {
+                var sw = new SpinWait();
+                while (!task.IsCompleted)
+                {
+                    sw.SpinOnce();
+                }
+            }
+            return task;
+#elif NET40 || NET45 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
+            var taskCompleteSource = new TaskCompletionSource<Theraot.VoidStruct>();
+            taskCompleteSource.TrySetCanceled();
+            return taskCompleteSource.Task;
+#else
+            return Task.FromCanceled(cancellationToken);
+#endif
+        }
+
         /// <summary>
         /// Starts a Task that will complete after the specified due time.
         /// </summary>
@@ -27,24 +81,6 @@ namespace System.Threading.Tasks
         /// </returns>
         /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
         ///             </exception>
-        /// <summary>A task that's already been completed successfully.</summary>
-        private static Task _completedTask;
-
-        /// <summary>Gets a task that's already been completed successfully.</summary>
-        /// <remarks>May not always return the same instance.</remarks>
-        public static Task CompletedTask
-        {
-            get
-            {
-                var completedTask = _completedTask;
-                if (completedTask == null)
-                {
-                    _completedTask = completedTask = CreateCompletedTask();
-                }
-                return completedTask;
-            }
-        }
-
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
@@ -570,6 +606,8 @@ namespace System.Threading.Tasks
             return new YieldAwaitable();
         }
 
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
+
         private static Task CreateCompletedTask()
         {
 #if NET20 || NET30 || NET35
@@ -581,6 +619,8 @@ namespace System.Threading.Tasks
             return FromResult(default(Theraot.VoidStruct));
 #endif
         }
+
+#endif
 
 #if NET40
 
