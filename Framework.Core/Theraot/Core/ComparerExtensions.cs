@@ -4,6 +4,10 @@ using System;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+using System.Runtime.CompilerServices;
+#endif
+
 namespace Theraot.Core
 {
     public static class ComparerExtensions
@@ -12,6 +16,10 @@ namespace Theraot.Core
         {
             return !(comparer is ReverseComparer<T> originalAsReverse) ? new ReverseComparer<T>(comparer ?? Comparer<T>.Default) : originalAsReverse.Wrapped;
         }
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 
         public static IComparer<T> ToComparer<T>(this Comparison<T> comparison)
         {

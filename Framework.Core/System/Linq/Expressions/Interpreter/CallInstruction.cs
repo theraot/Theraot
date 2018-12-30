@@ -104,7 +104,7 @@ namespace System.Linq.Expressions.Interpreter
         /// </summary>
         public abstract int ArgumentCount { get; }
 
-        #region Construction
+#region Construction
 
         public override string InstructionName => "Call";
 
@@ -335,13 +335,13 @@ namespace System.Linq.Expressions.Interpreter
         }
 #endif
 
-        #endregion Construction
+#endregion Construction
 
-        #region Instruction
+#region Instruction
 
         public override int ConsumedStack => ArgumentCount;
 
-        #endregion Instruction
+#endregion Instruction
 
         /// <summary>
         /// If the target of invocation happens to be a delegate

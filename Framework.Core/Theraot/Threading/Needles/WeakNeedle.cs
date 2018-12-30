@@ -54,7 +54,7 @@ namespace Theraot.Threading.Needles
             {
                 if (Exception != null && _handle.TryGetTarget(out _))
                 {
-                        return true;
+                    return true;
                 }
                 return false;
             }
@@ -189,9 +189,9 @@ namespace Theraot.Threading.Needles
                 return EqualityComparer<Exception>.Default.Equals(leftException, rightException);
             }
             if (left._handle.TryGetTarget(out var leftValue) && right._handle.TryGetTarget(out var rightValue))
-        {
+            {
                 return EqualityComparer<T>.Default.Equals(leftValue, rightValue);
-                }
+            }
             return false;
         }
     }
