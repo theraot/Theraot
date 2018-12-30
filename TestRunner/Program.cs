@@ -213,7 +213,7 @@ namespace TestRunner
         private static IEnumerable<Test> GetAllTests(string[] ignoredCategories)
         {
             return TypeDiscoverer.GetAllTypes()
-                .Where(type => type.HasAttribute<TestAttribute>())
+                .Where(type => type.HasAttribute<TestFixtureAttribute>())
                 .SelectMany(type => type.GetTypeInfo().GetMethods())
                 .Select(method => new TestMethod(method))
                 .Where(testMethod => testMethod.TestAttribute != null && !testMethod.Categories.Overlaps(ignoredCategories))
