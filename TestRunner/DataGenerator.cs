@@ -9,24 +9,33 @@ using Theraot.Reflection;
 
 namespace TestRunner
 {
-    [AttributeUsage(AttributeTargets.Method)]
-    public sealed class DataGeneratorAttribute : Attribute { }
-
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter)]
-    public sealed class UseGeneratorAttribute : Attribute
-    {
-        public UseGeneratorAttribute(Type type)
-        {
-            GeneratorType = type;
-        }
-
-        public Type GeneratorType { get; }
-    }
-
     public static class DataGenerator
     {
         private static readonly Dictionary<Type, SortedDictionary<Type, Delegate>> _dataGenerators = FindAllGenerators();
         private static readonly Dictionary<Type, object> _instances = new Dictionary<Type, object>();
+
+        public static object Get(Type type, IEnumerable<Type> preferredTypes)
+        {
+            if (_dataGenerators.TryGetValue(type, out var dictionary))
+            {
+                Delegate @delegate = null;
+                foreach (var preferredType in preferredTypes)
+                {
+                    if (!dictionary.TryGetValue(preferredType, out var found))
+                    {
+                        continue;
+                    }
+                    @delegate = found;
+                    break;
+                }
+                if (@delegate == null)
+                {
+                    @delegate = dictionary.First().Value;
+                }
+                return @delegate.DynamicInvoke(ArrayReservoir<object>.EmptyArray);
+            }
+            return type.GetTypeInfo().IsValueType ? Activator.CreateInstance(type) : null;
+        }
 
         private static Dictionary<Type, SortedDictionary<Type, Delegate>> FindAllGenerators()
         {
@@ -106,28 +115,45 @@ namespace TestRunner
             return methodInfo.HasAttribute<DataGeneratorAttribute>() && methodInfo.DeclaringType != null &&
                    methodInfo.GetParameters().Length == 0;
         }
+    }
 
-        public static object Get(Type type, IEnumerable<Type> preferredTypes)
+    public static class NumericGenerator
+    {
+        [DataGenerator]
+        public static byte GenerateByte()
         {
-            if (_dataGenerators.TryGetValue(type, out var dictionary))
-            {
-                Delegate @delegate = null;
-                foreach (var preferredType in preferredTypes)
-                {
-                    if (!dictionary.TryGetValue(preferredType, out var found))
-                    {
-                        continue;
-                    }
-                    @delegate = found;
-                    break;
-                }
-                if (@delegate == null)
-                {
-                    @delegate = dictionary.First().Value;
-                }
-                return @delegate.DynamicInvoke(ArrayReservoir<object>.EmptyArray);
-            }
-            return type.GetTypeInfo().IsValueType ? Activator.CreateInstance(type) : null;
+            var random = new Random();
+            var buffer = new byte[1];
+            random.NextBytes(buffer);
+            return buffer[0];
+        }
+
+        [DataGenerator]
+        public static int GenerateInt()
+        {
+            var random = new Random();
+            var buffer = new byte[4];
+            random.NextBytes(buffer);
+            return BitConverter.ToInt32(buffer, 0);
+        }
+    }
+
+    public static class SmallNumericGenerator
+    {
+        [DataGenerator]
+        public static byte GenerateByte()
+        {
+            var random = new Random();
+            var buffer = new byte[1];
+            random.NextBytes(buffer);
+            return buffer[0];
+        }
+
+        [DataGenerator]
+        public static int GenerateInt()
+        {
+            var random = new Random();
+            return random.Next(0, 2000);
         }
     }
 
@@ -149,43 +175,17 @@ namespace TestRunner
         }
     }
 
-    public static class NumericGenerator
+    [AttributeUsage(AttributeTargets.Method)]
+    public sealed class DataGeneratorAttribute : Attribute { }
+
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter)]
+    public sealed class UseGeneratorAttribute : Attribute
     {
-        [DataGenerator]
-        public static int GenerateInt()
+        public UseGeneratorAttribute(Type type)
         {
-            var random = new Random();
-            var buffer = new byte[4];
-            random.NextBytes(buffer);
-            return BitConverter.ToInt32(buffer, 0);
+            GeneratorType = type;
         }
 
-        [DataGenerator]
-        public static byte GenerateByte()
-        {
-            var random = new Random();
-            var buffer = new byte[1];
-            random.NextBytes(buffer);
-            return buffer[0];
-        }
-    }
-
-    public static class SmallNumericGenerator
-    {
-        [DataGenerator]
-        public static int GenerateInt()
-        {
-            var random = new Random();
-            return random.Next(0, 2000);
-        }
-
-        [DataGenerator]
-        public static byte GenerateByte()
-        {
-            var random = new Random();
-            var buffer = new byte[1];
-            random.NextBytes(buffer);
-            return buffer[0];
-        }
+        public Type GeneratorType { get; }
     }
 }
