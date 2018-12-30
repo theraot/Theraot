@@ -147,7 +147,10 @@ namespace TestRunner.System.Threading
         }
 
         [Test]
-        public static void TimerInfiniteDueTimeIgnoresPeriod(int period)
+        public static void TimerInfiniteDueTimeIgnoresPositivePeriod
+        (
+            [UseGenerator(typeof(SmallPositiveNumericGenerator))] int period
+        )
         {
             var data = new[] { 0 };
             var timer = new Timer(_ => Interlocked.Increment(ref data[0]), null, Timeout.Infinite, period);
