@@ -51,12 +51,12 @@ namespace System.Threading.Tasks
 
         public static Task FromCanceled<T>(CancellationToken cancellationToken)
         {
+#if NET20 || NET30 || NET35
             // Microsoft says Task.FromCancellation throws ArgumentOutOfRangeException when cancellation has not been requested for cancellationToken
             if (!cancellationToken.IsCancellationRequested)
             {
                 throw new ArgumentOutOfRangeException("cancellationToken");
             }
-#if NET20 || NET30 || NET35
             var task = new Task<T>();
             var value = task.TrySetCanceled(cancellationToken);
             if (!value && !task.IsCompleted)
@@ -69,6 +69,11 @@ namespace System.Threading.Tasks
             }
             return task;
 #elif NET40 || NET45 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
+            // Microsoft says Task.FromCancellation throws ArgumentOutOfRangeException when cancellation has not been requested for cancellationToken
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                throw new ArgumentOutOfRangeException("cancellationToken");
+            }
             var taskCompleteSource = new TaskCompletionSource<T>();
             taskCompleteSource.TrySetCanceled();
             return taskCompleteSource.Task;
