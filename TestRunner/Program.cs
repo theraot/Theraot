@@ -97,6 +97,33 @@ namespace TestRunner
             }
             throw new AssertionFailedException($"Expected: {typeof(TException).Name}");
         }
+
+        public static void Throws<TException, T>(Func<T> func, string message = null)
+            where TException : Exception
+        {
+            try
+            {
+                GC.KeepAlive(func());
+            }
+            catch (TException exception)
+            {
+                GC.KeepAlive(exception);
+                return;
+            }
+            catch (Exception exception)
+            {
+                if (message != null)
+                {
+                    throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found: {exception} - Message: {message}", exception);
+                }
+                throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found: {exception}", exception);
+            }
+            if (message != null)
+            {
+                throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Message: {message}");
+            }
+            throw new AssertionFailedException($"Expected: {typeof(TException).Name}");
+        }
     }
 
     public static class Program
