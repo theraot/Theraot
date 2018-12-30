@@ -38,51 +38,72 @@ namespace TestRunner
 		{
 			continue;
 		}
-		var lines = System.IO.File.ReadAllLines(file);
-		var n = string.Empty;
-		bool next = false;
-		foreach (var line in lines)
+		var text = System.IO.File.ReadAllText(file);
+		var stack = new System.Collections.Generic.Stack<System.Tuple<string, int, bool>>();
+		var level = 0;
+		var currentNamespace = string.Empty;
+		var position = 0;
+		do
 		{
-			var index = line.IndexOf("namespace");
-			if (index != -1)
+			SkipWhiteSpace(text, ref position);
+			if (this.Consume(text, "namespace", ref position))
 			{
-				n = line.Substring(index + "namespace".Length).Trim();
-				continue;
+				SkipWhiteSpace(text, ref position);
+				var word = ConsumeWord(text, ref position);
+				stack.Push(new System.Tuple<string, int, bool>(word, level, true));
+				if (currentNamespace.Length == 0)
+				{
+					currentNamespace = word;
+				}
+				else
+				{
+					currentNamespace += "." + word;
+				}
 			}
-			if (next)
+			else if (this.Consume(text, "class", ref position) || this.Consume(text, "struct", ref position))
 			{
-				index = line.IndexOf("class");
-				if (index == -1)
+				SkipWhiteSpace(text, ref position);
+				if (char.IsLetterOrDigit(text[position]))
 				{
-					index = line.IndexOf("struct");
+					var allow = stack.Count == 0 || stack.Peek().Item3;
+					stack.Push(new System.Tuple<string, int, bool>(currentNamespace, level, false));
+					var word = ConsumeWord(text, ref position);
+					if (currentNamespace.Length == 0)
+					{
+						currentNamespace = word;
+					}
+					else
+					{
+						currentNamespace += "." + word;
+					}
+					if (allow)
+					{
+						types.Add(currentNamespace);
+					}
 				}
-				if (index == -1)
-				{
-					continue;
-				}
-				var typeName = line.Substring(index);
-				index = typeName.IndexOf(" ");
-				if (index == -1)
-				{
-					continue;
-				}
-				typeName = typeName.Substring(index).Trim();
-				index = typeName.IndexOf(" ");
-				if (index != -1)
-				{
-					typeName = typeName.Substring(0, index);
-				}
-				types.Add(n+"."+typeName);
 			}
-			if (line.Trim() == "[TestFixture]")
+			else if(this.Consume(text, "{", ref position))
 			{
-				next = true;
+				level++;
+			}
+			else if(this.Consume(text, "}", ref position))
+			{
+				level--;
+				while (stack.Count > 0)
+				{
+					var found = stack.Peek();
+					if (found.Item2 < level)
+					{
+						break;
+					}
+					currentNamespace = stack.Pop().Item1;
+				}
 			}
 			else
 			{
-				next = false;
+				ConsumeWord(text, ref position);
 			}
-		}
+		} while(position < text.Length);
 	}
 #>
             types = new <#= types.Count == 0 ? "global::System.Type" : string.Empty #>[]
@@ -113,14 +134,57 @@ namespace TestRunner
 		while(queue.Count > 0)
 		{
 			var current = queue.Dequeue();
-			foreach (var currentDir in System.IO.Directory.GetDirectories(current))
+			foreach (var file in System.IO.Directory.GetFiles(current))
 			{
-				foreach (var file in System.IO.Directory.GetFiles(currentDir))
-				{
-					yield return file;
-				}
-				queue.Enqueue(currentDir);
+				yield return file;
+			}
+			foreach (var directory in System.IO.Directory.GetDirectories(current))
+			{
+				queue.Enqueue(directory);
 			}
 		}
+	}
+
+	public void SkipWhiteSpace(string text, ref int position)
+	{
+		var length = text.Length;
+		for (var index = position; index < length; index++)
+		{
+			if (!char.IsWhiteSpace(text[index]))
+			{
+				position = index;
+				return;
+			}
+		}
+		position = length;
+	}
+
+	public bool Consume(string text, string match, ref int position)
+	{
+		var length = match.Length;
+		var next = length + position;
+		if (next <= text.Length && text.Substring(position, length) == match)
+		{
+			position = next;
+			return true;
+		}
+		return false;
+	}
+
+	public string ConsumeWord(string text, ref int position)
+	{
+		var length = text.Length;
+		for (var index = position; index < length; index++)
+		{
+			if (char.IsWhiteSpace(text[index]) || text[index] == '{' || text[index] == '}')
+			{
+				var start = position;
+				var diff = index - start;
+				position = index;
+				return text.Substring(start, diff);
+			}
+		}
+		position = length;
+		return text.Substring(position);
 	}
 #>
