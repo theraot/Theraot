@@ -46,13 +46,18 @@ namespace System.Threading.Tasks
 
         public static Task FromCanceled(CancellationToken cancellationToken)
         {
+            return FromCanceled<Theraot.VoidStruct>(cancellationToken);
+        }
+
+        public static Task FromCanceled<T>(CancellationToken cancellationToken)
+        {
             // Microsoft says Task.FromCancellation throws ArgumentOutOfRangeException when cancellation has not been requested for cancellationToken
             if (!cancellationToken.IsCancellationRequested)
             {
                 throw new ArgumentOutOfRangeException("cancellationToken");
             }
 #if NET20 || NET30 || NET35
-            var task = new Task<Theraot.VoidStruct>();
+            var task = new Task<T>();
             var value = task.TrySetCanceled(cancellationToken);
             if (!value && !task.IsCompleted)
             {
@@ -64,11 +69,11 @@ namespace System.Threading.Tasks
             }
             return task;
 #elif NET40 || NET45 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
-            var taskCompleteSource = new TaskCompletionSource<Theraot.VoidStruct>();
+            var taskCompleteSource = new TaskCompletionSource<T>();
             taskCompleteSource.TrySetCanceled();
             return taskCompleteSource.Task;
 #else
-            return Task.FromCanceled(cancellationToken);
+            return Task.FromCanceled<T>(cancellationToken);
 #endif
         }
 
@@ -159,7 +164,7 @@ namespace System.Threading.Tasks
             }
             if (cancellationToken.IsCancellationRequested)
             {
-                return _preCanceledTask;
+                return FromCanceled(cancellationToken);
             }
             if (dueTime == 0)
             {
@@ -625,16 +630,6 @@ namespace System.Threading.Tasks
 #if NET40
 
         private const string _argumentOutOfRangeTimeoutNonNegativeOrMinusOne = "The timeout must be non-negative or -1, and it must be less than or equal to Int32.MaxValue.";
-
-        /// <summary>
-        /// An already canceled task.
-        /// </summary>
-        private static readonly Task _preCanceledTask = ((Func<Task>)(() =>
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            tcs.TrySetCanceled();
-            return tcs.Task;
-        }))();
 
         /// <summary>
         /// Adds the target exception to the list, initializing the list if it's null.
