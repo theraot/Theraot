@@ -12,11 +12,11 @@ namespace TestRunner.System.Threading
     public static class ThreadTest
     {
         [Test]
-        public static void CurrentThreadInTaskIsBackground()
+        public static void CurrentThreadInTaskIsBackgroundOrRunning()
         {
             ThreadState found = default;
             TaskEx.Run(() => found = Thread.CurrentThread.ThreadState).Wait();
-            Assert.AreEqual(ThreadState.Background, found);
+            Assert.IsTrue(found == ThreadState.Background || found == ThreadState.Running);
         }
 
         [Test]
@@ -166,7 +166,7 @@ namespace TestRunner.System.Threading
                 }
             );
             ThreadingHelper.SpinWaitWhileNull(ref thread);
-            Assert.AreEqual(ThreadState.Background, thread.ThreadState);
+            Assert.IsTrue(EnumHelper.HasFlag(thread.ThreadState, ThreadState.Background));
             ThreadingHelper.MemoryBarrier();
             Volatile.Write(ref signal[0], 1);
         }
