@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 #if NET40
@@ -266,7 +266,7 @@ namespace System.Threading.Tasks
         public static Task<TResult> FromResult<TResult>(TResult result)
         {
 #if NET40
-            var completionSource = new TaskCompletionSource<TResult>(null);
+            var completionSource = new TaskCompletionSource<TResult>();
             completionSource.TrySetResult(result);
             return completionSource.Task;
 #else
