@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using Theraot.Collections;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 using Theraot.Reflection;
 
@@ -208,8 +207,7 @@ namespace TestRunner
         private static void Exit()
         {
             Console.WriteLine("[Press any key to exit]");
-            var readKey = typeof(Console).GetTypeInfo().GetMethod("ReadKey", ArrayReservoir<Type>.EmptyArray);
-            readKey?.Invoke(null, ArrayReservoir<object>.EmptyArray);
+            Console.ReadKey();
         }
 
         private static IEnumerable<Test> GetAllTests(string[] ignoredCategories)
