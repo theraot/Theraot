@@ -1,6 +1,7 @@
-﻿#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
+﻿#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
 
 using System;
+using System.Globalization;
 using System.Text;
 
 namespace TestRunner
@@ -19,13 +20,11 @@ namespace TestRunner
             _stringBuilder.Append(value);
         }
 
-        [CLSCompliant(false)]
         public static void Write(ulong value)
         {
             _stringBuilder.Append(value.ToString());
         }
 
-        [CLSCompliant(false)]
         public static void Write(uint value)
         {
             _stringBuilder.Append(value.ToString());
@@ -33,12 +32,12 @@ namespace TestRunner
 
         public static void Write(float value)
         {
-            _stringBuilder.Append(value.ToString());
+            _stringBuilder.Append(value.ToString(CultureInfo.InvariantCulture));
         }
 
         public static void Write(decimal value)
         {
-            _stringBuilder.Append(value.ToString());
+            _stringBuilder.Append(value.ToString(CultureInfo.InvariantCulture));
         }
 
         public static void Write(long value)
@@ -85,7 +84,7 @@ namespace TestRunner
 
         public static void Write(double value)
         {
-            _stringBuilder.Append(value.ToString());
+            _stringBuilder.Append(value.ToString(CultureInfo.InvariantCulture));
         }
 
         public static void Write(string format, object arg0)
@@ -118,13 +117,11 @@ namespace TestRunner
             _stringBuilder.AppendLine(value);
         }
 
-        [CLSCompliant(false)]
         public static void WriteLine(ulong value)
         {
             _stringBuilder.AppendLine(value.ToString());
         }
 
-        [CLSCompliant(false)]
         public static void WriteLine(uint value)
         {
             _stringBuilder.AppendLine(value.ToString());
@@ -132,12 +129,12 @@ namespace TestRunner
 
         public static void WriteLine(float value)
         {
-            _stringBuilder.AppendLine(value.ToString());
+            _stringBuilder.AppendLine(value.ToString(CultureInfo.InvariantCulture));
         }
 
         public static void WriteLine(decimal value)
         {
-            _stringBuilder.AppendLine(value.ToString());
+            _stringBuilder.AppendLine(value.ToString(CultureInfo.InvariantCulture));
         }
 
         public static void WriteLine(long value)
@@ -184,7 +181,7 @@ namespace TestRunner
 
         public static void WriteLine(double value)
         {
-            _stringBuilder.AppendLine(value.ToString());
+            _stringBuilder.AppendLine(value.ToString(CultureInfo.InvariantCulture));
         }
 
         public static void WriteLine(string format, object arg0)
