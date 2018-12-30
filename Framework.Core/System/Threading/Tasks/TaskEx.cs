@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 #if NET40
@@ -79,6 +79,43 @@ namespace System.Threading.Tasks
             return taskCompleteSource.Task;
 #else
             return Task.FromCanceled<TResult>(cancellationToken);
+#endif
+        }
+
+        public static Task FromCancellation(CancellationToken token)
+        {
+            return FromCancellation<Theraot.VoidStruct>(token);
+        }
+
+        public static Task<TResult> FromCancellation<TResult>(CancellationToken token)
+        {
+#if NET20 || NET30 || NET35
+            var result = new Task<TResult>(TaskStatus.WaitingForActivation, InternalTaskOptions.PromiseTask)
+            {
+                CancellationToken = token,
+                ExecutingTaskScheduler = TaskScheduler.Default
+            };
+            if (token.IsCancellationRequested)
+            {
+                result.InternalCancel(false);
+            }
+            else if (token.CanBeCanceled)
+            {
+                token.Register(() => result.InternalCancel(false));
+            }
+            return result;
+#else
+            var taskCompleteSource = new TaskCompletionSource<TResult>();
+            if (token.IsCancellationRequested)
+            {
+                taskCompleteSource.TrySetCanceled();
+                return taskCompleteSource.Task;
+            }
+            if (token.CanBeCanceled)
+            {
+                token.Register(() => taskCompleteSource.TrySetCanceled());
+            }
+            return taskCompleteSource.Task;
 #endif
         }
 
