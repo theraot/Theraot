@@ -7,23 +7,9 @@ namespace System.Threading.Tasks
 {
     public partial class Task
     {
-        /// <summary>A task that's already been completed successfully.</summary>
-        private static Task _completedTask;
-
         /// <summary>Gets a task that's already been completed successfully.</summary>
         /// <remarks>May not always return the same instance.</remarks>
-        internal static Task CompletedTask
-        {
-            get
-            {
-                var completedTask = _completedTask;
-                if (completedTask == null)
-                {
-                    _completedTask = completedTask = CreateCompletedTask();
-                }
-                return completedTask;
-            }
-        }
+        public static Task CompletedTask => TaskEx.CompletedTask;
 
         /// <summary>
         /// Creates a Task that will complete after a time delay.
@@ -119,7 +105,7 @@ namespace System.Threading.Tasks
             if (millisecondsDelay == 0)
             {
                 // return a Task created as already-RanToCompletion
-                return CompletedTask;
+                return TaskEx.CompletedTask;
             }
             var source = new TaskCompletionSource<bool>();
             if (millisecondsDelay > 0)

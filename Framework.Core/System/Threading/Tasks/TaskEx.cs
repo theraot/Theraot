@@ -27,6 +27,24 @@ namespace System.Threading.Tasks
         /// </returns>
         /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
         ///             </exception>
+        /// <summary>A task that's already been completed successfully.</summary>
+        private static Task _completedTask;
+
+        /// <summary>Gets a task that's already been completed successfully.</summary>
+        /// <remarks>May not always return the same instance.</remarks>
+        public static Task CompletedTask
+        {
+            get
+            {
+                var completedTask = _completedTask;
+                if (completedTask == null)
+                {
+                    _completedTask = completedTask = CreateCompletedTask();
+                }
+                return completedTask;
+            }
+        }
+
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
@@ -109,7 +127,7 @@ namespace System.Threading.Tasks
             }
             if (dueTime == 0)
             {
-                return _preCompletedTask;
+                return _completedTask;
             }
             var tcs = new TaskCompletionSource<bool>();
             var timerBox = new Timer[] { null };
@@ -166,7 +184,7 @@ namespace System.Threading.Tasks
         public static Task<TResult> FromResult<TResult>(TResult result)
         {
 #if NET40
-            var completionSource = new TaskCompletionSource<TResult>(result);
+            var completionSource = new TaskCompletionSource<TResult>(null);
             completionSource.TrySetResult(result);
             return completionSource.Task;
 #else
@@ -552,6 +570,18 @@ namespace System.Threading.Tasks
             return new YieldAwaitable();
         }
 
+        private static Task CreateCompletedTask()
+        {
+#if NET20 || NET30 || NET35
+            return new Task(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose)
+            {
+                CancellationToken = default
+            };
+#else
+            return FromResult(default(Theraot.VoidStruct));
+#endif
+        }
+
 #if NET40
 
         private const string _argumentOutOfRangeTimeoutNonNegativeOrMinusOne = "The timeout must be non-negative or -1, and it must be less than or equal to Int32.MaxValue.";
@@ -565,11 +595,6 @@ namespace System.Threading.Tasks
             tcs.TrySetCanceled();
             return tcs.Task;
         }))();
-
-        /// <summary>
-        /// An already completed task.
-        /// </summary>
-        private static readonly Task _preCompletedTask = FromResult(false);
 
         /// <summary>
         /// Adds the target exception to the list, initializing the list if it's null.

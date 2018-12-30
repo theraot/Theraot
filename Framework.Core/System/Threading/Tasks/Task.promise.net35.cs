@@ -238,14 +238,6 @@ namespace System.Threading.Tasks
             return succeeded;
         }
 
-        private static Task CreateCompletedTask()
-        {
-            return new Task(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose)
-            {
-                CancellationToken = default
-            };
-        }
-
         private void PromiseCheck()
         {
             _promiseCheck.Invoke();
