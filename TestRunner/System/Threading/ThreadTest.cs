@@ -108,7 +108,7 @@ namespace TestRunner.System.Threading
         [Test]
         public static void SleepDurationIsAtLeastMillisecondsTimeout
         (
-            [UseGenerator(typeof(SmallNumericGenerator))] int millisecondsTimeout
+            [UseGenerator(typeof(SmallPositiveNumericGenerator))] int millisecondsTimeout
         )
         {
             var stopWatch = new Stopwatch();

@@ -27,7 +27,7 @@
 				typeof(DataGenerator),
 				typeof(StringGenerator),
 				typeof(NumericGenerator),
-				typeof(SmallNumericGenerator),
+				typeof(SmallPositiveNumericGenerator),
 				typeof(Assert),
 				typeof(Program),
 				typeof(AssertionFailedException),

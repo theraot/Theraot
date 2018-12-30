@@ -138,7 +138,7 @@ namespace TestRunner
         }
     }
 
-    public static class SmallNumericGenerator
+    public static class SmallPositiveNumericGenerator
     {
         [DataGenerator]
         public static byte GenerateByte()
