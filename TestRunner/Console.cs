@@ -1,8 +1,9 @@
 ﻿#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
 
+using System;
 using System.Text;
 
-namespace System
+namespace TestRunner
 {
     public static class Console
     {
