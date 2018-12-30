@@ -141,11 +141,11 @@ namespace TestRunner.System.Threading
         }
 
         [Test]
-        public static void TaskThreadIsBackgroundAfterWait()
+        public static void TaskThreadIsBackgroundOrRunningAfterWait()
         {
             Thread thread = null;
             TaskEx.Run(() => thread = Thread.CurrentThread).Wait();
-            Assert.AreEqual(ThreadState.Background, thread.ThreadState);
+            Assert.IsTrue(thread.ThreadState == ThreadState.Background || thread.ThreadState == ThreadState.Running);
         }
 
         [Test]
