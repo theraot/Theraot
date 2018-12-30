@@ -215,22 +215,11 @@ namespace TestRunner
         private static IEnumerable<Test> GetAllTests(string[] ignoredCategories)
         {
             return TypeDiscoverer.GetAllTypes()
-                .Where(IsTestType)
-                .SelectMany(t => t.GetTypeInfo().GetMethods())
-                .Where(IsTestMethod)
+                .Where(type => type.HasAttribute<TestAttribute>())
+                .SelectMany(type => type.GetTypeInfo().GetMethods())
                 .Select(method => new TestMethod(method))
-                .Where(testMethod => !testMethod.Categories.Overlaps(ignoredCategories))
+                .Where(testMethod => testMethod.TestAttribute != null && !testMethod.Categories.Overlaps(ignoredCategories))
                 .Select(testMethod => new Test(testMethod));
-        }
-
-        private static bool IsTestMethod(MethodInfo methodInfo)
-        {
-            return methodInfo.HasAttribute<TestAttribute>() && !methodInfo.HasAttribute<IgnoreAttribute>();
-        }
-
-        private static bool IsTestType(Type type)
-        {
-            return type.HasAttribute<TestFixtureAttribute>() && !type.HasAttribute<IgnoreAttribute>();
         }
 
         private sealed class Test : IDisposable
@@ -358,8 +347,13 @@ namespace TestRunner
             public TestMethod(MethodInfo method)
             {
                 Method = method;
+                var testAttributes = method.GetAttributes<TestAttribute>(true);
+                if (testAttributes == null || testAttributes.Length <= 0 || testAttributes[0].Ignore)
+                {
+                    return;
+                }
+                TestAttribute = testAttributes[0];
                 Categories = method.GetAttributes<CategoryAttribute>(false).Select(category => category.Name);
-                TestAttribute = method.GetAttributes<TestAttribute>(false).First();
                 PreferredGenerators = method.GetAttributes<UseGeneratorAttribute>(false).Select(attribute => attribute.GeneratorType).ToArray();
             }
 
@@ -398,12 +392,6 @@ namespace TestRunner
         public string Name { get; }
     }
 
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = false)]
-    public sealed class IgnoreAttribute : Attribute
-    {
-        // Empty
-    }
-
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public sealed class TestAttribute : Attribute
     {
@@ -411,6 +399,8 @@ namespace TestRunner
         {
             Repeat = 1;
         }
+
+        public bool Ignore { get; set; }
 
         public bool IsolatedThread { get; set; }
 
