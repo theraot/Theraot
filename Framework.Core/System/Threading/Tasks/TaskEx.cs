@@ -77,6 +77,42 @@ namespace System.Threading.Tasks
 #endif
         }
 
+        public static Task FromException(Exception exception)
+        {
+            return FromException<Theraot.VoidStruct>(exception);
+        }
+
+        public static Task FromException<TResult>(Exception exception)
+        {
+#if NET20 || NET30 || NET35
+            if (exception == null)
+            {
+                throw new ArgumentNullException("exception");
+            }
+            var task = new Task<TResult>();
+            var value = task.TrySetException(exception);
+            if (!value && !task.IsCompleted)
+            {
+                var sw = new SpinWait();
+                while (!task.IsCompleted)
+                {
+                    sw.SpinOnce();
+                }
+            }
+            return task;
+#elif NET40 || NET45 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
+            if (exception == null)
+            {
+                throw new ArgumentNullException("exception");
+            }
+            var taskCompleteSource = new TaskCompletionSource<TResult>();
+            taskCompleteSource.TrySetException(exception);
+            return taskCompleteSource.Task;
+#else
+            return Task.FromException<TResult>(exception);
+#endif
+        }
+
         /// <summary>
         /// Starts a Task that will complete after the specified due time.
         /// </summary>
