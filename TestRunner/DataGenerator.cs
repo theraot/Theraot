@@ -119,57 +119,49 @@ namespace TestRunner
 
     public static class NumericGenerator
     {
-        [DataGenerator]
-        public static byte GenerateByte()
-        {
-            var random = new Random();
-            var buffer = new byte[1];
-            random.NextBytes(buffer);
-            return buffer[0];
-        }
+        private static readonly Random _random = new Random();
 
         [DataGenerator]
         public static int GenerateInt()
         {
-            var random = new Random();
             var buffer = new byte[4];
-            random.NextBytes(buffer);
+            _random.NextBytes(buffer);
             return BitConverter.ToInt32(buffer, 0);
         }
     }
 
     public static class SmallPositiveNumericGenerator
     {
+        private static readonly Random _random = new Random();
+
         [DataGenerator]
         public static byte GenerateByte()
         {
-            var random = new Random();
             var buffer = new byte[1];
-            random.NextBytes(buffer);
+            _random.NextBytes(buffer);
             return buffer[0];
         }
 
         [DataGenerator]
         public static int GenerateInt()
         {
-            var random = new Random();
-            return random.Next(0, 2000);
+            return _random.Next(0, 2000);
         }
     }
 
     public static class StringGenerator
     {
         private static readonly char[] _chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".ToCharArray();
+        private static readonly Random _random = new Random();
 
         [DataGenerator]
         public static string GenerateString()
         {
-            var random = new Random();
-            var length = random.Next(1, 16);
+            var length = _random.Next(1, 16);
             var stringBuilder = new StringBuilder(length);
             for (var index = 0; index < length; index++)
             {
-                stringBuilder.Append(_chars[random.Next(0, _chars.Length)]);
+                stringBuilder.Append(_chars[_random.Next(0, _chars.Length)]);
             }
             return stringBuilder.ToString();
         }
