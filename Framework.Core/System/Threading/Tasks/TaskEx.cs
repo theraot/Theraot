@@ -49,7 +49,7 @@ namespace System.Threading.Tasks
             return FromCanceled<Theraot.VoidStruct>(cancellationToken);
         }
 
-        public static Task FromCanceled<T>(CancellationToken cancellationToken)
+        public static Task<TResult> FromCanceled<TResult>(CancellationToken cancellationToken)
         {
 #if NET20 || NET30 || NET35
             // Microsoft says Task.FromCancellation throws ArgumentOutOfRangeException when cancellation has not been requested for cancellationToken
@@ -57,7 +57,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentOutOfRangeException("cancellationToken");
             }
-            var task = new Task<T>();
+            var task = new Task<TResult>();
             var value = task.TrySetCanceled(cancellationToken);
             if (!value && !task.IsCompleted)
             {
@@ -74,11 +74,11 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentOutOfRangeException("cancellationToken");
             }
-            var taskCompleteSource = new TaskCompletionSource<T>();
+            var taskCompleteSource = new TaskCompletionSource<TResult>();
             taskCompleteSource.TrySetCanceled();
             return taskCompleteSource.Task;
 #else
-            return Task.FromCanceled<T>(cancellationToken);
+            return Task.FromCanceled<TResult>(cancellationToken);
 #endif
         }
 
@@ -87,7 +87,7 @@ namespace System.Threading.Tasks
             return FromException<Theraot.VoidStruct>(exception);
         }
 
-        public static Task FromException<TResult>(Exception exception)
+        public static Task<TResult> FromException<TResult>(Exception exception)
         {
 #if NET20 || NET30 || NET35
             if (exception == null)

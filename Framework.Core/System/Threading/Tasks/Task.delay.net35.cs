@@ -100,7 +100,7 @@ namespace System.Threading.Tasks
             if (cancellationToken.IsCancellationRequested)
             {
                 // return a Task created as already-Canceled
-                return FromCancellation(cancellationToken);
+                return TaskEx.FromCanceled(cancellationToken);
             }
             if (millisecondsDelay == 0)
             {
