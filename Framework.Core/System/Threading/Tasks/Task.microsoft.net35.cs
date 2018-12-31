@@ -398,7 +398,7 @@ namespace System.Threading.Tasks
             CancellationToken = cancellationToken;
             try
             {
-                cancellationToken.ThrowIfSourceDisposed();
+                GC.KeepAlive(cancellationToken.WaitHandle);
                 // If an unstarted task has a valid CancellationToken that gets signalled while the task is still not queued
                 // we need to proactively cancel it, because it may never execute to transition itself.
                 // The only way to accomplish this is to register a callback on the CT.
