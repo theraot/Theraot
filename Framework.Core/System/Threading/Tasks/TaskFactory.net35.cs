@@ -18,6 +18,166 @@ namespace System.Threading.Tasks
             _scheduler = scheduler;
         }
 
+        public Task ContinueWhenAll(Task[] tasks, Action<Task[]> continuationAction)
+        {
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks));
+        }
+
+        public Task ContinueWhenAll(Task[] tasks, Action<Task[]> continuationAction, CancellationToken cancellationToken)
+        {
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken);
+        }
+
+        public Task ContinueWhenAll(Task[] tasks, Action<Task[]> continuationAction, TaskContinuationOptions continuationOptions)
+        {
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), continuationOptions);
+        }
+
+        public Task ContinueWhenAll(Task[] tasks, Action<Task[]> continuationAction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken, continuationOptions, scheduler);
+        }
+
+        public Task<TResult> ContinueWhenAll<TAntecedentResult, TResult>(Task<TAntecedentResult>[] tasks, Func<Task<TAntecedentResult>[], TResult> continuationFunction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken, continuationOptions, scheduler);
+        }
+
+        public Task<TResult> ContinueWhenAll<TAntecedentResult, TResult>(Task<TAntecedentResult>[] tasks, Func<Task<TAntecedentResult>[], TResult> continuationFunction, TaskContinuationOptions continuationOptions)
+        {
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), continuationOptions);
+        }
+
+        public Task<TResult> ContinueWhenAll<TAntecedentResult, TResult>(Task<TAntecedentResult>[] tasks, Func<Task<TAntecedentResult>[], TResult> continuationFunction, CancellationToken cancellationToken)
+        {
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken);
+        }
+
+        public Task<TResult> ContinueWhenAll<TAntecedentResult, TResult>(Task<TAntecedentResult>[] tasks, Func<Task<TAntecedentResult>[], TResult> continuationFunction)
+        {
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks));
+        }
+
+        public Task ContinueWhenAll<TAntecedentResult>(Task<TAntecedentResult>[] tasks, Action<Task<TAntecedentResult>[]> continuationAction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken, continuationOptions, scheduler);
+        }
+
+        public Task ContinueWhenAll<TAntecedentResult>(Task<TAntecedentResult>[] tasks, Action<Task<TAntecedentResult>[]> continuationAction, TaskContinuationOptions continuationOptions)
+        {
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), continuationOptions);
+        }
+
+        public Task ContinueWhenAll<TAntecedentResult>(Task<TAntecedentResult>[] tasks, Action<Task<TAntecedentResult>[]> continuationAction, CancellationToken cancellationToken)
+        {
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken);
+        }
+
+        public Task ContinueWhenAll<TAntecedentResult>(Task<TAntecedentResult>[] tasks, Action<Task<TAntecedentResult>[]> continuationAction)
+        {
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks));
+        }
+
+        public Task<TResult> ContinueWhenAll<TResult>(Task[] tasks, Func<Task[], TResult> continuationFunction)
+        {
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks));
+        }
+
+        public Task<TResult> ContinueWhenAll<TResult>(Task[] tasks, Func<Task[], TResult> continuationFunction, CancellationToken cancellationToken)
+        {
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken);
+        }
+
+        public Task<TResult> ContinueWhenAll<TResult>(Task[] tasks, Func<Task[], TResult> continuationFunction, TaskContinuationOptions continuationOptions)
+        {
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), continuationOptions);
+        }
+
+        public Task<TResult> ContinueWhenAll<TResult>(Task[] tasks, Func<Task[], TResult> continuationFunction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken, continuationOptions, scheduler);
+        }
+
+        public Task ContinueWhenAny(Task[] tasks, Action<Task[]> continuationAction)
+        {
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks));
+        }
+
+        public Task ContinueWhenAny(Task[] tasks, Action<Task[]> continuationAction, CancellationToken cancellationToken)
+        {
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken);
+        }
+
+        public Task ContinueWhenAny(Task[] tasks, Action<Task[]> continuationAction, TaskContinuationOptions continuationOptions)
+        {
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), continuationOptions);
+        }
+
+        public Task ContinueWhenAny(Task[] tasks, Action<Task[]> continuationAction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken, continuationOptions, scheduler);
+        }
+
+        public Task<TResult> ContinueWhenAny<TAntecedentResult, TResult>(Task<TAntecedentResult>[] tasks, Func<Task<TAntecedentResult>[], TResult> continuationFunction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken, continuationOptions, scheduler);
+        }
+
+        public Task<TResult> ContinueWhenAny<TAntecedentResult, TResult>(Task<TAntecedentResult>[] tasks, Func<Task<TAntecedentResult>[], TResult> continuationFunction, TaskContinuationOptions continuationOptions)
+        {
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), continuationOptions);
+        }
+
+        public Task<TResult> ContinueWhenAny<TAntecedentResult, TResult>(Task<TAntecedentResult>[] tasks, Func<Task<TAntecedentResult>[], TResult> continuationFunction, CancellationToken cancellationToken)
+        {
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken);
+        }
+
+        public Task<TResult> ContinueWhenAny<TAntecedentResult, TResult>(Task<TAntecedentResult>[] tasks, Func<Task<TAntecedentResult>[], TResult> continuationFunction)
+        {
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks));
+        }
+
+        public Task ContinueWhenAny<TAntecedentResult>(Task<TAntecedentResult>[] tasks, Action<Task<TAntecedentResult>[]> continuationAction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken, continuationOptions, scheduler);
+        }
+
+        public Task ContinueWhenAny<TAntecedentResult>(Task<TAntecedentResult>[] tasks, Action<Task<TAntecedentResult>[]> continuationAction, TaskContinuationOptions continuationOptions)
+        {
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), continuationOptions);
+        }
+
+        public Task ContinueWhenAny<TAntecedentResult>(Task<TAntecedentResult>[] tasks, Action<Task<TAntecedentResult>[]> continuationAction, CancellationToken cancellationToken)
+        {
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken);
+        }
+
+        public Task ContinueWhenAny<TAntecedentResult>(Task<TAntecedentResult>[] tasks, Action<Task<TAntecedentResult>[]> continuationAction)
+        {
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks));
+        }
+
+        public Task<TResult> ContinueWhenAny<TResult>(Task[] tasks, Func<Task[], TResult> continuationFunction)
+        {
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks));
+        }
+
+        public Task<TResult> ContinueWhenAny<TResult>(Task[] tasks, Func<Task[], TResult> continuationFunction, CancellationToken cancellationToken)
+        {
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken);
+        }
+
+        public Task<TResult> ContinueWhenAny<TResult>(Task[] tasks, Func<Task[], TResult> continuationFunction, TaskContinuationOptions continuationOptions)
+        {
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), continuationOptions);
+        }
+
+        public Task<TResult> ContinueWhenAny<TResult>(Task[] tasks, Func<Task[], TResult> continuationFunction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken, continuationOptions, scheduler);
+        }
+
         public Task StartNew(Action action)
         {
             var result = new Task(action, null, CancellationToken.None, TaskCreationOptions.None, InternalTaskOptions.None, _scheduler);
