@@ -8,8 +8,7 @@ namespace Theraot.Threading.Needles
 #endif
         class NeedleHelper
     {
-        public static bool Retrieve<T, TNeedle>(this TNeedle needle, out T target)
-            where TNeedle : IRecyclableNeedle<T>
+        public static bool Retrieve<T>(this IRecyclableNeedle<T> needle, out T target)
         {
             if (needle == null)
             {
@@ -19,7 +18,7 @@ namespace Theraot.Threading.Needles
             bool done;
             if (!(needle is ICacheNeedle<T> cacheNeedle))
             {
-                target = ((INeedle<T>)needle).Value;
+                target = needle.Value;
                 done = needle.IsAlive;
             }
             else
