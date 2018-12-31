@@ -70,7 +70,7 @@ namespace TestRunner
             AreEqual(true, found, message);
         }
 
-        public static void Throws<TException>(Action action, string message = null)
+        public static TException Throws<TException>(Action action, string message = null)
             where TException : Exception
         {
             try
@@ -80,7 +80,7 @@ namespace TestRunner
             catch (TException exception)
             {
                 GC.KeepAlive(exception);
-                return;
+                return exception;
             }
             catch (Exception exception)
             {
@@ -97,7 +97,7 @@ namespace TestRunner
             throw new AssertionFailedException($"Expected: {typeof(TException).Name}");
         }
 
-        public static void Throws<TException, T>(Func<T> func, string message = null)
+        public static TException Throws<TException, T>(Func<T> func, string message = null)
             where TException : Exception
         {
             try
@@ -107,7 +107,7 @@ namespace TestRunner
             catch (TException exception)
             {
                 GC.KeepAlive(exception);
-                return;
+                return exception;
             }
             catch (Exception exception)
             {
