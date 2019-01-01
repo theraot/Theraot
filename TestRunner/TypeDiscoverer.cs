@@ -1,4 +1,4 @@
-﻿namespace TestRunner
+namespace TestRunner
 {
     public static class TypeDiscoverer
     {
@@ -36,6 +36,7 @@
 				typeof(TestFixtureAttribute),
 				typeof(TypeDiscoverer),
 				typeof(System.Reflection.IntrospectionExtensionsTest),
+				typeof(System.Threading.SemaphoreSlimTestsEx),
 				typeof(System.Threading.TaskExFromTest),
 				typeof(System.Threading.ThreadTest),
 				typeof(System.Threading.TimerTest),
