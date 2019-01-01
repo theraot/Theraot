@@ -3,6 +3,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Theraot.Threading;
 
 namespace Theraot.Core
 {
@@ -67,25 +68,64 @@ namespace Theraot.Core
             if (semaphore.Wait(0))
             {
                 source.SetResult(true);
-                return source.Task;
             }
-            var waiterThread = new Thread
-            (
-                () =>
+            else
+            {
+                var waitHandle = semaphore.AvailableWaitHandle;
+                var registration = new RegisteredWaitHandle[1];
+                if (millisecondsTimeout == -1)
                 {
-                    try
+                    registration[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, CallbackWithoutTimeout, null, -1, true);
+                    void CallbackWithoutTimeout(object state, bool timeOut)
                     {
-                        var result = semaphore.Wait(millisecondsTimeout, cancellationToken);
-                        source.TrySetResult(result);
-                    }
-                    catch (OperationCanceledException exception)
-                    {
-                        GC.KeepAlive(exception);
-                        source.TrySetCanceled();
+                        Unregister();
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            source.TrySetCanceled();
+                            return;
+                        }
+                        if (semaphore.Wait(0))
+                        {
+                            source.TrySetResult(true);
+                            return;
+                        }
+                        var newRegistration = ThreadPool.RegisterWaitForSingleObject(waitHandle, CallbackWithoutTimeout, null, -1, true);
+                        Volatile.Write(ref registration[0], newRegistration);
                     }
                 }
-            );
-            waiterThread.Start();
+                else
+                {
+                    var start = ThreadingHelper.TicksNow();
+                    registration[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, CallbackWithTimeout, null, millisecondsTimeout, true);
+                    void CallbackWithTimeout(object state, bool timeOut)
+                    {
+                        Unregister();
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            source.TrySetCanceled();
+                            return;
+                        }
+                        long timeout;
+                        if (timeOut || (timeout = millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start)) <= 0)
+                        {
+                            source.TrySetResult(false);
+                            return;
+                        }
+                        if (semaphore.Wait(0))
+                        {
+                            source.TrySetResult(true);
+                            return;
+                        }
+                        var newRegistration = ThreadPool.RegisterWaitForSingleObject(waitHandle, CallbackWithTimeout, null, timeout, true);
+                        Volatile.Write(ref registration[0], newRegistration);
+                    }
+                }
+                cancellationToken.Register(Unregister);
+                void Unregister()
+                {
+                    Volatile.Read(ref registration[0]).Unregister(null);
+                }
+            }
             return source.Task;
         }
     }
