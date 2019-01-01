@@ -16,7 +16,7 @@ namespace System.Threading.Tasks
     /// <remarks>
     /// TaskEx is a placeholder.
     /// </remarks>
-    public static class TaskEx
+    public static partial class TaskEx
     {
 #if NET20 || NET30 || NET35 || NET40 || NET45 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
 
@@ -152,140 +152,6 @@ namespace System.Threading.Tasks
             return taskCompleteSource.Task;
 #else
             return Task.FromException<TResult>(exception);
-#endif
-        }
-
-        /// <summary>
-        /// Starts a Task that will complete after the specified due time.
-        /// </summary>
-        /// <param name="dueTime">The delay in milliseconds before the returned task completes.</param>
-        /// <returns>
-        /// The timed Task.
-        /// </returns>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
-        ///             </exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
-
-        public static Task Delay(int dueTime)
-        {
-            return Delay(dueTime, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// Starts a Task that will complete after the specified due time.
-        /// </summary>
-        /// <param name="dueTime">The delay before the returned task completes.</param>
-        /// <returns>
-        /// The timed Task.
-        /// </returns>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
-        ///             </exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
-
-        public static Task Delay(TimeSpan dueTime)
-        {
-            return Delay(dueTime, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// Starts a Task that will complete after the specified due time.
-        /// </summary>
-        /// <param name="dueTime">The delay before the returned task completes.</param><param name="cancellationToken">A CancellationToken that may be used to cancel the task before the due time occurs.</param>
-        /// <returns>
-        /// The timed Task.
-        /// </returns>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
-        ///             </exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
-
-        public static Task Delay(TimeSpan dueTime, CancellationToken cancellationToken)
-        {
-#if NET40
-            var timeoutMs = (long)dueTime.TotalMilliseconds;
-            if (timeoutMs < Timeout.Infinite || timeoutMs > int.MaxValue)
-            {
-                throw new ArgumentOutOfRangeException(nameof(dueTime), _argumentOutOfRangeTimeoutNonNegativeOrMinusOne);
-            }
-
-            return Delay((int)timeoutMs, cancellationToken);
-#else
-            // Missing in .NET 4.0
-            return Task.Delay(dueTime, cancellationToken);
-#endif
-        }
-
-        /// <summary>
-        /// Starts a Task that will complete after the specified due time.
-        /// </summary>
-        /// <param name="dueTime">The delay in milliseconds before the returned task completes.</param><param name="cancellationToken">A CancellationToken that may be used to cancel the task before the due time occurs.</param>
-        /// <returns>
-        /// The timed Task.
-        /// </returns>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
-        ///             </exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
-
-        public static Task Delay(int dueTime, CancellationToken cancellationToken)
-        {
-#if NET40
-            if (dueTime < -1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(dueTime), _argumentOutOfRangeTimeoutNonNegativeOrMinusOne);
-            }
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return FromCanceled(cancellationToken);
-            }
-            if (dueTime == 0)
-            {
-                return _completedTask;
-            }
-            var tcs = new TaskCompletionSource<bool>();
-            var timerBox = new Timer[] { null };
-            var registration = GetRegistrationToken();
-            var timer = new Timer(_ =>
-            {
-                registration.Dispose();
-                Interlocked.Exchange(ref timerBox[0], null)?.Dispose();
-                tcs.TrySetResult(true);
-            }, null, Timeout.Infinite, Timeout.Infinite);
-            Volatile.Write(ref timerBox[0], timer);
-            try
-            {
-                timer.Change(dueTime, Timeout.Infinite);
-            }
-            catch (ObjectDisposedException exception)
-            {
-                GC.KeepAlive(exception);
-            }
-            return tcs.Task;
-            CancellationTokenRegistration GetRegistrationToken()
-            {
-                if (cancellationToken.CanBeCanceled)
-                {
-                    var newRegistration = cancellationToken.Register
-                    (
-                        () =>
-                        {
-                            Interlocked.Exchange(ref timerBox[0], null)?.Dispose();
-                            tcs.TrySetCanceled();
-                        }
-                    );
-                    return newRegistration;
-                }
-                return default;
-            }
-#else
-            // Missing in .NET 4.0
-            return Task.Delay(dueTime, cancellationToken);
 #endif
         }
 
@@ -794,5 +660,142 @@ namespace System.Threading.Tasks
             return tcs.Task;
         }
 #endif
+    }
+
+    public static partial class TaskEx
+    {
+        /// <summary>
+        /// Starts a Task that will complete after the specified due time.
+        /// </summary>
+        /// <param name="dueTime">The delay in milliseconds before the returned task completes.</param>
+        /// <returns>
+        /// The timed Task.
+        /// </returns>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
+        ///             </exception>
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
+        public static Task Delay(int dueTime)
+        {
+            return Delay(dueTime, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Starts a Task that will complete after the specified due time.
+        /// </summary>
+        /// <param name="dueTime">The delay before the returned task completes.</param>
+        /// <returns>
+        /// The timed Task.
+        /// </returns>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
+        ///             </exception>
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
+        public static Task Delay(TimeSpan dueTime)
+        {
+            return Delay(dueTime, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Starts a Task that will complete after the specified due time.
+        /// </summary>
+        /// <param name="dueTime">The delay before the returned task completes.</param><param name="cancellationToken">A CancellationToken that may be used to cancel the task before the due time occurs.</param>
+        /// <returns>
+        /// The timed Task.
+        /// </returns>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
+        ///             </exception>
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
+        public static Task Delay(TimeSpan dueTime, CancellationToken cancellationToken)
+        {
+#if NET40
+            var timeoutMs = (long)dueTime.TotalMilliseconds;
+            if (timeoutMs < Timeout.Infinite || timeoutMs > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException(nameof(dueTime), _argumentOutOfRangeTimeoutNonNegativeOrMinusOne);
+            }
+
+            return Delay((int)timeoutMs, cancellationToken);
+#else
+            // Missing in .NET 4.0
+            return Task.Delay(dueTime, cancellationToken);
+#endif
+        }
+
+        /// <summary>
+        /// Starts a Task that will complete after the specified due time.
+        /// </summary>
+        /// <param name="dueTime">The delay in milliseconds before the returned task completes.</param><param name="cancellationToken">A CancellationToken that may be used to cancel the task before the due time occurs.</param>
+        /// <returns>
+        /// The timed Task.
+        /// </returns>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
+        ///             </exception>
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
+        public static Task Delay(int dueTime, CancellationToken cancellationToken)
+        {
+#if NET40
+            if (dueTime < -1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(dueTime), _argumentOutOfRangeTimeoutNonNegativeOrMinusOne);
+            }
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return FromCanceled(cancellationToken);
+            }
+            if (dueTime == 0)
+            {
+                return _completedTask;
+            }
+            var tcs = new TaskCompletionSource<bool>();
+            var timerBox = new Timer[] { null };
+            var registration = GetRegistrationToken();
+            var timer = new Timer(_ =>
+            {
+                registration.Dispose();
+                Interlocked.Exchange(ref timerBox[0], null)?.Dispose();
+                tcs.TrySetResult(true);
+            }, null, Timeout.Infinite, Timeout.Infinite);
+            Volatile.Write(ref timerBox[0], timer);
+            try
+            {
+                timer.Change(dueTime, Timeout.Infinite);
+            }
+            catch (ObjectDisposedException exception)
+            {
+                GC.KeepAlive(exception);
+            }
+            return tcs.Task;
+            CancellationTokenRegistration GetRegistrationToken()
+            {
+                if (cancellationToken.CanBeCanceled)
+                {
+                    var newRegistration = cancellationToken.Register
+                    (
+                        () =>
+                        {
+                            Interlocked.Exchange(ref timerBox[0], null)?.Dispose();
+                            tcs.TrySetCanceled();
+                        }
+                    );
+                    return newRegistration;
+                }
+                return default;
+            }
+#else
+            // Missing in .NET 4.0
+            return Task.Delay(dueTime, cancellationToken);
+#endif
+        }
     }
 }
