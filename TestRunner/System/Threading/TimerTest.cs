@@ -104,7 +104,6 @@ namespace TestRunner.System.Threading
             Assert.AreEqual(2, Volatile.Read(ref data[0]));
             // ReSharper disable once AccessToDisposedClosure
             Assert.Throws<ArgumentOutOfRangeException>(() => timer.Change(-2 - dueTime, Timeout.Infinite));
-            Assert.AreEqual(2, Volatile.Read(ref data[0]));
             timer.Dispose();
         }
 
@@ -120,7 +119,6 @@ namespace TestRunner.System.Threading
             Assert.AreEqual(2, Volatile.Read(ref data[0]));
             // ReSharper disable once AccessToDisposedClosure
             Assert.Throws<ArgumentOutOfRangeException>(() => timer.Change(Timeout.Infinite, -2 - period));
-            Assert.AreEqual(2, Volatile.Read(ref data[0]));
             timer.Dispose();
         }
 
