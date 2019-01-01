@@ -130,5 +130,20 @@ namespace Theraot.Core
                 return memoryStream.ToArray();
             }
         }
+
+        /*[System.Runtime.InteropServices.ComVisible(false)]
+        public static System.Threading.Tasks.Task WriteAsync(this Stream stream, byte[] buffer, int offset, int count, System.Threading.CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            // Bind parameters to tuple to avoid allocation of delegate class
+            var writeArgs = (stream, buffer, offset, count);
+            return Task.Factory.FromAsync
+            (
+                (wArgs, cb, state) => wArgs.Item1.BeginWrite(wArgs.Item2, wArgs.Item3, wArgs.Item4, cb, state),
+                (result) => ((Stream)result.AsyncState).EndWrite(result),
+                writeArgs,
+                stream
+            );
+        }*/
     }
 }

@@ -11,17 +11,32 @@ namespace Theraot.Core
     {
         public static Task WaitAsync(this SemaphoreSlim semaphore)
         {
-            return WaitAsync(semaphore, Timeout.Infinite, CancellationToken.None);
+            if (semaphore == null)
+            {
+                throw new ArgumentNullException(nameof(semaphore));
+            }
+            GC.KeepAlive(semaphore.AvailableWaitHandle);
+            return WaitAsyncPrivate(semaphore);
         }
 
         public static Task WaitAsync(this SemaphoreSlim semaphore, CancellationToken cancellationToken)
         {
-            return WaitAsync(semaphore, Timeout.Infinite, cancellationToken);
+            if (semaphore == null)
+            {
+                throw new ArgumentNullException(nameof(semaphore));
+            }
+            GC.KeepAlive(semaphore.AvailableWaitHandle);
+            return WaitAsyncPrivate(semaphore, cancellationToken);
         }
 
         public static Task<bool> WaitAsync(this SemaphoreSlim semaphore, int millisecondsTimeout)
         {
-            return WaitAsync(semaphore, millisecondsTimeout, CancellationToken.None);
+            if (semaphore == null)
+            {
+                throw new ArgumentNullException(nameof(semaphore));
+            }
+            GC.KeepAlive(semaphore.AvailableWaitHandle);
+            return WaitAsyncPrivate(semaphore, millisecondsTimeout);
         }
 
         public static Task<bool> WaitAsync(this SemaphoreSlim semaphore, TimeSpan timeout)
@@ -31,7 +46,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(semaphore));
             }
             GC.KeepAlive(semaphore.AvailableWaitHandle);
-            return WaitAsyncPrivate(semaphore, (int)timeout.TotalMilliseconds, CancellationToken.None);
+            return WaitAsyncPrivate(semaphore, (int)timeout.TotalMilliseconds);
         }
 
         public static Task<bool> WaitAsync(this SemaphoreSlim semaphore, TimeSpan timeout, CancellationToken cancellationToken)
@@ -54,79 +69,124 @@ namespace Theraot.Core
             return WaitAsyncPrivate(semaphore, millisecondsTimeout, cancellationToken);
         }
 
-        private static Task<bool> WaitAsyncPrivate(SemaphoreSlim semaphore, int millisecondsTimeout, CancellationToken cancellationToken)
+        private static Task<bool> WaitAsyncPrivate(SemaphoreSlim semaphore)
         {
-            if (millisecondsTimeout < -1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
-            }
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return TaskEx.FromCanceled<bool>(cancellationToken);
-            }
             var source = new TaskCompletionSource<bool>();
-            if (semaphore.Wait(0))
+            TaskEx.FromWaitHandle(semaphore.AvailableWaitHandle).ContinueWith(ContinuationFunction, TaskContinuationOptions.None);
+            return source.Task;
+            void ContinuationFunction(Task<bool> task)
             {
-                source.SetResult(true);
-            }
-            else
-            {
-                var waitHandle = semaphore.AvailableWaitHandle;
-                var registration = new RegisteredWaitHandle[1];
-                if (millisecondsTimeout == -1)
+                if (task.Result)
                 {
-                    registration[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, CallbackWithoutTimeout, null, -1, true);
-                    void CallbackWithoutTimeout(object state, bool timeOut)
+                    if (semaphore.Wait(0))
                     {
-                        Unregister();
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            source.TrySetCanceled();
-                            return;
-                        }
-                        if (semaphore.Wait(0))
-                        {
-                            source.TrySetResult(true);
-                            return;
-                        }
-                        var newRegistration = ThreadPool.RegisterWaitForSingleObject(waitHandle, CallbackWithoutTimeout, null, -1, true);
-                        Volatile.Write(ref registration[0], newRegistration);
+                        source.TrySetResult(true);
+                    }
+                    else
+                    {
+                        TaskEx.FromWaitHandle(semaphore.AvailableWaitHandle).ContinueWith(ContinuationFunction, TaskContinuationOptions.None);
                     }
                 }
                 else
                 {
-                    var start = ThreadingHelper.TicksNow();
-                    registration[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, CallbackWithTimeout, null, millisecondsTimeout, true);
-                    void CallbackWithTimeout(object state, bool timeOut)
+                    source.TrySetResult(false);
+                }
+            }
+        }
+
+        private static Task<bool> WaitAsyncPrivate(SemaphoreSlim semaphore, int millisecondsTimeout)
+        {
+            var source = new TaskCompletionSource<bool>();
+            var start = ThreadingHelper.TicksNow();
+            var remaining = millisecondsTimeout - (int)ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
+            TaskEx.FromWaitHandle(semaphore.AvailableWaitHandle, remaining).ContinueWith(ContinuationFunction, TaskContinuationOptions.None);
+            return source.Task;
+            void ContinuationFunction(Task<bool> task)
+            {
+                if (task.Result)
+                {
+                    if (semaphore.Wait(0))
                     {
-                        Unregister();
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            source.TrySetCanceled();
-                            return;
-                        }
-                        long timeout;
-                        if (timeOut || (timeout = millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start)) <= 0)
-                        {
-                            source.TrySetResult(false);
-                            return;
-                        }
+                        source.TrySetResult(true);
+                    }
+                    else
+                    {
+                        remaining = millisecondsTimeout - (int)ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
+                        TaskEx.FromWaitHandle(semaphore.AvailableWaitHandle, remaining).ContinueWith(ContinuationFunction, TaskContinuationOptions.None);
+                    }
+                }
+                else
+                {
+                    source.TrySetResult(false);
+                }
+            }
+        }
+
+        private static Task<bool> WaitAsyncPrivate(SemaphoreSlim semaphore, CancellationToken cancellationToken)
+        {
+            var source = new TaskCompletionSource<bool>();
+            TaskEx.FromWaitHandle(semaphore.AvailableWaitHandle, cancellationToken).ContinueWith(ContinuationFunction, TaskContinuationOptions.None);
+            return source.Task;
+            void ContinuationFunction(Task<bool> task)
+            {
+                if (task.IsCanceled)
+                {
+                    source.TrySetCanceled();
+                }
+                else
+                {
+                    if (task.Result)
+                    {
                         if (semaphore.Wait(0))
                         {
                             source.TrySetResult(true);
-                            return;
                         }
-                        var newRegistration = ThreadPool.RegisterWaitForSingleObject(waitHandle, CallbackWithTimeout, null, timeout, true);
-                        Volatile.Write(ref registration[0], newRegistration);
+                        else
+                        {
+                            TaskEx.FromWaitHandle(semaphore.AvailableWaitHandle, cancellationToken).ContinueWith(ContinuationFunction, TaskContinuationOptions.None);
+                        }
+                    }
+                    else
+                    {
+                        source.TrySetResult(false);
                     }
                 }
-                cancellationToken.Register(Unregister);
-                void Unregister()
+            }
+        }
+
+        private static Task<bool> WaitAsyncPrivate(SemaphoreSlim semaphore, int millisecondsTimeout, CancellationToken cancellationToken)
+        {
+            var source = new TaskCompletionSource<bool>();
+            var start = ThreadingHelper.TicksNow();
+            var remaining = millisecondsTimeout - (int)ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
+            TaskEx.FromWaitHandle(semaphore.AvailableWaitHandle, remaining, cancellationToken).ContinueWith(ContinuationFunction, TaskContinuationOptions.None);
+            return source.Task;
+            void ContinuationFunction(Task<bool> task)
+            {
+                if (task.IsCanceled)
                 {
-                    Volatile.Read(ref registration[0]).Unregister(null);
+                    source.TrySetCanceled();
+                }
+                else
+                {
+                    if (task.Result)
+                    {
+                        if (semaphore.Wait(0))
+                        {
+                            source.TrySetResult(true);
+                        }
+                        else
+                        {
+                            remaining = millisecondsTimeout - (int)ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
+                            TaskEx.FromWaitHandle(semaphore.AvailableWaitHandle, remaining, cancellationToken).ContinueWith(ContinuationFunction, TaskContinuationOptions.None);
+                        }
+                    }
+                    else
+                    {
+                        source.TrySetResult(false);
+                    }
                 }
             }
-            return source.Task;
         }
     }
 }
