@@ -73,6 +73,14 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(nameof(Timer));
             }
+            if (period < -1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(period));
+            }
+            if (dueTime < -1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(dueTime));
+            }
             Stop();
             if (dueTime != -1)
             {
