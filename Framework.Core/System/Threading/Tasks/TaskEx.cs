@@ -798,4 +798,170 @@ namespace System.Threading.Tasks
 #endif
         }
     }
+
+    public static partial class TaskEx
+    {
+        public static Task<bool> FromWaitHandle(WaitHandle waitHandle)
+        {
+            var source = new TaskCompletionSource<bool>();
+            if (waitHandle.WaitOne(0))
+            {
+                source.SetResult(true);
+            }
+            else
+            {
+                var registration = new RegisteredWaitHandle[1];
+                registration[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, CallbackWithoutTimeout, null, -1, true);
+                void CallbackWithoutTimeout(object state, bool timeOut)
+                {
+                    Unregister();
+                    source.TrySetResult(true);
+                }
+                void Unregister()
+                {
+                    Volatile.Read(ref registration[0]).Unregister(null);
+                }
+            }
+            return source.Task;
+        }
+
+        public static Task<bool> FromWaitHandle(WaitHandle waitHandle, int millisecondsTimeout)
+        {
+            if (millisecondsTimeout < -1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
+            }
+            var source = new TaskCompletionSource<bool>();
+            if (waitHandle.WaitOne(0))
+            {
+                source.SetResult(true);
+            }
+            else
+            {
+                var registration = new RegisteredWaitHandle[1];
+                if (millisecondsTimeout == -1)
+                {
+                    registration[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, CallbackWithoutTimeout, null, -1, true);
+                    void CallbackWithoutTimeout(object state, bool timeOut)
+                    {
+                        Unregister();
+                        source.TrySetResult(true);
+                    }
+                }
+                else
+                {
+                    registration[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, CallbackWithTimeout, null, millisecondsTimeout, true);
+                    void CallbackWithTimeout(object state, bool timeOut)
+                    {
+                        Unregister();
+                        if (timeOut)
+                        {
+                            source.TrySetResult(false);
+                            return;
+                        }
+                        source.TrySetResult(true);
+                    }
+                }
+                void Unregister()
+                {
+                    Volatile.Read(ref registration[0]).Unregister(null);
+                }
+            }
+            return source.Task;
+        }
+
+        public static Task<bool> FromWaitHandle(WaitHandle waitHandle, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return FromCanceled<bool>(cancellationToken);
+            }
+            var source = new TaskCompletionSource<bool>();
+            if (waitHandle.WaitOne(0))
+            {
+                source.SetResult(true);
+            }
+            else
+            {
+                var registration = new RegisteredWaitHandle[1];
+                registration[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, CallbackWithoutTimeout, null, -1, true);
+                void CallbackWithoutTimeout(object state, bool timeOut)
+                {
+                    Unregister();
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        source.TrySetCanceled();
+                        return;
+                    }
+                    source.TrySetResult(true);
+                }
+                cancellationToken.Register(Unregister);
+                void Unregister()
+                {
+                    Volatile.Read(ref registration[0]).Unregister(null);
+                }
+            }
+            return source.Task;
+        }
+
+        public static Task<bool> FromWaitHandle(WaitHandle waitHandle, int millisecondsTimeout, CancellationToken cancellationToken)
+        {
+            if (millisecondsTimeout < -1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
+            }
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return FromCanceled<bool>(cancellationToken);
+            }
+            var source = new TaskCompletionSource<bool>();
+            if (waitHandle.WaitOne(0))
+            {
+                source.SetResult(true);
+            }
+            else
+            {
+                var registration = new RegisteredWaitHandle[1];
+                if (millisecondsTimeout == -1)
+                {
+                    registration[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, CallbackWithoutTimeout, null, -1, true);
+                    void CallbackWithoutTimeout(object state, bool timeOut)
+                    {
+                        Unregister();
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            source.TrySetCanceled();
+                            return;
+                        }
+                        source.TrySetResult(true);
+                    }
+                }
+                else
+                {
+                    registration[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, CallbackWithTimeout, null, millisecondsTimeout, true);
+                    void CallbackWithTimeout(object state, bool timeOut)
+                    {
+                        Unregister();
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            source.TrySetCanceled();
+                            return;
+                        }
+                        if (timeOut)
+                        {
+                            source.TrySetResult(false);
+                            return;
+                        }
+                        source.TrySetResult(true);
+                    }
+                }
+                cancellationToken.Register(Unregister);
+                void Unregister()
+                {
+                    Volatile.Read(ref registration[0]).Unregister(null);
+                }
+            }
+            return source.Task;
+        }
+    }
 }
