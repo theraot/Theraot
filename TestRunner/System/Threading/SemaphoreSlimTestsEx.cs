@@ -5,7 +5,12 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Theraot.Collections.ThreadSafe;
+
+#if NET40
+
 using Theraot.Core;
+
+#endif
 
 namespace TestRunner.System.Threading
 {
