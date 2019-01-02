@@ -798,4 +798,330 @@ namespace System.Threading.Tasks
 #endif
         }
     }
+
+    public static partial class TaskEx
+    {
+#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+
+        private class WaitHandleCancellableTaskCompletionSourceManager
+        {
+            private readonly TaskCompletionSource<bool> _taskCompletionSource;
+            private readonly WaitHandle[] _handles;
+
+            private WaitHandleCancellableTaskCompletionSourceManager(WaitHandle waitHandle, CancellationToken cancellationToken, TaskCompletionSource<bool> taskCompletionSource)
+            {
+                _taskCompletionSource = taskCompletionSource;
+                _handles = new[] { waitHandle, cancellationToken.WaitHandle };
+            }
+
+            public static void CreateWithoutTimeout(WaitHandle waitHandle, CancellationToken cancellationToken, TaskCompletionSource<bool> taskCompletionSource)
+            {
+                var result = new WaitHandleCancellableTaskCompletionSourceManager(waitHandle, cancellationToken, taskCompletionSource);
+                var thread = new Thread(result.CallbackWithoutTimeout);
+                thread.Start();
+            }
+
+            public static void CreateWithTimeout(WaitHandle waitHandle, CancellationToken cancellationToken, TaskCompletionSource<bool> taskCompletionSource, int millisecondsTimeout)
+            {
+                var result = new WaitHandleCancellableTaskCompletionSourceManager(waitHandle, cancellationToken, taskCompletionSource);
+                var thread = new Thread(result.CallbackWithTimeout);
+                thread.Start(millisecondsTimeout);
+            }
+
+            private void CallbackWithoutTimeout()
+            {
+                var index = WaitHandle.WaitAny(_handles);
+                if (index == 0)
+                {
+                    _taskCompletionSource.SetResult(true);
+                }
+                _taskCompletionSource.TrySetCanceled();
+            }
+
+            private void CallbackWithTimeout(object state)
+            {
+                var index = WaitHandle.WaitAny(_handles, (int)state);
+                if (index == 0)
+                {
+                    _taskCompletionSource.SetResult(true);
+                }
+                _taskCompletionSource.TrySetCanceled();
+            }
+        }
+
+        private class WaitHandleTaskCompletionSourceManager
+        {
+            private readonly TaskCompletionSource<bool> _taskCompletionSource;
+            private readonly WaitHandle _handle;
+
+            private WaitHandleTaskCompletionSourceManager(WaitHandle waitHandle, TaskCompletionSource<bool> taskCompletionSource)
+            {
+                _taskCompletionSource = taskCompletionSource;
+                _handle = waitHandle;
+            }
+
+            public static void CreateWithoutTimeout(WaitHandle waitHandle, TaskCompletionSource<bool> taskCompletionSource)
+            {
+                var result = new WaitHandleTaskCompletionSourceManager(waitHandle, taskCompletionSource);
+                var thread = new Thread(result.CallbackWithoutTimeout);
+                thread.Start();
+            }
+
+            public static void CreateWithTimeout(WaitHandle waitHandle, TaskCompletionSource<bool> taskCompletionSource, int millisecondsTimeout)
+            {
+                var result = new WaitHandleTaskCompletionSourceManager(waitHandle, taskCompletionSource);
+                var thread = new Thread(result.CallbackWithTimeout);
+                thread.Start(millisecondsTimeout);
+            }
+
+            private void CallbackWithoutTimeout()
+            {
+                _handle.WaitOne();
+                _taskCompletionSource.SetResult(true);
+            }
+
+            private void CallbackWithTimeout(object state)
+            {
+                _taskCompletionSource.SetResult(_handle.WaitOne((int)state));
+            }
+        }
+
+#else
+
+        private class WaitHandleCancellableTaskCompletionSourceManager
+        {
+            private readonly CancellationToken _cancellationToken;
+            private readonly RegisteredWaitHandle[] _registeredWaitHandle;
+            private readonly TaskCompletionSource<bool> _taskCompletionSource;
+
+            private WaitHandleCancellableTaskCompletionSourceManager(CancellationToken cancellationToken, TaskCompletionSource<bool> taskCompletionSource)
+            {
+                _cancellationToken = cancellationToken;
+                _taskCompletionSource = taskCompletionSource;
+                _registeredWaitHandle = new RegisteredWaitHandle[1];
+            }
+
+            public static void CreateWithoutTimeout(WaitHandle waitHandle, CancellationToken cancellationToken, TaskCompletionSource<bool> taskCompletionSource)
+            {
+                var result = new WaitHandleCancellableTaskCompletionSourceManager(cancellationToken, taskCompletionSource);
+                result._registeredWaitHandle[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, result.CallbackWithoutTimeout, null, -1, true);
+                cancellationToken.Register(result.Unregister);
+            }
+
+            public static void CreateWithTimeout(WaitHandle waitHandle, CancellationToken cancellationToken, TaskCompletionSource<bool> taskCompletionSource, int millisecondsTimeout)
+            {
+                var result = new WaitHandleCancellableTaskCompletionSourceManager(cancellationToken, taskCompletionSource);
+                result._registeredWaitHandle[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, result.CallbackWithTimeout, null, millisecondsTimeout, true);
+                cancellationToken.Register(result.Unregister);
+            }
+
+            private void CallbackWithoutTimeout(object state, bool timeOut)
+            {
+                Unregister();
+                if (_cancellationToken.IsCancellationRequested)
+                {
+                    _taskCompletionSource.TrySetCanceled();
+                    return;
+                }
+                _taskCompletionSource.TrySetResult(true);
+            }
+
+            private void CallbackWithTimeout(object state, bool timeOut)
+            {
+                Unregister();
+                if (_cancellationToken.IsCancellationRequested)
+                {
+                    _taskCompletionSource.TrySetCanceled();
+                    return;
+                }
+                if (timeOut)
+                {
+                    _taskCompletionSource.TrySetResult(false);
+                    return;
+                }
+                _taskCompletionSource.TrySetResult(true);
+            }
+
+            private void Unregister()
+            {
+                Volatile.Read(ref _registeredWaitHandle[0]).Unregister(null);
+            }
+        }
+
+        private class WaitHandleTaskCompletionSourceManager
+        {
+            private readonly RegisteredWaitHandle[] _registeredWaitHandle;
+            private readonly TaskCompletionSource<bool> _taskCompletionSource;
+
+            private WaitHandleTaskCompletionSourceManager(TaskCompletionSource<bool> taskCompletionSource)
+            {
+                _taskCompletionSource = taskCompletionSource;
+                _registeredWaitHandle = new RegisteredWaitHandle[1];
+            }
+
+            public static void CreateWithoutTimeout(WaitHandle waitHandle, TaskCompletionSource<bool> taskCompletionSource)
+            {
+                var result = new WaitHandleTaskCompletionSourceManager(taskCompletionSource);
+                result._registeredWaitHandle[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, result.CallbackWithoutTimeout, null, -1, true);
+            }
+
+            public static void CreateWithTimeout(WaitHandle waitHandle, TaskCompletionSource<bool> taskCompletionSource, int millisecondsTimeout)
+            {
+                var result = new WaitHandleTaskCompletionSourceManager(taskCompletionSource);
+                result._registeredWaitHandle[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, result.CallbackWithTimeout, null, millisecondsTimeout, true);
+            }
+
+            private void CallbackWithoutTimeout(object state, bool timeOut)
+            {
+                Unregister();
+                _taskCompletionSource.TrySetResult(true);
+            }
+
+            private void CallbackWithTimeout(object state, bool timeOut)
+            {
+                Unregister();
+                if (timeOut)
+                {
+                    _taskCompletionSource.TrySetResult(false);
+                    return;
+                }
+                _taskCompletionSource.TrySetResult(true);
+            }
+
+            private void Unregister()
+            {
+                Volatile.Read(ref _registeredWaitHandle[0]).Unregister(null);
+            }
+        }
+
+#endif
+
+        public static Task FromWaitHandle(WaitHandle waitHandle)
+        {
+            if (waitHandle == null)
+            {
+                throw new ArgumentNullException(nameof(waitHandle));
+            }
+            return FromWaitHandleInternal(waitHandle);
+        }
+
+        public static Task FromWaitHandle(WaitHandle waitHandle, CancellationToken cancellationToken)
+        {
+            if (waitHandle == null)
+            {
+                throw new ArgumentNullException(nameof(waitHandle));
+            }
+            return FromWaitHandleInternal(waitHandle, cancellationToken);
+        }
+
+        public static Task<bool> FromWaitHandle(WaitHandle waitHandle, int millisecondsTimeout)
+        {
+            if (waitHandle == null)
+            {
+                throw new ArgumentNullException(nameof(waitHandle));
+            }
+            return FromWaitHandleInternal(waitHandle, millisecondsTimeout);
+        }
+
+        public static Task<bool> FromWaitHandle(WaitHandle waitHandle, TimeSpan timeout)
+        {
+            if (waitHandle == null)
+            {
+                throw new ArgumentNullException(nameof(waitHandle));
+            }
+            return FromWaitHandleInternal(waitHandle, (int)timeout.TotalMilliseconds);
+        }
+
+        public static Task<bool> FromWaitHandle(WaitHandle waitHandle, TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            if (waitHandle == null)
+            {
+                throw new ArgumentNullException(nameof(waitHandle));
+            }
+            return FromWaitHandleInternal(waitHandle, (int)timeout.TotalMilliseconds, cancellationToken);
+        }
+
+        public static Task<bool> FromWaitHandle(WaitHandle waitHandle, int millisecondsTimeout, CancellationToken cancellationToken)
+        {
+            if (waitHandle == null)
+            {
+                throw new ArgumentNullException(nameof(waitHandle));
+            }
+            return FromWaitHandleInternal(waitHandle, millisecondsTimeout, cancellationToken);
+        }
+
+        internal static Task FromWaitHandleInternal(WaitHandle waitHandle)
+        {
+            var source = new TaskCompletionSource<bool>();
+            if (waitHandle.WaitOne(0))
+            {
+                source.SetResult(true);
+            }
+            WaitHandleTaskCompletionSourceManager.CreateWithoutTimeout(waitHandle, source);
+            return source.Task;
+        }
+
+        internal static Task<bool> FromWaitHandleInternal(WaitHandle waitHandle, int millisecondsTimeout)
+        {
+            if (millisecondsTimeout < -1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
+            }
+            var source = new TaskCompletionSource<bool>();
+            if (waitHandle.WaitOne(0))
+            {
+                source.SetResult(true);
+            }
+            else if (millisecondsTimeout == -1)
+            {
+                WaitHandleTaskCompletionSourceManager.CreateWithoutTimeout(waitHandle, source);
+            }
+            else
+            {
+                WaitHandleTaskCompletionSourceManager.CreateWithTimeout(waitHandle, source, millisecondsTimeout);
+            }
+            return source.Task;
+        }
+
+        internal static Task FromWaitHandleInternal(WaitHandle waitHandle, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return FromCanceled<bool>(cancellationToken);
+            }
+            var source = new TaskCompletionSource<bool>();
+            if (waitHandle.WaitOne(0))
+            {
+                source.SetResult(true);
+            }
+            WaitHandleCancellableTaskCompletionSourceManager.CreateWithoutTimeout(waitHandle, cancellationToken, source);
+            return source.Task;
+        }
+
+        internal static Task<bool> FromWaitHandleInternal(WaitHandle waitHandle, int millisecondsTimeout, CancellationToken cancellationToken)
+        {
+            if (millisecondsTimeout < -1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
+            }
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return FromCanceled<bool>(cancellationToken);
+            }
+            var source = new TaskCompletionSource<bool>();
+            if (waitHandle.WaitOne(0))
+            {
+                source.SetResult(true);
+            }
+            else if (millisecondsTimeout == -1)
+            {
+                WaitHandleCancellableTaskCompletionSourceManager.CreateWithoutTimeout(waitHandle, cancellationToken, source);
+            }
+            else
+            {
+                WaitHandleCancellableTaskCompletionSourceManager.CreateWithTimeout(waitHandle, cancellationToken, source, millisecondsTimeout);
+            }
+            return source.Task;
+        }
+    }
 }
