@@ -416,6 +416,7 @@
     <Compile Include="System\Numerics\BigNumberBuffer.cs" />
     <Compile Include="System\Numerics\NumericsHelpers.cs" />
     <Compile Include="System\Numerics\ReverseStringBuilder.cs" />
+    <Compile Include="System\Reflection\CustomAttributeExtensions.net40.cs" />
     <Compile Include="System\Reflection\IntrospectionExtensions.net40.cs" />
     <Compile Include="System\Reflection\RuntimeReflectionExtensions.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\AsyncMethodBuilderAttribute.net40.cs" />
