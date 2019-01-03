@@ -209,7 +209,7 @@ namespace Theraot.Collections
 
         public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array)
         {
-            CopyTo(source.SkipItems(sourceIndex), array, 0);
+            CopyTo(source.Skip(sourceIndex), array, 0);
         }
 
         public static void CopyTo<T>(this IEnumerable<T> source, T[] array, int arrayIndex)
@@ -239,17 +239,17 @@ namespace Theraot.Collections
 
         public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array, int arrayIndex)
         {
-            CopyTo(source.SkipItems(sourceIndex), array, arrayIndex);
+            CopyTo(source.Skip(sourceIndex), array, arrayIndex);
         }
 
         public static void CopyTo<T>(this IEnumerable<T> source, T[] array, int arrayIndex, int countLimit)
         {
-            CopyTo(source.TakeItems(countLimit), array, arrayIndex);
+            CopyTo(source.Take(countLimit), array, arrayIndex);
         }
 
         public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array, int arrayIndex, int countLimit)
         {
-            CopyTo(source.SkipItems(sourceIndex).TakeItems(countLimit), array, arrayIndex);
+            CopyTo(source.Skip(sourceIndex).Take(countLimit), array, arrayIndex);
         }
 
         public static void DeprecatedCopyTo<T>(this IEnumerable<T> source, Array array)

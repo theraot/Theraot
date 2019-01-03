@@ -70,7 +70,7 @@ namespace Theraot.Collections.Specialized
                 }
                 if (index < Count)
                 {
-                    using (var enumerator = _wrapped.SkipItems(index).GetEnumerator())
+                    using (var enumerator = _wrapped.Skip(index).GetEnumerator())
                     {
                         if (enumerator.MoveNext())
                         {

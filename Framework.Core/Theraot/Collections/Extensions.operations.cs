@@ -145,16 +145,7 @@ namespace Theraot.Collections
             return false;
         }
 
-        public static IEnumerable<T> SkipItems<T>(this IEnumerable<T> source, int skipCount)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            return SkipItemsExtracted(source, skipCount);
-        }
-
-        public static IEnumerable<T> SkipItems<T>(this IEnumerable<T> source, Predicate<T> predicateCount, int skipCount)
+        public static IEnumerable<T> Skip<T>(this IEnumerable<T> source, Predicate<T> predicateCount, int skipCount)
         {
             if (source == null)
             {
@@ -189,16 +180,7 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<T> TakeItems<T>(this IEnumerable<T> source, int takeCount)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            return TakeItemsExtracted(source, takeCount);
-        }
-
-        public static IEnumerable<T> TakeItems<T>(this IEnumerable<T> source, Predicate<T> predicateCount, int takeCount)
+        public static IEnumerable<T> Take<T>(this IEnumerable<T> source, Predicate<T> predicateCount, int takeCount)
         {
             if (source == null)
             {
