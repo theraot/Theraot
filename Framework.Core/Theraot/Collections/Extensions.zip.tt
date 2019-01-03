@@ -9,10 +9,7 @@ namespace Theraot.Collections
     {
 #if NET35
         public static IEnumerable<TReturn> Zip<T1, T2, TReturn>(this IEnumerable<T1> first, IEnumerable<T2> second, Func<T1, T2, TReturn> resultSelector)
-#else
-        public static IEnumerable<TReturn> Zip<T1, T2, TReturn>(IEnumerable<T1> first, IEnumerable<T2> second, Func<T1, T2, TReturn> resultSelector)
-#endif
-        {
+		{
             if (first == null)
             {
                 throw new ArgumentNullException("first");
@@ -42,6 +39,15 @@ namespace Theraot.Collections
                 }
             }
         }
+#else
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+#endif
+        public static IEnumerable<TReturn> Zip<T1, T2, TReturn>(IEnumerable<T1> first, IEnumerable<T2> second, Func<T1, T2, TReturn> resultSelector)
+        {
+            return System.Linq.Enumerable.Zip(first, second, resultSelector);
+        }
+#endif
 
 #if FAT
 
