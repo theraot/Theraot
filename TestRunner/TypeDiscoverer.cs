@@ -34,6 +34,7 @@
 				typeof(CategoryAttribute),
 				typeof(TestAttribute),
 				typeof(TestFixtureAttribute),
+				typeof(SerializableAttributeTest),
 				typeof(TypeDiscoverer),
 				typeof(System.Reflection.IntrospectionExtensionsTest),
 				typeof(System.Threading.SemaphoreSlimTestsEx),
