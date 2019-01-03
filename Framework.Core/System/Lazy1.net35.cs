@@ -226,7 +226,7 @@ namespace System
 
         private T FullMode(Func<T> valueFactory, ManualResetEvent waitHandle, ref Thread thread, ref int preIsValueCreated)
         {
-            back:
+        back:
             if (Interlocked.CompareExchange(ref preIsValueCreated, 1, 0) == 0)
             {
                 try

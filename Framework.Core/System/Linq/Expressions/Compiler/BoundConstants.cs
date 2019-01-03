@@ -10,7 +10,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
-using Theraot.Collections;
 using Theraot.Core;
 using static System.Linq.Expressions.CachedReflectionInfo;
 
@@ -63,8 +62,8 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         internal void EmitCacheConstants(LambdaCompiler lc)
         {
-            int count = 0;
-            foreach (KeyValuePair<TypedConstant, int> reference in _references)
+            var count = 0;
+            foreach (var reference in _references)
             {
                 if (!lc.CanEmitBoundConstants)
                 {
@@ -85,7 +84,7 @@ namespace System.Linq.Expressions.Compiler
             // need to clear any locals from last time.
             _cache.Clear();
 
-            foreach (KeyValuePair<TypedConstant, int> reference in _references)
+            foreach (var reference in _references)
             {
                 if (ShouldCache(reference.Value))
                 {
@@ -94,7 +93,7 @@ namespace System.Linq.Expressions.Compiler
                         // Dup array to keep it on the stack
                         lc.IL.Emit(OpCodes.Dup);
                     }
-                    LocalBuilder local = lc.IL.DeclareLocal(reference.Key.Type);
+                    var local = lc.IL.DeclareLocal(reference.Key.Type);
                     EmitConstantFromArray(lc, reference.Key.Value, local.LocalType);
                     lc.IL.Emit(OpCodes.Stloc, local);
                     _cache.Add(reference.Key, local);

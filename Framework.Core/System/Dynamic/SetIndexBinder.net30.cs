@@ -51,8 +51,8 @@ namespace System.Dynamic
             ContractUtils.RequiresNotNull(args, nameof(args));
             ContractUtils.Requires(args.Length >= 2, nameof(args));
 
-            DynamicMetaObject value = args[args.Length - 1];
-            DynamicMetaObject[] indexes = args.RemoveLast();
+            var value = args[args.Length - 1];
+            var indexes = args.RemoveLast();
 
             ContractUtils.RequiresNotNull(value, nameof(args));
             ContractUtils.RequiresNotNullItems(indexes, nameof(args));

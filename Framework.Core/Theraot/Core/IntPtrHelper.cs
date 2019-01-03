@@ -2,10 +2,18 @@
 
 using System;
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+using System.Runtime.CompilerServices;
+#endif
+
 namespace Theraot.Core
 {
     public static class IntPtrHelper
     {
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static IntPtr Add(IntPtr pointer, int offset)
         {
 #if NET20 || NET30 || NET35
@@ -24,6 +32,10 @@ namespace Theraot.Core
             return IntPtr.Add(pointer, offset);
 #endif
         }
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 
         public static IntPtr Subtract(IntPtr pointer, int offset)
         {
@@ -48,6 +60,9 @@ namespace Theraot.Core
     public static class UIntPtrHelper
     {
         [CLSCompliant(false)]
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static UIntPtr Add(UIntPtr pointer, int offset)
         {
 #if NET20 || NET30 || NET35
@@ -68,6 +83,9 @@ namespace Theraot.Core
         }
 
         [CLSCompliant(false)]
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static UIntPtr Subtract(UIntPtr pointer, int offset)
         {
 #if NET20 || NET30 || NET35

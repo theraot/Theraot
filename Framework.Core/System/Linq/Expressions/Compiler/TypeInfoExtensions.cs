@@ -20,10 +20,10 @@ namespace System.Linq.Expressions.Compiler
         {
             // nope, go ahead and create it and spend the
             // cost of creating the array.
-            Type[] paramTypes = new Type[args.Count + 2];
+            var paramTypes = new Type[args.Count + 2];
             paramTypes[0] = typeof(CallSite);
             paramTypes[paramTypes.Length - 1] = retType;
-            for (int i = 0; i < args.Count; i++)
+            for (var i = 0; i < args.Count; i++)
             {
                 paramTypes[i + 1] = args[i].Type;
             }

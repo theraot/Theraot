@@ -75,17 +75,14 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed class InstructionList
     {
         private readonly List<Instruction> _instructions = new List<Instruction>();
-
-        private int _currentContinuationsDepth;
-
         private int _currentStackDepth;
 
         // list of (instruction index, cookie) sorted by instruction index:
         // Not readonly for debug
         private List<KeyValuePair<int, object>> _debugCookies;
+
         private List<BranchLabel> _labels;
         private int _maxContinuationDepth;
-        private int _maxStackDepth;
         private List<object> _objects;
         private int _runtimeLabelCount;
 
@@ -200,11 +197,11 @@ namespace System.Linq.Expressions.Interpreter
 
         public int Count => _instructions.Count;
 
-        public int CurrentContinuationsDepth => _currentContinuationsDepth;
+        public int CurrentContinuationsDepth { get; private set; }
 
         public int CurrentStackDepth => _currentStackDepth;
 
-        public int MaxStackDepth => _maxStackDepth;
+        public int MaxStackDepth { get; private set; }
 
         public void Emit(Instruction instruction)
         {
@@ -254,7 +251,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 #endif
             return new InstructionArray(
-                _maxStackDepth,
+                MaxStackDepth,
                 _maxContinuationDepth,
                 Theraot.Collections.Extensions.AsArray(_instructions),
                 _objects == null ? null : Theraot.Collections.Extensions.AsArray(_objects),
@@ -272,8 +269,8 @@ namespace System.Linq.Expressions.Interpreter
             var instruction = _instructions[_instructions.Count - 1];
             _instructions.RemoveAt(_instructions.Count - 1);
 
-            _currentContinuationsDepth -= instruction.ProducedContinuations;
-            _currentContinuationsDepth += instruction.ConsumedContinuations;
+            CurrentContinuationsDepth -= instruction.ProducedContinuations;
+            CurrentContinuationsDepth += instruction.ConsumedContinuations;
             _currentStackDepth -= instruction.ProducedStack;
             _currentStackDepth += instruction.ConsumedStack;
         }
@@ -288,17 +285,17 @@ namespace System.Linq.Expressions.Interpreter
             _currentStackDepth -= instruction.ConsumedStack;
             Debug.Assert(_currentStackDepth >= 0, "negative stack depth " + instruction);
             _currentStackDepth += instruction.ProducedStack;
-            if (_currentStackDepth > _maxStackDepth)
+            if (_currentStackDepth > MaxStackDepth)
             {
-                _maxStackDepth = _currentStackDepth;
+                MaxStackDepth = _currentStackDepth;
             }
 
-            _currentContinuationsDepth -= instruction.ConsumedContinuations;
-            Debug.Assert(_currentContinuationsDepth >= 0, "negative continuations " + instruction);
-            _currentContinuationsDepth += instruction.ProducedContinuations;
-            if (_currentContinuationsDepth > _maxContinuationDepth)
+            CurrentContinuationsDepth -= instruction.ConsumedContinuations;
+            Debug.Assert(CurrentContinuationsDepth >= 0, "negative continuations " + instruction);
+            CurrentContinuationsDepth += instruction.ProducedContinuations;
+            if (CurrentContinuationsDepth > _maxContinuationDepth)
             {
-                _maxContinuationDepth = _currentContinuationsDepth;
+                _maxContinuationDepth = CurrentContinuationsDepth;
             }
         }
 

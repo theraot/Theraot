@@ -55,12 +55,12 @@ namespace System.Dynamic
         internal ExpandoClass FindNewClass(string newKey, object lockObject)
         {
             // just XOR the newKey hash code
-            int hashCode = _hashCode ^ newKey.GetHashCode();
+            var hashCode = _hashCode ^ newKey.GetHashCode();
             lock (lockObject)
             {
-                List<WeakReference> infos = GetTransitionList(hashCode);
+                var infos = GetTransitionList(hashCode);
 
-                for (int i = 0; i < infos.Count; i++)
+                for (var i = 0; i < infos.Count; i++)
                 {
                     if (!(infos[i].Target is ExpandoClass @class))
                     {
@@ -79,10 +79,10 @@ namespace System.Dynamic
 
                 // no applicable transition, create a new one
                 var keys = Keys;
-                string[] newKeys = new string[keys.Length + 1];
+                var newKeys = new string[keys.Length + 1];
                 Array.Copy(keys, 0, newKeys, 0, keys.Length);
                 newKeys[keys.Length] = newKey;
-                ExpandoClass ec = new ExpandoClass(newKeys, hashCode);
+                var ec = new ExpandoClass(newKeys, hashCode);
 
                 infos.Add(new WeakReference(ec));
                 return ec;
@@ -111,7 +111,7 @@ namespace System.Dynamic
             lock (lockObject)
             {
                 var keys = Keys;
-                for (int i = 0; i < keys.Length; i++)
+                for (var i = 0; i < keys.Length; i++)
                 {
                     if (string.Equals(
                         keys[i],
@@ -158,11 +158,11 @@ namespace System.Dynamic
         /// </returns>
         private int GetValueIndexCaseInsensitive(string name, ExpandoObject obj)
         {
-            int caseInsensitiveMatch = ExpandoObject.NoMatch; //the location of the case-insensitive matching member
+            var caseInsensitiveMatch = ExpandoObject.NoMatch; //the location of the case-insensitive matching member
             lock (obj.LockObject)
             {
                 var keys = Keys;
-                for (int i = keys.Length - 1; i >= 0; i--)
+                for (var i = keys.Length - 1; i >= 0; i--)
                 {
                     if (string.Equals(
                         keys[i],

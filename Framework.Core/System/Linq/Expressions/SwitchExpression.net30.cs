@@ -118,20 +118,20 @@ namespace System.Linq.Expressions
                 resultType = typeof(void);
             }
 
-            bool customType = type != null;
+            var customType = type != null;
 
             if (comparison != null)
             {
                 ValidateMethodInfo(comparison, nameof(comparison));
-                ParameterInfo[] pms = comparison.GetParameters();
+                var pms = comparison.GetParameters();
                 if (pms.Length != 2)
                 {
                     throw Error.IncorrectNumberOfMethodCallArguments(comparison, nameof(comparison));
                 }
                 // Validate that the switch value's type matches the comparison method's
                 // left hand side parameter type.
-                ParameterInfo leftParam = pms[0];
-                bool liftedCall = false;
+                var leftParam = pms[0];
+                var liftedCall = false;
                 if (!ParameterIsAssignable(leftParam, switchValue.Type))
                 {
                     liftedCall = ParameterIsAssignable(leftParam, switchValue.Type.GetNonNullable());
@@ -141,8 +141,8 @@ namespace System.Linq.Expressions
                     }
                 }
 
-                ParameterInfo rightParam = pms[1];
-                foreach (SwitchCase c in caseList)
+                var rightParam = pms[1];
+                foreach (var c in caseList)
                 {
                     ContractUtils.RequiresNotNull(c, nameof(cases));
                     ValidateSwitchCaseType(c.Body, customType, resultType, nameof(cases));
@@ -150,7 +150,7 @@ namespace System.Linq.Expressions
                     {
                         // When a comparison method is provided, test values can have different type but have to
                         // be reference assignable to the right hand side parameter of the method.
-                        Type rightOperandType = c.TestValues[i].Type;
+                        var rightOperandType = c.TestValues[i].Type;
                         if (liftedCall)
                         {
                             if (!rightOperandType.IsNullable())
@@ -176,8 +176,8 @@ namespace System.Linq.Expressions
             {
                 // When comparison method is not present, all the test values must have
                 // the same type. Use the first test value's type as the baseline.
-                Expression firstTestValue = caseList[0].TestValues[0];
-                foreach (SwitchCase c in caseList)
+                var firstTestValue = caseList[0].TestValues[0];
+                foreach (var c in caseList)
                 {
                     ContractUtils.RequiresNotNull(c, nameof(cases));
                     ValidateSwitchCaseType(c.Body, customType, resultType, nameof(cases));
@@ -194,7 +194,7 @@ namespace System.Linq.Expressions
                 // Now we need to validate that switchValue.Type and testValueType
                 // make sense in an Equal node. Fortunately, Equal throws a
                 // reasonable error, so just call it.
-                BinaryExpression equal = Equal(switchValue, firstTestValue, false, null);
+                var equal = Equal(switchValue, firstTestValue, false, null);
 
                 // Get the comparison function from equals node.
                 comparison = equal.Method;

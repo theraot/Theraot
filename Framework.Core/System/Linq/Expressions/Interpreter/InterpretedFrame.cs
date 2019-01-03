@@ -137,7 +137,7 @@ namespace System.Linq.Expressions.Interpreter
             get
             {
                 var trace = new List<string>();
-                InterpretedFrame frame = this;
+                var frame = this;
                 do
                 {
                     trace.Add(frame.Name);

@@ -80,7 +80,7 @@ namespace Theraot.Collections.Specialized
                 var targetCount = _target.Count;
                 if (enumerateAppend)
                 {
-                    int appendCount = _append.Count;
+                    var appendCount = _append.Count;
                     Extensions.CanCopyTo(targetCount + appendCount, array, arrayIndex);
                     _target.CopyTo(array, arrayIndex);
                     Extensions.CopyTo(_append, array, targetCount);
@@ -95,7 +95,7 @@ namespace Theraot.Collections.Specialized
             {
                 if (enumerateAppend)
                 {
-                    int appendCount = _append.Count;
+                    var appendCount = _append.Count;
                     Extensions.CanCopyTo(appendCount, array, arrayIndex);
                     Extensions.CopyTo(_append, array);
                 }

@@ -54,7 +54,7 @@ namespace System.Linq.Expressions
 
         private int GetParamId(ParameterExpression p) => GetId(p);
 
-        #region The printing code
+#region The printing code
 
         private void Out(string s)
         {
@@ -66,9 +66,9 @@ namespace System.Linq.Expressions
             _out.Append(c);
         }
 
-        #endregion The printing code
+#endregion The printing code
 
-        #region Output an expression tree to a string
+#region Output an expression tree to a string
 
         internal static string CatchBlockToString(CatchBlock node)
         {
@@ -872,7 +872,7 @@ namespace System.Linq.Expressions
             Out(close);
         }
 
-        #endregion Output an expression tree to a string
+#endregion Output an expression tree to a string
     }
 }
 

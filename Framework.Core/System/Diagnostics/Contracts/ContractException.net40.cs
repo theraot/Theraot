@@ -16,8 +16,6 @@ namespace System.Diagnostics.Contracts
     {
         public ContractFailureKind Kind { get; }
 
-        public string Failure => Message;
-
         public string UserMessage { get; }
 
         public string Condition { get; }
@@ -39,6 +37,7 @@ namespace System.Diagnostics.Contracts
         }
 
 #pragma warning disable IDE0051 // Remove unused private members
+
         private ContractException(SerializationInfo info, StreamingContext context)
 #pragma warning restore IDE0051 // Remove unused private members
             : base(info, context)

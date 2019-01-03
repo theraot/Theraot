@@ -7,7 +7,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
-using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -20,7 +19,7 @@ namespace System.Linq.Expressions.Compiler
         // This allows us to generate better IL
         private void AddReturnLabel(LambdaExpression lambda)
         {
-            Expression expression = lambda.Body;
+            var expression = lambda.Body;
 
             while (true)
             {
@@ -33,8 +32,8 @@ namespace System.Linq.Expressions.Compiler
                     case ExpressionType.Label:
                         // Found the label. We can directly return from this place
                         // only if the label type is reference assignable to the lambda return type.
-                        LabelTarget label = ((LabelExpression)expression).Target;
-                        _labelInfo.Add(label, new LabelInfo(_ilg, label, lambda.ReturnType.IsReferenceAssignableFromInternal(label.Type)));
+                        var label = ((LabelExpression)expression).Target;
+                        _labelInfo.Add(label, new LabelInfo(IL, label, lambda.ReturnType.IsReferenceAssignableFromInternal(label.Type)));
                         return;
 
                     case ExpressionType.Block:
@@ -46,7 +45,7 @@ namespace System.Linq.Expressions.Compiler
                         {
                             return;
                         }
-                        for (int i = body.ExpressionCount - 1; i >= 0; i--)
+                        for (var i = body.ExpressionCount - 1; i >= 0; i--)
                         {
                             expression = body.GetExpression(i);
                             if (Significant(expression))
@@ -67,7 +66,7 @@ namespace System.Linq.Expressions.Compiler
             }
             for (int i = 0, n = block.ExpressionCount; i < n; i++)
             {
-                Expression e = block.GetExpression(i);
+                var e = block.GetExpression(i);
 
                 if (e is LabelExpression label)
                 {
@@ -80,9 +79,9 @@ namespace System.Linq.Expressions.Compiler
         {
             if (node == null)
             {
-                return new LabelInfo(_ilg, null, false);
+                return new LabelInfo(IL, null, false);
             }
-            LabelInfo result = EnsureLabel(node);
+            var result = EnsureLabel(node);
             result.Define(_labelBlock);
             return result;
         }
@@ -90,9 +89,9 @@ namespace System.Linq.Expressions.Compiler
         private void EmitGotoExpression(Expression expr, CompilationFlags flags)
         {
             var node = (GotoExpression)expr;
-            LabelInfo labelInfo = ReferenceLabel(node.Target);
+            var labelInfo = ReferenceLabel(node.Target);
 
-            CompilationFlags tailCall = flags & CompilationFlags.EmitAsTailCallMask;
+            var tailCall = flags & CompilationFlags.EmitAsTailCallMask;
             if (tailCall != CompilationFlags.EmitAsNoTail)
             {
                 // Since tail call flags are not passed into EmitTryExpression, CanReturn
@@ -174,7 +173,7 @@ namespace System.Linq.Expressions.Compiler
         {
             if (node.Type != typeof(void) && (flags & CompilationFlags.EmitAsVoidType) == 0)
             {
-                _ilg.EmitDefault(node.Type, this);
+                IL.EmitDefault(node.Type, this);
             }
         }
 
@@ -182,7 +181,7 @@ namespace System.Linq.Expressions.Compiler
         {
             if (!_labelInfo.TryGetValue(node, out var result))
             {
-                _labelInfo.Add(node, result = new LabelInfo(_ilg, node, false));
+                _labelInfo.Add(node, result = new LabelInfo(IL, node, false));
             }
             return result;
         }
@@ -202,7 +201,7 @@ namespace System.Linq.Expressions.Compiler
 
         private LabelInfo ReferenceLabel(LabelTarget node)
         {
-            LabelInfo result = EnsureLabel(node);
+            var result = EnsureLabel(node);
             result.Reference(_labelBlock);
             return result;
         }
@@ -231,7 +230,7 @@ namespace System.Linq.Expressions.Compiler
                     // thing if it's in a switch case body.
                     if (_labelBlock.Kind == LabelScopeKind.Block)
                     {
-                        LabelTarget label = ((LabelExpression)node).Target;
+                        var label = ((LabelExpression)node).Target;
                         if (_labelBlock.ContainsTarget(label))
                         {
                             return false;
@@ -267,7 +266,7 @@ namespace System.Linq.Expressions.Compiler
                     // scope for the whole switch. This allows "goto case" and
                     // "goto default" to be considered as local jumps.
                     var @switch = (SwitchExpression)node;
-                    foreach (SwitchCase c in @switch.Cases)
+                    foreach (var c in @switch.Cases)
                     {
                         DefineBlockLabels(c.Body);
                     }

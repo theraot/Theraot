@@ -78,7 +78,7 @@ namespace System.Runtime.CompilerServices
                 }
             }
 
-            RuleCache<T> result = ruleCache as RuleCache<T>;
+            var result = ruleCache as RuleCache<T>;
             Debug.Assert(result != null);
             return result;
         }

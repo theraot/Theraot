@@ -95,10 +95,12 @@ namespace Theraot.Collections
         }
 
 #if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
+
         object ICloneable.Clone()
         {
             return Clone();
         }
+
 #endif
 
         public bool Contains(T item)

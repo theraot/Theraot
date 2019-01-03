@@ -30,7 +30,7 @@ namespace System.Collections.Concurrent
         {
             var orderablePartitions = GetOrderablePartitions(partitionCount);
             var partitions = new IEnumerator<TSource>[partitionCount];
-            for (int i = 0; i < partitionCount; i++)
+            for (var i = 0; i < partitionCount; i++)
             {
                 partitions[i] = Enumerator(orderablePartitions[i]);
             }

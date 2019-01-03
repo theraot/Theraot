@@ -223,12 +223,6 @@ namespace Theraot.Collections
                 collection.CopyTo(array, 0);
                 return array;
             }
-            if (source is string str && count >= str.Length)
-            {
-                var array = new char[str.Length];
-                str.CopyTo(0, array, 0, str.Length);
-                return (T[])(object)array;
-            }
             var result = new List<T>(count);
             foreach (var item in source)
             {
@@ -249,6 +243,7 @@ namespace Theraot.Collections
                     throw new ArgumentNullException(nameof(source));
                 case IList<T> result:
                     return result;
+
                 default:
                     return new EnumerationList<T>(source);
             }
@@ -262,10 +257,13 @@ namespace Theraot.Collections
                     throw new ArgumentNullException(nameof(source));
                 case T[] array:
                     return new EnumerationList<T>(array);
+
                 case ICollection<T> collection:
                     return new EnumerationList<T>(collection);
+
                 case IReadOnlyCollection<T> result:
                     return result;
+
                 default:
                     return new EnumerationList<T>(source);
             }

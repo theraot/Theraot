@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Reflection;
 using Theraot.Collections.ThreadSafe;
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+using System.Runtime.CompilerServices;
+#endif
+
 namespace Theraot.Reflection
 {
     public static partial class TypeExtensions
@@ -11,16 +15,28 @@ namespace Theraot.Reflection
         private static readonly CacheDict<Type, bool> _blittableCache = new CacheDict<Type, bool>(256);
         private static readonly CacheDict<Type, bool> _valueTypeRecursiveCache = new CacheDict<Type, bool>(256);
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static bool CanBeNull(this Type type)
         {
             var info = type.GetTypeInfo();
             return !info.IsValueType || Nullable.GetUnderlyingType(type) != null;
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static bool DelegateEquals(this Delegate @delegate, MethodInfo method, object target)
         {
             return @delegate.GetMethodInfo().Equals(method) && @delegate.Target == target;
         }
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 
         public static TAttribute[] GetAttributes<TAttribute>(this Assembly item)
             where TAttribute : Attribute
@@ -36,6 +52,10 @@ namespace Theraot.Reflection
 #endif
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static TAttribute[] GetAttributes<TAttribute>(this MemberInfo item, bool inherit)
             where TAttribute : Attribute
         {
@@ -45,6 +65,10 @@ namespace Theraot.Reflection
             }
             return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute), inherit);
         }
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 
         public static TAttribute[] GetAttributes<TAttribute>(this Module item)
             where TAttribute : Attribute
@@ -60,6 +84,10 @@ namespace Theraot.Reflection
 #endif
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static TAttribute[] GetAttributes<TAttribute>(this ParameterInfo item, bool inherit)
             where TAttribute : Attribute
         {
@@ -70,12 +98,20 @@ namespace Theraot.Reflection
             return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute), inherit);
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static TAttribute[] GetAttributes<TAttribute>(this Type type, bool inherit)
             where TAttribute : Attribute
         {
             var info = type.GetTypeInfo();
             return (TAttribute[])info.GetCustomAttributes(typeof(TAttribute), inherit);
         }
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 
         public static Type GetNonNullable(this Type type)
         {
@@ -85,6 +121,10 @@ namespace Theraot.Reflection
             }
             return type;
         }
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 
         public static Type GetNonRefType(this ParameterInfo parameterInfo)
         {
@@ -100,6 +140,10 @@ namespace Theraot.Reflection
             return parameterType;
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Type GetNonRefType(this Type type)
         {
             if (type == null)
@@ -109,11 +153,19 @@ namespace Theraot.Reflection
             return type.GetNonRefTypeInternal();
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Type GetNotNullable(this Type type)
         {
             var underlying = Nullable.GetUnderlyingType(type);
             return underlying ?? type;
         }
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 
         public static Type GetNullable(this Type type)
         {
@@ -124,6 +176,10 @@ namespace Theraot.Reflection
             }
             return type;
         }
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 
         public static Type GetReturnType(this MethodBase methodInfo)
         {
@@ -157,6 +213,7 @@ namespace Theraot.Reflection
         }
 
 #if NET20 || NET30 || NET35
+
         public static TypeCode GetTypeCode(this Type type)
         {
             if (type == null)
@@ -237,17 +294,26 @@ namespace Theraot.Reflection
             }
             return TypeCode.Object;
         }
+
+#endif
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
 
         public static object GetValue(this PropertyInfo info, object obj)
         {
             //Added in .NET 4.5
 #if NET45
-                    return info.GetValue(obj);
+            return info.GetValue(obj);
 #else
             return info.GetValue(obj, null);
 #endif
         }
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 
         public static bool HasAttribute<TAttribute>(this Assembly item)
             where TAttribute : Attribute
@@ -260,6 +326,10 @@ namespace Theraot.Reflection
             return false;
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static bool HasAttribute<TAttribute>(this MemberInfo item)
             where TAttribute : Attribute
         {
@@ -270,6 +340,10 @@ namespace Theraot.Reflection
             }
             return false;
         }
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 
         public static bool HasAttribute<TAttribute>(this Module item)
             where TAttribute : Attribute
@@ -282,6 +356,10 @@ namespace Theraot.Reflection
             return false;
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static bool HasAttribute<TAttribute>(this ParameterInfo item)
             where TAttribute : Attribute
         {
@@ -292,6 +370,10 @@ namespace Theraot.Reflection
             }
             return false;
         }
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 
         public static bool HasAttribute<TAttribute>(this Type item)
             where TAttribute : Attribute
@@ -343,6 +425,10 @@ namespace Theraot.Reflection
                                          || source.GetTypeInfo().IsEnum && source.GetUnderlyingSystemType() == typeof(bool));
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static bool IsArithmetic(this Type type)
         {
             type = GetNonNullable(type);
@@ -381,6 +467,10 @@ namespace Theraot.Reflection
             return IsBlittableExtracted(type);
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static bool IsBool(this Type type)
         {
             return GetNonNullable(type) == typeof(bool);
@@ -395,11 +485,19 @@ namespace Theraot.Reflection
             return parameterInfo.IsByRefParameterInternal();
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static bool IsConstructedGenericType(this Type type)
         {
             var info = type.GetTypeInfo();
             return info.IsGenericType && !info.IsGenericTypeDefinition;
         }
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 
         public static bool IsConvertible(this Type type)
         {
@@ -430,6 +528,10 @@ namespace Theraot.Reflection
             return false;
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static bool IsGenericInstanceOf(this Type type, Type genericTypeDefinition)
         {
             var info = type.GetTypeInfo();
@@ -440,6 +542,10 @@ namespace Theraot.Reflection
             return type.GetGenericTypeDefinition() == genericTypeDefinition;
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static bool IsInteger(this Type type)
         {
             type = GetNonNullable(type);
@@ -449,12 +555,12 @@ namespace Theraot.Reflection
         public static bool IsInteger64(this Type type)
         {
             type = GetNonNullable(type);
-            if (!type.IsSameOrSubclassOfInternal(typeof(Enum)))
-            {
-                if (type == typeof(long) || type == typeof(ulong)) return true;
-            }
-            return false;
+            return !type.IsSameOrSubclassOfInternal(typeof(Enum)) && (type == typeof(long) || type == typeof(ulong));
         }
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 
         public static bool IsIntegerOrBool(this Type type)
         {
@@ -477,10 +583,18 @@ namespace Theraot.Reflection
             return false;
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static bool IsNullable(this Type type)
         {
             return Nullable.GetUnderlyingType(type) != null;
         }
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 
         public static bool IsNumeric(this Type type)
         {
@@ -505,10 +619,18 @@ namespace Theraot.Reflection
             return false;
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static bool IsNumericOrBool(this Type type)
         {
             return IsNumeric(type) || IsBool(type);
         }
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 
         public static bool IsPrimitiveInteger(this Type type)
         {
@@ -529,6 +651,10 @@ namespace Theraot.Reflection
             return false;
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static bool IsSafeArray(this Type type)
         {
             if (type == null)
@@ -538,24 +664,7 @@ namespace Theraot.Reflection
 #if NETCOREAPP2_0 || NETCOREAPP2_1
                     return type.IsSZArray;
 #else
-            try
-            {
-                // GetArrayRank could throw - should not, but could.
-                // We are not checking the lower bound of the array type, there is no API for that.
-                // However, the type of arrays that can have a different lower index other than zero...
-                // ... have two constructors, one taking only the size, and one taking the lower and upper bounds.
-                var typeInfo = type.GetTypeInfo();
-                return type.IsArray
-                       && typeof(Array).GetTypeInfo().IsAssignableFrom(typeInfo)
-                       && type.GetArrayRank() == 1
-                       && type.GetElementType() != null
-                       && typeInfo.GetConstructors().Length == 1;
-            }
-            catch (Exception exception)
-            {
-                GC.KeepAlive(exception);
-                return false;
-            }
+            return type.IsArray && type.GetElementType()?.MakeArrayType() == type;
 #endif
         }
 
@@ -585,6 +694,10 @@ namespace Theraot.Reflection
             return type.IsSubclassOfInternal(baseType);
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static bool IsSubclassOfInternal(this Type type, Type baseType)
         {
 #if NETCOREAPP1_0 || NETCOREAPP1_1
@@ -612,10 +725,18 @@ namespace Theraot.Reflection
             return IsValueTypeRecursiveExtracted(type);
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Type MakeNullable(this Type self)
         {
             return typeof(Nullable<>).MakeGenericType(self);
         }
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 
         public static void SetValue(this PropertyInfo info, object obj, object value)
         {
@@ -852,6 +973,7 @@ namespace Theraot.Reflection
     public static partial class TypeExtensions
     {
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ConstructorInfo[] GetConstructors(this TypeInfo typeInfo)
         {
             var members = typeInfo.DeclaredMembers;
@@ -866,6 +988,7 @@ namespace Theraot.Reflection
             return result.ToArray();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static FieldInfo[] GetFields(this TypeInfo typeInfo)
         {
             var members = typeInfo.DeclaredMembers;
@@ -880,6 +1003,7 @@ namespace Theraot.Reflection
             return result.ToArray();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ConstructorInfo GetConstructor(this TypeInfo typeInfo, Type[] typeArguments)
         {
             var members = typeInfo.DeclaredMembers;
@@ -894,15 +1018,15 @@ namespace Theraot.Reflection
                 {
                     continue;
                 }
-                bool ok = true;
-                for (int index = 0; index < typeArguments.Length; index++)
-			    {
+                var ok = true;
+                for (var index = 0; index < typeArguments.Length; index++)
+                {
                     if (parameters[index].GetType() != typeArguments[index])
                     {
                         ok = false;
                         break;
                     }
-			    }
+                }
                 if (!ok)
                 {
                     continue;
@@ -912,6 +1036,7 @@ namespace Theraot.Reflection
             return null;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static MethodInfo[] GetMethods(this TypeInfo typeInfo)
         {
             var members = typeInfo.DeclaredMembers;
@@ -926,26 +1051,73 @@ namespace Theraot.Reflection
             return result.ToArray();
         }
 
-        public static MethodInfo GetMethod(this TypeInfo typeInfo, string name)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static MethodInfo GetMethod(this TypeInfo typeInfo, string name, Type[] typeArguments)
         {
             var members = typeInfo.DeclaredMembers;
             foreach (var member in members)
             {
                 if (member is MethodInfo methodInfo)
                 {
-                    if (member.Name == name)
+                    if (member.Name != name)
                     {
-                        return methodInfo;
+                        continue;
                     }
+                    var parameters = methodInfo.GetParameters();
+                    if (parameters.Length != typeArguments.Length)
+                    {
+                        continue;
+                    }
+                    var ok = true;
+                    for (var index = 0; index < typeArguments.Length; index++)
+                    {
+                        if (parameters[index].GetType() != typeArguments[index])
+                        {
+                            ok = false;
+                            break;
+                        }
+                    }
+                    if (!ok)
+                    {
+                        continue;
+                    }
+                    return methodInfo;
                 }
             }
             return null;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static MethodInfo GetMethod(this TypeInfo typeInfo, string name)
+        {
+            var members = typeInfo.DeclaredMembers;
+            MethodInfo found = null;
+            foreach (var member in members)
+            {
+                if (member is MethodInfo methodInfo)
+                {
+                    if (member.Name != name)
+                    {
+                        continue;
+                    }
+                    if (found != null)
+                    {
+                        throw new AmbiguousMatchException();
+                    }
+                    found = methodInfo;
+                }
+            }
+            return found;
+        }
+#endif
+
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
 
         public static System.Runtime.InteropServices.StructLayoutAttribute GetStructLayoutAttribute(this Type type)
         {
-#if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+#if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_5 || NETSTANDARD1_6 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
             var attributes = type.GetAttributes<System.Runtime.InteropServices.StructLayoutAttribute>(false);
             foreach (var attribute in attributes)
             {
@@ -957,9 +1129,13 @@ namespace Theraot.Reflection
 #endif
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Type GetUnderlyingSystemType(this Type type)
         {
-#if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+#if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_5 || NETSTANDARD1_6 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
             return type;
 #else
             return type.UnderlyingSystemType;

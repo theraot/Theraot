@@ -31,15 +31,15 @@ namespace System.Linq.Expressions.Compiler
                 switch (binding.BindingType)
                 {
                     case MemberBindingType.Assignment:
-                        MemberAssignment assign = (MemberAssignment)binding;
+                        var assign = (MemberAssignment)binding;
                         return new MemberAssignmentRewriter(assign, spiller, stack);
 
                     case MemberBindingType.ListBinding:
-                        MemberListBinding list = (MemberListBinding)binding;
+                        var list = (MemberListBinding)binding;
                         return new ListBindingRewriter(list, spiller, stack);
 
                     case MemberBindingType.MemberBinding:
-                        MemberMemberBinding member = (MemberMemberBinding)binding;
+                        var member = (MemberMemberBinding)binding;
                         return new MemberMemberBindingRewriter(member, spiller, stack);
                 }
                 throw Error.UnhandledBinding();
@@ -68,14 +68,14 @@ namespace System.Linq.Expressions.Compiler
             {
                 _initializers = binding.Initializers;
 
-                int count = _initializers.Count;
+                var count = _initializers.Count;
                 _childRewriters = new ChildRewriter[count];
 
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
-                    ElementInit init = _initializers[i];
+                    var init = _initializers[i];
 
-                    ChildRewriter cr = new ChildRewriter(spiller, stack, init.Arguments.Count);
+                    var cr = new ChildRewriter(spiller, stack, init.Arguments.Count);
                     cr.Add(init.Arguments);
 
                     Action |= cr.Action;
@@ -91,11 +91,11 @@ namespace System.Linq.Expressions.Compiler
                         return Binding;
 
                     case RewriteAction.Copy:
-                        int count = _initializers.Count;
-                        ElementInit[] newInitializer = new ElementInit[count];
-                        for (int i = 0; i < count; i++)
+                        var count = _initializers.Count;
+                        var newInitializer = new ElementInit[count];
+                        for (var i = 0; i < count; i++)
                         {
-                            ChildRewriter cr = _childRewriters[i];
+                            var cr = _childRewriters[i];
                             if (cr.Action == RewriteAction.None)
                             {
                                 newInitializer[i] = _initializers[i];
@@ -117,14 +117,14 @@ namespace System.Linq.Expressions.Compiler
                 Expression member = MemberExpression.Make(target, Binding.Member);
                 Expression memberTemp = Spiller.MakeTemp(member.Type);
 
-                int count = _initializers.Count;
-                Expression[] block = new Expression[count + 2];
+                var count = _initializers.Count;
+                var block = new Expression[count + 2];
                 block[0] = new AssignBinaryExpression(memberTemp, member);
 
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
-                    ChildRewriter cr = _childRewriters[i];
-                    Result add = cr.Finish(new InstanceMethodCallExpressionN(_initializers[i].AddMethod, memberTemp, cr[0, -1]));
+                    var cr = _childRewriters[i];
+                    var add = cr.Finish(new InstanceMethodCallExpressionN(_initializers[i].AddMethod, memberTemp, cr[0, -1]));
                     block[i + 1] = add.Node;
                 }
 
@@ -152,7 +152,7 @@ namespace System.Linq.Expressions.Compiler
             internal MemberAssignmentRewriter(MemberAssignment binding, StackSpiller spiller, Stack stack) :
                 base(binding, spiller)
             {
-                Result result = spiller.RewriteExpression(binding.Expression, stack);
+                var result = spiller.RewriteExpression(binding.Expression, stack);
                 Action = result.Action;
                 _rhs = result.Node;
             }
@@ -193,12 +193,12 @@ namespace System.Linq.Expressions.Compiler
             {
                 _bindings = binding.Bindings;
 
-                int count = _bindings.Count;
+                var count = _bindings.Count;
                 _bindingRewriters = new BindingRewriter[count];
 
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
-                    BindingRewriter br = Create(_bindings[i], spiller, stack);
+                    var br = Create(_bindings[i], spiller, stack);
                     Action |= br.Action;
                     _bindingRewriters[i] = br;
                 }
@@ -212,9 +212,9 @@ namespace System.Linq.Expressions.Compiler
                         return Binding;
 
                     case RewriteAction.Copy:
-                        int count = _bindings.Count;
-                        MemberBinding[] newBindings = new MemberBinding[count];
-                        for (int i = 0; i < count; i++)
+                        var count = _bindings.Count;
+                        var newBindings = new MemberBinding[count];
+                        for (var i = 0; i < count; i++)
                         {
                             newBindings[i] = _bindingRewriters[i].AsBinding();
                         }
@@ -230,13 +230,13 @@ namespace System.Linq.Expressions.Compiler
                 Expression member = MemberExpression.Make(target, Binding.Member);
                 Expression memberTemp = Spiller.MakeTemp(member.Type);
 
-                int count = _bindings.Count;
-                Expression[] block = new Expression[count + 2];
+                var count = _bindings.Count;
+                var block = new Expression[count + 2];
                 block[0] = new AssignBinaryExpression(memberTemp, member);
 
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
-                    BindingRewriter br = _bindingRewriters[i];
+                    var br = _bindingRewriters[i];
                     block[i + 1] = br.AsExpression(memberTemp);
                 }
 

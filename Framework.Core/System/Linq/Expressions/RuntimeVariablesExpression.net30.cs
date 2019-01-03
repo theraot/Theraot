@@ -34,7 +34,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(variables, nameof(variables));
 
             var vars = Theraot.Collections.Extensions.AsArray(variables);
-            for (int i = 0; i < vars.Length; i++)
+            for (var i = 0; i < vars.Length; i++)
             {
                 ContractUtils.RequiresNotNull(vars[i], nameof(variables), i);
             }

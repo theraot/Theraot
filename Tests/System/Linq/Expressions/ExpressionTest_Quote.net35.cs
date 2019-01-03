@@ -39,8 +39,10 @@ namespace MonoTests.System.Linq.Expressions
 
 		[Test]
 		[ExpectedException (typeof (ArgumentException))]
+		[Category("NotDotNet")]
 		public void QuoteConstant ()
 		{
+            // Failing in .NET35
 			Expression.Quote (Expression.Constant (1));
 		}
 

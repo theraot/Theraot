@@ -13,17 +13,17 @@ namespace System.Dynamic.Utils
     {
         internal static T CommonNode<T>(T first, T second, Func<T, T> parent) where T : class
         {
-            EqualityComparer<T> cmp = EqualityComparer<T>.Default;
+            var cmp = EqualityComparer<T>.Default;
             if (cmp.Equals(first, second))
             {
                 return first;
             }
             var set = new HashSet<T>(cmp);
-            for (T t = first; t != null; t = parent(t))
+            for (var t = first; t != null; t = parent(t))
             {
                 set.Add(t);
             }
-            for (T t = second; t != null; t = parent(t))
+            for (var t = second; t != null; t = parent(t))
             {
                 if (set.Contains(t))
                 {

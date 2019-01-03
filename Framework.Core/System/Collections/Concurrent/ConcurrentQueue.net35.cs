@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35 || NETSTANDARD1_0
+﻿#if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,6 +9,7 @@ using Theraot.Collections.ThreadSafe;
 namespace System.Collections.Concurrent
 {
 #if NET20 || NET30 || NET35
+
     [Serializable]
 #endif
     [ComVisible(false)]

@@ -48,22 +48,21 @@ namespace System.Linq
     internal class QueryableEnumerable<TElement> : IQueryableEnumerable<TElement>, IQueryProvider
     {
         private readonly IEnumerable<TElement> _enumerable;
-        private readonly Expression _expression;
 
         public QueryableEnumerable(IEnumerable<TElement> enumerable)
         {
-            _expression = Expression.Constant(this);
+            Expression = Expression.Constant(this);
             _enumerable = enumerable;
         }
 
         public QueryableEnumerable(Expression expression)
         {
-            _expression = expression;
+            Expression = expression;
         }
 
         public Type ElementType => typeof(TElement);
 
-        public Expression Expression => _expression;
+        public Expression Expression { get; }
 
         public IQueryProvider Provider => this;
 
@@ -103,7 +102,7 @@ namespace System.Linq
 
         public IEnumerator<TElement> GetEnumerator()
         {
-            return Execute<IEnumerable<TElement>>(_expression).GetEnumerator();
+            return Execute<IEnumerable<TElement>>(Expression).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -117,11 +116,11 @@ namespace System.Linq
             {
                 return _enumerable.ToString();
             }
-            if (_expression == null)
+            if (Expression == null)
             {
                 return base.ToString();
             }
-            return _expression is ConstantExpression constant && constant.Value == this ? base.ToString() : _expression.ToString();
+            return Expression is ConstantExpression constant && constant.Value == this ? base.ToString() : Expression.ToString();
         }
 
         private static Expression TransformQueryable(Expression expression)

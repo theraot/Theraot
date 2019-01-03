@@ -20,12 +20,6 @@ namespace System.Linq.Expressions.Interpreter
         public virtual int ProducedStack => 0;
         public int StackBalance => ProducedStack - ConsumedStack;
 
-        public virtual object GetDebugCookie(LightCompiler compiler)
-        {
-            GC.KeepAlive(compiler);
-            return null;
-        }
-
         public abstract int Run(InterpretedFrame frame);
 
         public virtual string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects) => ToString();

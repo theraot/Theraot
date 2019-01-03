@@ -37,8 +37,6 @@ namespace System.Linq.Expressions.Compiler
             /// </summary>
             private readonly StackSpiller _self;
 
-            private RewriteAction _action;
-
             /// <summary>
             /// Indicates whether a child expression represents a ByRef value and
             /// requires use of a <see cref="ByRefAssignBinaryExpression" /> node
@@ -52,7 +50,7 @@ namespace System.Linq.Expressions.Compiler
             /// is populated in <see cref="EnsureDone"/> which gets called upon
             /// the first access to an indexer or the <see cref="Rewrite"/> method
             /// on the child rewriter instance. A comma only gets built if the
-            /// rewrite action in <see cref="_action"/> is set to SpillStack.
+            /// rewrite action in <see cref="Action"/> is set to SpillStack.
             /// </summary>
             /// <example>
             /// When stack spilling the following expression:
@@ -98,13 +96,13 @@ namespace System.Linq.Expressions.Compiler
                 _expressions = new Expression[count];
             }
 
-            internal RewriteAction Action => _action;
+            internal RewriteAction Action { get; private set; }
 
             /// <summary>
             /// Gets a Boolean value indicating whether the parent expression should be
             /// rewritten by using <see cref="Finish"/>.
             /// </summary>
-            internal bool Rewrite => _action != RewriteAction.None;
+            internal bool Rewrite => Action != RewriteAction.None;
 
             /// <summary>
             /// Gets the rewritten child expression at the specified <paramref name="index"/>,
@@ -164,7 +162,7 @@ namespace System.Linq.Expressions.Compiler
                         last += _expressions.Length;
                     }
 
-                    int count = last - first + 1;
+                    var count = last - first + 1;
                     ContractUtils.RequiresArrayRange(_expressions, first, count, nameof(first), nameof(last));
 
                     if (count == _expressions.Length)
@@ -175,7 +173,7 @@ namespace System.Linq.Expressions.Compiler
                         return _expressions;
                     }
 
-                    Expression[] clone = new Expression[count];
+                    var clone = new Expression[count];
                     Array.Copy(_expressions, first, clone, 0, count);
                     return clone;
                 }
@@ -197,8 +195,8 @@ namespace System.Linq.Expressions.Compiler
                     return;
                 }
 
-                Result exp = _self.RewriteExpression(expression, _stack);
-                _action |= exp.Action;
+                var exp = _self.RewriteExpression(expression, _stack);
+                Action |= exp.Action;
                 _stack = Stack.NonEmpty;
 
                 if (exp.Action == RewriteAction.SpillStack)
@@ -260,14 +258,14 @@ namespace System.Linq.Expressions.Compiler
             {
                 EnsureDone();
 
-                if (_action == RewriteAction.SpillStack)
+                if (Action == RewriteAction.SpillStack)
                 {
                     Debug.Assert(_comma.Capacity == _comma.Count + 1);
                     _comma.Add(expression);
                     expression = MakeBlock(_comma.ToArray());
                 }
 
-                return new Result(_action, expression);
+                return new Result(Action, expression);
             }
 
             /// <summary>
@@ -386,14 +384,14 @@ namespace System.Linq.Expressions.Compiler
                 {
                     _done = true;
 
-                    if (_action == RewriteAction.SpillStack)
+                    if (Action == RewriteAction.SpillStack)
                     {
-                        Expression[] clone = _expressions;
-                        int count = _lastSpillIndex + 1;
-                        List<Expression> comma = new List<Expression>(count + 1);
-                        for (int i = 0; i < count; i++)
+                        var clone = _expressions;
+                        var count = _lastSpillIndex + 1;
+                        var comma = new List<Expression>(count + 1);
+                        for (var i = 0; i < count; i++)
                         {
-                            Expression current = clone[i];
+                            var current = clone[i];
                             if (ShouldSaveToTemp(current))
                             {
                                 clone[i] = _self.ToTemp(current, out var temp, _byRefs?[i] ?? false);

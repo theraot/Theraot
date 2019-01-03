@@ -246,7 +246,6 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed class EnterTryCatchFinallyInstruction : IndexedBranchInstruction
     {
         private readonly bool _hasFinally;
-        private TryCatchFinallyHandler _tryHandler;
 
         private EnterTryCatchFinallyInstruction(int targetIndex, bool hasFinally)
             : base(targetIndex)
@@ -258,11 +257,11 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedContinuations => _hasFinally ? 1 : 0;
 
-        internal TryCatchFinallyHandler Handler => _tryHandler;
+        internal TryCatchFinallyHandler Handler { get; private set; }
 
         public override int Run(InterpretedFrame frame)
         {
-            Debug.Assert(_tryHandler != null, "the tryHandler must be set already");
+            Debug.Assert(Handler != null, "the tryHandler must be set already");
 
             if (_hasFinally)
             {
@@ -278,21 +277,21 @@ namespace System.Linq.Expressions.Interpreter
             {
                 // run the try block
                 var index = frame.InstructionIndex;
-                while (index >= _tryHandler.TryStartIndex && index < _tryHandler.TryEndIndex)
+                while (index >= Handler.TryStartIndex && index < Handler.TryEndIndex)
                 {
                     index += instructions[index].Run(frame);
                     frame.InstructionIndex = index;
                 }
 
                 // we finish the try block and is about to jump out of the try/catch blocks
-                if (index == _tryHandler.GotoEndTargetIndex)
+                if (index == Handler.GotoEndTargetIndex)
                 {
                     // run the 'Goto' that jumps out of the try/catch/finally blocks
                     Debug.Assert(instructions[index] is GotoInstruction, "should be the 'Goto' instruction that jumps out the try/catch/finally");
                     frame.InstructionIndex += instructions[index].Run(frame);
                 }
             }
-            catch (Exception exception) when (_tryHandler.HasHandler(frame, exception, out var exHandler, out var unwrappedException))
+            catch (Exception exception) when (Handler.HasHandler(frame, exception, out var exHandler, out var unwrappedException))
             {
                 Debug.Assert(!(unwrappedException is RethrowException));
                 frame.InstructionIndex += frame.Goto(exHandler.LabelIndex, unwrappedException, gotoExceptionHandler: true);
@@ -319,7 +318,7 @@ namespace System.Linq.Expressions.Interpreter
                     }
 
                     // we finish the catch block and is about to jump out of the try/catch blocks
-                    if (index == _tryHandler.GotoEndTargetIndex)
+                    if (index == Handler.GotoEndTargetIndex)
                     {
                         // run the 'Goto' that jumps out of the try/catch/finally blocks
                         Debug.Assert(instructions[index] is GotoInstruction, "should be the 'Goto' instruction that jumps out the try/catch/finally");
@@ -336,7 +335,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             finally
             {
-                if (_tryHandler.IsFinallyBlockExist)
+                if (Handler.IsFinallyBlockExist)
                 {
                     // We get to the finally block in two paths:
                     //  1. Jump from the try/catch blocks. This includes two sub-routes:
@@ -346,13 +345,13 @@ namespace System.Linq.Expressions.Interpreter
                     // In the first path, the continuation mechanism works and frame.InstructionIndex will be updated to point to the first instruction of the finally block
                     // In the second path, the continuation mechanism is not involved and frame.InstructionIndex is not updated
 #if DEBUG
-                    bool isFromJump = frame.IsJumpHappened();
-                    Debug.Assert(!isFromJump || isFromJump && _tryHandler.FinallyStartIndex == frame.InstructionIndex, "we should already jump to the first instruction of the finally");
+                    var isFromJump = frame.IsJumpHappened();
+                    Debug.Assert(!isFromJump || isFromJump && Handler.FinallyStartIndex == frame.InstructionIndex, "we should already jump to the first instruction of the finally");
 #endif
                     // run the finally block
                     // we cannot jump out of the finally block, and we cannot have an immediate rethrow in it
-                    var index = frame.InstructionIndex = _tryHandler.FinallyStartIndex;
-                    while (index >= _tryHandler.FinallyStartIndex && index < _tryHandler.FinallyEndIndex)
+                    var index = frame.InstructionIndex = Handler.FinallyStartIndex;
+                    while (index >= Handler.FinallyStartIndex && index < Handler.FinallyEndIndex)
                     {
                         index += instructions[index].Run(frame);
                         frame.InstructionIndex = index;
@@ -377,15 +376,13 @@ namespace System.Linq.Expressions.Interpreter
 
         internal void SetTryHandler(TryCatchFinallyHandler tryHandler)
         {
-            Debug.Assert(_tryHandler == null && tryHandler != null, "the tryHandler can be set only once");
-            _tryHandler = tryHandler;
+            Debug.Assert(Handler == null && tryHandler != null, "the tryHandler can be set only once");
+            Handler = tryHandler;
         }
     }
 
     internal sealed class EnterTryFaultInstruction : IndexedBranchInstruction
     {
-        private TryFaultHandler _tryHandler;
-
         internal EnterTryFaultInstruction(int targetIndex)
             : base(targetIndex)
         {
@@ -394,11 +391,11 @@ namespace System.Linq.Expressions.Interpreter
         public override string InstructionName => "EnterTryFault";
         public override int ProducedContinuations => 1;
 
-        internal TryFaultHandler Handler => _tryHandler;
+        internal TryFaultHandler Handler { get; private set; }
 
         public override int Run(InterpretedFrame frame)
         {
-            Debug.Assert(_tryHandler != null, "the tryHandler must be set already");
+            Debug.Assert(Handler != null, "the tryHandler must be set already");
 
             // Push fault.
             frame.PushContinuation(LabelIndex);
@@ -420,7 +417,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 // run the try block
                 var index = frame.InstructionIndex;
-                while (index >= _tryHandler.TryStartIndex && index < _tryHandler.TryEndIndex)
+                while (index >= Handler.TryStartIndex && index < Handler.TryEndIndex)
                 {
                     index += instructions[index].Run(frame);
                     frame.InstructionIndex = index;
@@ -441,8 +438,8 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     // run the fault block
                     // we cannot jump out of the finally block, and we cannot have an immediate rethrow in it
-                    var index = frame.InstructionIndex = _tryHandler.FinallyStartIndex;
-                    while (index >= _tryHandler.FinallyStartIndex && index < _tryHandler.FinallyEndIndex)
+                    var index = frame.InstructionIndex = Handler.FinallyStartIndex;
+                    while (index >= Handler.FinallyStartIndex && index < Handler.FinallyEndIndex)
                     {
                         index += instructions[index].Run(frame);
                         frame.InstructionIndex = index;
@@ -456,8 +453,8 @@ namespace System.Linq.Expressions.Interpreter
         internal void SetTryHandler(TryFaultHandler tryHandler)
         {
             Debug.Assert(tryHandler != null);
-            Debug.Assert(_tryHandler == null, "the tryHandler can be set only once");
-            _tryHandler = tryHandler;
+            Debug.Assert(Handler == null, "the tryHandler can be set only once");
+            Handler = tryHandler;
         }
     }
 

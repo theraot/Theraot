@@ -119,10 +119,10 @@ namespace System.Linq.Expressions.Compiler
         {
             Node = node;
             IsMethod = isMethod;
-            ParameterExpression[] variables = GetVariables(node);
+            var variables = GetVariables(node);
 
             Definitions = new Dictionary<ParameterExpression, VariableStorageKind>(variables.Length);
-            foreach (ParameterExpression v in variables)
+            foreach (var v in variables)
             {
                 Definitions.Add(v, VariableStorageKind.Local);
             }
@@ -138,7 +138,7 @@ namespace System.Linq.Expressions.Compiler
         {
             get
             {
-                CompilerScope s = this;
+                var s = this;
                 while (s != null)
                 {
                     if (s.Node is LambdaExpression lambda)
@@ -185,7 +185,7 @@ namespace System.Linq.Expressions.Compiler
             // free scope's variables
             if (!IsMethod)
             {
-                foreach (Storage storage in _locals.Values)
+                foreach (var storage in _locals.Values)
                 {
                     storage.FreeLocal();
                 }
@@ -193,7 +193,7 @@ namespace System.Linq.Expressions.Compiler
 
             // Clear state that is associated with this parent
             // (because the scope can be reused in another context)
-            CompilerScope parent = _parent;
+            var parent = _parent;
             _parent = null;
             _hoistedLocals = null;
             _closureHoistedLocals = null;
@@ -211,11 +211,11 @@ namespace System.Linq.Expressions.Compiler
                 // Find what array each variable is on & its index
                 var indexes = new ArrayBuilder<long>(vars.Count);
 
-                foreach (ParameterExpression variable in vars)
+                foreach (var variable in vars)
                 {
                     // For each variable, find what array it's defined on
                     ulong parents = 0;
-                    HoistedLocals locals = NearestHoistedLocals;
+                    var locals = NearestHoistedLocals;
                     while (!locals.Indexes.ContainsKey(variable))
                     {
                         parents++;
@@ -225,7 +225,7 @@ namespace System.Linq.Expressions.Compiler
 
                     // combine the number of parents we walked, with the
                     // real index of variable to get the index to emit.
-                    ulong index = (parents << 32) | (uint)locals.Indexes[variable];
+                    var index = (parents << 32) | (uint)locals.Indexes[variable];
 
                     indexes.UncheckedAdd((long)index);
                 }
@@ -280,7 +280,7 @@ namespace System.Linq.Expressions.Compiler
         private Storage ResolveVariable(ParameterExpression variable, HoistedLocals hoistedLocals)
         {
             // Search IL locals and arguments, but only in this lambda
-            for (CompilerScope s = this; s != null; s = s._parent)
+            for (var s = this; s != null; s = s._parent)
             {
                 if (s._locals.TryGetValue(variable, out var storage))
                 {
@@ -295,7 +295,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // search hoisted locals
-            for (HoistedLocals h = hoistedLocals; h != null; h = h.Parent)
+            for (var h = hoistedLocals; h != null; h = h.Parent)
             {
                 if (h.Indexes.TryGetValue(variable, out var index))
                 {
@@ -334,7 +334,7 @@ namespace System.Linq.Expressions.Compiler
         // Allocates slots for IL locals or IL arguments
         private void AllocateLocals(LambdaCompiler lc)
         {
-            foreach (ParameterExpression v in GetVariables())
+            foreach (var v in GetVariables())
             {
                 if (Definitions[v] == VariableStorageKind.Local)
                 {
@@ -377,7 +377,7 @@ namespace System.Linq.Expressions.Compiler
                 return;
             }
 
-            foreach (KeyValuePair<ParameterExpression, int> refCount in ReferenceCount)
+            foreach (var refCount in ReferenceCount)
             {
                 if (ShouldCache(refCount.Key, refCount.Value))
                 {
@@ -402,7 +402,7 @@ namespace System.Linq.Expressions.Compiler
 
             while ((locals = locals.Parent) != null)
             {
-                ParameterExpression v = locals.SelfVariable;
+                var v = locals.SelfVariable;
                 var local = new LocalStorage(lc, v);
                 local.EmitStore(ResolveVariable(v));
                 _locals.Add(v, local);
@@ -430,13 +430,13 @@ namespace System.Linq.Expressions.Compiler
             lc.IL.Emit(OpCodes.Newarr, typeof(object));
 
             // initialize all elements
-            int i = 0;
-            foreach (ParameterExpression v in _hoistedLocals.Variables)
+            var i = 0;
+            foreach (var v in _hoistedLocals.Variables)
             {
                 // array[i] = new StrongBox<T>(...);
                 lc.IL.Emit(OpCodes.Dup);
                 lc.IL.EmitPrimitive(i++);
-                Type boxType = typeof(StrongBox<>).MakeGenericType(v.Type);
+                var boxType = typeof(StrongBox<>).MakeGenericType(v.Type);
 
                 int index;
                 if (IsMethod && (index = lc.Parameters.IndexOf(v)) >= 0)
@@ -477,14 +477,14 @@ namespace System.Linq.Expressions.Compiler
 
         private IEnumerable<ParameterExpression> GetVariablesIncludingMerged()
         {
-            foreach (ParameterExpression param in GetVariables(Node))
+            foreach (var param in GetVariables(Node))
             {
                 yield return param;
             }
 
-            foreach (BlockExpression scope in MergedScopes)
+            foreach (var scope in MergedScopes)
             {
-                foreach (ParameterExpression param in scope.Variables)
+                foreach (var param in scope.Variables)
                 {
                     yield return param;
                 }
@@ -501,7 +501,7 @@ namespace System.Linq.Expressions.Compiler
                 _closureHoistedLocals = _parent.NearestHoistedLocals;
             }
 
-            ReadOnlyCollection<ParameterExpression> hoistedVars = GetVariables().Where(p => Definitions[p] == VariableStorageKind.Hoisted).ToTrueReadOnly();
+            var hoistedVars = GetVariables().Where(p => Definitions[p] == VariableStorageKind.Hoisted).ToTrueReadOnly();
 
             if (hoistedVars.Count > 0)
             {

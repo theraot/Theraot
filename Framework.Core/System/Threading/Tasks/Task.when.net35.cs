@@ -415,7 +415,7 @@ namespace System.Threading.Tasks
             // take shortcut if there are no tasks upon which to wait
             if (tasks.Length == 0)
             {
-                return CompletedTask;
+                return TaskEx.CompletedTask;
             }
             return new WhenAllPromise(tasks);
         }

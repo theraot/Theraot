@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -11,7 +13,7 @@ using Theraot.Core;
 namespace APIList
 {
     [TestFixture]
-    static class ApiListTest
+    public static class ApiListTest
     {
         [Test]
         [Category("Performance")]
@@ -192,3 +194,5 @@ namespace APIList
         }
     }
 }
+
+#endif

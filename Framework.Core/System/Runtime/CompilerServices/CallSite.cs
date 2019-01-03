@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Reflection;
@@ -83,16 +82,16 @@ namespace System.Runtime.CompilerServices
                 throw Error.TypeMustBeDerivedFromSystemDelegate();
             }
 
-            CacheDict<Type, Func<CallSiteBinder, CallSite>> ctors = _siteCtors;
+            var ctors = _siteCtors;
             if (ctors == null)
             {
                 // It's okay to just set this, worst case we're just throwing away some data
                 _siteCtors = ctors = new CacheDict<Type, Func<CallSiteBinder, CallSite>>(100);
             }
 
-            if (!ctors.TryGetValue(delegateType, out Func<CallSiteBinder, CallSite> ctor))
+            if (!ctors.TryGetValue(delegateType, out var ctor))
             {
-                MethodInfo method = typeof(CallSite<>).MakeGenericType(delegateType).GetMethod(nameof(Create));
+                var method = typeof(CallSite<>).MakeGenericType(delegateType).GetMethod(nameof(Create));
 
                 /*if (delegateType.IsCollectible)
                 {
@@ -158,7 +157,7 @@ namespace System.Runtime.CompilerServices
 
         internal void AddRule(T newRule)
         {
-            T[] rules = Rules;
+            var rules = Rules;
             if (rules == null)
             {
                 Rules = new[] { newRule };
@@ -204,8 +203,8 @@ namespace System.Runtime.CompilerServices
         {
             if (i > 1)
             {
-                T[] rules = Rules;
-                T rule = rules[i];
+                var rules = Rules;
+                var rule = rules[i];
 
                 rules[i] = rules[i - 1];
                 rules[i - 1] = rules[i - 2];
