@@ -53,19 +53,9 @@ namespace Theraot.Collections
             return GetEnumerator();
         }
 
-        public void Move(int oldIndex, int newIndex)
-        {
-            _wrapped.Move(oldIndex, newIndex);
-        }
-
         bool ICollection<T>.Remove(T item)
         {
             throw new NotSupportedException();
-        }
-
-        public void Swap(int indexA, int indexB)
-        {
-            _wrapped.Swap(indexA, indexB);
         }
 
         public T[] ToArray()
