@@ -42,6 +42,9 @@ namespace Theraot.Collections
                 }
             }
         }
+
+#if FAT
+
 <#
     for (var indice = 3; indice < 17; indice++)
     {#>
@@ -91,5 +94,8 @@ namespace Theraot.Collections
             }
         }
 <#
-    }#>    }
+    }#>
+#endif
+
+	}
 }

@@ -43,6 +43,9 @@ namespace Theraot.Collections
             }
         }
 
+#if FAT
+
+
         public static IEnumerable<TReturn> Zip<T1, T2, T3, TReturn>(IEnumerable<T1> arg1, IEnumerable<T2> arg2, IEnumerable<T3> arg3, Func<T1, T2, T3, TReturn> resultSelector)
         {
             if (arg1 == null)
@@ -1225,5 +1228,7 @@ namespace Theraot.Collections
                 }
             }
         }
-    }
+#endif
+
+	}
 }
