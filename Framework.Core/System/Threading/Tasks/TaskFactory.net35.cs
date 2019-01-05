@@ -297,7 +297,7 @@ namespace System.Threading.Tasks
 
     public partial class TaskFactory
     {
-        public Task FromAsync(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, object state, TaskCreationOptions creationOptions)
+        public Task FromAsync(IAsyncResult asyncResult, Action<IAsyncResult> endMethod)
         {
             if (asyncResult == null)
             {
@@ -307,74 +307,20 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(endMethod));
             }
-            return FromAsyncInternal(asyncResult, endMethod, state, creationOptions);
+            return FromAsyncInternal(asyncResult, endMethod);
         }
 
-        /*public Task FromAsync(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        public Task FromAsync(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state)
         {
-            if (asyncResult == null)
+            if (beginMethod == null)
             {
-                throw new ArgumentNullException(nameof(asyncResult));
+                throw new ArgumentNullException(nameof(beginMethod));
             }
             if (endMethod == null)
             {
                 throw new ArgumentNullException(nameof(endMethod));
             }
-            var source = new TaskCompletionSource<Theraot.VoidStruct>(null, creationOptions);
-            if (asyncResult.IsCompleted)
-            {
-                AsyncCallback(asyncResult);
-            }
-            else
-            {
-                var waiterThread = new Thread
-                (
-                    () =>
-                    {
-                        try
-                        {
-                            asyncResult.AsyncWaitHandle.WaitOne();
-                            AsyncCallback(asyncResult);
-                        }
-                        catch (OperationCanceledException exception)
-                        {
-                            GC.KeepAlive(exception);
-                            source.TrySetCanceled();
-                        }
-                    }
-                );
-                waiterThread.Start();
-            }
-            return source.Task;
-            void AsyncCallback(IAsyncResult r)
-            {
-                try
-                {
-                    endMethod(r);
-                    source.SetResult(default);
-                }
-                catch (OperationCanceledException)
-                {
-                    source.SetCanceled();
-                }
-                catch (Exception e)
-                {
-                    source.SetException(e);
-                }
-            }
-        }*/
-
-        public Task FromAsync(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, object state)
-        {
-            if (asyncResult == null)
-            {
-                throw new ArgumentNullException(nameof(asyncResult));
-            }
-            if (endMethod == null)
-            {
-                throw new ArgumentNullException(nameof(endMethod));
-            }
-            return FromAsyncInternal(asyncResult, endMethod, state, default);
+            return FromAsyncInternal(beginMethod, endMethod, state);
         }
 
         public Task FromAsync(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, TaskCreationOptions creationOptions)
@@ -387,20 +333,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(endMethod));
             }
-            return FromAsyncInternal(asyncResult, endMethod, null, creationOptions);
-        }
-
-        public Task FromAsync(IAsyncResult asyncResult, Action<IAsyncResult> endMethod)
-        {
-            if (asyncResult == null)
-            {
-                throw new ArgumentNullException(nameof(asyncResult));
-            }
-            if (endMethod == null)
-            {
-                throw new ArgumentNullException(nameof(endMethod));
-            }
-            return FromAsyncInternal(asyncResult, endMethod, null, default);
+            return FromAsyncInternal(asyncResult, endMethod, creationOptions);
         }
 
         public Task FromAsync(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state, TaskCreationOptions creationOptions)
@@ -416,43 +349,21 @@ namespace System.Threading.Tasks
             return FromAsyncInternal(beginMethod, endMethod, state, creationOptions);
         }
 
-        public Task FromAsync(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state)
+        public Task FromAsync(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
-            if (beginMethod == null)
+            if (asyncResult == null)
             {
-                throw new ArgumentNullException(nameof(beginMethod));
+                throw new ArgumentNullException(nameof(asyncResult));
             }
             if (endMethod == null)
             {
                 throw new ArgumentNullException(nameof(endMethod));
             }
-            return FromAsyncInternal(beginMethod, endMethod, state, default);
-        }
-
-        public Task FromAsync(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TaskCreationOptions creationOptions)
-        {
-            if (beginMethod == null)
+            if (scheduler == null)
             {
-                throw new ArgumentNullException(nameof(beginMethod));
+                throw new ArgumentNullException(nameof(scheduler));
             }
-            if (endMethod == null)
-            {
-                throw new ArgumentNullException(nameof(endMethod));
-            }
-            return FromAsyncInternal(beginMethod, endMethod, null, creationOptions);
-        }
-
-        public Task FromAsync(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod)
-        {
-            if (beginMethod == null)
-            {
-                throw new ArgumentNullException(nameof(beginMethod));
-            }
-            if (endMethod == null)
-            {
-                throw new ArgumentNullException(nameof(endMethod));
-            }
-            return FromAsyncInternal(beginMethod, endMethod, null, default);
+            return FromAsyncInternal(asyncResult, endMethod, creationOptions, scheduler);
         }
 
         public Task<TResult> FromAsync<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object state, TaskCreationOptions creationOptions)
@@ -481,66 +392,85 @@ namespace System.Threading.Tasks
             return FromAsyncInternal(beginMethod, endMethod, state, default);
         }
 
-        public Task<TResult> FromAsync<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TaskCreationOptions creationOptions)
+        internal async Task FromAsyncInternal(IAsyncResult asyncResult, Action<IAsyncResult> endMethod)
         {
-            if (beginMethod == null)
-            {
-                throw new ArgumentNullException(nameof(beginMethod));
-            }
-            if (endMethod == null)
-            {
-                throw new ArgumentNullException(nameof(endMethod));
-            }
-            return FromAsyncInternal(beginMethod, endMethod, null, creationOptions);
-        }
-
-        public Task<TResult> FromAsync<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod)
-        {
-            if (beginMethod == null)
-            {
-                throw new ArgumentNullException(nameof(beginMethod));
-            }
-            if (endMethod == null)
-            {
-                throw new ArgumentNullException(nameof(endMethod));
-            }
-            return FromAsyncInternal(beginMethod, endMethod, null, default);
-        }
-
-        internal Task FromAsyncInternal(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, object state, TaskCreationOptions creationOptions)
-        {
-            var source = new TaskCompletionSource<Theraot.VoidStruct>(state, creationOptions);
             if (asyncResult.IsCompleted)
             {
-                AsyncCallback(asyncResult);
+                endMethod(asyncResult);
             }
             else
             {
-                var waiterThread = new Thread
+                await TaskEx.FromWaitHandleInternal(asyncResult.AsyncWaitHandle);
+                endMethod(asyncResult);
+            }
+        }
+
+        internal async Task FromAsyncInternal(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, TaskCreationOptions creationOptions)
+        {
+            if (asyncResult.IsCompleted)
+            {
+                endMethod(asyncResult);
+            }
+            else
+            {
+                await TaskEx.FromWaitHandleInternal(asyncResult.AsyncWaitHandle, creationOptions);
+                endMethod(asyncResult);
+            }
+        }
+
+        internal async Task FromAsyncInternal(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        {
+            if (asyncResult.IsCompleted)
+            {
+                endMethod(asyncResult);
+            }
+            else
+            {
+                await TaskEx.FromWaitHandleInternal(asyncResult.AsyncWaitHandle, creationOptions);
+                await StartNew
                 (
-                    () =>
-                    {
-                        try
-                        {
-                            asyncResult.AsyncWaitHandle.WaitOne();
-                            AsyncCallback(asyncResult);
-                        }
-                        catch (OperationCanceledException exception)
-                        {
-                            GC.KeepAlive(exception);
-                            source.TrySetCanceled();
-                        }
-                    }
+                    () => endMethod(asyncResult),
+                    CancellationToken.None,
+                    TaskCreationOptions.None,
+                    scheduler
                 );
-                waiterThread.Start();
+            }
+        }
+
+        internal async Task FromAsyncInternal(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state)
+        {
+            endMethod(await FromBeginMethod(beginMethod, state));
+        }
+
+        internal async Task FromAsyncInternal(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state, TaskCreationOptions creationOptions)
+        {
+            endMethod(await FromBeginMethod(beginMethod, state, creationOptions));
+        }
+
+        internal async Task<TResult> FromAsyncInternal<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object state, TaskCreationOptions creationOptions)
+        {
+            return endMethod(await FromBeginMethod(beginMethod, state, creationOptions));
+        }
+
+        private Task<IAsyncResult> FromBeginMethod(Func<AsyncCallback, object, IAsyncResult> beginMethod, object state)
+        {
+            var source = new TaskCompletionSource<IAsyncResult>();
+            var canInvokeEnd = new[] { 0 };
+            var asyncResult = beginMethod(AsyncCallback, state);
+            if (asyncResult != null && asyncResult.CompletedSynchronously)
+            {
+                AsyncCallback(asyncResult);
             }
             return source.Task;
             void AsyncCallback(IAsyncResult r)
             {
+                if (Interlocked.CompareExchange(ref canInvokeEnd[0], 1, 0) != 0)
+                {
+                    return;
+                }
                 try
                 {
-                    endMethod(r);
-                    source.SetResult(default);
+                    source.SetResult(r);
                 }
                 catch (OperationCanceledException)
                 {
@@ -553,9 +483,9 @@ namespace System.Threading.Tasks
             }
         }
 
-        internal Task FromAsyncInternal(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state, TaskCreationOptions creationOptions)
+        private Task<IAsyncResult> FromBeginMethod(Func<AsyncCallback, object, IAsyncResult> beginMethod, object state, TaskCreationOptions creationOptions)
         {
-            var source = new TaskCompletionSource<Theraot.VoidStruct>(state, creationOptions);
+            var source = new TaskCompletionSource<IAsyncResult>(creationOptions);
             var canInvokeEnd = new[] { 0 };
             var asyncResult = beginMethod(AsyncCallback, state);
             if (asyncResult != null && asyncResult.CompletedSynchronously)
@@ -565,51 +495,21 @@ namespace System.Threading.Tasks
             return source.Task;
             void AsyncCallback(IAsyncResult r)
             {
-                if (Interlocked.CompareExchange(ref canInvokeEnd[0], 1, 0) == 0)
+                if (Interlocked.CompareExchange(ref canInvokeEnd[0], 1, 0) != 0)
                 {
-                    try
-                    {
-                        endMethod(r);
-                        source.SetResult(default);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        source.SetCanceled();
-                    }
-                    catch (Exception e)
-                    {
-                        source.SetException(e);
-                    }
+                    return;
                 }
-            }
-        }
-
-        internal Task<TResult> FromAsyncInternal<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object state, TaskCreationOptions creationOptions)
-        {
-            var source = new TaskCompletionSource<TResult>(state, creationOptions);
-            var canInvokeEnd = new[] { 0 };
-            var asyncResult = beginMethod(AsyncCallback, state);
-            if (asyncResult != null && asyncResult.CompletedSynchronously)
-            {
-                AsyncCallback(asyncResult);
-            }
-            return source.Task;
-            void AsyncCallback(IAsyncResult r)
-            {
-                if (Interlocked.CompareExchange(ref canInvokeEnd[0], 1, 0) == 0)
+                try
                 {
-                    try
-                    {
-                        source.SetResult(endMethod(r));
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        source.SetCanceled();
-                    }
-                    catch (Exception e)
-                    {
-                        source.SetException(e);
-                    }
+                    source.SetResult(r);
+                }
+                catch (OperationCanceledException)
+                {
+                    source.SetCanceled();
+                }
+                catch (Exception e)
+                {
+                    source.SetException(e);
                 }
             }
         }

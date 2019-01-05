@@ -1004,6 +1004,17 @@ namespace System.Threading.Tasks
             return source.Task;
         }
 
+        internal static Task FromWaitHandleInternal(WaitHandle waitHandle, TaskCreationOptions creationOptions)
+        {
+            var source = new TaskCompletionSource<bool>(creationOptions);
+            if (waitHandle.WaitOne(0))
+            {
+                source.SetResult(true);
+            }
+            WaitHandleTaskCompletionSourceManager.CreateWithoutTimeout(waitHandle, source);
+            return source.Task;
+        }
+
         internal static Task<bool> FromWaitHandleInternal(WaitHandle waitHandle, int millisecondsTimeout)
         {
             if (millisecondsTimeout < -1)
