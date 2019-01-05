@@ -12,11 +12,7 @@ namespace Theraot.Collections.ThreadSafe
     /// Represent a fixed size thread-safe lock-free (loops) stack.
     /// </summary>
     /// <typeparam name="T">The type of items stored in the stack.</typeparam>
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
-
     [Serializable]
-#endif
-
     public sealed class SafeStack<T> : IProducerConsumerCollection<T>
     {
         private int _count;

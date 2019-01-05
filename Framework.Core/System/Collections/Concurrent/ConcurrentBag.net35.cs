@@ -8,10 +8,7 @@ using Theraot.Collections.ThreadSafe;
 
 namespace System.Collections.Concurrent
 {
-#if NET20 || NET30 || NET35
-
     [Serializable]
-#endif
     [ComVisible(false)]
     [DebuggerDisplay("Count = {Count}")]
     public class ConcurrentBag<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>

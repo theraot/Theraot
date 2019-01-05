@@ -9,10 +9,7 @@ using Theraot.Core;
 
 namespace Theraot.Collections
 {
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
     [Serializable]
-#endif
-
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
     public sealed class ExtendedStack<T> : ICollection<T>, ICloneable<ExtendedStack<T>>, IProducerConsumerCollection<T>

@@ -18,11 +18,7 @@ namespace Theraot.Collections.ThreadSafe
     /// <remarks>
     /// Consider wrapping this class to implement <see cref="IDictionary{TKey,TValue}" /> or any other desired interface.
     /// </remarks>
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
-
     [Serializable]
-#endif
-
     public sealed partial class SafeDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private const int _defaultProbing = 1;
@@ -30,8 +26,6 @@ namespace Theraot.Collections.ThreadSafe
         private Bucket<KeyValuePair<TKey, TValue>> _bucket;
         private int _probing;
 
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
-
         [NonSerialized]
         private KeyCollection<TKey, TValue> _keyCollection;
 
@@ -50,26 +44,6 @@ namespace Theraot.Collections.ThreadSafe
             _bucket = new Bucket<KeyValuePair<TKey, TValue>>();
             _probing = initialProbing;
         }
-
-#else
-
-        private KeyCollection<TKey, TValue> _keyCollection;
-        private ValueCollection<TKey, TValue> _valueCollection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SafeDictionary{TKey,TValue}" /> class.
-        /// </summary>
-        /// <param name="comparer">The key comparer.</param>
-        /// <param name="initialProbing">The number of steps in linear probing.</param>
-        public SafeDictionary(IEqualityComparer<TKey> comparer, int initialProbing)
-        {
-            KeyComparer = comparer ?? EqualityComparer<TKey>.Default;
-            _valueComparer = EqualityComparer<TValue>.Default;
-            _bucket = new Bucket<KeyValuePair<TKey, TValue>>();
-            _probing = initialProbing;
-        }
-
-#endif
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SafeDictionary{TKey,TValue}" /> class.
