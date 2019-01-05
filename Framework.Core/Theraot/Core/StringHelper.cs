@@ -16,7 +16,7 @@ namespace Theraot.Core
     public static partial class StringHelper
     {
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string Append(this string text, string value)
@@ -25,7 +25,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string Append(this string text, string value1, string value2)
@@ -34,7 +34,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string Append(this string text, string value1, string value2, string value3)
@@ -43,7 +43,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string Append(this string text, params string[] values)
@@ -52,7 +52,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string Concat(params string[] value)
@@ -103,7 +103,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string Concat(params object[] values)
@@ -175,7 +175,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string End(this string text, int characterCount)
@@ -193,7 +193,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string EnsureEnd(this string text, string end, StringComparison comparisonType)
@@ -210,7 +210,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string EnsureStart(this string text, string start)
@@ -227,7 +227,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string EnsureStart(this string text, string start, StringComparison comparisonType)
@@ -244,7 +244,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string ExceptEnd(this string text, int characterCount)
@@ -262,7 +262,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string ExceptStart(this string text, int characterCount)
@@ -546,7 +546,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static bool Like(this string text, Regex regex, int startAt)
@@ -555,7 +555,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static bool Like(this string text, Regex regex)
@@ -564,7 +564,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static bool Like(this string text, string regexPattern, RegexOptions regexOptions, int startAt)
@@ -574,7 +574,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static bool Like(this string text, string regexPattern, RegexOptions regexOptions)
@@ -583,7 +583,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static bool Like(this string text, string regexPattern, bool ignoreCase)
@@ -592,7 +592,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static bool Like(this string text, string regexPattern)
@@ -601,7 +601,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static bool Like(this string text, string regexPattern, bool ignoreCase, int startAt)
@@ -610,7 +610,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static bool Like(this string text, string regexPattern, int startAt)
@@ -619,7 +619,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static Match Match(this string text, Regex regex, int startAt, int length)
@@ -628,7 +628,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static Match Match(this string text, Regex regex, int startAt)
@@ -637,7 +637,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static Match Match(this string text, Regex regex)
@@ -646,7 +646,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static Match Match(this string text, string regexPattern, RegexOptions regexOptions, int startAt, int length)
@@ -656,7 +656,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static Match Match(this string text, string regexPattern, RegexOptions regexOptions, int startAt)
@@ -666,7 +666,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static Match Match(this string text, string regexPattern, RegexOptions regexOptions)
@@ -675,7 +675,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static Match Match(this string text, string regexPattern, bool ignoreCase, int startAt, int length)
@@ -684,7 +684,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static Match Match(this string text, string regexPattern, bool ignoreCase, int startAt)
@@ -693,7 +693,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static Match Match(this string text, string regexPattern, bool ignoreCase)
@@ -702,7 +702,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static Match Match(this string text, string regexPattern, int startAt, int length)
@@ -711,7 +711,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static Match Match(this string text, string regexPattern, int startAt)
@@ -720,7 +720,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static Match Match(this string text, string regexPattern)
@@ -729,7 +729,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static MatchCollection Matches(this string text, Regex regex, int startAt)
@@ -738,7 +738,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static MatchCollection Matches(this string text, Regex regex)
@@ -747,7 +747,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static MatchCollection Matches(this string text, string regexPattern, RegexOptions regexOptions, int startAt)
@@ -757,7 +757,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static MatchCollection Matches(this string text, string regexPattern, RegexOptions regexOptions)
@@ -766,7 +766,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static MatchCollection Matches(this string text, string regexPattern, bool ignoreCase, int startAt)
@@ -776,7 +776,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static MatchCollection Matches(this string text, string regexPattern, bool ignoreCase)
@@ -785,7 +785,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static MatchCollection Matches(this string text, string regexPattern, int startAt)
@@ -795,7 +795,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static MatchCollection Matches(this string text, string regexPattern)
@@ -804,7 +804,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string NeglectEnd(this string text, string end, StringComparison comparisonType)
@@ -825,7 +825,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string NeglectStart(this string text, string start)
@@ -846,7 +846,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string NeglectStart(this string text, string start, StringComparison comparisonType)
@@ -867,7 +867,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string Safe(this string text)
@@ -880,7 +880,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string Start(this string text, int characterCount)
@@ -1008,7 +1008,7 @@ namespace Theraot.Core
     public static partial class StringHelper
     {
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string Concat(IEnumerable<string> values)
@@ -1032,7 +1032,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string Concat<T>(IEnumerable<T> values)
@@ -1061,7 +1061,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static bool IsNullOrWhiteSpace(string value)
@@ -1089,7 +1089,7 @@ namespace Theraot.Core
     public static partial class StringHelper
     {
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string Join(string separator, IEnumerable<string> values)
@@ -1123,7 +1123,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string Join<T>(string separator, IEnumerable<T> values)
@@ -1158,7 +1158,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string Join(string separator, params object[] values)
@@ -1193,7 +1193,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string Join(string separator, params string[] values)
@@ -1202,7 +1202,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string Join(string separator, string[] values, int startIndex, int count)
@@ -1216,7 +1216,7 @@ namespace Theraot.Core
 #if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
 
 #if NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string EnsureEnd(this string text, string end)
@@ -1233,7 +1233,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string EnsureEnd(this string text, string end, bool ignoreCase, System.Globalization.CultureInfo culture)
@@ -1250,7 +1250,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string EnsureStart(this string text, string start, bool ignoreCase, System.Globalization.CultureInfo culture)
@@ -1267,7 +1267,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string NeglectEnd(this string text, string end)
@@ -1288,7 +1288,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string NeglectEnd(this string text, string end, bool ignoreCase, System.Globalization.CultureInfo culture)
@@ -1309,7 +1309,7 @@ namespace Theraot.Core
         }
 
 #if NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
 
         public static string NeglectStart(this string text, string start, bool ignoreCase, System.Globalization.CultureInfo culture)

@@ -51,7 +51,7 @@ namespace System.Threading.Tasks
         /// At least one of the <see cref="Task"/> instances was canceled -or- an exception was thrown during
         /// the execution of at least one of the <see cref="Task"/> instances.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoOptimization)]  // this is needed for the parallel debugger
+        [MethodImpl(MethodImplOptionsEx.NoOptimization)]  // this is needed for the parallel debugger
         public static void WaitAll(params Task[] tasks)
         {
 #if DEBUG
@@ -92,7 +92,7 @@ namespace System.Threading.Tasks
         /// infinite time-out -or- timeout is greater than
         /// <see cref="int.MaxValue"/>.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoOptimization)]  // this is needed for the parallel debugger
+        [MethodImpl(MethodImplOptionsEx.NoOptimization)]  // this is needed for the parallel debugger
         public static bool WaitAll(Task[] tasks, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
@@ -130,7 +130,7 @@ namespace System.Threading.Tasks
         /// <paramref name="millisecondsTimeout"/> is a negative number other than -1, which represents an
         /// infinite time-out.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoOptimization)]  // this is needed for the parallel debugger
+        [MethodImpl(MethodImplOptionsEx.NoOptimization)]  // this is needed for the parallel debugger
         public static bool WaitAll(Task[] tasks, int millisecondsTimeout)
         {
             return WaitAll(tasks, millisecondsTimeout, default);
@@ -162,7 +162,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.OperationCanceledException">
         /// The <paramref name="cancellationToken"/> was canceled.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoOptimization)]  // this is needed for the parallel debugger
+        [MethodImpl(MethodImplOptionsEx.NoOptimization)]  // this is needed for the parallel debugger
         public static void WaitAll(Task[] tasks, CancellationToken cancellationToken)
         {
             WaitAll(tasks, Timeout.Infinite, cancellationToken);
@@ -202,7 +202,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.OperationCanceledException">
         /// The <paramref name="cancellationToken"/> was canceled.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoOptimization)]  // this is needed for the parallel debugger
+        [MethodImpl(MethodImplOptionsEx.NoOptimization)]  // this is needed for the parallel debugger
         public static bool WaitAll(Task[] tasks, int millisecondsTimeout, CancellationToken cancellationToken)
         {
             if (tasks == null)
@@ -321,7 +321,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentException">
         /// The <paramref name="tasks"/> argument contains a null element.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoOptimization)]  // this is needed for the parallel debugger
+        [MethodImpl(MethodImplOptionsEx.NoOptimization)]  // this is needed for the parallel debugger
         public static int WaitAny(params Task[] tasks)
         {
             var waitResult = WaitAny(tasks, Timeout.Infinite);
@@ -353,7 +353,7 @@ namespace System.Threading.Tasks
         /// infinite time-out -or- timeout is greater than
         /// <see cref="int.MaxValue"/>.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoOptimization)]  // this is needed for the parallel debugger
+        [MethodImpl(MethodImplOptionsEx.NoOptimization)]  // this is needed for the parallel debugger
         public static int WaitAny(Task[] tasks, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
@@ -386,7 +386,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.OperationCanceledException">
         /// The <paramref name="cancellationToken"/> was canceled.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoOptimization)]  // this is needed for the parallel debugger
+        [MethodImpl(MethodImplOptionsEx.NoOptimization)]  // this is needed for the parallel debugger
         public static int WaitAny(Task[] tasks, CancellationToken cancellationToken)
         {
             return WaitAny(tasks, Timeout.Infinite, cancellationToken);
@@ -416,7 +416,7 @@ namespace System.Threading.Tasks
         /// <paramref name="millisecondsTimeout"/> is a negative number other than -1, which represents an
         /// infinite time-out.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoOptimization)]  // this is needed for the parallel debugger
+        [MethodImpl(MethodImplOptionsEx.NoOptimization)]  // this is needed for the parallel debugger
         public static int WaitAny(Task[] tasks, int millisecondsTimeout)
         {
             return WaitAny(tasks, millisecondsTimeout, default);
@@ -452,7 +452,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.OperationCanceledException">
         /// The <paramref name="cancellationToken"/> was canceled.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoOptimization)]  // this is needed for the parallel debugger
+        [MethodImpl(MethodImplOptionsEx.NoOptimization)]  // this is needed for the parallel debugger
         public static int WaitAny(Task[] tasks, int millisecondsTimeout, CancellationToken cancellationToken)
         {
             if (tasks == null)
@@ -600,7 +600,7 @@ namespace System.Threading.Tasks
 
         /// <summary>Placeholder method used as a breakpoint target by the debugger.  Must not be inlined or optimized.</summary>
         /// <remarks>All joins with a task should end up calling this if their debugger notification bit is set.</remarks>
-        [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
+        [MethodImpl(MethodImplOptionsEx.NoOptimization | MethodImplOptions.NoInlining)]
         private void NotifyDebuggerOfWaitCompletion()
         {
             // It's theoretically possible but extremely rare that this assert could fire because the

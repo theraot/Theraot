@@ -53,7 +53,7 @@ namespace System.Linq.Expressions.Interpreter
         /// interpreted stack traces by aligning interpreted frames to the frames of this method.
         /// Each group of subsequent frames of Run method corresponds to a single interpreted frame.
         /// </remarks>
-        [MethodImpl(MethodImplOptions.NoInlining)]
+        [MethodImpl(MethodImplOptionsEx.NoInlining)]
         public void Run(InterpretedFrame frame)
         {
             var instructions = Instructions.Instructions;

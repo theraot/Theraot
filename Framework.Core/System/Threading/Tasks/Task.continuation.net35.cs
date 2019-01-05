@@ -1085,7 +1085,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="continuationAction"/> argument is null.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction)
         {
             return ContinueWith(continuationAction, TaskScheduler.Current, default, TaskContinuationOptions.None);
@@ -1111,7 +1111,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction, CancellationToken cancellationToken)
         {
             return ContinueWith(continuationAction, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
@@ -1139,7 +1139,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction, TaskScheduler scheduler)
         {
             return ContinueWith(continuationAction, scheduler, default, TaskContinuationOptions.None);
@@ -1169,7 +1169,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentOutOfRangeException">
         /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction, TaskContinuationOptions continuationOptions)
         {
             return ContinueWith(continuationAction, TaskScheduler.Current, default, continuationOptions);
@@ -1210,7 +1210,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
             return ContinueWith(continuationAction, scheduler, cancellationToken, continuationOptions);
@@ -1234,7 +1234,7 @@ namespace System.Threading.Tasks
         /// The <paramref name="continuationAction"/> argument is null.
         /// </exception>
         [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1061:DoNotHideBaseClassMethods")]
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state)
         {
             return ContinueWith(continuationAction, state, TaskScheduler.Current, default, TaskContinuationOptions.None);
@@ -1262,7 +1262,7 @@ namespace System.Threading.Tasks
         /// has already been disposed.
         /// </exception>
         [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1061:DoNotHideBaseClassMethods")]
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, CancellationToken cancellationToken)
         {
             return ContinueWith(continuationAction, state, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
@@ -1292,7 +1292,7 @@ namespace System.Threading.Tasks
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
         [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1061:DoNotHideBaseClassMethods")]
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskScheduler scheduler)
         {
             return ContinueWith(continuationAction, state, scheduler, default, TaskContinuationOptions.None);
@@ -1324,7 +1324,7 @@ namespace System.Threading.Tasks
         /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
         [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1061:DoNotHideBaseClassMethods")]
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskContinuationOptions continuationOptions)
         {
             return ContinueWith(continuationAction, state, TaskScheduler.Current, default, continuationOptions);
@@ -1367,7 +1367,7 @@ namespace System.Threading.Tasks
         /// has already been disposed.
         /// </exception>
         [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1061:DoNotHideBaseClassMethods")]
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
             return ContinueWith(continuationAction, state, scheduler, cancellationToken, continuationOptions);
@@ -1392,7 +1392,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="continuationFunction"/> argument is null.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction)
         {
             return ContinueWith(continuationFunction, TaskScheduler.Current, default, TaskContinuationOptions.None);
@@ -1421,7 +1421,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, CancellationToken cancellationToken)
         {
             return ContinueWith(continuationFunction, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
@@ -1452,7 +1452,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, TaskScheduler scheduler)
         {
             return ContinueWith(continuationFunction, scheduler, default, TaskContinuationOptions.None);
@@ -1491,7 +1491,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentOutOfRangeException">
         /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, TaskContinuationOptions continuationOptions)
         {
             return ContinueWith(continuationFunction, TaskScheduler.Current, default, continuationOptions);
@@ -1542,7 +1542,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
             return ContinueWith(continuationFunction, scheduler, cancellationToken, continuationOptions);
@@ -1568,7 +1568,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="continuationFunction"/> argument is null.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state)
         {
             return ContinueWith(continuationFunction, state, TaskScheduler.Current, default, TaskContinuationOptions.None);
@@ -1598,7 +1598,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, CancellationToken cancellationToken)
         {
             return ContinueWith(continuationFunction, state, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
@@ -1630,7 +1630,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, TaskScheduler scheduler)
         {
             return ContinueWith(continuationFunction, state, scheduler, default, TaskContinuationOptions.None);
@@ -1670,7 +1670,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentOutOfRangeException">
         /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, TaskContinuationOptions continuationOptions)
         {
             return ContinueWith(continuationFunction, state, TaskScheduler.Current, default, continuationOptions);
@@ -1722,7 +1722,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
             return ContinueWith(continuationFunction, state, scheduler, cancellationToken, continuationOptions);
