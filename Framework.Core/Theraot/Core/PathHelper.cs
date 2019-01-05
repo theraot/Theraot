@@ -5,15 +5,12 @@
 using System;
 using System.IO;
 using Theraot.Collections;
+using System.Runtime.CompilerServices;
 
 #if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
 
-#endif
-
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-using System.Runtime.CompilerServices;
 #endif
 
 namespace Theraot.Core
@@ -24,10 +21,7 @@ namespace Theraot.Core
         public static string DirectorySeparatorString { get; } = Path.DirectorySeparatorChar.ToString();
         public static string VolumeSeparatorString { get; } = Path.VolumeSeparatorChar.ToString();
 
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static string Combine(params string[] paths)
         {
 #if NET20 || NET30 || NET35
@@ -67,10 +61,7 @@ namespace Theraot.Core
 #endif
         }
 
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static string Combine(string path1, string path2)
         {
 #if NET20 || NET30 || NET35
@@ -101,10 +92,7 @@ namespace Theraot.Core
 #endif
         }
 
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static string Combine(string path1, string path2, string path3)
         {
 #if NET20 || NET30 || NET35
@@ -147,10 +135,7 @@ namespace Theraot.Core
 #endif
         }
 
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static string Combine(string path1, string path2, string path3, string path4)
         {
 #if NET20 || NET30 || NET35
@@ -206,10 +191,7 @@ namespace Theraot.Core
 #endif
         }
 
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static bool HasInvalidFileNameChars(string fileName)
         {
             if (fileName == null)
@@ -219,10 +201,7 @@ namespace Theraot.Core
             return fileName.ContainsAny(Path.GetInvalidFileNameChars());
         }
 
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static bool HasInvalidPathChars(string path)
         {
             if (path == null)

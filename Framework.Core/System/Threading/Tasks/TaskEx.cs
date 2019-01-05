@@ -220,10 +220,7 @@ namespace System.Threading.Tasks
         /// A task that represents the completion of the action.
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="function"/> argument is null.</exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task<TResult> Run<TResult>(Func<TResult> function)
         {
             return Run(function, CancellationToken.None);
@@ -237,10 +234,7 @@ namespace System.Threading.Tasks
         /// A task that represents the completion of the action.
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="function"/> argument is null.</exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task<TResult> Run<TResult>(Func<TResult> function, CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(function, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
@@ -254,10 +248,7 @@ namespace System.Threading.Tasks
         /// A task that represents the completion of the action.
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="function"/> argument is null.</exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task Run(Func<Task> function)
         {
             return Run(function, CancellationToken.None);
@@ -271,10 +262,7 @@ namespace System.Threading.Tasks
         /// A task that represents the completion of the function.
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="function"/> argument is null.</exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task Run(Func<Task> function, CancellationToken cancellationToken)
         {
             return Run<Task>(function, cancellationToken).Unwrap();
@@ -288,10 +276,7 @@ namespace System.Threading.Tasks
         /// A task that represents the completion of the action.
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="function"/> argument is null.</exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task<TResult> Run<TResult>(Func<Task<TResult>> function)
         {
             return Run(function, CancellationToken.None);
@@ -305,10 +290,7 @@ namespace System.Threading.Tasks
         /// A task that represents the completion of the action.
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="function"/> argument is null.</exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task<TResult> Run<TResult>(Func<Task<TResult>> function, CancellationToken cancellationToken)
         {
             return Run<Task<TResult>>(function, cancellationToken).Unwrap();
@@ -329,10 +311,7 @@ namespace System.Threading.Tasks
         ///
         /// </remarks>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task WhenAll(params Task[] tasks)
         {
             return WhenAll((IEnumerable<Task>)tasks);
@@ -353,10 +332,7 @@ namespace System.Threading.Tasks
         ///
         /// </remarks>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task<TResult[]> WhenAll<TResult>(params Task<TResult>[] tasks)
         {
             return WhenAll((IEnumerable<Task<TResult>>)tasks);
@@ -377,10 +353,7 @@ namespace System.Threading.Tasks
         ///
         /// </remarks>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task WhenAll(IEnumerable<Task> tasks)
         {
 #if NET40
@@ -406,10 +379,7 @@ namespace System.Threading.Tasks
         ///
         /// </remarks>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task<TResult[]> WhenAll<TResult>(IEnumerable<Task<TResult>> tasks)
         {
 #if NET40
@@ -437,10 +407,7 @@ namespace System.Threading.Tasks
         /// Any Tasks that fault will need to have their exceptions observed elsewhere.
         /// </remarks>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task<Task> WhenAny(params Task[] tasks)
         {
             return WhenAny((IEnumerable<Task>)tasks);
@@ -459,10 +426,7 @@ namespace System.Threading.Tasks
         /// Any Tasks that fault will need to have their exceptions observed elsewhere.
         /// </remarks>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task<Task> WhenAny(IEnumerable<Task> tasks)
         {
 #if NET40
@@ -493,10 +457,7 @@ namespace System.Threading.Tasks
         /// Any Tasks that fault will need to have their exceptions observed elsewhere.
         /// </remarks>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task<Task<TResult>> WhenAny<TResult>(params Task<TResult>[] tasks)
         {
             return WhenAny((IEnumerable<Task<TResult>>)tasks);
@@ -515,10 +476,7 @@ namespace System.Threading.Tasks
         /// Any Tasks that fault will need to have their exceptions observed elsewhere.
         /// </remarks>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task<Task<TResult>> WhenAny<TResult>(IEnumerable<Task<TResult>> tasks)
         {
 #if NET40
@@ -546,10 +504,7 @@ namespace System.Threading.Tasks
         ///             Otherwise, TaskScheduler.Current is treated as the current context.
         ///
         /// </returns>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static YieldAwaitable Yield()
         {
             return new YieldAwaitable();
@@ -673,10 +628,7 @@ namespace System.Threading.Tasks
         /// </returns>
         /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
         ///             </exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task Delay(int dueTime)
         {
             return Delay(dueTime, CancellationToken.None);
@@ -691,10 +643,7 @@ namespace System.Threading.Tasks
         /// </returns>
         /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
         ///             </exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task Delay(TimeSpan dueTime)
         {
             return Delay(dueTime, CancellationToken.None);
@@ -709,10 +658,7 @@ namespace System.Threading.Tasks
         /// </returns>
         /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
         ///             </exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task Delay(TimeSpan dueTime, CancellationToken cancellationToken)
         {
 #if NET40
@@ -738,10 +684,7 @@ namespace System.Threading.Tasks
         /// </returns>
         /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
         ///             </exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static Task Delay(int dueTime, CancellationToken cancellationToken)
         {
 #if NET40
