@@ -602,16 +602,16 @@ namespace Theraot.Reflection
         public static bool IsSubclassOfInternal(this Type type, Type baseType)
         {
 #if NETCOREAPP1_0 || NETCOREAPP1_1
-                    while (type != null)
-                    {
-                        var info = type.GetTypeInfo();
-                        type = info.BaseType;
-                        if (type == baseType)
-                        {
-                            return true;
-                        }
-                    }
-                    return false;
+            while (type != null)
+            {
+                var info = type.GetTypeInfo();
+                type = info.BaseType;
+                if (type == baseType)
+                {
+                    return true;
+                }
+            }
+            return false;
 #else
             return type.IsSubclassOf(baseType);
 #endif
@@ -1161,4 +1161,21 @@ namespace Theraot.Reflection
 #endif
         }
     }
+
+#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
+    public static partial class TypeExtensions
+    {
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static MethodInfo GetGetMethod(this PropertyInfo propertyInfo)
+        {
+            return propertyInfo.GetMethod;
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static MethodInfo GetSetMethod(this PropertyInfo propertyInfo)
+        {
+            return propertyInfo.SetMethod;
+        }
+    }
+#endif
 }
