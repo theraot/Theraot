@@ -1004,6 +1004,81 @@ namespace Theraot.Reflection
             }
             return found;
         }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static PropertyInfo[] GetProperties(this TypeInfo typeInfo)
+        {
+            var members = typeInfo.DeclaredMembers;
+            var result = new List<PropertyInfo>();
+            foreach (var member in members)
+            {
+                if (member is PropertyInfo propertyInfo)
+                {
+                    result.Add(propertyInfo);
+                }
+            }
+            return result.ToArray();
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static PropertyInfo GetProperty(this TypeInfo typeInfo, string name, Type[] typeArguments)
+        {
+            var members = typeInfo.DeclaredMembers;
+            foreach (var member in members)
+            {
+                if (member is PropertyInfo propertyInfo)
+                {
+                    if (member.Name != name)
+                    {
+                        continue;
+                    }
+                    var parameters = propertyInfo.GetIndexParameters();
+                    if (parameters.Length != typeArguments.Length)
+                    {
+                        continue;
+                    }
+                    var ok = true;
+                    for (var index = 0; index < typeArguments.Length; index++)
+                    {
+                        if (parameters[index].GetType() != typeArguments[index])
+                        {
+                            ok = false;
+                            break;
+                        }
+                    }
+                    if (!ok)
+                    {
+                        continue;
+                    }
+                    return propertyInfo;
+                }
+            }
+            return null;
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static PropertyInfo GetProperty(this TypeInfo typeInfo, string name)
+        {
+            var members = typeInfo.DeclaredMembers;
+            PropertyInfo found = null;
+            foreach (var member in members)
+            {
+                if (member is PropertyInfo propertyInfo)
+                {
+                    if (member.Name != name)
+                    {
+                        continue;
+                    }
+                    if (found != null)
+                    {
+                        throw new AmbiguousMatchException();
+                    }
+                    found = propertyInfo;
+                }
+            }
+            return found;
+        }
+
 #endif
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
