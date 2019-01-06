@@ -5,9 +5,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Globalization;
 using System.Reflection;
+
+#if NETSTANDARD1_0
+
 using Theraot.Reflection;
+
+#endif
 
 namespace System.ComponentModel.DataAnnotations
 {
@@ -53,7 +57,7 @@ namespace System.ComponentModel.DataAnnotations
         /// </summary>
         public string Value
         {
-            get { return _propertyValue; }
+            get => _propertyValue;
             set
             {
                 if (_propertyValue != value)
@@ -69,7 +73,7 @@ namespace System.ComponentModel.DataAnnotations
         /// </summary>
         public Type ResourceType
         {
-            get { return _resourceType; }
+            get => _resourceType;
             set
             {
                 if (_resourceType != value)
@@ -125,16 +129,16 @@ namespace System.ComponentModel.DataAnnotations
                 }
                 else
                 {
-                    var _resourceTypeInfo = _resourceType.GetTypeInfo();
+                    var resourceTypeInfo = _resourceType.GetTypeInfo();
 
                     // Get the property from the resource type for this resource key
-                    var property = _resourceTypeInfo.GetProperty(_propertyValue);
+                    var property = resourceTypeInfo.GetProperty(_propertyValue);
 
                     // We need to detect bad configurations so that we can throw exceptions accordingly
                     var badlyConfigured = false;
 
                     // Make sure we found the property and it's the correct type, and that the type itself is public
-                    if (!_resourceTypeInfo.IsVisible || property == null ||
+                    if (!resourceTypeInfo.IsVisible || property == null ||
                         property.PropertyType != typeof(string))
                     {
                         badlyConfigured = true;
@@ -153,7 +157,7 @@ namespace System.ComponentModel.DataAnnotations
                     if (badlyConfigured)
                     {
                         string exceptionMessage = $"Localization failed ({_propertyName}, {_resourceType.FullName}, _propertyValue)";
-                        _cachedResult = () => { throw new InvalidOperationException(exceptionMessage); };
+                        _cachedResult = () => throw new InvalidOperationException(exceptionMessage);
                     }
                     else
                     {

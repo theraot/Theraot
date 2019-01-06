@@ -5,8 +5,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Globalization;
-
 namespace System.ComponentModel.DataAnnotations
 {
     /// <summary>
@@ -14,9 +12,7 @@ namespace System.ComponentModel.DataAnnotations
     ///     The string properties of this class can be used either as literals or as resource identifiers into a specified
     ///     <see cref="ResourceType" />
     /// </summary>
-    [AttributeUsage(
-        AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Method,
-        AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Method)]
     public sealed class DisplayAttribute : Attribute
     {
         #region Member Fields
@@ -32,8 +28,6 @@ namespace System.ComponentModel.DataAnnotations
         private Type _resourceType;
 
         #endregion Member Fields
-
-
 
         #region Properties
 
@@ -58,7 +52,7 @@ namespace System.ComponentModel.DataAnnotations
         /// </value>
         public string ShortName
         {
-            get { return _shortName.Value; }
+            get => _shortName.Value;
             set
             {
                 if (_shortName.Value != value)
@@ -89,7 +83,7 @@ namespace System.ComponentModel.DataAnnotations
         /// </value>
         public string Name
         {
-            get { return _name.Value; }
+            get => _name.Value;
             set
             {
                 if (_name.Value != value)
@@ -120,7 +114,7 @@ namespace System.ComponentModel.DataAnnotations
         /// </value>
         public string Description
         {
-            get { return _description.Value; }
+            get => _description.Value;
             set
             {
                 if (_description.Value != value)
@@ -151,7 +145,7 @@ namespace System.ComponentModel.DataAnnotations
         /// </value>
         public string Prompt
         {
-            get { return _prompt.Value; }
+            get => _prompt.Value;
             set
             {
                 if (_prompt.Value != value)
@@ -182,7 +176,7 @@ namespace System.ComponentModel.DataAnnotations
         /// </value>
         public string GroupName
         {
-            get { return _groupName.Value; }
+            get => _groupName.Value;
             set
             {
                 if (_groupName.Value != value)
@@ -201,7 +195,7 @@ namespace System.ComponentModel.DataAnnotations
         /// </summary>
         public Type ResourceType
         {
-            get { return _resourceType; }
+            get => _resourceType;
             set
             {
                 if (_resourceType != value)
@@ -241,7 +235,7 @@ namespace System.ComponentModel.DataAnnotations
 
                 return _autoGenerateField.Value;
             }
-            set { _autoGenerateField = value; }
+            set => _autoGenerateField = value;
         }
 
         /// <summary>
@@ -269,7 +263,7 @@ namespace System.ComponentModel.DataAnnotations
 
                 return _autoGenerateFilter.Value;
             }
-            set { _autoGenerateFilter = value; }
+            set => _autoGenerateFilter = value;
         }
 
         /// <summary>
@@ -295,7 +289,7 @@ namespace System.ComponentModel.DataAnnotations
 
                 return _order.Value;
             }
-            set { _order = value; }
+            set => _order = value;
         }
 
         #endregion Properties
