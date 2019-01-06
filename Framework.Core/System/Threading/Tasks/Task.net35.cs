@@ -41,8 +41,32 @@ namespace System.Threading.Tasks
             // Empty
         }
 
+        public Task(Action<object> action, object state)
+            : this(action, state, null, default, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
+        {
+            // Empty
+        }
+
         public Task(Action action, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
             : this(action, null, InternalCurrentIfAttached(creationOptions), cancellationToken, creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
+        {
+            // Empty
+        }
+
+        public Task(Action<object> action, object state, CancellationToken cancellationToken)
+            : this(action, state, null, cancellationToken, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
+        {
+            // Empty
+        }
+
+        public Task(Action<object> action, object state, TaskCreationOptions creationOptions)
+            : this(action, state, InternalCurrentIfAttached(creationOptions), default, creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
+        {
+            // Empty
+        }
+
+        public Task(Action<object> action, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
+            : this(action, state, InternalCurrentIfAttached(creationOptions), cancellationToken, creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
