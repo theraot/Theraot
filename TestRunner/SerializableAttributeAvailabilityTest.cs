@@ -3,7 +3,7 @@
 namespace TestRunner
 {
     [Serializable]
-    public class SerializableAttributeTest
+    public class SerializableAttributeAvailabilityTest
     {
         // There is "nothing" to test about SerializableAttribute...
         // Except, whatever or not it is available.
