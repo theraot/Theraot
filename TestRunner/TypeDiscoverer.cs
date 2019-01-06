@@ -21,6 +21,7 @@
 #else
             types = new []
 			{
+				typeof(AvailabilityTests),
 				typeof(Console),
 				typeof(DataGenerator),
 				typeof(NumericGenerator),
@@ -28,14 +29,12 @@
 				typeof(StringGenerator),
 				typeof(DataGeneratorAttribute),
 				typeof(UseGeneratorAttribute),
-				typeof(DisplayAttributeAvailabilityTest),
 				typeof(Assert),
 				typeof(Program),
 				typeof(AssertionFailedException),
 				typeof(CategoryAttribute),
 				typeof(TestAttribute),
 				typeof(TestFixtureAttribute),
-				typeof(SerializableAttributeAvailabilityTest),
 				typeof(TypeDiscoverer),
 				typeof(System.Reflection.IntrospectionExtensionsTest),
 				typeof(System.Threading.SemaphoreSlimTestsEx),
