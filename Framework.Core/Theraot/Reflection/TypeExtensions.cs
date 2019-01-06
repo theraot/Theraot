@@ -867,7 +867,62 @@ namespace Theraot.Reflection
 
     public static partial class TypeExtensions
     {
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
+#if NET45 || NET46 || NET47 || NETCOREAPP2_0 || NETCOREAPP2_1
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static ConstructorInfo[] GetConstructors(this TypeInfo typeInfo)
+        {
+            return typeInfo.AsType().GetConstructors();
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static FieldInfo[] GetFields(this TypeInfo typeInfo)
+        {
+            return typeInfo.AsType().GetFields();
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static ConstructorInfo GetConstructor(this TypeInfo typeInfo, Type[] typeArguments)
+        {
+            return typeInfo.AsType().GetConstructor(typeArguments);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static MethodInfo[] GetMethods(this TypeInfo typeInfo)
+        {
+            return typeInfo.AsType().GetMethods();
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static MethodInfo GetMethod(this TypeInfo typeInfo, string name, Type[] typeArguments)
+        {
+            return typeInfo.AsType().GetMethod(name, typeArguments);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static MethodInfo GetMethod(this TypeInfo typeInfo, string name)
+        {
+            return typeInfo.AsType().GetMethod(name);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static PropertyInfo[] GetProperties(this TypeInfo typeInfo)
+        {
+            return typeInfo.AsType().GetProperties();
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static PropertyInfo GetProperty(this TypeInfo typeInfo, string name, Type[] typeArguments)
+        {
+            return typeInfo.AsType().GetProperty(name, typeArguments);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static PropertyInfo GetProperty(this TypeInfo typeInfo, string name)
+        {
+            return typeInfo.AsType().GetProperty(name);
+        }
+
+#elif NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static ConstructorInfo[] GetConstructors(this TypeInfo typeInfo)
         {
