@@ -36,6 +36,7 @@
     <ProjectReference Include="..\Framework.Core\Framekwork.Core.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <PackageReference Include="System.ValueTuple">
       <Version>4.5.0</Version>
     </PackageReference>
