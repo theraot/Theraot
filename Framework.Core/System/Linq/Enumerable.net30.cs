@@ -1307,43 +1307,6 @@ namespace System.Linq
             }
         }
 
-        public static IEnumerable<TReturn> Zip<T1, T2, TReturn>(this IEnumerable<T1> first, IEnumerable<T2> second, Func<T1, T2, TReturn> resultSelector)
-        {
-            if (first == null)
-            {
-                throw new ArgumentNullException(nameof(first));
-            }
-            if (second == null)
-            {
-                throw new ArgumentNullException(nameof(second));
-            }
-            if (resultSelector == null)
-            {
-                throw new ArgumentNullException(nameof(resultSelector));
-            }
-            return ZipExtracted();
-
-            IEnumerable<TReturn> ZipExtracted()
-            {
-                using (var enumeratorFirst = first.GetEnumerator())
-                using (var enumeratorSecond = second.GetEnumerator())
-                {
-                    while
-                    (
-                        enumeratorFirst.MoveNext()
-                        && enumeratorSecond.MoveNext()
-                    )
-                    {
-                        yield return resultSelector
-                        (
-                            enumeratorFirst.Current,
-                            enumeratorSecond.Current
-                        );
-                    }
-                }
-            }
-        }
-
         private static IEnumerable<TSource> ExceptExtracted<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
             comparer = comparer ?? EqualityComparer<TSource>.Default;
