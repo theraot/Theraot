@@ -18,7 +18,7 @@ namespace System.Collections
     [Serializable]
     public sealed class Comparer : IComparer, ISerializable
     {
-        private CompareInfo _compareInfo;
+        private readonly CompareInfo _compareInfo;
 
         public static readonly Comparer Default = new Comparer(CultureInfo.CurrentCulture);
         public static readonly Comparer DefaultInvariant = new Comparer(CultureInfo.InvariantCulture);
@@ -26,7 +26,9 @@ namespace System.Collections
         public Comparer(CultureInfo culture)
         {
             if (culture == null)
+            {
                 throw new ArgumentNullException(nameof(culture));
+            }
 
             _compareInfo = culture.CompareInfo;
         }
@@ -34,7 +36,9 @@ namespace System.Collections
         private Comparer(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
+            {
                 throw new ArgumentNullException(nameof(info));
+            }
 
             _compareInfo = (CompareInfo)info.GetValue("CompareInfo", typeof(CompareInfo));
         }
@@ -42,7 +46,9 @@ namespace System.Collections
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
+            {
                 throw new ArgumentNullException(nameof(info));
+            }
 
             info.AddValue("CompareInfo", _compareInfo);
         }
@@ -55,19 +61,35 @@ namespace System.Collections
         //
         public int Compare(object a, object b)
         {
-            if (a == b) return 0;
-            if (a == null) return -1;
-            if (b == null) return 1;
+            if (a == b)
+            {
+                return 0;
+            }
 
-            string sa = a as string;
-            if (sa != null && b is string sb)
+            if (a == null)
+            {
+                return -1;
+            }
+
+            if (b == null)
+            {
+                return 1;
+            }
+
+            if (a is string sa && b is string sb)
+            {
                 return _compareInfo.Compare(sa, sb);
+            }
 
             if (a is IComparable ia)
+            {
                 return ia.CompareTo(b);
+            }
 
             if (b is IComparable ib)
+            {
                 return -ib.CompareTo(a);
+            }
 
             throw new ArgumentException("At least one object must implement IComparable.");
         }
