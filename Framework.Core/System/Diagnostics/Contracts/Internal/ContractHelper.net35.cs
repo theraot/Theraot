@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35
+﻿#if LESSTHAN_NET40
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -6,10 +6,6 @@
 
 using System.Runtime.ConstrainedExecution;
 
-// Note: In .NET FX 4.5, we duplicated the ContractHelper class in the System.Runtime.CompilerServices
-// namespace to remove an ugly wart of a namespace from the Windows 8 profile.  But we still need the
-// old locations left around, so we can support rewritten .NET FX 4.0 libraries.  Consider removing
-// these from our reference assembly in a future version.
 namespace System.Diagnostics.Contracts.Internal
 {
     [Obsolete("Use the ContractHelper class in the System.Runtime.CompilerServices namespace instead.")]

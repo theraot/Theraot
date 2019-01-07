@@ -1,4 +1,4 @@
-#if NET20 || NET30 || NET35 || NET40
+#if LESSTHAN_NET45
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -102,7 +102,7 @@ namespace System.Runtime.CompilerServices
                 (
                     exception =>
                     {
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
                         eventArgs.ThrownDuringHandler = exception;
 #else
                         GC.KeepAlive(exception);
@@ -114,7 +114,7 @@ namespace System.Runtime.CompilerServices
                 );
                 if (eventArgs.Unwind)
                 {
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
                     // unwind
                     if (innerException == null)
                     {

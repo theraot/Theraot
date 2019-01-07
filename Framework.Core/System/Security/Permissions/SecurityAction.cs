@@ -1,10 +1,18 @@
-﻿#if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_5 || NETSTANDARD1_6
+﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
 
 namespace System.Security.Permissions
 {
-    internal enum SecurityAction
+    public enum SecurityAction
     {
-        Demand
+        Demand = 2,
+        Assert = 3,
+        Deny = 4,
+        PermitOnly = 5,
+        LinkDemand = 6,
+        InheritanceDemand = 7,
+        RequestMinimum = 8,
+        RequestOptional = 9,
+        RequestRefuse = 10,
     }
 }
 

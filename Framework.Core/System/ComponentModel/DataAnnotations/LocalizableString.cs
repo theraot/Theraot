@@ -1,4 +1,5 @@
-﻿#if NET20 || NET30 || NET35 || NETSTANDARD1_0
+﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
+
 //BASEDON: https://github.com/dotnet/corefx/blob/master/src/System.ComponentModel.Annotations/src/System/ComponentModel/DataAnnotations/LocalizableString.cs
 
 // Licensed to the .NET Foundation under one or more agreements.
