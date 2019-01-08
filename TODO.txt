@@ -1,17 +1,31 @@
-TASK																					URGENCY (0 = most urgent)
+TASK																					PRIORITY
+																						0 	= most urgent
+																						0-3	= for next release
 
 Features:
 - Add Stream.*Async methods																	2
 - Use LESSTHAN_* compilation constants everywhere they make sense							5
 - DictionaryEx, ListEx, ReadOnlyCollectionEx												1
-- Review what *Extensions and *Helpers can be moved to the proper namespaces (System.*)		2
+- Review what *Extensions and *Helpers can be moved to the proper namespaces (System.*)		3
 - Bring back PrimeHelper and use it Hashtable												4
 - Use a weak key dictionary in Hashtable to cache hashcodes									0	(Note 1)
-- Add all types from System.ComponentModel.DataAnnotations									4
+- Add all types from System.ComponentModel.Annotations										4
+- Add all types from System.Collections.NonGeneric											4
+- Add all types from System.Runtime.Serialization.Formatters								4
+- Add all types from System.Security.Permissions											4
+- Remove .net* from file namespaces															5
+- Update readme																				3
 
-
-Can we use:
-- JetBrain code annotations																	5
+Can we:
+- Use JetBrain code annotations																	5
+- Provide alternative Linq expressions for .NET 3.5											?	(Note 2)
+- Provide dynamic support for .NET 3.5														?	(Note 2)
+- Provide System.Dynamic.Utils.TypeUtils elsewhere											?	(Note 3)
+- Make Visual Studio sign NuGets automatically												?
+- Make Visual Studio use license instead of licenseUrl when creating the NuGets				?
+- Provide System.Dynamic.Utils.CollectionExtensions methods elsewhere						5
+- Provide System.Dynamic.Utils.Helpers methods elsewhere									5
+- Expose System.Collections.Generic.ArrayBuilder<T> elsewhere								?
 
 Can we backport/polyfill:
 - System.Net.Security																		?
@@ -20,7 +34,8 @@ Can we backport/polyfill:
 - TaskScheduler.FromCurrentSynchronizationContext											?
 
 Can we improve:
-- FolderEnumeration																			?
+- FolderEnumeration (error handling in particular)											?
+- ConcurrentBag performance by dropping order												?
 
 Tests:
 
@@ -36,3 +51,10 @@ Tests:
 Note 1:
 Hashtable currently uses a ConditionalWeakTable which cannot really be backported, review if it is ok to use it.
 If it isn't, provide an alternative weak key dictionary.
+
+Note 2:
+Linq Expressions exist in .NET 3.5, but it is not good enough for ExpandoObject et.al. We could, in theory, implement it...
+However, it would have to be separate from native expressions, es extending them is not feasible.
+
+Note 3:
+The methods here are likely not portable because .NET Standard 1.4 and prior has limited reflection support.

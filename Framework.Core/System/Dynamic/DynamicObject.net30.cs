@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -43,7 +43,7 @@ namespace System.Dynamic
         {
         }
 
-        #region Public Virtual APIs
+#region Public Virtual APIs
 
         /// <summary>
         /// Returns the enumeration of all dynamic member names.
@@ -218,9 +218,9 @@ namespace System.Dynamic
             return false;
         }
 
-        #endregion Public Virtual APIs
+#endregion Public Virtual APIs
 
-        #region MetaDynamic
+#region MetaDynamic
 
         private sealed class MetaDynamic : DynamicMetaObject
         {
@@ -883,9 +883,9 @@ namespace System.Dynamic
             }
         }
 
-        #endregion MetaDynamic
+#endregion MetaDynamic
 
-        #region IDynamicMetaObjectProvider Members
+#region IDynamicMetaObjectProvider Members
 
         /// <summary>
         /// Returns the <see cref="DynamicMetaObject" /> responsible for binding operations performed on this object,
@@ -898,7 +898,7 @@ namespace System.Dynamic
         /// </returns>
         public virtual DynamicMetaObject GetMetaObject(Expression parameter) => new MetaDynamic(parameter, this);
 
-        #endregion IDynamicMetaObjectProvider Members
+#endregion IDynamicMetaObjectProvider Members
     }
 }
 

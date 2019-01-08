@@ -14,19 +14,6 @@ namespace System.Diagnostics.Contracts
     [Serializable]
     internal sealed class ContractException : Exception
     {
-        public ContractFailureKind Kind { get; }
-
-        public string UserMessage { get; }
-
-        public string Condition { get; }
-
-        // Called by COM Interop, if we see Cor_E_CodeContractFailed as an HRESULT.
-        // ReSharper disable once UnusedMember.Local
-        private ContractException()
-        {
-            HResult = ContractHelper.Cor_E_CodeContractFailed;
-        }
-
         public ContractException(ContractFailureKind kind, string failure, string userMessage, string condition, Exception innerException)
             : base(failure, innerException)
         {
@@ -34,6 +21,13 @@ namespace System.Diagnostics.Contracts
             Kind = kind;
             UserMessage = userMessage;
             Condition = condition;
+        }
+
+        // Called by COM Interop, if we see Cor_E_CodeContractFailed as an HRESULT.
+        // ReSharper disable once UnusedMember.Local
+        private ContractException()
+        {
+            HResult = ContractHelper.Cor_E_CodeContractFailed;
         }
 
 #pragma warning disable IDE0051 // Remove unused private members
@@ -46,6 +40,11 @@ namespace System.Diagnostics.Contracts
             UserMessage = info.GetString(nameof(UserMessage));
             Condition = info.GetString(nameof(Condition));
         }
+
+        public string Condition { get; }
+        public ContractFailureKind Kind { get; }
+
+        public string UserMessage { get; }
 
         [SecurityCritical]
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]

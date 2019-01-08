@@ -29,10 +29,8 @@ namespace System.Diagnostics.Contracts
 
         public string Category { get; }
 
-        public string Setting { get; }
-
         public bool Enabled { get; }
-
+        public string Setting { get; }
         public string Value { get; }
     }
 }

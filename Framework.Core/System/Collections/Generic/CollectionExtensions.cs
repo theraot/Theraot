@@ -27,6 +27,21 @@ namespace System.Collections.Generic
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static bool Remove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, out TValue value)
+        {
+            if (dictionary == null)
+            {
+                throw new ArgumentNullException(nameof(dictionary));
+            }
+            if (dictionary.TryGetValue(key, out value) && dictionary.Remove(key))
+            {
+                return true;
+            }
+            value = default;
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
             if (dictionary == null)
@@ -43,21 +58,6 @@ namespace System.Collections.Generic
                 GC.KeepAlive(ex);
                 return false;
             }
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static bool Remove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, out TValue value)
-        {
-            if (dictionary == null)
-            {
-                throw new ArgumentNullException(nameof(dictionary));
-            }
-            if (dictionary.TryGetValue(key, out value) && dictionary.Remove(key))
-            {
-                return true;
-            }
-            value = default;
-            return false;
         }
     }
 }

@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -96,8 +96,8 @@ namespace System.Linq.Expressions
                 throw Error.ArgumentCannotBeOfTypeVoid(nameof(switchValue));
             }
 
-            var caseList = Theraot.Collections.Extensions.AsArray(cases);
-            ContractUtils.RequiresNotNullItems(caseList, nameof(cases));
+            var caseArray = Theraot.Collections.Extensions.AsArray(cases);
+            ContractUtils.RequiresNotNullItems(caseArray, nameof(cases));
 
             // Type of the result. Either provided, or it is type of the branches.
             Type resultType;
@@ -105,9 +105,9 @@ namespace System.Linq.Expressions
             {
                 resultType = type;
             }
-            else if (caseList.Length != 0)
+            else if (caseArray.Length != 0)
             {
-                resultType = caseList[0].Body.Type;
+                resultType = caseArray[0].Body.Type;
             }
             else if (defaultBody != null)
             {
@@ -142,7 +142,7 @@ namespace System.Linq.Expressions
                 }
 
                 var rightParam = pms[1];
-                foreach (var c in caseList)
+                foreach (var c in caseArray)
                 {
                     ContractUtils.RequiresNotNull(c, nameof(cases));
                     ValidateSwitchCaseType(c.Body, customType, resultType, nameof(cases));
@@ -172,12 +172,12 @@ namespace System.Linq.Expressions
                     throw Error.EqualityMustReturnBoolean(comparison, nameof(comparison));
                 }
             }
-            else if (caseList.Length != 0)
+            else if (caseArray.Length != 0)
             {
                 // When comparison method is not present, all the test values must have
                 // the same type. Use the first test value's type as the baseline.
-                var firstTestValue = caseList[0].TestValues[0];
-                foreach (var c in caseList)
+                var firstTestValue = caseArray[0].TestValues[0];
+                foreach (var c in caseArray)
                 {
                     ContractUtils.RequiresNotNull(c, nameof(cases));
                     ValidateSwitchCaseType(c.Body, customType, resultType, nameof(cases));
@@ -212,7 +212,7 @@ namespace System.Linq.Expressions
                 ValidateSwitchCaseType(defaultBody, customType, resultType, nameof(defaultBody));
             }
 
-            return new SwitchExpression(resultType, switchValue, defaultBody, comparison, caseList);
+            return new SwitchExpression(resultType, switchValue, defaultBody, comparison, caseArray);
         }
 
         /// <summary>

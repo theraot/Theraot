@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -383,7 +383,7 @@ namespace System.Linq.Expressions
                 builder.UncheckedAdd(Assign(tempArg, arg));
             }
 
-            var tempIndex = MakeIndex(tempObj, index.Indexer, tempArgs.ToReadOnly());
+            var tempIndex = MakeIndex(tempObj, index.Indexer, tempArgs.ToArray());
 
             // tempValue = tempObj[tempArg0, ... tempArgN] (op) r
             var binaryOp = GetBinaryOpFromAssignmentOp(NodeType);
@@ -400,7 +400,7 @@ namespace System.Linq.Expressions
             // tempObj[tempArg0, ... tempArgN] = tempValue
             builder.UncheckedAdd(Assign(tempIndex, tempValue));
 
-            return Block(vars.ToReadOnly(), builder.ToReadOnly());
+            return Block(vars.ToArray(), builder.ToArray());
         }
 
         private Expression ReduceMember()

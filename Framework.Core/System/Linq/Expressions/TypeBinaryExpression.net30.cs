@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -87,7 +87,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Type TypeOperand { get; }
 
-#region Reduce TypeEqual
+        #region Reduce TypeEqual
 
         internal Expression ReduceTypeEqual()
         {
@@ -186,7 +186,7 @@ namespace System.Linq.Expressions
             return Utils.Constant(TypeOperand.GetNonNullable() == ce.Value.GetType());
         }
 
-#endregion Reduce TypeEqual
+        #endregion Reduce TypeEqual
 
         /// <summary>
         /// Creates a new expression that is like this one, but using the

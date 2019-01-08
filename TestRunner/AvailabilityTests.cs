@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
+using System.Dynamic;
 using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.Serialization;
@@ -15,6 +16,7 @@ namespace TestRunner
     {
         public static readonly Type ArrayList = typeof(ArrayList);
         public static readonly Type BlockingCollection = typeof(BlockingCollection<int>);
+        public static readonly Type CallInfo = typeof(CallInfo);
         public static readonly Type Comparer = typeof(Comparer);
         public static readonly Type ConcurrentBag = typeof(ConcurrentBag<int>);
         public static readonly Type ContractAbbreviatorAttribute = typeof(ContractAbbreviatorAttribute);
@@ -24,6 +26,7 @@ namespace TestRunner
         public static readonly Type HostProtectionAttribute = typeof(HostProtectionAttribute);
         public static readonly Type HostProtectionResource = typeof(HostProtectionResource);
         public static readonly Type IFormatterConverter = typeof(IFormatterConverter);
+        public static readonly Type IInvokeOnGetBinder = typeof(IInvokeOnGetBinder);
         public static readonly Type PureAttribute = typeof(PureAttribute);
         public static readonly Type ReliabilityContractAttribute = typeof(ReliabilityContractAttribute);
         public static readonly Type SecurityAction = typeof(SecurityAction);

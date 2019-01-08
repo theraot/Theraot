@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -68,7 +68,7 @@ namespace System.Dynamic
             LockObject = new object();
         }
 
-        #region Get/Set/Delete Helpers
+#region Get/Set/Delete Helpers
 
         /// <summary>
         /// Exposes the ExpandoClass which we've associated with this
@@ -298,18 +298,18 @@ namespace System.Dynamic
             }
         }
 
-        #endregion Get/Set/Delete Helpers
+#endregion Get/Set/Delete Helpers
 
-        #region IDynamicMetaObjectProvider Members
+#region IDynamicMetaObjectProvider Members
 
         DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
         {
             return new MetaExpando(parameter, this);
         }
 
-        #endregion IDynamicMetaObjectProvider Members
+#endregion IDynamicMetaObjectProvider Members
 
-        #region Helper methods
+#region Helper methods
 
         private bool ExpandoContainsKey(string key)
         {
@@ -361,7 +361,7 @@ namespace System.Dynamic
                 }
             }
 
-            #region ICollection<string> Members
+#region ICollection<string> Members
 
             public int Count
             {
@@ -416,9 +416,9 @@ namespace System.Dynamic
                 throw Error.CollectionReadOnly();
             }
 
-            #endregion ICollection<string> Members
+#endregion ICollection<string> Members
 
-            #region IEnumerable<string> Members
+#region IEnumerable<string> Members
 
             public IEnumerator<string> GetEnumerator()
             {
@@ -432,16 +432,16 @@ namespace System.Dynamic
                 }
             }
 
-            #endregion IEnumerable<string> Members
+#endregion IEnumerable<string> Members
 
-            #region IEnumerable Members
+#region IEnumerable Members
 
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
             }
 
-            #endregion IEnumerable Members
+#endregion IEnumerable Members
         }
 
         // We create a non-generic type for the debug view for each different collection type
@@ -501,7 +501,7 @@ namespace System.Dynamic
                 }
             }
 
-            #region ICollection<string> Members
+#region ICollection<string> Members
 
             public int Count
             {
@@ -567,9 +567,9 @@ namespace System.Dynamic
                 throw Error.CollectionReadOnly();
             }
 
-            #endregion ICollection<string> Members
+#endregion ICollection<string> Members
 
-            #region IEnumerable<string> Members
+#region IEnumerable<string> Members
 
             public IEnumerator<object> GetEnumerator()
             {
@@ -587,16 +587,16 @@ namespace System.Dynamic
                 }
             }
 
-            #endregion IEnumerable<string> Members
+#endregion IEnumerable<string> Members
 
-            #region IEnumerable Members
+#region IEnumerable Members
 
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
             }
 
-            #endregion IEnumerable Members
+#endregion IEnumerable Members
         }
 
         // We create a non-generic type for the debug view for each different collection type
@@ -627,9 +627,9 @@ namespace System.Dynamic
             }
         }
 
-        #endregion Helper methods
+#endregion Helper methods
 
-        #region IDictionary<string, object> Members
+#region IDictionary<string, object> Members
 
         ICollection<string> IDictionary<string, object>.Keys => new KeyCollection(this);
 
@@ -679,9 +679,9 @@ namespace System.Dynamic
             return TryGetValueForKey(key, out value);
         }
 
-        #endregion IDictionary<string, object> Members
+#endregion IDictionary<string, object> Members
 
-        #region ICollection<KeyValuePair<string, object>> Members
+#region ICollection<KeyValuePair<string, object>> Members
 
         int ICollection<KeyValuePair<string, object>>.Count => _count;
 
@@ -743,9 +743,9 @@ namespace System.Dynamic
             return TryDeleteValue(null, -1, item.Key, ignoreCase: false, deleteValue: item.Value);
         }
 
-        #endregion ICollection<KeyValuePair<string, object>> Members
+#endregion ICollection<KeyValuePair<string, object>> Members
 
-        #region IEnumerable<KeyValuePair<string, object>> Member
+#region IEnumerable<KeyValuePair<string, object>> Member
 
         IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
         {
@@ -782,9 +782,9 @@ namespace System.Dynamic
             }
         }
 
-        #endregion IEnumerable<KeyValuePair<string, object>> Member
+#endregion IEnumerable<KeyValuePair<string, object>> Member
 
-        #region MetaExpando
+#region MetaExpando
 
         private class MetaExpando : DynamicMetaObject
         {
@@ -1023,9 +1023,9 @@ namespace System.Dynamic
             }
         }
 
-        #endregion MetaExpando
+#endregion MetaExpando
 
-        #region ExpandoData
+#region ExpandoData
 
         /// <summary>
         /// Stores the class and the data associated with the class as one atomic
@@ -1117,9 +1117,9 @@ namespace System.Dynamic
             }
         }
 
-        #endregion ExpandoData
+#endregion ExpandoData
 
-        #region INotifyPropertyChanged
+#region INotifyPropertyChanged
 
 #pragma warning disable IDE0051 // Remove unused private members
 
@@ -1130,7 +1130,7 @@ namespace System.Dynamic
             remove => _propertyChanged.Remove(value.Method, value.Target);
         }
 
-        #endregion INotifyPropertyChanged
+#endregion INotifyPropertyChanged
     }
 }
 

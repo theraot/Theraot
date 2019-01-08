@@ -52,6 +52,22 @@ namespace System.ComponentModel.DataAnnotations
         #region Properties
 
         /// <summary>
+        ///     Gets or sets the resource type to be used for localization.
+        /// </summary>
+        public Type ResourceType
+        {
+            get => _resourceType;
+            set
+            {
+                if (_resourceType != value)
+                {
+                    ClearCache();
+                    _resourceType = value;
+                }
+            }
+        }
+
+        /// <summary>
         ///     Gets or sets the value of this localizable string.  This value can be
         ///     either the literal, non-localized value, or it can be a resource name
         ///     found on the resource type supplied to <see cref="GetLocalizableValue" />.
@@ -69,34 +85,9 @@ namespace System.ComponentModel.DataAnnotations
             }
         }
 
-        /// <summary>
-        ///     Gets or sets the resource type to be used for localization.
-        /// </summary>
-        public Type ResourceType
-        {
-            get => _resourceType;
-            set
-            {
-                if (_resourceType != value)
-                {
-                    ClearCache();
-                    _resourceType = value;
-                }
-            }
-        }
-
         #endregion Properties
 
         #region Methods
-
-        /// <summary>
-        ///     Clears any cached values, forcing <see cref="GetLocalizableValue" /> to
-        ///     perform evaluation.
-        /// </summary>
-        private void ClearCache()
-        {
-            _cachedResult = null;
-        }
 
         /// <summary>
         ///     Gets the potentially localized value.
@@ -170,6 +161,15 @@ namespace System.ComponentModel.DataAnnotations
 
             // Return the cached result
             return _cachedResult();
+        }
+
+        /// <summary>
+        ///     Clears any cached values, forcing <see cref="GetLocalizableValue" /> to
+        ///     perform evaluation.
+        /// </summary>
+        private void ClearCache()
+        {
+            _cachedResult = null;
         }
 
         #endregion Methods
