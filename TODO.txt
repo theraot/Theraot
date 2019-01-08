@@ -1,0 +1,38 @@
+TASK																					URGENCY (0 = most urgent)
+
+Features:
+- Add Stream.*Async methods																	2
+- Use LESSTHAN_* compilation constants everywhere they make sense							5
+- DictionaryEx, ListEx, ReadOnlyCollectionEx												1
+- Review what *Extensions and *Helpers can be moved to the proper namespaces (System.*)		2
+- Bring back PrimeHelper and use it Hashtable												4
+- Use a weak key dictionary in Hashtable to cache hashcodes									0	(Note 1)
+- Add all types from System.ComponentModel.DataAnnotations									4
+
+
+Can we use:
+- JetBrain code annotations																	5
+
+Can we backport/polyfill:
+- System.Net.Security																		?
+- Span/ReadOnlySpan																			?
+- System.Threading.Tasks.Parallel															?
+- TaskScheduler.FromCurrentSynchronizationContext											?
+
+Can we improve:
+- FolderEnumeration																			?
+
+Tests:
+
+- Migrate tests from Tests to TestRunner													2
+- Add tests for TaskEx.FromWaitHandle														3
+- Add tests for TaskEx.FromAsync															3
+- Add availability tests as needed															?
+- Increase coverage																			?
+- Test for Task.Run<TResult>(Func<Task<TResult>> function)									3
+
+----
+
+Note 1:
+Hashtable currently uses a ConditionalWeakTable which cannot really be backported, review if it is ok to use it.
+If it isn't, provide an alternative weak key dictionary.
