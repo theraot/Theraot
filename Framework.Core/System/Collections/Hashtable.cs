@@ -1803,18 +1803,18 @@ namespace System.Collections
             return GetPrime(newSize);
         }
 
-        private static ConditionalWeakTable<object, SerializationInfo> _sSerializationInfoTable;
+        private static ConditionalWeakTable<object, SerializationInfo> _serializationInfoTable;
 
         public static ConditionalWeakTable<object, SerializationInfo> SerializationInfoTable
         {
             get
             {
-                if (_sSerializationInfoTable == null)
+                if (_serializationInfoTable == null)
                 {
-                    Interlocked.CompareExchange(ref _sSerializationInfoTable, new ConditionalWeakTable<object, SerializationInfo>(), null);
+                    Interlocked.CompareExchange(ref _serializationInfoTable, new ConditionalWeakTable<object, SerializationInfo>(), null);
                 }
 
-                return _sSerializationInfoTable;
+                return _serializationInfoTable;
             }
         }
     }
