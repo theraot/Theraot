@@ -45,9 +45,13 @@ namespace Theraot.Collections
         }
 
         protected ExtendedDictionary(SerializationInfo info, StreamingContext context)
+#if GREATERTHAN_NETCOREAPP20 || NETSTANDARD2_0 || TARGETS_NET
             : base(info, context)
+#endif
         {
-            // Empty
+            // TODO ?
+            GC.KeepAlive(info);
+            GC.KeepAlive(context);
         }
 
         IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Keys;
