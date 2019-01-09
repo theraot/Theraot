@@ -94,54 +94,71 @@ namespace Theraot.Reflection
                     case 0:
                         delegateType = typeof(Action);
                         break;
+
                     case 1:
                         delegateType = typeof(Action<>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 2:
                         delegateType = typeof(Action<,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 3:
                         delegateType = typeof(Action<,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 4:
                         delegateType = typeof(Action<,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 5:
                         delegateType = typeof(Action<,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 6:
                         delegateType = typeof(Action<,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 7:
                         delegateType = typeof(Action<,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 8:
                         delegateType = typeof(Action<,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 9:
                         delegateType = typeof(Action<,,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 10:
                         delegateType = typeof(Action<,,,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 11:
                         delegateType = typeof(Action<,,,,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 12:
                         delegateType = typeof(Action<,,,,,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 13:
                         delegateType = typeof(Action<,,,,,,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 14:
                         delegateType = typeof(Action<,,,,,,,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 15:
                         delegateType = typeof(Action<,,,,,,,,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 16:
                         delegateType = typeof(Action<,,,,,,,,,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     default:
                         throw new ArgumentException("No valid Action delegate found", nameof(methodInfo));
                 }
@@ -155,54 +172,71 @@ namespace Theraot.Reflection
                     case 1:
                         delegateType = typeof(Func<>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 2:
                         delegateType = typeof(Func<,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 3:
                         delegateType = typeof(Func<,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 4:
                         delegateType = typeof(Func<,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 5:
                         delegateType = typeof(Func<,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 6:
                         delegateType = typeof(Func<,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 7:
                         delegateType = typeof(Func<,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 8:
                         delegateType = typeof(Func<,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 9:
                         delegateType = typeof(Func<,,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 10:
                         delegateType = typeof(Func<,,,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 11:
                         delegateType = typeof(Func<,,,,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 12:
                         delegateType = typeof(Func<,,,,,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 13:
                         delegateType = typeof(Func<,,,,,,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 14:
                         delegateType = typeof(Func<,,,,,,,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 15:
                         delegateType = typeof(Func<,,,,,,,,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 16:
                         delegateType = typeof(Func<,,,,,,,,,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     case 17:
                         delegateType = typeof(Func<,,,,,,,,,,,,,,,>).MakeGenericType(parameterTypeArray);
                         break;
+
                     default:
                         throw new ArgumentException("No valid Func delegate found", nameof(methodInfo));
                 }
@@ -413,85 +447,69 @@ namespace Theraot.Reflection
             where T : class
         {
             var found = target;
-            if (found == null)
+            if (found != null)
             {
-                found = Volatile.Read(ref target);
-                if (found == null)
-                {
-                    T created;
-                    try
-                    {
-                        created = Activator.CreateInstance<T>();
-                    }
-                    catch
-                    {
-                        throw new MissingMemberException("The type being lazily initialized does not have a public, parameterless constructor.");
-                    }
-                    found = Interlocked.CompareExchange(ref target, created, null);
-                    if (found == null)
-                    {
-                        return created;
-                    }
-                }
+                return found;
             }
-            return found;
+            found = Volatile.Read(ref target);
+            if (found != null)
+            {
+                return found;
+            }
+            T created;
+            try
+            {
+                created = Activator.CreateInstance<T>();
+            }
+            catch
+            {
+                throw new MissingMemberException("The type being lazily initialized does not have a public, parameterless constructor.");
+            }
+            found = Interlocked.CompareExchange(ref target, created, null);
+            return found ?? created;
         }
 
         public static T LazyCreate<T>(ref T target, object syncRoot)
             where T : class
         {
             var found = target;
-            if (found == null)
+            if (found != null)
             {
-                found = Volatile.Read(ref target);
-                if (found == null)
-                {
-                    lock (syncRoot)
-                    {
-                        found = Volatile.Read(ref target);
-                        if (found == null)
-                        {
-                            T created;
-                            try
-                            {
-                                created = Activator.CreateInstance<T>();
-                            }
-                            catch
-                            {
-                                throw new MissingMemberException("The type being lazily initialized does not have a public, parameterless constructor.");
-                            }
-                            found = Interlocked.CompareExchange(ref target, created, null);
-                            if (found == null)
-                            {
-                                return created;
-                            }
-                        }
-                    }
-                }
+                return found;
             }
-            return found;
+            found = Volatile.Read(ref target);
+            if (found != null)
+            {
+                return found;
+            }
+            lock (syncRoot)
+            {
+                return LazyCreate(ref target);
+            }
         }
 
         public static T LazyCreate<T>(ref T target, Func<T> valueFactory)
             where T : class
         {
             var found = target;
+            if (found != null)
+            {
+                return found;
+            }
+            found = Volatile.Read(ref target);
+            if (found != null)
+            {
+                return found;
+            }
+            var created = valueFactory();
+            if (created == null)
+            {
+                throw new InvalidOperationException("valueFactory returned null");
+            }
+            found = Interlocked.CompareExchange(ref target, created, null);
             if (found == null)
             {
-                found = Volatile.Read(ref target);
-                if (found == null)
-                {
-                    var created = valueFactory();
-                    if (created == null)
-                    {
-                        throw new InvalidOperationException("valueFactory returned null");
-                    }
-                    found = Interlocked.CompareExchange(ref target, created, null);
-                    if (found == null)
-                    {
-                        return created;
-                    }
-                }
+                return created;
             }
             return found;
         }
@@ -500,31 +518,19 @@ namespace Theraot.Reflection
             where T : class
         {
             var found = target;
-            if (found == null)
+            if (found != null)
             {
-                found = Volatile.Read(ref target);
-                if (found == null)
-                {
-                    lock (syncRoot)
-                    {
-                        found = Volatile.Read(ref target);
-                        if (found == null)
-                        {
-                            var created = valueFactory();
-                            if (created == null)
-                            {
-                                throw new InvalidOperationException("valueFactory returned null");
-                            }
-                            found = Interlocked.CompareExchange(ref target, created, null);
-                            if (found == null)
-                            {
-                                return created;
-                            }
-                        }
-                    }
-                }
+                return found;
             }
-            return found;
+            found = Volatile.Read(ref target);
+            if (found != null)
+            {
+                return found;
+            }
+            lock (syncRoot)
+            {
+                return LazyCreate(ref target, valueFactory);
+            }
         }
     }
 }
