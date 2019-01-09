@@ -8,17 +8,16 @@ namespace System.Runtime.Serialization
 {
     public /*readonly*/ struct StreamingContext
     {
-        private readonly object _additionalContext;
-        private readonly StreamingContextStates _state;
-
-        public StreamingContext(StreamingContextStates state) : this(state, null)
+        public StreamingContext(StreamingContextStates state)
+            : this(state, null)
         {
+            // Empty
         }
 
         public StreamingContext(StreamingContextStates state, object additional)
         {
-            _state = state;
-            _additionalContext = additional;
+            State = state;
+            Context = additional;
         }
 
         public override bool Equals(object obj)
@@ -27,15 +26,15 @@ namespace System.Runtime.Serialization
             {
                 return false;
             }
-            StreamingContext ctx = (StreamingContext)obj;
-            return ctx._additionalContext == _additionalContext && ctx._state == _state;
+            var ctx = (StreamingContext)obj;
+            return ctx.Context == Context && ctx.State == State;
         }
 
-        public override int GetHashCode() => (int)_state;
+        public override int GetHashCode() => (int)State;
 
-        public StreamingContextStates State => _state;
+        public StreamingContextStates State { get; }
 
-        public object Context => _additionalContext;
+        public object Context { get; }
     }
 
     [Flags]

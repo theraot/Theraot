@@ -15,6 +15,7 @@ Features:
 - Add all types from System.Security.Permissions											4
 - Remove .net* from file namespaces															5
 - Update readme																				3
+- Inline SR and Error
 
 Can we:
 - Use JetBrain code annotations																	5

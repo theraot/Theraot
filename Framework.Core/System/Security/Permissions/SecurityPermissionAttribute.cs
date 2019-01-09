@@ -144,16 +144,24 @@ namespace System.Security.Permissions
 
     public sealed class SecurityPermission : CodeAccessPermission, IUnrestrictedPermission
     {
-        public SecurityPermission(PermissionState state) { }
-        public SecurityPermission(SecurityPermissionFlag flag) { }
+        public SecurityPermission(PermissionState state)
+        {
+            GC.KeepAlive(state);
+        }
+
+        public SecurityPermission(SecurityPermissionFlag flag)
+        {
+            GC.KeepAlive(flag);
+        }
+
         public SecurityPermissionFlag Flags { get; set; }
         public override IPermission Copy() { return this; }
         public override void FromXml(SecurityElement esd) { }
-        public override IPermission Intersect(IPermission target) { return default(IPermission); }
+        public override IPermission Intersect(IPermission target) { return default; }
         public override bool IsSubsetOf(IPermission target) { return false; }
         public bool IsUnrestricted() { return false; }
-        public override SecurityElement ToXml() { return default(SecurityElement); }
-        public override IPermission Union(IPermission target) { return default(IPermission); }
+        public override SecurityElement ToXml() { return default; }
+        public override IPermission Union(IPermission target) { return default; }
     }
 }
 

@@ -17,6 +17,7 @@ namespace TestRunner
         public static readonly Type ArrayList = typeof(ArrayList);
         public static readonly Type BlockingCollection = typeof(BlockingCollection<int>);
         public static readonly Type CallInfo = typeof(CallInfo);
+        public static readonly Type CodeAccessPermission = typeof(CodeAccessPermission);
         public static readonly Type Comparer = typeof(Comparer);
         public static readonly Type ConcurrentBag = typeof(ConcurrentBag<int>);
         public static readonly Type ContractAbbreviatorAttribute = typeof(ContractAbbreviatorAttribute);
@@ -35,5 +36,6 @@ namespace TestRunner
         public static readonly Type SerializableAttribute = typeof(SerializableAttribute);
         public static readonly Type SerializationInfo = typeof(SerializationInfo);
         public static readonly Type StreamingContext = typeof(StreamingContext);
+        public static readonly Type IUnrestrictedPermission = typeof(IUnrestrictedPermission);
     }
 }

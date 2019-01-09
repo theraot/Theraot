@@ -11,20 +11,16 @@ namespace System.Runtime.Serialization
 {
     public struct SerializationEntry
     {
-        private string _name;
-        private object _value;
-        private Type _type;
-
         internal SerializationEntry(string entryName, object entryValue, Type entryType)
         {
-            _name = entryName;
-            _value = entryValue;
-            _type = entryType;
+            Name = entryName;
+            Value = entryValue;
+            ObjectType = entryType;
         }
 
-        public object Value => _value;
-        public string Name => _name;
-        public Type ObjectType => _type;
+        public object Value { get; }
+        public string Name { get; }
+        public Type ObjectType { get; }
     }
 
     public sealed class SerializationInfoEnumerator : IEnumerator
@@ -33,7 +29,7 @@ namespace System.Runtime.Serialization
         private readonly object[] _data;
         private readonly Type[] _types;
         private readonly int _numItems;
-        private int _currItem;
+        private int _currentItem;
         private bool _current;
 
         internal SerializationInfoEnumerator(string[] members, object[] info, Type[] types, int numItems)
@@ -53,15 +49,15 @@ namespace System.Runtime.Serialization
             //The MoveNext semantic is much easier if we enforce that [0..m_numItems] are valid entries
             //in the enumerator, hence we subtract 1.
             _numItems = numItems - 1;
-            _currItem = -1;
+            _currentItem = -1;
             _current = false;
         }
 
         public bool MoveNext()
         {
-            if (_currItem < _numItems)
+            if (_currentItem < _numItems)
             {
-                _currItem++;
+                _currentItem++;
                 _current = true;
             }
             else
@@ -82,13 +78,13 @@ namespace System.Runtime.Serialization
                 {
                     throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                 }
-                return new SerializationEntry(_members[_currItem], _data[_currItem], _types[_currItem]);
+                return new SerializationEntry(_members[_currentItem], _data[_currentItem], _types[_currentItem]);
             }
         }
 
         public void Reset()
         {
-            _currItem = -1;
+            _currentItem = -1;
             _current = false;
         }
 
@@ -100,7 +96,7 @@ namespace System.Runtime.Serialization
                 {
                     throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                 }
-                return _members[_currItem];
+                return _members[_currentItem];
             }
         }
 
@@ -112,7 +108,7 @@ namespace System.Runtime.Serialization
                 {
                     throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                 }
-                return _data[_currItem];
+                return _data[_currentItem];
             }
         }
 
@@ -124,7 +120,7 @@ namespace System.Runtime.Serialization
                 {
                     throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                 }
-                return _types[_currItem];
+                return _types[_currentItem];
             }
         }
     }

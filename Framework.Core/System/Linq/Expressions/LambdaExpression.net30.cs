@@ -758,7 +758,7 @@ namespace System.Linq.Expressions
         /// <summary>
         /// Compiles the lambda into a method definition.
         /// </summary>
-        /// <param name="method">A <see cref="System.Reflection.Emit.MethodBuilder"/> which will be used to hold the lambda's IL.</param>
+        /// <param name="method">A <see cref="Reflection.Emit.MethodBuilder"/> which will be used to hold the lambda's IL.</param>
         public void CompileToMethod(Reflection.Emit.MethodBuilder method)
         {
             ContractUtils.RequiresNotNull(method, nameof(method));

@@ -42,7 +42,7 @@ namespace System.ComponentModel.DataAnnotations
         ///         an exception if the value has not been set.
         ///     </para>
         /// </summary>
-        /// <exception cref="System.InvalidOperationException">
+        /// <exception cref="InvalidOperationException">
         ///     If the getter of this property is invoked when the value has not been explicitly set using the setter.
         /// </exception>
         public bool AutoGenerateField
@@ -70,7 +70,7 @@ namespace System.ComponentModel.DataAnnotations
         ///         an exception if the value has not been set.
         ///     </para>
         /// </summary>
-        /// <exception cref="System.InvalidOperationException">
+        /// <exception cref="InvalidOperationException">
         ///     If the getter of this property is invoked when the value has not been explicitly set using the setter.
         /// </exception>
         public bool AutoGenerateFilter
@@ -189,7 +189,7 @@ namespace System.ComponentModel.DataAnnotations
         ///         an exception if the value has not been set.
         ///     </para>
         /// </summary>
-        /// <exception cref="System.InvalidOperationException">
+        /// <exception cref="InvalidOperationException">
         ///     If the getter of this property is invoked when the value has not been explicitly set using the setter.
         /// </exception>
         public int Order
@@ -238,7 +238,7 @@ namespace System.ComponentModel.DataAnnotations
         }
 
         /// <summary>
-        ///     Gets or sets the <see cref="System.Type" /> that contains the resources for <see cref="ShortName" />,
+        ///     Gets or sets the <see cref="Type" /> that contains the resources for <see cref="ShortName" />,
         ///     <see cref="Name" />, <see cref="Description" />, <see cref="Prompt" />, and <see cref="GroupName" />.
         ///     Using <see cref="ResourceType" /> along with these Key properties, allows the <see cref="GetShortName" />,
         ///     <see cref="GetName" />, <see cref="GetDescription" />, <see cref="GetPrompt" />, and <see cref="GetGroupName" />
@@ -341,7 +341,7 @@ namespace System.ComponentModel.DataAnnotations
         ///         represents a resource key within that resource type, then the localized value will be returned.
         ///     </para>
         /// </returns>
-        /// <exception cref="System.InvalidOperationException">
+        /// <exception cref="InvalidOperationException">
         ///     After setting both the <see cref="ResourceType" /> property and the <see cref="Description" /> property,
         ///     but a public static property with a name matching the <see cref="Description" /> value couldn't be found
         ///     on the <see cref="ResourceType" />.
@@ -367,7 +367,7 @@ namespace System.ComponentModel.DataAnnotations
         ///         represents a resource key within that resource type, then the localized value will be returned.
         ///     </para>
         /// </returns>
-        /// <exception cref="System.InvalidOperationException">
+        /// <exception cref="InvalidOperationException">
         ///     After setting both the <see cref="ResourceType" /> property and the <see cref="GroupName" /> property,
         ///     but a public static property with a name matching the <see cref="GroupName" /> value couldn't be found
         ///     on the <see cref="ResourceType" />.
@@ -397,7 +397,7 @@ namespace System.ComponentModel.DataAnnotations
         ///         consumer to want to fall back onto the property name.
         ///     </para>
         /// </returns>
-        /// <exception cref="System.InvalidOperationException">
+        /// <exception cref="InvalidOperationException">
         ///     After setting both the <see cref="ResourceType" /> property and the <see cref="Name" /> property,
         ///     but a public static property with a name matching the <see cref="Name" /> value couldn't be found
         ///     on the <see cref="ResourceType" />.
@@ -442,7 +442,7 @@ namespace System.ComponentModel.DataAnnotations
         ///         represents a resource key within that resource type, then the localized value will be returned.
         ///     </para>
         /// </returns>
-        /// <exception cref="System.InvalidOperationException">
+        /// <exception cref="InvalidOperationException">
         ///     After setting both the <see cref="ResourceType" /> property and the <see cref="Prompt" /> property,
         ///     but a public static property with a name matching the <see cref="Prompt" /> value couldn't be found
         ///     on the <see cref="ResourceType" />.
@@ -471,7 +471,7 @@ namespace System.ComponentModel.DataAnnotations
         ///         If <see cref="ShortName" /> is <c>null</c>, the value from <see cref="GetName" /> will be returned.
         ///     </para>
         /// </returns>
-        /// <exception cref="System.InvalidOperationException">
+        /// <exception cref="InvalidOperationException">
         ///     After setting both the <see cref="ResourceType" /> property and the <see cref="ShortName" /> property,
         ///     but a public static property with a name matching the <see cref="ShortName" /> value couldn't be found
         ///     on the <see cref="ResourceType" />.

@@ -4,19 +4,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Runtime.Serialization;
-
 namespace System.Runtime.Serialization
 {
     [Serializable]
     public class SerializationException : SystemException
     {
-        private static string s_nullMessage = "Serialization error";
+        private static readonly string _nullMessage = "Serialization error";
 
         // Creates a new SerializationException with its message
         // string set to a default message.
         public SerializationException()
-            : base(s_nullMessage)
+            : base(_nullMessage)
         {
             HResult = -2146233076;
         }
@@ -27,6 +25,7 @@ namespace System.Runtime.Serialization
             HResult = -2146233076;
         }
 
+        // ReSharper disable once UnusedMember.Global
         public SerializationException(string message, Exception innerException)
             : base(message, innerException)
         {

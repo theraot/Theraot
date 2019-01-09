@@ -14,47 +14,36 @@ namespace System.Runtime.Serialization
     /// <summary>The structure for holding all of the data needed for object serialization and deserialization.</summary>
     public sealed class SerializationInfo
     {
-        private const int DefaultSize = 4;
+        private const int _defaultSize = 4;
 
         // Even though we have a dictionary, we're still keeping all the arrays around for back-compat.
         // Otherwise we may run into potentially breaking behaviors like GetEnumerator() not returning entries in the same order they were added.
         private string[] _names;
         private object[] _values;
         private Type[] _types;
-        private int _count;
-        private Dictionary<string, int> _nameToIndex;
-        private IFormatterConverter _converter;
+        private readonly Dictionary<string, int> _nameToIndex;
+        private readonly IFormatterConverter _converter;
         private string _rootTypeName;
         private string _rootTypeAssemblyName;
-        private Type _rootType;
 
         [CLSCompliant(false)]
         public SerializationInfo(Type type, IFormatterConverter converter)
         {
-            if ((object)type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            if (converter == null)
-            {
-                throw new ArgumentNullException(nameof(converter));
-            }
-
-            _rootType = type;
+            ObjectType = type ?? throw new ArgumentNullException(nameof(type));
             _rootTypeName = type.FullName;
             _rootTypeAssemblyName = type.GetTypeInfo().Module.Assembly.FullName;
 
-            _names = new string[DefaultSize];
-            _values = new object[DefaultSize];
-            _types = new Type[DefaultSize];
+            _names = new string[_defaultSize];
+            _values = new object[_defaultSize];
+            _types = new Type[_defaultSize];
 
             _nameToIndex = new Dictionary<string, int>();
 
-            _converter = converter;
+            _converter = converter ?? throw new ArgumentNullException(nameof(converter));
         }
 
         [CLSCompliant(false)]
+        // ReSharper disable once UnusedParameter.Local
         public SerializationInfo(Type type, IFormatterConverter converter, bool requireSameTokenInPartialTrust)
             : this(type, converter)
         {
@@ -63,29 +52,20 @@ namespace System.Runtime.Serialization
 
         public string FullTypeName
         {
-            get { return _rootTypeName; }
+            get => _rootTypeName;
             set
             {
-                if (null == value)
-                {
-                    throw new ArgumentNullException(nameof(value));
-                }
-
-                _rootTypeName = value;
+                _rootTypeName = value ?? throw new ArgumentNullException(nameof(value));
                 IsFullTypeNameSetExplicit = true;
             }
         }
 
         public string AssemblyName
         {
-            get { return _rootTypeAssemblyName; }
+            get => _rootTypeAssemblyName;
             set
             {
-                if (null == value)
-                {
-                    throw new ArgumentNullException(nameof(value));
-                }
-                _rootTypeAssemblyName = value;
+                _rootTypeAssemblyName = value ?? throw new ArgumentNullException(nameof(value));
                 IsAssemblyNameSetExplicit = true;
             }
         }
@@ -96,14 +76,14 @@ namespace System.Runtime.Serialization
 
         public void SetType(Type type)
         {
-            if ((object)type == null)
+            if (type == null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
 
-            if (!ReferenceEquals(_rootType, type))
+            if (!ReferenceEquals(ObjectType, type))
             {
-                _rootType = type;
+                ObjectType = type;
                 _rootTypeName = type.FullName;
                 _rootTypeAssemblyName = type.GetTypeInfo().Module.Assembly.FullName;
                 IsFullTypeNameSetExplicit = false;
@@ -111,36 +91,35 @@ namespace System.Runtime.Serialization
             }
         }
 
-        public int MemberCount => _count;
+        public int MemberCount { get; private set; }
 
-        public Type ObjectType => _rootType;
+        public Type ObjectType { get; private set; }
 
-        public SerializationInfoEnumerator GetEnumerator() => new SerializationInfoEnumerator(_names, _values, _types, _count);
+        public SerializationInfoEnumerator GetEnumerator() => new SerializationInfoEnumerator(_names, _values, _types, MemberCount);
 
         private void ExpandArrays()
         {
-            int newSize;
-            Debug.Assert(_names.Length == _count, "[SerializationInfo.ExpandArrays]_names.Length == _count");
+            Debug.Assert(_names.Length == MemberCount, "[SerializationInfo.ExpandArrays]_names.Length == _count");
 
-            newSize = (_count * 2);
+            var newSize = MemberCount * 2;
 
             // In the pathological case, we may wrap
-            if (newSize < _count)
+            if (newSize < MemberCount)
             {
-                if (int.MaxValue > _count)
+                if (int.MaxValue > MemberCount)
                 {
                     newSize = int.MaxValue;
                 }
             }
 
             // Allocate more space and copy the data
-            string[] newMembers = new string[newSize];
-            object[] newData = new object[newSize];
-            Type[] newTypes = new Type[newSize];
+            var newMembers = new string[newSize];
+            var newData = new object[newSize];
+            var newTypes = new Type[newSize];
 
-            Array.Copy(_names, newMembers, _count);
-            Array.Copy(_values, newData, _count);
-            Array.Copy(_types, newTypes, _count);
+            Array.Copy(_names, newMembers, MemberCount);
+            Array.Copy(_values, newData, MemberCount);
+            Array.Copy(_types, newTypes, MemberCount);
 
             // Assign the new arrays back to the member vars.
             _names = newMembers;
@@ -155,7 +134,7 @@ namespace System.Runtime.Serialization
                 throw new ArgumentNullException(nameof(name));
             }
 
-            if ((object)type == null)
+            if (type == null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
@@ -167,7 +146,7 @@ namespace System.Runtime.Serialization
         {
             if (null == value)
             {
-                AddValue(name, value, typeof(object));
+                AddValue(name, null, typeof(object));
             }
             else
             {
@@ -177,76 +156,76 @@ namespace System.Runtime.Serialization
 
         public void AddValue(string name, bool value)
         {
-            AddValue(name, (object)value, typeof(bool));
+            AddValue(name, value, typeof(bool));
         }
 
         public void AddValue(string name, char value)
         {
-            AddValue(name, (object)value, typeof(char));
+            AddValue(name, value, typeof(char));
         }
 
         [CLSCompliant(false)]
         public void AddValue(string name, sbyte value)
         {
-            AddValue(name, (object)value, typeof(sbyte));
+            AddValue(name, value, typeof(sbyte));
         }
 
         public void AddValue(string name, byte value)
         {
-            AddValue(name, (object)value, typeof(byte));
+            AddValue(name, value, typeof(byte));
         }
 
         public void AddValue(string name, short value)
         {
-            AddValue(name, (object)value, typeof(short));
+            AddValue(name, value, typeof(short));
         }
 
         [CLSCompliant(false)]
         public void AddValue(string name, ushort value)
         {
-            AddValue(name, (object)value, typeof(ushort));
+            AddValue(name, value, typeof(ushort));
         }
 
         public void AddValue(string name, int value)
         {
-            AddValue(name, (object)value, typeof(int));
+            AddValue(name, value, typeof(int));
         }
 
         [CLSCompliant(false)]
         public void AddValue(string name, uint value)
         {
-            AddValue(name, (object)value, typeof(uint));
+            AddValue(name, value, typeof(uint));
         }
 
         public void AddValue(string name, long value)
         {
-            AddValue(name, (object)value, typeof(long));
+            AddValue(name, value, typeof(long));
         }
 
         [CLSCompliant(false)]
         public void AddValue(string name, ulong value)
         {
-            AddValue(name, (object)value, typeof(ulong));
+            AddValue(name, value, typeof(ulong));
         }
 
         public void AddValue(string name, float value)
         {
-            AddValue(name, (object)value, typeof(float));
+            AddValue(name, value, typeof(float));
         }
 
         public void AddValue(string name, double value)
         {
-            AddValue(name, (object)value, typeof(double));
+            AddValue(name, value, typeof(double));
         }
 
         public void AddValue(string name, decimal value)
         {
-            AddValue(name, (object)value, typeof(decimal));
+            AddValue(name, value, typeof(decimal));
         }
 
         public void AddValue(string name, DateTime value)
         {
-            AddValue(name, (object)value, typeof(DateTime));
+            AddValue(name, value, typeof(DateTime));
         }
 
         internal void AddValueInternal(string name, object value, Type type)
@@ -255,19 +234,19 @@ namespace System.Runtime.Serialization
             {
                 throw new SerializationException();
             }
-            _nameToIndex.Add(name, _count);
+            _nameToIndex.Add(name, MemberCount);
 
             // If we need to expand the arrays, do so.
-            if (_count >= _names.Length)
+            if (MemberCount >= _names.Length)
             {
                 ExpandArrays();
             }
 
             // Add the data and then advance the counter.
-            _names[_count] = name;
-            _values[_count] = value;
-            _types[_count] = type;
-            _count++;
+            _names[MemberCount] = name;
+            _values[MemberCount] = value;
+            _types[MemberCount] = type;
+            MemberCount++;
         }
 
         /// <summary>
@@ -288,13 +267,13 @@ namespace System.Runtime.Serialization
         /// <param name="name"> The name of the data to be updated.</param>
         /// <param name="value"> The new value.</param>
         /// <param name="type"> The type of the data being added.</param>
-        public void UpdateValue(string name, object value, Type type)
+        internal void UpdateValue(string name, object value, Type type)
         {
             Debug.Assert(null != name, "[SerializationInfo.UpdateValue]name!=null");
             Debug.Assert(null != value, "[SerializationInfo.UpdateValue]value!=null");
-            Debug.Assert(null != (object)type, "[SerializationInfo.UpdateValue]type!=null");
+            Debug.Assert(null != type, "[SerializationInfo.UpdateValue]type!=null");
 
-            int index = FindElement(name);
+            var index = FindElement(name);
             if (index < 0)
             {
                 AddValueInternal(name, value, type);
@@ -312,8 +291,7 @@ namespace System.Runtime.Serialization
             {
                 throw new ArgumentNullException(nameof(name));
             }
-            int index;
-            if (_nameToIndex.TryGetValue(name, out index))
+            if (_nameToIndex.TryGetValue(name, out var index))
             {
                 return index;
             }
@@ -330,7 +308,7 @@ namespace System.Runtime.Serialization
         /// <returns>The value of the element at the position associated with name.</returns>
         private object GetElement(string name, out Type foundType)
         {
-            int index = FindElement(name);
+            var index = FindElement(name);
             if (index == -1)
             {
                 throw new SerializationException();
@@ -340,13 +318,13 @@ namespace System.Runtime.Serialization
             Debug.Assert(index < _types.Length, "[SerializationInfo.GetElement]index<_types.Length");
 
             foundType = _types[index];
-            Debug.Assert((object)foundType != null, "[SerializationInfo.GetElement]foundType!=null");
+            Debug.Assert(foundType != null, "[SerializationInfo.GetElement]foundType!=null");
             return _values[index];
         }
 
         private object GetElementNoThrow(string name, out Type foundType)
         {
-            int index = FindElement(name);
+            var index = FindElement(name);
             if (index == -1)
             {
                 foundType = null;
@@ -357,23 +335,23 @@ namespace System.Runtime.Serialization
             Debug.Assert(index < _types.Length, "[SerializationInfo.GetElement]index<_types.Length");
 
             foundType = _types[index];
-            Debug.Assert((object)foundType != null, "[SerializationInfo.GetElement]foundType!=null");
+            Debug.Assert(foundType != null, "[SerializationInfo.GetElement]foundType!=null");
             return _values[index];
         }
 
         public object GetValue(string name, Type type)
         {
-            if ((object)type == null)
+            if (type == null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
 
             if (type.GetUnderlyingSystemType() != type)
+            {
                 throw new ArgumentException();
-            Type foundType;
-            object value;
+            }
 
-            value = GetElement(name, out foundType);
+            var value = GetElement(name, out var foundType);
 
             if (ReferenceEquals(foundType, type) || type.GetTypeInfo().IsAssignableFrom(foundType.GetTypeInfo()) || value == null)
             {
@@ -386,15 +364,14 @@ namespace System.Runtime.Serialization
 
         internal object GetValueNoThrow(string name, Type type)
         {
-            Type foundType;
-            object value;
-
-            Debug.Assert((object)type != null, "[SerializationInfo.GetValue]type ==null");
+            Debug.Assert(type != null, "[SerializationInfo.GetValue]type ==null");
             Debug.Assert(type.GetUnderlyingSystemType() == type, "[SerializationInfo.GetValue]type is not a runtime type");
 
-            value = GetElementNoThrow(name, out foundType);
+            var value = GetElementNoThrow(name, out var foundType);
             if (value == null)
+            {
                 return null;
+            }
 
             if (ReferenceEquals(foundType, type) || type.GetTypeInfo().IsAssignableFrom(foundType.GetTypeInfo()) || value == null)
             {
@@ -408,110 +385,95 @@ namespace System.Runtime.Serialization
 
         public bool GetBoolean(string name)
         {
-            Type foundType;
-            object value = GetElement(name, out foundType);
+            var value = GetElement(name, out var foundType);
             return ReferenceEquals(foundType, typeof(bool)) ? (bool)value : _converter.ToBoolean(value);
         }
 
         public char GetChar(string name)
         {
-            Type foundType;
-            object value = GetElement(name, out foundType);
+            var value = GetElement(name, out var foundType);
             return ReferenceEquals(foundType, typeof(char)) ? (char)value : _converter.ToChar(value);
         }
 
         [CLSCompliant(false)]
         public sbyte GetSByte(string name)
         {
-            Type foundType;
-            object value = GetElement(name, out foundType);
+            var value = GetElement(name, out var foundType);
             return ReferenceEquals(foundType, typeof(sbyte)) ? (sbyte)value : _converter.ToSByte(value);
         }
 
         public byte GetByte(string name)
         {
-            Type foundType;
-            object value = GetElement(name, out foundType);
+            var value = GetElement(name, out var foundType);
             return ReferenceEquals(foundType, typeof(byte)) ? (byte)value : _converter.ToByte(value);
         }
 
         public short GetInt16(string name)
         {
-            Type foundType;
-            object value = GetElement(name, out foundType);
+            var value = GetElement(name, out var foundType);
             return ReferenceEquals(foundType, typeof(short)) ? (short)value : _converter.ToInt16(value);
         }
 
         [CLSCompliant(false)]
         public ushort GetUInt16(string name)
         {
-            Type foundType;
-            object value = GetElement(name, out foundType);
+            var value = GetElement(name, out var foundType);
             return ReferenceEquals(foundType, typeof(ushort)) ? (ushort)value : _converter.ToUInt16(value);
         }
 
         public int GetInt32(string name)
         {
-            Type foundType;
-            object value = GetElement(name, out foundType);
+            var value = GetElement(name, out var foundType);
             return ReferenceEquals(foundType, typeof(int)) ? (int)value : _converter.ToInt32(value);
         }
 
         [CLSCompliant(false)]
         public uint GetUInt32(string name)
         {
-            Type foundType;
-            object value = GetElement(name, out foundType);
+            var value = GetElement(name, out var foundType);
             return ReferenceEquals(foundType, typeof(uint)) ? (uint)value : _converter.ToUInt32(value);
         }
 
         public long GetInt64(string name)
         {
-            Type foundType;
-            object value = GetElement(name, out foundType);
+            var value = GetElement(name, out var foundType);
             return ReferenceEquals(foundType, typeof(long)) ? (long)value : _converter.ToInt64(value);
         }
 
         [CLSCompliant(false)]
         public ulong GetUInt64(string name)
         {
-            Type foundType;
-            object value = GetElement(name, out foundType);
+            var value = GetElement(name, out var foundType);
             return ReferenceEquals(foundType, typeof(ulong)) ? (ulong)value : _converter.ToUInt64(value);
         }
 
         public float GetSingle(string name)
         {
-            Type foundType;
-            object value = GetElement(name, out foundType);
+            var value = GetElement(name, out var foundType);
             return ReferenceEquals(foundType, typeof(float)) ? (float)value : _converter.ToSingle(value);
         }
 
         public double GetDouble(string name)
         {
-            Type foundType;
-            object value = GetElement(name, out foundType);
+            var value = GetElement(name, out var foundType);
             return ReferenceEquals(foundType, typeof(double)) ? (double)value : _converter.ToDouble(value);
         }
 
         public decimal GetDecimal(string name)
         {
-            Type foundType;
-            object value = GetElement(name, out foundType);
+            var value = GetElement(name, out var foundType);
             return ReferenceEquals(foundType, typeof(decimal)) ? (decimal)value : _converter.ToDecimal(value);
         }
 
         public DateTime GetDateTime(string name)
         {
-            Type foundType;
-            object value = GetElement(name, out foundType);
+            var value = GetElement(name, out var foundType);
             return ReferenceEquals(foundType, typeof(DateTime)) ? (DateTime)value : _converter.ToDateTime(value);
         }
 
         public string GetString(string name)
         {
-            Type foundType;
-            object value = GetElement(name, out foundType);
+            var value = GetElement(name, out var foundType);
             return ReferenceEquals(foundType, typeof(string)) || value == null ? (string)value : _converter.ToString(value);
         }
     }

@@ -6,17 +6,21 @@
 
 namespace System.Security.Permissions
 {
-    [System.Runtime.InteropServices.ComVisible(true)]
-    [System.AttributeUsage(System.AttributeTargets.Assembly | System.AttributeTargets.Class | System.AttributeTargets.Struct | System.AttributeTargets.Constructor | System.AttributeTargets.Method | System.AttributeTargets.Delegate, AllowMultiple = true, Inherited = false)]
-    [System.Serializable]
+    [Runtime.InteropServices.ComVisible(true)]
+    [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Delegate, AllowMultiple = true, Inherited = false)]
+    [Serializable]
     public sealed class HostProtectionAttribute : CodeAccessSecurityAttribute
     {
-        public HostProtectionAttribute() : base(default(SecurityAction))
+        public HostProtectionAttribute()
+            : base(default)
         {
+            // Empty
         }
 
-        public HostProtectionAttribute(SecurityAction action) : base(default(SecurityAction))
+        public HostProtectionAttribute(SecurityAction action)
+            : base(default)
         {
+            // Empty
         }
 
         public bool ExternalProcessMgmt { get; set; }
@@ -32,7 +36,7 @@ namespace System.Security.Permissions
 
         public override IPermission CreatePermission()
         {
-            return default(IPermission);
+            return default;
         }
     }
 }

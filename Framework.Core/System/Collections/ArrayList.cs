@@ -1838,19 +1838,18 @@ namespace System.Collections
         private sealed class SyncIList : IList
         {
             private readonly IList _list;
-            private readonly object _root;
 
             internal SyncIList(IList list)
             {
                 _list = list;
-                _root = list.SyncRoot;
+                SyncRoot = list.SyncRoot;
                 IsReadOnly = _list.IsReadOnly;
                 IsFixedSize = _list.IsFixedSize;
             }
 
             public int Count
             {
-                get { lock (_root) { return _list.Count; } }
+                get { lock (SyncRoot) { return _list.Count; } }
             }
 
             public bool IsReadOnly { get; }
@@ -1863,25 +1862,25 @@ namespace System.Collections
             {
                 get
                 {
-                    lock (_root)
+                    lock (SyncRoot)
                     {
                         return _list[index];
                     }
                 }
                 set
                 {
-                    lock (_root)
+                    lock (SyncRoot)
                     {
                         _list[index] = value;
                     }
                 }
             }
 
-            public object SyncRoot => _root;
+            public object SyncRoot { get; }
 
             public int Add(object value)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.Add(value);
                 }
@@ -1889,7 +1888,7 @@ namespace System.Collections
 
             public void Clear()
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.Clear();
                 }
@@ -1897,7 +1896,7 @@ namespace System.Collections
 
             public bool Contains(object item)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.Contains(item);
                 }
@@ -1905,7 +1904,7 @@ namespace System.Collections
 
             public void CopyTo(Array array, int index)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.CopyTo(array, index);
                 }
@@ -1913,7 +1912,7 @@ namespace System.Collections
 
             public IEnumerator GetEnumerator()
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.GetEnumerator();
                 }
@@ -1921,7 +1920,7 @@ namespace System.Collections
 
             public int IndexOf(object value)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.IndexOf(value);
                 }
@@ -1929,7 +1928,7 @@ namespace System.Collections
 
             public void Insert(int index, object value)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.Insert(index, value);
                 }
@@ -1937,7 +1936,7 @@ namespace System.Collections
 
             public void Remove(object value)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.Remove(value);
                 }
@@ -1945,7 +1944,7 @@ namespace System.Collections
 
             public void RemoveAt(int index)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.RemoveAt(index);
                 }

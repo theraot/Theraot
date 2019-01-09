@@ -22,16 +22,16 @@ namespace System.ComponentModel.DataAnnotations
     /// </summary>
     internal class LocalizableString
     {
-        #region Member fields
+#region Member fields
 
         private readonly string _propertyName;
         private Func<string> _cachedResult;
         private string _propertyValue;
         private Type _resourceType;
 
-        #endregion Member fields
+#endregion Member fields
 
-        #region All Constructors
+#region All Constructors
 
         /// <summary>
         ///     Constructs a localizable string, specifying the property name associated
@@ -47,9 +47,9 @@ namespace System.ComponentModel.DataAnnotations
             _propertyName = propertyName;
         }
 
-        #endregion All Constructors
+#endregion All Constructors
 
-        #region Properties
+#region Properties
 
         /// <summary>
         ///     Gets or sets the resource type to be used for localization.
@@ -85,9 +85,9 @@ namespace System.ComponentModel.DataAnnotations
             }
         }
 
-        #endregion Properties
+#endregion Properties
 
-        #region Methods
+#region Methods
 
         /// <summary>
         ///     Gets the potentially localized value.
@@ -100,7 +100,7 @@ namespace System.ComponentModel.DataAnnotations
         ///         as a literal, non-localized string.
         ///     </para>
         /// </remarks>
-        /// <exception cref="System.InvalidOperationException">
+        /// <exception cref="InvalidOperationException">
         ///     Thrown if localization fails.  This can occur if <see cref="ResourceType" /> has been
         ///     specified, <see cref="Value" /> is not null, but the resource could not be
         ///     accessed.  <see cref="ResourceType" /> must be a public class, and <see cref="Value" />
@@ -148,7 +148,7 @@ namespace System.ComponentModel.DataAnnotations
                     // If the property is not configured properly, then throw a missing member exception
                     if (badlyConfigured)
                     {
-                        string exceptionMessage = $"Localization failed ({_propertyName}, {_resourceType.FullName}, _propertyValue)";
+                        var exceptionMessage = $"Localization failed ({_propertyName}, {_resourceType.FullName}, _propertyValue)";
                         _cachedResult = () => throw new InvalidOperationException(exceptionMessage);
                     }
                     else
@@ -172,7 +172,7 @@ namespace System.ComponentModel.DataAnnotations
             _cachedResult = null;
         }
 
-        #endregion Methods
+#endregion Methods
     }
 }
 

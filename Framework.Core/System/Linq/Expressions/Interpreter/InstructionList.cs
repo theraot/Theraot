@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -75,7 +75,6 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed class InstructionList
     {
         private readonly List<Instruction> _instructions = new List<Instruction>();
-        private int _currentStackDepth;
 
         // list of (instruction index, cookie) sorted by instruction index:
         // Not readonly for debug
@@ -199,7 +198,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public int CurrentContinuationsDepth { get; private set; }
 
-        public int CurrentStackDepth => _currentStackDepth;
+        public int CurrentStackDepth { get; private set; }
 
         public int MaxStackDepth { get; private set; }
 
@@ -271,8 +270,8 @@ namespace System.Linq.Expressions.Interpreter
 
             CurrentContinuationsDepth -= instruction.ProducedContinuations;
             CurrentContinuationsDepth += instruction.ConsumedContinuations;
-            _currentStackDepth -= instruction.ProducedStack;
-            _currentStackDepth += instruction.ConsumedStack;
+            CurrentStackDepth -= instruction.ProducedStack;
+            CurrentStackDepth += instruction.ConsumedStack;
         }
 
         internal Instruction GetInstruction(int index) => _instructions[index];
@@ -282,12 +281,12 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(instruction.ConsumedStack >= 0 && instruction.ProducedStack >= 0 &&
                 instruction.ConsumedContinuations >= 0 && instruction.ProducedContinuations >= 0, "bad instruction " + instruction);
 
-            _currentStackDepth -= instruction.ConsumedStack;
-            Debug.Assert(_currentStackDepth >= 0, "negative stack depth " + instruction);
-            _currentStackDepth += instruction.ProducedStack;
-            if (_currentStackDepth > MaxStackDepth)
+            CurrentStackDepth -= instruction.ConsumedStack;
+            Debug.Assert(CurrentStackDepth >= 0, "negative stack depth " + instruction);
+            CurrentStackDepth += instruction.ProducedStack;
+            if (CurrentStackDepth > MaxStackDepth)
             {
-                MaxStackDepth = _currentStackDepth;
+                MaxStackDepth = CurrentStackDepth;
             }
 
             CurrentContinuationsDepth -= instruction.ConsumedContinuations;

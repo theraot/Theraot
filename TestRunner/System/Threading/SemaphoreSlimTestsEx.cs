@@ -60,7 +60,7 @@ namespace TestRunner.System.Threading
         {
             for (var count = 0; count < 10; count++)
             {
-                int maxTasks = 3 + count;
+                var maxTasks = 3 + count;
                 var spinWait = new SpinWait();
                 while (!WaitAsyncWaitCorrectlyExtractedExtracted(3, maxTasks))
                 {

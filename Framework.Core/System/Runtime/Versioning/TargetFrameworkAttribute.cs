@@ -1,8 +1,8 @@
-﻿#if NET20 || NET30 || NET35
+﻿#if LESSTHAN_NET40
 
 namespace System.Runtime.Versioning
 {
-    [AttributeUsageAttribute(AttributeTargets.Assembly)]
+    [AttributeUsage(AttributeTargets.Assembly)]
     public sealed class TargetFrameworkAttribute : Attribute
     {
         public TargetFrameworkAttribute(string frameworkName)

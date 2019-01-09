@@ -151,19 +151,17 @@ namespace System.Collections
         private ICollection _keys;
         private ICollection _values;
 
-        private IEqualityComparer _keyComparer;
-
         [Obsolete("Please use EqualityComparer property.")]
         protected IHashCodeProvider Hcp
         {
             get
             {
-                if (_keyComparer is CompatibleComparer comparer)
+                if (EqualityComparer is CompatibleComparer comparer)
                 {
                     return comparer.HashCodeProvider;
                 }
 
-                if (_keyComparer == null)
+                if (EqualityComparer == null)
                 {
                     return null;
                 }
@@ -171,13 +169,13 @@ namespace System.Collections
             }
             set
             {
-                if (_keyComparer is CompatibleComparer keyComparer)
+                if (EqualityComparer is CompatibleComparer keyComparer)
                 {
-                    _keyComparer = new CompatibleComparer(value, keyComparer.Comparer);
+                    EqualityComparer = new CompatibleComparer(value, keyComparer.Comparer);
                 }
-                else if (_keyComparer == null)
+                else if (EqualityComparer == null)
                 {
-                    _keyComparer = new CompatibleComparer(value, null);
+                    EqualityComparer = new CompatibleComparer(value, null);
                 }
                 else
                 {
@@ -191,12 +189,12 @@ namespace System.Collections
         {
             get
             {
-                if (_keyComparer is CompatibleComparer comparer)
+                if (EqualityComparer is CompatibleComparer comparer)
                 {
                     return comparer.Comparer;
                 }
 
-                if (_keyComparer == null)
+                if (EqualityComparer == null)
                 {
                     return null;
                 }
@@ -204,13 +202,13 @@ namespace System.Collections
             }
             set
             {
-                if (_keyComparer is CompatibleComparer keyComparer)
+                if (EqualityComparer is CompatibleComparer keyComparer)
                 {
-                    _keyComparer = new CompatibleComparer(keyComparer.HashCodeProvider, value);
+                    EqualityComparer = new CompatibleComparer(keyComparer.HashCodeProvider, value);
                 }
-                else if (_keyComparer == null)
+                else if (EqualityComparer == null)
                 {
-                    _keyComparer = new CompatibleComparer(null, value);
+                    EqualityComparer = new CompatibleComparer(null, value);
                 }
                 else
                 {
@@ -219,7 +217,7 @@ namespace System.Collections
             }
         }
 
-        protected IEqualityComparer EqualityComparer => _keyComparer;
+        protected IEqualityComparer EqualityComparer { get; private set; }
 
         // Note: this constructor is a bogus constructor that does nothing
         // and is for use only with SyncHashtable.
@@ -289,7 +287,7 @@ namespace System.Collections
 
         public Hashtable(int capacity, float loadFactor, IEqualityComparer equalityComparer) : this(capacity, loadFactor)
         {
-            _keyComparer = equalityComparer;
+            EqualityComparer = equalityComparer;
         }
 
         [Obsolete("Please use Hashtable(IEqualityComparer) instead.")]
@@ -345,7 +343,7 @@ namespace System.Collections
         {
             if (hcp != null || comparer != null)
             {
-                _keyComparer = new CompatibleComparer(hcp, comparer);
+                EqualityComparer = new CompatibleComparer(hcp, comparer);
             }
         }
 
@@ -464,7 +462,7 @@ namespace System.Collections
         public virtual object Clone()
         {
             var buckets = _buckets;
-            var ht = new Hashtable(_count, _keyComparer) { _version = _version, _loadFactor = _loadFactor, _count = 0 };
+            var ht = new Hashtable(_count, EqualityComparer) { _version = _version, _loadFactor = _loadFactor, _count = 0 };
 
             var bucket = buckets.Length;
             while (bucket > 0)
@@ -815,9 +813,9 @@ namespace System.Collections
         // instance.  Otherwise, it calls hcp.GetHashCode(obj).
         protected virtual int GetHash(object key)
         {
-            if (_keyComparer != null)
+            if (EqualityComparer != null)
             {
-                return _keyComparer.GetHashCode(key);
+                return EqualityComparer.GetHashCode(key);
             }
 
             return key.GetHashCode();
@@ -848,9 +846,9 @@ namespace System.Collections
                 return true;
             }
 
-            if (_keyComparer != null)
+            if (EqualityComparer != null)
             {
-                return _keyComparer.Equals(item, key);
+                return EqualityComparer.Equals(item, key);
             }
 
             return item != null && item.Equals(key);
@@ -1112,7 +1110,7 @@ namespace System.Collections
                 // Also, if the Hashtable is using randomized hashing, serialize the old
                 // view of the _keyComparer so previous frameworks don't see the new types
 #pragma warning disable 618
-                var keyComparerForSerialization = _keyComparer;
+                var keyComparerForSerialization = EqualityComparer;
 
                 if (keyComparerForSerialization == null)
                 {
@@ -1190,7 +1188,7 @@ namespace System.Collections
                         break;
 
                     case _keyComparerName:
-                        _keyComparer = (IEqualityComparer)siInfo.GetValue(_keyComparerName, typeof(IEqualityComparer));
+                        EqualityComparer = (IEqualityComparer)siInfo.GetValue(_keyComparerName, typeof(IEqualityComparer));
                         break;
 
                     case _comparerName:
@@ -1216,9 +1214,9 @@ namespace System.Collections
             _loadSize = (int)(_loadFactor * hashsize);
 
             // V1 object doesn't has _keyComparer field.
-            if (_keyComparer == null && (c != null || hcp != null))
+            if (EqualityComparer == null && (c != null || hcp != null))
             {
-                _keyComparer = new CompatibleComparer(hcp, c);
+                EqualityComparer = new CompatibleComparer(hcp, c);
             }
 
             _buckets = new Bucket[hashsize];
@@ -1658,23 +1656,18 @@ namespace System.Collections
     internal sealed class CompatibleComparer : IEqualityComparer
     {
 #pragma warning disable 618
-        private readonly IHashCodeProvider _hcp;
-#pragma warning restore 618
-        private readonly IComparer _comparer;
-
-#pragma warning disable 618
         internal CompatibleComparer(IHashCodeProvider hashCodeProvider, IComparer comparer)
 #pragma warning restore 618
         {
-            _hcp = hashCodeProvider;
-            _comparer = comparer;
+            HashCodeProvider = hashCodeProvider;
+            Comparer = comparer;
         }
 
 #pragma warning disable 618
-        internal IHashCodeProvider HashCodeProvider => _hcp;
+        internal IHashCodeProvider HashCodeProvider { get; }
 #pragma warning restore 618
 
-        internal IComparer Comparer => _comparer;
+        internal IComparer Comparer { get; }
 
         public new bool Equals(object a, object b) => Compare(a, b) == 0;
 
@@ -1695,9 +1688,9 @@ namespace System.Collections
                 return 1;
             }
 
-            if (_comparer != null)
+            if (Comparer != null)
             {
-                return _comparer.Compare(a, b);
+                return Comparer.Compare(a, b);
             }
 
             if (a is IComparable ia)
@@ -1715,8 +1708,8 @@ namespace System.Collections
                 throw new ArgumentNullException(nameof(obj));
             }
 
-            return _hcp != null ?
-                _hcp.GetHashCode(obj) :
+            return HashCodeProvider != null ?
+                HashCodeProvider.GetHashCode(obj) :
                 obj.GetHashCode();
         }
     }

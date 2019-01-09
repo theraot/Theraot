@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35
+﻿#if LESSTHAN_NET40
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -102,7 +102,7 @@ namespace System.Threading.Tasks
         /// <remarks>
         /// This property enables a consumer access to the <see cref="T:System.Threading.Tasks.Task{TResult}"/> that is controlled by this instance.
         /// The <see cref="SetResult"/>, <see cref="SetException(Exception)"/>,
-        /// <see cref="SetException(System.Collections.Generic.IEnumerable{System.Exception})"/>, and <see cref="SetCanceled"/>
+        /// <see cref="SetException(IEnumerable{Exception})"/>, and <see cref="SetCanceled"/>
         /// methods (and their "Try" variants) on this instance all result in the relevant state
         /// transitions on this underlying Task.
         /// </remarks>
