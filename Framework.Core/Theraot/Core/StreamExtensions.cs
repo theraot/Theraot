@@ -2,9 +2,14 @@
 
 using System;
 using System.IO;
+
+#if LESSTHAN_NET45
+
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+
+#endif
 
 namespace Theraot.Core
 {
@@ -62,10 +67,10 @@ namespace Theraot.Core
 #if LESSTHAN_NET45
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task<int> ReadAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        public static async Task<int> ReadAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return Task.Factory.FromAsync
+            return await Task.Factory.FromAsync
             (
                 BeginRead,
                 stream.EndRead,
@@ -74,9 +79,9 @@ namespace Theraot.Core
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task<int> ReadAsync(this Stream stream, byte[] buffer, int offset, int count)
+        public static async Task<int> ReadAsync(this Stream stream, byte[] buffer, int offset, int count)
         {
-            return Task.Factory.FromAsync
+            return await Task.Factory.FromAsync
             (
                 BeginRead,
                 stream.EndRead,
@@ -91,10 +96,10 @@ namespace Theraot.Core
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task WriteAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        public static async Task WriteAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return Task.Factory.FromAsync
+            await Task.Factory.FromAsync
             (
                 BeginWrite,
                 stream.EndWrite,
@@ -103,9 +108,9 @@ namespace Theraot.Core
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task WriteAsync(this Stream stream, byte[] buffer, int offset, int count)
+        public static async Task WriteAsync(this Stream stream, byte[] buffer, int offset, int count)
         {
-            return Task.Factory.FromAsync
+            await Task.Factory.FromAsync
             (
                 BeginWrite,
                 stream.EndWrite,
