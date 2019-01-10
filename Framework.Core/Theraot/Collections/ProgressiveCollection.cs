@@ -26,18 +26,6 @@ namespace Theraot.Collections
             // Empty
         }
 
-        public ProgressiveCollection(IEnumerable<T> enumerable, IEqualityComparer<T> comparer)
-            : this(Progressor<T>.CreateFromIEnumerable(enumerable), new ExtendedList<T>(comparer), comparer)
-        {
-            // Empty
-        }
-
-        public ProgressiveCollection(IObservable<T> observable, IEqualityComparer<T> comparer)
-            : this(Progressor<T>.CreateFromIObservable(observable), new ExtendedList<T>(comparer), comparer)
-        {
-            // Empty
-        }
-
         protected ProgressiveCollection(Progressor<T> progressor, ICollection<T> cache, IEqualityComparer<T> comparer)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
