@@ -9,6 +9,7 @@ using System.Runtime.ConstrainedExecution;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Security.Permissions;
+using System.Threading.Tasks;
 
 namespace TestRunner
 {
@@ -28,6 +29,7 @@ namespace TestRunner
         public static readonly Type HostProtectionResource = typeof(HostProtectionResource);
         public static readonly Type IFormatterConverter = typeof(IFormatterConverter);
         public static readonly Type IInvokeOnGetBinder = typeof(IInvokeOnGetBinder);
+        public static readonly Type IUnrestrictedPermission = typeof(IUnrestrictedPermission);
         public static readonly Type PureAttribute = typeof(PureAttribute);
         public static readonly Type ReliabilityContractAttribute = typeof(ReliabilityContractAttribute);
         public static readonly Type SecurityAction = typeof(SecurityAction);
@@ -36,6 +38,9 @@ namespace TestRunner
         public static readonly Type SerializableAttribute = typeof(SerializableAttribute);
         public static readonly Type SerializationInfo = typeof(SerializationInfo);
         public static readonly Type StreamingContext = typeof(StreamingContext);
-        public static readonly Type IUnrestrictedPermission = typeof(IUnrestrictedPermission);
+        public static readonly Type Task = typeof(Task);
+        public static readonly Type Tuple = typeof(Tuple);
+        public static readonly Type ValueTask = typeof(ValueTask<int>);
+        public static readonly Type ValueTuple = typeof(ValueTuple);
     }
 }
