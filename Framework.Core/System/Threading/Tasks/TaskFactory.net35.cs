@@ -438,18 +438,7 @@ namespace System.Threading.Tasks
                 {
                     return;
                 }
-                try
-                {
-                    source.SetResult(r);
-                }
-                catch (OperationCanceledException)
-                {
-                    source.SetCanceled();
-                }
-                catch (Exception e)
-                {
-                    source.SetException(e);
-                }
+                source.TrySetResult(r);
             }
         }
 
@@ -469,18 +458,7 @@ namespace System.Threading.Tasks
                 {
                     return;
                 }
-                try
-                {
-                    source.SetResult(r);
-                }
-                catch (OperationCanceledException)
-                {
-                    source.SetCanceled();
-                }
-                catch (Exception e)
-                {
-                    source.SetException(e);
-                }
+                source.TrySetResult(r);
             }
         }
     }
