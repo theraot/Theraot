@@ -299,6 +299,24 @@ namespace Theraot.Collections
             }
         }
 
+        public static bool Dequeue<T>(this Queue<T> source, T item, IEqualityComparer<T> comparer)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (comparer == null)
+            {
+                comparer = EqualityComparer<T>.Default;
+            }
+            if (comparer.Equals(item, source.Peek()))
+            {
+                source.Dequeue();
+                return true;
+            }
+            return false;
+        }
+
         public static int ExceptWith<T>(this ICollection<T> source, IEnumerable<T> other)
         {
             if (source == null)
@@ -507,6 +525,24 @@ namespace Theraot.Collections
         public static bool Overlaps<T>(this IEnumerable<T> source, IEnumerable<T> items)
         {
             return ContainsAny(source, items);
+        }
+
+        public static bool Pop<T>(this Stack<T> source, T item, IEqualityComparer<T> comparer)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (comparer == null)
+            {
+                comparer = EqualityComparer<T>.Default;
+            }
+            if (comparer.Equals(item, source.Peek()))
+            {
+                source.Pop();
+                return true;
+            }
+            return false;
         }
 
         public static bool Remove<T>(this ICollection<T> source, T item, IEqualityComparer<T> comparer)
