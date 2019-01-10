@@ -5,7 +5,6 @@ TASK                                                                            
 Features:
 - Add Stream.*Async methods                                                                 2
 - Use LESSTHAN_* compilation constants everywhere they make sense                           5
-- DictionaryEx, ListEx, ReadOnlyCollectionEx                                                1
 - Review what *Extensions and *Helpers can be moved to the proper namespaces (System.*)     3
 - Bring back PrimeHelper and use it Hashtable                                               4
 - Add all types from System.ComponentModel.Annotations                                      4

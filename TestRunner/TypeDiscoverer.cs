@@ -29,6 +29,7 @@
 				typeof(StringGenerator),
 				typeof(DataGeneratorAttribute),
 				typeof(UseGeneratorAttribute),
+				typeof(InterfaceTests),
 				typeof(Assert),
 				typeof(Program),
 				typeof(AssertionFailedException),
