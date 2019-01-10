@@ -37,6 +37,7 @@
 				typeof(TestAttribute),
 				typeof(TestFixtureAttribute),
 				typeof(TypeDiscoverer),
+				typeof(System.IO.StreamExtensionsTest),
 				typeof(System.Reflection.IntrospectionExtensionsTest),
 				typeof(System.Threading.SemaphoreSlimTestsEx),
 				typeof(System.Threading.TaskExFromTest),
