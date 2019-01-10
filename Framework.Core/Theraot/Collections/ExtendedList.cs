@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace Theraot.Collections
 {
     [Serializable]
-    [System.Diagnostics.DebuggerNonUserCode]
-    [System.Diagnostics.DebuggerDisplay("Count={Count}")]
+    [DebuggerNonUserCode]
+    [DebuggerDisplay("Count={Count}")]
     public sealed class ListEx<T> : List<T>
 #if GREATERTHAN_NET40
         , IReadOnlyList<T>

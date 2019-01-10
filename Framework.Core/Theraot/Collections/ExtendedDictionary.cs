@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
 namespace Theraot.Collections
 {
     [Serializable]
-    [System.Diagnostics.DebuggerNonUserCode]
-    [System.Diagnostics.DebuggerDisplay("Count={Count}")]
+    [ComVisible(false)]
+    [DebuggerNonUserCode]
+    [DebuggerDisplay("Count={Count}")]
     public class DictionaryEx<TKey, TValue> : Dictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
     {
         public DictionaryEx()

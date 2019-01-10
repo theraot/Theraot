@@ -1,13 +1,18 @@
 // Needed for NET40
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Theraot.Collections
 {
+    [Serializable]
+    [ComVisible(false)]
     [DebuggerNonUserCode]
+    [DebuggerDisplay("Count={Count}")]
     public sealed class ReadOnlyCollectionEx<T> : ReadOnlyCollection<T>
 #if LESSTHAN_NET45
         , IReadOnlyList<T>
