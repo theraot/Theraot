@@ -9,11 +9,11 @@ using System.Linq;
 namespace Theraot.Collections
 {
     [DebuggerNonUserCode]
-    public sealed class ExtendedReadOnlyList<T> : ReadOnlyCollection<T>, IReadOnlyList<T>
+    public sealed class ReadOnlyCollectionEx<T> : ReadOnlyCollection<T>, IReadOnlyList<T>
     {
         private readonly IList<T> _wrapped;
 
-        public ExtendedReadOnlyList(IList<T> wrapped)
+        public ReadOnlyCollectionEx(IList<T> wrapped)
             : base(wrapped)
         {
             _wrapped = wrapped;

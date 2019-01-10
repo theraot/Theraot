@@ -7,44 +7,44 @@ namespace Theraot.Collections
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public class ExtendedDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
+    public class DictionaryEx<TKey, TValue> : Dictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
     {
-        public ExtendedDictionary()
+        public DictionaryEx()
         {
             // Empty
         }
 
-        public ExtendedDictionary(IDictionary<TKey, TValue> dictionary)
+        public DictionaryEx(IDictionary<TKey, TValue> dictionary)
             : base(dictionary)
         {
             // Empty
         }
 
-        public ExtendedDictionary(IEqualityComparer<TKey> comparer)
+        public DictionaryEx(IEqualityComparer<TKey> comparer)
             : base(comparer)
         {
             // Empty
         }
 
-        public ExtendedDictionary(int capacity)
+        public DictionaryEx(int capacity)
             : base(capacity)
         {
             // Empty
         }
 
-        public ExtendedDictionary(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> comparer)
+        public DictionaryEx(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> comparer)
             : base(dictionary, comparer)
         {
             // Empty
         }
 
-        public ExtendedDictionary(int capacity, IEqualityComparer<TKey> comparer)
+        public DictionaryEx(int capacity, IEqualityComparer<TKey> comparer)
             : base(capacity, comparer)
         {
             // Empty
         }
 
-        protected ExtendedDictionary(SerializationInfo info, StreamingContext context)
+        protected DictionaryEx(SerializationInfo info, StreamingContext context)
 #if GREATERTHAN_NETCOREAPP20 || NETSTANDARD2_0 || TARGETS_NET
             : base(info, context)
 #endif

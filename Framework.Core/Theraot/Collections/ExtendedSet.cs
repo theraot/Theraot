@@ -11,32 +11,32 @@ namespace Theraot.Collections
     [Serializable]
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={Count}")]
-    public class ExtendedSet<T> : HashSet<T>, ISet<T>
+    public class HashSetEx<T> : HashSet<T>, ISet<T>
     {
-        public ExtendedSet()
+        public HashSetEx()
         {
             // Empty
         }
 
-        public ExtendedSet(IEnumerable<T> collection)
+        public HashSetEx(IEnumerable<T> collection)
             : base(collection)
         {
             // Empty
         }
 
-        public ExtendedSet(IEqualityComparer<T> comparer)
+        public HashSetEx(IEqualityComparer<T> comparer)
             : base(comparer)
         {
             // Empty
         }
 
-        public ExtendedSet(IEnumerable<T> collection, IEqualityComparer<T> comparer)
+        public HashSetEx(IEnumerable<T> collection, IEqualityComparer<T> comparer)
             : base(collection, comparer)
         {
             // Empty
         }
 
-        protected ExtendedSet(SerializationInfo info, StreamingContext context)
+        protected HashSetEx(SerializationInfo info, StreamingContext context)
 #if GREATERTHAN_NETCOREAPP20 || NETSTANDARD2_0 || TARGETS_NET
             : base(info, context)
 #endif

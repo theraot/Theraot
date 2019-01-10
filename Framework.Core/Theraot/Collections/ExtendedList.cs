@@ -6,20 +6,20 @@ namespace Theraot.Collections
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public sealed class ExtendedList<T> : List<T>, IReadOnlyList<T>
+    public sealed class ListEx<T> : List<T>, IReadOnlyList<T>
     {
-        public ExtendedList()
+        public ListEx()
         {
             // Empty
         }
 
-        public ExtendedList(int capacity)
+        public ListEx(int capacity)
             : base(capacity)
         {
             // Empty
         }
 
-        public ExtendedList(IEnumerable<T> collection)
+        public ListEx(IEnumerable<T> collection)
             : base(collection)
         {
             // Empty
