@@ -1,15 +1,13 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace Theraot.Collections
+namespace System.Collections.Generic
 {
     [Serializable]
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={Count}")]
     public sealed class ListEx<T> : List<T>
-#if GREATERTHAN_NET40
+#if LESSTHAN_NET45
         , IReadOnlyList<T>
 #endif
     {
@@ -33,7 +31,7 @@ namespace Theraot.Collections
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public void CopyTo(T[] array, int arrayIndex, int count)
         {
-            base.CopyTo(0, array, arrayIndex, count);
+            CopyTo(0, array, arrayIndex, count);
         }
     }
 }

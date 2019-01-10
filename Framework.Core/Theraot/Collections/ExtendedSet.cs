@@ -1,17 +1,21 @@
-﻿// Needed for NET40
-
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
 using System.Runtime.Serialization;
 
-namespace Theraot.Collections
+#if NET35
+
+using System.Runtime.CompilerServices;
+
+#endif
+
+namespace System.Collections.Generic
 {
     [Serializable]
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={Count}")]
-    public class HashSetEx<T> : HashSet<T>, ISet<T>
+    public class HashSetEx<T> : HashSet<T>
+#if NET35
+        , ISet<T>
+#endif
     {
         public HashSetEx()
         {
@@ -44,6 +48,8 @@ namespace Theraot.Collections
             GC.KeepAlive(info);
             GC.KeepAlive(context);
         }
+
+#if NET35
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         bool ISet<T>.Add(T item)
@@ -110,5 +116,7 @@ namespace Theraot.Collections
         {
             UnionWith(other);
         }
+
+#endif
     }
 }

@@ -982,6 +982,82 @@ namespace Theraot.Collections
         }
 
 #endif
+
+#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
+
+        public static bool TryPeek<T>(this Stack<T> source, out T item)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            try
+            {
+                item = source.Peek();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default;
+                return false;
+            }
+        }
+
+        public static bool TryPop<T>(this Stack<T> source, out T item)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            try
+            {
+                item = source.Pop();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default;
+                return false;
+            }
+        }
+
+        public static bool TryPeek<T>(this Queue<T> source, out T item)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            try
+            {
+                item = source.Peek();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default;
+                return false;
+            }
+        }
+
+        public static bool TryDequeue<T>(this Queue<T> source, out T item)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            try
+            {
+                item = source.Dequeue();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default;
+                return false;
+            }
+        }
+
+#endif
     }
 
 #if FAT

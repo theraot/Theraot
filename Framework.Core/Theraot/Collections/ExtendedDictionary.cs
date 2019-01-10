@@ -1,17 +1,23 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace Theraot.Collections
+#if LESSTHAN_NET45
+
+using System.Runtime.CompilerServices;
+
+#endif
+
+namespace System.Collections.Generic
 {
     [Serializable]
     [ComVisible(false)]
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={Count}")]
-    public class DictionaryEx<TKey, TValue> : Dictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
+    public class DictionaryEx<TKey, TValue> : Dictionary<TKey, TValue>
+#if LESSTHAN_NET45
+        , IReadOnlyDictionary<TKey, TValue>
+#endif
     {
         public DictionaryEx()
         {
@@ -58,6 +64,8 @@ namespace Theraot.Collections
             GC.KeepAlive(context);
         }
 
+#if LESSTHAN_NET45
+
         IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
         {
             [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -69,5 +77,7 @@ namespace Theraot.Collections
             [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
             get => Values;
         }
+
+#endif
     }
 }
