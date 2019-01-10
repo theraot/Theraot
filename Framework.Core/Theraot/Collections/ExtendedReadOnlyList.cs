@@ -1,6 +1,5 @@
 // Needed for NET40
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,7 +9,7 @@ using System.Linq;
 namespace Theraot.Collections
 {
     [DebuggerNonUserCode]
-    public sealed class ExtendedReadOnlyList<T> : ReadOnlyCollection<T>, IReadOnlyList<T>, ICollection<T>
+    public sealed class ExtendedReadOnlyList<T> : ReadOnlyCollection<T>, IReadOnlyList<T>
     {
         private readonly IList<T> _wrapped;
 
@@ -18,18 +17,6 @@ namespace Theraot.Collections
             : base(wrapped)
         {
             _wrapped = wrapped;
-        }
-
-        bool ICollection<T>.IsReadOnly => true;
-
-        void ICollection<T>.Add(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        void ICollection<T>.Clear()
-        {
-            throw new NotSupportedException();
         }
 
         public bool Contains(T item, IEqualityComparer<T> comparer)
@@ -51,11 +38,6 @@ namespace Theraot.Collections
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        bool ICollection<T>.Remove(T item)
-        {
-            throw new NotSupportedException();
         }
 
         public T[] ToArray()
