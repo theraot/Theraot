@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Theraot.Collections;
 using Theraot.Core;
 using Theraot.Reflection;
@@ -110,6 +111,33 @@ namespace TestRunner
                 return exception;
             }
             catch (Exception exception)
+            {
+                if (message != null)
+                {
+                    throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found: {exception} - Message: {message}", exception);
+                }
+                throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found: {exception}", exception);
+            }
+            if (message != null)
+            {
+                throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Message: {message}");
+            }
+            throw new AssertionFailedException($"Expected: {typeof(TException).Name}");
+        }
+
+        public static TException ThrowsAsync<TException>(Func<Task> func, string message = null)
+            where TException : Exception
+        {
+            try
+            {
+                func().Wait();
+            }
+            catch (AggregateException aggregateException) when (aggregateException.InnerException is TException exception)
+            {
+                GC.KeepAlive(exception);
+                return exception;
+            }
+            catch (AggregateException aggregateException) when (aggregateException.InnerException is Exception exception)
             {
                 if (message != null)
                 {
