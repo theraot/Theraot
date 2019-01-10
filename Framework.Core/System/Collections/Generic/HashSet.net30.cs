@@ -8,7 +8,7 @@ using Theraot.Collections.Specialized;
 namespace System.Collections.Generic
 {
     [Serializable]
-    public class HashSet<T> : ISet<T>, ISerializable
+    public class HashSet<T> : ISet<T>, IReadOnlyCollection<T>, ISerializable
     {
         private readonly NullAwareDictionary<T, object> _wrapped;
 

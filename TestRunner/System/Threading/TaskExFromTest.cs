@@ -8,7 +8,7 @@ namespace TestRunner.System.Threading
     public static class TaskExFromTest
     {
         [Test]
-        public static void TaskExFromCanceledIsCancelled()
+        public static void TaskExFromCanceledIsCanceled()
         {
             var source = new CancellationTokenSource();
             source.Cancel();
@@ -17,7 +17,7 @@ namespace TestRunner.System.Threading
         }
 
         [Test]
-        public static void TaskExFromCanceledThrowsOnNonCancelledToken()
+        public static void TaskExFromCanceledThrowsOnNonCanceledToken()
         {
             Assert.Throws<ArgumentOutOfRangeException, Task>(() => TaskEx.FromCanceled(CancellationToken.None));
         }
@@ -56,7 +56,7 @@ namespace TestRunner.System.Threading
         }
 
         [Test]
-        public static void TaskExGenericFromCanceledIsCancelled()
+        public static void TaskExGenericFromCanceledIsCanceled()
         {
             var source = new CancellationTokenSource();
             source.Cancel();
@@ -65,7 +65,7 @@ namespace TestRunner.System.Threading
         }
 
         [Test]
-        public static void TaskExGenericFromCanceledThrowsOnNonCancelledToken()
+        public static void TaskExGenericFromCanceledThrowsOnNonCanceledToken()
         {
             Assert.Throws<ArgumentOutOfRangeException, Task<bool>>(() => TaskEx.FromCanceled<bool>(CancellationToken.None));
         }

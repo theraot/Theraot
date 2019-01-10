@@ -1,4 +1,4 @@
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
 
 using System.Diagnostics.Contracts;
 using Theraot.Threading;
@@ -120,7 +120,7 @@ namespace System.Threading.Tasks
                             }
                             catch (InvalidOperationException exception)
                             {
-                                // Already cancelled
+                                // Already canceled
                                 GC.KeepAlive(exception);
                             }
                         },

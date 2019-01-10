@@ -1,4 +1,4 @@
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
 
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -228,7 +228,7 @@ namespace System.Threading
                     }
                     catch (InvalidCastException exception)
                     {
-                        // Already cancelled
+                        // Already canceled
                         GC.KeepAlive(exception);
                     }
                 },
