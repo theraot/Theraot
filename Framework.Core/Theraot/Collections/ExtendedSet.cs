@@ -1,181 +1,93 @@
 ﻿// Needed for NET40
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace Theraot.Collections
 {
+    [Serializable]
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={Count}")]
-#if FAT
-    public sealed class ExtendedSet<T> : ISet<T>, Core.ICloneable<ExtendedSet<T>>
+    public class ExtendedSet<T> : HashSet<T>, ISet<T>
     {
-        private readonly HashSet<T> _wrapped;
-
         public ExtendedSet()
         {
-            _wrapped = new HashSet<T>();
+            // Empty
         }
 
-        public ExtendedSet(IEnumerable<T> prototype)
+        public ExtendedSet(IEnumerable<T> collection)
+            : base(collection)
         {
-            _wrapped = new HashSet<T>();
-            this.AddRange(prototype);
-        }
-
-        public ExtendedSet(IEnumerable<T> prototype, IEqualityComparer<T> comparer)
-        {
-            _wrapped = new HashSet<T>(comparer);
-            this.AddRange(prototype);
+            // Empty
         }
 
         public ExtendedSet(IEqualityComparer<T> comparer)
+            : base(comparer)
         {
-            _wrapped = new HashSet<T>(comparer);
+            // Empty
         }
 
-#else
-    public sealed class ExtendedSet<T> : ISet<T>
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
-        , ICloneable
+        public ExtendedSet(IEnumerable<T> collection, IEqualityComparer<T> comparer)
+            : base(collection, comparer)
+        {
+            // Empty
+        }
+
+        protected ExtendedSet(SerializationInfo info, StreamingContext context)
+#if GREATERTHAN_NETCOREAPP20 || NETSTANDARD2_0 || TARGETS_NET
+            : base(info, context)
 #endif
-    {
-        private readonly HashSet<T> _wrapped;
-
-        public ExtendedSet()
         {
-            _wrapped = new HashSet<T>();
+            GC.KeepAlive(info);
+            GC.KeepAlive(context);
         }
 
-        public ExtendedSet(IEnumerable<T> prototype)
+        bool ISet<T>.Add(T item)
         {
-            _wrapped = new HashSet<T>();
-            this.AddRange(prototype);
-        }
-
-        public ExtendedSet(IEnumerable<T> prototype, IEqualityComparer<T> comparer)
-        {
-            _wrapped = new HashSet<T>(comparer);
-            this.AddRange(prototype);
-        }
-
-        public ExtendedSet(IEqualityComparer<T> comparer)
-        {
-            _wrapped = new HashSet<T>(comparer);
-        }
-
-#endif
-
-        public int Count => _wrapped.Count;
-
-        public bool IsReadOnly => false;
-
-        public bool Add(T item)
-        {
-            return _wrapped.Add(item);
-        }
-
-        void ICollection<T>.Add(T item)
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            Add(item);
-        }
-
-        public void Clear()
-        {
-            _wrapped.Clear();
-        }
-
-        public ExtendedSet<T> Clone()
-        {
-            return new ExtendedSet<T>(this);
-        }
-
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
-
-        object ICloneable.Clone()
-        {
-            return Clone();
-        }
-
-#endif
-
-        public bool Contains(T item)
-        {
-            return _wrapped.Contains(item);
+            return Add(item);
         }
 
         public bool Contains(T item, IEqualityComparer<T> comparer)
         {
-            return Enumerable.Contains(_wrapped, item, comparer);
+            return Enumerable.Contains(this, item, comparer);
         }
 
-        public void CopyTo(T[] array, int arrayIndex)
+        void ISet<T>.ExceptWith(IEnumerable<T> other)
         {
-            _wrapped.CopyTo(array, arrayIndex);
+            ExceptWith(other);
         }
 
-        public void CopyTo(T[] array)
+        void ISet<T>.IntersectWith(IEnumerable<T> other)
         {
-            _wrapped.CopyTo(array, 0);
+            IntersectWith(other);
         }
 
-        public void CopyTo(T[] array, int arrayIndex, int countLimit)
+        bool ISet<T>.IsProperSubsetOf(IEnumerable<T> other)
         {
-            _wrapped.CopyTo(array, arrayIndex, countLimit);
+            return IsProperSubsetOf(other);
         }
 
-        public void ExceptWith(IEnumerable<T> other)
+        bool ISet<T>.IsProperSupersetOf(IEnumerable<T> other)
         {
-            Extensions.ExceptWith(this, other);
+            return IsProperSupersetOf(other);
         }
 
-        public IEnumerator<T> GetEnumerator()
+        bool ISet<T>.IsSubsetOf(IEnumerable<T> other)
         {
-            return _wrapped.GetEnumerator();
+            return IsSubsetOf(other);
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        bool ISet<T>.IsSupersetOf(IEnumerable<T> other)
         {
-            return GetEnumerator();
+            return IsSupersetOf(other);
         }
 
-        public void IntersectWith(IEnumerable<T> other)
+        bool ISet<T>.Overlaps(IEnumerable<T> other)
         {
-            _wrapped.IntersectWith(other);
-        }
-
-        public bool IsProperSubsetOf(IEnumerable<T> other)
-        {
-            return _wrapped.IsProperSubsetOf(other);
-        }
-
-        public bool IsProperSupersetOf(IEnumerable<T> other)
-        {
-            return _wrapped.IsProperSupersetOf(other);
-        }
-
-        public bool IsSubsetOf(IEnumerable<T> other)
-        {
-            return _wrapped.IsSubsetOf(other);
-        }
-
-        public bool IsSupersetOf(IEnumerable<T> other)
-        {
-            return _wrapped.IsSupersetOf(other);
-        }
-
-        public bool Overlaps(IEnumerable<T> other)
-        {
-            return _wrapped.Overlaps(other);
-        }
-
-        public bool Remove(T item)
-        {
-            return _wrapped.Remove(item);
+            return Overlaps(other);
         }
 
         public bool Remove(T item, IEqualityComparer<T> comparer)
@@ -184,7 +96,7 @@ namespace Theraot.Collections
             {
                 comparer = EqualityComparer<T>.Default;
             }
-            foreach (var foundItem in _wrapped.RemoveWhereEnumerable(input => comparer.Equals(input, item)))
+            foreach (var foundItem in this.RemoveWhereEnumerable(input => comparer.Equals(input, item)))
             {
                 GC.KeepAlive(foundItem);
                 return true;
@@ -192,19 +104,19 @@ namespace Theraot.Collections
             return false;
         }
 
-        public bool SetEquals(IEnumerable<T> other)
+        bool ISet<T>.SetEquals(IEnumerable<T> other)
         {
-            return _wrapped.SetEquals(other);
+            return SetEquals(other);
         }
 
-        public void SymmetricExceptWith(IEnumerable<T> other)
+        void ISet<T>.SymmetricExceptWith(IEnumerable<T> other)
         {
-            _wrapped.SymmetricExceptWith(other);
+            SymmetricExceptWith(other);
         }
 
-        public void UnionWith(IEnumerable<T> other)
+        void ISet<T>.UnionWith(IEnumerable<T> other)
         {
-            _wrapped.UnionWith(other);
+            UnionWith(other);
         }
     }
 }
