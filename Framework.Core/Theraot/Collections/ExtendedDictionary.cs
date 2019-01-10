@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace Theraot.Collections
@@ -54,8 +55,16 @@ namespace Theraot.Collections
             GC.KeepAlive(context);
         }
 
-        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Keys;
+        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
+        {
+            [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+            get => Keys;
+        }
 
-        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Values;
+        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values
+        {
+            [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+            get => Values;
+        }
     }
 }

@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Theraot.Collections
 {
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public sealed class ListEx<T> : List<T>, IReadOnlyList<T>
+    public sealed class ListEx<T> : List<T>
+#if GREATERTHAN_NET40
+        , IReadOnlyList<T>
+#endif
     {
         public ListEx()
         {
@@ -25,18 +29,10 @@ namespace Theraot.Collections
             // Empty
         }
 
-        public bool Remove(T item, IEqualityComparer<T> comparer)
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public void CopyTo(T[] array, int arrayIndex, int count)
         {
-            if (comparer == null)
-            {
-                comparer = EqualityComparer<T>.Default;
-            }
-            foreach (var foundItem in this.RemoveWhereEnumerable(input => comparer.Equals(input, item)))
-            {
-                GC.KeepAlive(foundItem);
-                return true;
-            }
-            return false;
+            base.CopyTo(0, array, arrayIndex, count);
         }
     }
 }

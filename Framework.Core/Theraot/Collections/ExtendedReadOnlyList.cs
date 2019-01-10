@@ -1,15 +1,17 @@
 // Needed for NET40
 
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Theraot.Collections
 {
     [DebuggerNonUserCode]
-    public sealed class ReadOnlyCollectionEx<T> : ReadOnlyCollection<T>, IReadOnlyList<T>
+    public sealed class ReadOnlyCollectionEx<T> : ReadOnlyCollection<T>
+#if LESSTHAN_NET45
+        , IReadOnlyList<T>
+#endif
     {
         private readonly IList<T> _wrapped;
 
@@ -19,27 +21,27 @@ namespace Theraot.Collections
             _wrapped = wrapped;
         }
 
-        public bool Contains(T item, IEqualityComparer<T> comparer)
-        {
-            return Enumerable.Contains(this, item, comparer);
-        }
-
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public void CopyTo(T[] array)
         {
             _wrapped.CopyTo(array, 0);
         }
 
-        public void CopyTo(T[] array, int arrayIndex, int countLimit)
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public void CopyTo(T[] array, int arrayIndex, int count)
         {
-            Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            Extensions.CopyTo(this, array, arrayIndex, countLimit);
+            Extensions.CanCopyTo(array, arrayIndex, count);
+            Extensions.CopyTo(this, array, arrayIndex, count);
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public void CopyTo(int index, T[] array, int arrayIndex, int count)
         {
-            return GetEnumerator();
+            Extensions.CanCopyTo(Count - index, array, count);
+            Extensions.CopyTo(this, index, array, arrayIndex, count);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public T[] ToArray()
         {
             var array = new T[_wrapped.Count];

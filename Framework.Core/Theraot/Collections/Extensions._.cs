@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 #if FAT
 
@@ -46,6 +47,7 @@ namespace Theraot.Collections
             return res;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CanCopyTo(int count, Array array)
         {
             if (array == null)
@@ -58,6 +60,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CanCopyTo(int count, Array array, int arrayIndex)
         {
             if (array == null)
@@ -74,6 +77,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CanCopyTo<T>(int count, T[] array)
         {
             if (array == null)
@@ -86,6 +90,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CanCopyTo<T>(int count, T[] array, int arrayIndex)
         {
             if (array == null)
@@ -102,6 +107,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CanCopyTo<T>(T[] array, int arrayIndex, int countLimit)
         {
             if (array == null)
@@ -202,16 +208,19 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CopyTo<T>(this IEnumerable<T> source, T[] array)
         {
             CopyTo(source, array, 0);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array)
         {
             CopyTo(source.Skip(sourceIndex), array, 0);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CopyTo<T>(this IEnumerable<T> source, T[] array, int arrayIndex)
         {
             if (source == null)
@@ -237,21 +246,25 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array, int arrayIndex)
         {
             CopyTo(source.Skip(sourceIndex), array, arrayIndex);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CopyTo<T>(this IEnumerable<T> source, T[] array, int arrayIndex, int countLimit)
         {
             CopyTo(source.Take(countLimit), array, arrayIndex);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array, int arrayIndex, int countLimit)
         {
             CopyTo(source.Skip(sourceIndex).Take(countLimit), array, arrayIndex);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void DeprecatedCopyTo<T>(this IEnumerable<T> source, Array array)
         {
             if (source == null)
@@ -269,6 +282,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void DeprecatedCopyTo<T>(this IEnumerable<T> source, Array array, int index)
         {
             if (source == null)
@@ -493,6 +507,24 @@ namespace Theraot.Collections
         public static bool Overlaps<T>(this IEnumerable<T> source, IEnumerable<T> items)
         {
             return ContainsAny(source, items);
+        }
+
+        public static bool Remove<T>(this ICollection<T> source, T item, IEqualityComparer<T> comparer)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (comparer == null)
+            {
+                comparer = EqualityComparer<T>.Default;
+            }
+            foreach (var foundItem in source.RemoveWhereEnumerable(input => comparer.Equals(input, item)))
+            {
+                GC.KeepAlive(foundItem);
+                return true;
+            }
+            return false;
         }
 
         public static T[] RemoveFirst<T>(this T[] array)
@@ -726,6 +758,43 @@ namespace Theraot.Collections
 
     public static partial class Extensions
     {
+        public static List<TOutput> ConvertAll<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (converter == null)
+            {
+                throw new ArgumentNullException(nameof(converter));
+            }
+            var result = new List<TOutput>();
+            foreach (var item in source)
+            {
+                result.Add(converter(item));
+            }
+            return result;
+        }
+
+        public static TList ConvertAll<T, TOutput, TList>(this IEnumerable<T> source, Func<T, TOutput> converter)
+            where TList : ICollection<TOutput>, new()
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (converter == null)
+            {
+                throw new ArgumentNullException(nameof(converter));
+            }
+            var result = new TList();
+            foreach (var item in source)
+            {
+                result.Add(converter(item));
+            }
+            return result;
+        }
+
         public static int CountContiguousItems<T>(this IEnumerable<T> source, T item)
         {
             if (source == null)
@@ -823,43 +892,6 @@ namespace Theraot.Collections
                 {
                     result++;
                 }
-            }
-            return result;
-        }
-
-        public static List<TOutput> ConvertAll<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (converter == null)
-            {
-                throw new ArgumentNullException(nameof(converter));
-            }
-            var result = new List<TOutput>();
-            foreach (var item in source)
-            {
-                result.Add(converter(item));
-            }
-            return result;
-        }
-
-        public static TList ConvertAll<T, TOutput, TList>(this IEnumerable<T> source, Func<T, TOutput> converter)
-            where TList : ICollection<TOutput>, new()
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (converter == null)
-            {
-                throw new ArgumentNullException(nameof(converter));
-            }
-            var result = new TList();
-            foreach (var item in source)
-            {
-                result.Add(converter(item));
             }
             return result;
         }

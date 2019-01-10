@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace Theraot.Collections
@@ -45,75 +45,67 @@ namespace Theraot.Collections
             GC.KeepAlive(context);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         bool ISet<T>.Add(T item)
         {
             return Add(item);
         }
 
-        public bool Contains(T item, IEqualityComparer<T> comparer)
-        {
-            return Enumerable.Contains(this, item, comparer);
-        }
-
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         void ISet<T>.ExceptWith(IEnumerable<T> other)
         {
             ExceptWith(other);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         void ISet<T>.IntersectWith(IEnumerable<T> other)
         {
             IntersectWith(other);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         bool ISet<T>.IsProperSubsetOf(IEnumerable<T> other)
         {
             return IsProperSubsetOf(other);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         bool ISet<T>.IsProperSupersetOf(IEnumerable<T> other)
         {
             return IsProperSupersetOf(other);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         bool ISet<T>.IsSubsetOf(IEnumerable<T> other)
         {
             return IsSubsetOf(other);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         bool ISet<T>.IsSupersetOf(IEnumerable<T> other)
         {
             return IsSupersetOf(other);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         bool ISet<T>.Overlaps(IEnumerable<T> other)
         {
             return Overlaps(other);
         }
 
-        public bool Remove(T item, IEqualityComparer<T> comparer)
-        {
-            if (comparer == null)
-            {
-                comparer = EqualityComparer<T>.Default;
-            }
-            foreach (var foundItem in this.RemoveWhereEnumerable(input => comparer.Equals(input, item)))
-            {
-                GC.KeepAlive(foundItem);
-                return true;
-            }
-            return false;
-        }
-
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         bool ISet<T>.SetEquals(IEnumerable<T> other)
         {
             return SetEquals(other);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         void ISet<T>.SymmetricExceptWith(IEnumerable<T> other)
         {
             SymmetricExceptWith(other);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         void ISet<T>.UnionWith(IEnumerable<T> other)
         {
             UnionWith(other);
