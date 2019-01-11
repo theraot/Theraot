@@ -10,7 +10,7 @@ namespace System.Collections.ObjectModel
     [ComVisible(false)]
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={Count}")]
-    public sealed class ReadOnlyCollectionEx<T> : ReadOnlyCollection<T>
+    public class ReadOnlyCollectionEx<T> : ReadOnlyCollection<T>
 #if LESSTHAN_NET45
         , IReadOnlyList<T>
 #endif
