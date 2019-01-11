@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 #if FAT
 
@@ -46,6 +47,7 @@ namespace Theraot.Collections
             return res;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CanCopyTo(int count, Array array)
         {
             if (array == null)
@@ -58,6 +60,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CanCopyTo(int count, Array array, int arrayIndex)
         {
             if (array == null)
@@ -74,6 +77,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CanCopyTo<T>(int count, T[] array)
         {
             if (array == null)
@@ -86,6 +90,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CanCopyTo<T>(int count, T[] array, int arrayIndex)
         {
             if (array == null)
@@ -102,6 +107,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CanCopyTo<T>(T[] array, int arrayIndex, int countLimit)
         {
             if (array == null)
@@ -202,16 +208,19 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CopyTo<T>(this IEnumerable<T> source, T[] array)
         {
             CopyTo(source, array, 0);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array)
         {
-            CopyTo(source.SkipItems(sourceIndex), array, 0);
+            CopyTo(source.Skip(sourceIndex), array, 0);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CopyTo<T>(this IEnumerable<T> source, T[] array, int arrayIndex)
         {
             if (source == null)
@@ -237,21 +246,25 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array, int arrayIndex)
         {
-            CopyTo(source.SkipItems(sourceIndex), array, arrayIndex);
+            CopyTo(source.Skip(sourceIndex), array, arrayIndex);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CopyTo<T>(this IEnumerable<T> source, T[] array, int arrayIndex, int countLimit)
         {
-            CopyTo(source.TakeItems(countLimit), array, arrayIndex);
+            CopyTo(source.Take(countLimit), array, arrayIndex);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CopyTo<T>(this IEnumerable<T> source, int sourceIndex, T[] array, int arrayIndex, int countLimit)
         {
-            CopyTo(source.SkipItems(sourceIndex).TakeItems(countLimit), array, arrayIndex);
+            CopyTo(source.Skip(sourceIndex).Take(countLimit), array, arrayIndex);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void DeprecatedCopyTo<T>(this IEnumerable<T> source, Array array)
         {
             if (source == null)
@@ -269,6 +282,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void DeprecatedCopyTo<T>(this IEnumerable<T> source, Array array, int index)
         {
             if (source == null)
@@ -283,6 +297,24 @@ namespace Theraot.Collections
             {
                 array.SetValue(item, index++);
             }
+        }
+
+        public static bool Dequeue<T>(this Queue<T> source, T item, IEqualityComparer<T> comparer)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (comparer == null)
+            {
+                comparer = EqualityComparer<T>.Default;
+            }
+            if (comparer.Equals(item, source.Peek()))
+            {
+                source.Dequeue();
+                return true;
+            }
+            return false;
         }
 
         public static int ExceptWith<T>(this ICollection<T> source, IEnumerable<T> other)
@@ -495,6 +527,42 @@ namespace Theraot.Collections
             return ContainsAny(source, items);
         }
 
+        public static bool Pop<T>(this Stack<T> source, T item, IEqualityComparer<T> comparer)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (comparer == null)
+            {
+                comparer = EqualityComparer<T>.Default;
+            }
+            if (comparer.Equals(item, source.Peek()))
+            {
+                source.Pop();
+                return true;
+            }
+            return false;
+        }
+
+        public static bool Remove<T>(this ICollection<T> source, T item, IEqualityComparer<T> comparer)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (comparer == null)
+            {
+                comparer = EqualityComparer<T>.Default;
+            }
+            foreach (var foundItem in source.RemoveWhereEnumerable(input => comparer.Equals(input, item)))
+            {
+                GC.KeepAlive(foundItem);
+                return true;
+            }
+            return false;
+        }
+
         public static T[] RemoveFirst<T>(this T[] array)
         {
             if (array == null)
@@ -627,24 +695,6 @@ namespace Theraot.Collections
             return source.AddRange(Where(other.Distinct(), input => !source.Remove(input)));
         }
 
-        public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
-        {
-            if (dictionary == null)
-            {
-                throw new ArgumentNullException(nameof(dictionary));
-            }
-            try
-            {
-                dictionary.Add(key, value);
-                return true;
-            }
-            catch (ArgumentException ex)
-            {
-                GC.KeepAlive(ex);
-                return false;
-            }
-        }
-
         public static bool TryTake<T>(this Stack<T> stack, out T item)
         {
             if (stack == null)
@@ -744,6 +794,43 @@ namespace Theraot.Collections
 
     public static partial class Extensions
     {
+        public static List<TOutput> ConvertAll<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (converter == null)
+            {
+                throw new ArgumentNullException(nameof(converter));
+            }
+            var result = new List<TOutput>();
+            foreach (var item in source)
+            {
+                result.Add(converter(item));
+            }
+            return result;
+        }
+
+        public static TList ConvertAll<T, TOutput, TList>(this IEnumerable<T> source, Func<T, TOutput> converter)
+            where TList : ICollection<TOutput>, new()
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (converter == null)
+            {
+                throw new ArgumentNullException(nameof(converter));
+            }
+            var result = new TList();
+            foreach (var item in source)
+            {
+                result.Add(converter(item));
+            }
+            return result;
+        }
+
         public static int CountContiguousItems<T>(this IEnumerable<T> source, T item)
         {
             if (source == null)
@@ -844,43 +931,6 @@ namespace Theraot.Collections
             }
             return result;
         }
-
-        public static List<TOutput> ConvertAll<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (converter == null)
-            {
-                throw new ArgumentNullException(nameof(converter));
-            }
-            var result = new List<TOutput>();
-            foreach (var item in source)
-            {
-                result.Add(converter(item));
-            }
-            return result;
-        }
-
-        public static TList ConvertAll<T, TOutput, TList>(this IEnumerable<T> source, Func<T, TOutput> converter)
-            where TList : ICollection<TOutput>, new()
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (converter == null)
-            {
-                throw new ArgumentNullException(nameof(converter));
-            }
-            var result = new TList();
-            foreach (var item in source)
-            {
-                result.Add(converter(item));
-            }
-            return result;
-        }
     }
 
     public static partial class Extensions
@@ -929,6 +979,82 @@ namespace Theraot.Collections
                 }
             }
             return true;
+        }
+
+#endif
+
+#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
+
+        public static bool TryPeek<T>(this Stack<T> source, out T item)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            try
+            {
+                item = source.Peek();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default;
+                return false;
+            }
+        }
+
+        public static bool TryPop<T>(this Stack<T> source, out T item)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            try
+            {
+                item = source.Pop();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default;
+                return false;
+            }
+        }
+
+        public static bool TryPeek<T>(this Queue<T> source, out T item)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            try
+            {
+                item = source.Peek();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default;
+                return false;
+            }
+        }
+
+        public static bool TryDequeue<T>(this Queue<T> source, out T item)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            try
+            {
+                item = source.Dequeue();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default;
+                return false;
+            }
         }
 
 #endif
@@ -1291,7 +1417,6 @@ namespace Theraot.Collections
             Array.Copy(array, copy, array.Length);
             return copy;
         }
-
 
         public static IEnumerable<T> EmptyChecked<T>(this IEnumerable<T> source, Action onEmpty)
         {

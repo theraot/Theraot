@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -758,7 +758,7 @@ namespace System.Linq.Expressions
         /// <summary>
         /// Compiles the lambda into a method definition.
         /// </summary>
-        /// <param name="method">A <see cref="System.Reflection.Emit.MethodBuilder"/> which will be used to hold the lambda's IL.</param>
+        /// <param name="method">A <see cref="Reflection.Emit.MethodBuilder"/> which will be used to hold the lambda's IL.</param>
         public void CompileToMethod(Reflection.Emit.MethodBuilder method)
         {
             ContractUtils.RequiresNotNull(method, nameof(method));

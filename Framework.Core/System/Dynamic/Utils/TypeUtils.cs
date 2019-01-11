@@ -1,21 +1,21 @@
-#if NET20 || NET30 || NET35 || NET40
+#if LESSTHAN_NET45
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Linq;
 using Theraot.Reflection;
 
 namespace System.Dynamic.Utils
 {
     internal static class TypeUtils
     {
-        private static readonly Type[] _arrayAssignableInterfaces = typeof(int[]).GetTypeInfo().GetInterfaces()
-         .Where(i => i.GetTypeInfo().IsGenericType)
+        private static readonly Type[] _arrayAssignableInterfaces = typeof(int[]).GetInterfaces()
+         .Where(i => i.IsGenericType)
          .Select(i => i.GetGenericTypeDefinition())
          .ToArray();
 
@@ -29,11 +29,9 @@ namespace System.Dynamic.Utils
                 {
                     return type;
                 }
-                var definitionInfo = definition.GetTypeInfo();
-                var info = type.GetTypeInfo();
-                if (definitionInfo.IsInterface)
+                if (definition.IsInterface)
                 {
-                    foreach (var interfaceType in info.GetInterfaces())
+                    foreach (var interfaceType in type.GetInterfaces())
                     {
                         var found = FindGenericType(definition, interfaceType);
                         if (found != null)
@@ -42,7 +40,7 @@ namespace System.Dynamic.Utils
                         }
                     }
                 }
-                type = info.BaseType;
+                type = type.BaseType;
             }
             return null;
         }
@@ -56,8 +54,7 @@ namespace System.Dynamic.Utils
                 {
                     return result;
                 }
-                var info = type.GetTypeInfo();
-                type = info.BaseType;
+                type = type.BaseType;
             } while (type != null);
             return null;
         }
@@ -73,7 +70,7 @@ namespace System.Dynamic.Utils
                 throw new ArgumentNullException(nameof(types));
             }
             // Don't use BindingFlags.Static
-            foreach (var method in type.GetTypeInfo().GetMethods())
+            foreach (var method in type.GetMethods())
             {
                 if (method.Name == name && method.IsStatic && method.MatchesArgumentTypes(types))
                 {
@@ -86,7 +83,7 @@ namespace System.Dynamic.Utils
         internal static MethodInfo GetStaticMethodInternal(this Type type, string name, Type[] types)
         {
             // Don't use BindingFlags.Static
-            foreach (var method in type.GetTypeInfo().GetMethods())
+            foreach (var method in type.GetMethods())
             {
                 if (method.Name == name && method.IsStatic && method.MatchesArgumentTypes(types))
                 {
@@ -98,17 +95,15 @@ namespace System.Dynamic.Utils
 
         internal static bool HasBuiltInEqualityOperator(Type left, Type right)
         {
-            var leftInfo = left.GetTypeInfo();
-            var rightInfo = right.GetTypeInfo();
-            if (leftInfo.IsInterface && !rightInfo.IsValueType)
+            if (left.IsInterface && !right.IsValueType)
             {
                 return true;
             }
-            if (rightInfo.IsInterface && !leftInfo.IsValueType)
+            if (right.IsInterface && !left.IsValueType)
             {
                 return true;
             }
-            if (!leftInfo.IsValueType && !rightInfo.IsValueType)
+            if (!left.IsValueType && !right.IsValueType)
             {
                 if (left.IsReferenceAssignableFromInternal(right) || right.IsReferenceAssignableFromInternal(left))
                 {
@@ -120,8 +115,7 @@ namespace System.Dynamic.Utils
                 return false;
             }
             var notNullable = left.GetNonNullable();
-            var info = notNullable.GetTypeInfo();
-            if (notNullable == typeof(bool) || notNullable.IsNumeric() || info.IsEnum)
+            if (notNullable == typeof(bool) || notNullable.IsNumeric() || notNullable.IsEnum)
             {
                 return true;
             }
@@ -158,9 +152,7 @@ namespace System.Dynamic.Utils
                 return true;
             }
             // Interface conversion
-            var sourceInfo = source.GetTypeInfo();
-            var targetInfo = target.GetTypeInfo();
-            if (sourceInfo.IsInterface || targetInfo.IsInterface)
+            if (source.IsInterface || target.IsInterface)
             {
                 return true;
             }
@@ -195,9 +187,7 @@ namespace System.Dynamic.Utils
                 return true;
             }
             // Interface conversion
-            var sourceInfo = source.GetTypeInfo();
-            var targetInfo = target.GetTypeInfo();
-            if (sourceInfo.IsInterface || targetInfo.IsInterface)
+            if (source.IsInterface || target.IsInterface)
             {
                 return true;
             }
@@ -212,9 +202,7 @@ namespace System.Dynamic.Utils
 
         internal static bool HasReferenceEquality(Type left, Type right)
         {
-            var leftInfo = left.GetTypeInfo();
-            var rightInfo = right.GetTypeInfo();
-            if (leftInfo.IsValueType || rightInfo.IsValueType)
+            if (left.IsValueType || right.IsValueType)
             {
                 return false;
             }
@@ -222,8 +210,8 @@ namespace System.Dynamic.Utils
             // reference equality.
             // If we have two reference types and one is assignable to the
             // other then we can do reference equality.
-            return leftInfo.IsInterface
-                   || rightInfo.IsInterface
+            return left.IsInterface
+                   || right.IsInterface
                    || left.IsReferenceAssignableFromInternal(right)
                    || right.IsReferenceAssignableFromInternal(left);
         }
@@ -318,8 +306,7 @@ namespace System.Dynamic.Utils
             }
             foreach (var currentInterface in type.GetInterfaces())
             {
-                var info = currentInterface.GetTypeInfo();
-                if (info.IsGenericTypeDefinition)
+                if (currentInterface.IsGenericTypeDefinition)
                 {
                     var match = currentInterface.GetGenericTypeDefinition();
                     if (Array.Exists(interfaceGenericTypeDefinitions, item => item == match))
@@ -463,9 +450,7 @@ namespace System.Dynamic.Utils
             //     to Ti via an identify conversion,  implicit reference conversion, or explicit reference conversion.
             //   o If type parameter Xi is declared to be contravariant ("in") then either Si must be identical to Ti,
             //     or Si and Ti must both be reference types.
-            var sourceInfo = source.GetTypeInfo();
-            var targetInfo = target.GetTypeInfo();
-            if (!PrivateIsDelegate(source) || !PrivateIsDelegate(target) || !sourceInfo.IsGenericType || !targetInfo.IsGenericType)
+            if (!PrivateIsDelegate(source) || !PrivateIsDelegate(target) || !source.IsGenericType || !target.IsGenericType)
             {
                 return false;
             }
@@ -499,9 +484,7 @@ namespace System.Dynamic.Utils
                 }
                 else if (PrivateIsContravariant(genericParameter))
                 {
-                    var sourceArgumentInfo = sourceArgument.GetTypeInfo();
-                    var destArgumentInfo = destArgument.GetTypeInfo();
-                    if (sourceArgumentInfo.IsValueType || destArgumentInfo.IsValueType)
+                    if (sourceArgument.IsValueType || destArgument.IsValueType)
                     {
                         return false;
                     }
@@ -530,10 +513,8 @@ namespace System.Dynamic.Utils
             {
                 return true;
             }
-            var info = type.GetTypeInfo();
-            var sourceInfo = source.GetTypeInfo();
-            return !info.IsValueType
-                   && !sourceInfo.IsValueType
+            return !type.IsValueType
+                   && !source.IsValueType
                    && type.IsAssignableFrom(source);
         }
 
@@ -565,8 +546,7 @@ namespace System.Dynamic.Utils
             {
                 return true;
             }
-            var instanceInfo = instanceType.GetTypeInfo();
-            if (instanceInfo.IsValueType)
+            if (instanceType.IsValueType)
             {
                 if (targetType.IsReferenceAssignableFromInternal(typeof(object)))
                 {
@@ -576,14 +556,13 @@ namespace System.Dynamic.Utils
                 {
                     return true;
                 }
-                if (instanceInfo.IsEnum && targetType.IsReferenceAssignableFromInternal(typeof(Enum)))
+                if (instanceType.IsEnum && targetType.IsReferenceAssignableFromInternal(typeof(Enum)))
                 {
                     return true;
                 }
                 // A call to an interface implemented by a struct is legal whether the struct has
                 // been boxed or not.
-                var targetInfo = targetType.GetTypeInfo();
-                if (targetInfo.IsInterface)
+                if (targetType.IsInterface)
                 {
                     foreach (var interfaceType in instanceType.GetInterfaces())
                     {
@@ -655,12 +634,11 @@ namespace System.Dynamic.Utils
 
         private static bool HasArrayToInterfaceConversion(Type source, Type target)
         {
-            if (!source.IsSafeArray() || !target.GetTypeInfo().IsInterface || !target.GetTypeInfo().IsGenericType)
+            if (!source.IsSafeArray() || !target.IsInterface || !target.IsGenericType)
             {
                 return false;
             }
-            var targetTypeInfo = target.GetTypeInfo();
-            var targetParams = targetTypeInfo.GetGenericArguments();
+            var targetParams = target.GetGenericArguments();
             if (targetParams.Length != 1)
             {
                 return false;
@@ -678,12 +656,11 @@ namespace System.Dynamic.Utils
 
         private static bool HasInterfaceToArrayConversion(Type source, Type target)
         {
-            if (!target.IsSafeArray() || !source.GetTypeInfo().IsInterface || !source.GetTypeInfo().IsGenericType)
+            if (!target.IsSafeArray() || !source.IsInterface || !source.IsGenericType)
             {
                 return false;
             }
-            var sourceTypeInfo = source.GetTypeInfo();
-            var sourceParams = sourceTypeInfo.GetGenericArguments();
+            var sourceParams = source.GetGenericArguments();
             if (sourceParams.Length != 1)
             {
                 return false;
@@ -701,26 +678,22 @@ namespace System.Dynamic.Utils
 
         private static bool PrivateIsContravariant(Type type)
         {
-            var info = type.GetTypeInfo();
-            return 0 != (info.GenericParameterAttributes & GenericParameterAttributes.Contravariant);
+            return 0 != (type.GenericParameterAttributes & GenericParameterAttributes.Contravariant);
         }
 
         private static bool PrivateIsCovariant(Type type)
         {
-            var info = type.GetTypeInfo();
-            return 0 != (info.GenericParameterAttributes & GenericParameterAttributes.Covariant);
+            return 0 != (type.GenericParameterAttributes & GenericParameterAttributes.Covariant);
         }
 
         private static bool PrivateIsDelegate(Type type)
         {
-            var info = type.GetTypeInfo();
-            return info.IsSubclassOf(typeof(MulticastDelegate));
+            return type.IsSubclassOf(typeof(MulticastDelegate));
         }
 
         private static bool PrivateIsInvariant(Type type)
         {
-            var info = type.GetTypeInfo();
-            return 0 == (info.GenericParameterAttributes & GenericParameterAttributes.VarianceMask);
+            return 0 == (type.GenericParameterAttributes & GenericParameterAttributes.VarianceMask);
         }
 
         private static bool StrictHasReferenceConversionTo(this Type source, Type target, bool skipNonArray)
@@ -746,8 +719,6 @@ namespace System.Dynamic.Utils
             {
                 throw new ArgumentNullException(nameof(target));
             }
-            var sourceTypeInfo = source.GetTypeInfo();
-            var targetTypeInfo = target.GetTypeInfo();
             // HasReferenceConversionTo was both too strict and too lax. It was too strict in prohibiting
             // some valid conversions involving arrays, and too lax in allowing casts between interfaces
             // and sealed classes that don't implement them. Unfortunately fixing the lax cases would be
@@ -760,12 +731,12 @@ namespace System.Dynamic.Utils
                 if (!skipNonArray) // Skip if we just came from HasReferenceConversionTo and have just tested these
                 {
                     // ReSharper disable once PossibleNullReferenceException
-                    if (sourceTypeInfo.IsValueType)
+                    if (source.IsValueType)
                     {
                         return false;
                     }
                     // ReSharper disable once PossibleNullReferenceException
-                    if (targetTypeInfo.IsValueType)
+                    if (target.IsValueType)
                     {
                         return false;
                     }
@@ -773,23 +744,23 @@ namespace System.Dynamic.Utils
                     if
                     (
                         // ReSharper disable once PossibleNullReferenceException
-                        sourceTypeInfo.IsAssignableFrom(targetTypeInfo)
+                        source.IsAssignableFrom(target)
                         // ReSharper disable once PossibleNullReferenceException
-                        || targetTypeInfo.IsAssignableFrom(sourceTypeInfo)
+                        || target.IsAssignableFrom(source)
                     )
                     {
                         return true;
                     }
-                    if (sourceTypeInfo.IsInterface)
+                    if (source.IsInterface)
                     {
-                        if (targetTypeInfo.IsInterface || targetTypeInfo.IsClass && !targetTypeInfo.IsSealed)
+                        if (target.IsInterface || target.IsClass && !target.IsSealed)
                         {
                             return true;
                         }
                     }
-                    else if (targetTypeInfo.IsInterface)
+                    else if (target.IsInterface)
                     {
-                        if (sourceTypeInfo.IsClass && !sourceTypeInfo.IsSealed)
+                        if (source.IsClass && !source.IsSealed)
                         {
                             return true;
                         }

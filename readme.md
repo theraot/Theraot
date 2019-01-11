@@ -1,37 +1,9 @@
 Theraot.Core [![Build status](https://ci.appveyor.com/api/projects/status/rulmie40mm1ydvno/branch/master?svg=true)](https://ci.appveyor.com/project/theraot/theraot/branch/master)
 ===
 
-These Libraries are an ongoing effort to ease the work on .NET, including a backport of recent .NET features to .NET 2.0 among other things.
+These Libraries are an ongoing effort to ease the work on .NET, including a backport/polyfill/bridge of recent .NET features to .NET 2.0, .NET Core 1.0, .NET Standard 1.0, among other things.
 
----
-Introduction
----
-
-Theraot.Core is as close as I am to a ".NET Compatibility Pack" capable to bring code from recent .NET versions back to .NET 2.0.
-
-Please refer to the Wiki for more information.
-
----
-Build
----
-
-The compiling configuration has been set for ease of batch building from Visual Studio, building from Xamarin Studio is also supported.
-
-The solution can also be built from `build.bat`, which is also used to create the NuGet Package.
-
----
-Tests
----
-
-This repository includes a test proyect for NUnit 2.6.3 you can use any NUnit test runner to execute the tests. The library is included nunit.framework.dll for ease of use.
-
-To run the unit test you can use one of the following:
-  - NUnit test runner included in the NUnit installation available from nunit.org
-  - From Xamarin Studio using the NUnit integration
-  - From Visual Studio using the Test Explorer with NUnit Test Adapter available from visualstudiogallery.msdn.microsoft.com
-  - From Visual Studio with TestDriven.net
-  - From Visual Studio with Reshaper
-  - Any other test runner compatible with NUnit
+Theraot.Core is as close as I am to a ".NET Compatibility Pack" capable to provide a uniform API surface for many .NET platforms.
 
 ---
 License
@@ -40,8 +12,6 @@ License
 This project is under MIT license, refer to LICENSE.txt for the license text.
 
 The reason for this license is that this library includes code from Mono under MIT License.
-
-This repository also includes a copy of NUnit 2.6.4 and a copy of Nuget.CommandLine 2.8.5 with their respective license files.
 
 ---
 Warranty

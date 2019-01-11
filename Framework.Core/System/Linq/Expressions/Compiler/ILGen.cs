@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -470,7 +470,7 @@ namespace System.Linq.Expressions.Compiler
                 return false;
             }
 
-            Type dt = mb.DeclaringType;
+            var dt = mb.DeclaringType;
             return dt == null || ShouldLdtoken(dt);
         }
 
@@ -511,7 +511,7 @@ namespace System.Linq.Expressions.Compiler
             if (value is MethodBase mb && ShouldLdtoken(mb))
             {
                 il.Emit(OpCodes.Ldtoken, mb);
-                Type dt = mb.DeclaringType;
+                var dt = mb.DeclaringType;
                 if (dt != null && dt.IsGenericType)
                 {
                     il.Emit(OpCodes.Ldtoken, dt);
@@ -606,7 +606,7 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(value != null);
             if (type.IsNullable())
             {
-                Type nonNullType = type.GetNonNullable();
+                var nonNullType = type.GetNonNullable();
                 if (TryEmitILConstant(il, value, nonNullType))
                 {
                     // ReSharper disable once AssignNullToNotNullAttribute
@@ -691,11 +691,11 @@ namespace System.Linq.Expressions.Compiler
 
             Debug.Assert(typeFrom != typeof(void) && typeTo != typeof(void));
 
-            bool isTypeFromNullable = typeFrom.IsNullable();
-            bool isTypeToNullable = typeTo.IsNullable();
+            var isTypeFromNullable = typeFrom.IsNullable();
+            var isTypeToNullable = typeTo.IsNullable();
 
-            Type nnExprType = typeFrom.GetNonNullable();
-            Type nnType = typeTo.GetNonNullable();
+            var nnExprType = typeFrom.GetNonNullable();
+            var nnType = typeTo.GetNonNullable();
 
             if (typeFrom.IsInterface || // interface cast
                typeTo.IsInterface ||
@@ -730,7 +730,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal static void EmitGetValue(this ILGenerator il, Type nullable)
         {
-            MethodInfo mi = nullable.GetMethod("get_Value", BindingFlags.Instance | BindingFlags.Public);
+            var mi = nullable.GetMethod("get_Value", BindingFlags.Instance | BindingFlags.Public);
             Debug.Assert(nullable.IsValueType);
             // ReSharper disable once AssignNullToNotNullAttribute
             il.Emit(OpCodes.Call, mi);
@@ -738,7 +738,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal static void EmitGetValueOrDefault(this ILGenerator il, Type nullable)
         {
-            MethodInfo mi = nullable.GetMethod("GetValueOrDefault", Type.EmptyTypes);
+            var mi = nullable.GetMethod("GetValueOrDefault", Type.EmptyTypes);
             Debug.Assert(nullable.IsValueType);
             // ReSharper disable once AssignNullToNotNullAttribute
             il.Emit(OpCodes.Call, mi);
@@ -746,7 +746,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal static void EmitHasValue(this ILGenerator il, Type nullable)
         {
-            MethodInfo mi = nullable.GetMethod("get_HasValue", BindingFlags.Instance | BindingFlags.Public);
+            var mi = nullable.GetMethod("get_HasValue", BindingFlags.Instance | BindingFlags.Public);
             Debug.Assert(nullable.IsValueType);
             // ReSharper disable once AssignNullToNotNullAttribute
             il.Emit(OpCodes.Call, mi);
@@ -773,17 +773,17 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(!typeFrom.IsNullable());
             Debug.Assert(typeTo.IsNullable());
-            Type nnTypeTo = typeTo.GetNonNullable();
+            var nnTypeTo = typeTo.GetNonNullable();
             il.EmitConvertToType(typeFrom, nnTypeTo, isChecked, locals);
-            ConstructorInfo ci = typeTo.GetConstructor(new[] { nnTypeTo });
+            var ci = typeTo.GetConstructor(new[] { nnTypeTo });
             // ReSharper disable once AssignNullToNotNullAttribute
             il.Emit(OpCodes.Newobj, ci);
         }
 
         private static void EmitNullableConversion(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked, ILocalCache locals)
         {
-            bool isTypeFromNullable = typeFrom.IsNullable();
-            bool isTypeToNullable = typeTo.IsNullable();
+            var isTypeFromNullable = typeFrom.IsNullable();
+            var isTypeToNullable = typeTo.IsNullable();
             Debug.Assert(isTypeFromNullable || isTypeToNullable);
             if (isTypeFromNullable && isTypeToNullable)
             {
@@ -818,12 +818,12 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(typeFrom.IsNullable());
             Debug.Assert(!typeTo.IsNullable());
             Debug.Assert(typeTo.IsValueType);
-            LocalBuilder locFrom = locals.GetLocal(typeFrom);
+            var locFrom = locals.GetLocal(typeFrom);
             il.Emit(OpCodes.Stloc, locFrom);
             il.Emit(OpCodes.Ldloca, locFrom);
             locals.FreeLocal(locFrom);
             il.EmitGetValue(typeFrom);
-            Type nnTypeFrom = typeFrom.GetNonNullable();
+            var nnTypeFrom = typeFrom.GetNonNullable();
             il.EmitConvertToType(nnTypeFrom, typeTo, isChecked, locals);
         }
 
@@ -831,7 +831,7 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(typeFrom.IsNullable());
             Debug.Assert(typeTo.IsNullable());
-            LocalBuilder locFrom = locals.GetLocal(typeFrom);
+            var locFrom = locals.GetLocal(typeFrom);
             il.Emit(OpCodes.Stloc, locFrom);
             // test for null
             il.Emit(OpCodes.Ldloca, locFrom);
@@ -841,18 +841,18 @@ namespace System.Linq.Expressions.Compiler
             il.Emit(OpCodes.Ldloca, locFrom);
             locals.FreeLocal(locFrom);
             il.EmitGetValueOrDefault(typeFrom);
-            Type nnTypeFrom = typeFrom.GetNonNullable();
-            Type nnTypeTo = typeTo.GetNonNullable();
+            var nnTypeFrom = typeFrom.GetNonNullable();
+            var nnTypeTo = typeTo.GetNonNullable();
             il.EmitConvertToType(nnTypeFrom, nnTypeTo, isChecked, locals);
             // construct result type
-            ConstructorInfo ci = typeTo.GetConstructor(new[] { nnTypeTo });
+            var ci = typeTo.GetConstructor(new[] { nnTypeTo });
             // ReSharper disable once AssignNullToNotNullAttribute
             il.Emit(OpCodes.Newobj, ci);
             var labEnd = il.DefineLabel();
             il.Emit(OpCodes.Br_S, labEnd);
             // if null then create a default one
             il.MarkLabel(labIfNull);
-            LocalBuilder locTo = locals.GetLocal(typeTo);
+            var locTo = locals.GetLocal(typeTo);
             il.Emit(OpCodes.Ldloca, locTo);
             il.Emit(OpCodes.Initobj, typeTo);
             il.Emit(OpCodes.Ldloc, locTo);
@@ -871,8 +871,8 @@ namespace System.Linq.Expressions.Compiler
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private static void EmitNumericConversion(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked)
         {
-            TypeCode tc = typeTo.GetTypeCode();
-            TypeCode tf = typeFrom.GetTypeCode();
+            var tc = typeTo.GetTypeCode();
+            var tf = typeFrom.GetTypeCode();
 
             if (tc == tf)
             {
@@ -882,7 +882,7 @@ namespace System.Linq.Expressions.Compiler
                 return;
             }
 
-            bool isFromUnsigned = tf.IsUnsigned();
+            var isFromUnsigned = tf.IsUnsigned();
             OpCode convCode;
             switch (tc)
             {
@@ -1104,7 +1104,7 @@ namespace System.Linq.Expressions.Compiler
 
             il.EmitPrimitive(items.Length);
             il.Emit(OpCodes.Newarr, typeof(T));
-            for (int i = 0; i < items.Length; i++)
+            for (var i = 0; i < items.Length; i++)
             {
                 il.Emit(OpCodes.Dup);
                 il.EmitPrimitive(i);
@@ -1142,12 +1142,12 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
-                Type[] types = new Type[arrayType.GetArrayRank()];
-                for (int i = 0; i < types.Length; i++)
+                var types = new Type[arrayType.GetArrayRank()];
+                for (var i = 0; i < types.Length; i++)
                 {
                     types[i] = typeof(int);
                 }
-                ConstructorInfo ci = arrayType.GetConstructor(types);
+                var ci = arrayType.GetConstructor(types);
                 Debug.Assert(ci != null);
                 il.EmitNew(ci);
             }
@@ -1179,7 +1179,7 @@ namespace System.Linq.Expressions.Compiler
                         // This is the IL for default(T) if T is a generic type
                         // parameter, so it should work for any type. It's also
                         // the standard pattern for structs.
-                        LocalBuilder lb = locals.GetLocal(type);
+                        var lb = locals.GetLocal(type);
                         il.Emit(OpCodes.Ldloca, lb);
                         il.Emit(OpCodes.Initobj, type);
                         il.Emit(OpCodes.Ldloc, lb);
@@ -1231,15 +1231,15 @@ namespace System.Linq.Expressions.Compiler
 
         private static void EmitDecimal(this ILGenerator il, decimal value)
         {
-            int[] bits = decimal.GetBits(value);
-            int scale = (bits[3] & int.MaxValue) >> 16;
+            var bits = decimal.GetBits(value);
+            var scale = (bits[3] & int.MaxValue) >> 16;
             if (scale == 0)
             {
                 if (int.MinValue <= value)
                 {
                     if (value <= int.MaxValue)
                     {
-                        int intValue = decimal.ToInt32(value);
+                        var intValue = decimal.ToInt32(value);
                         switch (intValue)
                         {
                             case -1:

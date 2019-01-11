@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -12,7 +12,6 @@ using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
-using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -970,16 +969,15 @@ namespace System.Linq.Expressions
         public static BlockExpression Block(IEnumerable<ParameterExpression> variables, IEnumerable<Expression> expressions)
         {
             ContractUtils.RequiresNotNull(expressions, nameof(expressions));
-            var variableList = variables.ToTrueReadOnly();
-
-            var expressionList = Theraot.Collections.Extensions.AsArray(expressions);
-            RequiresCanRead(expressionList, nameof(expressions));
-            if (variableList.Count == 0)
+            var variableArray = Theraot.Collections.Extensions.AsArray(variables);
+            var expressionArray = Theraot.Collections.Extensions.AsArray(expressions);
+            RequiresCanRead(expressionArray, nameof(expressions));
+            if (variableArray.Length == 0)
             {
-                return GetOptimizedBlockExpression(expressionList);
+                return GetOptimizedBlockExpression(expressionArray);
             }
 
-            return BlockCore(null, Theraot.Collections.Extensions.AsArray(variableList), expressionList);
+            return BlockCore(null, variableArray, expressionArray);
         }
 
         /// <summary>

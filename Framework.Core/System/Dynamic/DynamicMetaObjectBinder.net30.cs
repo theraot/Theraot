@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -10,7 +10,6 @@ using System.Dynamic.Utils;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Theraot.Collections;
-using Theraot.Reflection;
 using DelegateHelpers = System.Linq.Expressions.Compiler.DelegateHelpers;
 
 namespace System.Dynamic
@@ -95,18 +94,18 @@ namespace System.Dynamic
                 expectedResult = returnLabel.Type;
             }
 
-            DynamicMetaObject target = DynamicMetaObject.Create(args[0], parameters[0]);
-            DynamicMetaObject[] metaArgs = CreateArgumentMetaObjects(args, parameters);
+            var target = DynamicMetaObject.Create(args[0], parameters[0]);
+            var metaArgs = CreateArgumentMetaObjects(args, parameters);
 
-            DynamicMetaObject binding = Bind(target, metaArgs);
+            var binding = Bind(target, metaArgs);
 
             if (binding == null)
             {
                 throw Error.BindingCannotBeNull();
             }
 
-            Expression body = binding.Expression;
-            BindingRestrictions restrictions = binding.Restrictions;
+            var body = binding.Expression;
+            var restrictions = binding.Restrictions;
 
             // Ensure the result matches the expected result type.
             if (expectedResult != typeof(void) &&
@@ -209,7 +208,7 @@ namespace System.Dynamic
             if (args.Length != 1)
             {
                 mos = new DynamicMetaObject[args.Length - 1];
-                for (int i = 1; i < args.Length; i++)
+                for (var i = 1; i < args.Length; i++)
                 {
                     mos[i - 1] = DynamicMetaObject.Create(args[i], parameters[i]);
                 }
@@ -225,7 +224,7 @@ namespace System.Dynamic
         {
             var expressions = DynamicMetaObject.GetExpressions(args);
 
-            Type delegateType = DelegateHelpers.MakeDeferredSiteDelegate(args, ReturnType);
+            var delegateType = DelegateHelpers.MakeDeferredSiteDelegate(args, ReturnType);
 
             // Because we know the arguments match the delegate type (we just created the argument types)
             // we go directly to DynamicExpression.Make to avoid a bunch of unnecessary argument validation

@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using Theraot.Collections;
+using System.Runtime.CompilerServices;
 
 #if NET20 || NET30 || NET35
 
@@ -20,6 +21,7 @@ namespace Theraot.Core
         public static string DirectorySeparatorString { get; } = Path.DirectorySeparatorChar.ToString();
         public static string VolumeSeparatorString { get; } = Path.VolumeSeparatorChar.ToString();
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Combine(params string[] paths)
         {
 #if NET20 || NET30 || NET35
@@ -59,6 +61,7 @@ namespace Theraot.Core
 #endif
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Combine(string path1, string path2)
         {
 #if NET20 || NET30 || NET35
@@ -89,6 +92,7 @@ namespace Theraot.Core
 #endif
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Combine(string path1, string path2, string path3)
         {
 #if NET20 || NET30 || NET35
@@ -131,6 +135,7 @@ namespace Theraot.Core
 #endif
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Combine(string path1, string path2, string path3, string path4)
         {
 #if NET20 || NET30 || NET35
@@ -186,6 +191,7 @@ namespace Theraot.Core
 #endif
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool HasInvalidFileNameChars(string fileName)
         {
             if (fileName == null)
@@ -195,6 +201,7 @@ namespace Theraot.Core
             return fileName.ContainsAny(Path.GetInvalidFileNameChars());
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool HasInvalidPathChars(string path)
         {
             if (path == null)

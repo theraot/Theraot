@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -24,8 +24,8 @@ namespace System.Linq.Expressions.Compiler
         {
             var name = new AssemblyName("Snippets");
 
-            AppDomain thisDomain = Thread.GetDomain();
-            AssemblyBuilder myAssembly = thisDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
+            var thisDomain = Thread.GetDomain();
+            var myAssembly = thisDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
             _myModule = myAssembly.DefineDynamicModule(name.Name);
         }
 
@@ -55,9 +55,9 @@ namespace System.Linq.Expressions.Compiler
             ContractUtils.RequiresNotNull(name, nameof(name));
             ContractUtils.RequiresNotNull(parent, nameof(parent));
 
-            StringBuilder sb = new StringBuilder(name);
+            var sb = new StringBuilder(name);
 
-            int index = Interlocked.Increment(ref _index);
+            var index = Interlocked.Increment(ref _index);
             sb.Append("$");
             sb.Append(index);
 

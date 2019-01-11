@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30
+﻿#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -15,8 +15,8 @@ namespace System.Dynamic.Utils
             Expression[] newNodes = null;
             for (int i = 0, n = nodes.ArgumentCount; i < n; i++)
             {
-                Expression curNode = nodes.GetArgument(i);
-                Expression node = visitor.Visit(curNode);
+                var curNode = nodes.GetArgument(i);
+                var node = visitor.Visit(curNode);
 
                 if (newNodes != null)
                 {
@@ -25,7 +25,7 @@ namespace System.Dynamic.Utils
                 else if (node != curNode)
                 {
                     newNodes = new Expression[n];
-                    for (int j = 0; j < i; j++)
+                    for (var j = 0; j < i; j++)
                     {
                         newNodes[j] = nodes.GetArgument(j);
                     }
@@ -40,8 +40,8 @@ namespace System.Dynamic.Utils
             Expression[] newNodes = null;
             for (int i = 0, n = block.ExpressionCount; i < n; i++)
             {
-                Expression curNode = block.GetExpression(i);
-                Expression node = visitor.Visit(curNode);
+                var curNode = block.GetExpression(i);
+                var node = visitor.Visit(curNode);
 
                 if (newNodes != null)
                 {
@@ -50,7 +50,7 @@ namespace System.Dynamic.Utils
                 else if (node != curNode)
                 {
                     newNodes = new Expression[n];
-                    for (int j = 0; j < i; j++)
+                    for (var j = 0; j < i; j++)
                     {
                         newNodes[j] = block.GetExpression(j);
                     }
@@ -65,8 +65,8 @@ namespace System.Dynamic.Utils
             ParameterExpression[] newNodes = null;
             for (int i = 0, n = nodes.ParameterCount; i < n; i++)
             {
-                ParameterExpression curNode = nodes.GetParameter(i);
-                ParameterExpression node = visitor.VisitAndConvert(curNode, callerName);
+                var curNode = nodes.GetParameter(i);
+                var node = visitor.VisitAndConvert(curNode, callerName);
 
                 if (newNodes != null)
                 {
@@ -75,7 +75,7 @@ namespace System.Dynamic.Utils
                 else if (node != curNode)
                 {
                     newNodes = new ParameterExpression[n];
-                    for (int j = 0; j < i; j++)
+                    for (var j = 0; j < i; j++)
                     {
                         newNodes[j] = nodes.GetParameter(j);
                     }

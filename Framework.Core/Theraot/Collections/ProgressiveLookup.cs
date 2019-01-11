@@ -41,7 +41,7 @@ namespace Theraot.Collections
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             Progressor = progressor ?? throw new ArgumentNullException(nameof(progressor));
             _subscription = Progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
-            KeyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
+            Comparer = keyComparer ?? EqualityComparer<TKey>.Default;
             ItemComparer = itemComparer ?? EqualityComparer<T>.Default;
             Keys = new EnumerationList<TKey>(this.ConvertProgressive(input => input.Key));
         }
@@ -64,7 +64,7 @@ namespace Theraot.Collections
 
         protected IEqualityComparer<T> ItemComparer { get; }
 
-        protected IEqualityComparer<TKey> KeyComparer { get; }
+        protected IEqualityComparer<TKey> Comparer { get; }
 
         private Progressor<IGrouping<TKey, T>> Progressor { get; }
 
@@ -123,7 +123,7 @@ namespace Theraot.Collections
             return ProgressorWhere(Check).Any();
             bool Check(IGrouping<TKey, T> item)
             {
-                return KeyComparer.Equals(key, item.Key);
+                return Comparer.Equals(key, item.Key);
             }
         }
 
@@ -200,7 +200,7 @@ namespace Theraot.Collections
             return false;
             bool Check(IGrouping<TKey, T> item)
             {
-                return KeyComparer.Equals(key, item.Key);
+                return Comparer.Equals(key, item.Key);
             }
         }
 

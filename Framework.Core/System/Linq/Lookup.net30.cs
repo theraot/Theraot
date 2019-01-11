@@ -30,7 +30,7 @@ namespace System.Linq
         {
             get
             {
-                if (_groupings.TryGetValue(key, out Grouping<TKey, TElement> grouping))
+                if (_groupings.TryGetValue(key, out var grouping))
                 {
                     return grouping;
                 }

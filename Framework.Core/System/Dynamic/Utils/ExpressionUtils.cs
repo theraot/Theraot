@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30
+﻿#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -31,7 +31,7 @@ namespace System.Dynamic.Utils
             switch (expression.NodeType)
             {
                 case ExpressionType.Index:
-                    IndexExpression index = (IndexExpression)expression;
+                    var index = (IndexExpression)expression;
                     if (index.Indexer != null && !index.Indexer.CanRead)
                     {
                         throw Error.ExpressionMustBeReadable(paramName, idx);
@@ -39,7 +39,7 @@ namespace System.Dynamic.Utils
                     break;
 
                 case ExpressionType.MemberAccess:
-                    MemberExpression member = (MemberExpression)expression;
+                    var member = (MemberExpression)expression;
                     if (member.Member is PropertyInfo prop)
                     {
                         if (!prop.CanRead)
@@ -90,7 +90,7 @@ namespace System.Dynamic.Utils
 
         public static ReadOnlyCollection<T> ReturnReadOnly<T>(ref IReadOnlyList<T> collection)
         {
-            IReadOnlyList<T> value = collection;
+            var value = collection;
 
             // if it's already read-only just return it.
             if (value is ReadOnlyCollection<T> res)
@@ -141,7 +141,7 @@ namespace System.Dynamic.Utils
             // We used to allow quoting of any expression, but the behavior of
             // quote (produce a new tree closed over parameter values), only
             // works consistently for lambdas
-            Type quoteable = typeof(LambdaExpression);
+            var quoteable = typeof(LambdaExpression);
 
             if (parameterType.IsSameOrSubclassOfInternal(quoteable) && parameterType.IsInstanceOfType(argument))
             {
@@ -184,21 +184,21 @@ namespace System.Dynamic.Utils
         {
             Debug.Assert(nodeKind == ExpressionType.Invoke || nodeKind == ExpressionType.Call || nodeKind == ExpressionType.Dynamic || nodeKind == ExpressionType.New);
 
-            ParameterInfo[] pis = GetParametersForValidation(method, nodeKind);
+            var pis = GetParametersForValidation(method, nodeKind);
 
             ValidateArgumentCount(method, nodeKind, arguments.Length, pis);
 
             Expression[] newArgs = null;
             for (int i = 0, n = pis.Length; i < n; i++)
             {
-                Expression arg = arguments[i];
-                ParameterInfo pi = pis[i];
+                var arg = arguments[i];
+                var pi = pis[i];
                 arg = ValidateOneArgument(method, nodeKind, arg, pi, methodParamName, nameof(arguments), i);
 
                 if (newArgs == null && arg != arguments[i])
                 {
                     newArgs = new Expression[arguments.Length];
-                    for (int j = 0; j < i; j++)
+                    for (var j = 0; j < i; j++)
                     {
                         newArgs[j] = arguments[j];
                     }
@@ -217,7 +217,7 @@ namespace System.Dynamic.Utils
         public static Expression ValidateOneArgument(MethodBase method, ExpressionType nodeKind, Expression arguments, ParameterInfo pi, string methodParamName, string argumentParamName, int index = -1)
         {
             RequiresCanRead(arguments, argumentParamName, index);
-            Type pType = pi.ParameterType;
+            var pType = pi.ParameterType;
             if (pType.IsByRef)
             {
                 pType = pType.GetElementType();
@@ -247,7 +247,7 @@ namespace System.Dynamic.Utils
 
         internal static ParameterInfo[] GetParametersForValidation(MethodBase method, ExpressionType nodeKind)
         {
-            ParameterInfo[] pis = method.GetParameters();
+            var pis = method.GetParameters();
 
             if (nodeKind == ExpressionType.Dynamic)
             {
@@ -298,7 +298,7 @@ namespace System.Dynamic.Utils
 
         private static bool SameElementsInCollection<T>(ICollection<T> replacement, T[] current) where T : class
         {
-            int count = current.Length;
+            var count = current.Length;
             if (replacement.Count != count)
             {
                 return false;
@@ -306,8 +306,8 @@ namespace System.Dynamic.Utils
 
             if (count != 0)
             {
-                int index = 0;
-                foreach (T replacementObject in replacement)
+                var index = 0;
+                foreach (var replacementObject in replacement)
                 {
                     if (replacementObject != current[index])
                     {

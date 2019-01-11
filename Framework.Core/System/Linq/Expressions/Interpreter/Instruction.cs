@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -19,12 +19,6 @@ namespace System.Linq.Expressions.Interpreter
         public virtual int ProducedContinuations => 0;
         public virtual int ProducedStack => 0;
         public int StackBalance => ProducedStack - ConsumedStack;
-
-        public virtual object GetDebugCookie(LightCompiler compiler)
-        {
-            GC.KeepAlive(compiler);
-            return null;
-        }
 
         public abstract int Run(InterpretedFrame frame);
 

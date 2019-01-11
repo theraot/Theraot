@@ -30,8 +30,8 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakDictionary(IEqualityComparer<TKey> comparer)
         {
-            KeyComparer = comparer ?? EqualityComparer<TKey>.Default;
-            var needleComparer = new NeedleConversionEqualityComparer<WeakNeedle<TKey>, TKey>(KeyComparer);
+            Comparer = comparer ?? EqualityComparer<TKey>.Default;
+            var needleComparer = new NeedleConversionEqualityComparer<WeakNeedle<TKey>, TKey>(Comparer);
             Wrapped = new SafeDictionary<WeakNeedle<TKey>, TValue>(needleComparer);
             _keyCollection = new KeyCollection<TKey, TValue>(this);
             _valueCollection = new ValueCollection<TKey, TValue>(this);
@@ -40,8 +40,8 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakDictionary(IEqualityComparer<TKey> comparer, int initialProbing)
         {
-            KeyComparer = comparer ?? EqualityComparer<TKey>.Default;
-            var needleComparer = new NeedleConversionEqualityComparer<WeakNeedle<TKey>, TKey>(KeyComparer);
+            Comparer = comparer ?? EqualityComparer<TKey>.Default;
+            var needleComparer = new NeedleConversionEqualityComparer<WeakNeedle<TKey>, TKey>(Comparer);
             Wrapped = new SafeDictionary<WeakNeedle<TKey>, TValue>(needleComparer, initialProbing);
             _keyCollection = new KeyCollection<TKey, TValue>(this);
             _valueCollection = new ValueCollection<TKey, TValue>(this);
@@ -77,7 +77,7 @@ namespace Theraot.Collections.ThreadSafe
 
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
 
-        public IEqualityComparer<TKey> KeyComparer { get; }
+        public IEqualityComparer<TKey> Comparer { get; }
 
         public ICollection<TKey> Keys => _keyCollection;
 
@@ -291,13 +291,13 @@ namespace Theraot.Collections.ThreadSafe
             {
                 if (PrivateTryGetValue(input, out var foundKey))
                 {
-                    return KeyComparer.Equals(foundKey, item.Key);
+                    return Comparer.Equals(foundKey, item.Key);
                 }
                 return false;
             }
             return Wrapped.ContainsKey
                 (
-                    KeyComparer.GetHashCode(item.Key),
+                    Comparer.GetHashCode(item.Key),
                     Check,
                     input => EqualityComparer<TValue>.Default.Equals(input, item.Value)
                 );
@@ -314,12 +314,12 @@ namespace Theraot.Collections.ThreadSafe
         {
             return Wrapped.ContainsKey
                 (
-                    KeyComparer.GetHashCode(key),
+                    Comparer.GetHashCode(key),
                     input =>
                     {
                         if (PrivateTryGetValue(input, out var foundKey))
                         {
-                            return KeyComparer.Equals(foundKey, key);
+                            return Comparer.Equals(foundKey, key);
                         }
                         return false;
                     }
@@ -496,12 +496,12 @@ namespace Theraot.Collections.ThreadSafe
         {
             return Wrapped.Remove
                 (
-                    KeyComparer.GetHashCode(key),
+                    Comparer.GetHashCode(key),
                     input =>
                     {
                         if (PrivateTryGetValue(input, out var foundKey))
                         {
-                            return KeyComparer.Equals(foundKey, key);
+                            return Comparer.Equals(foundKey, key);
                         }
                         return false;
                     },
@@ -521,12 +521,12 @@ namespace Theraot.Collections.ThreadSafe
         {
             return Wrapped.Remove
             (
-                KeyComparer.GetHashCode(key),
+                Comparer.GetHashCode(key),
                 input =>
                 {
                     if (PrivateTryGetValue(input, out var foundKey))
                     {
-                        return KeyComparer.Equals(foundKey, key);
+                        return Comparer.Equals(foundKey, key);
                     }
                     return false;
                 },
@@ -546,12 +546,12 @@ namespace Theraot.Collections.ThreadSafe
         {
             return Wrapped.Remove
                 (
-                    KeyComparer.GetHashCode(key),
+                    Comparer.GetHashCode(key),
                     input =>
                     {
                         if (PrivateTryGetValue(input, out var foundKey))
                         {
-                            return KeyComparer.Equals(foundKey, key);
+                            return Comparer.Equals(foundKey, key);
                         }
                         return false;
                     },
@@ -634,13 +634,13 @@ namespace Theraot.Collections.ThreadSafe
             {
                 if (PrivateTryGetValue(input, out var foundKey))
                 {
-                    return KeyComparer.Equals(foundKey, item.Key);
+                    return Comparer.Equals(foundKey, item.Key);
                 }
                 return false;
             }
             return Wrapped.Remove
                 (
-                    KeyComparer.GetHashCode(item.Key),
+                    Comparer.GetHashCode(item.Key),
                     Check,
                     input => EqualityComparer<TValue>.Default.Equals(input, item.Value),
                     out _
@@ -871,11 +871,11 @@ namespace Theraot.Collections.ThreadSafe
             {
                 if (PrivateTryGetValue(found, out var foundKey))
                 {
-                    return KeyComparer.Equals(key, foundKey);
+                    return Comparer.Equals(key, foundKey);
                 }
                 return false;
             }
-            return Wrapped.TryGetValue(KeyComparer.GetHashCode(key), Check, out value);
+            return Wrapped.TryGetValue(Comparer.GetHashCode(key), Check, out value);
         }
 
         /// <summary>

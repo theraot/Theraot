@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35 || NETSTANDARD1_0
+﻿#if LESSTHAN_NET40
 
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,9 +8,7 @@ using Theraot.Collections.ThreadSafe;
 
 namespace System.Collections.Concurrent
 {
-#if NET20 || NET30 || NET35
     [Serializable]
-#endif
     [ComVisible(false)]
     [DebuggerDisplay("Count = {Count}")]
     public class ConcurrentQueue<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>

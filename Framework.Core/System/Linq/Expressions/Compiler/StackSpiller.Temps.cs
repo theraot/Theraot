@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -60,8 +60,8 @@ namespace System.Linq.Expressions.Compiler
         /// <returns>The temporary variable holding the result of evaluating <paramref name="expression"/>.</returns>
         private ParameterExpression ToTemp(Expression expression, out Expression save, bool byRef)
         {
-            Type tempType = byRef ? expression.Type.MakeByRefType() : expression.Type;
-            ParameterExpression temp = MakeTemp(tempType);
+            var tempType = byRef ? expression.Type.MakeByRefType() : expression.Type;
+            var temp = MakeTemp(tempType);
             save = AssignBinaryExpression.Make(temp, expression, byRef);
             return temp;
         }
@@ -153,7 +153,7 @@ namespace System.Linq.Expressions.Compiler
                 if (_freeTemps != null)
                 {
                     // Recycle from the free-list if possible.
-                    for (int i = _freeTemps.Count - 1; i >= 0; i--)
+                    for (var i = _freeTemps.Count - 1; i >= 0; i--)
                     {
                         temp = _freeTemps[i];
                         if (temp.Type == type)

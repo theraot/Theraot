@@ -12,10 +12,16 @@ namespace System.Numerics
             return ((u1 << 7) | (u1 >> 25)) ^ u2;
         }
 
+#endif
+#if NET20 || NET30 || NET35 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
+
         public static int CombineHash(int n1, int n2)
         {
             return (int)CombineHash((uint)n1, (uint)n2);
         }
+
+#endif
+#if NET20 || NET30 || NET35
 
         // Do an in-place two's complement. "Dangerous" because it causes
         // a mutation and needs to be used with care for immutable types.

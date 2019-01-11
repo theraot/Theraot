@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -6,7 +6,6 @@
 
 using System.Dynamic;
 using System.Reflection;
-using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using Theraot.Collections;
 
@@ -33,7 +32,7 @@ namespace System.Linq.Expressions.Compiler
         {
             lock (_delegateCache)
             {
-                TypeInfo curTypeInfo = _delegateCache;
+                var curTypeInfo = _delegateCache;
 
                 // CallSite
                 curTypeInfo = NextTypeInfo(typeof(CallSite), curTypeInfo);
@@ -67,7 +66,7 @@ namespace System.Linq.Expressions.Compiler
         {
             lock (_delegateCache)
             {
-                TypeInfo curTypeInfo = _delegateCache;
+                var curTypeInfo = _delegateCache;
 
                 // CallSite
                 curTypeInfo = NextTypeInfo(typeof(CallSite), curTypeInfo);
@@ -75,7 +74,7 @@ namespace System.Linq.Expressions.Compiler
                 // arguments
                 foreach (var mo in args)
                 {
-                    Type paramType = mo.Expression.Type;
+                    var paramType = mo.Expression.Type;
                     if (IsByRef(mo))
                     {
                         paramType = paramType.MakeByRefType();
@@ -91,13 +90,13 @@ namespace System.Linq.Expressions.Compiler
                 {
                     // nope, go ahead and create it and spend the
                     // cost of creating the array.
-                    Type[] paramTypes = new Type[args.Length + 2];
+                    var paramTypes = new Type[args.Length + 2];
                     paramTypes[0] = typeof(CallSite);
                     paramTypes[paramTypes.Length - 1] = returnType;
-                    for (int i = 0; i < args.Length; i++)
+                    for (var i = 0; i < args.Length; i++)
                     {
-                        DynamicMetaObject mo = args[i];
-                        Type paramType = mo.Expression.Type;
+                        var mo = args[i];
+                        var paramType = mo.Expression.Type;
                         if (IsByRef(mo))
                         {
                             paramType = paramType.MakeByRefType();
@@ -119,10 +118,10 @@ namespace System.Linq.Expressions.Compiler
 
         private static Type MakeNewCustomDelegate(Type[] types)
         {
-            Type returnType = types[types.Length - 1];
-            Type[] parameters = types.RemoveLast();
+            var returnType = types[types.Length - 1];
+            var parameters = types.RemoveLast();
 
-            TypeBuilder builder = AssemblyGen.DefineDelegateType("Delegate" + types.Length);
+            var builder = AssemblyGen.DefineDelegateType("Delegate" + types.Length);
             builder.DefineConstructor(_ctorAttributes, CallingConventions.Standard, _delegateCtorSignature).SetImplementationFlags(_implAttributes);
             builder.DefineMethod("Invoke", _invokeAttributes, returnType, parameters).SetImplementationFlags(_implAttributes);
             return builder.CreateType();

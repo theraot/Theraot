@@ -23,7 +23,6 @@ namespace System.Runtime.CompilerServices
         private const int _defaultCapacity = 4;
 
         private T[] _items;
-        private int _size;
         private int _version;
 
         /// <summary>
@@ -63,17 +62,17 @@ namespace System.Runtime.CompilerServices
 
             if (collection is ICollection<T> c)
             {
-                int count = c.Count;
+                var count = c.Count;
                 _items = new T[count];
                 c.CopyTo(_items, 0);
-                _size = count;
+                Count = count;
             }
             else
             {
-                _size = 0;
+                Count = 0;
                 _items = new T[_defaultCapacity];
 
-                using (IEnumerator<T> en = collection.GetEnumerator())
+                using (var en = collection.GetEnumerator())
                 {
                     while (en.MoveNext())
                     {
@@ -91,7 +90,7 @@ namespace System.Runtime.CompilerServices
             get => _items.Length;
             set
             {
-                if (value < _size)
+                if (value < Count)
                 {
                     throw new ArgumentOutOfRangeException(nameof(value));
                 }
@@ -100,10 +99,10 @@ namespace System.Runtime.CompilerServices
                 {
                     if (value > 0)
                     {
-                        T[] newItems = new T[value];
-                        if (_size > 0)
+                        var newItems = new T[value];
+                        if (Count > 0)
                         {
-                            Array.Copy(_items, 0, newItems, 0, _size);
+                            Array.Copy(_items, 0, newItems, 0, Count);
                         }
                         _items = newItems;
                     }
@@ -118,9 +117,9 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// Returns number of elements in the <see cref="ReadOnlyCollectionBuilder{T}"/>.
         /// </summary>
-        public int Count => _size;
+        public int Count { get; private set; }
 
-#region IList<T> Members
+        #region IList<T> Members
 
         /// <summary>
         ///  Gets or sets the element at the specified index.
@@ -131,7 +130,7 @@ namespace System.Runtime.CompilerServices
         {
             get
             {
-                if (index >= _size)
+                if (index >= Count)
                 {
                     throw new ArgumentOutOfRangeException(nameof(index));
                 }
@@ -140,7 +139,7 @@ namespace System.Runtime.CompilerServices
             }
             set
             {
-                if (index >= _size)
+                if (index >= Count)
                 {
                     throw new ArgumentOutOfRangeException(nameof(index));
                 }
@@ -157,7 +156,7 @@ namespace System.Runtime.CompilerServices
         /// <returns>The index of the first occurrence of an item.</returns>
         public int IndexOf(T item)
         {
-            return Array.IndexOf(_items, item, 0, _size);
+            return Array.IndexOf(_items, item, 0, Count);
         }
 
         /// <summary>
@@ -167,21 +166,21 @@ namespace System.Runtime.CompilerServices
         /// <param name="item">The object to insert into the <see cref="ReadOnlyCollectionBuilder{T}"/>.</param>
         public void Insert(int index, T item)
         {
-            if (index > _size)
+            if (index > Count)
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
 
-            if (_size == _items.Length)
+            if (Count == _items.Length)
             {
-                EnsureCapacity(_size + 1);
+                EnsureCapacity(Count + 1);
             }
-            if (index < _size)
+            if (index < Count)
             {
-                Array.Copy(_items, index, _items, index + 1, _size - index);
+                Array.Copy(_items, index, _items, index + 1, Count - index);
             }
             _items[index] = item;
-            _size++;
+            Count++;
             _version++;
         }
 
@@ -191,23 +190,23 @@ namespace System.Runtime.CompilerServices
         /// <param name="index">The zero-based index of the item to remove.</param>
         public void RemoveAt(int index)
         {
-            if (index < 0 || index >= _size)
+            if (index < 0 || index >= Count)
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
 
-            _size--;
-            if (index < _size)
+            Count--;
+            if (index < Count)
             {
-                Array.Copy(_items, index + 1, _items, index, _size - index);
+                Array.Copy(_items, index + 1, _items, index, Count - index);
             }
-            _items[_size] = default;
+            _items[Count] = default;
             _version++;
         }
 
-#endregion IList<T> Members
+        #endregion IList<T> Members
 
-#region ICollection<T> Members
+        #region ICollection<T> Members
 
         bool ICollection<T>.IsReadOnly => false;
 
@@ -217,11 +216,11 @@ namespace System.Runtime.CompilerServices
         /// <param name="item">The object to add to the <see cref="ReadOnlyCollectionBuilder{T}"/>.</param>
         public void Add(T item)
         {
-            if (_size == _items.Length)
+            if (Count == _items.Length)
             {
-                EnsureCapacity(_size + 1);
+                EnsureCapacity(Count + 1);
             }
-            _items[_size++] = item;
+            _items[Count++] = item;
             _version++;
         }
 
@@ -230,10 +229,10 @@ namespace System.Runtime.CompilerServices
         /// </summary>
         public void Clear()
         {
-            if (_size > 0)
+            if (Count > 0)
             {
-                Array.Clear(_items, 0, _size);
-                _size = 0;
+                Array.Clear(_items, 0, Count);
+                Count = 0;
             }
             _version++;
         }
@@ -247,7 +246,7 @@ namespace System.Runtime.CompilerServices
         {
             if (item == null)
             {
-                for (int i = 0; i < _size; i++)
+                for (var i = 0; i < Count; i++)
                 {
                     if (_items[i] == null)
                     {
@@ -257,8 +256,8 @@ namespace System.Runtime.CompilerServices
                 return false;
             }
 
-            EqualityComparer<T> c = EqualityComparer<T>.Default;
-            for (int i = 0; i < _size; i++)
+            var c = EqualityComparer<T>.Default;
+            for (var i = 0; i < Count; i++)
             {
                 if (c.Equals(_items[i], item))
                 {
@@ -276,7 +275,7 @@ namespace System.Runtime.CompilerServices
         /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
         public void CopyTo(T[] array, int arrayIndex)
         {
-            Array.Copy(_items, 0, array, arrayIndex, _size);
+            Array.Copy(_items, 0, array, arrayIndex, Count);
         }
 
         /// <summary>
@@ -288,7 +287,7 @@ namespace System.Runtime.CompilerServices
         /// </returns>
         public bool Remove(T item)
         {
-            int index = IndexOf(item);
+            var index = IndexOf(item);
             if (index >= 0)
             {
                 RemoveAt(index);
@@ -298,9 +297,9 @@ namespace System.Runtime.CompilerServices
             return false;
         }
 
-#endregion ICollection<T> Members
+        #endregion ICollection<T> Members
 
-#region IEnumerable<T> Members
+        #region IEnumerable<T> Members
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -308,15 +307,15 @@ namespace System.Runtime.CompilerServices
         /// <returns>A <see cref="IEnumerator{T}"/> that can be used to iterate through the collection.</returns>
         public IEnumerator<T> GetEnumerator() => new Enumerator(this);
 
-#endregion IEnumerable<T> Members
+        #endregion IEnumerable<T> Members
 
-#region IEnumerable Members
+        #region IEnumerable Members
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-#endregion IEnumerable Members
+        #endregion IEnumerable Members
 
-#region IList Members
+        #region IList Members
 
         bool IList.IsFixedSize => false;
         bool IList.IsReadOnly => false;
@@ -393,9 +392,9 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-#endregion IList Members
+        #endregion IList Members
 
-#region ICollection Members
+        #region ICollection Members
 
         bool ICollection.IsSynchronized => false;
 
@@ -413,10 +412,10 @@ namespace System.Runtime.CompilerServices
                 throw new ArgumentException(nameof(array));
             }
 
-            Array.Copy(_items, 0, array, index, _size);
+            Array.Copy(_items, 0, array, index, Count);
         }
 
-#endregion ICollection Members
+        #endregion ICollection Members
 
         /// <summary>
         /// Reverses the order of the elements in the entire <see cref="ReadOnlyCollectionBuilder{T}"/>.
@@ -453,8 +452,8 @@ namespace System.Runtime.CompilerServices
         /// <returns>An array containing copies of the elements of the <see cref="ReadOnlyCollectionBuilder{T}"/>.</returns>
         public T[] ToArray()
         {
-            T[] array = new T[_size];
-            Array.Copy(_items, 0, array, 0, _size);
+            var array = new T[Count];
+            Array.Copy(_items, 0, array, 0, Count);
             return array;
         }
 
@@ -468,7 +467,7 @@ namespace System.Runtime.CompilerServices
         {
             // Can we use the stored array?
             T[] items;
-            if (_size == _items.Length)
+            if (Count == _items.Length)
             {
                 items = _items;
             }
@@ -477,7 +476,7 @@ namespace System.Runtime.CompilerServices
                 items = ToArray();
             }
             _items = ArrayReservoir<T>.EmptyArray;
-            _size = 0;
+            Count = 0;
             _version++;
 
             return new TrueReadOnlyCollection<T>(items);
@@ -500,7 +499,7 @@ namespace System.Runtime.CompilerServices
         {
             if (_items.Length < min)
             {
-                int newCapacity = _defaultCapacity;
+                var newCapacity = _defaultCapacity;
                 if (_items.Length > 0)
                 {
                     newCapacity = _items.Length * 2;
@@ -517,8 +516,6 @@ namespace System.Runtime.CompilerServices
         {
             private readonly ReadOnlyCollectionBuilder<T> _builder;
             private readonly int _version;
-
-            private T _current;
             private int _index;
 
             internal Enumerator(ReadOnlyCollectionBuilder<T> builder)
@@ -526,34 +523,34 @@ namespace System.Runtime.CompilerServices
                 _builder = builder;
                 _version = builder._version;
                 _index = 0;
-                _current = default;
+                Current = default;
             }
 
-#region IEnumerator<T> Members
+            #region IEnumerator<T> Members
 
-            public T Current => _current;
+            public T Current { get; private set; }
 
-#endregion IEnumerator<T> Members
+            #endregion IEnumerator<T> Members
 
-#region IDisposable Members
+            #region IDisposable Members
 
             public void Dispose()
             {
             }
 
-#endregion IDisposable Members
+            #endregion IDisposable Members
 
-#region IEnumerator Members
+            #region IEnumerator Members
 
             object IEnumerator.Current
             {
                 get
                 {
-                    if (_index == 0 || _index > _builder._size)
+                    if (_index == 0 || _index > _builder.Count)
                     {
                         throw Error.EnumerationIsDone();
                     }
-                    return _current;
+                    return Current;
                 }
             }
 
@@ -561,23 +558,23 @@ namespace System.Runtime.CompilerServices
             {
                 if (_version == _builder._version)
                 {
-                    if (_index < _builder._size)
+                    if (_index < _builder.Count)
                     {
-                        _current = _builder._items[_index++];
+                        Current = _builder._items[_index++];
                         return true;
                     }
 
-                    _index = _builder._size + 1;
-                    _current = default;
+                    _index = _builder.Count + 1;
+                    Current = default;
                     return false;
                 }
 
                 throw Error.CollectionModifiedWhileEnumerating();
             }
 
-#endregion IEnumerator Members
+            #endregion IEnumerator Members
 
-#region IEnumerator Members
+            #region IEnumerator Members
 
             void IEnumerator.Reset()
             {
@@ -586,10 +583,10 @@ namespace System.Runtime.CompilerServices
                     throw Error.CollectionModifiedWhileEnumerating();
                 }
                 _index = 0;
-                _current = default;
+                Current = default;
             }
 
-#endregion IEnumerator Members
+            #endregion IEnumerator Members
         }
     }
 }

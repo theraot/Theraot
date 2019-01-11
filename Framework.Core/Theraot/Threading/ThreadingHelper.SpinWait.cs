@@ -126,7 +126,7 @@ namespace Theraot.Threading
         public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless)
         {
             var spinWait = new SpinWait();
-            retry:
+        retry:
             var lastValue = Volatile.Read(ref check);
             if (lastValue == unless)
             {
@@ -190,6 +190,16 @@ namespace Theraot.Threading
         {
             var spinWait = new SpinWait();
             while (Volatile.Read(ref check) == comparand)
+            {
+                spinWait.SpinOnce();
+            }
+        }
+
+        public static void SpinWaitWhileNull<T>(ref T check)
+            where T : class
+        {
+            var spinWait = new SpinWait();
+            while (Volatile.Read(ref check) == null)
             {
                 spinWait.SpinOnce();
             }
@@ -602,16 +612,6 @@ namespace Theraot.Threading
             }
             spinWait.SpinOnce();
             goto retry;
-        }
-
-        public static void SpinWaitWhileNull<T>(ref T check)
-            where T : class
-        {
-            var spinWait = new SpinWait();
-            while (Volatile.Read(ref check) == null)
-            {
-                spinWait.SpinOnce();
-            }
         }
 
         public static void SpinWaitWhileNull<T>(ref T check, CancellationToken cancellationToken)

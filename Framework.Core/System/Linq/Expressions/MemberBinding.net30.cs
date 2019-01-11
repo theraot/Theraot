@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -16,17 +16,17 @@ namespace System.Linq.Expressions
         /// <summary>
         /// A binding that represents initializing a member with the value of an expression.
         /// </summary>
-        Assignment,
+        Assignment = 0,
 
         /// <summary>
         /// A binding that represents recursively initializing members of a member.
         /// </summary>
-        MemberBinding,
+        MemberBinding = 1,
 
         /// <summary>
         /// A binding that represents initializing a member of type <see cref="Collections.IList"/> or <see cref="Collections.Generic.ICollection{T}"/> from a list of elements.
         /// </summary>
-        ListBinding
+        ListBinding = 2
     }
 
     /// <summary>

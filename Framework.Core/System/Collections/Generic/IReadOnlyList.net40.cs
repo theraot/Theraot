@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35 || NET40
+﻿#if LESSTHAN_NET45
 
 namespace System.Collections.Generic
 {
@@ -11,8 +11,8 @@ namespace System.Collections.Generic
             get;
         }
     }
-#endif
-#if NET20 || NET30 || NET35
+
+#else
 
     public interface IReadOnlyList<T> : IReadOnlyCollection<T>
     {

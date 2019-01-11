@@ -96,12 +96,14 @@ namespace Theraot.Core
 
 #else
 
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptionsEx.AggressiveInlining)]
         public static bool HasFlag(Enum value, Enum flag)
         {
             // Added in .NET 4.0
             return value.HasFlag(flag);
         }
 
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptionsEx.AggressiveInlining)]
         public static bool TryParse<TEnum>(string value, out TEnum result)
             where TEnum : struct
         {
@@ -109,6 +111,7 @@ namespace Theraot.Core
             return Enum.TryParse(value, out result);
         }
 
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptionsEx.AggressiveInlining)]
         public static bool TryParse<TEnum>(string value, bool ignoreCase, out TEnum result)
             where TEnum : struct
         {

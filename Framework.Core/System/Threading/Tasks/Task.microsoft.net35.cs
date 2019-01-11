@@ -1,4 +1,4 @@
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
 
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -398,7 +398,7 @@ namespace System.Threading.Tasks
             CancellationToken = cancellationToken;
             try
             {
-                cancellationToken.ThrowIfSourceDisposed();
+                GC.KeepAlive(cancellationToken.WaitHandle);
                 // If an unstarted task has a valid CancellationToken that gets signalled while the task is still not queued
                 // we need to proactively cancel it, because it may never execute to transition itself.
                 // The only way to accomplish this is to register a callback on the CT.
@@ -520,7 +520,7 @@ namespace System.Threading.Tasks
         /// Returns a list of exceptions by aggregating the holder's contents. Or null if
         /// no exceptions have been thrown.
         /// </summary>
-        /// <param name="includeTaskCanceledExceptions">Whether to include a TCE if cancelled.</param>
+        /// <param name="includeTaskCanceledExceptions">Whether to include a TCE if canceled.</param>
         /// <returns>An aggregate exception, or null if no exceptions have been caught.</returns>
         private AggregateException GetExceptions(bool includeTaskCanceledExceptions)
         {

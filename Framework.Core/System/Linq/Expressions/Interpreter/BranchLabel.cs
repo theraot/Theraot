@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -40,17 +40,17 @@ namespace System.Linq.Expressions.Interpreter
         private List<int> _forwardBranchFixups;
 
         private int _stackDepth = UnknownDepth;
-        private int _targetIndex = UnknownIndex;
+
         internal bool HasRuntimeLabel => LabelIndex != UnknownIndex;
         internal int LabelIndex { get; set; } = UnknownIndex;
-        internal int TargetIndex => _targetIndex;
+        internal int TargetIndex { get; private set; } = UnknownIndex;
 
         internal void AddBranch(InstructionList instructions, int branchIndex)
         {
-            Debug.Assert(_targetIndex == UnknownIndex == (_stackDepth == UnknownDepth));
-            Debug.Assert(_targetIndex == UnknownIndex == (_continuationStackDepth == UnknownDepth));
+            Debug.Assert(TargetIndex == UnknownIndex == (_stackDepth == UnknownDepth));
+            Debug.Assert(TargetIndex == UnknownIndex == (_continuationStackDepth == UnknownDepth));
 
-            if (_targetIndex == UnknownIndex)
+            if (TargetIndex == UnknownIndex)
             {
                 if (_forwardBranchFixups == null)
                 {
@@ -66,8 +66,8 @@ namespace System.Linq.Expressions.Interpreter
 
         internal void FixupBranch(InstructionList instructions, int branchIndex)
         {
-            Debug.Assert(_targetIndex != UnknownIndex);
-            instructions.FixupBranch(branchIndex, _targetIndex - branchIndex);
+            Debug.Assert(TargetIndex != UnknownIndex);
+            instructions.FixupBranch(branchIndex, TargetIndex - branchIndex);
         }
 
         internal void Mark(InstructionList instructions)
@@ -76,7 +76,7 @@ namespace System.Linq.Expressions.Interpreter
 
             _stackDepth = instructions.CurrentStackDepth;
             _continuationStackDepth = instructions.CurrentContinuationsDepth;
-            _targetIndex = instructions.Count;
+            TargetIndex = instructions.Count;
 
             if (_forwardBranchFixups != null)
             {
@@ -90,8 +90,8 @@ namespace System.Linq.Expressions.Interpreter
 
         internal RuntimeLabel ToRuntimeLabel()
         {
-            Debug.Assert(_targetIndex != UnknownIndex && _stackDepth != UnknownDepth && _continuationStackDepth != UnknownDepth);
-            return new RuntimeLabel(_targetIndex, _continuationStackDepth, _stackDepth);
+            Debug.Assert(TargetIndex != UnknownIndex && _stackDepth != UnknownDepth && _continuationStackDepth != UnknownDepth);
+            return new RuntimeLabel(TargetIndex, _continuationStackDepth, _stackDepth);
         }
     }
 }

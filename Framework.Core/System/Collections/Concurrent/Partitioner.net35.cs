@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35
+﻿#if LESSTHAN_NET40
 
 using System.Collections.Generic;
 using System.Threading;
@@ -13,7 +13,7 @@ namespace System.Collections.Concurrent
         // How many chunks do we want to divide the range into?  If this is 1, then the
         // answer is "one chunk per core".  Generally, though, you'll achieve better
         // load balancing on a busy system if you make it higher than 1.
-        const int _coreOversubscriptionRate = 3;
+        private const int _coreOversubscriptionRate = 3;
 
         public static OrderablePartitioner<TSource> Create<TSource>(IList<TSource> list, bool loadBalance)
         {
@@ -169,7 +169,7 @@ namespace System.Collections.Concurrent
         private readonly IEnumerable<T> _source;
 
         public DynamicOrderablePartitioner(IEnumerable<T> source)
-            :base(true, false, true)
+            : base(true, false, true)
         {
             _source = source;
         }
@@ -204,14 +204,14 @@ namespace System.Collections.Concurrent
         {
             var list = new List<IEnumerator<KeyValuePair<long, T>>>(partitionCount);
             var source = GetDynamicPartitions();
-            for (int index = 0; index < partitionCount; index++)
+            for (var index = 0; index < partitionCount; index++)
             {
                 list.Add(Enumerator(index));
             }
             return list.AsReadOnly();
             IEnumerator<KeyValuePair<long, T>> Enumerator(int index)
             {
-                int subIndex = 0;
+                var subIndex = 0;
                 // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var item in source)
                 {
@@ -225,7 +225,7 @@ namespace System.Collections.Concurrent
         {
             var list = new List<IEnumerator<T>>(partitionCount);
             var source = GetDynamicPartitions();
-            for (int index = 0; index < partitionCount; index++)
+            for (var index = 0; index < partitionCount; index++)
             {
                 list.Add(Enumerator());
             }
@@ -265,14 +265,14 @@ namespace System.Collections.Concurrent
         {
             var list = new List<IEnumerator<KeyValuePair<long, T>>>(partitionCount);
             var source = GetDynamicPartitions();
-            for (int index = 0; index < partitionCount; index++)
+            for (var index = 0; index < partitionCount; index++)
             {
                 list.Add(Enumerator(index));
             }
             return list.AsReadOnly();
             IEnumerator<KeyValuePair<long, T>> Enumerator(int index)
             {
-                int subIndex = 0;
+                var subIndex = 0;
                 // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var item in source)
                 {

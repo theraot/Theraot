@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -239,7 +239,7 @@ namespace System.Dynamic
             {
                 if (IsOverridden(DynamicObjectTryBinaryOperation))
                 {
-                    DynamicMetaObject localArg = arg;
+                    var localArg = arg;
 
                     return CallMethodWithResult(
                         DynamicObjectTryBinaryOperation,
@@ -271,7 +271,7 @@ namespace System.Dynamic
             {
                 if (IsOverridden(DynamicObjectTryCreateInstance))
                 {
-                    DynamicMetaObject[] localArgs = args;
+                    var localArgs = args;
 
                     return CallMethodWithResult(
                         DynamicObjectTryCreateInstance,
@@ -288,7 +288,7 @@ namespace System.Dynamic
             {
                 if (IsOverridden(DynamicObjectTryDeleteIndex))
                 {
-                    DynamicMetaObject[] localIndexes = indexes;
+                    var localIndexes = indexes;
 
                     return CallMethodNoResult(
                         DynamicObjectTryDeleteIndex,
@@ -320,7 +320,7 @@ namespace System.Dynamic
             {
                 if (IsOverridden(DynamicObjectTryGetIndex))
                 {
-                    DynamicMetaObject[] localIndexes = indexes;
+                    var localIndexes = indexes;
 
                     return CallMethodWithResult(
                         DynamicObjectTryGetIndex,
@@ -352,7 +352,7 @@ namespace System.Dynamic
             {
                 if (IsOverridden(DynamicObjectTryInvoke))
                 {
-                    DynamicMetaObject[] localArgs = args;
+                    var localArgs = args;
 
                     return CallMethodWithResult(
                         DynamicObjectTryInvoke,
@@ -382,7 +382,7 @@ namespace System.Dynamic
                 // "error", giving the language the option of using this
                 // tree or doing .NET binding.
                 //
-                DynamicMetaObject call = BuildCallMethodWithResult(
+                var call = BuildCallMethodWithResult(
                     DynamicObjectTryInvokeMember,
                     binder,
                     GetExpressions(args),
@@ -403,8 +403,8 @@ namespace System.Dynamic
             {
                 if (IsOverridden(DynamicObjectTrySetIndex))
                 {
-                    DynamicMetaObject[] localIndexes = indexes;
-                    DynamicMetaObject localValue = value;
+                    var localIndexes = indexes;
+                    var localValue = value;
 
                     return CallMethodReturnLast(
                         DynamicObjectTrySetIndex,
@@ -422,7 +422,7 @@ namespace System.Dynamic
             {
                 if (IsOverridden(DynamicObjectTrySetMember))
                 {
-                    DynamicMetaObject localValue = value;
+                    var localValue = value;
 
                     return CallMethodReturnLast(
                         DynamicObjectTrySetMember,
@@ -480,7 +480,7 @@ namespace System.Dynamic
             {
                 var paramArgs = new Expression[args.Length];
 
-                for (int i = 0; i < args.Length; i++)
+                for (var i = 0; i < args.Length; i++)
                 {
                     paramArgs[i] = Expression.Convert(args[i], typeof(object));
                 }
@@ -496,9 +496,9 @@ namespace System.Dynamic
             {
                 ReadOnlyCollectionBuilder<Expression> block = null;
 
-                for (int i = 0; i < args.Length; i++)
+                for (var i = 0; i < args.Length; i++)
                 {
-                    ParameterExpression variable = args[i] as ParameterExpression;
+                    var variable = args[i] as ParameterExpression;
                     ContractUtils.Requires(variable != null, nameof(args));
 
                     // ReSharper disable once PossibleNullReferenceException
@@ -555,9 +555,9 @@ namespace System.Dynamic
                 //   TryGetMember(payload, out result) ? fallbackInvoke(result) : fallbackResult
                 // }
                 //
-                ParameterExpression result = Expression.Parameter(typeof(object), null);
-                ParameterExpression callArgs = method != DynamicObjectTryBinaryOperation ? Expression.Parameter(typeof(object[]), null) : Expression.Parameter(typeof(object), null);
-                ReadOnlyCollection<Expression> callArgsValue = GetConvertedArgs(args);
+                var result = Expression.Parameter(typeof(object), null);
+                var callArgs = method != DynamicObjectTryBinaryOperation ? Expression.Parameter(typeof(object[]), null) : Expression.Parameter(typeof(object), null);
+                var callArgsValue = GetConvertedArgs(args);
 
                 var resultMetaObject = new DynamicMetaObject(result, BindingRestrictions.Empty);
 
@@ -566,12 +566,12 @@ namespace System.Dynamic
                 {
                     Debug.Assert(binder is ConvertBinder && fallbackInvoke == null);
 
-                    UnaryExpression convert = Expression.Convert(resultMetaObject.Expression, binder.ReturnType);
+                    var convert = Expression.Convert(resultMetaObject.Expression, binder.ReturnType);
                     // will always be a cast or unbox
                     Debug.Assert(convert.Method == null);
 
                     // Prepare a good exception message in case the convert will fail
-                    string convertFailed = Strings.DynamicObjectResultNotAssignable(
+                    var convertFailed = Strings.DynamicObjectResultNotAssignable(
                         "{0}",
                         Value.GetType(),
                         binder.GetType(),
@@ -677,9 +677,9 @@ namespace System.Dynamic
                 // First, call fallback to do default binding
                 // This produces either an error or a call to a .NET member
                 //
-                DynamicMetaObject fallbackResult = fallback(this, binder, null);
-                ParameterExpression callArgs = Expression.Parameter(typeof(object[]), null);
-                ReadOnlyCollection<Expression> callArgsValue = GetConvertedArgs(args);
+                var fallbackResult = fallback(this, binder, null);
+                var callArgs = Expression.Parameter(typeof(object[]), null);
+                var callArgsValue = GetConvertedArgs(args);
 
                 //
                 // Build a new expression like:
@@ -740,7 +740,7 @@ namespace System.Dynamic
                 // First, call fallback to do default binding
                 // This produces either an error or a call to a .NET member
                 //
-                DynamicMetaObject fallbackResult = fallback(this, binder, null);
+                var fallbackResult = fallback(this, binder, null);
 
                 //
                 // Build a new expression like:
@@ -750,9 +750,9 @@ namespace System.Dynamic
                 // }
                 //
 
-                ParameterExpression result = Expression.Parameter(typeof(object), null);
-                ParameterExpression callArgs = Expression.Parameter(typeof(object[]), null);
-                ReadOnlyCollection<Expression> callArgsValue = GetConvertedArgs(args);
+                var result = Expression.Parameter(typeof(object), null);
+                var callArgs = Expression.Parameter(typeof(object[]), null);
+                var callArgsValue = GetConvertedArgs(args);
 
                 var callDynamic = new DynamicMetaObject(
                     Expression.Block(
@@ -804,9 +804,9 @@ namespace System.Dynamic
                 // First, call fallback to do default binding
                 // This produces either an error or a call to a .NET member
                 //
-                DynamicMetaObject fallbackResult = fallback(this, binder, null);
+                var fallbackResult = fallback(this, binder, null);
 
-                DynamicMetaObject callDynamic = BuildCallMethodWithResult(method, binder, args, fallbackResult, fallbackInvoke);
+                var callDynamic = BuildCallMethodWithResult(method, binder, args, fallbackResult, fallbackInvoke);
 
                 //
                 // Now, call fallback again using our new MO as the error
@@ -851,7 +851,7 @@ namespace System.Dynamic
             /// </summary>
             private bool IsOverridden(MethodInfo method)
             {
-                MemberInfo[] methods = Value.GetType().GetMember(method.Name, MemberTypes.Method, BindingFlags.Public | BindingFlags.Instance);
+                var methods = Value.GetType().GetMember(method.Name, MemberTypes.Method, BindingFlags.Public | BindingFlags.Instance);
 
                 // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
                 foreach (MethodInfo mi in methods)

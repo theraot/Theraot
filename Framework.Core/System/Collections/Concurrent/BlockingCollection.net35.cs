@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35
+﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +12,7 @@ namespace System.Collections.Concurrent
 {
     [ComVisible(false)]
     [DebuggerDisplay("Count = {Count}")]
-    [HostProtection(SecurityAction.LinkDemand, Synchronization=true, ExternalThreading=true)]
+    [HostProtection(SecurityAction.LinkDemand, Synchronization = true, ExternalThreading = true)]
     public class BlockingCollection<T> : ICollection, IDisposable, IReadOnlyCollection<T>
     {
         private PrivateData _data;
@@ -65,7 +65,6 @@ namespace System.Collections.Concurrent
 
         public bool IsCompleted
         {
-
             get
             {
                 var data = Data;
@@ -75,7 +74,6 @@ namespace System.Collections.Concurrent
 
         bool ICollection.IsSynchronized
         {
-
             get
             {
                 GC.KeepAlive(Data);

@@ -1,4 +1,4 @@
-#if NET20 || NET30 || NET35 || NET40
+#if LESSTHAN_NET45
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -29,10 +29,8 @@ namespace System.Diagnostics.Contracts
 
         public string Category { get; }
 
-        public string Setting { get; }
-
         public bool Enabled { get; }
-
+        public string Setting { get; }
         public string Value { get; }
     }
 }

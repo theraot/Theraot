@@ -1,6 +1,7 @@
 ﻿// Needed for Workaround
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Theraot.Threading;
 
@@ -8,14 +9,46 @@ namespace Theraot.Core
 {
     public static class CancellationTokenSourceExtensions
     {
-        public static void CancelAfter(this CancellationTokenSource cancellationToken, int millisecondsDelay)
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static void CancelAfter(this CancellationTokenSource cancellationTokenSource, int millisecondsDelay)
         {
-            RootedTimeout.Launch(cancellationToken.Cancel, millisecondsDelay);
+            GC.KeepAlive(cancellationTokenSource.Token);
+            RootedTimeout.Launch
+            (
+                () =>
+                {
+                    try
+                    {
+                        cancellationTokenSource.Cancel();
+                    }
+                    catch (ObjectDisposedException exception)
+                    {
+                        GC.KeepAlive(exception);
+                    }
+                },
+                millisecondsDelay
+            );
         }
 
-        public static void CancelAfter(this CancellationTokenSource cancellationToken, TimeSpan delay)
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static void CancelAfter(this CancellationTokenSource cancellationTokenSource, TimeSpan delay)
         {
-            RootedTimeout.Launch(cancellationToken.Cancel, delay);
+            GC.KeepAlive(cancellationTokenSource.Token);
+            RootedTimeout.Launch
+            (
+                () =>
+                {
+                    try
+                    {
+                        cancellationTokenSource.Cancel();
+                    }
+                    catch (ObjectDisposedException exception)
+                    {
+                        GC.KeepAlive(exception);
+                    }
+                },
+                delay
+            );
         }
     }
 }

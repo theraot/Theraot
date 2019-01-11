@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -85,7 +85,7 @@ namespace System.Dynamic
             {
                 if (HasValue)
                 {
-                    Type ct = Expression.Type;
+                    var ct = Expression.Type;
                     // ValueType at compile time, type cannot change.
                     if (ct.IsValueType)
                     {
@@ -293,12 +293,12 @@ namespace System.Dynamic
         {
             ContractUtils.RequiresNotNull(objects, nameof(objects));
 
-            Expression[] res = new Expression[objects.Length];
-            for (int i = 0; i < objects.Length; i++)
+            var res = new Expression[objects.Length];
+            for (var i = 0; i < objects.Length; i++)
             {
-                DynamicMetaObject mo = objects[i];
+                var mo = objects[i];
                 ContractUtils.RequiresNotNull(mo, nameof(objects));
-                Expression expr = mo.Expression;
+                var expr = mo.Expression;
                 Debug.Assert(expr != null, "Unexpected null expression; ctor should have caught this.");
                 res[i] = expr;
             }

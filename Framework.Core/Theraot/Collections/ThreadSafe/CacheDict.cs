@@ -48,8 +48,8 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public void Add(TKey key, TValue value)
         {
-            int hash = key.GetHashCode();
-            int index = hash & (_entries.Length - 1);
+            var hash = key.GetHashCode();
+            var index = hash & (_entries.Length - 1);
             var entry = Volatile.Read(ref _entries[index]);
             if (entry == null || entry.Hash != hash || !entry.Key.Equals(key))
             {
@@ -63,8 +63,8 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public bool TryGetValue(TKey key, out TValue value)
         {
-            int hash = key.GetHashCode();
-            int idx = hash & (_entries.Length - 1);
+            var hash = key.GetHashCode();
+            var idx = hash & (_entries.Length - 1);
             var entry = Volatile.Read(ref _entries[idx]);
             if (entry != null && entry.Hash == hash && entry.Key.Equals(key))
             {

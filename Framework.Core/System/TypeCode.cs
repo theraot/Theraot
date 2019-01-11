@@ -1,4 +1,4 @@
-﻿#if FAT
+﻿#if LESSTHAN_NETSTANDARD13
 
 namespace System
 {

@@ -1,6 +1,4 @@
-﻿#if !NET40
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -8,10 +6,23 @@ using System.Threading;
 namespace MonoTests.System.Threading
 {
     [TestFixture]
-    public class ThreadLocalTestsEx
+    public partial class ThreadLocalTestsEx
     {
-#if NET20 || NET30 || NET35 || NET45
+        [Test]
+        public void ThreadLocalDoesNotUseTheDefaultConstructor()
+        {
+            using (var local = new ThreadLocal<Random>())
+            {
+                Assert.AreEqual(null, local.Value);
+            }
+        }
+    }
 
+#if NET20 || NET30 ||NET35 || NET45
+
+    [TestFixture]
+    public partial class ThreadLocalTestsEx
+    {
         [Test]
         [Category("NotDotNet")] // Running this test against .NET 4.0 fails
         public void InitializeThrowingTest()
@@ -20,13 +31,8 @@ namespace MonoTests.System.Threading
             TestException(true);
         }
 
-#endif
-
-#if NET20 || NET30 || NET35 || NET45
-
         [Test]
         [Category("NotDotNet")] // nunit results in stack overflow
-        [Ignore]
         public void MultipleReferenceToValueTest()
         {
             if (Environment.Version.Major >= 4)
@@ -57,10 +63,6 @@ namespace MonoTests.System.Threading
             );
         }
 
-#endif
-
-#if NET20 || NET30 || NET35 || NET45
-
         [Test]
         public void TestValues()
         {
@@ -87,10 +89,6 @@ namespace MonoTests.System.Threading
             }
         }
 
-#endif
-
-#if NET20 || NET30 || NET35 || NET45
-
         [Test]
         public void TestValuesWithExceptions()
         {
@@ -110,19 +108,6 @@ namespace MonoTests.System.Threading
             Assert.AreEqual(count, 3);
         }
 
-#endif
-
-        [Test]
-        public void ThreadLocalDoesNotUseTheDefaultConstructor()
-        {
-            using (var local = new ThreadLocal<Random>())
-            {
-                Assert.AreEqual(null, local.Value);
-            }
-        }
-
-#if NET20 || NET30 || NET35 || NET45
-
         [Test]
         public void ValuesIsNewCopy()
         {
@@ -136,8 +121,6 @@ namespace MonoTests.System.Threading
                 Assert.AreEqual(threadLocal.Values.Count, 1);
             }
         }
-
-#endif
 
         private static void LaunchAndWaitThread(ThreadLocal<int> threadLocal)
         {
@@ -156,8 +139,6 @@ namespace MonoTests.System.Threading
             thread.Start();
             thread.Join();
         }
-
-#if NET20 || NET30 || NET35 || NET45
 
         private static void TestException(bool tracking)
         {
@@ -196,12 +177,23 @@ namespace MonoTests.System.Threading
 
                 Assert.IsNotNull(exception, "#4");
                 Assert.That(exception, Is.TypeOf(typeof(ApplicationException)), "#5");
+                // MSDN says on ThreadLocal.Value
+                //
+                // If this instance was not previously initialized for the current thread, accessing Value will attempt to
+                // initialize it. If an initialization function was supplied during the construction, that initialization
+                // will happen by invoking the function to retrieve the initial value for Value. Otherwise, the default
+                // value of will be used. If an exception is thrown, that exception is cached and thrown on each subsequent
+                // access of the property.
+                //
+                // That means that even though we did access ThreadLocal.Value twice, the value factory should have been
+                // executed only once.... because the value factory we used throws an exception, and that should have been
+                // cached and thrown instead of calling the value factory again...
+                //
+                // .NET 4.0 and .NET 4.5 are not doing that, instead they call the value factory again
                 Assert.AreEqual(1, callTime, "#6");
             }
         }
-
-#endif
     }
-}
 
 #endif
+}

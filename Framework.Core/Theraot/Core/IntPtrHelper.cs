@@ -1,11 +1,13 @@
 ﻿// Needed for Workaround
 
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Theraot.Core
 {
     public static class IntPtrHelper
     {
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static IntPtr Add(IntPtr pointer, int offset)
         {
 #if NET20 || NET30 || NET35
@@ -25,6 +27,7 @@ namespace Theraot.Core
 #endif
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static IntPtr Subtract(IntPtr pointer, int offset)
         {
 #if NET20 || NET30 || NET35
@@ -48,6 +51,7 @@ namespace Theraot.Core
     public static class UIntPtrHelper
     {
         [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static UIntPtr Add(UIntPtr pointer, int offset)
         {
 #if NET20 || NET30 || NET35
@@ -68,6 +72,7 @@ namespace Theraot.Core
         }
 
         [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static UIntPtr Subtract(UIntPtr pointer, int offset)
         {
 #if NET20 || NET30 || NET35

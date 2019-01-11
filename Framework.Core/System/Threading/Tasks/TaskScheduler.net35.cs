@@ -45,18 +45,18 @@ namespace System.Threading.Tasks
             {
                 return TryDequeue(task);
             }
+            catch (InternalSpecialCancelException)
+            {
+                // Special path for ThreadPool
+                special = true;
+                return false;
+            }
+            catch (ThreadAbortException)
+            {
+                return false;
+            }
             catch (Exception exception)
             {
-                if (exception is InternalSpecialCancelException)
-                {
-                    // Special path for ThreadPool
-                    special = true;
-                    return false;
-                }
-                if (exception is ThreadAbortException)
-                {
-                    return false;
-                }
                 throw new TaskSchedulerException(exception);
             }
         }

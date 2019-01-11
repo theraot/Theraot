@@ -55,8 +55,8 @@ namespace Theraot.Reflection
                 create = null;
                 return false;
             }
-            TReturn Create() => (TReturn) constructorInfo.Invoke(ArrayReservoir<object>.EmptyArray);
-            _constructorCache[type] = (Func<TReturn>) Create;
+            TReturn Create() => (TReturn)constructorInfo.Invoke(ArrayReservoir<object>.EmptyArray);
+            _constructorCache[type] = (Func<TReturn>)Create;
             create = Create;
             return true;
         }

@@ -16,7 +16,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             _id = RuntimeUniqueIdProvider.GetNextId();
             _entries = new FixedSizeQueue<T>(capacity);
-            _recycler = recycler ?? throw new ArgumentNullException(nameof(recycler));
+            _recycler = recycler;
         }
 
         internal bool Donate(T entry)

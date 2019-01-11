@@ -30,6 +30,7 @@
 using NUnit.Framework;
 using System;
 using System.Threading;
+using Theraot.Core;
 
 namespace MonoTests.System.Threading
 {
@@ -330,8 +331,14 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        [Category("NotDotNet")]
         public void Dispose()
         {
+            // Failing in .NET 4.0 and .NET 4.5
+            // Not sure if a bug in the implementation or a bug in the documentation
+            // Likely the implementation changed.
+            // However,  was it intentional and they forgot to update the documentation
+            // ... or was the change unintentional and the documentation is right?
             var cts = new CancellationTokenSource();
             var token = cts.Token;
 
@@ -362,6 +369,7 @@ namespace MonoTests.System.Threading
 
             try
             {
+                // According to MSDN this should throw
                 token.Register(() =>
                 {
                 });
@@ -384,6 +392,7 @@ namespace MonoTests.System.Threading
 
             try
             {
+                // According to MSDN this should throw
                 CancellationTokenSource.CreateLinkedTokenSource(token);
                 Assert.Fail("#5");
             }
@@ -392,9 +401,9 @@ namespace MonoTests.System.Threading
                 GC.KeepAlive(ex);
             }
 
-#if NET20 || NET30 || NET35 || NET_45
             try
             {
+                // According to MSDN this should throw
                 cts.CancelAfter(1);
                 Assert.Fail("#6");
             }
@@ -402,7 +411,6 @@ namespace MonoTests.System.Threading
             {
                 GC.KeepAlive(ex);
             }
-#endif
         }
 
         [Test]

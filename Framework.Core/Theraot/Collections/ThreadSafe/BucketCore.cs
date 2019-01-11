@@ -7,10 +7,7 @@ using Theraot.Threading;
 
 namespace Theraot.Collections.ThreadSafe
 {
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
     [Serializable]
-#endif
-
     internal class BucketCore : IEnumerable<object>
     {
         private const int _capacityLog2 = 8;
@@ -23,7 +20,7 @@ namespace Theraot.Collections.ThreadSafe
         private int[] _arrayUse;
 
         public BucketCore()
-            : this (_maxLevel)
+            : this(_maxLevel)
         {
             // Empty
         }

@@ -12,25 +12,25 @@ namespace Theraot.Collections
     {
         // Note: these constructors uses ExtendedSet because HashSet is not an ISet<T> in .NET 3.5 and base class needs an ISet<T>
         public ProgressiveSet(IEnumerable<T> enumerable)
-            : this(Progressor<T>.CreateFromIEnumerable(enumerable), new ExtendedSet<T>(), null)
+            : this(Progressor<T>.CreateFromIEnumerable(enumerable), new HashSetEx<T>(), null)
         {
             // Empty
         }
 
         public ProgressiveSet(IObservable<T> observable)
-            : this(Progressor<T>.CreateFromIObservable(observable), new ExtendedSet<T>(), null)
+            : this(Progressor<T>.CreateFromIObservable(observable), new HashSetEx<T>(), null)
         {
             // Empty
         }
 
         public ProgressiveSet(IEnumerable<T> enumerable, IEqualityComparer<T> comparer)
-            : this(Progressor<T>.CreateFromIEnumerable(enumerable), new ExtendedSet<T>(comparer), null)
+            : this(Progressor<T>.CreateFromIEnumerable(enumerable), new HashSetEx<T>(comparer), null)
         {
             // Empty
         }
 
         public ProgressiveSet(IObservable<T> observable, IEqualityComparer<T> comparer)
-           : this(Progressor<T>.CreateFromIObservable(observable), new ExtendedSet<T>(comparer), null)
+           : this(Progressor<T>.CreateFromIObservable(observable), new HashSetEx<T>(comparer), null)
         {
             // Empty
         }

@@ -9,10 +9,7 @@ namespace Theraot.Collections.ThreadSafe
     /// Represent a thread-safe wait-free bucket.
     /// </summary>
     /// <typeparam name="T">The type of the item.</typeparam>
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
     [Serializable]
-#endif
-
     public sealed class Bucket<T> : IBucket<T>
     {
         private readonly BucketCore _bucketCore;
@@ -21,6 +18,17 @@ namespace Theraot.Collections.ThreadSafe
         public Bucket()
         {
             _bucketCore = new BucketCore();
+        }
+
+        public Bucket(IEnumerable<T> source)
+        {
+            _bucketCore = new BucketCore();
+            var index = 0;
+            foreach (var item in source)
+            {
+                Insert(index, item);
+                index++;
+            }
         }
 
         public int Count => _count;

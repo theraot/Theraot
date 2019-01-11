@@ -1,4 +1,4 @@
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -47,7 +47,7 @@ namespace System.Dynamic.Utils
 
         protected abstract T GetElement(int index);
 
-        #region IList<T> Members
+#region IList<T> Members
 
         public T this[int index]
         {
@@ -91,9 +91,9 @@ namespace System.Dynamic.Utils
             throw ContractUtils.Unreachable;
         }
 
-        #endregion IList<T> Members
+#endregion IList<T> Members
 
-        #region ICollection<T> Members
+#region ICollection<T> Members
 
         public int Count => ElementCount;
 
@@ -119,7 +119,7 @@ namespace System.Dynamic.Utils
                 throw LinqError.ArgumentOutOfRange(nameof(index));
             }
 
-            int n = ElementCount;
+            var n = ElementCount;
             Debug.Assert(n > 0);
             if (index + n > array.Length)
             {
@@ -127,7 +127,7 @@ namespace System.Dynamic.Utils
             }
 
             array[index++] = First;
-            for (int i = 1; i < n; i++)
+            for (var i = 1; i < n; i++)
             {
                 array[index++] = GetElement(i);
             }
@@ -138,9 +138,9 @@ namespace System.Dynamic.Utils
             throw ContractUtils.Unreachable;
         }
 
-        #endregion ICollection<T> Members
+#endregion ICollection<T> Members
 
-        #region IEnumerable<T> Members
+#region IEnumerable<T> Members
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -152,13 +152,13 @@ namespace System.Dynamic.Utils
             }
         }
 
-        #endregion IEnumerable<T> Members
+#endregion IEnumerable<T> Members
 
-        #region IEnumerable Members
+#region IEnumerable Members
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        #endregion IEnumerable Members
+#endregion IEnumerable Members
     }
 }
 

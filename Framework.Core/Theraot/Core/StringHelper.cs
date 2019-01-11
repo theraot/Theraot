@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -11,26 +12,31 @@ namespace Theraot.Core
     [DebuggerNonUserCode]
     public static partial class StringHelper
     {
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Append(this string text, string value)
         {
             return string.Concat(text, value);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Append(this string text, string value1, string value2)
         {
             return string.Concat(text, value1, value2);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Append(this string text, string value1, string value2, string value3)
         {
             return string.Concat(text, value1, value2, value3);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Append(this string text, params string[] values)
         {
             return string.Concat(text, values);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Concat(params string[] value)
         {
             return string.Concat(value);
@@ -78,6 +84,7 @@ namespace Theraot.Core
             return ConcatExtracted(array, arrayIndex, countLimit);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Concat(params object[] values)
         {
             return string.Concat(values);
@@ -146,6 +153,7 @@ namespace Theraot.Core
             return ConcatExtractedExtracted(stringList.ToArray(), 0, stringList.Count, length);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string End(this string text, int characterCount)
         {
             if (text == null)
@@ -160,6 +168,7 @@ namespace Theraot.Core
             return text.Substring(length - characterCount);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string EnsureEnd(this string text, string end, StringComparison comparisonType)
         {
             if (text == null)
@@ -173,6 +182,7 @@ namespace Theraot.Core
             return text;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string EnsureStart(this string text, string start)
         {
             if (text == null)
@@ -186,6 +196,7 @@ namespace Theraot.Core
             return text;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string EnsureStart(this string text, string start, StringComparison comparisonType)
         {
             if (text == null)
@@ -199,6 +210,7 @@ namespace Theraot.Core
             return text;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string ExceptEnd(this string text, int characterCount)
         {
             if (text == null)
@@ -213,6 +225,7 @@ namespace Theraot.Core
             return text.Substring(0, length - characterCount);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string ExceptStart(this string text, int characterCount)
         {
             if (text == null)
@@ -241,7 +254,7 @@ namespace Theraot.Core
             var index = 0;
             foreach (var item in values)
             {
-                array[index++] = item.ToString();
+                array[index++] = item?.ToString();
             }
             return ImplodeExtracted(separator, array, 0, array.Length);
         }
@@ -390,7 +403,7 @@ namespace Theraot.Core
             var stringList = new List<string>();
             foreach (var item in values)
             {
-                stringList.Add(item.ToString());
+                stringList.Add(item?.ToString());
             }
             return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
         }
@@ -412,7 +425,7 @@ namespace Theraot.Core
             var stringList = new List<string>();
             foreach (var item in values)
             {
-                stringList.Add(item.ToString());
+                stringList.Add(item?.ToString());
             }
             return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
         }
@@ -454,7 +467,7 @@ namespace Theraot.Core
             var stringList = new List<string>();
             foreach (var item in values)
             {
-                stringList.Add(item.ToString());
+                stringList.Add(item?.ToString());
             }
             if (stringList.Count > 0)
             {
@@ -482,7 +495,7 @@ namespace Theraot.Core
             var stringList = new List<string>();
             foreach (var item in values)
             {
-                stringList.Add(item.ToString());
+                stringList.Add(item?.ToString());
             }
             if (stringList.Count > 0)
             {
@@ -493,152 +506,181 @@ namespace Theraot.Core
             return string.Empty;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool Like(this string text, Regex regex, int startAt)
         {
             return regex.IsMatch(text, startAt);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool Like(this string text, Regex regex)
         {
             return text.Like(regex, 0);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool Like(this string text, string regexPattern, RegexOptions regexOptions, int startAt)
         {
             var regex = new Regex(regexPattern, regexOptions);
             return regex.IsMatch(text, startAt);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool Like(this string text, string regexPattern, RegexOptions regexOptions)
         {
             return text.Like(regexPattern, regexOptions, 0);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool Like(this string text, string regexPattern, bool ignoreCase)
         {
             return text.Like(regexPattern, ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None, 0);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool Like(this string text, string regexPattern)
         {
             return text.Like(regexPattern, RegexOptions.IgnoreCase, 0);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool Like(this string text, string regexPattern, bool ignoreCase, int startAt)
         {
             return text.Like(regexPattern, ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None, startAt);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool Like(this string text, string regexPattern, int startAt)
         {
             return text.Like(regexPattern, RegexOptions.IgnoreCase, startAt);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Match Match(this string text, Regex regex, int startAt, int length)
         {
             return regex.Match(text, startAt, length);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Match Match(this string text, Regex regex, int startAt)
         {
             return regex.Match(text, startAt);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Match Match(this string text, Regex regex)
         {
             return text.Match(regex, 0);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Match Match(this string text, string regexPattern, RegexOptions regexOptions, int startAt, int length)
         {
             var regex = new Regex(regexPattern, regexOptions);
             return regex.Match(text, startAt, length);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Match Match(this string text, string regexPattern, RegexOptions regexOptions, int startAt)
         {
             var regex = new Regex(regexPattern, regexOptions);
             return regex.Match(text, startAt);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Match Match(this string text, string regexPattern, RegexOptions regexOptions)
         {
             return text.Match(regexPattern, regexOptions, 0);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Match Match(this string text, string regexPattern, bool ignoreCase, int startAt, int length)
         {
             return text.Match(regexPattern, ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None, startAt, length);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Match Match(this string text, string regexPattern, bool ignoreCase, int startAt)
         {
             return text.Match(regexPattern, ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None, startAt);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Match Match(this string text, string regexPattern, bool ignoreCase)
         {
             return text.Match(regexPattern, ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None, 0);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Match Match(this string text, string regexPattern, int startAt, int length)
         {
             return text.Match(regexPattern, RegexOptions.IgnoreCase, startAt, length);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Match Match(this string text, string regexPattern, int startAt)
         {
             return text.Match(regexPattern, RegexOptions.IgnoreCase, startAt);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Match Match(this string text, string regexPattern)
         {
             return text.Match(regexPattern, RegexOptions.IgnoreCase, 0);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MatchCollection Matches(this string text, Regex regex, int startAt)
         {
             return regex.Matches(text, startAt);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MatchCollection Matches(this string text, Regex regex)
         {
             return text.Matches(regex, 0);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MatchCollection Matches(this string text, string regexPattern, RegexOptions regexOptions, int startAt)
         {
             var regex = new Regex(regexPattern, regexOptions);
             return regex.Matches(text, startAt);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MatchCollection Matches(this string text, string regexPattern, RegexOptions regexOptions)
         {
             return text.Matches(regexPattern, regexOptions, 0);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MatchCollection Matches(this string text, string regexPattern, bool ignoreCase, int startAt)
         {
             var regex = new Regex(regexPattern, ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None);
             return regex.Matches(text, startAt);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MatchCollection Matches(this string text, string regexPattern, bool ignoreCase)
         {
             return text.Matches(regexPattern, ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None, 0);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MatchCollection Matches(this string text, string regexPattern, int startAt)
         {
             var regex = new Regex(regexPattern, RegexOptions.IgnoreCase);
             return regex.Matches(text, startAt);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MatchCollection Matches(this string text, string regexPattern)
         {
             return text.Matches(regexPattern, RegexOptions.IgnoreCase, 0);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string NeglectEnd(this string text, string end, StringComparison comparisonType)
         {
             if (text == null)
@@ -656,6 +698,7 @@ namespace Theraot.Core
             return text;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string NeglectStart(this string text, string start)
         {
             if (text == null)
@@ -673,6 +716,7 @@ namespace Theraot.Core
             return text;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string NeglectStart(this string text, string start, StringComparison comparisonType)
         {
             if (text == null)
@@ -690,6 +734,7 @@ namespace Theraot.Core
             return text;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Safe(this string text)
         {
             if (string.IsNullOrEmpty(text))
@@ -699,6 +744,7 @@ namespace Theraot.Core
             return text;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Start(this string text, int characterCount)
         {
             if (text == null)
@@ -823,6 +869,7 @@ namespace Theraot.Core
 
     public static partial class StringHelper
     {
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Concat(IEnumerable<string> values)
         {
 #if NET20 || NET30 || NET35
@@ -843,6 +890,7 @@ namespace Theraot.Core
 #endif
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Concat<T>(IEnumerable<T> values)
         {
 #if NET20 || NET30 || NET35
@@ -854,6 +902,10 @@ namespace Theraot.Core
             var length = 0;
             foreach (var item in values)
             {
+                if (item == null)
+                {
+                    continue;
+                }
                 var itemToString = item.ToString();
                 stringList.Add(itemToString);
                 length += itemToString.Length;
@@ -864,6 +916,7 @@ namespace Theraot.Core
 #endif
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool IsNullOrWhiteSpace(string value)
         {
 #if NET20 || NET30 || NET35
@@ -888,6 +941,7 @@ namespace Theraot.Core
 
     public static partial class StringHelper
     {
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Join(string separator, IEnumerable<string> values)
         {
 #if NET20 || NET30 || NET35
@@ -897,10 +951,14 @@ namespace Theraot.Core
             }
             var stringList = new List<string>();
             var length = 0;
-            var separatorLength = separator.Length;
+            var separatorLength = separator?.Length ?? 0;
             foreach (var item in values)
             {
-                if (length != 0)
+                if (item == null)
+                {
+                    continue;
+                }
+                if (length != 0 && separatorLength != 0)
                 {
                     stringList.Add(separator);
                     length += separatorLength;
@@ -914,6 +972,7 @@ namespace Theraot.Core
 #endif
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Join<T>(string separator, IEnumerable<T> values)
         {
 #if NET20 || NET30 || NET35
@@ -923,10 +982,14 @@ namespace Theraot.Core
             }
             var stringList = new List<string>();
             var length = 0;
-            var separatorLength = separator.Length;
+            var separatorLength = separator?.Length ?? 0;
             foreach (var item in values)
             {
-                if (length != 0)
+                if (item == null)
+                {
+                    continue;
+                }
+                if (length != 0 && separatorLength != 0)
                 {
                     stringList.Add(separator);
                     length += separatorLength;
@@ -941,6 +1004,7 @@ namespace Theraot.Core
 #endif
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Join(string separator, params object[] values)
         {
 #if NET20 || NET30 || NET35
@@ -950,10 +1014,14 @@ namespace Theraot.Core
             }
             var stringList = new List<string>();
             var length = 0;
-            var separatorLength = separator.Length;
+            var separatorLength = separator?.Length ?? 0;
             foreach (var item in values)
             {
-                if (length != 0)
+                if (item == null)
+                {
+                    continue;
+                }
+                if (length != 0 && separatorLength != 0)
                 {
                     stringList.Add(separator);
                     length += separatorLength;
@@ -968,11 +1036,16 @@ namespace Theraot.Core
 #endif
         }
 
+#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+#endif
+
         public static string Join(string separator, params string[] values)
         {
             return string.Join(separator, values);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Join(string separator, string[] values, int startIndex, int count)
         {
             return string.Join(separator, values, startIndex, count);
@@ -983,6 +1056,7 @@ namespace Theraot.Core
     {
 #if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string EnsureEnd(this string text, string end)
         {
             if (text == null)
@@ -996,6 +1070,7 @@ namespace Theraot.Core
             return text;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string EnsureEnd(this string text, string end, bool ignoreCase, System.Globalization.CultureInfo culture)
         {
             if (text == null)
@@ -1009,6 +1084,7 @@ namespace Theraot.Core
             return text;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string EnsureStart(this string text, string start, bool ignoreCase, System.Globalization.CultureInfo culture)
         {
             if (text == null)
@@ -1022,6 +1098,7 @@ namespace Theraot.Core
             return text;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string NeglectEnd(this string text, string end)
         {
             if (text == null)
@@ -1039,6 +1116,7 @@ namespace Theraot.Core
             return text;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string NeglectEnd(this string text, string end, bool ignoreCase, System.Globalization.CultureInfo culture)
         {
             if (text == null)
@@ -1056,6 +1134,7 @@ namespace Theraot.Core
             return text;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string NeglectStart(this string text, string start, bool ignoreCase, System.Globalization.CultureInfo culture)
         {
             if (text == null)

@@ -1,6 +1,4 @@
-﻿#define NET_4_0
-#if NET_4_0
-// ConcurrentQueueTest.cs
+﻿// ConcurrentQueueTest.cs
 //
 // Copyright (c) 2008 Jérémie "Garuma" Laval
 //
@@ -263,21 +261,27 @@ namespace MonoTests.System.Collections.Concurrent
         [Test]
         public void TryDequeueReferenceTest()
         {
-            var obj = new object();
-            var weakReference = CreateWeakReference(obj);
             var queue = new ConcurrentQueue<object>();
-
-            queue.Enqueue(obj);
-            queue.TryDequeue(out obj);
-            // ReSharper disable once RedundantAssignment
-            obj = null; // Removing reference to object to allow garbage collection
-
+            var weakReference = AddObjectWeakReference(queue);
+            DequeueIgnore(queue);
+            Thread.MemoryBarrier();
             GC.Collect();
             GC.WaitForPendingFinalizers();
-
+            Thread.MemoryBarrier();
             Assert.IsFalse(weakReference.IsAlive);
+        }
+
+        private static void DequeueIgnore(ConcurrentQueue<object> queue)
+        {
+            queue.TryDequeue(out _);
+        }
+
+        private static WeakReference AddObjectWeakReference(ConcurrentQueue<object> queue)
+        {
+            var obj = new object();
+            var weakReference = CreateWeakReference(obj);
+            queue.Enqueue(obj);
+            return weakReference;
         }
     }
 }
-
-#endif

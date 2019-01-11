@@ -1,4 +1,4 @@
-#if NET20 || NET30 || NET35 || NET40
+#if LESSTHAN_NET45
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -14,21 +14,6 @@ namespace System.Diagnostics.Contracts
     [Serializable]
     internal sealed class ContractException : Exception
     {
-        public ContractFailureKind Kind { get; }
-
-        public string Failure => Message;
-
-        public string UserMessage { get; }
-
-        public string Condition { get; }
-
-        // Called by COM Interop, if we see Cor_E_CodeContractFailed as an HRESULT.
-        // ReSharper disable once UnusedMember.Local
-        private ContractException()
-        {
-            HResult = ContractHelper.Cor_E_CodeContractFailed;
-        }
-
         public ContractException(ContractFailureKind kind, string failure, string userMessage, string condition, Exception innerException)
             : base(failure, innerException)
         {
@@ -38,7 +23,15 @@ namespace System.Diagnostics.Contracts
             Condition = condition;
         }
 
+        // Called by COM Interop, if we see Cor_E_CodeContractFailed as an HRESULT.
+        // ReSharper disable once UnusedMember.Local
+        private ContractException()
+        {
+            HResult = ContractHelper.Cor_E_CodeContractFailed;
+        }
+
 #pragma warning disable IDE0051 // Remove unused private members
+
         private ContractException(SerializationInfo info, StreamingContext context)
 #pragma warning restore IDE0051 // Remove unused private members
             : base(info, context)
@@ -47,6 +40,11 @@ namespace System.Diagnostics.Contracts
             UserMessage = info.GetString(nameof(UserMessage));
             Condition = info.GetString(nameof(Condition));
         }
+
+        public string Condition { get; }
+        public ContractFailureKind Kind { get; }
+
+        public string UserMessage { get; }
 
         [SecurityCritical]
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]

@@ -25,7 +25,6 @@ namespace System.Linq.Expressions.Interpreter
         internal readonly DebugInfo[] DebugInfos;
         internal readonly RuntimeLabel[] Labels;
         internal readonly object[] Objects;
-        private readonly InstructionArray _instructions;
 
         internal Interpreter(string name, LocalVariables locals, InstructionArray instructions, DebugInfo[] debugInfos)
         {
@@ -33,7 +32,7 @@ namespace System.Linq.Expressions.Interpreter
             LocalCount = locals.LocalCount;
             ClosureVariables = locals.ClosureVariables;
 
-            _instructions = instructions;
+            Instructions = instructions;
             Objects = instructions.Objects;
             Labels = instructions.Labels;
             DebugInfos = debugInfos;
@@ -41,7 +40,7 @@ namespace System.Linq.Expressions.Interpreter
 
         internal int ClosureSize => ClosureVariables?.Count ?? 0;
         internal Dictionary<ParameterExpression, LocalVariable> ClosureVariables { get; }
-        internal InstructionArray Instructions => _instructions;
+        internal InstructionArray Instructions { get; }
         internal int LocalCount { get; }
         internal string Name { get; }
 
@@ -54,10 +53,10 @@ namespace System.Linq.Expressions.Interpreter
         /// interpreted stack traces by aligning interpreted frames to the frames of this method.
         /// Each group of subsequent frames of Run method corresponds to a single interpreted frame.
         /// </remarks>
-        [MethodImpl(MethodImplOptions.NoInlining)]
+        [MethodImpl(MethodImplOptionsEx.NoInlining)]
         public void Run(InterpretedFrame frame)
         {
-            var instructions = _instructions.Instructions;
+            var instructions = Instructions.Instructions;
             var index = frame.InstructionIndex;
             while (index < instructions.Length)
             {

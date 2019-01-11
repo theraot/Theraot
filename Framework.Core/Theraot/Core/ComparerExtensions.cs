@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Theraot.Collections.Specialized;
 
 namespace Theraot.Core
@@ -13,6 +14,7 @@ namespace Theraot.Core
             return !(comparer is ReverseComparer<T> originalAsReverse) ? new ReverseComparer<T>(comparer ?? Comparer<T>.Default) : originalAsReverse.Wrapped;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static IComparer<T> ToComparer<T>(this Comparison<T> comparison)
         {
             // Replacement for Comparer.Create(Comparison<T>) added in .NET 4.5

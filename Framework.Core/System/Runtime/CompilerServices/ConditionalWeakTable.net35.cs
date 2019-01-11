@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35
+﻿#if LESSTHAN_NET40 || LESSTHAN_NETSTANDARD13
 
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -35,7 +35,7 @@ namespace System.Runtime.CompilerServices
 
         public ConditionalWeakTable()
         {
-            _wrapped = new WeakDictionary<TKey, TValue>();
+            _wrapped = new WeakDictionary<TKey, TValue> { AutoRemoveDeadItems = true };
         }
 
         /// <summary>

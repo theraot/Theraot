@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
@@ -40,7 +41,7 @@ namespace Theraot.Collections
             : base(progressor, cache, comparer)
         {
             _cache = cache;
-            Cache = new ExtendedReadOnlyList<T>(_cache);
+            Cache = new ReadOnlyCollectionEx<T>(_cache);
         }
 
         public new IReadOnlyList<T> Cache { get; }

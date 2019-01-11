@@ -1,14 +1,14 @@
-﻿#if NET20 || NET30 || NET35
+﻿#if LESSTHAN_NET40
 
 namespace System.Collections.Specialized
 {
     public enum NotifyCollectionChangedAction
     {
-        Add,
-        Remove,
-        Replace,
-        Move,
-        Reset
+        Add = 0,
+        Remove = 1,
+        Replace = 2,
+        Move = 3,
+        Reset = 4
     }
 }
 

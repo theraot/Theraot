@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35
+﻿#if LESSTHAN_NET40
 
 using System.Collections.Generic;
 
@@ -13,24 +13,32 @@ namespace System.Collections.Concurrent
             KeysNormalized = keysNormalized;
         }
 
-        public abstract IList<IEnumerator<KeyValuePair<long, TSource>>> GetOrderablePartitions(int partitionCount);
+        public bool KeysNormalized { get; }
+
+        public bool KeysOrderedAcrossPartitions { get; }
+
+        public bool KeysOrderedInEachPartition { get; }
+
+        public override IEnumerable<TSource> GetDynamicPartitions()
+        {
+            foreach (var item in GetOrderableDynamicPartitions())
+            {
+                yield return item.Value;
+            }
+        }
 
         public virtual IEnumerable<KeyValuePair<long, TSource>> GetOrderableDynamicPartitions()
         {
             throw new NotSupportedException();
         }
 
-        public bool KeysOrderedInEachPartition { get; }
-
-        public bool KeysOrderedAcrossPartitions { get; }
-
-        public bool KeysNormalized { get; }
+        public abstract IList<IEnumerator<KeyValuePair<long, TSource>>> GetOrderablePartitions(int partitionCount);
 
         public override IList<IEnumerator<TSource>> GetPartitions(int partitionCount)
         {
             var orderablePartitions = GetOrderablePartitions(partitionCount);
             var partitions = new IEnumerator<TSource>[partitionCount];
-            for (int i = 0; i < partitionCount; i++)
+            for (var i = 0; i < partitionCount; i++)
             {
                 partitions[i] = Enumerator(orderablePartitions[i]);
             }
@@ -48,14 +56,6 @@ namespace System.Collections.Concurrent
                 {
                     enumerator.Dispose();
                 }
-            }
-        }
-
-        public override IEnumerable<TSource> GetDynamicPartitions()
-        {
-            foreach (var item in GetOrderableDynamicPartitions())
-            {
-                yield return item.Value;
             }
         }
     }

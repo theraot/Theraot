@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -40,10 +40,6 @@ namespace System.Linq.Expressions.Compiler
     /// </summary>
     internal sealed class LabelInfo
     {
-        // True if this label is the last thing in this block
-        // (meaning we can emit a direct return)
-        private readonly bool _canReturn;
-
         // The blocks where this label is defined. If it has more than one item,
         // the blocks can't be jumped to except from a child block
         private readonly HashSet<LabelScopeInfo> _definitions = new HashSet<LabelScopeInfo>();
@@ -79,7 +75,7 @@ namespace System.Linq.Expressions.Compiler
         {
             _ilg = il;
             _node = node;
-            _canReturn = canReturn;
+            CanReturn = canReturn;
         }
 
         /// <summary>
@@ -89,7 +85,7 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         internal bool CanBranch => _opCode != OpCodes.Leave;
 
-        internal bool CanReturn => _canReturn;
+        internal bool CanReturn { get; }
 
         internal Label Label
         {
@@ -107,7 +103,7 @@ namespace System.Linq.Expressions.Compiler
             // Prevent the label from being shadowed, which enforces cleaner
             // trees. Also we depend on this for simplicity (keeping only one
             // active IL Label per LabelInfo)
-            for (LabelScopeInfo j = block; j != null; j = j.Parent)
+            for (var j = block; j != null; j = j.Parent)
             {
                 if (j.ContainsTarget(_node))
                 {
@@ -121,7 +117,7 @@ namespace System.Linq.Expressions.Compiler
             // Once defined, validate all jumps
             if (_definitions.Count == 1)
             {
-                foreach (LabelScopeInfo r in _references)
+                foreach (var r in _references)
                 {
                     ValidateJump(r);
                 }
@@ -158,7 +154,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal void Mark()
         {
-            if (_canReturn)
+            if (CanReturn)
             {
                 // Don't mark return labels unless they were actually jumped to
                 // (returns are last so we know for sure if anyone jumped to it)
@@ -242,10 +238,10 @@ namespace System.Linq.Expressions.Compiler
         private void ValidateJump(LabelScopeInfo reference)
         {
             // Assume we can do a ret/branch
-            _opCode = _canReturn ? OpCodes.Ret : OpCodes.Br;
+            _opCode = CanReturn ? OpCodes.Ret : OpCodes.Br;
 
             // look for a simple jump out
-            for (LabelScopeInfo j = reference; j != null; j = j.Parent)
+            for (var j = reference; j != null; j = j.Parent)
             {
                 if (_definitions.Contains(j))
                 {
@@ -277,14 +273,14 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // We didn't find an outward jump. Look for a jump across blocks
-            LabelScopeInfo def = _definitions.First();
-            LabelScopeInfo common = Helpers.CommonNode(def, reference, b => b.Parent);
+            var def = _definitions.First();
+            var common = Helpers.CommonNode(def, reference, b => b.Parent);
 
             // Assume we can do a ret/branch
-            _opCode = _canReturn ? OpCodes.Ret : OpCodes.Br;
+            _opCode = CanReturn ? OpCodes.Ret : OpCodes.Br;
 
             // Validate that we aren't jumping across a finally
-            for (LabelScopeInfo j = reference; j != common; j = j.Parent)
+            for (var j = reference; j != common; j = j.Parent)
             {
                 if (j.Kind == LabelScopeKind.Finally)
                 {
@@ -302,7 +298,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // Validate that we aren't jumping into a catch or an expression
-            for (LabelScopeInfo j = def; j != common; j = j.Parent)
+            for (var j = def; j != common; j = j.Parent)
             {
                 if (!j.CanJumpInto)
                 {

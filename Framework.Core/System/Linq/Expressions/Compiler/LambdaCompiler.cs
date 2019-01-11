@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -11,8 +11,8 @@ using System.Dynamic.Utils;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
-using Theraot.Reflection;
 using Theraot.Collections.Specialized;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -40,8 +40,6 @@ namespace System.Linq.Expressions.Compiler
         // True if the method's first argument is of type Closure
         private readonly bool _hasClosureArgument;
 
-        private readonly ILGenerator _ilg;
-
         // Mapping of labels used for "long" jumps (jumping out and into blocks)
         private readonly Dictionary<LabelTarget, LabelInfo> _labelInfo = new Dictionary<LabelTarget, LabelInfo>();
 
@@ -67,7 +65,7 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         private LambdaCompiler(AnalyzedTree tree, LambdaExpression lambda)
         {
-            Type[] parameterTypes = GetParameterTypes(lambda, typeof(Closure));
+            var parameterTypes = GetParameterTypes(lambda, typeof(Closure));
 
             var method = new DynamicMethod(lambda.Name ?? "lambda_method", lambda.ReturnType, parameterTypes, true);
 
@@ -75,7 +73,7 @@ namespace System.Linq.Expressions.Compiler
             _lambda = lambda;
             _method = method;
 
-            _ilg = method.GetILGenerator();
+            IL = method.GetILGenerator();
 
             _hasClosureArgument = true;
 
@@ -94,13 +92,13 @@ namespace System.Linq.Expressions.Compiler
             var scope = tree.Scopes[lambda];
             var hasClosureArgument = scope.NeedsClosure;
 
-            Type[] paramTypes = GetParameterTypes(lambda, hasClosureArgument ? typeof(Closure) : null);
+            var paramTypes = GetParameterTypes(lambda, hasClosureArgument ? typeof(Closure) : null);
 
             method.SetReturnType(lambda.ReturnType);
             method.SetParameters(paramTypes);
             var parameters = lambda.Parameters;
             // parameters are index from 1, with closure argument we need to skip the first arg
-            int startIndex = hasClosureArgument ? 2 : 1;
+            var startIndex = hasClosureArgument ? 2 : 1;
             for (int i = 0, n = parameters.Count; i < n; i++)
             {
                 method.DefineParameter(i + startIndex, ParameterAttributes.None, parameters[i].Name);
@@ -112,7 +110,7 @@ namespace System.Linq.Expressions.Compiler
             _method = method;
             _hasClosureArgument = hasClosureArgument;
 
-            _ilg = method.GetILGenerator();
+            IL = method.GetILGenerator();
 
             // These are populated by AnalyzeTree/VariableBinder
             _scope = scope;
@@ -132,7 +130,7 @@ namespace System.Linq.Expressions.Compiler
             _tree = parent._tree;
             _lambda = lambda;
             _method = parent._method;
-            _ilg = parent._ilg;
+            IL = parent.IL;
             _hasClosureArgument = parent._hasClosureArgument;
             _typeBuilder = parent._typeBuilder;
             // inlined scopes are associated with invocation, not with the lambda
@@ -144,7 +142,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal bool CanEmitBoundConstants => _method is DynamicMethod;
 
-        internal ILGenerator IL => _ilg;
+        internal ILGenerator IL { get; }
 
         internal IParameterProvider Parameters => _lambda;
 
@@ -156,18 +154,18 @@ namespace System.Linq.Expressions.Compiler
 
         public LocalBuilder GetLocal(Type type)
         {
-            if (_freeLocals.TryTake(type, out LocalBuilder builder))
+            if (_freeLocals.TryTake(type, out var builder))
             {
                 return builder;
             }
-            return _ilg.DeclareLocal(type);
+            return IL.DeclareLocal(type);
         }
 
         internal void EmitClosureArgument()
         {
             Debug.Assert(_hasClosureArgument, "must have a Closure argument");
             Debug.Assert(_method.IsStatic, "must be a static method");
-            _ilg.EmitLoadArg(0);
+            IL.EmitLoadArg(0);
         }
 
         /// <summary>
@@ -176,7 +174,7 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         internal void EmitLambdaArgument(int index)
         {
-            _ilg.EmitLoadArg(GetLambdaArgument(index));
+            IL.EmitLoadArg(GetLambdaArgument(index));
         }
 
         /// <summary>
@@ -250,10 +248,10 @@ namespace System.Linq.Expressions.Compiler
             lambda.ValidateArgumentCount();
 
             // 1. Bind lambda
-            AnalyzedTree tree = AnalyzeLambda(ref lambda);
+            var tree = AnalyzeLambda(ref lambda);
 
             // 2. Create lambda compiler
-            LambdaCompiler c = new LambdaCompiler(tree, lambda);
+            var c = new LambdaCompiler(tree, lambda);
 
             // 3. Emit
             c.EmitLambdaBody();
@@ -271,10 +269,10 @@ namespace System.Linq.Expressions.Compiler
         internal static void Compile(LambdaExpression lambda, MethodBuilder method)
         {
             // 1. Bind lambda
-            AnalyzedTree tree = AnalyzeLambda(ref lambda);
+            var tree = AnalyzeLambda(ref lambda);
 
             // 2. Create lambda compiler
-            LambdaCompiler c = new LambdaCompiler(tree, lambda, method);
+            var c = new LambdaCompiler(tree, lambda, method);
 
             // 3. Emit
             c.EmitLambdaBody();

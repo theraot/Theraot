@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -34,7 +34,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(variables, nameof(variables));
 
             var vars = Theraot.Collections.Extensions.AsArray(variables);
-            for (int i = 0; i < vars.Length; i++)
+            for (var i = 0; i < vars.Length; i++)
             {
                 ContractUtils.RequiresNotNull(vars[i], nameof(variables), i);
             }

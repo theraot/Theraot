@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35 || NET40 || NET45 || NET46 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+﻿#if NET20 || NET30 || NET35 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
+
 // ReSharper disable SuspiciousTypeConversion.Global
 
 namespace System
@@ -276,7 +277,7 @@ namespace System
 
         internal static int CombineHashCodes(int h1, int h2)
         {
-            return NumericsHelpers.CombineHash(NumericsHelpers.CombineHash(Guid.NewGuid().GetHashCode(), h1), h2);
+            return NumericsHelpers.CombineHash(h1, h2);
         }
 
         internal static int CombineHashCodes(int h1, int h2, int h3)

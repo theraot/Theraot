@@ -3,13 +3,22 @@
 using System;
 using System.IO;
 
+#if LESSTHAN_NET45
+
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
+
+#endif
+
 namespace Theraot.Core
 {
     public static class StreamExtensions
     {
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
         private const int _defaultBufferSize = 4096;
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CopyTo(this Stream input, Stream output)
         {
             //Added in .NET 4.0
@@ -31,18 +40,7 @@ namespace Theraot.Core
             while (read != 0);
         }
 
-#else
-
-        public static void CopyTo(Stream input, Stream output)
-        {
-            // Added in .NET 4.0
-            input.CopyTo(output);
-        }
-
-#endif
-
-#if NET20 || NET30 || NET35
-
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CopyTo(this Stream input, Stream output, int bufferSize)
         {
             //Added in .NET 4.0
@@ -64,12 +62,66 @@ namespace Theraot.Core
             while (read != 0);
         }
 
-#else
+#endif
 
-        public static void CopyTo(Stream input, Stream output, int bufferSize)
+#if LESSTHAN_NET45
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static async Task<int> ReadAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
-            // Added in .NET 4.0
-            input.CopyTo(output, bufferSize);
+            cancellationToken.ThrowIfCancellationRequested();
+            return await Task.Factory.FromAsync
+            (
+                BeginRead,
+                stream.EndRead,
+                Tuple.Create(stream, buffer, offset, count)
+            );
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static async Task<int> ReadAsync(this Stream stream, byte[] buffer, int offset, int count)
+        {
+            return await Task.Factory.FromAsync
+            (
+                BeginRead,
+                stream.EndRead,
+                Tuple.Create(stream, buffer, offset, count)
+            );
+        }
+
+        private static IAsyncResult BeginRead(AsyncCallback callback, object state)
+        {
+            var tuple = (Tuple<Stream, byte[], int, int>)state;
+            return tuple.Item1.BeginRead(tuple.Item2, tuple.Item3, tuple.Item4, callback, tuple.Item4);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static async Task WriteAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await Task.Factory.FromAsync
+            (
+                BeginWrite,
+                stream.EndWrite,
+                Tuple.Create(stream, buffer, offset, count)
+            );
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static async Task WriteAsync(this Stream stream, byte[] buffer, int offset, int count)
+        {
+            await Task.Factory.FromAsync
+            (
+                BeginWrite,
+                stream.EndWrite,
+                Tuple.Create(stream, buffer, offset, count)
+            );
+        }
+
+        private static IAsyncResult BeginWrite(AsyncCallback callback, object state)
+        {
+            var tuple = (Tuple<Stream, byte[], int, int>)state;
+            return tuple.Item1.BeginWrite(tuple.Item2, tuple.Item3, tuple.Item4, callback, tuple.Item4);
         }
 
 #endif

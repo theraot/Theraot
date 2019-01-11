@@ -1,127 +1,63 @@
 ﻿#if FAT
 
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-
-using Theraot.Core;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Theraot.Collections
 {
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
     [Serializable]
-#endif
-
-    [System.Diagnostics.DebuggerNonUserCode]
-    [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public sealed class ExtendedStack<T> : ICollection<T>, ICloneable<ExtendedStack<T>>, IProducerConsumerCollection<T>
+    [DebuggerNonUserCode]
+    [DebuggerDisplay("Count={Count}")]
+    public sealed class StackEx<T> : Stack<T>, IProducerConsumerCollection<T>
     {
-        private readonly Stack<T> _wrapped;
-
-        public ExtendedStack()
+        public StackEx()
         {
-            _wrapped = new Stack<T>();
+            // Empty
         }
 
-        public ExtendedStack(IEnumerable<T> collection)
+        public StackEx(int capacity)
+            : base(capacity)
         {
-            _wrapped = new Stack<T>(collection);
+            // Empty
         }
 
-        public int Count => _wrapped.Count;
-
-        bool ICollection<T>.IsReadOnly => false;
-
-        bool ICollection.IsSynchronized => false;
-
-        public T Item => _wrapped.Peek();
-
-        object ICollection.SyncRoot => throw new NotSupportedException();
-
-        void ICollection<T>.Add(T item)
+        public StackEx(IEnumerable<T> collection)
+            : base(collection)
         {
-            _wrapped.Push(item);
+            // Empty
         }
 
-        public void Clear()
-        {
-            _wrapped.Clear();
-        }
-
-        public ExtendedStack<T> Clone()
-        {
-            return new ExtendedStack<T>(this);
-        }
-
-        object ICloneable.Clone()
-        {
-            return Clone();
-        }
-
-        public bool Contains(T item)
-        {
-            return _wrapped.Contains(item);
-        }
-
-        public bool Contains(T item, IEqualityComparer<T> comparer)
-        {
-            return System.Linq.Enumerable.Contains(_wrapped, item, comparer);
-        }
-
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            _wrapped.CopyTo(array, arrayIndex);
-        }
-
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public void CopyTo(T[] array)
         {
-            _wrapped.CopyTo(array, 0);
+            CopyTo(array, 0);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public void CopyTo(T[] array, int arrayIndex, int countLimit)
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
             Extensions.CopyTo(this, array, arrayIndex, countLimit);
         }
 
-        void ICollection.CopyTo(Array array, int index)
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public void CopyTo(int index, T[] array, int arrayIndex, int count)
         {
-            Extensions.CanCopyTo(Count, array, index);
-            Extensions.DeprecatedCopyTo(_wrapped, array, index);
+            Extensions.CanCopyTo(Count - index, array, count);
+            Extensions.CopyTo(this, index, array, arrayIndex, count);
         }
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            return _wrapped.GetEnumerator();
-        }
+#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        bool ICollection<T>.Remove(T item)
-        {
-            return Remove(item);
-        }
-
-        public T[] ToArray()
-        {
-            return Extensions.ToArray(this, Count);
-        }
-
-        public bool TryAdd(T item)
-        {
-            _wrapped.Push(item);
-            return true;
-        }
-
-        public bool TryTake(out T item)
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public bool TryPeek(out T item)
         {
             try
             {
-                item = _wrapped.Pop();
+                item = Peek();
                 return true;
             }
             catch (InvalidOperationException)
@@ -131,14 +67,34 @@ namespace Theraot.Collections
             }
         }
 
-        private bool Remove(T item)
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public bool TryPop(out T item)
         {
-            if (EqualityComparer<T>.Default.Equals(item, _wrapped.Peek()))
+            try
             {
-                _wrapped.Pop();
+                item = Pop();
                 return true;
             }
-            return false;
+            catch (InvalidOperationException)
+            {
+                item = default;
+                return false;
+            }
+        }
+
+#endif
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        bool IProducerConsumerCollection<T>.TryAdd(T item)
+        {
+            Push(item);
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        bool IProducerConsumerCollection<T>.TryTake(out T item)
+        {
+            return TryPop(out item);
         }
     }
 }
