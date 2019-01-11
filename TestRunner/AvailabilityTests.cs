@@ -9,6 +9,7 @@ using System.Runtime.ConstrainedExecution;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Security.Permissions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TestRunner
@@ -42,5 +43,6 @@ namespace TestRunner
         public static readonly Type Tuple = typeof(Tuple);
         public static readonly Type ValueTask = typeof(ValueTask<int>);
         public static readonly Type ValueTuple = typeof(ValueTuple);
+        public static readonly Type Volatile = typeof(Volatile);
     }
 }
