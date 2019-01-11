@@ -96,6 +96,67 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp1.0'">
     <DefineConstants>TARGETS_NETCORE;LESSTHAN_NETCOREAPP22;LESSTHAN_NETCOREAPP21;LESSTHAN_NETCOREAPP20;LESSTHAN_NETCOREAPP11</DefineConstants>
   </PropertyGroup>
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Theraot\Collections\Extensions.interleave.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Extensions.interleave.cs</LastGenOutput>
+    </None>
+    <None Update="Theraot\Core\ActionHelper.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ActionHelper.cs</LastGenOutput>
+    </None>
+    <None Update="Theraot\Core\FuncHelper.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FuncHelper.cs</LastGenOutput>
+    </None>
+    <None Update="Theraot\Core\TupleEqualityComparer.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TupleEqualityComparer.cs</LastGenOutput>
+    </None>
+    <None Update="Theraot\Core\ValueActionClosure.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ValueActionClosure.cs</LastGenOutput>
+    </None>
+    <None Update="Theraot\Core\ValueFuncClosure.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ValueFuncClosure.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Theraot\Collections\Extensions.interleave.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Extensions.interleave.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Theraot\Core\ActionHelper.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ActionHelper.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Theraot\Core\FuncHelper.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FuncHelper.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Theraot\Core\TupleEqualityComparer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TupleEqualityComparer.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Theraot\Core\ValueActionClosure.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ValueActionClosure.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Theraot\Core\ValueFuncClosure.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ValueFuncClosure.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
     <PackageReference Include="System.Collections.NonGeneric">
       <Version>4.3.0</Version>
@@ -229,66 +290,5 @@
     <PackageReference Include="System.Runtime.Serialization.Formatters">
       <Version>4.3.0</Version>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="Theraot\Collections\Extensions.interleave.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Extensions.interleave.cs</LastGenOutput>
-    </None>
-    <None Update="Theraot\Core\ActionHelper.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ActionHelper.cs</LastGenOutput>
-    </None>
-    <None Update="Theraot\Core\FuncHelper.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>FuncHelper.cs</LastGenOutput>
-    </None>
-    <None Update="Theraot\Core\TupleEqualityComparer.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>TupleEqualityComparer.cs</LastGenOutput>
-    </None>
-    <None Update="Theraot\Core\ValueActionClosure.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ValueActionClosure.cs</LastGenOutput>
-    </None>
-    <None Update="Theraot\Core\ValueFuncClosure.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ValueFuncClosure.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Theraot\Collections\Extensions.interleave.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Extensions.interleave.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Theraot\Core\ActionHelper.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ActionHelper.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Theraot\Core\FuncHelper.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>FuncHelper.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Theraot\Core\TupleEqualityComparer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>TupleEqualityComparer.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Theraot\Core\ValueActionClosure.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ValueActionClosure.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Theraot\Core\ValueFuncClosure.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ValueFuncClosure.tt</DependentUpon>
-    </Compile>
   </ItemGroup>
 </Project>
