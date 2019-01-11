@@ -1,463 +1,517 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
-  <PropertyGroup>
-    <Configurations>Debug;Release</Configurations>
-    <TargetFrameworks>net20;net30;net35;net40;net45;net46;net47;netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;netcoreapp2.1;netstandard1.0;netstandard1.1;netstandard1.2;netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6</TargetFrameworks>
-    <ProjectGuid>{DDA186E5-EF94-43C1-AE04-F417BAFCFF4F}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestRunner</RootNamespace>
-    <AssemblyName>TestRunner</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <SignAssembly>False</SignAssembly>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <StartupObject>TestRunner.Program</StartupObject>
-    <ApplicationIcon />
-    <PackageId>TestRunner</PackageId>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>False</Prefer32Bit>
-    <LangVersion>7.1</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>True</DebugSymbols>
-    <Optimize>True</Optimize>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>False</Prefer32Bit>
-    <LangVersion>7.1</LangVersion>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Framework.Core\Framekwork.Core.csproj" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-    <PackageReference Include="System.Collections.Concurrent">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.Contracts">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Dynamic.Runtime">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Linq.Expressions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Extensions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Extensions">
-      <Version>4.5.2</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
-    <PackageReference Include="System.Collections.Concurrent">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Collections.NonGeneric">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Console">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.Contracts">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Dynamic.Runtime">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Linq.Expressions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Extensions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Serialization.Formatters">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Extensions">
-      <Version>4.5.2</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
-    <PackageReference Include="System.Collections.Concurrent">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Collections.NonGeneric">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Console">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.Contracts">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Dynamic.Runtime">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Linq.Expressions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Extensions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Serialization.Formatters">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Security.Permissions">
-      <Version>4.6.0-preview.18571.3</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Extensions">
-      <Version>4.5.2</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.0'">
-    <PackageReference Include="System.Collections.Concurrent">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Collections.NonGeneric">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Console">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.Contracts">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Dynamic.Runtime">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Linq.Expressions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Extensions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Serialization.Formatters">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Extensions">
-      <Version>4.5.2</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.1'">
-    <PackageReference Include="System.Collections.Concurrent">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Collections.NonGeneric">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Console">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.Contracts">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Dynamic.Runtime">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Linq.Expressions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Extensions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Serialization.Formatters">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Extensions">
-      <Version>4.5.2</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
-    <PackageReference Include="System.Collections.Concurrent">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Collections.NonGeneric">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Console">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.Contracts">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Dynamic.Runtime">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Linq.Expressions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Extensions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Serialization.Formatters">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Security.Permissions">
-      <Version>4.6.0-preview.18571.3</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Extensions">
-      <Version>4.5.2</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
-    <PackageReference Include="System.Collections.Concurrent">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Collections.NonGeneric">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Console">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.Contracts">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Dynamic.Runtime">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Linq.Expressions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Extensions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Serialization.Formatters">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Security.Permissions">
-      <Version>4.6.0-preview.18571.3</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Extensions">
-      <Version>4.5.2</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.3'">
-    <PackageReference Include="System.Collections.Concurrent">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Collections.NonGeneric">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Console">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.Contracts">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Dynamic.Runtime">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Linq.Expressions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Extensions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Serialization.Formatters">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Extensions">
-      <Version>4.5.2</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.4'">
-    <PackageReference Include="System.Collections.Concurrent">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Collections.NonGeneric">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Console">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.Contracts">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Dynamic.Runtime">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Linq.Expressions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Extensions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Serialization.Formatters">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Extensions">
-      <Version>4.5.2</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.5'">
-    <PackageReference Include="System.Collections.Concurrent">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Collections.NonGeneric">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Console">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.Contracts">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Dynamic.Runtime">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Linq.Expressions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Extensions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Serialization.Formatters">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Extensions">
-      <Version>4.5.2</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.6'">
-    <PackageReference Include="System.Collections.Concurrent">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Collections.NonGeneric">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Console">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.Contracts">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Dynamic.Runtime">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Linq.Expressions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Extensions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Serialization.Formatters">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Extensions">
-      <Version>4.5.2</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="TypeDiscoverer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>TypeDiscoverer.tt</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="TypeDiscoverer.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>TypeDiscoverer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.2'">
-    <PackageReference Include="System.Collections.Concurrent">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.Contracts">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Dynamic.Runtime">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Linq.Expressions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Extensions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Extensions">
-      <Version>4.5.2</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.1'">
-    <PackageReference Include="System.Collections.Concurrent">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.Contracts">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Dynamic.Runtime">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Linq.Expressions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Extensions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Extensions">
-      <Version>4.5.2</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
-    <PackageReference Include="System.Diagnostics.Contracts">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Dynamic.Runtime">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Linq.Expressions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Extensions">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Extensions">
-      <Version>4.5.2</Version>
-    </PackageReference>
-  </ItemGroup>
+    <PropertyGroup>
+        <Configurations>Debug;Release</Configurations>
+        <TargetFrameworks>net20;net30;net35;net40;net45;net46;net47;netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;netcoreapp2.1;netstandard1.0;netstandard1.1;netstandard1.2;netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6</TargetFrameworks>
+        <ProjectGuid>{DDA186E5-EF94-43C1-AE04-F417BAFCFF4F}</ProjectGuid>
+        <OutputType>Exe</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>TestRunner</RootNamespace>
+        <AssemblyName>TestRunner</AssemblyName>
+        <FileAlignment>512</FileAlignment>
+        <SignAssembly>False</SignAssembly>
+        <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+        <StartupObject>TestRunner.Program</StartupObject>
+        <ApplicationIcon />
+        <PackageId>TestRunner</PackageId>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>False</Optimize>
+        <DefineConstants>TRACE;DEBUG</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <Prefer32Bit>False</Prefer32Bit>
+        <LangVersion>7.1</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <DebugSymbols>True</DebugSymbols>
+        <Optimize>True</Optimize>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <Prefer32Bit>False</Prefer32Bit>
+        <LangVersion>7.1</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net47'">
+        <DefineConstants>TARGETS_NET;LESSTHAN_NET48;GREATERTHAN_NET46;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net46'">
+        <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET47;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
+        <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET47;LESSTHAN_NET46;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net40'">
+        <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET47;LESSTHAN_NET46;LESSTHAN_NET45;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net35'">
+        <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET47;LESSTHAN_NET46;LESSTHAN_NET45;LESSTHAN_NET40;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net30'">
+        <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET47;LESSTHAN_NET46;LESSTHAN_NET45;LESSTHAN_NET40;LESSTHAN_NET35;GREATERTHAN_NET20</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net20'">
+        <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET47;LESSTHAN_NET46;LESSTHAN_NET45;LESSTHAN_NET40;LESSTHAN_NET35;LESSTHAN_NET30</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.6'">
+        <DefineConstants>TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;GREATERTHAN_NETSTANDARD15;GREATERTHAN_NETSTANDARD14;GREATERTHAN_NETSTANDARD13;GREATERTHAN_NETSTANDARD12;GREATERTHAN_NETSTANDARD11;GREATERTHAN_NETSTANDARD10</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.5'">
+        <DefineConstants>TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;LESSTHAN_NETSTANDARD16;GREATERTHAN_NETSTANDARD14;GREATERTHAN_NETSTANDARD13;GREATERTHAN_NETSTANDARD12;GREATERTHAN_NETSTANDARD11;GREATERTHAN_NETSTANDARD10</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.4'">
+        <DefineConstants>TARGETS_NETSTANDARD;TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;LESSTHAN_NETSTANDARD16;LESSTHAN_NETSTANDARD15;GREATERTHAN_NETSTANDARD13;GREATERTHAN_NETSTANDARD12;GREATERTHAN_NETSTANDARD11;GREATERTHAN_NETSTANDARD10</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.3'">
+        <DefineConstants>TARGETS_NETSTANDARD;TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;LESSTHAN_NETSTANDARD16;LESSTHAN_NETSTANDARD15;LESSTHAN_NETSTANDARD14;GREATERTHAN_NETSTANDARD12;GREATERTHAN_NETSTANDARD11;GREATERTHAN_NETSTANDARD10</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.2'">
+        <DefineConstants>TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;LESSTHAN_NETSTANDARD16;LESSTHAN_NETSTANDARD15;LESSTHAN_NETSTANDARD14;LESSTHAN_NETSTANDARD13;GREATERTHAN_NETSTANDARD11;GREATERTHAN_NETSTANDARD10</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.1'">
+        <DefineConstants>TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;LESSTHAN_NETSTANDARD16;LESSTHAN_NETSTANDARD15;LESSTHAN_NETSTANDARD14;LESSTHAN_NETSTANDARD13;LESSTHAN_NETSTANDARD12;GREATERTHAN_NETSTANDARD10</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
+        <DefineConstants>TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;LESSTHAN_NETSTANDARD16;LESSTHAN_NETSTANDARD15;LESSTHAN_NETSTANDARD14;LESSTHAN_NETSTANDARD13;LESSTHAN_NETSTANDARD12;LESSTHAN_NETSTANDARD11</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
+        <DefineConstants>TARGETS_NETCORE;LESSTHAN_NETCOREAPP22;GREATERTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+        <DefineConstants>TARGETS_NETCORE;LESSTHAN_NETCOREAPP22;LESSTHAN_NETCOREAPP21;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp1.1'">
+        <DefineConstants>TARGETS_NETCORE;LESSTHAN_NETCOREAPP22;LESSTHAN_NETCOREAPP21;LESSTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP10</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp1.0'">
+        <DefineConstants>TARGETS_NETCORE;LESSTHAN_NETCOREAPP22;LESSTHAN_NETCOREAPP21;LESSTHAN_NETCOREAPP20;LESSTHAN_NETCOREAPP11</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Framework.Core\Framekwork.Core.csproj" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
+        <Reference Include="System.ComponentModel.DataAnnotations" />
+        <PackageReference Include="System.ValueTuple">
+            <Version>4.5.0</Version>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+        <PackageReference Include="System.Collections.Concurrent">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Diagnostics.Contracts">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Dynamic.Runtime">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Linq.Expressions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Extensions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Threading.Tasks.Extensions">
+            <Version>4.5.2</Version>
+        </PackageReference>
+        <PackageReference Include="System.ValueTuple">
+            <Version>4.5.0</Version>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
+        <PackageReference Include="System.Collections.Concurrent">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Collections.NonGeneric">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Console">
+            <Version>4.3.1</Version>
+        </PackageReference>
+        <PackageReference Include="System.Diagnostics.Contracts">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Dynamic.Runtime">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Linq.Expressions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Extensions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Serialization.Formatters">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Threading.Tasks.Extensions">
+            <Version>4.5.2</Version>
+        </PackageReference>
+        <PackageReference Include="System.ValueTuple">
+            <Version>4.5.0</Version>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
+        <PackageReference Include="System.Collections.Concurrent">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Collections.NonGeneric">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Console">
+            <Version>4.3.1</Version>
+        </PackageReference>
+        <PackageReference Include="System.Diagnostics.Contracts">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Dynamic.Runtime">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Linq.Expressions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Extensions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Serialization.Formatters">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Security.Permissions">
+            <Version>4.6.0-preview.18571.3</Version>
+        </PackageReference>
+        <PackageReference Include="System.Threading.Tasks.Extensions">
+            <Version>4.5.2</Version>
+        </PackageReference>
+        <PackageReference Include="System.ValueTuple">
+            <Version>4.5.0</Version>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.0'">
+        <PackageReference Include="System.Collections.Concurrent">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Collections.NonGeneric">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Console">
+            <Version>4.3.1</Version>
+        </PackageReference>
+        <PackageReference Include="System.Diagnostics.Contracts">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Dynamic.Runtime">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Linq.Expressions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Extensions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Serialization.Formatters">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Threading.Tasks.Extensions">
+            <Version>4.5.2</Version>
+        </PackageReference>
+        <PackageReference Include="System.ValueTuple">
+            <Version>4.5.0</Version>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.1'">
+        <PackageReference Include="System.Collections.Concurrent">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Collections.NonGeneric">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Console">
+            <Version>4.3.1</Version>
+        </PackageReference>
+        <PackageReference Include="System.Diagnostics.Contracts">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Dynamic.Runtime">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Linq.Expressions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Extensions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Serialization.Formatters">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Threading.Tasks.Extensions">
+            <Version>4.5.2</Version>
+        </PackageReference>
+        <PackageReference Include="System.ValueTuple">
+            <Version>4.5.0</Version>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+        <PackageReference Include="System.Collections.Concurrent">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Collections.NonGeneric">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Console">
+            <Version>4.3.1</Version>
+        </PackageReference>
+        <PackageReference Include="System.Diagnostics.Contracts">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Dynamic.Runtime">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Linq.Expressions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Extensions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Serialization.Formatters">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Security.Permissions">
+            <Version>4.6.0-preview.18571.3</Version>
+        </PackageReference>
+        <PackageReference Include="System.Threading.Tasks.Extensions">
+            <Version>4.5.2</Version>
+        </PackageReference>
+        <PackageReference Include="System.ValueTuple">
+            <Version>4.5.0</Version>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
+        <PackageReference Include="System.Collections.Concurrent">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Collections.NonGeneric">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Console">
+            <Version>4.3.1</Version>
+        </PackageReference>
+        <PackageReference Include="System.Diagnostics.Contracts">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Dynamic.Runtime">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Linq.Expressions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Extensions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Serialization.Formatters">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Security.Permissions">
+            <Version>4.6.0-preview.18571.3</Version>
+        </PackageReference>
+        <PackageReference Include="System.Threading.Tasks.Extensions">
+            <Version>4.5.2</Version>
+        </PackageReference>
+        <PackageReference Include="System.ValueTuple">
+            <Version>4.5.0</Version>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.3'">
+        <PackageReference Include="System.Collections.Concurrent">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Collections.NonGeneric">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Console">
+            <Version>4.3.1</Version>
+        </PackageReference>
+        <PackageReference Include="System.Diagnostics.Contracts">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Dynamic.Runtime">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Linq.Expressions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Extensions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Serialization.Formatters">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Threading.Tasks.Extensions">
+            <Version>4.5.2</Version>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.4'">
+        <PackageReference Include="System.Collections.Concurrent">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Collections.NonGeneric">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Console">
+            <Version>4.3.1</Version>
+        </PackageReference>
+        <PackageReference Include="System.Diagnostics.Contracts">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Dynamic.Runtime">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Linq.Expressions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Extensions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Serialization.Formatters">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Threading.Tasks.Extensions">
+            <Version>4.5.2</Version>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.5'">
+        <PackageReference Include="System.Collections.Concurrent">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Collections.NonGeneric">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Console">
+            <Version>4.3.1</Version>
+        </PackageReference>
+        <PackageReference Include="System.Diagnostics.Contracts">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Dynamic.Runtime">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Linq.Expressions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Extensions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Serialization.Formatters">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Threading.Tasks.Extensions">
+            <Version>4.5.2</Version>
+        </PackageReference>
+        <PackageReference Include="System.ValueTuple">
+            <Version>4.5.0</Version>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.6'">
+        <PackageReference Include="System.Collections.Concurrent">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Collections.NonGeneric">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Console">
+            <Version>4.3.1</Version>
+        </PackageReference>
+        <PackageReference Include="System.Diagnostics.Contracts">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Dynamic.Runtime">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Linq.Expressions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Extensions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Serialization.Formatters">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Threading.Tasks.Extensions">
+            <Version>4.5.2</Version>
+        </PackageReference>
+        <PackageReference Include="System.ValueTuple">
+            <Version>4.5.0</Version>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup>
+        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Update="TypeDiscoverer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>TypeDiscoverer.tt</DependentUpon>
+        </Compile>
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="TypeDiscoverer.tt">
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <LastGenOutput>TypeDiscoverer.cs</LastGenOutput>
+        </None>
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.2'">
+        <PackageReference Include="System.Collections.Concurrent">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Diagnostics.Contracts">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Dynamic.Runtime">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Linq.Expressions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Extensions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Threading.Tasks.Extensions">
+            <Version>4.5.2</Version>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.1'">
+        <PackageReference Include="System.Collections.Concurrent">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Diagnostics.Contracts">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Dynamic.Runtime">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Linq.Expressions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Extensions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Threading.Tasks.Extensions">
+            <Version>4.5.2</Version>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
+        <PackageReference Include="System.Diagnostics.Contracts">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Dynamic.Runtime">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Linq.Expressions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Runtime.Extensions">
+            <Version>4.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="System.Threading.Tasks.Extensions">
+            <Version>4.5.2</Version>
+        </PackageReference>
+    </ItemGroup>
 </Project>
