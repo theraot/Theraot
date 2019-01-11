@@ -10,15 +10,15 @@
     <FileAlignment>512</FileAlignment>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>OpenSourceKey.snk</AssemblyOriginatorKeyFile>
-    <Version>3.0.0</Version>
+    <Version>3.0.0-beta</Version>
     <Authors>Theraot</Authors>
     <Company>Theraot</Company>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageIconUrl>https://raw.githubusercontent.com/theraot/Theraot/master/icon.jpg</PackageIconUrl>
     <PackageProjectUrl>https://github.com/theraot/Theraot/</PackageProjectUrl>
-    <Description>.NET Backport (ValueTask, ValueTuple, Task, Expressions, Linq, ThreadLocal, etc...) for .NET 2.0, 3.0, 3.5, 4.0, 4.5, .NET Core 1.0, 1.1, 2.0, 2.1</Description>
-    <PackageTags>Backport ValueTask ValueTuple Async Task Linq Expressions ThreadLocal</PackageTags>
-    <Copyright>Copyright 2018</Copyright>
+    <Description>.NET Backport (ValueTask, ValueTuple, Task, Expressions, Linq, ThreadLocal, etc...) for .NET Framework. .NET Core, .NET Standard</Description>
+    <PackageTags>Backport Polyfill Bridge ValueTask ValueTuple Async Task Linq Expressions ThreadLocal</PackageTags>
+    <Copyright>Copyright 2019</Copyright>
     <PackageLicenseUrl>https://github.com/theraot/Theraot/blob/master/LICENSE.txt</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/theraot/Theraot/</RepositoryUrl>
