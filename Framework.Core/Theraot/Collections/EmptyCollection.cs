@@ -7,7 +7,7 @@ using Theraot.Collections.ThreadSafe;
 namespace Theraot.Collections
 {
     [DebuggerNonUserCode]
-    public sealed class EmptyCollection<T> : ReadOnlyCollection<T>
+    public sealed class EmptyCollection<T> : ReadOnlyCollectionEx<T>
     {
         private EmptyCollection()
             : base(ArrayReservoir<T>.EmptyArray)
