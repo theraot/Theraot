@@ -7,159 +7,38 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Theraot.Collections;
+using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 using Theraot.Reflection;
 
 namespace TestRunner
 {
-    public static class Assert
-    {
-        public static void AreEqual<T>(T expected, T found, string message = null)
-        {
-            if (Equals(expected, found))
-            {
-                return;
-            }
-            if (message != null)
-            {
-                throw new AssertionFailedException($"Expected: {expected} - Found: {found} - Message: {message}");
-            }
-            throw new AssertionFailedException($"Expected: {expected} - Found: {found}");
-        }
-
-        public static void AreNotEqual<T>(T expected, T found, string message = null)
-        {
-            if (!Equals(expected, found))
-            {
-                return;
-            }
-            if (message != null)
-            {
-                throw new AssertionFailedException($"Unexpected: {found} - Message: {message}");
-            }
-            throw new AssertionFailedException($"Unexpected: {found}");
-        }
-
-        public static void Fail(string message = null)
-        {
-            if (message != null)
-            {
-                throw new AssertionFailedException($"Failed - Message: {message}");
-            }
-            throw new AssertionFailedException("Failed");
-        }
-
-        public static void IsFalse(bool found, string message = null)
-        {
-            AreEqual(true, found, message);
-        }
-
-        public static void IsNotNull<T>(T found, string message = null)
-            where T : class
-        {
-            AreNotEqual(null, found, message);
-        }
-
-        public static void IsNull<T>(T found, string message = null)
-            where T : class
-        {
-            AreEqual(null, found, message);
-        }
-
-        public static void IsTrue(bool found, string message = null)
-        {
-            AreEqual(true, found, message);
-        }
-
-        public static TException Throws<TException>(Action action, string message = null)
-            where TException : Exception
-        {
-            try
-            {
-                action();
-            }
-            catch (TException exception)
-            {
-                GC.KeepAlive(exception);
-                return exception;
-            }
-            catch (Exception exception)
-            {
-                if (message != null)
-                {
-                    throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found: {exception} - Message: {message}", exception);
-                }
-                throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found: {exception}", exception);
-            }
-            if (message != null)
-            {
-                throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Message: {message}");
-            }
-            throw new AssertionFailedException($"Expected: {typeof(TException).Name}");
-        }
-
-        public static TException Throws<TException, T>(Func<T> func, string message = null)
-            where TException : Exception
-        {
-            try
-            {
-                GC.KeepAlive(func());
-            }
-            catch (TException exception)
-            {
-                GC.KeepAlive(exception);
-                return exception;
-            }
-            catch (Exception exception)
-            {
-                if (message != null)
-                {
-                    throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found: {exception} - Message: {message}", exception);
-                }
-                throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found: {exception}", exception);
-            }
-            if (message != null)
-            {
-                throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Message: {message}");
-            }
-            throw new AssertionFailedException($"Expected: {typeof(TException).Name}");
-        }
-
-        public static TException ThrowsAsync<TException>(Func<Task> func, string message = null)
-            where TException : Exception
-        {
-            try
-            {
-                func().Wait();
-            }
-            catch (AggregateException aggregateException) when (aggregateException.InnerException is TException exception)
-            {
-                GC.KeepAlive(exception);
-                return exception;
-            }
-            catch (AggregateException aggregateException) when (aggregateException.InnerException is Exception exception)
-            {
-                if (message != null)
-                {
-                    throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found: {exception} - Message: {message}", exception);
-                }
-                throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found: {exception}", exception);
-            }
-            if (message != null)
-            {
-                throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Message: {message}");
-            }
-            throw new AssertionFailedException($"Expected: {typeof(TException).Name}");
-        }
-    }
-
     public static class Program
     {
         public static void ExceptionReport(Exception exception)
         {
+            if (exception == null)
+            {
+                return;
+            }
+            while (true)
+            {
+                if (exception is TargetInvocationException targetInvocationException && targetInvocationException.InnerException != null)
+                {
+                    exception = targetInvocationException.InnerException;
+                    continue;
+                }
+                if (exception is AggregateException aggregateException && aggregateException.InnerException != null)
+                {
+                    exception = aggregateException.InnerException;
+                    continue;
+                }
+                break;
+            }
             if (exception is AssertionFailedException)
             {
                 Console.WriteLine(exception.Message);
+                Console.WriteLine(StringHelper.Implode("\r\n", exception.StackTrace.Split('\r', '\n').Skip(1)));
                 return;
             }
             var report = new StringBuilder();
@@ -190,8 +69,9 @@ namespace TestRunner
 
         public static void Main()
         {
-            var ignoredCategories = new string[]
+            var ignoredCategories = new[]
             {
+                "Performance"
             };
             var tests = GetAllTests(ignoredCategories);
             var stopwatch = new Stopwatch();
@@ -293,65 +173,6 @@ namespace TestRunner
                 Interlocked.Exchange(ref _delegate, null);
             }
 
-            public object Invoke(object[] parameters)
-            {
-                if (parameters == null)
-                {
-                    throw new ArgumentNullException(nameof(parameters));
-                }
-                var @delegate = Volatile.Read(ref _delegate);
-                if (@delegate == null)
-                {
-                    throw new ObjectDisposedException(nameof(Test));
-                }
-                if (_isolatedThread)
-                {
-                    Exception capturedException = null;
-                    object capturedResult = null;
-                    var thread = new Thread
-                    (
-                        () =>
-                        {
-                            try
-                            {
-                                for (var iteration = 0; iteration < _repeat; iteration++)
-                                {
-                                    capturedResult = _delegate.DynamicInvoke(parameters);
-                                }
-                            }
-                            catch (TargetInvocationException exception)
-                            {
-                                capturedException = exception.InnerException ?? exception;
-                            }
-                        }
-                    );
-                    thread.Start();
-                    thread.Join();
-                    if (capturedException != null)
-                    {
-                        throw capturedException;
-                    }
-                    return capturedResult;
-                }
-                try
-                {
-                    object capturedResult = null;
-                    for (var iteration = 0; iteration < _repeat; iteration++)
-                    {
-                        capturedResult = _delegate.DynamicInvoke(parameters);
-                    }
-                    return capturedResult;
-                }
-                catch (TargetInvocationException exception)
-                {
-                    if (exception.InnerException != null)
-                    {
-                        throw exception.InnerException;
-                    }
-                    throw;
-                }
-            }
-
             public object[] GenerateParameters()
             {
                 var parameterInfos = _parameterInfos;
@@ -365,6 +186,61 @@ namespace TestRunner
                     parameters[index] = DataGenerator.Get(parameterInfo.ParameterType, generators);
                 }
                 return parameters;
+            }
+
+            public object Invoke(object[] parameters)
+            {
+                if (parameters == null)
+                {
+                    throw new ArgumentNullException(nameof(parameters));
+                }
+                var @delegate = Volatile.Read(ref _delegate);
+                if (@delegate == null)
+                {
+                    throw new ObjectDisposedException(nameof(Test));
+                }
+                object capturedResult = null;
+                if (_isolatedThread)
+                {
+                    Exception capturedException = null;
+                    var thread = new Thread
+                    (
+                        () =>
+                        {
+                            try
+                            {
+                                for (var iteration = 0; iteration < _repeat; iteration++)
+                                {
+                                    capturedResult = _delegate.DynamicInvoke(parameters);
+                                }
+                            }
+                            catch (Exception exception)
+                            {
+                                capturedException = exception;
+                            }
+                        }
+                    );
+                    thread.Start();
+                    thread.Join();
+                    if (capturedException != null)
+                    {
+                        throw capturedException;
+                    }
+                }
+                else
+                {
+                    for (var iteration = 0; iteration < _repeat; iteration++)
+                    {
+                        capturedResult = _delegate.DynamicInvoke(parameters);
+                    }
+                }
+                if (capturedResult is Task task)
+                {
+                    capturedResult = null;
+                    task.Wait();
+                    capturedResult = task.GetType().GetTypeInfo().GetProperty("Result")?.GetValue(task, ArrayReservoir<object>.EmptyArray);
+                }
+                return capturedResult;
             }
         }
 
