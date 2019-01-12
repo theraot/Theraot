@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
 
 using System.Runtime.CompilerServices;
 
@@ -17,48 +17,49 @@ namespace Theraot.Collections
     {
         public static T[] AsArray<T>(IEnumerable<T> source)
         {
-            if (source == null)
+            switch (source)
             {
-                return ArrayReservoir<T>.EmptyArray;
-            }
-            if (source is T[] array)
-            {
-                return array;
-            }
-#if NET20 || NET30 || NET35
-            if (source is TrueReadOnlyCollection<T> trueReadOnlyCollection)
-            {
-                return trueReadOnlyCollection.Wrapped;
-            }
-#endif
-            if (source is ICollection<T> collection)
-            {
-                if (collection.Count == 0)
-                {
+                case null:
                     return ArrayReservoir<T>.EmptyArray;
-                }
-                var result = new T[collection.Count];
-                collection.CopyTo(result, 0);
-                return result;
+
+                case T[] array:
+                    return array;
+#if LESSTHAN_NET40
+                case TrueReadOnlyCollection<T> trueReadOnlyCollection:
+                    return trueReadOnlyCollection.Wrapped;
+#endif
+                case ICollection<T> collection when collection.Count == 0:
+                    return ArrayReservoir<T>.EmptyArray;
+
+                case ICollection<T> collection:
+                    var result = new T[collection.Count];
+                    collection.CopyTo(result, 0);
+                    return result;
+
+                default:
+                    return new List<T>(source).ToArray();
             }
-            return new List<T>(source).ToArray();
         }
 
         public static ICollection<T> AsDistinctICollection<T>(IEnumerable<T> source)
         {
 #if NET35
-            if (source == null)
+            switch (source)
             {
-                throw new ArgumentNullException(nameof(source));
+                case null:
+                    return ArrayReservoir<T>.EmptyArray;
+
+                case ISet<T> set:
+                    return set;
+
+                case HashSet<T> resultHashSet:
+                    // Workaround for .NET 3.5 when all you want is Contains and no duplicates
+                    // Remember that On .NET 3.5 HashSet is not an ISet
+                    return resultHashSet;
+
+                default:
+                    return new ProgressiveSet<T>(source);
             }
-            // Workaround for .NET 3.5 when all you want is Contains and no duplicates
-            // Remember that On .NET 3.5 HashSet is not an ISet
-            if (source is HashSet<T> resultHashSet)
-            {
-                return resultHashSet;
-            }
-            var resultISet = source as ISet<T>;
-            return resultISet ?? new ProgressiveSet<T>(source);
 #else
             return AsISet(source);
 #endif
@@ -66,46 +67,85 @@ namespace Theraot.Collections
 
         public static ICollection<T> AsICollection<T>(IEnumerable<T> source)
         {
-            if (source == null)
+            switch (source)
             {
-                throw new ArgumentNullException(nameof(source));
+                case null:
+                    return ArrayReservoir<T>.EmptyArray;
+
+                case ICollection<T> result:
+                    return result;
+
+                default:
+                    return new ProgressiveCollection<T>(source);
             }
-            var result = source as ICollection<T>;
-            return result ?? new ProgressiveCollection<T>(source);
         }
 
         public static IList<T> AsIList<T>(IEnumerable<T> source)
         {
-            if (source == null)
+            switch (source)
             {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (source is IList<T> list)
-            {
-                return list;
-            }
-            if (source is ICollection<T> collection)
-            {
-                if (collection.Count == 0)
-                {
+                case null:
+                    return ArrayReservoir<T>.EmptyArray;
+
+                case IList<T> list:
+                    return list;
+
+                case ICollection<T> collection when collection.Count == 0:
                     return EmptyCollection<T>.Instance;
-                }
-                var result = new T[collection.Count];
-                collection.CopyTo(result, 0);
-                return result;
+
+                case ICollection<T> collection:
+                    var result = new T[collection.Count];
+                    collection.CopyTo(result, 0);
+                    return result;
+
+                default:
+                    return new ProgressiveList<T>(source);
             }
-            return new ProgressiveList<T>(source);
+        }
+
+        public static IReadOnlyCollection<T> AsIReadOnlyCollection<T>(IEnumerable<T> source)
+        {
+            switch (source)
+            {
+                case null:
+                    return EmptyCollection<T>.Instance;
+
+                case IReadOnlyCollection<T> result:
+                    return result;
+
+                default:
+                    return new EnumerationList<T>(source);
+            }
+        }
+
+        public static IReadOnlyCollection<T> AsIReadOnlyList<T>(IEnumerable<T> source)
+        {
+            switch (source)
+            {
+                case null:
+                    return EmptyCollection<T>.Instance;
+
+                case IReadOnlyList<T> result:
+                    return result;
+
+                default:
+                    return new EnumerationList<T>(source);
+            }
         }
 
         public static ISet<T> AsISet<T>(IEnumerable<T> source)
         {
-            if (source == null)
+            switch (source)
             {
-                throw new ArgumentNullException(nameof(source));
+                case null:
+                    return EmptySet<T>.Instance;
+
+                case ISet<T> resultISet:
+                    return resultISet;
+
+                default:
+                    return new ProgressiveSet<T>(source);
             }
-            // Remember that On .NET 3.5 HashSet is not an ISet
-            var resultISet = source as ISet<T>;
-            return resultISet ?? new ProgressiveSet<T>(source);
         }
 
         public static IEnumerable<T> AsUnaryIEnumerable<T>(T source)
@@ -113,6 +153,59 @@ namespace Theraot.Collections
             yield return source;
         }
 
+        public static IReadOnlyCollection<T> WrapAsIReadOnlyCollection<T>(IEnumerable<T> source)
+        {
+            switch (source)
+            {
+                case null:
+                    throw new ArgumentNullException(nameof(source));
+
+                case T[] array:
+#if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NET45
+                    return new EnumerationList<T>(array);
+#else
+                    return Array.AsReadOnly(array);
+#endif
+                case List<T> list:
+#if LESSTHAN_NETSTANDARD13 || LESSTHAN_NET45
+                    return new EnumerationList<T>(list);
+#else
+                    return list.AsReadOnly();
+#endif
+
+                default:
+                    return new EnumerationList<T>(source);
+            }
+        }
+
+        public static IReadOnlyList<T> WrapAsIReadOnlyList<T>(IEnumerable<T> source)
+        {
+            switch (source)
+            {
+                case null:
+                    throw new ArgumentNullException(nameof(source));
+
+                case T[] array:
+#if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NET45
+                    return new EnumerationList<T>(array);
+#else
+                    return Array.AsReadOnly(array);
+#endif
+                case List<T> list:
+#if LESSTHAN_NETSTANDARD13 || LESSTHAN_NET45
+                    return new EnumerationList<T>(list);
+#else
+                    return list.AsReadOnly();
+#endif
+
+                default:
+                    return new EnumerationList<T>(source);
+            }
+        }
+    }
+
+    public static partial class Extensions
+    {
         public static bool HasAtLeast<TSource>(this IEnumerable<TSource> source, int count)
         {
             if (source == null)
@@ -151,10 +244,10 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            return predicateCount == null ? SkipItemsExtracted(source, skipCount) : SkipItemsExtracted(source, predicateCount, skipCount);
+            return predicateCount == null ? SkipExtracted(source, skipCount) : SkipExtracted(source, predicateCount, skipCount);
         }
 
-        public static IEnumerable<T> StepItems<T>(this IEnumerable<T> source, int stepCount)
+        public static IEnumerable<T> Step<T>(this IEnumerable<T> source, int stepCount)
         {
             if (source == null)
             {
@@ -186,7 +279,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            return predicateCount == null ? TakeItemsExtracted(source, takeCount) : TakeItemsExtracted(source, predicateCount, takeCount);
+            return predicateCount == null ? TakeExtracted(source, takeCount) : TakeExtracted(source, predicateCount, takeCount);
         }
 
         public static T[] ToArray<T>(this IEnumerable<T> source, int count)
@@ -217,41 +310,7 @@ namespace Theraot.Collections
             return result.ToArray();
         }
 
-        public static IList<T> WrapAsIList<T>(IEnumerable<T> source)
-        {
-            switch (source)
-            {
-                case null:
-                    throw new ArgumentNullException(nameof(source));
-                case IList<T> result:
-                    return result;
-
-                default:
-                    return new EnumerationList<T>(source);
-            }
-        }
-
-        public static IReadOnlyCollection<T> WrapAsIReadOnlyCollection<T>(IEnumerable<T> source)
-        {
-            switch (source)
-            {
-                case null:
-                    throw new ArgumentNullException(nameof(source));
-                case T[] array:
-                    return new EnumerationList<T>(array);
-
-                case ICollection<T> collection:
-                    return new EnumerationList<T>(collection);
-
-                case IReadOnlyCollection<T> result:
-                    return result;
-
-                default:
-                    return new EnumerationList<T>(source);
-            }
-        }
-
-        private static IEnumerable<T> SkipItemsExtracted<T>(IEnumerable<T> source, Predicate<T> predicateCount, int skipCount)
+        private static IEnumerable<T> SkipExtracted<T>(IEnumerable<T> source, Predicate<T> predicateCount, int skipCount)
         {
             var count = 0;
             foreach (var item in source)
@@ -270,7 +329,7 @@ namespace Theraot.Collections
             }
         }
 
-        private static IEnumerable<T> SkipItemsExtracted<T>(IEnumerable<T> source, int skipCount)
+        private static IEnumerable<T> SkipExtracted<T>(IEnumerable<T> source, int skipCount)
         {
             var count = 0;
             foreach (var item in source)
@@ -286,7 +345,7 @@ namespace Theraot.Collections
             }
         }
 
-        private static IEnumerable<T> TakeItemsExtracted<T>(IEnumerable<T> source, int takeCount)
+        private static IEnumerable<T> TakeExtracted<T>(IEnumerable<T> source, int takeCount)
         {
             var count = 0;
             foreach (var item in source)
@@ -300,7 +359,7 @@ namespace Theraot.Collections
             }
         }
 
-        private static IEnumerable<T> TakeItemsExtracted<T>(IEnumerable<T> source, Predicate<T> predicateCount, int takeCount)
+        private static IEnumerable<T> TakeExtracted<T>(IEnumerable<T> source, Predicate<T> predicateCount, int takeCount)
         {
             var count = 0;
             foreach (var item in source)
