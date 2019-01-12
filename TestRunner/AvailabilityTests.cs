@@ -41,6 +41,8 @@ namespace TestRunner
         public static readonly Type StreamingContext = typeof(StreamingContext);
         public static readonly Type Task = typeof(Task);
         public static readonly Type Tuple = typeof(Tuple);
+        public static readonly Type TupleElementNamesAttribute = typeof(TupleElementNamesAttribute);
+        public static readonly Type TupleExtensions = typeof(TupleExtensions);
         public static readonly Type ValueTask = typeof(ValueTask<int>);
         public static readonly Type ValueTuple = typeof(ValueTuple);
         public static readonly Type Volatile = typeof(Volatile);
