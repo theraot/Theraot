@@ -13,64 +13,75 @@ namespace Theraot.Collections.Specialized
     {
         private readonly Func<T, bool> _contains;
         private readonly Func<int> _count;
-        private readonly IEnumerable<T> _wrapped;
+        private readonly Func<int, T> _index;
+        private readonly Func<T, int> _indexOf;
+        private readonly Func<IEnumerator<T>> _getEnumerator;
 
         public EnumerationList(IEnumerable<T> wrapped)
         {
-            _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
-            if (wrapped is ICollection<T> collection)
+            switch (wrapped)
             {
-                _count = () => collection.Count;
+                case null:
+                    throw new ArgumentNullException(nameof(wrapped));
+                case T[] array:
+                    _count = () => array.Length;
+                    _contains = item => Array.IndexOf(array, item) != -1;
+                    _index = index => array[index];
+                    _indexOf = item => Array.IndexOf(array, item);
+                    _getEnumerator = array.Cast<T>().GetEnumerator;
+                    break;
+
+                case IList<T> list:
+                    _count = () => list.Count;
+                    _contains = list.Contains;
+                    _index = index => list[index];
+                    _indexOf = list.IndexOf;
+                    _getEnumerator = list.GetEnumerator;
+                    break;
+
+                case IReadOnlyList<T> readOnlyList:
+                    _count = () => readOnlyList.Count;
+                    _contains = readOnlyList.Contains;
+                    _index = index => readOnlyList[index];
+                    _indexOf = readOnlyList.IndexOf;
+                    _getEnumerator = readOnlyList.GetEnumerator;
+                    break;
+
+                case ICollection<T> collection:
+                    _count = () => collection.Count;
+                    _contains = collection.Contains;
+                    _index = Index;
+                    _indexOf = collection.IndexOf;
+                    _getEnumerator = collection.GetEnumerator;
+                    break;
+
+                case IReadOnlyCollection<T> readOnlyCollection:
+                    _count = () => readOnlyCollection.Count;
+                    _contains = readOnlyCollection.Contains;
+                    _index = Index;
+                    _indexOf = readOnlyCollection.IndexOf;
+                    _getEnumerator = readOnlyCollection.GetEnumerator;
+                    break;
+
+                default:
+                    // ReSharper disable once PossibleMultipleEnumeration
+                    _count = wrapped.Count;
+                    // ReSharper disable once PossibleMultipleEnumeration
+                    _contains = wrapped.Contains;
+                    _index = Index;
+                    // ReSharper disable once PossibleMultipleEnumeration
+                    _indexOf = wrapped.IndexOf;
+                    // ReSharper disable once PossibleMultipleEnumeration
+                    _getEnumerator = wrapped.GetEnumerator;
+                    break;
             }
-            else
+
+            T Index(int index)
             {
-                _count = _wrapped.Count;
-            }
-            _contains = item => _wrapped.Contains(item, EqualityComparer<T>.Default);
-        }
-
-        public EnumerationList(T[] wrapped)
-        {
-            _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
-            _count = () => wrapped.Length;
-            _contains = item => Array.IndexOf(wrapped, item) >= 0;
-        }
-
-        public EnumerationList(ICollection<T> wrapped)
-        {
-            _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
-            _count = () => wrapped.Count;
-            _contains = wrapped.Contains;
-        }
-
-        public EnumerationList(IEnumerable<T> wrapped, Func<int> count, Func<T, bool> contains)
-        {
-            _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
-            _count = count ?? throw new ArgumentNullException(nameof(count));
-            _contains = contains ?? throw new ArgumentNullException(nameof(contains));
-        }
-
-        public int Count => _count.Invoke();
-
-        bool ICollection<T>.IsReadOnly => true;
-
-        T IList<T>.this[int index]
-        {
-            get => this[index];
-            set => throw new NotSupportedException();
-        }
-
-        public T this[int index]
-        {
-            get
-            {
-                if (_wrapped is IList<T> list)
+                if (index < _count())
                 {
-                    return list[index];
-                }
-                if (index < Count)
-                {
-                    using (var enumerator = _wrapped.Skip(index).GetEnumerator())
+                    // ReSharper disable once PossibleMultipleEnumeration
+                    using (var enumerator = wrapped.Skip(index).GetEnumerator())
                     {
                         if (enumerator.MoveNext())
                         {
@@ -81,6 +92,18 @@ namespace Theraot.Collections.Specialized
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
+
+        public int Count => _count();
+
+        bool ICollection<T>.IsReadOnly => true;
+
+        T IList<T>.this[int index]
+        {
+            get => this[index];
+            set => throw new NotSupportedException();
+        }
+
+        public T this[int index] => _index(index);
 
         void ICollection<T>.Add(T item)
         {
@@ -94,7 +117,7 @@ namespace Theraot.Collections.Specialized
 
         public bool Contains(T item)
         {
-            return _contains.Invoke(item);
+            return _contains(item);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
@@ -105,7 +128,7 @@ namespace Theraot.Collections.Specialized
 
         public IEnumerator<T> GetEnumerator()
         {
-            return _wrapped.GetEnumerator();
+            return _getEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -115,7 +138,7 @@ namespace Theraot.Collections.Specialized
 
         public int IndexOf(T item)
         {
-            return _wrapped.IndexOf(item);
+            return _indexOf(item);
         }
 
         void IList<T>.Insert(int index, T item)
