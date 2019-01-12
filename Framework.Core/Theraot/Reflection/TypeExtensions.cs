@@ -844,7 +844,7 @@ namespace Theraot.Reflection
                 return result;
             }
             result = GetBlittableResult(type);
-            _binaryPortableCache[type] = result;
+            _blittableCache[type] = result;
             return result;
         }
 
@@ -860,7 +860,7 @@ namespace Theraot.Reflection
                 return result;
             }
             result = GetValueTypeRecursiveResult(type);
-            _binaryPortableCache[type] = result;
+            _valueTypeRecursiveCache[type] = result;
             return result;
         }
     }
