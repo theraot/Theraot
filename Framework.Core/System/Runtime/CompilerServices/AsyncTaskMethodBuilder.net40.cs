@@ -343,7 +343,7 @@ namespace System.Runtime.CompilerServices
         internal void SetNotificationForWaitCompletion(bool enabled)
         {
             // Should not be static
-            GC.KeepAlive(enabled);
+            No.Op(enabled);
         }
 
         /// <summary>

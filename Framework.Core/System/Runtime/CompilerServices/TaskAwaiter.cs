@@ -191,7 +191,7 @@ namespace System.Runtime.CompilerServices
                 }
                 catch (Exception ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
             }
             return exc;
@@ -223,7 +223,7 @@ namespace System.Runtime.CompilerServices
             }
             catch (Exception ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
                 return null;
             }
         }
@@ -242,7 +242,7 @@ namespace System.Runtime.CompilerServices
                 }
                 catch (Exception ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
             }
             if (task.Status == TaskStatus.RanToCompletion)

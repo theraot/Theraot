@@ -438,7 +438,7 @@ namespace System.Numerics
                 {
                     number.Negative |= reader.Read(negativeSign);
                     positive |= reader.Read(positiveSign);
-                    GC.KeepAlive(positive);
+                    Theraot.No.Op(positive);
                 }
                 if (waitingParentheses && !reader.Read(')'))
                 {

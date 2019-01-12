@@ -120,7 +120,7 @@ namespace System.Threading
                 catch (Exception exception)
                 {
                     // Catch them all - there shouldn't be exceptions here, yet we really don't want them
-                    GC.KeepAlive(exception);
+                    Theraot.No.Op(exception);
                 }
             }
         }
@@ -132,7 +132,7 @@ namespace System.Threading
         public bool IsBackground
         {
             get => _start == null;
-            set => GC.KeepAlive(value);
+            set => Theraot.No.Op(value);
         }
 
         public bool IsThreadPoolThread => _start == null;
@@ -208,7 +208,7 @@ namespace System.Threading
 
         public void Abort(object stateInfo)
         {
-            GC.KeepAlive(stateInfo);
+            Theraot.No.Op(stateInfo);
             throw new PlatformNotSupportedException();
         }
 

@@ -183,7 +183,7 @@ namespace System.Runtime.CompilerServices
             }
             catch (Exception ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 

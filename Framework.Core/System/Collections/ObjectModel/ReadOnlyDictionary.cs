@@ -74,7 +74,7 @@ namespace System.Collections.ObjectModel
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
-            GC.KeepAlive(item);
+            Theraot.No.Op(item);
             throw new NotSupportedException();
         }
 
@@ -144,7 +144,7 @@ namespace System.Collections.ObjectModel
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
         {
-            GC.KeepAlive(item);
+            Theraot.No.Op(item);
             throw new NotSupportedException();
         }
 

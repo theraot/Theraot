@@ -123,7 +123,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitDebugInfoExpression(Expression expr)
         {
-            GC.KeepAlive(expr);
+            Theraot.No.Op(expr);
         }
 
         private void EmitDynamicExpression(Expression expr)

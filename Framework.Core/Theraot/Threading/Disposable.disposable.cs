@@ -24,7 +24,7 @@ namespace Theraot.Threading
                 catch (Exception exception)
                 {
                     // Catch them all - fields may be partially collected.
-                    GC.KeepAlive(exception);
+                    No.Op(exception);
                 }
             }
         }
@@ -114,7 +114,7 @@ namespace Theraot.Threading
         [DebuggerNonUserCode]
         private void Dispose(bool disposeManagedResources)
         {
-            GC.KeepAlive(disposeManagedResources);
+            No.Op(disposeManagedResources);
             if (TakeDisposalExecution())
             {
                 try

@@ -57,7 +57,7 @@ namespace System.Linq.Expressions
                 return (TDelegate)(object)new Interpreter.LightCompiler().CompileTop(this).CreateDelegate();
             }
 #endif
-            GC.KeepAlive(preferInterpretation);
+            Theraot.No.Op(preferInterpretation);
             return (TDelegate)(object)LambdaCompiler.Compile(this);
         }
 
@@ -68,7 +68,7 @@ namespace System.Linq.Expressions
         /// <returns>A delegate containing the compiled version of the lambda.</returns>
         public new TDelegate Compile(DebugInfoGenerator debugInfoGenerator)
         {
-            GC.KeepAlive(debugInfoGenerator);
+            Theraot.No.Op(debugInfoGenerator);
             return Compile();
         }
 
@@ -740,7 +740,7 @@ namespace System.Linq.Expressions
                 return new Interpreter.LightCompiler().CompileTop(this).CreateDelegate();
             }
 #endif
-            GC.KeepAlive(preferInterpretation);
+            Theraot.No.Op(preferInterpretation);
             return LambdaCompiler.Compile(this);
         }
 
@@ -751,7 +751,7 @@ namespace System.Linq.Expressions
         /// <returns>A delegate containing the compiled version of the lambda.</returns>
         public Delegate Compile(DebugInfoGenerator debugInfoGenerator)
         {
-            GC.KeepAlive(debugInfoGenerator);
+            Theraot.No.Op(debugInfoGenerator);
             return Compile();
         }
 

@@ -112,8 +112,7 @@ namespace System.Threading.Tasks
                 }
                 catch (ObjectDisposedException exception)
                 {
-                    GC.KeepAlive(exception);
-                    // Empty
+                    Theraot.No.Op(exception);
                 }
                 _cancellationRegistration = null;
             }

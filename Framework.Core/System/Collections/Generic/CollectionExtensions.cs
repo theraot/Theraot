@@ -55,7 +55,7 @@ namespace System.Collections.Generic
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
                 return false;
             }
         }

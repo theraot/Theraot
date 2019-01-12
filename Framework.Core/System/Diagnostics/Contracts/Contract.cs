@@ -127,7 +127,7 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Ensures(bool condition)
         {
-            GC.KeepAlive(condition);
+            Theraot.No.Op(condition);
             AssertMustUseRewriter(ContractFailureKind.Postcondition, nameof(Ensures));
         }
 
@@ -145,8 +145,8 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Ensures(bool condition, string userMessage)
         {
-            GC.KeepAlive(condition);
-            GC.KeepAlive(userMessage);
+            Theraot.No.Op(condition);
+            Theraot.No.Op(userMessage);
             AssertMustUseRewriter(ContractFailureKind.Postcondition, nameof(Ensures));
         }
 
@@ -165,8 +165,8 @@ namespace System.Diagnostics.Contracts
         public static void EnsuresOnThrow<TException>(bool condition)
             where TException : Exception
         {
-            GC.KeepAlive(typeof(TException));
-            GC.KeepAlive(condition);
+            Theraot.No.Op(typeof(TException));
+            Theraot.No.Op(condition);
             AssertMustUseRewriter(ContractFailureKind.PostconditionOnException, nameof(EnsuresOnThrow));
         }
 
@@ -186,9 +186,9 @@ namespace System.Diagnostics.Contracts
         public static void EnsuresOnThrow<TException>(bool condition, string userMessage)
             where TException : Exception
         {
-            GC.KeepAlive(typeof(TException));
-            GC.KeepAlive(condition);
-            GC.KeepAlive(userMessage);
+            Theraot.No.Op(typeof(TException));
+            Theraot.No.Op(condition);
+            Theraot.No.Op(userMessage);
             AssertMustUseRewriter(ContractFailureKind.PostconditionOnException, nameof(EnsuresOnThrow));
         }
 
@@ -341,7 +341,7 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Invariant(bool condition)
         {
-            GC.KeepAlive(condition);
+            Theraot.No.Op(condition);
             AssertMustUseRewriter(ContractFailureKind.Invariant, nameof(Invariant));
         }
 
@@ -359,8 +359,8 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Invariant(bool condition, string userMessage)
         {
-            GC.KeepAlive(condition);
-            GC.KeepAlive(userMessage);
+            Theraot.No.Op(condition);
+            Theraot.No.Op(userMessage);
             AssertMustUseRewriter(ContractFailureKind.Invariant, nameof(Invariant));
         }
 
@@ -377,7 +377,7 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public static T OldValue<T>(T value)
         {
-            GC.KeepAlive(value);
+            Theraot.No.Op(value);
             return default;
         }
 
@@ -394,7 +394,7 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Requires(bool condition)
         {
-            GC.KeepAlive(condition);
+            Theraot.No.Op(condition);
             AssertMustUseRewriter(ContractFailureKind.Precondition, nameof(Requires));
         }
 
@@ -412,8 +412,8 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Requires(bool condition, string userMessage)
         {
-            GC.KeepAlive(condition);
-            GC.KeepAlive(userMessage);
+            Theraot.No.Op(condition);
+            Theraot.No.Op(userMessage);
             AssertMustUseRewriter(ContractFailureKind.Precondition, nameof(Requires));
         }
 
@@ -431,8 +431,8 @@ namespace System.Diagnostics.Contracts
         public static void Requires<TException>(bool condition)
             where TException : Exception
         {
-            GC.KeepAlive(typeof(TException));
-            GC.KeepAlive(condition);
+            Theraot.No.Op(typeof(TException));
+            Theraot.No.Op(condition);
             AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires<TException>");
         }
 
@@ -451,9 +451,9 @@ namespace System.Diagnostics.Contracts
         public static void Requires<TException>(bool condition, string userMessage)
             where TException : Exception
         {
-            GC.KeepAlive(typeof(TException));
-            GC.KeepAlive(condition);
-            GC.KeepAlive(userMessage);
+            Theraot.No.Op(typeof(TException));
+            Theraot.No.Op(condition);
+            Theraot.No.Op(userMessage);
             AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires<TException>");
         }
 

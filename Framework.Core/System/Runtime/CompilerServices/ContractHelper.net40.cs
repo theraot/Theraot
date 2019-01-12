@@ -105,7 +105,7 @@ namespace System.Runtime.CompilerServices
 #if LESSTHAN_NET40
                         eventArgs.ThrownDuringHandler = exception;
 #else
-                        GC.KeepAlive(exception);
+                        Theraot.No.Op(exception);
 #endif
                         eventArgs.SetUnwind();
                     },

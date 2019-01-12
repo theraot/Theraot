@@ -171,7 +171,7 @@ namespace Theraot.Collections
                     }
                     catch (OperationCanceledException exception)
                     {
-                        GC.KeepAlive(exception);
+                        No.Op(exception);
                     }
                 }
                 return TakeReplacement(out value);

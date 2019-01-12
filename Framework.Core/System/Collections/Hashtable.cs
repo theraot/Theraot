@@ -223,13 +223,15 @@ namespace System.Collections
         // and is for use only with SyncHashtable.
         internal Hashtable(bool trash)
         {
-            GC.KeepAlive(trash);
+            Theraot.No.Op(trash);
         }
 
         // Constructs a new hashtable. The hashtable is created with an initial
         // capacity of zero and a load factor of 1.0.
-        public Hashtable() : this(0, 1.0f)
+        public Hashtable()
+            : this(0, 1.0f)
         {
+            // Empty
         }
 
         // Constructs a new hashtable with the given initial capacity and a load

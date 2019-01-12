@@ -32,10 +32,11 @@ namespace System.Runtime.Serialization
             HResult = -2146233076;
         }
 
+        [Obsolete("This target platform does not support binary serialization.")]
         protected SerializationException(SerializationInfo info, StreamingContext context)
         {
-            GC.KeepAlive(info);
-            GC.KeepAlive(context);
+            Theraot.No.Op(info);
+            Theraot.No.Op(context);
         }
     }
 }

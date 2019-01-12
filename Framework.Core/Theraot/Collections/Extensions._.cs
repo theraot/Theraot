@@ -134,9 +134,9 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            foreach (var element in source)
+            foreach (var _ in source)
             {
-                GC.KeepAlive(element);
+                // Empty
             }
         }
 
@@ -555,9 +555,8 @@ namespace Theraot.Collections
             {
                 comparer = EqualityComparer<T>.Default;
             }
-            foreach (var foundItem in source.RemoveWhereEnumerable(input => comparer.Equals(input, item)))
+            foreach (var _ in source.RemoveWhereEnumerable(input => comparer.Equals(input, item)))
             {
-                GC.KeepAlive(foundItem);
                 return true;
             }
             return false;
@@ -652,14 +651,12 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(other));
             }
             var thatAsCollection = AsICollection(other);
-            foreach (var item in thatAsCollection.Where(input => !source.Contains(input)))
+            foreach (var _ in thatAsCollection.Where(input => !source.Contains(input)))
             {
-                GC.KeepAlive(item);
                 return false;
             }
-            foreach (var item in source.Where(input => !thatAsCollection.Contains(input)))
+            foreach (var _ in source.Where(input => !thatAsCollection.Contains(input)))
             {
-                GC.KeepAlive(item);
                 return false;
             }
             return true;
@@ -885,10 +882,9 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(source));
             }
             var result = 0;
-            foreach (var value in source)
+            foreach (var _ in source)
             {
                 result++;
-                GC.KeepAlive(value);
             }
             return result;
         }

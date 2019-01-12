@@ -151,7 +151,7 @@ namespace System.Runtime.CompilerServices
         [SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
         public static CallSite<T> Create(CallSiteBinder binder)
         {
-            GC.KeepAlive(binder);
+            Theraot.No.Op(binder);
             throw new NotSupportedException();
         }
 

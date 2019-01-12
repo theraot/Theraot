@@ -37,15 +37,15 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 catch (ObjectDisposedException exception)
                 {
-                    GC.KeepAlive(exception);
+                    No.Op(exception);
                 }
                 catch (InvalidOperationException exception)
                 {
-                    GC.KeepAlive(exception);
+                    No.Op(exception);
                 }
                 catch (NullReferenceException exception)
                 {
-                    GC.KeepAlive(exception);
+                    No.Op(exception);
                 }
                 finally
                 {

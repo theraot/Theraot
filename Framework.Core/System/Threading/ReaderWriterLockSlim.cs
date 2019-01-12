@@ -327,7 +327,7 @@ namespace System.Threading
             }
             catch (Exception ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
                 // An async exception occured, if we had taken the upgradable mode, release it
                 _upgradableTaken.Value &= !taken || success;
             }

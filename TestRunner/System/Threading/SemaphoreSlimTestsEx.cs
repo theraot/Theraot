@@ -47,7 +47,7 @@ namespace TestRunner.System.Threading
             }
             catch (OperationCanceledException exception)
             {
-                GC.KeepAlive(exception);
+                Theraot.No.Op(exception);
                 return;
             }
 

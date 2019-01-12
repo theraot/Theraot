@@ -68,7 +68,7 @@ namespace Theraot.Core
 
             private static bool FallacyFunc(T obj)
             {
-                GC.KeepAlive(obj);
+                Theraot.No.Op(obj);
                 return false;
             }
         }
@@ -84,7 +84,7 @@ namespace Theraot.Core
 
             private static bool TautologyFunc(T obj)
             {
-                GC.KeepAlive(obj);
+                Theraot.No.Op(obj);
                 return true;
             }
         }

@@ -710,7 +710,7 @@ namespace System.Threading.Tasks
             }
             catch (ObjectDisposedException exception)
             {
-                GC.KeepAlive(exception);
+                Theraot.No.Op(exception);
             }
             return tcs.Task;
             CancellationTokenRegistration GetRegistrationToken()

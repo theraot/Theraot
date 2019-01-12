@@ -55,8 +55,8 @@ namespace System.Runtime.CompilerServices
         /// <returns>A new delegate which replaces the CallSite Target.</returns>
         public virtual T BindDelegate<T>(CallSite<T> site, object[] args) where T : class
         {
-            GC.KeepAlive(site);
-            GC.KeepAlive(args);
+            Theraot.No.Op(site);
+            Theraot.No.Op(args);
             return null;
         }
 

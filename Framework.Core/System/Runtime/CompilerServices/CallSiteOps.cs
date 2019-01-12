@@ -42,9 +42,9 @@ namespace System.Runtime.CompilerServices
         // [Obsolete("do not use this method", error: true), EditorBrowsable(EditorBrowsableState.Never)]
         public static T Bind<T>(CallSiteBinder binder, CallSite<T> site, object[] args) where T : class
         {
-            GC.KeepAlive(binder);
-            GC.KeepAlive(site);
-            GC.KeepAlive(args);
+            Theraot.No.Op(binder);
+            Theraot.No.Op(site);
+            Theraot.No.Op(args);
             throw Error.NoOrInvalidRuleProduced();
         }
 

@@ -54,7 +54,7 @@ namespace System.Collections.Generic
 
         protected SortedSet(SerializationInfo info, StreamingContext context)
         {
-            GC.KeepAlive(context);
+            Theraot.No.Op(context);
             _serializationInfo = info;
         }
 
@@ -253,7 +253,7 @@ namespace System.Collections.Generic
 
         protected virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            GC.KeepAlive(context);
+            Theraot.No.Op(context);
             if (info == null)
             {
                 throw new ArgumentNullException();
@@ -269,7 +269,7 @@ namespace System.Collections.Generic
 
         protected virtual void OnDeserialization(object sender)
         {
-            GC.KeepAlive(sender);
+            Theraot.No.Op(sender);
             if (Comparer == null)
             {
                 if (_serializationInfo == null)

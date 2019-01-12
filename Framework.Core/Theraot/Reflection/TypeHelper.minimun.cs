@@ -273,7 +273,7 @@ namespace Theraot.Reflection
             }
             catch (Exception exception)
             {
-                GC.KeepAlive(exception);
+                No.Op(exception);
                 return alternative();
             }
         }

@@ -131,7 +131,7 @@ namespace Theraot.Threading
                     catch (Exception exception)
                     {
                         // Catch them all - there shouldn't be exceptions here, yet we really don't want them
-                        GC.KeepAlive(exception);
+                        No.Op(exception);
                     }
                 }
             }

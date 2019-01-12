@@ -57,7 +57,7 @@ namespace System.Runtime.ExceptionServices
             }
             catch (Exception exception)
             {
-                GC.KeepAlive(exception);
+                Theraot.No.Op(exception);
                 var newStackTrace = _stackTrace + BuildStackTrace(Environment.StackTrace);
                 SetStackTrace(SourceException, newStackTrace);
                 throw;

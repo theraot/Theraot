@@ -186,10 +186,9 @@ namespace System.Linq.Expressions.Compiler
             return result;
         }
 
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "kind")]
         private void PopLabelBlock(LabelScopeKind kind)
         {
-            GC.KeepAlive(kind);
+            Theraot.No.Op(kind);
             Debug.Assert(_labelBlock != null && _labelBlock.Kind == kind);
             _labelBlock = _labelBlock.Parent;
         }

@@ -91,9 +91,8 @@ namespace Theraot.Collections.Specialized
             {
                 comparer = EqualityComparer<T>.Default;
             }
-            foreach (var foundItem in Instance.RemoveWhereEnumerable(input => comparer.Equals(input, item)))
+            foreach (var _ in Instance.RemoveWhereEnumerable(input => comparer.Equals(input, item)))
             {
-                GC.KeepAlive(foundItem);
                 return true;
             }
             return false;

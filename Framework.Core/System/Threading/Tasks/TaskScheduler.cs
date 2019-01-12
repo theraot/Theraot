@@ -72,7 +72,7 @@ namespace System.Threading.Tasks
 
         protected virtual bool TryDequeue(Task task)
         {
-            GC.KeepAlive(task);
+            Theraot.No.Op(task);
             return false;
         }
 

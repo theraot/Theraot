@@ -121,7 +121,7 @@ namespace System.Threading.Tasks
                             catch (InvalidOperationException exception)
                             {
                                 // Already canceled
-                                GC.KeepAlive(exception);
+                                Theraot.No.Op(exception);
                             }
                         },
                         millisecondsDelay,
@@ -141,8 +141,8 @@ namespace System.Threading.Tasks
                             }
                             catch (InvalidOperationException exception)
                             {
-                                // Already timeout
-                                GC.KeepAlive(exception);
+                                // Already timed out
+                                Theraot.No.Op(exception);
                             }
                         }
                     );

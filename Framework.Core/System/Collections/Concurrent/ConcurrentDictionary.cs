@@ -459,7 +459,7 @@ namespace System.Collections.Concurrent
 
         private static ArgumentNullException CreateArgumentNullExceptionKey(TKey key)
         {
-            GC.KeepAlive(key);
+            Theraot.No.Op(key);
             return new ArgumentNullException(nameof(key));
         }
 

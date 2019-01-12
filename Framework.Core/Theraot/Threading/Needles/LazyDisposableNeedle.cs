@@ -138,7 +138,7 @@ namespace Theraot.Threading.Needles
             catch (Exception exception)
             {
                 // Fields may be partially collected
-                GC.KeepAlive(exception);
+                Theraot.No.Op(exception);
             }
         }
 

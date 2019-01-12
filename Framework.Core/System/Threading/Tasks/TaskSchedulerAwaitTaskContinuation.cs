@@ -75,7 +75,7 @@ namespace System.Threading.Tasks
                     catch (TaskSchedulerException exception)
                     {
                         // No further action is necessary, as ScheduleAndStart already transitioned task to faulted
-                        GC.KeepAlive(exception);
+                        Theraot.No.Op(exception);
                     }
                 }
             }

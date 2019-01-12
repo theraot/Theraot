@@ -23,7 +23,7 @@ namespace Theraot.Core
                     }
                     catch (ObjectDisposedException exception)
                     {
-                        GC.KeepAlive(exception);
+                        No.Op(exception);
                     }
                 },
                 millisecondsDelay
@@ -44,7 +44,7 @@ namespace Theraot.Core
                     }
                     catch (ObjectDisposedException exception)
                     {
-                        GC.KeepAlive(exception);
+                        No.Op(exception);
                     }
                 },
                 delay

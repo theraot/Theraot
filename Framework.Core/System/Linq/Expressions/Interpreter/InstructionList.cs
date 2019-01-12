@@ -223,7 +223,7 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(Count > 0);
             _debugCookies.Add(new KeyValuePair<int, object>(Count - 1, cookie));
 #else
-            GC.KeepAlive(cookie);
+            Theraot.No.Op(cookie);
             _debugCookies = null;
 #endif
         }

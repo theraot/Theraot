@@ -55,7 +55,7 @@ namespace Theraot.Threading
                     catch (Exception exception)
                     {
                         // Catch them all
-                        GC.KeepAlive(exception);
+                        No.Op(exception);
                     }
                     Volatile.Write(ref _status, _statusReady);
                 }

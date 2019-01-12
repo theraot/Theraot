@@ -38,7 +38,7 @@ namespace Theraot.Threading
                 catch (Exception exception)
                 {
                     // Catch them all - fields may be partially collected.
-                    GC.KeepAlive(exception);
+                    Theraot.No.Op(exception);
                 }
             }
         }

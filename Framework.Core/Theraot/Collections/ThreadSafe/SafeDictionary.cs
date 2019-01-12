@@ -1487,7 +1487,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static ArgumentException CreateKeyArgumentException(object key)
         {
-            GC.KeepAlive(key);
+            Theraot.No.Op(key);
             return new ArgumentException("An item with the same key has already been added", nameof(key));
         }
     }

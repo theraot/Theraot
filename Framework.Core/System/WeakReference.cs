@@ -64,7 +64,7 @@ namespace System
                 {
                     // The handle was freed or never initialized.
                     // Nothing to do.
-                    GC.KeepAlive(exception);
+                    Theraot.No.Op(exception);
                 }
             }
         }

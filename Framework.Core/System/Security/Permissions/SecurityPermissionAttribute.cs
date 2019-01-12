@@ -146,12 +146,12 @@ namespace System.Security.Permissions
     {
         public SecurityPermission(PermissionState state)
         {
-            GC.KeepAlive(state);
+            Theraot.No.Op(state);
         }
 
         public SecurityPermission(SecurityPermissionFlag flag)
         {
-            GC.KeepAlive(flag);
+            Theraot.No.Op(flag);
         }
 
         public SecurityPermissionFlag Flags { get; set; }

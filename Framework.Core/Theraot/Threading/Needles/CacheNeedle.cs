@@ -133,7 +133,7 @@ namespace Theraot.Threading.Needles
                 catch (ObjectDisposedException exception)
                 {
                     // Came late to the party, initialization was done
-                    GC.KeepAlive(exception);
+                    Theraot.No.Op(exception);
                 }
             }
         }
@@ -222,7 +222,7 @@ namespace Theraot.Threading.Needles
                     catch (ObjectDisposedException exception)
                     {
                         // Came late to the party, initialization is done
-                        GC.KeepAlive(exception);
+                        Theraot.No.Op(exception);
                     }
                 }
             }

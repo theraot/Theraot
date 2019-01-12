@@ -20,8 +20,8 @@ namespace System.Runtime.CompilerServices
         public Delegate CreateDelegate(int indexLambda, object[] locals)
         {
             // Should not be static
-            GC.KeepAlive(indexLambda);
-            GC.KeepAlive(locals);
+            Theraot.No.Op(indexLambda);
+            Theraot.No.Op(locals);
             throw new NotSupportedException();
         }
 
@@ -34,8 +34,8 @@ namespace System.Runtime.CompilerServices
         public Expression IsolateExpression(Expression expression, object[] locals)
         {
             // Should not be static
-            GC.KeepAlive(expression);
-            GC.KeepAlive(locals);
+            Theraot.No.Op(expression);
+            Theraot.No.Op(locals);
             throw new NotSupportedException();
         }
     }

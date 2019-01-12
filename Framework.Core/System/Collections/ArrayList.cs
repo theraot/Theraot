@@ -44,7 +44,7 @@ namespace System.Collections
         // and is for use only with SyncArrayList.
         internal ArrayList(bool trash)
         {
-            GC.KeepAlive(trash);
+            Theraot.No.Op(trash);
         }
 
         // Constructs a ArrayList. The list is initially empty and has a capacity

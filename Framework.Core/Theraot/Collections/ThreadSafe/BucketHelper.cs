@@ -599,7 +599,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool Tautology<T>(T item)
         {
-            GC.KeepAlive(item);
+            No.Op(item);
             return true;
         }
     }

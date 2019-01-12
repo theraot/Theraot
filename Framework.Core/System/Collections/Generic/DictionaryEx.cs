@@ -54,14 +54,16 @@ namespace System.Collections.Generic
             // Empty
         }
 
-        protected DictionaryEx(SerializationInfo info, StreamingContext context)
 #if GREATERTHAN_NETCOREAPP20 || NETSTANDARD2_0 || TARGETS_NET
+        protected DictionaryEx(SerializationInfo info, StreamingContext context)
             : base(info, context)
+#else
+        [Obsolete("This target platform does not support binary serialization.")]
+        protected DictionaryEx(SerializationInfo info, StreamingContext context)
 #endif
         {
-            // TODO ?
-            GC.KeepAlive(info);
-            GC.KeepAlive(context);
+            Theraot.No.Op(info);
+            Theraot.No.Op(context);
         }
 
 #if LESSTHAN_NET45

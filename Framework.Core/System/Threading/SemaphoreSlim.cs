@@ -257,7 +257,7 @@ namespace System.Threading
         protected virtual void Dispose(bool disposing)
         {
             // This is a protected method, the parameter should be kept
-            GC.KeepAlive(disposing);
+            Theraot.No.Op(disposing);
             _disposed = true;
             _canEnter.Dispose();
             _asyncWaiters = null;
