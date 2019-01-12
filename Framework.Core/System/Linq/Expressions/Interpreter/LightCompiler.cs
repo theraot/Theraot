@@ -122,12 +122,12 @@ namespace System.Linq.Expressions.Interpreter
         private class DebugInfoComparer : IComparer<DebugInfo>
         {
             //We allow comparison between int and DebugInfo here
-            int IComparer<DebugInfo>.Compare(DebugInfo d1, DebugInfo d2)
+            int IComparer<DebugInfo>.Compare(DebugInfo x, DebugInfo y)
             {
                 // ReSharper disable once PossibleNullReferenceException
-                var d1Index = d1.Index;
+                var d1Index = x.Index;
                 // ReSharper disable once PossibleNullReferenceException
-                var d2Index = d2.Index;
+                var d2Index = y.Index;
                 if (d1Index > d2Index)
                 {
                     return 1;
@@ -3212,6 +3212,22 @@ namespace System.Linq.Expressions.Interpreter
     [SuppressMessage("Microsoft.Usage", "CA2237:MarkISerializableTypesWithSerializable")]
     internal sealed class RethrowException : Exception
     {
+        public RethrowException()
+        {
+            // Empty
+        }
+
+        public RethrowException(string message)
+            : base(message)
+        {
+            // Empty
+        }
+
+        public RethrowException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+            // Empty
+        }
     }
 
     internal sealed class TryCatchFinallyHandler

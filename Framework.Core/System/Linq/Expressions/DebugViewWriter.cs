@@ -824,28 +824,28 @@ namespace System.Linq.Expressions
             return node;
         }
 
-        protected override MemberAssignment VisitMemberAssignment(MemberAssignment assignment)
+        protected override MemberAssignment VisitMemberAssignment(MemberAssignment node)
         {
-            Out(assignment.Member.Name);
+            Out(node.Member.Name);
             Out(Flow.Space, "=", Flow.Space);
-            Visit(assignment.Expression);
-            return assignment;
+            Visit(node.Expression);
+            return node;
         }
 
-        protected override MemberListBinding VisitMemberListBinding(MemberListBinding binding)
+        protected override MemberListBinding VisitMemberListBinding(MemberListBinding node)
         {
-            Out(binding.Member.Name);
+            Out(node.Member.Name);
             Out(Flow.Space, "=", Flow.Space);
-            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArray(binding.Initializers), e => VisitElementInit(e));
-            return binding;
+            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArray(node.Initializers), e => VisitElementInit(e));
+            return node;
         }
 
-        protected override MemberMemberBinding VisitMemberMemberBinding(MemberMemberBinding binding)
+        protected override MemberMemberBinding VisitMemberMemberBinding(MemberMemberBinding node)
         {
-            Out(binding.Member.Name);
+            Out(node.Member.Name);
             Out(Flow.Space, "=", Flow.Space);
-            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArray(binding.Bindings), e => VisitMemberBinding(e));
-            return binding;
+            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArray(node.Bindings), e => VisitMemberBinding(e));
+            return node;
         }
 
         protected override SwitchCase VisitSwitchCase(SwitchCase node)
