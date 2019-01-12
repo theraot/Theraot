@@ -2,13 +2,24 @@
 {
     public class AvailabilityTests
     {
-        public static readonly global::System.Type ArrayList = typeof(global::System.Collections.ArrayList);
+        // System.Collections.Concurrent
+
         public static readonly global::System.Type BlockingCollection = typeof(global::System.Collections.Concurrent.BlockingCollection<int>);
+        public static readonly global::System.Type ConcurrentBag = typeof(global::System.Collections.Concurrent.ConcurrentBag<int>);
+        public static readonly global::System.Type ConcurrentDictionary = typeof(global::System.Collections.Concurrent.ConcurrentDictionary<int, int>);
+        public static readonly global::System.Type ConcurrentQueue = typeof(global::System.Collections.Concurrent.ConcurrentQueue<int>);
+        public static readonly global::System.Type ConcurrentStack = typeof(global::System.Collections.Concurrent.ConcurrentStack<int>);
+        public static readonly global::System.Type EnumerablePartitionerOptions = typeof(global::System.Collections.Concurrent.EnumerablePartitionerOptions);
+        public static readonly global::System.Type IProducerConsumerCollection = typeof(global::System.Collections.Concurrent.IProducerConsumerCollection<int>);
+        public static readonly global::System.Type OrderablePartitioner = typeof(global::System.Collections.Concurrent.OrderablePartitioner<int>);
+        public static readonly global::System.Type Partitioner = typeof(global::System.Collections.Concurrent.Partitioner);
+        public static readonly global::System.Type Partitioner1 = typeof(global::System.Collections.Concurrent.Partitioner<int>);
+
+        public static readonly global::System.Type ArrayList = typeof(global::System.Collections.ArrayList);
         public static readonly global::System.Type CallInfo = typeof(global::System.Dynamic.CallInfo);
         public static readonly global::System.Type Closure = typeof(global::System.Runtime.CompilerServices.Closure);
         public static readonly global::System.Type CodeAccessPermission = typeof(global::System.Security.CodeAccessPermission);
         public static readonly global::System.Type Comparer = typeof(global::System.Collections.Comparer);
-        public static readonly global::System.Type ConcurrentBag = typeof(global::System.Collections.Concurrent.ConcurrentBag<int>);
         public static readonly global::System.Type ContractAbbreviatorAttribute = typeof(global::System.Diagnostics.Contracts.ContractAbbreviatorAttribute);
         public static readonly global::System.Type DisplayAttribute = typeof(global::System.ComponentModel.DataAnnotations.DisplayAttribute);
         public static readonly global::System.Type DynamicAttribute = typeof(global::System.Runtime.CompilerServices.DynamicAttribute);
