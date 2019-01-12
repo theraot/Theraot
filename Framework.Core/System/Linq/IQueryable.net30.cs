@@ -1,4 +1,4 @@
-#if NET20 || NET30
+#if LESSTHAN_NET35
 
 using System.Collections;
 using System.Linq.Expressions;

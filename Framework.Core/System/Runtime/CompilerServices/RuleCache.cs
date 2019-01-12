@@ -1,3 +1,5 @@
+#if LESSTHAN_NET40
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -14,10 +16,9 @@ namespace System.Runtime.CompilerServices
     /// <typeparam name="T">The delegate type.</typeparam>
     [EditorBrowsable(EditorBrowsableState.Never), DebuggerStepThrough]
     // ReSharper disable once UnusedTypeParameter
-    public class RuleCache<T> where T : class
+    public class RuleCache<T>
+        where T : class
     {
-#if NET20 || NET30 || NET35 || NET40
-
         // Adds to end or inserts items at InsertPosition
         private const int _insertPosition = _maxRules / 2;
 
@@ -27,6 +28,7 @@ namespace System.Runtime.CompilerServices
 
         internal RuleCache()
         {
+            // Empty
         }
 
         internal void AddRule(T newRule)
@@ -125,7 +127,7 @@ namespace System.Runtime.CompilerServices
             Array.Copy(rules, _insertPosition, newRules, _insertPosition + 1, newLength - _insertPosition - 1);
             return newRules;
         }
-
-#endif
     }
 }
+
+#endif
