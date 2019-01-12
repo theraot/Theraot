@@ -114,7 +114,7 @@ namespace Theraot.Collections
                     return result;
 
                 default:
-                    return new EnumerationList<T>(source);
+                    return new ProgressiveList<T>(source);
             }
         }
 
@@ -129,7 +129,7 @@ namespace Theraot.Collections
                     return result;
 
                 default:
-                    return new EnumerationList<T>(source);
+                    return new ProgressiveCollection<T>(source);
             }
         }
 
