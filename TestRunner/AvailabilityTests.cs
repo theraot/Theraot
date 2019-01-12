@@ -9,7 +9,7 @@
         public static readonly global::System.Type ConcurrentDictionary2 = typeof(global::System.Collections.Concurrent.ConcurrentDictionary<int, int>);
         public static readonly global::System.Type ConcurrentQueue1 = typeof(global::System.Collections.Concurrent.ConcurrentQueue<int>);
         public static readonly global::System.Type ConcurrentStack1 = typeof(global::System.Collections.Concurrent.ConcurrentStack<int>);
-        //public static readonly global::System.Type EnumerablePartitionerOptions = typeof(global::System.Collections.Concurrent.EnumerablePartitionerOptions);
+        public static readonly global::System.Type EnumerablePartitionerOptions = typeof(global::System.Collections.Concurrent.EnumerablePartitionerOptions);
         public static readonly global::System.Type IProducerConsumerCollection1 = typeof(global::System.Collections.Concurrent.IProducerConsumerCollection<int>);
         public static readonly global::System.Type OrderablePartitioner1 = typeof(global::System.Collections.Concurrent.OrderablePartitioner<int>);
         public static readonly global::System.Type Partitioner = typeof(global::System.Collections.Concurrent.Partitioner);

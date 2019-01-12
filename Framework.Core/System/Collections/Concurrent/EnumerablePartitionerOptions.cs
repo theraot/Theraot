@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
+﻿#if LESSTHAN_NET45 || NETSTANDARD1_0
 
 namespace System.Collections.Concurrent
 {
