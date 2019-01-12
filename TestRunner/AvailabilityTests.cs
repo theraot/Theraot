@@ -44,6 +44,14 @@
         public static readonly global::System.Type SortedSet1 = typeof(global::System.Collections.Generic.SortedSet<int>);
         public static readonly global::System.Type Stack1 = typeof(global::System.Collections.Generic.Stack<int>);
 
+        // System.Collections.ObjectModel
+
+        public static readonly global::System.Type Collection1 = typeof(global::System.Collections.ObjectModel.Collection<int>);
+        public static readonly global::System.Type KeyedCollection2 = typeof(global::System.Collections.ObjectModel.KeyedCollection<int, int>);
+        public static readonly global::System.Type ObservableCollection1 = typeof(global::System.Collections.ObjectModel.ObservableCollection<int>);
+        public static readonly global::System.Type ReadOnlyCollection1 = typeof(global::System.Collections.ObjectModel.ReadOnlyCollection<int>);
+        public static readonly global::System.Type ReadOnlyDictionary2 = typeof(global::System.Collections.ObjectModel.ReadOnlyDictionary<int, int>);
+
         public static readonly global::System.Type ArrayList = typeof(global::System.Collections.ArrayList);
         public static readonly global::System.Type CallInfo = typeof(global::System.Dynamic.CallInfo);
         public static readonly global::System.Type Closure = typeof(global::System.Runtime.CompilerServices.Closure);
