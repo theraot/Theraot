@@ -48,17 +48,7 @@ namespace Theraot.Threading.Needles
 
         public Exception Exception { get; private set; }
 
-        public bool IsAlive
-        {
-            get
-            {
-                if (Exception != null && _handle.TryGetTarget(out _))
-                {
-                    return true;
-                }
-                return false;
-            }
-        }
+        public bool IsAlive => Exception != null && _handle.TryGetTarget(out _);
 
         bool IPromise.IsCanceled => false;
 

@@ -76,18 +76,14 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool FinalizingForUnload
-        {
-            get
-            {
+        public static bool FinalizingForUnload =>
                 // If you need to get rid of this, just set this property to return false
 #if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
-                return AppDomain.CurrentDomain.IsFinalizingForUnload();
+                AppDomain.CurrentDomain.IsFinalizingForUnload();
 #else
-                return false;
+                false;
 #endif
-            }
-        }
+
 
         private static void Initialize()
         {

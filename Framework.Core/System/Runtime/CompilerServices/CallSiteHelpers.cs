@@ -34,11 +34,7 @@ namespace System.Runtime.CompilerServices
             // non-static method. If it does, it is a dynamic method.
             // This could be improved if the CLR provides a way to attach some information
             // to the dynamic method we create, like CustomAttributes.
-            if (mb.Name == CallSite.CallSiteTargetMethodName && mb.GetType() != _knownNonDynamicMethodType)
-            {
-                return true;
-            }
-            return false;
+            return mb.Name == CallSite.CallSiteTargetMethodName && mb.GetType() != _knownNonDynamicMethodType;
         }
     }
 }

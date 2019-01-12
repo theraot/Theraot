@@ -60,10 +60,7 @@ namespace Theraot.Threading
 
         T IThreadLocal<T>.ValueForDebugDisplay => TryGetValue(Thread.CurrentThread, out var target) ? target : default;
 
-        public IList<T> Values
-        {
-            get { return _slots.ConvertFiltered(input => input.Value.Value, input => input.Value is ReadOnlyStructNeedle<T>); }
-        }
+        public IList<T> Values => _slots.ConvertFiltered(input => input.Value.Value, input => input.Value is ReadOnlyStructNeedle<T>);
 
         [DebuggerNonUserCode]
         public void Dispose()

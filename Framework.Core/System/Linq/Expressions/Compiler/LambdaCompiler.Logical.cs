@@ -21,12 +21,7 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         private static bool NotEmpty(Expression node)
         {
-            if (!(node is DefaultExpression empty) || empty.Type != typeof(void))
-            {
-                return true;
-            }
-
-            return false;
+            return !(node is DefaultExpression empty) || empty.Type != typeof(void);
         }
 
         /// <summary>

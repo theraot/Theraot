@@ -220,11 +220,7 @@ namespace System.Linq.Expressions
             // Check for this condition and try and get the method from reflection.
             var type = method.DeclaringType;
             // ReSharper disable once PossibleNullReferenceException
-            if (type.IsInterface && method.Name == propertyMethod.Name && type.GetMethod(method.Name) == propertyMethod)
-            {
-                return true;
-            }
-            return false;
+            return type.IsInterface && method.Name == propertyMethod.Name && type.GetMethod(method.Name) == propertyMethod;
         }
 
         private static PropertyInfo GetProperty(MethodInfo mi, string paramName, int index = -1)

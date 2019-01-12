@@ -149,7 +149,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 return addValueFactory(key);
             }
-            TValue ValueFactory(WeakNeedle<TKey> input) => addValueFactory(key);
+            TValue ValueFactory(WeakNeedle<TKey> _) => addValueFactory(key);
             var result = Wrapped.AddOrUpdate
                 (
                     needle,
@@ -212,7 +212,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 return addValueFactory(key);
             }
-            TValue ValueFactory(WeakNeedle<TKey> input) => addValueFactory(key);
+            TValue ValueFactory(WeakNeedle<TKey> _) => addValueFactory(key);
             var result = Wrapped.AddOrUpdate
                 (
                     needle,

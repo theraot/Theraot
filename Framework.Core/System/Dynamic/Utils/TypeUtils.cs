@@ -115,11 +115,7 @@ namespace System.Dynamic.Utils
                 return false;
             }
             var notNullable = left.GetNonNullable();
-            if (notNullable == typeof(bool) || notNullable.IsNumeric() || notNullable.IsEnum)
-            {
-                return true;
-            }
-            return false;
+            return notNullable == typeof(bool) || notNullable.IsNumeric() || notNullable.IsEnum;
         }
 
         internal static bool HasReferenceConversionTo(this Type source, Type target)

@@ -233,11 +233,7 @@ namespace Theraot.Core
                 return false;
             }
             var result = String[_position];
-            if (result == target)
-            {
-                return true;
-            }
-            return false;
+            return result == target;
         }
 
         /// <summary>
@@ -259,11 +255,7 @@ namespace Theraot.Core
                 return false;
             }
             var character = String[_position];
-            if (predicate(character))
-            {
-                return true;
-            }
-            return false;
+            return predicate(character);
         }
 
         /// <summary>

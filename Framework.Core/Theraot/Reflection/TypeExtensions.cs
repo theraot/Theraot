@@ -369,21 +369,14 @@ namespace Theraot.Reflection
         public static bool IsArithmetic(this Type type)
         {
             type = GetNonNullable(type);
-            if
-            (
-                type == typeof(short)
+            return type == typeof(short)
                 || type == typeof(int)
                 || type == typeof(long)
                 || type == typeof(double)
                 || type == typeof(float)
                 || type == typeof(ushort)
                 || type == typeof(uint)
-                || type == typeof(ulong)
-            )
-            {
-                return true;
-            }
-            return false;
+                || type == typeof(ulong);
         }
 
         public static bool IsBinaryPortable(this Type type)
@@ -484,9 +477,7 @@ namespace Theraot.Reflection
         public static bool IsIntegerOrBool(this Type type)
         {
             type = GetNonNullable(type);
-            if
-            (
-                type == typeof(bool)
+            return type == typeof(bool)
                 || type == typeof(sbyte)
                 || type == typeof(byte)
                 || type == typeof(short)
@@ -494,12 +485,7 @@ namespace Theraot.Reflection
                 || type == typeof(long)
                 || type == typeof(ushort)
                 || type == typeof(uint)
-                || type == typeof(ulong)
-            )
-            {
-                return true;
-            }
-            return false;
+                || type == typeof(ulong);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -512,9 +498,7 @@ namespace Theraot.Reflection
         public static bool IsNumeric(this Type type)
         {
             type = GetNonNullable(type);
-            if
-                (
-                    type == typeof(char)
+            return type == typeof(char)
                     || type == typeof(sbyte)
                     || type == typeof(byte)
                     || type == typeof(short)
@@ -524,12 +508,7 @@ namespace Theraot.Reflection
                     || type == typeof(float)
                     || type == typeof(ushort)
                     || type == typeof(uint)
-                    || type == typeof(ulong)
-                )
-            {
-                return true;
-            }
-            return false;
+                    || type == typeof(ulong);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -541,21 +520,14 @@ namespace Theraot.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool IsPrimitiveInteger(this Type type)
         {
-            if
-                (
-                    type == typeof(sbyte)
+            return type == typeof(sbyte)
                     || type == typeof(byte)
                     || type == typeof(short)
                     || type == typeof(int)
                     || type == typeof(long)
                     || type == typeof(ushort)
                     || type == typeof(uint)
-                    || type == typeof(ulong)
-                )
-            {
-                return true;
-            }
-            return false;
+                    || type == typeof(ulong);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -687,15 +659,8 @@ namespace Theraot.Reflection
         internal static bool IsFloatingPoint(this Type type)
         {
             type = GetNonNullable(type);
-            if
-            (
-                type == typeof(float)
-                || type == typeof(double)
-            )
-            {
-                return true;
-            }
-            return false;
+            return type == typeof(float)
+                || type == typeof(double);
         }
 
         internal static bool IsSameOrSubclassOfInternal(this Type type, Type baseType)
@@ -711,34 +676,20 @@ namespace Theraot.Reflection
         {
             // Including byte and char
             type = GetNonNullable(type);
-            if
-            (
-                type == typeof(byte)
+            return type == typeof(byte)
                 || type == typeof(char)
                 || type == typeof(ushort)
                 || type == typeof(uint)
-                || type == typeof(ulong)
-            )
-            {
-                return true;
-            }
-            return false;
+                || type == typeof(ulong);
         }
 
         internal static bool IsUnsignedInteger(this Type type)
         {
             // Not including byte or char, by design - use IsUnsigned instead
             type = GetNonNullable(type);
-            if
-            (
-                type == typeof(ushort)
+            return type == typeof(ushort)
                 || type == typeof(uint)
-                || type == typeof(ulong)
-            )
-            {
-                return true;
-            }
-            return false;
+                || type == typeof(ulong);
         }
 
         private static bool GetBinaryPortableResult(Type type)
@@ -771,15 +722,8 @@ namespace Theraot.Reflection
             var info = type.GetTypeInfo();
             if (info.IsPrimitive)
             {
-                if
-                (
-                    type == typeof(char)
-                    || type == typeof(bool)
-                )
-                {
-                    return false;
-                }
-                return true;
+                return type != typeof(char)
+                    && type != typeof(bool);
             }
             if (info.IsValueType)
             {

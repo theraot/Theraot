@@ -58,11 +58,7 @@ namespace System.Threading.Tasks
                     return false;
                 }
                 var scheduler = TaskScheduler.Current;
-                if (scheduler != null && scheduler != TaskScheduler.Default)
-                {
-                    return false;
-                }
-                return true;
+                return scheduler == null || scheduler == TaskScheduler.Default;
             }
         }
 

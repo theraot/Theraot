@@ -80,21 +80,9 @@ namespace Theraot.Collections.ThreadSafe
 
         public IEqualityComparer<TKey> Comparer { get; }
 
-        public ICollection<TKey> Keys
-        {
-            get
-            {
-                return TypeHelper.LazyCreate(ref _keyCollection, () => new KeyCollection<TKey, TValue>(this));
-            }
-        }
+        public ICollection<TKey> Keys => TypeHelper.LazyCreate(ref _keyCollection, () => new KeyCollection<TKey, TValue>(this));
 
-        public ICollection<TValue> Values
-        {
-            get
-            {
-                return TypeHelper.LazyCreate(ref _valueCollection, () => new ValueCollection<TKey, TValue>(this));
-            }
-        }
+        public ICollection<TValue> Values => TypeHelper.LazyCreate(ref _valueCollection, () => new ValueCollection<TKey, TValue>(this));
 
         public TValue this[TKey key]
         {
@@ -172,11 +160,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     if (Comparer.Equals(found.Key, item.Key))
                     {
-                        if (_valueComparer.Equals(found.Value, item.Value))
-                        {
-                            return true;
-                        }
-                        return false;
+                        return _valueComparer.Equals(found.Value, item.Value);
                     }
                 }
             }
