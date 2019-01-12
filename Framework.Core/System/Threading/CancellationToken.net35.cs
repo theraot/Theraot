@@ -1,4 +1,6 @@
-﻿// CancellationToken.cs
+﻿#if LESSTHAN_NET40
+
+// CancellationToken.cs
 //
 // Authors:
 //       Jérémie "Garuma" Laval <jeremie.laval@gmail.com>
@@ -25,8 +27,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-#if NET20 || NET30 || NET35
 
 using System.Diagnostics;
 using Theraot.Core;

@@ -1,4 +1,6 @@
-﻿// CancellationTokenRegistration.cs
+﻿#if LESSTHAN_NET40
+
+// CancellationTokenRegistration.cs
 //
 // Authors:
 //       Jérémie "Garuma" Laval <jeremie.laval@gmail.com>
@@ -23,8 +25,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-#if NET20 || NET30 || NET35
 
 namespace System.Threading
 {

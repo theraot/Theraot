@@ -18,7 +18,7 @@ namespace System.Threading.Tasks
     /// </remarks>
     public static partial class TaskEx
     {
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
+#if LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
 
         /// <summary>A task that's already been completed successfully.</summary>
         private static Task _completedTask;
@@ -31,7 +31,7 @@ namespace System.Threading.Tasks
         {
             get
             {
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
+#if LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
                 var completedTask = _completedTask;
                 if (completedTask == null)
                 {
@@ -51,7 +51,7 @@ namespace System.Threading.Tasks
 
         public static Task<TResult> FromCanceled<TResult>(CancellationToken cancellationToken)
         {
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
             // Microsoft says Task.FromCancellation throws ArgumentOutOfRangeException when cancellation has not been requested for cancellationToken
             if (!cancellationToken.IsCancellationRequested)
             {
@@ -68,7 +68,7 @@ namespace System.Threading.Tasks
                 }
             }
             return task;
-#elif NET40 || NET45 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
+#elif LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
             // Microsoft says Task.FromCancellation throws ArgumentOutOfRangeException when cancellation has not been requested for cancellationToken
             if (!cancellationToken.IsCancellationRequested)
             {
@@ -89,7 +89,7 @@ namespace System.Threading.Tasks
 
         public static Task<TResult> FromCancellation<TResult>(CancellationToken token)
         {
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
             var result = new Task<TResult>(TaskStatus.WaitingForActivation, InternalTaskOptions.PromiseTask)
             {
                 CancellationToken = token,
@@ -126,7 +126,7 @@ namespace System.Threading.Tasks
 
         public static Task<TResult> FromException<TResult>(Exception exception)
         {
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
             if (exception == null)
             {
                 throw new ArgumentNullException("exception");
@@ -142,7 +142,7 @@ namespace System.Threading.Tasks
                 }
             }
             return task;
-#elif NET40 || NET45 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
+#elif LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
             if (exception == null)
             {
                 throw new ArgumentNullException("exception");
@@ -162,9 +162,7 @@ namespace System.Threading.Tasks
         /// <returns>
         /// The completed task.
         /// </returns>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
 
         public static Task<TResult> FromResult<TResult>(TResult result)
         {
@@ -186,9 +184,7 @@ namespace System.Threading.Tasks
         /// A task that represents the completion of the action.
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="action"/> argument is null.</exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
 
         public static Task Run(Action action)
         {
@@ -203,9 +199,7 @@ namespace System.Threading.Tasks
         /// A task that represents the completion of the action.
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="action"/> argument is null.</exception>
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
 
         public static Task Run(Action action, CancellationToken cancellationToken)
         {
@@ -510,11 +504,11 @@ namespace System.Threading.Tasks
             return new YieldAwaitable();
         }
 
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
+#if LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
 
         private static Task CreateCompletedTask()
         {
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET24
             return new Task(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose)
             {
                 CancellationToken = default
@@ -744,7 +738,7 @@ namespace System.Threading.Tasks
 
     public static partial class TaskEx
     {
-#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+#if TARGETS_NETSTANDARD
 
         private class WaitHandleCancellableTaskCompletionSourceManager
         {

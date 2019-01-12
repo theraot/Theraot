@@ -1,4 +1,6 @@
-﻿// SpinWait.cs
+﻿#if LESSTHAN_NET40
+
+// SpinWait.cs
 //
 // Copyright (c) 2008 Jérémie "Garuma" Laval, Alfonso J. Ramos
 //
@@ -19,8 +21,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-#if NET20 || NET30 || NET35
 
 using Theraot.Core;
 using Theraot.Threading;

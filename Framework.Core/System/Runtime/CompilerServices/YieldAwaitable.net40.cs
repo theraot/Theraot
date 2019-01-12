@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35 || NET40
+﻿#if LESSTHAN_NET45
 
 using System.Security;
 using System.Security.Permissions;

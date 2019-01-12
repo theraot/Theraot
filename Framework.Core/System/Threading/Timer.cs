@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD1_0 || NETSTANDARD1_1
+﻿#if LESSTHAN_NETSTANDARD12
 
 using System.Threading.Tasks;
 
