@@ -4,16 +4,45 @@
     {
         // System.Collections.Concurrent
 
-        public static readonly global::System.Type BlockingCollection = typeof(global::System.Collections.Concurrent.BlockingCollection<int>);
-        public static readonly global::System.Type ConcurrentBag = typeof(global::System.Collections.Concurrent.ConcurrentBag<int>);
-        public static readonly global::System.Type ConcurrentDictionary = typeof(global::System.Collections.Concurrent.ConcurrentDictionary<int, int>);
-        public static readonly global::System.Type ConcurrentQueue = typeof(global::System.Collections.Concurrent.ConcurrentQueue<int>);
-        public static readonly global::System.Type ConcurrentStack = typeof(global::System.Collections.Concurrent.ConcurrentStack<int>);
+        public static readonly global::System.Type BlockingCollection1 = typeof(global::System.Collections.Concurrent.BlockingCollection<int>);
+        public static readonly global::System.Type ConcurrentBag1 = typeof(global::System.Collections.Concurrent.ConcurrentBag<int>);
+        public static readonly global::System.Type ConcurrentDictionary2 = typeof(global::System.Collections.Concurrent.ConcurrentDictionary<int, int>);
+        public static readonly global::System.Type ConcurrentQueue1 = typeof(global::System.Collections.Concurrent.ConcurrentQueue<int>);
+        public static readonly global::System.Type ConcurrentStack1 = typeof(global::System.Collections.Concurrent.ConcurrentStack<int>);
         public static readonly global::System.Type EnumerablePartitionerOptions = typeof(global::System.Collections.Concurrent.EnumerablePartitionerOptions);
-        public static readonly global::System.Type IProducerConsumerCollection = typeof(global::System.Collections.Concurrent.IProducerConsumerCollection<int>);
-        public static readonly global::System.Type OrderablePartitioner = typeof(global::System.Collections.Concurrent.OrderablePartitioner<int>);
+        public static readonly global::System.Type IProducerConsumerCollection1 = typeof(global::System.Collections.Concurrent.IProducerConsumerCollection<int>);
+        public static readonly global::System.Type OrderablePartitioner1 = typeof(global::System.Collections.Concurrent.OrderablePartitioner<int>);
         public static readonly global::System.Type Partitioner = typeof(global::System.Collections.Concurrent.Partitioner);
         public static readonly global::System.Type Partitioner1 = typeof(global::System.Collections.Concurrent.Partitioner<int>);
+
+        // System.Collections.Generic
+
+        public static readonly global::System.Type CollectionExtensions = typeof(global::System.Collections.Generic.CollectionExtensions);
+        public static readonly global::System.Type Comparer1 = typeof(global::System.Collections.Generic.Comparer<int>);
+        public static readonly global::System.Type Dictionary2 = typeof(global::System.Collections.Generic.Dictionary<int, int>);
+        public static readonly global::System.Type EqualityComparer1 = typeof(global::System.Collections.Generic.EqualityComparer<int>);
+        public static readonly global::System.Type HashSet1 = typeof(global::System.Collections.Generic.HashSet<int>);
+        public static readonly global::System.Type ICollection1 = typeof(global::System.Collections.Generic.ICollection<int>);
+        public static readonly global::System.Type IComparer1 = typeof(global::System.Collections.Generic.IComparer<int>);
+        public static readonly global::System.Type IDictionary1 = typeof(global::System.Collections.Generic.IDictionary<int, int>);
+        public static readonly global::System.Type IEnumerable1 = typeof(global::System.Collections.Generic.IEnumerable<int>);
+        public static readonly global::System.Type IEnumerator1 = typeof(global::System.Collections.Generic.IEnumerator<int>);
+        public static readonly global::System.Type IEqualityComparer1 = typeof(global::System.Collections.Generic.IEqualityComparer<int>);
+        public static readonly global::System.Type IList1 = typeof(global::System.Collections.Generic.IList<int>);
+        public static readonly global::System.Type IReadOnlyCollection1 = typeof(global::System.Collections.Generic.IReadOnlyCollection<int>);
+        public static readonly global::System.Type IReadOnlyDictionary1 = typeof(global::System.Collections.Generic.IReadOnlyDictionary<int, int>);
+        public static readonly global::System.Type IReadOnlyList1 = typeof(global::System.Collections.Generic.IReadOnlyList<int>);
+        public static readonly global::System.Type ISet1 = typeof(global::System.Collections.Generic.ISet<int>);
+        public static readonly global::System.Type KeyNotFoundException = typeof(global::System.Collections.Generic.KeyNotFoundException);
+        public static readonly global::System.Type KeyValuePair2 = typeof(global::System.Collections.Generic.KeyValuePair<int, int>);
+        public static readonly global::System.Type LinkedList1 = typeof(global::System.Collections.Generic.LinkedList<int>);
+        public static readonly global::System.Type LinkedListNode1 = typeof(global::System.Collections.Generic.LinkedListNode<int>);
+        public static readonly global::System.Type List1 = typeof(global::System.Collections.Generic.List<int>);
+        public static readonly global::System.Type Queue1 = typeof(global::System.Collections.Generic.Queue<int>);
+        public static readonly global::System.Type SortedDictionary2 = typeof(global::System.Collections.Generic.SortedDictionary<int, int>);
+        public static readonly global::System.Type SortedList2 = typeof(global::System.Collections.Generic.SortedList<int, int>);
+        public static readonly global::System.Type SortedSet1 = typeof(global::System.Collections.Generic.SortedSet<int>);
+        public static readonly global::System.Type Stack1 = typeof(global::System.Collections.Generic.Stack<int>);
 
         public static readonly global::System.Type ArrayList = typeof(global::System.Collections.ArrayList);
         public static readonly global::System.Type CallInfo = typeof(global::System.Dynamic.CallInfo);
