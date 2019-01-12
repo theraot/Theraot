@@ -340,7 +340,10 @@ namespace System.Numerics
                 if (allowLeadingSign)
                 {
                     number.Negative |= reader.Read(negativeSign);
-                    positive |= reader.Read(positiveSign);
+                    if (!number.Negative)
+                    {
+                        positive |= reader.Read(positiveSign);
+                    }
                 }
                 if (!number.Negative && allowParentheses && reader.Read('('))
                 {
@@ -437,8 +440,10 @@ namespace System.Numerics
                 if (!number.Negative && !positive && allowTrailingSign)
                 {
                     number.Negative |= reader.Read(negativeSign);
-                    positive |= reader.Read(positiveSign);
-                    Theraot.No.Op(positive);
+                    if (!number.Negative)
+                    {
+                        reader.Read(positiveSign);
+                    }
                 }
                 if (waitingParentheses && !reader.Read(')'))
                 {
