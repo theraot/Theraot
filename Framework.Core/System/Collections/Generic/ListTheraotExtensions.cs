@@ -1,4 +1,8 @@
-﻿using System.Collections.ObjectModel;
+﻿#if LESSTHAN_NETSTANDARD13
+
+using System.Collections.ObjectModel;
+
+#endif
 
 namespace System.Collections.Generic
 {
