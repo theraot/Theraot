@@ -52,6 +52,24 @@
         public static readonly global::System.Type ReadOnlyCollection1 = typeof(global::System.Collections.ObjectModel.ReadOnlyCollection<int>);
         public static readonly global::System.Type ReadOnlyDictionary2 = typeof(global::System.Collections.ObjectModel.ReadOnlyDictionary<int, int>);
 
+        // System.Collections.Specialized
+
+        public static readonly global::System.Type BitVector32 = typeof(global::System.Collections.Specialized.BitVector32);
+        public static readonly global::System.Type CollectionsUtil = typeof(global::System.Collections.Specialized.CollectionsUtil);
+        public static readonly global::System.Type HybridDictionary = typeof(global::System.Collections.Specialized.HybridDictionary);
+        public static readonly global::System.Type INotifyCollectionChanged = typeof(global::System.Collections.Specialized.INotifyCollectionChanged);
+        public static readonly global::System.Type IOrderedDictionary = typeof(global::System.Collections.Specialized.IOrderedDictionary);
+        public static readonly global::System.Type ListDictionary = typeof(global::System.Collections.Specialized.ListDictionary);
+        public static readonly global::System.Type NameObjectCollectionBase = typeof(global::System.Collections.Specialized.NameObjectCollectionBase);
+        public static readonly global::System.Type NameValueCollection = typeof(global::System.Collections.Specialized.NameValueCollection);
+        public static readonly global::System.Type NotifyCollectionChangedAction = typeof(global::System.Collections.Specialized.NotifyCollectionChangedAction);
+        public static readonly global::System.Type NotifyCollectionChangedEventArgs = typeof(global::System.Collections.Specialized.NotifyCollectionChangedEventArgs);
+        public static readonly global::System.Type NotifyCollectionChangedEventHandler = typeof(global::System.Collections.Specialized.NotifyCollectionChangedEventHandler);
+        public static readonly global::System.Type OrderedDictionary = typeof(global::System.Collections.Specialized.OrderedDictionary);
+        public static readonly global::System.Type StringCollection = typeof(global::System.Collections.Specialized.StringCollection);
+        public static readonly global::System.Type StringDictionary = typeof(global::System.Collections.Specialized.StringDictionary);
+        public static readonly global::System.Type StringEnumerator = typeof(global::System.Collections.Specialized.StringEnumerator);
+
         public static readonly global::System.Type ArrayList = typeof(global::System.Collections.ArrayList);
         public static readonly global::System.Type CallInfo = typeof(global::System.Dynamic.CallInfo);
         public static readonly global::System.Type Closure = typeof(global::System.Runtime.CompilerServices.Closure);
