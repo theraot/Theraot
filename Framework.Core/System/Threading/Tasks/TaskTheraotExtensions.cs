@@ -19,7 +19,7 @@ namespace System.Threading.Tasks
     /// <remarks>
     /// AsyncCtpThreadingExtensions is a placeholder.
     /// </remarks>
-    public static class AsyncCompatLibExtensions
+    public static class TaskTheraotExtensions
     {
         /// <summary>
         /// Creates and configures an awaitable object for awaiting the specified task.
