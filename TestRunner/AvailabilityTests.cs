@@ -20,6 +20,7 @@ namespace TestRunner
         public static readonly Type ArrayList = typeof(ArrayList);
         public static readonly Type BlockingCollection = typeof(BlockingCollection<int>);
         public static readonly Type CallInfo = typeof(CallInfo);
+        public static readonly Type Closure = typeof(Closure);
         public static readonly Type CodeAccessPermission = typeof(CodeAccessPermission);
         public static readonly Type Comparer = typeof(Comparer);
         public static readonly Type ConcurrentBag = typeof(ConcurrentBag<int>);
@@ -35,6 +36,7 @@ namespace TestRunner
         public static readonly Type IUnrestrictedPermission = typeof(IUnrestrictedPermission);
         public static readonly Type PureAttribute = typeof(PureAttribute);
         public static readonly Type ReliabilityContractAttribute = typeof(ReliabilityContractAttribute);
+        public static readonly Type RuleCache = typeof(RuleCache<string>);
         public static readonly Type SecurityAction = typeof(SecurityAction);
         public static readonly Type SecurityElement = typeof(SecurityElement);
         public static readonly Type SecurityPermissionAttribute = typeof(SecurityPermissionAttribute);
