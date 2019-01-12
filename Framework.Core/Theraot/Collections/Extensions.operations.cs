@@ -153,6 +153,36 @@ namespace Theraot.Collections
             yield return source;
         }
 
+        public static ICollection<T> WrapAsICollection<T>(IEnumerable<T> source)
+        {
+            switch (source)
+            {
+                case null:
+                    throw new ArgumentNullException(nameof(source));
+
+                case ICollection<T> collection:
+                    return collection;
+
+                default:
+                    return new EnumerationList<T>(source);
+            }
+        }
+
+        public static IList<T> WrapAsIList<T>(IEnumerable<T> source)
+        {
+            switch (source)
+            {
+                case null:
+                    throw new ArgumentNullException(nameof(source));
+
+                case IList<T> list:
+                    return list;
+
+                default:
+                    return new EnumerationList<T>(source);
+            }
+        }
+
         public static IReadOnlyCollection<T> WrapAsIReadOnlyCollection<T>(IEnumerable<T> source)
         {
             switch (source)
