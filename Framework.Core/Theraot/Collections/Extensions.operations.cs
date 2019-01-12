@@ -2,19 +2,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
-
-#if LESSTHAN_NET40
-
-using System.Runtime.CompilerServices;
-
-#endif
 
 namespace Theraot.Collections
 {
     public static partial class Extensions
     {
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static T[] AsArray<T>(IEnumerable<T> source)
         {
             switch (source)
@@ -41,6 +37,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static ICollection<T> AsDistinctICollection<T>(IEnumerable<T> source)
         {
 #if NET35
@@ -65,6 +62,7 @@ namespace Theraot.Collections
 #endif
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static ICollection<T> AsICollection<T>(IEnumerable<T> source)
         {
             switch (source)
@@ -80,6 +78,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static IList<T> AsIList<T>(IEnumerable<T> source)
         {
             switch (source)
@@ -103,6 +102,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static IReadOnlyCollection<T> AsIReadOnlyCollection<T>(IEnumerable<T> source)
         {
             switch (source)
@@ -118,6 +118,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static IReadOnlyCollection<T> AsIReadOnlyList<T>(IEnumerable<T> source)
         {
             switch (source)
@@ -133,6 +134,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static ISet<T> AsISet<T>(IEnumerable<T> source)
         {
             switch (source)
@@ -148,11 +150,13 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static IEnumerable<T> AsUnaryIEnumerable<T>(T source)
         {
             yield return source;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static ICollection<T> WrapAsICollection<T>(IEnumerable<T> source)
         {
             switch (source)
@@ -168,6 +172,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static IList<T> WrapAsIList<T>(IEnumerable<T> source)
         {
             switch (source)
@@ -183,6 +188,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static IReadOnlyCollection<T> WrapAsIReadOnlyCollection<T>(IEnumerable<T> source)
         {
             switch (source)
@@ -208,6 +214,7 @@ namespace Theraot.Collections
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static IReadOnlyList<T> WrapAsIReadOnlyList<T>(IEnumerable<T> source)
         {
             switch (source)
