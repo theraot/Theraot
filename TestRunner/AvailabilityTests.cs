@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Dynamic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.Serialization;
@@ -25,6 +26,7 @@ namespace TestRunner
         public static readonly Type ContractAbbreviatorAttribute = typeof(ContractAbbreviatorAttribute);
         public static readonly Type DisplayAttribute = typeof(DisplayAttribute);
         public static readonly Type DynamicAttribute = typeof(DynamicAttribute);
+        public static readonly Type EnumerableExecutor = typeof(EnumerableExecutor);
         public static readonly Type Hashtable = typeof(Hashtable);
         public static readonly Type HostProtectionAttribute = typeof(HostProtectionAttribute);
         public static readonly Type HostProtectionResource = typeof(HostProtectionResource);
