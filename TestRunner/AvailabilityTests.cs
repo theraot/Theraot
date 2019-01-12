@@ -70,16 +70,41 @@
         public static readonly global::System.Type StringDictionary = typeof(global::System.Collections.Specialized.StringDictionary);
         public static readonly global::System.Type StringEnumerator = typeof(global::System.Collections.Specialized.StringEnumerator);
 
+        // System.Collections
+
         public static readonly global::System.Type ArrayList = typeof(global::System.Collections.ArrayList);
+        public static readonly global::System.Type BitArray = typeof(global::System.Collections.BitArray);
+        public static readonly global::System.Type CaseInsensitiveComparer = typeof(global::System.Collections.CaseInsensitiveComparer);
+        public static readonly global::System.Type CaseInsensitiveHashCodeProvider = typeof(global::System.Collections.CaseInsensitiveHashCodeProvider);
+        public static readonly global::System.Type CollectionBase = typeof(global::System.Collections.CollectionBase);
+        public static readonly global::System.Type Comparer = typeof(global::System.Collections.Comparer);
+        public static readonly global::System.Type DictionaryBase = typeof(global::System.Collections.DictionaryBase);
+        public static readonly global::System.Type DictionaryEntry = typeof(global::System.Collections.DictionaryEntry);
+        public static readonly global::System.Type Hashtable = typeof(global::System.Collections.Hashtable);
+        public static readonly global::System.Type ICollection = typeof(global::System.Collections.ICollection);
+        public static readonly global::System.Type IComparer = typeof(global::System.Collections.IComparer);
+        public static readonly global::System.Type IDictionary = typeof(global::System.Collections.IDictionary);
+        public static readonly global::System.Type IDictionaryEnumerator = typeof(global::System.Collections.IDictionaryEnumerator);
+        public static readonly global::System.Type IEnumerable = typeof(global::System.Collections.IEnumerable);
+        public static readonly global::System.Type IEnumerator = typeof(global::System.Collections.IEnumerator);
+        public static readonly global::System.Type IEqualityComparer = typeof(global::System.Collections.IEqualityComparer);
+        public static readonly global::System.Type IHashCodeProvider = typeof(global::System.Collections.IHashCodeProvider);
+        public static readonly global::System.Type IList = typeof(global::System.Collections.IList);
+        public static readonly global::System.Type IStructuralComparable = typeof(global::System.Collections.IStructuralComparable);
+        public static readonly global::System.Type IStructuralEquatable = typeof(global::System.Collections.IStructuralEquatable);
+        public static readonly global::System.Type Queue = typeof(global::System.Collections.Queue);
+        public static readonly global::System.Type ReadOnlyCollectionBase = typeof(global::System.Collections.ReadOnlyCollectionBase);
+        public static readonly global::System.Type SortedList = typeof(global::System.Collections.SortedList);
+        public static readonly global::System.Type Stack = typeof(global::System.Collections.Stack);
+        public static readonly global::System.Type StructuralComparisons = typeof(global::System.Collections.StructuralComparisons);
+
         public static readonly global::System.Type CallInfo = typeof(global::System.Dynamic.CallInfo);
         public static readonly global::System.Type Closure = typeof(global::System.Runtime.CompilerServices.Closure);
         public static readonly global::System.Type CodeAccessPermission = typeof(global::System.Security.CodeAccessPermission);
-        public static readonly global::System.Type Comparer = typeof(global::System.Collections.Comparer);
         public static readonly global::System.Type ContractAbbreviatorAttribute = typeof(global::System.Diagnostics.Contracts.ContractAbbreviatorAttribute);
         public static readonly global::System.Type DisplayAttribute = typeof(global::System.ComponentModel.DataAnnotations.DisplayAttribute);
         public static readonly global::System.Type DynamicAttribute = typeof(global::System.Runtime.CompilerServices.DynamicAttribute);
         public static readonly global::System.Type EnumerableExecutor = typeof(global::System.Linq.EnumerableExecutor);
-        public static readonly global::System.Type Hashtable = typeof(global::System.Collections.Hashtable);
         public static readonly global::System.Type HostProtectionAttribute = typeof(global::System.Security.Permissions.HostProtectionAttribute);
         public static readonly global::System.Type HostProtectionResource = typeof(global::System.Security.Permissions.HostProtectionResource);
         public static readonly global::System.Type IFormatterConverter = typeof(global::System.Runtime.Serialization.IFormatterConverter);
