@@ -1,10 +1,10 @@
 ﻿#if LESSTHAN_NET40
 
+using System.Runtime.Serialization;
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
-
-using Theraot.Core;
 
 namespace System.Threading.Tasks
 {
@@ -12,7 +12,7 @@ namespace System.Threading.Tasks
     /// Represents an exception used to communicate task cancellation.
     /// </summary>
     [Serializable]
-    public class TaskCanceledException : NewOperationCanceledException
+    public class TaskCanceledException : OperationCanceledExceptionEx
     {
         [NonSerialized]
         private readonly Task _canceledTask; // The task which has been canceled.
@@ -20,7 +20,8 @@ namespace System.Threading.Tasks
         /// <summary>
         /// Initializes a new instance of the <see cref="T:System.Threading.Tasks.TaskCanceledException"/> class.
         /// </summary>
-        public TaskCanceledException() : base("A task was canceled")
+        public TaskCanceledException()
+            : base("A task was canceled")
         {
             // Empty
         }
@@ -30,7 +31,8 @@ namespace System.Threading.Tasks
         /// class with a specified error message.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
-        public TaskCanceledException(string message) : base(message)
+        public TaskCanceledException(string message)
+            : base(message)
         {
             // Empty
         }
@@ -42,8 +44,10 @@ namespace System.Threading.Tasks
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
-        public TaskCanceledException(string message, Exception innerException) : base(message, innerException)
+        public TaskCanceledException(string message, Exception innerException)
+            : base(message, innerException)
         {
+            // Empty
         }
 
         /// <summary>
@@ -55,6 +59,12 @@ namespace System.Threading.Tasks
             base("A task was canceled", task?.CancellationToken ?? new CancellationToken())
         {
             _canceledTask = task;
+        }
+
+        protected TaskCanceledException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            // Empty
         }
 
         /// <summary>

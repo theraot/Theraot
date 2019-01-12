@@ -658,7 +658,7 @@ namespace System.Threading.Tasks
                 cancellationToken.ThrowIfCancellationRequested();
                 GC.KeepAlive(cancellationToken.WaitHandle);
             }
-            catch (NewOperationCanceledException)
+            catch (OperationCanceledExceptionEx)
             {
                 throw new AggregateException(new TaskCanceledException(this));
             }

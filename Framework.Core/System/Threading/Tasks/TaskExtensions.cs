@@ -94,7 +94,7 @@ namespace System.Threading.Tasks
             {
                 task.GetAwaiter().GetResult();
             }
-            catch (NewOperationCanceledException oce)
+            catch (OperationCanceledExceptionEx oce)
             {
                 var ct = oce.CancellationToken;
                 if (ct.IsCancellationRequested)

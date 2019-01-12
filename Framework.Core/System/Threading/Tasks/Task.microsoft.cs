@@ -577,7 +577,7 @@ namespace System.Threading.Tasks
         {
             Contract.Requires(unhandledException != null);
 
-            if (unhandledException is NewOperationCanceledException exceptionAsOce && IsCancellationRequested && CancellationToken == exceptionAsOce.CancellationToken)
+            if (unhandledException is OperationCanceledExceptionEx exceptionAsOce && IsCancellationRequested && CancellationToken == exceptionAsOce.CancellationToken)
             {
                 // All conditions are satisfied for us to go into canceled state in Finish().
                 // Mark the acknowledgement.  The exception is also stored to enable it to be

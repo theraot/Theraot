@@ -649,7 +649,7 @@ namespace System.Threading
                         //
                         if (waitWasCanceled)
                         {
-                            throw new NewOperationCanceledException("The operation was canceled.", cancellationToken);
+                            throw new OperationCanceledExceptionEx("The operation was canceled.", cancellationToken);
                         }
                         return false;
                     }
