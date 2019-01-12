@@ -29,7 +29,7 @@ namespace System.Threading.Tasks
             get
             {
                 var exceptionsHolder = Volatile.Read(ref _exceptionsHolder);
-                return exceptionsHolder != null && exceptionsHolder.ContainsFaultList;
+                return exceptionsHolder?.ContainsFaultList == true;
             }
         }
 
@@ -328,15 +328,16 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
+        /// <para>
         /// Checks whether this is an attached task, and whether we are being called by the parent task.
         /// And sets the TASK_STATE_EXCEPTIONOBSERVEDBYPARENT status flag based on that.
-        ///
+        /// </para>
+        /// <para>
         /// This is meant to be used internally when throwing an exception, and when WaitAll is gathering
         /// exceptions for tasks it waited on. If this flag gets set, the implicit wait on children
         /// will skip exceptions to prevent duplication.
-        ///
-        /// This should only be called when this task has completed with an exception
-        ///
+        /// </para>
+        /// <para>This should only be called when this task has completed with an exception</para>
         /// </summary>
         internal void UpdateExceptionObservedStatus()
         {
@@ -365,12 +366,15 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
+        /// <para>
         /// Internal function that will be called by a new child task to add itself to
         /// the children list of the parent (this).
-        ///
+        /// </para>
+        /// <para>
         /// Since a child task can only be created from the thread executing the action delegate
         /// of this task, reentrancy is neither required nor supported. This should not be called from
         /// anywhere other than the task construction/initialization code paths.
+        /// </para>
         /// </summary>
         private void AddNewChild()
         {
@@ -552,7 +556,7 @@ namespace System.Threading.Tasks
             }
 
             var exceptionsHolder = Volatile.Read(ref _exceptionsHolder);
-            if (exceptionsHolder != null && exceptionsHolder.ContainsFaultList)
+            if (exceptionsHolder?.ContainsFaultList == true)
             {
                 // No need to lock around this, as other logic prevents the consumption of exceptions
                 // before they have been completely processed.

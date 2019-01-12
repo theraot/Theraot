@@ -90,9 +90,9 @@ namespace System.Threading.Tasks
         /// <param name="state">Optional state to pass to the action.</param>
         /// <param name="parent">Parent of Task.</param>
         /// <param name="cancellationToken">A CancellationToken for the task.</param>
-        /// <param name="scheduler">A task scheduler under which the task will run.</param>
         /// <param name="creationOptions">Options to control its execution.</param>
         /// <param name="internalOptions">Internal options to control its execution</param>
+        /// <param name="scheduler">A task scheduler under which the task will run.</param>
         internal Task(Delegate action, object state, Task parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
         {
             if (action == null)
@@ -133,19 +133,19 @@ namespace System.Threading.Tasks
             Action = action;
             State = state;
             _waitHandle = new ManualResetEventSlim(false);
-            if ((creationOptions &
-                    ~(TaskCreationOptions.AttachedToParent |
-                      TaskCreationOptions.LongRunning |
-                      TaskCreationOptions.DenyChildAttach |
-                      TaskCreationOptions.HideScheduler |
-                      TaskCreationOptions.PreferFairness |
-                      TaskCreationOptions.RunContinuationsAsynchronously)) != 0)
+            if ((creationOptions
+                    & ~(TaskCreationOptions.AttachedToParent
+                      | TaskCreationOptions.LongRunning
+                      | TaskCreationOptions.DenyChildAttach
+                      | TaskCreationOptions.HideScheduler
+                      | TaskCreationOptions.PreferFairness
+                      | TaskCreationOptions.RunContinuationsAsynchronously)) != 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(creationOptions));
             }
             // Throw exception if the user specifies both LongRunning and SelfReplicating
-            if ((creationOptions & TaskCreationOptions.LongRunning) != 0 &&
-                (internalOptions & InternalTaskOptions.SelfReplicating) != 0)
+            if ((creationOptions & TaskCreationOptions.LongRunning) != 0
+                && (internalOptions & InternalTaskOptions.SelfReplicating) != 0)
             {
                 throw new InvalidOperationException("An attempt was made to create a LongRunning SelfReplicating task.");
             }

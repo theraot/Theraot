@@ -125,7 +125,7 @@ namespace System.Threading
 
         public void ThrowIfCancellationRequested()
         {
-            if (_source != null && _source.IsCancellationRequested)
+            if (_source?.IsCancellationRequested == true)
             {
                 throw new OperationCanceledExceptionEx(this);
             }
