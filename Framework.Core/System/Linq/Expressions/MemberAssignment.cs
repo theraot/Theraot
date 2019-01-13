@@ -80,10 +80,8 @@ namespace System.Linq.Expressions
     public sealed class MemberAssignment : MemberBinding
     {
         internal MemberAssignment(MemberInfo member, Expression expression)
-#pragma warning disable 618
             : base(MemberBindingType.Assignment, member)
         {
-#pragma warning restore 618
             Expression = expression;
         }
 

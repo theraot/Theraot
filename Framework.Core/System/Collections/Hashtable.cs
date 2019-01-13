@@ -1104,7 +1104,6 @@ namespace System.Collections
                 //
                 // Also, if the Hashtable is using randomized hashing, serialize the old
                 // view of the _keyComparer so previous frameworks don't see the new types
-#pragma warning disable 618
                 var keyComparerForSerialization = EqualityComparer;
 
                 if (keyComparerForSerialization == null)
@@ -1121,7 +1120,6 @@ namespace System.Collections
                 {
                     info.AddValue(_keyComparerName, keyComparerForSerialization, typeof(IEqualityComparer));
                 }
-#pragma warning restore 618
 
                 info.AddValue(_hashSizeName, _buckets.Length); //This is the length of the bucket array.
                 var serKeys = new object[_count];
@@ -1161,9 +1159,7 @@ namespace System.Collections
             var hashsize = 0;
             IComparer c = null;
 
-#pragma warning disable 618
             IHashCodeProvider hcp = null;
-#pragma warning restore 618
 
             object[] serKeys = null;
             object[] serValues = null;
@@ -1191,9 +1187,7 @@ namespace System.Collections
                         break;
 
                     case _hashCodeProviderName:
-#pragma warning disable 618
                         hcp = (IHashCodeProvider)siInfo.GetValue(_hashCodeProviderName, typeof(IHashCodeProvider));
-#pragma warning restore 618
                         break;
 
                     case _keysName:
@@ -1647,17 +1641,13 @@ namespace System.Collections
 
     internal sealed class CompatibleComparer : IEqualityComparer
     {
-#pragma warning disable 618
         internal CompatibleComparer(IHashCodeProvider hashCodeProvider, IComparer comparer)
-#pragma warning restore 618
         {
             HashCodeProvider = hashCodeProvider;
             Comparer = comparer;
         }
 
-#pragma warning disable 618
         internal IHashCodeProvider HashCodeProvider { get; }
-#pragma warning restore 618
 
         internal IComparer Comparer { get; }
 

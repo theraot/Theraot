@@ -130,10 +130,8 @@ namespace System.Linq.Expressions
         private readonly TrueReadOnlyCollection<MemberBinding> _bindingsAsReadOnlyCollection;
 
         internal MemberMemberBinding(MemberInfo member, MemberBinding[] bindings)
-#pragma warning disable 618
             : base(MemberBindingType.MemberBinding, member)
         {
-#pragma warning restore 618
             _bindings = bindings;
             _bindingsAsReadOnlyCollection = new TrueReadOnlyCollection<MemberBinding>(_bindings);
         }

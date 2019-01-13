@@ -94,10 +94,8 @@ namespace System.Linq.Expressions
     public sealed class MemberListBinding : MemberBinding
     {
         internal MemberListBinding(MemberInfo member, ReadOnlyCollection<ElementInit> initializers)
-#pragma warning disable 618
             : base(MemberBindingType.ListBinding, member)
         {
-#pragma warning restore 618
             Initializers = initializers;
         }
 

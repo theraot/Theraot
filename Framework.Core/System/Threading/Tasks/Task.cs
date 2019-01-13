@@ -97,15 +97,11 @@ namespace System.Threading.Tasks
         {
             if (action == null)
             {
-#pragma warning disable IDE0016
                 throw new ArgumentNullException(nameof(action));
-#pragma warning restore IDE0016
             }
             if (scheduler == null)
             {
-#pragma warning disable IDE0016
                 throw new ArgumentNullException(nameof(scheduler));
-#pragma warning restore IDE0016
             }
             Contract.EndContractBlock();
             // This is readonly, and so must be set in the constructor

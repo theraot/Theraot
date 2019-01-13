@@ -29,10 +29,7 @@ namespace System.Diagnostics.Contracts
             HResult = ContractHelper.Cor_E_CodeContractFailed;
         }
 
-#pragma warning disable IDE0051 // Remove unused private members
-
         private ContractException(SerializationInfo info, StreamingContext context)
-#pragma warning restore IDE0051 // Remove unused private members
             : base(info, context)
         {
             Kind = (ContractFailureKind)info.GetInt32(nameof(Kind));
