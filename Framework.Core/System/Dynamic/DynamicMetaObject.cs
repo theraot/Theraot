@@ -6,7 +6,6 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Linq.Expressions;
 using Theraot.Collections.ThreadSafe;
@@ -121,10 +120,9 @@ namespace System.Dynamic
             {
                 var idoMetaObject = ido.GetMetaObject(expression);
 
-                if (idoMetaObject == null ||
-                    !idoMetaObject.HasValue ||
-                    idoMetaObject.Value == null ||
-                    idoMetaObject.Expression != expression)
+                if (idoMetaObject?.HasValue != true
+                    || idoMetaObject.Value == null
+                    || idoMetaObject.Expression != expression)
                 {
                     throw Error.InvalidMetaObjectCreated(ido.GetType());
                 }
