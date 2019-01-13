@@ -397,11 +397,7 @@ namespace System.Collections.Generic
             public void Dispose()
             {
                 var enumerator = _enumerator;
-                // ReSharper disable once UseNullPropagation
-                if (enumerator != null)
-                {
-                    enumerator.Dispose();
-                }
+                enumerator?.Dispose();
             }
 
             public bool MoveNext()

@@ -510,8 +510,7 @@ namespace System.Collections
                 {
                     return false;
                 }
-                if ((b.HashColl & 0x7FFFFFFF) == hashcode &&
-                    KeyEquals(b.Key, key))
+                if ((b.HashColl & 0x7FFFFFFF) == hashcode && KeyEquals(b.Key, key))
                 {
                     return true;
                 }
@@ -544,7 +543,7 @@ namespace System.Collections
                 for (var i = _buckets.Length; --i >= 0;)
                 {
                     var val = _buckets[i].Val;
-                    if (val != null && val.Equals(value))
+                    if (val?.Equals(value) == true)
                     {
                         return true;
                     }
@@ -715,8 +714,7 @@ namespace System.Collections
                     {
                         return null;
                     }
-                    if ((b.HashColl & 0x7FFFFFFF) == hashcode &&
-                        KeyEquals(b.Key, key))
+                    if ((b.HashColl & 0x7FFFFFFF) == hashcode && KeyEquals(b.Key, key))
                     {
                         return b.Val;
                     }
@@ -853,7 +851,7 @@ namespace System.Collections
                 return EqualityComparer.Equals(item, key);
             }
 
-            return item != null && item.Equals(key);
+            return item?.Equals(key) == true;
         }
 
         // Returns a collection representing the keys of this hashtable. The order
@@ -919,8 +917,7 @@ namespace System.Collections
                 // Insert the key/value pair into this bucket if this bucket is empty and has never contained an entry
                 // OR
                 // This bucket once contained an entry but there has never been a collision
-                if (_buckets[bucketNumber].Key == null ||
-                    _buckets[bucketNumber].Key == _buckets && (_buckets[bucketNumber].HashColl & 0x80000000) == 0)
+                if (_buckets[bucketNumber].Key == null || _buckets[bucketNumber].Key == _buckets && (_buckets[bucketNumber].HashColl & 0x80000000) == 0)
                 {
                     // If we have found an available bucket that has never had a collision, but we've seen an available
                     // bucket in the past that has the collision bit set, use the previous bucket instead
@@ -945,8 +942,7 @@ namespace System.Collections
                 // The current bucket is in use
                 // OR
                 // it is available, but has had the collision bit set and we have already found an available bucket
-                if ((_buckets[bucketNumber].HashColl & 0x7FFFFFFF) == hashcode &&
-                    KeyEquals(_buckets[bucketNumber].Key, key))
+                if ((_buckets[bucketNumber].HashColl & 0x7FFFFFFF) == hashcode && KeyEquals(_buckets[bucketNumber].Key, key))
                 {
                     if (add)
                     {
@@ -1004,7 +1000,7 @@ namespace System.Collections
             var seed = (uint)hashcode;
             var incr = unchecked(1 + seed * HashHelpers.HashPrime % ((uint)newBuckets.Length - 1));
             var bucketNumber = (int)(seed % (uint)newBuckets.Length);
-            do
+            while (true)
             {
                 if (newBuckets[bucketNumber].Key == null || newBuckets[bucketNumber].Key == _buckets)
                 {
@@ -1020,7 +1016,7 @@ namespace System.Collections
                     _occupancy++;
                 }
                 bucketNumber = (int)((bucketNumber + incr) % (uint)newBuckets.Length);
-            } while (true);
+            }
         }
 
         // Removes an entry from this hashtable. If an entry with the specified
@@ -1045,8 +1041,7 @@ namespace System.Collections
             do
             {
                 b = _buckets[bn];
-                if ((b.HashColl & 0x7FFFFFFF) == hashcode &&
-                    KeyEquals(b.Key, key))
+                if ((b.HashColl & 0x7FFFFFFF) == hashcode && KeyEquals(b.Key, key))
                 {
                     _isWriterInProgress = true;
                     // Clear hash_coll field, then key, then value
@@ -1260,7 +1255,7 @@ namespace System.Collections
                 _hashtable = hashtable;
             }
 
-            public void CopyTo(Array array, int arrayIndex)
+            public void CopyTo(Array array, int index)
             {
                 if (array == null)
                 {
@@ -1272,17 +1267,17 @@ namespace System.Collections
                     throw new ArgumentException("Only single dimensional arrays are supported for the requested action.", nameof(array));
                 }
 
-                if (arrayIndex < 0)
+                if (index < 0)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number required.");
+                    throw new ArgumentOutOfRangeException(nameof(index), "Non-negative number required.");
                 }
 
-                if (array.Length - arrayIndex < _hashtable._count)
+                if (array.Length - index < _hashtable._count)
                 {
                     throw new ArgumentException("Destination array is not long enough to copy all the items in the collection. Check array index and length.");
                 }
 
-                _hashtable.CopyKeys(array, arrayIndex);
+                _hashtable.CopyKeys(array, index);
             }
 
             public IEnumerator GetEnumerator()
@@ -1308,7 +1303,7 @@ namespace System.Collections
                 _hashtable = hashtable;
             }
 
-            public void CopyTo(Array array, int arrayIndex)
+            public void CopyTo(Array array, int index)
             {
                 if (array == null)
                 {
@@ -1320,17 +1315,17 @@ namespace System.Collections
                     throw new ArgumentException("Only single dimensional arrays are supported for the requested action.", nameof(array));
                 }
 
-                if (arrayIndex < 0)
+                if (index < 0)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number required.");
+                    throw new ArgumentOutOfRangeException(nameof(index), "Non-negative number required.");
                 }
 
-                if (array.Length - arrayIndex < _hashtable._count)
+                if (array.Length - index < _hashtable._count)
                 {
                     throw new ArgumentException("Destination array is not long enough to copy all the items in the collection. Check array index and length.");
                 }
 
-                _hashtable.CopyValues(array, arrayIndex);
+                _hashtable.CopyValues(array, index);
             }
 
             public IEnumerator GetEnumerator()
@@ -1418,11 +1413,11 @@ namespace System.Collections
                 return _table.ContainsKey(key);
             }
 
-            public override bool ContainsValue(object key)
+            public override bool ContainsValue(object value)
             {
                 lock (_table.SyncRoot)
                 {
-                    return _table.ContainsValue(key);
+                    return _table.ContainsValue(value);
                 }
             }
 
@@ -1527,7 +1522,7 @@ namespace System.Collections
             {
                 get
                 {
-                    if (_current == false)
+                    if (!_current)
                     {
                         throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
                     }
@@ -1563,7 +1558,7 @@ namespace System.Collections
             {
                 get
                 {
-                    if (_current == false)
+                    if (!_current)
                     {
                         throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                     }
@@ -1576,7 +1571,7 @@ namespace System.Collections
             {
                 get
                 {
-                    if (_current == false)
+                    if (!_current)
                     {
                         throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                     }
@@ -1599,7 +1594,7 @@ namespace System.Collections
             {
                 get
                 {
-                    if (_current == false)
+                    if (!_current)
                     {
                         throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                     }
@@ -1671,7 +1666,7 @@ namespace System.Collections
 
         internal IComparer Comparer { get; }
 
-        public new bool Equals(object a, object b) => Compare(a, b) == 0;
+        public new bool Equals(object x, object y) => Compare(x, y) == 0;
 
         public int Compare(object a, object b)
         {

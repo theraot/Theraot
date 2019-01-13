@@ -1,6 +1,6 @@
 ﻿namespace TestRunner
 {
-    public class AvailabilityTests
+    public static class AvailabilityTests
     {
         // System.Collections.Concurrent
 
