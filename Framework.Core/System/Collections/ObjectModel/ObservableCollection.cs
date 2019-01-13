@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using Theraot.Threading;
 
 namespace System.Collections.ObjectModel
@@ -14,14 +13,10 @@ namespace System.Collections.ObjectModel
         // This field is disposable and will not be disposed
         private readonly TrackingThreadLocal<int> _entryCheck;
 
-        // This field is disposable and will not be disposed either
-        private readonly ReentryBlockage _reentryBlockage;
-
         public ObservableCollection()
             : base(new List<T>())
         {
             _entryCheck = new TrackingThreadLocal<int>(() => 0);
-            _reentryBlockage = new ReentryBlockage(() => _entryCheck.Value--);
         }
 
         public ObservableCollection(IEnumerable<T> collection)
@@ -48,7 +43,7 @@ namespace System.Collections.ObjectModel
         protected IDisposable BlockReentrancy()
         {
             _entryCheck.Value++;
-            return _reentryBlockage;
+            return Disposable.Create(() => _entryCheck.Value--);
         }
 
         protected void CheckReentrancy()
@@ -115,51 +110,34 @@ namespace System.Collections.ObjectModel
         private void InvokeCollectionChanged(NotifyCollectionChangedEventArgs eventArgs)
         {
             var collectionChanged = CollectionChanged;
-            if (collectionChanged != null)
+            if (collectionChanged == null)
             {
-                try
-                {
-                    _entryCheck.Value++;
-                    collectionChanged.Invoke(this, eventArgs);
-                }
-                finally
-                {
-                    _entryCheck.Value--;
-                }
+                return;
+            }
+            try
+            {
+                _entryCheck.Value++;
+                collectionChanged(this, eventArgs);
+            }
+            finally
+            {
+                _entryCheck.Value--;
             }
         }
 
         private void InvokePropertyChanged(string propertyName)
         {
             var propertyChanged = PropertyChanged;
-            if (propertyChanged != null)
+            if (propertyChanged == null)
+            {return;}
+            try
             {
-                try
-                {
-                    _entryCheck.Value++;
-                    propertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
-                }
-                finally
-                {
-                    _entryCheck.Value--;
-                }
+                _entryCheck.Value++;
+                propertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
-        }
-
-        [DebuggerNonUserCode]
-        public sealed class ReentryBlockage : IDisposable
-        {
-            private readonly Action _release;
-
-            public ReentryBlockage(Action release)
+            finally
             {
-                _release = release ?? throw new ArgumentNullException(nameof(release));
-            }
-
-            [DebuggerNonUserCode]
-            public void Dispose()
-            {
-                _release.Invoke();
+                _entryCheck.Value--;
             }
         }
     }
