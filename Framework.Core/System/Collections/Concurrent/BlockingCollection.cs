@@ -415,7 +415,7 @@ namespace System.Collections.Concurrent
 
         public IEnumerable<T> GetConsumingEnumerable()
         {
-            while (TryTake(out var item))
+            while (TryTake(out var item, -1, CancellationToken.None))
             {
                 yield return item;
             }
