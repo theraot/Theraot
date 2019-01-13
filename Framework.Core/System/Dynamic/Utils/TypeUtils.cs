@@ -50,7 +50,7 @@ namespace System.Dynamic.Utils
             do
             {
                 var result = type.GetStaticMethodInternal(name, new[] { type });
-                if (result != null && result.IsSpecialName && !result.ContainsGenericParameters)
+                if (result?.IsSpecialName == true && !result.ContainsGenericParameters)
                 {
                     return result;
                 }
@@ -726,10 +726,12 @@ namespace System.Dynamic.Utils
             {
                 if (!skipNonArray) // Skip if we just came from HasReferenceConversionTo and have just tested these
                 {
+                    // ReSharper disable once PossibleNullReferenceException
                     if (source.IsValueType)
                     {
                         return false;
                     }
+                    // ReSharper disable once PossibleNullReferenceException
                     if (target.IsValueType)
                     {
                         return false;
@@ -745,7 +747,7 @@ namespace System.Dynamic.Utils
                     }
                     if (source.IsInterface)
                     {
-                        if (target.IsInterface || target.IsClass && !target.IsSealed)
+                        if (target.IsInterface || (target.IsClass && !target.IsSealed))
                         {
                             return true;
                         }
