@@ -93,6 +93,7 @@ namespace System.Collections.Generic
         public bool Contains(T item)
         {
             // item can be null
+            // ReSharper disable once AssignNullToNotNullAttribute
             return _wrapped.ContainsKey(item);
         }
 
@@ -240,11 +241,8 @@ namespace System.Collections.Generic
         public bool Remove(T item)
         {
             // item can be null
-            if (_wrapped.ContainsKey(item))
-            {
-                return _wrapped.Remove(item);
-            }
-            return false;
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return _wrapped.Remove(item);
         }
 
         public int RemoveWhere(Predicate<T> match)
