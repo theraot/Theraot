@@ -264,7 +264,7 @@ namespace System.Collections.Generic
             info.AddValue(nameof(Count), Count);
             if (Count > 0)
             {
-                info.AddValue("Items", Enumerable.ToArray(this), typeof(T[]));
+                info.AddValue("Items", this.ToArray(), typeof(T[]));
             }
             info.AddValue("Version", 0);
         }
