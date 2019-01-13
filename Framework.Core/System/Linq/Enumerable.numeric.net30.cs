@@ -303,18 +303,28 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            var found = false;
-            var max = double.MinValue;
-            foreach (var element in source)
+            using (var enumerator = source.GetEnumerator())
             {
-                max = Math.Max(element, max);
-                found = true;
-            }
-            if (found)
-            {
+                if (!enumerator.MoveNext())
+                {
+                    throw new InvalidOperationException();
+                }
+                // Skin NaN
+                var max = enumerator.Current;
+                while (double.IsNaN(max))
+                {
+                    if (!enumerator.MoveNext())
+                    {
+                        return max;
+                    }
+                    max = enumerator.Current;
+                }
+                while (enumerator.MoveNext())
+                {
+                    max = Math.Max(enumerator.Current, max);
+                }
                 return max;
             }
-            throw new InvalidOperationException();
         }
 
         public static float Max(this IEnumerable<float> source)
@@ -323,18 +333,28 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            var found = false;
-            var max = float.MinValue;
-            foreach (var element in source)
+            using (var enumerator = source.GetEnumerator())
             {
-                max = Math.Max(element, max);
-                found = true;
-            }
-            if (found)
-            {
+                if (!enumerator.MoveNext())
+                {
+                    throw new InvalidOperationException();
+                }
+                // Skin NaN
+                var max = enumerator.Current;
+                while (float.IsNaN(max))
+                {
+                    if (!enumerator.MoveNext())
+                    {
+                        return max;
+                    }
+                    max = enumerator.Current;
+                }
+                while (enumerator.MoveNext())
+                {
+                    max = Math.Max(enumerator.Current, max);
+                }
                 return max;
             }
-            throw new InvalidOperationException();
         }
 
         public static decimal Max(this IEnumerable<decimal> source)
@@ -409,21 +429,58 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            var found = false;
-            var max = double.MinValue;
-            foreach (var element in source)
+            using (var enumerator = source.GetEnumerator())
             {
-                if (element.HasValue)
+                if (!enumerator.MoveNext())
                 {
-                    max = Math.Max(element.Value, max);
-                    found = true;
+                    return null;
                 }
-            }
-            if (found)
-            {
+                // Skip null
+                var found = enumerator.Current;
+                while (!found.HasValue)
+                {
+                    if (!enumerator.MoveNext())
+                    {
+                        return null;
+                    }
+                    found = enumerator.Current;
+                }
+                // Skip NaN
+                var max = found.Value;
+                while (double.IsNaN(max))
+                {
+                    if (!enumerator.MoveNext())
+                    {
+                        return max;
+                    }
+                    // Skip null
+                    found = enumerator.Current;
+                    while (!found.HasValue)
+                    {
+                        if (!enumerator.MoveNext())
+                        {
+                            return max;
+                        }
+                        found = enumerator.Current;
+                    }
+                    max = found.Value;
+                }
+                while (enumerator.MoveNext())
+                {
+                    // Skip null
+                    found = enumerator.Current;
+                    while (!found.HasValue)
+                    {
+                        if (!enumerator.MoveNext())
+                        {
+                            return max;
+                        }
+                        found = enumerator.Current;
+                    }
+                    max = Math.Max(found.Value, max);
+                }
                 return max;
             }
-            return null;
         }
 
         public static float? Max(this IEnumerable<float?> source)
@@ -432,21 +489,58 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            var found = false;
-            var max = float.MinValue;
-            foreach (var element in source)
+            using (var enumerator = source.GetEnumerator())
             {
-                if (element.HasValue)
+                if (!enumerator.MoveNext())
                 {
-                    max = Math.Max(element.Value, max);
-                    found = true;
+                    return null;
                 }
-            }
-            if (found)
-            {
+                // Skip null
+                var found = enumerator.Current;
+                while (!found.HasValue)
+                {
+                    if (!enumerator.MoveNext())
+                    {
+                        return null;
+                    }
+                    found = enumerator.Current;
+                }
+                // Skip NaN
+                var max = found.Value;
+                while (float.IsNaN(max))
+                {
+                    if (!enumerator.MoveNext())
+                    {
+                        return max;
+                    }
+                    // Skip null
+                    found = enumerator.Current;
+                    while (!found.HasValue)
+                    {
+                        if (!enumerator.MoveNext())
+                        {
+                            return max;
+                        }
+                        found = enumerator.Current;
+                    }
+                    max = found.Value;
+                }
+                while (enumerator.MoveNext())
+                {
+                    // Skip null
+                    found = enumerator.Current;
+                    while (!found.HasValue)
+                    {
+                        if (!enumerator.MoveNext())
+                        {
+                            return max;
+                        }
+                        found = enumerator.Current;
+                    }
+                    max = Math.Max(found.Value, max);
+                }
                 return max;
             }
-            return null;
         }
 
         public static decimal? Max(this IEnumerable<decimal?> source)
@@ -575,18 +669,28 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(selector));
             }
-            var found = false;
-            var max = double.MinValue;
-            foreach (var element in source)
+            using (var enumerator = source.GetEnumerator())
             {
-                max = Math.Max(selector(element), max);
-                found = true;
-            }
-            if (found)
-            {
+                if (!enumerator.MoveNext())
+                {
+                    throw new InvalidOperationException();
+                }
+                // Skin NaN
+                var max = selector(enumerator.Current);
+                while (double.IsNaN(max))
+                {
+                    if (!enumerator.MoveNext())
+                    {
+                        return max;
+                    }
+                    max = selector(enumerator.Current);
+                }
+                while (enumerator.MoveNext())
+                {
+                    max = Math.Max(selector(enumerator.Current), max);
+                }
                 return max;
             }
-            throw new InvalidOperationException();
         }
 
         public static float Max<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector)
@@ -599,18 +703,28 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(selector));
             }
-            var found = false;
-            var max = float.MinValue;
-            foreach (var element in source)
+            using (var enumerator = source.GetEnumerator())
             {
-                max = Math.Max(selector(element), max);
-                found = true;
-            }
-            if (found)
-            {
+                if (!enumerator.MoveNext())
+                {
+                    throw new InvalidOperationException();
+                }
+                // Skin NaN
+                var max = selector(enumerator.Current);
+                while (float.IsNaN(max))
+                {
+                    if (!enumerator.MoveNext())
+                    {
+                        return max;
+                    }
+                    max = selector(enumerator.Current);
+                }
+                while (enumerator.MoveNext())
+                {
+                    max = Math.Max(selector(enumerator.Current), max);
+                }
                 return max;
             }
-            throw new InvalidOperationException();
         }
 
         public static decimal Max<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector)
@@ -717,29 +831,58 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(selector));
             }
-            var found = false;
-            double? max = null;
-            foreach (var element in source)
+            using (var enumerator = source.GetEnumerator())
             {
-                var item = selector(element);
-                if (max.HasValue)
+                if (!enumerator.MoveNext())
                 {
-                    if (item > max)
+                    return null;
+                }
+                // Skip null
+                var found = selector(enumerator.Current);
+                while (!found.HasValue)
+                {
+                    if (!enumerator.MoveNext())
                     {
-                        max = item;
+                        return null;
                     }
+                    found = selector(enumerator.Current);
                 }
-                else
+                // Skip NaN
+                var max = found.Value;
+                while (double.IsNaN(max))
                 {
-                    max = item;
+                    if (!enumerator.MoveNext())
+                    {
+                        return max;
+                    }
+                    // Skip null
+                    found = selector(enumerator.Current);
+                    while (!found.HasValue)
+                    {
+                        if (!enumerator.MoveNext())
+                        {
+                            return max;
+                        }
+                        found = selector(enumerator.Current);
+                    }
+                    max = found.Value;
                 }
-                found = true;
-            }
-            if (found)
-            {
+                while (enumerator.MoveNext())
+                {
+                    // Skip null
+                    found = selector(enumerator.Current);
+                    while (!found.HasValue)
+                    {
+                        if (!enumerator.MoveNext())
+                        {
+                            return max;
+                        }
+                        found = selector(enumerator.Current);
+                    }
+                    max = Math.Max(found.Value, max);
+                }
                 return max;
             }
-            return null;
         }
 
         public static float? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector)
@@ -752,29 +895,58 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(selector));
             }
-            var found = false;
-            float? max = null;
-            foreach (var element in source)
+            using (var enumerator = source.GetEnumerator())
             {
-                var item = selector(element);
-                if (max.HasValue)
+                if (!enumerator.MoveNext())
                 {
-                    if (item > max)
+                    return null;
+                }
+                // Skip null
+                var found = selector(enumerator.Current);
+                while (!found.HasValue)
+                {
+                    if (!enumerator.MoveNext())
                     {
-                        max = item;
+                        return null;
                     }
+                    found = selector(enumerator.Current);
                 }
-                else
+                // Skip NaN
+                var max = found.Value;
+                while (float.IsNaN(max))
                 {
-                    max = item;
+                    if (!enumerator.MoveNext())
+                    {
+                        return max;
+                    }
+                    // Skip null
+                    found = selector(enumerator.Current);
+                    while (!found.HasValue)
+                    {
+                        if (!enumerator.MoveNext())
+                        {
+                            return max;
+                        }
+                        found = selector(enumerator.Current);
+                    }
+                    max = found.Value;
                 }
-                found = true;
-            }
-            if (found)
-            {
+                while (enumerator.MoveNext())
+                {
+                    // Skip null
+                    found = selector(enumerator.Current);
+                    while (!found.HasValue)
+                    {
+                        if (!enumerator.MoveNext())
+                        {
+                            return max;
+                        }
+                        found = selector(enumerator.Current);
+                    }
+                    max = Math.Max(found.Value, max);
+                }
                 return max;
             }
-            return null;
         }
 
         public static decimal? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector)
