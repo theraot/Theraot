@@ -59,36 +59,36 @@ namespace System.Collections
         // If a doesn't implement IComparable and b does, -(b.CompareTo(a)) is returned.
         // Otherwise an exception is thrown.
         //
-        public int Compare(object a, object b)
+        public int Compare(object x, object y)
         {
-            if (a == b)
+            if (x == y)
             {
                 return 0;
             }
 
-            if (a == null)
+            if (x == null)
             {
                 return -1;
             }
 
-            if (b == null)
+            if (y == null)
             {
                 return 1;
             }
 
-            if (a is string sa && b is string sb)
+            if (x is string sa && y is string sb)
             {
                 return _compareInfo.Compare(sa, sb);
             }
 
-            if (a is IComparable ia)
+            if (x is IComparable ia)
             {
-                return ia.CompareTo(b);
+                return ia.CompareTo(y);
             }
 
-            if (b is IComparable ib)
+            if (y is IComparable ib)
             {
-                return -ib.CompareTo(a);
+                return -ib.CompareTo(x);
             }
 
             throw new ArgumentException("At least one object must implement IComparable.");
