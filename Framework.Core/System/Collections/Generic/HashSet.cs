@@ -288,7 +288,9 @@ namespace System.Collections.Generic
             }
         }
 
+#pragma warning disable CC0091 // Use static method
         public void TrimExcess()
+#pragma warning restore CC0091 // Use static method
         {
             // Should not be static
             // Empty
