@@ -267,7 +267,10 @@ namespace System.Linq
             var max = int.MinValue;
             foreach (var element in source)
             {
-                max = Math.Max(element, max);
+                if (element > max)
+                {
+                    max = element;
+                }
                 found = true;
             }
             if (found)
@@ -287,7 +290,10 @@ namespace System.Linq
             var max = long.MinValue;
             foreach (var element in source)
             {
-                max = Math.Max(element, max);
+                if (element > max)
+                {
+                    max = element;
+                }
                 found = true;
             }
             if (found)
@@ -321,7 +327,11 @@ namespace System.Linq
                 }
                 while (enumerator.MoveNext())
                 {
-                    max = Math.Max(enumerator.Current, max);
+                    var element = enumerator.Current;
+                    if (element > max)
+                    {
+                        max = element;
+                    }
                 }
                 return max;
             }
@@ -351,7 +361,11 @@ namespace System.Linq
                 }
                 while (enumerator.MoveNext())
                 {
-                    max = Math.Max(enumerator.Current, max);
+                    var element = enumerator.Current;
+                    if (element > max)
+                    {
+                        max = element;
+                    }
                 }
                 return max;
             }
@@ -367,7 +381,10 @@ namespace System.Linq
             var max = decimal.MinValue;
             foreach (var element in source)
             {
-                max = Math.Max(element, max);
+                if (element > max)
+                {
+                    max = element;
+                }
                 found = true;
             }
             if (found)
@@ -389,7 +406,11 @@ namespace System.Linq
             {
                 if (element.HasValue)
                 {
-                    max = Math.Max(element.Value, max);
+                    var value = element.Value;
+                    if (value > max)
+                    {
+                        max = value;
+                    }
                     found = true;
                 }
             }
@@ -412,7 +433,11 @@ namespace System.Linq
             {
                 if (element.HasValue)
                 {
-                    max = Math.Max(element.Value, max);
+                    var value = element.Value;
+                    if (value > max)
+                    {
+                        max = value;
+                    }
                     found = true;
                 }
             }
@@ -477,7 +502,11 @@ namespace System.Linq
                         }
                         found = enumerator.Current;
                     }
-                    max = Math.Max(found.Value, max);
+                    var value = found.Value;
+                    if (value > max)
+                    {
+                        max = value;
+                    }
                 }
                 return max;
             }
@@ -537,7 +566,11 @@ namespace System.Linq
                         }
                         found = enumerator.Current;
                     }
-                    max = Math.Max(found.Value, max);
+                    var value = found.Value;
+                    if (value > max)
+                    {
+                        max = value;
+                    }
                 }
                 return max;
             }
@@ -555,7 +588,11 @@ namespace System.Linq
             {
                 if (element.HasValue)
                 {
-                    max = Math.Max(element.Value, max);
+                    var value = element.Value;
+                    if (value > max)
+                    {
+                        max = value;
+                    }
                     found = true;
                 }
             }
@@ -625,7 +662,11 @@ namespace System.Linq
             var max = int.MinValue;
             foreach (var element in source)
             {
-                max = Math.Max(selector(element), max);
+                var value = selector(element);
+                if (value > max)
+                {
+                    max = value;
+                }
                 found = true;
             }
             if (found)
@@ -649,7 +690,11 @@ namespace System.Linq
             var max = long.MinValue;
             foreach (var element in source)
             {
-                max = Math.Max(selector(element), max);
+                var value = selector(element);
+                if (value > max)
+                {
+                    max = value;
+                }
                 found = true;
             }
             if (found)
@@ -687,7 +732,11 @@ namespace System.Linq
                 }
                 while (enumerator.MoveNext())
                 {
-                    max = Math.Max(selector(enumerator.Current), max);
+                    var value = selector(enumerator.Current);
+                    if (value > max)
+                    {
+                        max = value;
+                    }
                 }
                 return max;
             }
@@ -721,7 +770,11 @@ namespace System.Linq
                 }
                 while (enumerator.MoveNext())
                 {
-                    max = Math.Max(selector(enumerator.Current), max);
+                    var value = selector(enumerator.Current);
+                    if (value > max)
+                    {
+                        max = value;
+                    }
                 }
                 return max;
             }
@@ -741,7 +794,11 @@ namespace System.Linq
             var max = decimal.MinValue;
             foreach (var element in source)
             {
-                max = Math.Max(selector(element), max);
+                var value = selector(element);
+                if (value > max)
+                {
+                    max = value;
+                }
                 found = true;
             }
             if (found)
@@ -879,7 +936,11 @@ namespace System.Linq
                         }
                         found = selector(enumerator.Current);
                     }
-                    max = Math.Max(found.Value, max);
+                    var value = found.Value;
+                    if (value > max)
+                    {
+                        max = value;
+                    }
                 }
                 return max;
             }
@@ -943,7 +1004,11 @@ namespace System.Linq
                         }
                         found = selector(enumerator.Current);
                     }
-                    max = Math.Max(found.Value, max);
+                    var value = found.Value;
+                    if (value > max)
+                    {
+                        max = value;
+                    }
                 }
                 return max;
             }
@@ -1015,7 +1080,10 @@ namespace System.Linq
             var min = int.MaxValue;
             foreach (var element in source)
             {
-                min = Math.Min(element, min);
+                if (element < min)
+                {
+                    min = element;
+                }
                 found = true;
             }
             if (found)
@@ -1035,7 +1103,10 @@ namespace System.Linq
             var min = long.MaxValue;
             foreach (var element in source)
             {
-                min = Math.Min(element, min);
+                if (element < min)
+                {
+                    min = element;
+                }
                 found = true;
             }
             if (found)
@@ -1059,7 +1130,10 @@ namespace System.Linq
                 {
                     return element;
                 }
-                min = Math.Min(element, min);
+                if (element < min)
+                {
+                    min = element;
+                }
                 found = true;
             }
             if (found)
@@ -1083,7 +1157,10 @@ namespace System.Linq
                 {
                     return element;
                 }
-                min = Math.Min(element, min);
+                if (element < min)
+                {
+                    min = element;
+                }
                 found = true;
             }
             if (found)
@@ -1103,7 +1180,10 @@ namespace System.Linq
             var min = decimal.MaxValue;
             foreach (var element in source)
             {
-                min = Math.Min(element, min);
+                if (element < min)
+                {
+                    min = element;
+                }
                 found = true;
             }
             if (found)
@@ -1125,7 +1205,11 @@ namespace System.Linq
             {
                 if (element.HasValue)
                 {
-                    min = Math.Min(element.Value, min);
+                    var value = element.Value;
+                    if (value < min)
+                    {
+                        min = value;
+                    }
                     found = true;
                 }
             }
@@ -1148,7 +1232,11 @@ namespace System.Linq
             {
                 if (element.HasValue)
                 {
-                    min = Math.Min(element.Value, min);
+                    var value = element.Value;
+                    if (value < min)
+                    {
+                        min = value;
+                    }
                     found = true;
                 }
             }
@@ -1176,7 +1264,10 @@ namespace System.Linq
                     {
                         return value;
                     }
-                    min = Math.Min(value, min);
+                    if (value < min)
+                    {
+                        min = value;
+                    }
                     found = true;
                 }
             }
@@ -1204,7 +1295,10 @@ namespace System.Linq
                     {
                         return value;
                     }
-                    min = Math.Min(value, min);
+                    if (value < min)
+                    {
+                        min = value;
+                    }
                     found = true;
                 }
             }
@@ -1227,7 +1321,11 @@ namespace System.Linq
             {
                 if (element.HasValue)
                 {
-                    min = Math.Min(element.Value, min);
+                    var value = element.Value;
+                    if (value < min)
+                    {
+                        min = value;
+                    }
                     found = true;
                 }
             }
@@ -1298,7 +1396,11 @@ namespace System.Linq
             var min = int.MaxValue;
             foreach (var element in source)
             {
-                min = Math.Min(selector(element), min);
+                var value = selector(element);
+                if (value < min)
+                {
+                    min = value;
+                }
                 found = true;
             }
             if (found)
@@ -1322,7 +1424,11 @@ namespace System.Linq
             var min = long.MaxValue;
             foreach (var element in source)
             {
-                min = Math.Min(selector(element), min);
+                var value = selector(element);
+                if (value < min)
+                {
+                    min = value;
+                }
                 found = true;
             }
             if (found)
@@ -1351,7 +1457,10 @@ namespace System.Linq
                 {
                     return value;
                 }
-                min = Math.Min(value, min);
+                if (value < min)
+                {
+                    min = value;
+                }
                 found = true;
             }
             if (found)
@@ -1380,7 +1489,10 @@ namespace System.Linq
                 {
                     return value;
                 }
-                min = Math.Min(value, min);
+                if (value < min)
+                {
+                    min = value;
+                }
                 found = true;
             }
             if (found)
@@ -1404,7 +1516,11 @@ namespace System.Linq
             var min = decimal.MaxValue;
             foreach (var element in source)
             {
-                min = Math.Min(selector(element), min);
+                var value = selector(element);
+                if (value < min)
+                {
+                    min = value;
+                }
                 found = true;
             }
             if (found)
