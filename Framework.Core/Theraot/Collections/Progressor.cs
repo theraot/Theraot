@@ -58,6 +58,10 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(enumerable));
             }
+            if (enumerable is T[] array)
+            {
+                return CreateFromArray(array);
+            }
             if (enumerable is IList<T> list)
             {
                 return CreateFromIList(list);
