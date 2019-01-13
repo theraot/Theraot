@@ -1,10 +1,12 @@
 // Needed for NET35 (SortedSet, OrderedCollection)
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace Theraot.Collections.Specialized
 {
+    [Serializable]
     public sealed class AVLTree<TKey, TValue> : IEnumerable<AVLNode<TKey, TValue>>
     {
         private readonly IComparer<TKey> _comparer;

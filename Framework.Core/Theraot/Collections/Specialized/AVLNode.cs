@@ -6,6 +6,7 @@ using System.Threading;
 
 namespace Theraot.Collections.Specialized
 {
+    [Serializable]
     public sealed class AVLNode<TKey, TValue>
     {
         private int _balance;
