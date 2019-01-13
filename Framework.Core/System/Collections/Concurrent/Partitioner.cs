@@ -175,7 +175,7 @@ namespace System.Collections.Concurrent
         public override IList<IEnumerator<KeyValuePair<long, T>>> GetOrderablePartitions(int partitionCount)
         {
             var list = new List<IEnumerator<KeyValuePair<long, T>>>(partitionCount);
-            var source = GetDynamicPartitions();
+            var source = Progressor<T>.CreateFromIEnumerable(_source);
             for (var index = 0; index < partitionCount; index++)
             {
                 list.Add(Enumerator(index));

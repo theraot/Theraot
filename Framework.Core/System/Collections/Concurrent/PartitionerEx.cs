@@ -53,14 +53,6 @@ namespace System.Collections.Concurrent
 
         public override IEnumerable<T> GetDynamicPartitions()
         {
-            if (_source is T[] array)
-            {
-                return Progressor<T>.CreateFromArray(array);
-            }
-            if (_source is IList<T> list)
-            {
-                return Progressor<T>.CreateFromIList(list);
-            }
             return Progressor<T>.CreateFromIEnumerable(_source);
         }
 
@@ -78,7 +70,7 @@ namespace System.Collections.Concurrent
         public override IList<IEnumerator<KeyValuePair<long, T>>> GetOrderablePartitions(int partitionCount)
         {
             var list = new List<IEnumerator<KeyValuePair<long, T>>>(partitionCount);
-            var source = GetDynamicPartitions();
+            var source = Progressor<T>.CreateFromIEnumerable(_source);
             for (var index = 0; index < partitionCount; index++)
             {
                 list.Add(Enumerator(index));
@@ -98,7 +90,7 @@ namespace System.Collections.Concurrent
         public override IList<IEnumerator<T>> GetPartitions(int partitionCount)
         {
             var list = new List<IEnumerator<T>>(partitionCount);
-            var source = GetDynamicPartitions();
+            var source = Progressor<T>.CreateFromIEnumerable(_source);
             for (var index = 0; index < partitionCount; index++)
             {
                 list.Add(Enumerator());
