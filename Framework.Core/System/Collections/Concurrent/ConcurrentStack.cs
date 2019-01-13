@@ -94,7 +94,7 @@ namespace System.Collections.Concurrent
             }
             if (startIndex + count > items.Length)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("The sum of the startIndex and count arguments must be less than or equal to the collection's Count.");
             }
             for (var index = 0; index < count; index++)
             {
@@ -156,7 +156,7 @@ namespace System.Collections.Concurrent
             }
             if (startIndex + count > items.Length)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("The sum of the startIndex and count arguments must be less than or equal to the collection's Count.");
             }
             var index = 0;
             for (; index < count; index++)

@@ -145,7 +145,7 @@ namespace System.Collections.Concurrent
                 {
                     this[keyAsTKey] = valueAsTValue;
                 }
-                throw new ArgumentException();
+                throw new ArgumentException(string.Empty, nameof(value));
             }
         }
 
@@ -173,7 +173,7 @@ namespace System.Collections.Concurrent
             {
                 _wrapped.AddNew(keyAsTKey, valueAsTValue);
             }
-            throw new ArgumentException();
+            throw new ArgumentException(string.Empty, nameof(value));
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
@@ -329,7 +329,7 @@ namespace System.Collections.Concurrent
             }
             catch (IndexOutOfRangeException exception)
             {
-                throw new ArgumentException(nameof(array), exception.Message);
+                throw new ArgumentException(exception.Message, nameof(array));
             }
         }
 

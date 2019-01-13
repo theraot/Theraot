@@ -258,7 +258,7 @@ namespace System.Collections.Generic
             Theraot.No.Op(context);
             if (info == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(info));
             }
             info.AddValue(nameof(Comparer), Comparer, typeof(IComparer<T>));
             info.AddValue(nameof(Count), Count);
