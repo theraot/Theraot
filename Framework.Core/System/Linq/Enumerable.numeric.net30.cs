@@ -1055,6 +1055,10 @@ namespace System.Linq
             var min = double.MaxValue;
             foreach (var element in source)
             {
+                if (double.IsNaN(element))
+                {
+                    return element;
+                }
                 min = Math.Min(element, min);
                 found = true;
             }
@@ -1075,6 +1079,10 @@ namespace System.Linq
             var min = float.MaxValue;
             foreach (var element in source)
             {
+                if (float.IsNaN(element))
+                {
+                    return element;
+                }
                 min = Math.Min(element, min);
                 found = true;
             }
@@ -1163,7 +1171,12 @@ namespace System.Linq
             {
                 if (element.HasValue)
                 {
-                    min = Math.Min(element.Value, min);
+                    var value = element.Value;
+                    if (double.IsNaN(value))
+                    {
+                        return value;
+                    }
+                    min = Math.Min(value, min);
                     found = true;
                 }
             }
@@ -1186,7 +1199,12 @@ namespace System.Linq
             {
                 if (element.HasValue)
                 {
-                    min = Math.Min(element.Value, min);
+                    var value = element.Value;
+                    if (float.IsNaN(value))
+                    {
+                        return value;
+                    }
+                    min = Math.Min(value, min);
                     found = true;
                 }
             }
@@ -1328,7 +1346,12 @@ namespace System.Linq
             var min = double.MaxValue;
             foreach (var element in source)
             {
-                min = Math.Min(selector(element), min);
+                var value = selector(element);
+                if (double.IsNaN(value))
+                {
+                    return value;
+                }
+                min = Math.Min(value, min);
                 found = true;
             }
             if (found)
@@ -1352,7 +1375,12 @@ namespace System.Linq
             var min = float.MaxValue;
             foreach (var element in source)
             {
-                min = Math.Min(selector(element), min);
+                var value = selector(element);
+                if (float.IsNaN(value))
+                {
+                    return value;
+                }
+                min = Math.Min(value, min);
                 found = true;
             }
             if (found)
@@ -1471,16 +1499,25 @@ namespace System.Linq
             foreach (var element in source)
             {
                 var item = selector(element);
+                if (!item.HasValue)
+                {
+                    continue;
+                }
+                var value = item.Value;
+                if (float.IsNaN(value))
+                {
+                    return value;
+                }
                 if (min.HasValue)
                 {
-                    if (item < min)
+                    if (value < min)
                     {
-                        min = item;
+                        min = value;
                     }
                 }
                 else
                 {
-                    min = item;
+                    min = value;
                 }
                 found = true;
             }
@@ -1506,16 +1543,25 @@ namespace System.Linq
             foreach (var element in source)
             {
                 var item = selector(element);
+                if (!item.HasValue)
+                {
+                    continue;
+                }
+                var value = item.Value;
+                if (double.IsNaN(value))
+                {
+                    return value;
+                }
                 if (min.HasValue)
                 {
-                    if (item < min)
+                    if (value < min)
                     {
-                        min = item;
+                        min = value;
                     }
                 }
                 else
                 {
-                    min = item;
+                    min = value;
                 }
                 found = true;
             }
