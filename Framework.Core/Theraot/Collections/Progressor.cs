@@ -58,6 +58,14 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(enumerable));
             }
+            if (enumerable is IList<T> list)
+            {
+                return CreateFromIList(list);
+            }
+            if (enumerable is IReadOnlyList<T> readOnlyList)
+            {
+                return CreateFromIReadOnlyList(readOnlyList);
+            }
             var enumerator = enumerable.GetEnumerator();
             var proxy = new ProxyObservable<T>();
             bool Take(out T value)
@@ -125,7 +133,7 @@ namespace Theraot.Collections
             (
                 new CustomObserver<T>(
                     onCompleted: source.Cancel,
-                    onError: exception => source.Cancel(),
+                    onError: _ => source.Cancel(),
                     onNext: OnNext
                 )
             );
@@ -188,6 +196,29 @@ namespace Theraot.Collections
             bool Take(out T value)
             {
                 return tryTake[0](out value);
+            }
+            return new Progressor<T>(proxy, Take);
+        }
+
+        public static Progressor<T> CreateFromIReadOnlyList(IReadOnlyList<T> list)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+            var index = -1;
+            var proxy = new ProxyObservable<T>();
+            bool Take(out T value)
+            {
+                value = default;
+                var currentIndex = Interlocked.Increment(ref index);
+                if (currentIndex >= list.Count)
+                {
+                    return false;
+                }
+
+                value = list[currentIndex];
+                return true;
             }
             return new Progressor<T>(proxy, Take);
         }
