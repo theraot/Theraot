@@ -293,39 +293,44 @@ namespace System.Collections.Concurrent
             Extensions.CanCopyTo(_wrapped.Count, array, index);
             try
             {
-                // most decent alternative
-                if (array is KeyValuePair<TKey, TValue>[] pairs)
+                switch (array)
                 {
-                    var keyValuePairs = pairs;
-                    foreach (var pair in _wrapped)
+                    case KeyValuePair<TKey, TValue>[] pairs:
                     {
-                        keyValuePairs[index] = pair;
-                        index++;
+                        // most decent alternative
+                        var keyValuePairs = pairs;
+                        foreach (var pair in _wrapped)
+                        {
+                            keyValuePairs[index] = pair;
+                            index++;
+                        }
+                        return;
                     }
-                    return;
-                }
-                if (array is object[] objects)
-                {
-                    var valuePairs = objects;
-                    foreach (var pair in _wrapped)
+                    case DictionaryEntry[] entries:
                     {
-                        valuePairs[index] = pair;
-                        index++;
+                        // that thing exists, I was totally unaware, I may as well use it.
+                        var dictionaryEntries = entries;
+                        foreach (var pair in _wrapped)
+                        {
+                            dictionaryEntries[index] = new DictionaryEntry(pair.Key, pair.Value);
+                            index++;
+                        }
+                        return;
                     }
-                    return;
-                }
-                // that thing exists, I was totally unaware, I may as well use it.
-                if (array is DictionaryEntry[] entries)
-                {
-                    var dictionaryEntries = entries;
-                    foreach (var pair in _wrapped)
+                    case object[] objects:
                     {
-                        dictionaryEntries[index] = new DictionaryEntry(pair.Key, pair.Value);
-                        index++;
+                        var valuePairs = objects;
+                        foreach (var pair in _wrapped)
+                        {
+                            valuePairs[index] = pair;
+                            index++;
+                        }
+                        return;
                     }
-                    return;
+                    default:
+                        // A.K.A ScrewYouException
+                        throw new ArgumentException("Not supported array type");
                 }
-                throw new ArgumentException("Not supported array type"); // A.K.A ScrewYouException
             }
             catch (IndexOutOfRangeException exception)
             {
