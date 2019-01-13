@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable CC0091 // Use static method
+
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using Theraot.Collections;
@@ -288,9 +290,7 @@ namespace System.Collections.Generic
             }
         }
 
-#pragma warning disable CC0091 // Use static method
         public void TrimExcess()
-#pragma warning restore CC0091 // Use static method
         {
             // Should not be static
             // Empty

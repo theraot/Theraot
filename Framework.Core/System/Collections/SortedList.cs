@@ -1,4 +1,7 @@
-﻿#if LESSTHAN_NETSTANDARD13
+#if LESSTHAN_NETSTANDARD13
+
+#pragma warning disable CA2235 // Mark all non-serializable fields
+#pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -922,7 +925,7 @@ namespace System.Collections
                     if (_getObjectRetType == Keys)
                     {
                         return _key;
-                    }
+                }
                     else if (_getObjectRetType == Values)
                     {
                         return _value;
@@ -930,7 +933,7 @@ namespace System.Collections
                     else
                     {
                         return new DictionaryEntry(_key, _value);
-                    }
+            }
                 }
             }
 

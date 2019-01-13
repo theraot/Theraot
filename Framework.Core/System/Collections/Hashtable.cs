@@ -1,4 +1,11 @@
-﻿#if LESSTHAN_NETSTANDARD13
+#if LESSTHAN_NETSTANDARD13
+
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
+#pragma warning disable CA2235 // Mark all non-serializable fields
+#pragma warning disable CC0021 // Use nameof
+#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
+#pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
+// ReSharper disable once VirtualMemberCallInConstructor
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -114,14 +121,14 @@ namespace System.Collections
 
         private const int _initialSize = 3;
 
-        private const string _loadFactorName = "LoadFactor"; // Do not rename (binary serialization)
-        private const string _versionName = "Version"; // Do not rename (binary serialization)
-        private const string _comparerName = "Comparer"; // Do not rename (binary serialization)
-        private const string _hashCodeProviderName = "HashCodeProvider"; // Do not rename (binary serialization)
-        private const string _hashSizeName = "HashSize";  // Must save buckets.Length. Do not rename (binary serialization)
-        private const string _keysName = "Keys"; // Do not rename (binary serialization)
-        private const string _valuesName = "Values"; // Do not rename (binary serialization)
-        private const string _keyComparerName = "KeyComparer"; // Do not rename (binary serialization)
+        private const string _loadFactorName = "LoadFactor";
+        private const string _versionName = "Version";
+        private const string _comparerName = "Comparer";
+        private const string _hashCodeProviderName = "HashCodeProvider";
+        private const string _hashSizeName = "HashSize";
+        private const string _keysName = "Keys";
+        private const string _valuesName = "Values";
+        private const string _keyComparerName = "KeyComparer";
 
         // Deleted entries have their key set to buckets
 
@@ -361,7 +368,6 @@ namespace System.Collections
             var e = d.GetEnumerator();
             while (e.MoveNext())
             {
-                // ReSharper disable once VirtualMemberCallInConstructor
                 Add(e.Key, e.Value);
             }
         }
@@ -377,7 +383,6 @@ namespace System.Collections
             var e = d.GetEnumerator();
             while (e.MoveNext())
             {
-                // ReSharper disable once VirtualMemberCallInConstructor
                 Add(e.Key, e.Value);
             }
         }
@@ -1111,16 +1116,12 @@ namespace System.Collections
                 if (keyComparerForSerialization == null)
                 {
                     info.AddValue(_comparerName, null, typeof(IComparer));
-#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
                     info.AddValue(_hashCodeProviderName, null, typeof(IHashCodeProvider));
-#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
                 }
                 else if (keyComparerForSerialization is CompatibleComparer c)
                 {
                     info.AddValue(_comparerName, c.Comparer, typeof(IComparer));
-#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
                     info.AddValue(_hashCodeProviderName, c.HashCodeProvider, typeof(IHashCodeProvider));
-#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
                 }
                 else
                 {
@@ -1165,9 +1166,7 @@ namespace System.Collections
             var hashsize = 0;
             IComparer c = null;
 
-#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
             IHashCodeProvider hcp = null;
-#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
 
             object[] serKeys = null;
             object[] serValues = null;
@@ -1195,9 +1194,7 @@ namespace System.Collections
                         break;
 
                     case _hashCodeProviderName:
-#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
                         hcp = (IHashCodeProvider)siInfo.GetValue(_hashCodeProviderName, typeof(IHashCodeProvider));
-#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
                         break;
 
                     case _keysName:
@@ -1647,17 +1644,13 @@ namespace System.Collections
 
     internal sealed class CompatibleComparer : IEqualityComparer
     {
-#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
         internal CompatibleComparer(IHashCodeProvider hashCodeProvider, IComparer comparer)
-#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
         {
             HashCodeProvider = hashCodeProvider;
             Comparer = comparer;
         }
 
-#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
         internal IHashCodeProvider HashCodeProvider { get; }
-#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
 
         internal IComparer Comparer { get; }
 

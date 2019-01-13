@@ -1,10 +1,13 @@
 ﻿#if LESSTHAN_NET45
 
+#pragma warning disable CA1034 // Nested types should not be visible
+#pragma warning disable RECS0096 // Type parameter is never used
+// ReSharper disable UnusedTypeParameter
+
 using System.Collections.Generic;
 
 namespace System.Collections.ObjectModel
 {
-    // ReSharper disable once UnusedTypeParameter
     public partial class ReadOnlyDictionary<TKey, TValue> // TKey is used in another file, this is a partial class
     {
         [Serializable]

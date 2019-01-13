@@ -1,5 +1,9 @@
 ﻿#if LESSTHAN_NETSTANDARD13
 
+#pragma warning disable CA2235 // Mark all non-serializable fields
+#pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
+// ReSharper disable VirtualMemberCallInConstructor
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -62,17 +66,10 @@ namespace System.Collections
         {
             if (capacity < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(capacity), string.Format("'{0}' must be non-negative.", nameof(capacity)));
+                throw new ArgumentOutOfRangeException(nameof(capacity), $"'{nameof(capacity)}' must be non-negative.");
             }
 
-            if (capacity == 0)
-            {
-                _items = ArrayReservoir<object>.EmptyArray;
-            }
-            else
-            {
-                _items = new object[capacity];
-            }
+            _items = capacity == 0 ? ArrayReservoir<object>.EmptyArray : new object[capacity];
         }
 
         // Constructs a ArrayList, copying the contents of the given collection. The
@@ -94,7 +91,6 @@ namespace System.Collections
             else
             {
                 _items = new object[count];
-                // ReSharper disable once VirtualMemberCallInConstructor
                 AddRange(c);
             }
         }

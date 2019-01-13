@@ -1,3 +1,5 @@
+#pragma warning disable RCS1231 // Make parameter ref read-only.
+
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
