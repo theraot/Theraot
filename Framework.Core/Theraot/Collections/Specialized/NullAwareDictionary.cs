@@ -1,5 +1,8 @@
 // Needed for NET30
 
+#pragma warning disable RECS0017 // Possible compare of value type with 'null'
+// ReSharper disable HeuristicUnreachableCode
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -113,7 +116,7 @@ namespace Theraot.Collections.Specialized
             }
             set
             {
-                // key could  be null
+                // key could be null
                 if (key == null)
                 {
                     SetForNull(value); // OK
