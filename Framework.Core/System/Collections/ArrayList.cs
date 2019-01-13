@@ -15,7 +15,6 @@
 ===========================================================*/
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Theraot.Collections.ThreadSafe;
 
 namespace System.Collections
@@ -31,9 +30,9 @@ namespace System.Collections
     [Serializable]
     public class ArrayList : IList, ICloneable
     {
-        private object[] _items; // Do not rename (binary serialization)
-        private int _size; // Do not rename (binary serialization)
-        private int _version; // Do not rename (binary serialization)
+        private object[] _items;
+        private int _size;
+        private int _version;
 
         private const int _defaultCapacity = 4;
 
@@ -95,6 +94,7 @@ namespace System.Collections
             else
             {
                 _items = new object[count];
+                // ReSharper disable once VirtualMemberCallInConstructor
                 AddRange(c);
             }
         }
@@ -291,9 +291,9 @@ namespace System.Collections
         // It does a linear, O(n) search.  Equality is determined by calling
         // item.Equals().
         //
-        public virtual bool Contains(object item)
+        public virtual bool Contains(object value)
         {
-            if (item == null)
+            if (value == null)
             {
                 for (var i = 0; i < _size; i++)
                 {
@@ -308,7 +308,7 @@ namespace System.Collections
 
             for (var i = 0; i < _size; i++)
             {
-                if (_items[i] != null && _items[i].Equals(item))
+                if (_items[i]?.Equals(value) == true)
                 {
                     return true;
                 }
@@ -650,9 +650,9 @@ namespace System.Collections
         // Removes the element at the given index. The size of the list is
         // decreased by one.
         //
-        public virtual void Remove(object obj)
+        public virtual void Remove(object value)
         {
-            var index = IndexOf(obj);
+            var index = IndexOf(value);
             if (index >= 0)
             {
                 RemoveAt(index);
@@ -961,9 +961,9 @@ namespace System.Collections
 
             public override object SyncRoot => _list.SyncRoot;
 
-            public override int Add(object obj)
+            public override int Add(object value)
             {
-                var i = _list.Add(obj);
+                var i = _list.Add(value);
                 _version++;
                 return i;
             }
@@ -1036,14 +1036,14 @@ namespace System.Collections
                 return new ListWrapper(_list);
             }
 
-            public override bool Contains(object obj)
+            public override bool Contains(object value)
             {
-                return _list.Contains(obj);
+                return _list.Contains(value);
             }
 
-            public override void CopyTo(Array array, int index)
+            public override void CopyTo(Array array, int arrayIndex)
             {
-                _list.CopyTo(array, index);
+                _list.CopyTo(array, arrayIndex);
             }
 
             public override void CopyTo(int index, Array array, int arrayIndex, int count)
@@ -1142,7 +1142,7 @@ namespace System.Collections
 
                 for (var i = startIndex; i < endIndex; i++)
                 {
-                    if (_list[i] != null && _list[i].Equals(value))
+                    if (_list[i]?.Equals(value) == true)
                     {
                         return i;
                     }
@@ -1151,9 +1151,9 @@ namespace System.Collections
                 return -1;
             }
 
-            public override void Insert(int index, object obj)
+            public override void Insert(int index, object value)
             {
-                _list.Insert(index, obj);
+                _list.Insert(index, value);
                 _version++;
             }
 
@@ -1233,7 +1233,7 @@ namespace System.Collections
 
                 for (var i = startIndex; i >= endIndex; i--)
                 {
-                    if (_list[i] != null && _list[i].Equals(value))
+                    if (_list[i]?.Equals(value) == true)
                     {
                         return i;
                     }
@@ -1607,11 +1607,11 @@ namespace System.Collections
                 }
             }
 
-            public override bool Contains(object item)
+            public override bool Contains(object value)
             {
                 lock (_root)
                 {
-                    return _list.Contains(item);
+                    return _list.Contains(value);
                 }
             }
 
@@ -1623,11 +1623,11 @@ namespace System.Collections
                 }
             }
 
-            public override void CopyTo(Array array, int index)
+            public override void CopyTo(Array array, int arrayIndex)
             {
                 lock (_root)
                 {
-                    _list.CopyTo(array, index);
+                    _list.CopyTo(array, arrayIndex);
                 }
             }
 
@@ -1875,11 +1875,11 @@ namespace System.Collections
                 }
             }
 
-            public bool Contains(object item)
+            public bool Contains(object value)
             {
                 lock (SyncRoot)
                 {
-                    return _list.Contains(item);
+                    return _list.Contains(value);
                 }
             }
 
@@ -1957,7 +1957,7 @@ namespace System.Collections
 
             public object SyncRoot => _list.SyncRoot;
 
-            public int Add(object obj)
+            public int Add(object value)
             {
                 throw new NotSupportedException("Collection was of a fixed size.");
             }
@@ -1967,9 +1967,9 @@ namespace System.Collections
                 throw new NotSupportedException("Collection was of a fixed size.");
             }
 
-            public bool Contains(object obj)
+            public bool Contains(object value)
             {
-                return _list.Contains(obj);
+                return _list.Contains(value);
             }
 
             public void CopyTo(Array array, int index)
@@ -1987,7 +1987,7 @@ namespace System.Collections
                 return _list.IndexOf(value);
             }
 
-            public void Insert(int index, object obj)
+            public void Insert(int index, object value)
             {
                 throw new NotSupportedException("Collection was of a fixed size.");
             }
@@ -2033,7 +2033,7 @@ namespace System.Collections
 
             public override object SyncRoot => _list.SyncRoot;
 
-            public override int Add(object obj)
+            public override int Add(object value)
             {
                 throw new NotSupportedException("Collection was of a fixed size.");
             }
@@ -2065,14 +2065,14 @@ namespace System.Collections
                 return arrayList;
             }
 
-            public override bool Contains(object obj)
+            public override bool Contains(object value)
             {
-                return _list.Contains(obj);
+                return _list.Contains(value);
             }
 
-            public override void CopyTo(Array array, int index)
+            public override void CopyTo(Array array, int arrayIndex)
             {
-                _list.CopyTo(array, index);
+                _list.CopyTo(array, arrayIndex);
             }
 
             public override void CopyTo(int index, Array array, int arrayIndex, int count)
@@ -2105,7 +2105,7 @@ namespace System.Collections
                 return _list.IndexOf(value, startIndex, count);
             }
 
-            public override void Insert(int index, object obj)
+            public override void Insert(int index, object value)
             {
                 throw new NotSupportedException("Collection was of a fixed size.");
             }
@@ -2219,7 +2219,7 @@ namespace System.Collections
 
             public object SyncRoot => _list.SyncRoot;
 
-            public int Add(object obj)
+            public int Add(object value)
             {
                 throw new NotSupportedException("Collection is read-only.");
             }
@@ -2229,9 +2229,9 @@ namespace System.Collections
                 throw new NotSupportedException("Collection is read-only.");
             }
 
-            public bool Contains(object obj)
+            public bool Contains(object value)
             {
-                return _list.Contains(obj);
+                return _list.Contains(value);
             }
 
             public void CopyTo(Array array, int index)
@@ -2249,7 +2249,7 @@ namespace System.Collections
                 return _list.IndexOf(value);
             }
 
-            public void Insert(int index, object obj)
+            public void Insert(int index, object value)
             {
                 throw new NotSupportedException("Collection is read-only.");
             }
@@ -2290,7 +2290,7 @@ namespace System.Collections
 
             public override object SyncRoot => _list.SyncRoot;
 
-            public override int Add(object obj)
+            public override int Add(object value)
             {
                 throw new NotSupportedException("Collection is read-only.");
             }
@@ -2322,14 +2322,14 @@ namespace System.Collections
                 return arrayList;
             }
 
-            public override bool Contains(object obj)
+            public override bool Contains(object value)
             {
-                return _list.Contains(obj);
+                return _list.Contains(value);
             }
 
-            public override void CopyTo(Array array, int index)
+            public override void CopyTo(Array array, int arrayIndex)
             {
-                _list.CopyTo(array, index);
+                _list.CopyTo(array, arrayIndex);
             }
 
             public override void CopyTo(int index, Array array, int arrayIndex, int count)
@@ -2362,7 +2362,7 @@ namespace System.Collections
                 return _list.IndexOf(value, startIndex, count);
             }
 
-            public override void Insert(int index, object obj)
+            public override void Insert(int index, object value)
             {
                 throw new NotSupportedException("Collection is read-only.");
             }
@@ -2630,10 +2630,10 @@ namespace System.Collections
                 return arrayList;
             }
 
-            public override bool Contains(object item)
+            public override bool Contains(object value)
             {
                 InternalUpdateRange();
-                if (item == null)
+                if (value == null)
                 {
                     for (var i = 0; i < _baseSize; i++)
                     {
@@ -2648,7 +2648,7 @@ namespace System.Collections
 
                 for (var i = 0; i < _baseSize; i++)
                 {
-                    if (_baseList[_baseIndex + i] != null && _baseList[_baseIndex + i].Equals(item))
+                    if (_baseList[_baseIndex + i]?.Equals(value) == true)
                     {
                         return true;
                     }
@@ -2657,7 +2657,7 @@ namespace System.Collections
                 return false;
             }
 
-            public override void CopyTo(Array array, int index)
+            public override void CopyTo(Array array, int arrayIndex)
             {
                 if (array == null)
                 {
@@ -2669,18 +2669,18 @@ namespace System.Collections
                     throw new ArgumentException("Only single dimensional arrays are supported for the requested action.", nameof(array));
                 }
 
-                if (index < 0)
+                if (arrayIndex < 0)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(index), "Non-negative number required.");
+                    throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number required.");
                 }
 
-                if (array.Length - index < _baseSize)
+                if (array.Length - arrayIndex < _baseSize)
                 {
                     throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
                 }
 
                 InternalUpdateRange();
-                _baseList.CopyTo(_baseIndex, array, index, _baseSize);
+                _baseList.CopyTo(_baseIndex, array, arrayIndex, _baseSize);
             }
 
             public override void CopyTo(int index, Array array, int arrayIndex, int count)
