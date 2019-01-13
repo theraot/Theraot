@@ -136,7 +136,6 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Contains(T value)
         {
-            // ReSharper disable once AssignNullToNotNullAttribute
             var hashCode = Comparer.GetHashCode(value);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
@@ -265,7 +264,6 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(T value)
         {
-            // ReSharper disable once AssignNullToNotNullAttribute
             var hashCode = Comparer.GetHashCode(value);
             for (var attempts = 0; attempts < _probing; attempts++)
             {

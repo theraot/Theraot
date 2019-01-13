@@ -27,7 +27,6 @@ namespace System.Dynamic
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicMetaObjectBinder"/> class.
         /// </summary>
-        // ReSharper disable once EmptyConstructor
         protected DynamicMetaObjectBinder()
         {
             // Empty

@@ -43,7 +43,6 @@ namespace System.Runtime.Serialization
         }
 
         [CLSCompliant(false)]
-        // ReSharper disable once UnusedParameter.Local
         public SerializationInfo(Type type, IFormatterConverter converter, bool requireSameTokenInPartialTrust)
             : this(type, converter)
         {

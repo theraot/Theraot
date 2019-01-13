@@ -31,7 +31,6 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (o == null)
             {
-                // ReSharper disable once PossibleNullReferenceException
                 GC.KeepAlive(o.GetType());
             }
         }

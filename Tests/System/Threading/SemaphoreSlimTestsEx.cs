@@ -78,7 +78,6 @@ namespace Tests.System.Threading
                         (
                             _ =>
                             {
-                                // ReSharper disable once MethodSupportsCancellation
                                 return Task.Factory.StartNew
                                 (
                                     async () =>

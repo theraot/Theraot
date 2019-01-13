@@ -15,7 +15,6 @@ namespace System.Linq.Expressions.Compiler
     {
         private const MethodAttributes _ctorAttributes = MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public;
 
-        // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
         private const MethodImplAttributes _implAttributes = MethodImplAttributes.Runtime | MethodImplAttributes.Managed;
 
         private const MethodAttributes _invokeAttributes = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual;

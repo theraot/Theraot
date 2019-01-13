@@ -22,7 +22,6 @@ namespace System.Dynamic
     /// <summary>
     /// Represents an object with members that can be dynamically added and removed at runtime.
     /// </summary>
-    // ReSharper disable once ClassNeverInstantiated.Global
     public sealed class ExpandoObject : IDynamicMetaObjectProvider, IDictionary<string, object>, INotifyPropertyChanged
     {
         internal const int AmbiguousMatchFound = -2;
@@ -459,7 +458,6 @@ namespace System.Dynamic
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            // ReSharper disable once UnusedMember.Local
             public string[] Items
             {
                 get
@@ -614,7 +612,6 @@ namespace System.Dynamic
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            // ReSharper disable once UnusedMember.Local
             public object[] Items
             {
                 get

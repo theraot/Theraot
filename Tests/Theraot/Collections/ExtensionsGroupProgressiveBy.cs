@@ -141,7 +141,6 @@ namespace Tests.Theraot.Collections
             var src = new IterateAndCount(10);
             var a = src.GroupProgressiveBy(i => i > 5, null);
             Assert.AreEqual(src.Total, 0);
-            // ReSharper disable once PossibleMultipleEnumeration
             using (var enumerator = a.GetEnumerator())
             {
                 // GroupProgressiveBy is truly deferred
@@ -149,7 +148,6 @@ namespace Tests.Theraot.Collections
                 Assert.AreEqual(src.Total, 0);
             }
             Assert.AreEqual(src.Total, 0);
-            // ReSharper disable once PossibleMultipleEnumeration
             using (var enumerator = a.GetEnumerator())
             {
                 // GroupProgressiveBy is truly deferred

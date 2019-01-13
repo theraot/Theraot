@@ -89,16 +89,13 @@ namespace TestRunner.System.Threading
                         (
                             _ =>
                             {
-                                // ReSharper disable once MethodSupportsCancellation
                                 return Task.Factory.StartNew
                                 (
                                     async () =>
                                     {
                                         log.Add("a");
-                                        // ReSharper disable once AccessToDisposedClosure
                                         await semaphore.WaitAsync
                                         (
-                                            // ReSharper disable once AccessToDisposedClosure
                                             source.Token
                                         );
                                         Interlocked.Add(ref padding, 100);
@@ -107,7 +104,6 @@ namespace TestRunner.System.Threading
                                         Thread.Sleep(1000 + padding);
                                         // Calling release should give increasing results per chunk
                                         log.Add("c");
-                                        // ReSharper disable once AccessToDisposedClosure
                                         var count = semaphore.Release();
                                         logCount.Add(count);
                                         log.Add("d");

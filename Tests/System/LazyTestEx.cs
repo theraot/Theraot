@@ -100,21 +100,18 @@ namespace MonoTests.System
             {
                 var threadA = new Thread(() =>
                 {
-                    // ReSharper disable once AccessToDisposedClosure
                     manual.WaitOne();
                     GC.KeepAlive(needle.Value);
                     Interlocked.Increment(ref threadDone);
                 });
                 var threadB = new Thread(() =>
                 {
-                    // ReSharper disable once AccessToDisposedClosure
                     manual.WaitOne();
                     GC.KeepAlive(needle.Value);
                     Interlocked.Increment(ref threadDone);
                 });
                 var threadC = new Thread(() =>
                 {
-                    // ReSharper disable once AccessToDisposedClosure
                     manual.WaitOne();
                     GC.KeepAlive(needle.Value);
                     Interlocked.Increment(ref threadDone);

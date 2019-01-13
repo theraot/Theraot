@@ -216,7 +216,6 @@ namespace System.Linq.Expressions
             // same as that returned by reflection.
             // Check for this condition and try and get the method from reflection.
             var type = method.DeclaringType;
-            // ReSharper disable once PossibleNullReferenceException
             return type.IsInterface && method.Name == propertyMethod.Name && type.GetMethod(method.Name) == propertyMethod;
         }
 

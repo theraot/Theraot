@@ -568,7 +568,6 @@ namespace System.Linq.Expressions.Compiler
             var add = DictionaryOfStringInt32AddStringInt32;
             for (int i = 0, n = node.Cases.Count; i < n; i++)
             {
-                // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
                 foreach (ConstantExpression t in node.Cases[i].TestValues)
                 {
                     if (t.Value != null)
@@ -689,7 +688,6 @@ namespace System.Linq.Expressions.Compiler
             {
                 DefineSwitchCaseLabel(node.Cases[i], out labels[i], out isGoto[i]);
 
-                // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
                 foreach (ConstantExpression test in node.Cases[i].TestValues)
                 {
                     // Guaranteed to work thanks to CanOptimizeSwitchType.
@@ -898,7 +896,6 @@ namespace System.Linq.Expressions.Compiler
                 if (tryType != typeof(void))
                 {
                     //store the value of the catch block body
-                    // ReSharper disable once AssignNullToNotNullAttribute
                     IL.Emit(OpCodes.Stloc, value);
                 }
 
@@ -937,7 +934,6 @@ namespace System.Linq.Expressions.Compiler
 
             if (tryType != typeof(void))
             {
-                // ReSharper disable once AssignNullToNotNullAttribute
                 IL.Emit(OpCodes.Ldloc, value);
                 FreeLocal(value);
             }

@@ -205,7 +205,6 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    // ReSharper disable once CompareOfFloatsByEqualityOperator
                     frame.Push((double)left == (double)right);
                 }
                 return 1;
@@ -224,7 +223,6 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    // ReSharper disable once CompareOfFloatsByEqualityOperator
                     frame.Push((double)left == (double)right);
                 }
                 return 1;
@@ -355,7 +353,6 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                // ReSharper disable once EqualExpressionComparison
                 frame.Push(frame.Pop() == frame.Pop());
                 return 1;
             }
@@ -417,7 +414,6 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    // ReSharper disable once CompareOfFloatsByEqualityOperator
                     frame.Push((float)left == (float)right);
                 }
                 return 1;
@@ -436,7 +432,6 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    // ReSharper disable once CompareOfFloatsByEqualityOperator
                     frame.Push((float)left == (float)right);
                 }
                 return 1;

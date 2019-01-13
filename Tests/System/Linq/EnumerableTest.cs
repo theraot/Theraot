@@ -119,9 +119,7 @@ namespace MonoTests.System.Linq
             var bingo = new Bingo();
 
             // Note: we are testing Cast
-            // ReSharper disable once RedundantEnumerableCastCall
             AssertAreSame(ints, bingo.Cast<int>());
-            // ReSharper disable once RedundantEnumerableCastCall
             AssertAreSame(strs, bingo.Cast<string>());
         }
 

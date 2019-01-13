@@ -399,7 +399,6 @@ namespace MonoTests.System
                 {
                     var lazy = new Lazy<string>(() =>
                     {
-                        // ReSharper disable once AccessToDisposedClosure
                         init.Set();
                         Thread.Sleep(10);
                         throw new ApplicationException();
@@ -415,7 +414,6 @@ namespace MonoTests.System
                         catch (Exception ex)
                         {
                             e1 = ex;
-                            // ReSharper disable once AccessToDisposedClosure
                             e1Set.Set();
                         }
                     });

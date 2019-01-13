@@ -16,8 +16,6 @@ using Theraot.Collections.ThreadSafe;
 using static System.Linq.Expressions.CachedReflectionInfo;
 using AstUtils = System.Linq.Expressions.Utils;
 
-// ReSharper disable UnusedParameter.Global
-
 namespace System.Dynamic
 {
     /// <summary>
@@ -29,7 +27,6 @@ namespace System.Dynamic
     /// If a method is not overridden then the <see cref="DynamicObject"/> does not directly support
     /// that behavior and the call site will determine how the binding should be performed.
     /// </summary>
-    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class DynamicObject : IDynamicMetaObjectProvider
     {
         /// <summary>
@@ -491,7 +488,6 @@ namespace System.Dynamic
                     var variable = args[i] as ParameterExpression;
                     ContractUtils.Requires(variable != null, nameof(args));
 
-                    // ReSharper disable once PossibleNullReferenceException
                     if (variable.IsByRef)
                     {
                         if (block == null)
@@ -843,7 +839,6 @@ namespace System.Dynamic
             {
                 var methods = Value.GetType().GetMember(method.Name, MemberTypes.Method, BindingFlags.Public | BindingFlags.Instance);
 
-                // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
                 foreach (MethodInfo mi in methods)
                 {
                     if (mi.DeclaringType != typeof(DynamicObject) && mi.GetBaseDefinition() == method)

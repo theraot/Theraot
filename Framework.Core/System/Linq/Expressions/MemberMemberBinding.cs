@@ -109,7 +109,6 @@ namespace System.Linq.Expressions
                 var b = bindings[i];
                 ContractUtils.RequiresNotNull(b, nameof(bindings));
                 b.ValidateAsDefinedHere(i);
-                // ReSharper disable once PossibleNullReferenceException
                 if (!b.Member.DeclaringType.IsAssignableFrom(type))
                 {
                     throw Error.NotAMemberOfType(b.Member.Name, type, nameof(bindings), i);

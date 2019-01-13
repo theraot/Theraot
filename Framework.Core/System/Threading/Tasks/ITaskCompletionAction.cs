@@ -30,7 +30,6 @@ namespace System.Threading.Tasks
             {
                 if (Interlocked.CompareExchange(ref _firstTaskAlreadyCompleted, 1, 0) == 0)
                 {
-                    // ReSharper disable once RedundantAssignment
                     var success = TrySetResult(completingTask);
                     Contract.Assert(success, "Only one task should have gotten to this point, and thus this must be successful.");
 

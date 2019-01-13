@@ -118,7 +118,6 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            // ReSharper disable once StaticMemberInGenericType
             public static bool CanCreate { get; }
 
             public static TNeedle Create(Func<T> target)
@@ -150,7 +149,6 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            // ReSharper disable once StaticMemberInGenericType
             public static bool CanCreate { get; }
 
             public static TNeedle Create(Func<T> target)
@@ -196,7 +194,6 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            // ReSharper disable once StaticMemberInGenericType
             public static bool CanCreate { get; }
 
             public static TNeedle Create(T target)
@@ -228,7 +225,6 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            // ReSharper disable once StaticMemberInGenericType
             public static bool CanCreate { get; }
 
             public static TNeedle Create(INeedle<T> target)
@@ -260,7 +256,6 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            // ReSharper disable once StaticMemberInGenericType
             public static bool CanCreate { get; }
 
             public static TNeedle Create(IReadOnlyNeedle<T> target)
@@ -292,7 +287,6 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            // ReSharper disable once StaticMemberInGenericType
             public static bool CanCreate { get; }
 
             public static TNeedle Create(T target)

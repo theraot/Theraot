@@ -177,7 +177,6 @@ namespace System.Linq.Expressions
         {
             var ce = Expression as ConstantExpression;
             //TypeEqual(null, T) always returns false.
-            // ReSharper disable once PossibleNullReferenceException
             if (ce.Value == null)
             {
                 return Utils.Constant(value: false);

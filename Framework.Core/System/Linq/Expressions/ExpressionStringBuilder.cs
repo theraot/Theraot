@@ -367,7 +367,6 @@ namespace System.Linq.Expressions
         {
             // Prefer an overridden ToString, if available.
             var toString = node.GetType().GetMethod("ToString", Type.EmptyTypes);
-            // ReSharper disable once PossibleNullReferenceException
             if (toString.DeclaringType != typeof(Expression) && !toString.IsStatic)
             {
                 Out(node.ToString());
@@ -415,7 +414,6 @@ namespace System.Linq.Expressions
             else
             {
                 Debug.Assert(node.Indexer != null);
-                // ReSharper disable once PossibleNullReferenceException
                 Out(node.Indexer.DeclaringType.Name);
             }
             if (node.Indexer != null)
@@ -839,7 +837,6 @@ namespace System.Linq.Expressions
             else
             {
                 // For static members, include the type name
-                // ReSharper disable once PossibleNullReferenceException
                 Out(member.DeclaringType.Name);
             }
 

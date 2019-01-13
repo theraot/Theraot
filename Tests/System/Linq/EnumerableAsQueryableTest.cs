@@ -105,7 +105,6 @@ namespace MonoTests.System.Linq
         [Test]
         public void Count()
         {
-            // ReSharper disable once UseCollectionCountProperty
             Assert.AreEqual(_src.Count(), _array.Count());
         }
 
@@ -208,7 +207,6 @@ namespace MonoTests.System.Linq
         [Test]
         public void OfType()
         {
-            // ReSharper disable once UseCollectionCountProperty
             Assert.AreEqual(_src.OfType<int>().Count(), _array.Count());
         }
 
@@ -411,7 +409,6 @@ namespace MonoTests.System.Linq
             Assert.IsTrue(nonGen.AsQueryable() != null);
         }
 
-        // ReSharper disable once UnusedTypeParameter
         private class Bar<T1, T2> : IEnumerable<T2>
         {
             public IEnumerator<T2> GetEnumerator()

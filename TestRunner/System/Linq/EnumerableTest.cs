@@ -16,9 +16,7 @@ namespace TestRunner.System.Linq
         [Test]
         public static void MaxOfEmptyEnumerableThrows()
         {
-            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             Assert.Throws<InvalidOperationException>(() => new double[]{}.Max());
-            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             Assert.Throws<InvalidOperationException>(() => new float[]{}.Max());
         }
 
@@ -32,22 +30,16 @@ namespace TestRunner.System.Linq
         [Test]
         public static void MaxOfNullableNaNisNaN()
         {
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(double.IsNaN(new double?[]{double.NaN}.Max().Value));
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(float.IsNaN(new float?[]{float.NaN}.Max().Value));
         }
 
         [Test]
         public static void MaxOfNullableNaNAndNullIsNaN()
         {
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(double.IsNaN(new double?[]{double.NaN, null}.Max().Value));
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(float.IsNaN(new float?[]{float.NaN, null}.Max().Value));
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(double.IsNaN(new double?[]{null, double.NaN}.Max().Value));
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(float.IsNaN(new float?[]{null, float.NaN}.Max().Value));
         }
 
@@ -89,9 +81,7 @@ namespace TestRunner.System.Linq
         [Test]
         public static void MinOfEmptyEnumerableThrows()
         {
-            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             Assert.Throws<InvalidOperationException>(() => new double[]{}.Min());
-            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             Assert.Throws<InvalidOperationException>(() => new float[]{}.Min());
         }
 
@@ -105,22 +95,16 @@ namespace TestRunner.System.Linq
         [Test]
         public static void MinOfNullableNaNisNaN()
         {
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(double.IsNaN(new double?[]{double.NaN}.Min().Value));
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(float.IsNaN(new float?[]{float.NaN}.Min().Value));
         }
 
         [Test]
         public static void MinOfNullableNaNAndNullIsNaN()
         {
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(double.IsNaN(new double?[]{double.NaN, null}.Min().Value));
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(float.IsNaN(new float?[]{float.NaN, null}.Min().Value));
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(double.IsNaN(new double?[]{null, double.NaN}.Min().Value));
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(float.IsNaN(new float?[]{null, float.NaN}.Min().Value));
         }
 
@@ -136,31 +120,19 @@ namespace TestRunner.System.Linq
         [Test]
         public static void MinOfNaNMinValueWithNullsIsNaN()
         {
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(double.IsNaN(new double?[]{null, double.NaN, double.MinValue}.Min().Value));
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(float.IsNaN(new float?[]{null, float.NaN, float.MinValue}.Min().Value));
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(double.IsNaN(new double?[]{null, double.MinValue, double.NaN}.Min().Value));
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(float.IsNaN(new float?[]{null, float.MinValue, float.NaN}.Min().Value));
 
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(double.IsNaN(new double?[]{double.NaN, null, double.MinValue}.Min().Value));
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(float.IsNaN(new float?[]{float.NaN, null, float.MinValue}.Min().Value));
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(double.IsNaN(new double?[]{double.MinValue, null, double.NaN}.Min().Value));
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(float.IsNaN(new float?[]{float.MinValue, null, float.NaN}.Min().Value));
 
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(double.IsNaN(new double?[]{double.NaN, double.MinValue, null}.Min().Value));
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(float.IsNaN(new float?[]{float.NaN, float.MinValue, null}.Min().Value));
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(double.IsNaN(new double?[]{double.MinValue, double.NaN, null}.Min().Value));
-            // ReSharper disable once PossibleInvalidOperationException
             Assert.IsTrue(float.IsNaN(new float?[]{float.MinValue, float.NaN, null}.Min().Value));
         }
     }

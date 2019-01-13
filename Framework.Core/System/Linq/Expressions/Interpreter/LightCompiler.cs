@@ -122,9 +122,7 @@ namespace System.Linq.Expressions.Interpreter
             //We allow comparison between int and DebugInfo here
             int IComparer<DebugInfo>.Compare(DebugInfo x, DebugInfo y)
             {
-                // ReSharper disable once PossibleNullReferenceException
                 var d1Index = x.Index;
-                // ReSharper disable once PossibleNullReferenceException
                 var d2Index = y.Index;
                 if (d1Index > d2Index)
                 {
@@ -580,7 +578,6 @@ namespace System.Linq.Expressions.Interpreter
         private void CompileAsVoid(Expression expr)
         {
             var pushLabelBlock = TryPushLabelBlock(expr);
-            // ReSharper disable once RedundantAssignment
             var startingStackDepth = Instructions.CurrentStackDepth;
             switch (expr.NodeType)
             {
@@ -1329,7 +1326,6 @@ namespace System.Linq.Expressions.Interpreter
             }
             else if (index.ArgumentCount != 1)
             {
-                // ReSharper disable once PossibleNullReferenceException
                 Instructions.EmitCall(index.Object.Type.GetMethod("Set", BindingFlags.Public | BindingFlags.Instance));
             }
             else
@@ -1388,7 +1384,6 @@ namespace System.Linq.Expressions.Interpreter
                 var switchCase = node.Cases[i];
 
                 var caseOffset = Instructions.Count - switchIndex;
-                // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
                 foreach (ConstantExpression testValue in switchCase.TestValues)
                 {
                     var key = (T)testValue.Value;
@@ -1418,7 +1413,6 @@ namespace System.Linq.Expressions.Interpreter
                         node.Expression,
                         compMethod
                     ),
-                    // ReSharper disable once PossibleNullReferenceException
                     compMethod.ReturnType.GetInvokeMethod(),
                     node
                 );
@@ -1984,7 +1978,6 @@ namespace System.Linq.Expressions.Interpreter
 
             if (node.Constructor != null)
             {
-                // ReSharper disable once PossibleNullReferenceException
                 if (node.Constructor.DeclaringType.IsAbstract)
                 {
                     throw Error.NonAbstractConstructorRequired();
@@ -2050,7 +2043,6 @@ namespace System.Linq.Expressions.Interpreter
                 return;
             }
 
-            // ReSharper disable once RedundantAssignment
             var startingStackDepth = Instructions.CurrentStackDepth;
             switch (expr.NodeType)
             {
@@ -2253,7 +2245,6 @@ namespace System.Linq.Expressions.Interpreter
                 var switchCase = node.Cases[i];
 
                 var caseOffset = Instructions.Count - switchIndex;
-                // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
                 foreach (ConstantExpression testValue in switchCase.TestValues)
                 {
                     var key = (string)testValue.Value;
@@ -2529,10 +2520,8 @@ namespace System.Linq.Expressions.Interpreter
                     CompileAsVoid(node.Finally);
                     Instructions.EmitLeaveFinally();
 
-                    // ReSharper disable once PossibleNullReferenceException
                     enterTryInstr.SetTryHandler(
                         new TryCatchFinallyHandler(tryStart, tryEnd, gotoEnd.TargetIndex,
-                            // ReSharper disable once PossibleNullReferenceException
                             startOfFinally.TargetIndex, Instructions.Count,
                             exHandlers?.ToArray()));
                     PopLabelBlock(LabelScopeKind.Finally);
@@ -2540,9 +2529,7 @@ namespace System.Linq.Expressions.Interpreter
                 else
                 {
                     Debug.Assert(exHandlers != null);
-                    // ReSharper disable once PossibleNullReferenceException
                     enterTryInstr.SetTryHandler(
-                        // ReSharper disable once PossibleNullReferenceException
                         new TryCatchFinallyHandler(tryStart, tryEnd, gotoEnd.TargetIndex, exHandlers.ToArray()));
                 }
 

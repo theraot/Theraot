@@ -10,8 +10,6 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
-// ReSharper disable SuspiciousTypeConversion.Global
-
 namespace System
 {
     /// <summary>
@@ -318,7 +316,6 @@ namespace System
         /// <summary>
         /// The current <see cref="ValueTuple{T1}"/> instance's first component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T1 Item1;
 
         /// <summary>
@@ -414,7 +411,6 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            // ReSharper disable once MergeSequentialChecks
             if (other == null || !(other is ValueTuple<T1>))
             {
                 return false;
@@ -431,7 +427,6 @@ namespace System
         /// <returns>A 32-bit signed integer hash code.</returns>
         public override int GetHashCode()
         {
-            // ReSharper disable once NonReadonlyMemberInGetHashCode
             return EqualityComparer<T1>.Default.GetHashCode(Item1);
         }
 
@@ -477,13 +472,11 @@ namespace System
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2}"/> instance's first component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T1 Item1;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2}"/> instance's first component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T2 Item2;
 
         /// <summary>
@@ -551,7 +544,6 @@ namespace System
         /// </remarks>
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            // ReSharper disable once MergeSequentialChecks
             if (other == null || !(other is ValueTuple<T1, T2>))
             {
                 return false;
@@ -628,9 +620,7 @@ namespace System
         {
             return ValueTuple.CombineHashCodes
             (
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T1>.Default.GetHashCode(Item1),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T2>.Default.GetHashCode(Item2)
             );
         }
@@ -687,19 +677,16 @@ namespace System
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3}"/> instance's first component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T1 Item1;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3}"/> instance's second component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T2 Item2;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3}"/> instance's third component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T3 Item3;
 
         /// <summary>
@@ -752,7 +739,6 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            // ReSharper disable once MergeSequentialChecks
             if (other == null || !(other is ValueTuple<T1, T2, T3>))
             {
                 return false;
@@ -842,11 +828,8 @@ namespace System
         {
             return ValueTuple.CombineHashCodes
             (
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T1>.Default.GetHashCode(Item1),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T2>.Default.GetHashCode(Item2),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T3>.Default.GetHashCode(Item3)
             );
         }
@@ -903,25 +886,21 @@ namespace System
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4}"/> instance's first component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T1 Item1;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4}"/> instance's second component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T2 Item2;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4}"/> instance's third component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T3 Item3;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4}"/> instance's fourth component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T4 Item4;
 
         /// <summary>
@@ -977,7 +956,6 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            // ReSharper disable once MergeSequentialChecks
             if (other == null || !(other is ValueTuple<T1, T2, T3, T4>))
             {
                 return false;
@@ -1080,13 +1058,9 @@ namespace System
         {
             return ValueTuple.CombineHashCodes
             (
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T1>.Default.GetHashCode(Item1),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T2>.Default.GetHashCode(Item2),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T3>.Default.GetHashCode(Item3),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T4>.Default.GetHashCode(Item4)
             );
         }
@@ -1145,31 +1119,26 @@ namespace System
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5}"/> instance's first component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T1 Item1;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5}"/> instance's second component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T2 Item2;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5}"/> instance's third component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T3 Item3;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5}"/> instance's fourth component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T4 Item4;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5}"/> instance's fifth component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T5 Item5;
 
         /// <summary>
@@ -1228,7 +1197,6 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            // ReSharper disable once MergeSequentialChecks
             if (other == null || !(other is ValueTuple<T1, T2, T3, T4, T5>))
             {
                 return false;
@@ -1344,15 +1312,10 @@ namespace System
         {
             return ValueTuple.CombineHashCodes
             (
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T1>.Default.GetHashCode(Item1),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T2>.Default.GetHashCode(Item2),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T3>.Default.GetHashCode(Item3),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T4>.Default.GetHashCode(Item4),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T5>.Default.GetHashCode(Item5)
             );
         }
@@ -1413,37 +1376,31 @@ namespace System
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6}"/> instance's first component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T1 Item1;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6}"/> instance's second component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T2 Item2;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6}"/> instance's third component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T3 Item3;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6}"/> instance's fourth component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T4 Item4;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6}"/> instance's fifth component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T5 Item5;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6}"/> instance's sixth component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T6 Item6;
 
         /// <summary>
@@ -1505,7 +1462,6 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            // ReSharper disable once MergeSequentialChecks
             if (other == null || !(other is ValueTuple<T1, T2, T3, T4, T5, T6>))
             {
                 return false;
@@ -1634,17 +1590,11 @@ namespace System
         {
             return ValueTuple.CombineHashCodes
             (
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T1>.Default.GetHashCode(Item1),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T2>.Default.GetHashCode(Item2),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T3>.Default.GetHashCode(Item3),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T4>.Default.GetHashCode(Item4),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T5>.Default.GetHashCode(Item5),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T6>.Default.GetHashCode(Item6)
             );
         }
@@ -1707,43 +1657,36 @@ namespace System
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7}"/> instance's first component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T1 Item1;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7}"/> instance's second component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T2 Item2;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7}"/> instance's third component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T3 Item3;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7}"/> instance's fourth component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T4 Item4;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7}"/> instance's fifth component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T5 Item5;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7}"/> instance's sixth component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T6 Item6;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7}"/> instance's seventh component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T7 Item7;
 
         /// <summary>
@@ -1808,7 +1751,6 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            // ReSharper disable once MergeSequentialChecks
             if (other == null || !(other is ValueTuple<T1, T2, T3, T4, T5, T6, T7>))
             {
                 return false;
@@ -1950,19 +1892,12 @@ namespace System
         {
             return ValueTuple.CombineHashCodes
             (
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T1>.Default.GetHashCode(Item1),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T2>.Default.GetHashCode(Item2),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T3>.Default.GetHashCode(Item3),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T4>.Default.GetHashCode(Item4),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T5>.Default.GetHashCode(Item5),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T6>.Default.GetHashCode(Item6),
-                // ReSharper disable once NonReadonlyMemberInGetHashCode
                 EqualityComparer<T7>.Default.GetHashCode(Item7)
             );
         }
@@ -2028,43 +1963,36 @@ namespace System
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}"/> instance's first component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T1 Item1;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}"/> instance's second component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T2 Item2;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}"/> instance's third component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T3 Item3;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}"/> instance's fourth component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T4 Item4;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}"/> instance's fifth component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T5 Item5;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}"/> instance's sixth component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T6 Item6;
 
         /// <summary>
         /// The current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}"/> instance's seventh component.
         /// </summary>
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public T7 Item7;
 
         /// <summary>
@@ -2142,7 +2070,6 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            // ReSharper disable once MergeSequentialChecks
             if (other == null || !(other is ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>))
             {
                 return false;
@@ -2296,24 +2223,16 @@ namespace System
         public override int GetHashCode()
         {
             // We want to have a limited hash in this case.  We'll use the last 8 elements of the tuple
-            // ReSharper disable once NonReadonlyMemberInGetHashCode
             if (!(Rest is ITupleInternal rest))
             {
                 return ValueTuple.CombineHashCodes
                 (
-                    // ReSharper disable once NonReadonlyMemberInGetHashCode
                     EqualityComparer<T1>.Default.GetHashCode(Item1),
-                    // ReSharper disable once NonReadonlyMemberInGetHashCode
                     EqualityComparer<T2>.Default.GetHashCode(Item2),
-                    // ReSharper disable once NonReadonlyMemberInGetHashCode
                     EqualityComparer<T3>.Default.GetHashCode(Item3),
-                    // ReSharper disable once NonReadonlyMemberInGetHashCode
                     EqualityComparer<T4>.Default.GetHashCode(Item4),
-                    // ReSharper disable once NonReadonlyMemberInGetHashCode
                     EqualityComparer<T5>.Default.GetHashCode(Item5),
-                    // ReSharper disable once NonReadonlyMemberInGetHashCode
                     EqualityComparer<T6>.Default.GetHashCode(Item6),
-                    // ReSharper disable once NonReadonlyMemberInGetHashCode
                     EqualityComparer<T7>.Default.GetHashCode(Item7)
                 );
             }
@@ -2331,7 +2250,6 @@ namespace System
                 case 1:
                     return ValueTuple.CombineHashCodes
                     (
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T7>.Default.GetHashCode(Item7),
                         rest.GetHashCode()
                     );
@@ -2339,9 +2257,7 @@ namespace System
                 case 2:
                     return ValueTuple.CombineHashCodes
                     (
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T6>.Default.GetHashCode(Item6),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T7>.Default.GetHashCode(Item7),
                         rest.GetHashCode()
                     );
@@ -2349,11 +2265,8 @@ namespace System
                 case 3:
                     return ValueTuple.CombineHashCodes
                     (
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T5>.Default.GetHashCode(Item5),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T6>.Default.GetHashCode(Item6),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T7>.Default.GetHashCode(Item7),
                         rest.GetHashCode()
                     );
@@ -2361,13 +2274,9 @@ namespace System
                 case 4:
                     return ValueTuple.CombineHashCodes
                     (
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T4>.Default.GetHashCode(Item4),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T5>.Default.GetHashCode(Item5),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T6>.Default.GetHashCode(Item6),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T7>.Default.GetHashCode(Item7),
                         rest.GetHashCode()
                     );
@@ -2375,15 +2284,10 @@ namespace System
                 case 5:
                     return ValueTuple.CombineHashCodes
                     (
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T3>.Default.GetHashCode(Item3),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T4>.Default.GetHashCode(Item4),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T5>.Default.GetHashCode(Item5),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T6>.Default.GetHashCode(Item6),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T7>.Default.GetHashCode(Item7),
                         rest.GetHashCode()
                     );
@@ -2391,17 +2295,11 @@ namespace System
                 case 6:
                     return ValueTuple.CombineHashCodes
                     (
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T2>.Default.GetHashCode(Item2),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T3>.Default.GetHashCode(Item3),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T4>.Default.GetHashCode(Item4),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T5>.Default.GetHashCode(Item5),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T6>.Default.GetHashCode(Item6),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T7>.Default.GetHashCode(Item7),
                         rest.GetHashCode()
                     );
@@ -2410,19 +2308,12 @@ namespace System
                 case 8:
                     return ValueTuple.CombineHashCodes
                     (
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T1>.Default.GetHashCode(Item1),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T2>.Default.GetHashCode(Item2),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T3>.Default.GetHashCode(Item3),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T4>.Default.GetHashCode(Item4),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T5>.Default.GetHashCode(Item5),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T6>.Default.GetHashCode(Item6),
-                        // ReSharper disable once NonReadonlyMemberInGetHashCode
                         EqualityComparer<T7>.Default.GetHashCode(Item7),
                         rest.GetHashCode()
                     );

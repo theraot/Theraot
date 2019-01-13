@@ -56,9 +56,7 @@ namespace Theraot.Core
 
         public override int GetHashCode()
         {
-            // ReSharper disable once NonReadonlyMemberInGetHashCode
             return Minimum.GetHashCode() * 7
-                   // ReSharper disable once NonReadonlyMemberInGetHashCode
                    + Maximum.GetHashCode();
         }
 

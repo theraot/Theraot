@@ -64,14 +64,10 @@ namespace Theraot.Collections.Specialized
                     break;
 
                 default:
-                    // ReSharper disable once PossibleMultipleEnumeration
                     _count = wrapped.Count;
-                    // ReSharper disable once PossibleMultipleEnumeration
                     _contains = wrapped.Contains;
                     _index = Index;
-                    // ReSharper disable once PossibleMultipleEnumeration
                     _indexOf = wrapped.IndexOf;
-                    // ReSharper disable once PossibleMultipleEnumeration
                     _getEnumerator = wrapped.GetEnumerator;
                     break;
             }
@@ -80,7 +76,6 @@ namespace Theraot.Collections.Specialized
             {
                 if (index < _count())
                 {
-                    // ReSharper disable once PossibleMultipleEnumeration
                     using (var enumerator = wrapped.Skip(index).GetEnumerator())
                     {
                         if (enumerator.MoveNext())

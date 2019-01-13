@@ -443,20 +443,17 @@ namespace System.Linq.Expressions.Compiler
                 {
                     // array[i] = new StrongBox<T>(argument);
                     lc.EmitLambdaArgument(index);
-                    // ReSharper disable once AssignNullToNotNullAttribute
                     lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new[] { v.Type }));
                 }
                 else if (v == _hoistedLocals.ParentVariable)
                 {
                     // array[i] = new StrongBox<T>(closure.Locals);
                     ResolveVariable(v, _closureHoistedLocals).EmitLoad();
-                    // ReSharper disable once AssignNullToNotNullAttribute
                     lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new[] { v.Type }));
                 }
                 else
                 {
                     // array[i] = new StrongBox<T>();
-                    // ReSharper disable once AssignNullToNotNullAttribute
                     lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(Type.EmptyTypes));
                 }
                 // if we want to cache this into a local, do it now

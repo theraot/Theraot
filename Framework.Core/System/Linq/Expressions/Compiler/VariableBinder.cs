@@ -154,7 +154,6 @@ namespace System.Linq.Expressions.Compiler
             }
 
             Debug.Assert(referenceScope != null);
-            // ReSharper disable once PossibleNullReferenceException
             if (referenceScope.ReferenceCount == null)
             {
                 referenceScope.ReferenceCount = new Dictionary<ParameterExpression, int>();

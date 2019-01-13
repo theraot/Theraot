@@ -35,7 +35,6 @@ using Theraot.Threading;
 
 namespace System.Threading
 {
-    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class CancellationTokenSource : IDisposable
     {
         internal static readonly CancellationTokenSource CanceledSource = new CancellationTokenSource(); // Leaked

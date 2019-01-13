@@ -10,7 +10,6 @@ using Theraot.Reflection;
 namespace Theraot.Collections.ThreadSafe
 {
     [System.Diagnostics.DebuggerNonUserCode]
-    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class WeakEvent<TEventArgs> : IEvent<TEventArgs>
         where TEventArgs : EventArgs
     {

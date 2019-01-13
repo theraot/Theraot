@@ -160,7 +160,6 @@ namespace Theraot.Core
                     yield return currentState;
                 }
                 // Infinite Loop - This method creates an endless IEnumerable<T>
-                // ReSharper disable once IteratorNeverReturns
             }
         }
 
@@ -185,7 +184,6 @@ namespace Theraot.Core
                     yield return resultSelector.Invoke(currentState);
                 }
                 // Infinite Loop - This method creates an endless IEnumerable<T>
-                // ReSharper disable once IteratorNeverReturns
             }
         }
 
@@ -204,7 +202,6 @@ namespace Theraot.Core
                     yield return iterate.Invoke();
                 }
                 // Infinite Loop - This method creates an endless IEnumerable<T>
-                // ReSharper disable once IteratorNeverReturns
             }
         }
 
@@ -227,7 +224,6 @@ namespace Theraot.Core
                     yield return resultSelector(iterate.Invoke());
                 }
                 // Infinite Loop - This method creates an endless IEnumerable<T>
-                // ReSharper disable once IteratorNeverReturns
             }
         }
     }

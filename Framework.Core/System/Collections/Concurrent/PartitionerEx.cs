@@ -87,7 +87,6 @@ namespace System.Collections.Concurrent
             IEnumerator<KeyValuePair<long, T>> Enumerator(int index)
             {
                 var subIndex = 0;
-                // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var item in source)
                 {
                     yield return new KeyValuePair<long, T>(NumericHelper.BuildInt64(index, subIndex), item);
@@ -107,7 +106,6 @@ namespace System.Collections.Concurrent
             return list.AsReadOnly();
             IEnumerator<T> Enumerator()
             {
-                // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var item in source)
                 {
                     yield return item;

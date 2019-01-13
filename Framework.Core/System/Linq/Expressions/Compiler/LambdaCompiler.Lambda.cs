@@ -126,7 +126,6 @@ namespace System.Linq.Expressions.Compiler
                 _boundConstants.EmitConstant(this, dynamicMethod, typeof(DynamicMethod));
                 IL.EmitType(delegateType);
                 EmitClosureCreation(inner);
-                // ReSharper disable once AssignNullToNotNullAttribute
                 IL.Emit(OpCodes.Callvirt, typeof(DynamicMethod).GetMethod(nameof(DynamicMethod.CreateDelegate), new[] { typeof(Type), typeof(object) }));
                 IL.Emit(OpCodes.Castclass, delegateType);
             }

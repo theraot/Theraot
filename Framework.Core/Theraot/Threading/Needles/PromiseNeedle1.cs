@@ -5,7 +5,6 @@ using System;
 namespace Theraot.Threading.Needles
 {
     [System.Diagnostics.DebuggerNonUserCode]
-    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class PromiseNeedle<T> : Promise, IWaitablePromise<T>, IRecyclableNeedle<T>, ICacheNeedle<T>
     {
         private readonly int _hashCode;

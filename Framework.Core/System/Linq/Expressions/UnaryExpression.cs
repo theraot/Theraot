@@ -842,7 +842,6 @@ namespace System.Linq.Expressions
             // return type must be assignable back to the operand type
             if (!expression.Type.IsReferenceAssignableFromInternal(result.Type))
             {
-                // ReSharper disable once PossibleNullReferenceException
                 throw Error.UserDefinedOpMustHaveValidReturnType(kind, method.Name);
             }
             return result;

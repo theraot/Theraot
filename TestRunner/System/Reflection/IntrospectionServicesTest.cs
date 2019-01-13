@@ -10,7 +10,6 @@ namespace TestRunner.System.Reflection
         public static void GetTypeInfoOnNullThrowsNullReferenceException()
         {
             Type type = null;
-            // ReSharper disable once ExpressionIsAlwaysNull
             Assert.Throws<ArgumentNullException>(() => type.GetTypeInfo());
         }
     }

@@ -22,7 +22,6 @@ namespace Theraot.Core
 
         public int GetHashCode(Delegate obj)
         {
-            // ReSharper disable once UseNullPropagation
             if (obj == null) // obj can be null
             {
                 return 0; // TODO: Test coverage?

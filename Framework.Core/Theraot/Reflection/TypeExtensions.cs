@@ -711,7 +711,6 @@ namespace Theraot.Reflection
                         return false;
                     }
                 }
-                // ReSharper disable once PossibleNullReferenceException
                 return !info.IsAutoLayout && type.GetStructLayoutAttribute().Pack > 0;
             }
             return false;

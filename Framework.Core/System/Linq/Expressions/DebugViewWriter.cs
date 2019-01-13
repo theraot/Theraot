@@ -1109,7 +1109,6 @@ namespace System.Linq.Expressions
                         var binary = parent as BinaryExpression;
                         Debug.Assert(binary != null);
                         // Need to have parenthesis for the right operand.
-                        // ReSharper disable once PossibleNullReferenceException
                         return child == binary.Right;
                 }
                 return true;

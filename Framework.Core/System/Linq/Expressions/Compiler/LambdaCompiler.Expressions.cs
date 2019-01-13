@@ -309,7 +309,6 @@ namespace System.Linq.Expressions.Compiler
             else
             {
                 // Multidimensional arrays, call get
-                // ReSharper disable once AssignNullToNotNullAttribute
                 IL.Emit(OpCodes.Call, arrayType.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance));
             }
         }
@@ -367,7 +366,6 @@ namespace System.Linq.Expressions.Compiler
             // Restore the value
             if (emitAs != CompilationFlags.EmitAsVoidType)
             {
-                // ReSharper disable once AssignNullToNotNullAttribute
                 IL.Emit(OpCodes.Ldloc, temp);
                 FreeLocal(temp);
             }
@@ -405,7 +403,6 @@ namespace System.Linq.Expressions.Compiler
             else
             {
                 // Multidimensional arrays, call set
-                // ReSharper disable once AssignNullToNotNullAttribute
                 IL.Emit(OpCodes.Call, arrayType.GetMethod("Set", BindingFlags.Public | BindingFlags.Instance));
             }
         }
@@ -466,7 +463,6 @@ namespace System.Linq.Expressions.Compiler
             {
                 return false;
             }
-            // ReSharper disable once PossibleNullReferenceException
             if (mi.DeclaringType.IsValueType)
             {
                 return false;
@@ -627,7 +623,6 @@ namespace System.Linq.Expressions.Compiler
                 type = type.GetElementType();
 
                 Debug.Assert(instance.NodeType == ExpressionType.Parameter);
-                // ReSharper disable once PossibleNullReferenceException
                 Debug.Assert(type.IsValueType);
 
                 EmitExpression(instance);
@@ -688,7 +683,6 @@ namespace System.Linq.Expressions.Compiler
 
             if (emitAs != CompilationFlags.EmitAsVoidType)
             {
-                // ReSharper disable once AssignNullToNotNullAttribute
                 IL.Emit(OpCodes.Ldloc, temp);
                 FreeLocal(temp);
             }
@@ -770,7 +764,6 @@ namespace System.Linq.Expressions.Compiler
 
             if (node.Constructor != null)
             {
-                // ReSharper disable once PossibleNullReferenceException
                 if (node.Constructor.DeclaringType.IsAbstract)
                 {
                     throw Error.NonAbstractConstructorRequired();
@@ -1150,7 +1143,6 @@ namespace System.Linq.Expressions.Compiler
                         if (resultType.IsNullable() && !TypeUtils.AreEquivalent(resultType, mc.Type))
                         {
                             var ci = resultType.GetConstructor(new[] { mc.Type });
-                            // ReSharper disable once AssignNullToNotNullAttribute
                             IL.Emit(OpCodes.Newobj, ci);
                         }
                         IL.Emit(OpCodes.Br_S, exit);
@@ -1255,7 +1247,6 @@ namespace System.Linq.Expressions.Compiler
                         if (resultType.IsNullable() && !TypeUtils.AreEquivalent(resultType, mc.Type))
                         {
                             var ci = resultType.GetConstructor(new[] { mc.Type });
-                            // ReSharper disable once AssignNullToNotNullAttribute
                             IL.Emit(OpCodes.Newobj, ci);
                         }
                         IL.Emit(OpCodes.Br_S, exit);

@@ -60,9 +60,7 @@ namespace System.Collections
                         try
                         {
                             // If there comes the day when an array has no enumerator, let this code fail
-                            // ReSharper disable once PossibleNullReferenceException
                             firstEnumerator = (IEnumerator)xEnumeratorInfo.Invoke(x, ArrayReservoir<object>.EmptyArray);
-                            // ReSharper disable once PossibleNullReferenceException
                             secondEnumerator = (IEnumerator)yEnumeratorInfo.Invoke(y, ArrayReservoir<object>.EmptyArray);
                             while (firstEnumerator.MoveNext())
                             {

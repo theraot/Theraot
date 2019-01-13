@@ -25,7 +25,6 @@ namespace System.Runtime.Serialization
             HResult = -2146233076;
         }
 
-        // ReSharper disable once UnusedMember.Global
         public SerializationException(string message, Exception innerException)
             : base(message, innerException)
         {

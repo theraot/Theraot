@@ -34,7 +34,6 @@ namespace MonoTests.System.Linq
             var src = new IterateAndCount(10);
             var a = src.GroupBy(i => i > 5, null);
             Assert.AreEqual(src.Total, 0);
-            // ReSharper disable once PossibleMultipleEnumeration
             using (var enumerator = a.GetEnumerator())
             {
                 // This is a shame, GroupBy is not really deferred
@@ -42,7 +41,6 @@ namespace MonoTests.System.Linq
                 Assert.AreEqual(src.Total, 10);
             }
             Assert.AreEqual(src.Total, 10);
-            // ReSharper disable once PossibleMultipleEnumeration
             using (var enumerator = a.GetEnumerator())
             {
                 // This is a shame, GroupBy is not really deferred

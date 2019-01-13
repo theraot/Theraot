@@ -8,7 +8,6 @@ using Theraot.Threading;
 namespace System.Threading
 {
     [DebuggerDisplay("Current Count = {CurrentCount}")]
-    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class SemaphoreSlim : IDisposable
     {
         private readonly int? _maxCount;

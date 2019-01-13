@@ -35,7 +35,6 @@ namespace TestRunner.System.Threading
         {
             var exception = new Exception();
             var task = TaskEx.FromException(exception);
-            // ReSharper disable once PossibleNullReferenceException
             Assert.AreEqual(exception, task.Exception.InnerException);
         }
 
@@ -83,7 +82,6 @@ namespace TestRunner.System.Threading
         {
             var exception = new Exception();
             var task = TaskEx.FromException<bool>(exception);
-            // ReSharper disable once PossibleNullReferenceException
             Assert.AreEqual(exception, task.Exception.InnerException);
         }
     }

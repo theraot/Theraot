@@ -185,7 +185,6 @@ namespace System.Linq.Expressions
                     ContractUtils.RequiresNotNull(member, nameof(members), i);
                     if (!TypeUtils.AreEquivalent(member.DeclaringType, constructor.DeclaringType))
                     {
-                        // ReSharper disable once PossibleNullReferenceException
                         throw Error.ArgumentMemberNotDeclOnType(member.Name, constructor.DeclaringType.Name, nameof(members), i);
                     }
 

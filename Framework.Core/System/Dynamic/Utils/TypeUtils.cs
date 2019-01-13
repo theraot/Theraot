@@ -726,12 +726,10 @@ namespace System.Dynamic.Utils
             {
                 if (!skipNonArray) // Skip if we just came from HasReferenceConversionTo and have just tested these
                 {
-                    // ReSharper disable once PossibleNullReferenceException
                     if (source.IsValueType)
                     {
                         return false;
                     }
-                    // ReSharper disable once PossibleNullReferenceException
                     if (target.IsValueType)
                     {
                         return false;
@@ -739,9 +737,7 @@ namespace System.Dynamic.Utils
                     // Includes to case of either being typeof(object)
                     if
                     (
-                        // ReSharper disable once PossibleNullReferenceException
                         source.IsAssignableFrom(target)
-                        // ReSharper disable once PossibleNullReferenceException
                         || target.IsAssignableFrom(source)
                     )
                     {

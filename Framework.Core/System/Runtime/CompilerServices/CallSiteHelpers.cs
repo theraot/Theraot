@@ -14,7 +14,6 @@ namespace System.Runtime.CompilerServices
     /// </summary>
     public static class CallSiteHelpers
     {
-        // ReSharper disable once PossibleNullReferenceException
         private static readonly Type _knownNonDynamicMethodType = typeof(object).GetMethod(nameof(ToString)).GetType();
 
         /// <summary>

@@ -19,7 +19,6 @@ namespace TestRunner.System.IO
         {
             var stream = new MemoryStream(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 });
             var buffer = new byte[10];
-            // ReSharper disable once MethodSupportsCancellation
             int x = await stream.ReadAsync(buffer, 0, 10);
             Assert.AreEqual(10, x);
             Assert.CollectionEquals(buffer, new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 });
@@ -32,7 +31,6 @@ namespace TestRunner.System.IO
             var tokenSource = new CancellationTokenSource();
             tokenSource.Cancel();
             var buffer = new byte[10];
-            // ReSharper disable once MethodSupportsCancellation
             Assert.ThrowsAsync<OperationCanceledException>(() => stream.ReadAsync(buffer, 0, 10, tokenSource.Token));
         }
 
@@ -43,7 +41,6 @@ namespace TestRunner.System.IO
             var tokenSource = new CancellationTokenSource();
             tokenSource.Cancel();
             var buffer = new byte[10];
-            // ReSharper disable once MethodSupportsCancellation
             Assert.ThrowsAsync<OperationCanceledException>(() => stream.ReadAsync(buffer, 0, 10, tokenSource.Token));
         }
     }

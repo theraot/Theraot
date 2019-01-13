@@ -350,7 +350,6 @@ namespace System.Threading.Tasks
             //    return (Task<Task<TResult>>) WhenAny( (Task[]) tasks);
             // but classes are not covariant to enable casting Task<TResult> to Task<Task<TResult>>.
             // Call WhenAny(Task[]) for basic functionality
-            // ReSharper disable once CoVariantArrayConversion
             var intermediate = WhenAny((Task[])tasks);
             // Return a continuation task with the correct result type
             return intermediate.ContinueWith(Task<TResult>.ContinuationConversion, default, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);

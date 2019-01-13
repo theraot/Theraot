@@ -361,7 +361,6 @@ namespace System.Collections
             var e = d.GetEnumerator();
             while (e.MoveNext())
             {
-                // ReSharper disable once VirtualMemberCallInConstructor
                 Add(e.Key, e.Value);
             }
         }
@@ -377,7 +376,6 @@ namespace System.Collections
             var e = d.GetEnumerator();
             while (e.MoveNext())
             {
-                // ReSharper disable once VirtualMemberCallInConstructor
                 Add(e.Key, e.Value);
             }
         }
@@ -1350,7 +1348,6 @@ namespace System.Collections
                 _table = table;
             }
 
-            // ReSharper disable once UnusedMember.Local
             internal SyncHashtable(SerializationInfo info, StreamingContext context) : base(info, context)
             {
                 throw new PlatformNotSupportedException();
@@ -1636,11 +1633,9 @@ namespace System.Collections
     internal class KeyValuePairs
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        // ReSharper disable once NotAccessedField.Local
         private readonly object _key;
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         private readonly object _value;
 
         public KeyValuePairs(object key, object value)

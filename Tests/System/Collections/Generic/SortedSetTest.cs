@@ -545,17 +545,11 @@ namespace MonoTests.System.Collections.Generic
             Assert.IsTrue(!sb || !psu);
 
             // actual tests // TODO: Review
-            // ReSharper disable once PossibleMultipleEnumeration
             Assert.AreEqual(o, s1.Overlaps(s2));
-            // ReSharper disable once PossibleMultipleEnumeration
             Assert.AreEqual(se, s1.SetEquals(s2));
-            // ReSharper disable once PossibleMultipleEnumeration
             Assert.AreEqual(sb, s1.IsSubsetOf(s2));
-            // ReSharper disable once PossibleMultipleEnumeration
             Assert.AreEqual(su, s1.IsSupersetOf(s2));
-            // ReSharper disable once PossibleMultipleEnumeration
             Assert.AreEqual(psb, s1.IsProperSubsetOf(s2));
-            // ReSharper disable once PossibleMultipleEnumeration
             Assert.AreEqual(psu, s1.IsProperSupersetOf(s2));
         }
     }

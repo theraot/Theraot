@@ -228,7 +228,6 @@ namespace System.Linq.Expressions.Interpreter
 
             if (HasMultipleDefinitions)
             {
-                // ReSharper disable once PossibleNullReferenceException
                 throw Error.AmbiguousJump(_node.Name);
             }
 

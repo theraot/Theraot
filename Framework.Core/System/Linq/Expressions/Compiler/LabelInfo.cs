@@ -268,7 +268,6 @@ namespace System.Linq.Expressions.Compiler
 
             if (_definitions.Count > 1)
             {
-                // ReSharper disable once PossibleNullReferenceException
                 throw Error.AmbiguousJump(_node.Name);
             }
 

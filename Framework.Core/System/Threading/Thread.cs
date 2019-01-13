@@ -54,7 +54,6 @@ namespace System.Threading
         private static int _lastId;
 
         [ThreadStatic]
-        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         private static object _threadProbe;
 
         private readonly WeakReference<object> _probe;

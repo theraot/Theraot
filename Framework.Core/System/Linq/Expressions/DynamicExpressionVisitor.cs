@@ -8,7 +8,6 @@ using System.Dynamic.Utils;
 
 namespace System.Linq.Expressions
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
     public class DynamicExpressionVisitor : ExpressionVisitor
     {
         /// <summary>

@@ -15,7 +15,6 @@ namespace System.Runtime.CompilerServices
     /// </summary>
     /// <typeparam name="T">The delegate type.</typeparam>
     [EditorBrowsable(EditorBrowsableState.Never), DebuggerStepThrough]
-    // ReSharper disable once UnusedTypeParameter
     public class RuleCache<T>
         where T : class
     {

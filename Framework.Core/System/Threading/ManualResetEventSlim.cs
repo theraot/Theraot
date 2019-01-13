@@ -5,7 +5,6 @@ using Theraot.Threading;
 
 namespace System.Threading
 {
-    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public partial class ManualResetEventSlim : IDisposable
     {
         private const int _defaultSpinCount = 10;

@@ -231,7 +231,6 @@ namespace System.Linq.Expressions.Interpreter
             var isGetter = info.Name == "Get";
             MethodInfo alternativeMethod = null;
 
-            // ReSharper disable once PossibleNullReferenceException
             switch (arrayType.GetArrayRank())
             {
                 case 1:

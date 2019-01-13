@@ -36,8 +36,6 @@ namespace TestRunner.System.Threading
         public static void NewThreadWithNullParametrizedThreadStartThrows()
         {
             ParameterizedThreadStart parameterizedStart = null;
-            // ReSharper disable once ExpressionIsAlwaysNull
-            // ReSharper disable once AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException, Thread>(() => new Thread(parameterizedStart));
         }
 
@@ -45,8 +43,6 @@ namespace TestRunner.System.Threading
         public static void NewThreadWithNullThreadStartThrows()
         {
             ThreadStart start = null;
-            // ReSharper disable once ExpressionIsAlwaysNull
-            // ReSharper disable once AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException, Thread>(() => new Thread(start));
         }
 

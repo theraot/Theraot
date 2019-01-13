@@ -103,9 +103,7 @@ namespace Theraot.Collections.Specialized
                 if (key == null)
                 {
                     if (_hasNull)
-                    // ReSharper disable once HeuristicUnreachableCode
                     {
-                        // ReSharper disable once HeuristicUnreachableCode
                         return _valueForNull[0];
                     }
                     throw new KeyNotFoundException();
@@ -116,9 +114,7 @@ namespace Theraot.Collections.Specialized
             {
                 // key could  be null
                 if (key == null)
-                // ReSharper disable once HeuristicUnreachableCode
                 {
-                    // ReSharper disable once HeuristicUnreachableCode
                     SetForNull(value); // OK
                 }
                 else
@@ -132,13 +128,9 @@ namespace Theraot.Collections.Specialized
         {
             // key could  be null
             if (key == null)
-            // ReSharper disable once HeuristicUnreachableCode
             {
-                // ReSharper disable once HeuristicUnreachableCode
                 if (_hasNull)
-                // ReSharper disable once HeuristicUnreachableCode
                 {
-                    // ReSharper disable once HeuristicUnreachableCode
                     throw new ArgumentException();
                 }
                 SetForNull(value);
@@ -188,9 +180,7 @@ namespace Theraot.Collections.Specialized
         {
             // key could  be null
             if (key == null)
-            // ReSharper disable once HeuristicUnreachableCode
             {
-                // ReSharper disable once HeuristicUnreachableCode
                 return _hasNull; // OK
             }
             return _wrapped.ContainsKey(key);
@@ -235,13 +225,9 @@ namespace Theraot.Collections.Specialized
         {
             // key can be null
             if (key == null)
-            // ReSharper disable once HeuristicUnreachableCode
             {
-                // ReSharper disable once HeuristicUnreachableCode
                 if (_hasNull) // OK
-                // ReSharper disable once HeuristicUnreachableCode
                 {
-                    // ReSharper disable once HeuristicUnreachableCode
                     ClearForNull();
                     return true;
                 }
@@ -281,13 +267,9 @@ namespace Theraot.Collections.Specialized
         {
             // key can be null
             if (key == null)
-            // ReSharper disable once HeuristicUnreachableCode
             {
-                // ReSharper disable once HeuristicUnreachableCode
                 if (_hasNull)
-                // ReSharper disable once HeuristicUnreachableCode
                 {
-                    // ReSharper disable once HeuristicUnreachableCode
                     value = _valueForNull[0];
                     return true;
                 }

@@ -95,7 +95,6 @@ namespace System.Collections
             else
             {
                 _items = new object[count];
-                // ReSharper disable once VirtualMemberCallInConstructor
                 AddRange(c);
             }
         }

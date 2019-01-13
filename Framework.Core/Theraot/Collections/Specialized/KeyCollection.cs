@@ -35,7 +35,6 @@ namespace Theraot.Collections.Specialized
 
         bool ICollection<TKey>.Contains(TKey item)
         {
-            // ReSharper disable once AssignNullToNotNullAttribute
             return _wrapped.ContainsKey(item);
         }
 

@@ -608,7 +608,6 @@ namespace System.Linq.Expressions.Compiler
                 var nonNullType = type.GetNonNullable();
                 if (TryEmitILConstant(il, value, nonNullType))
                 {
-                    // ReSharper disable once AssignNullToNotNullAttribute
                     il.Emit(OpCodes.Newobj, type.GetConstructor(new[] { nonNullType }));
                     return true;
                 }
@@ -731,7 +730,6 @@ namespace System.Linq.Expressions.Compiler
         {
             var mi = nullable.GetMethod("get_Value", BindingFlags.Instance | BindingFlags.Public);
             Debug.Assert(nullable.IsValueType);
-            // ReSharper disable once AssignNullToNotNullAttribute
             il.Emit(OpCodes.Call, mi);
         }
 
@@ -739,7 +737,6 @@ namespace System.Linq.Expressions.Compiler
         {
             var mi = nullable.GetMethod("GetValueOrDefault", Type.EmptyTypes);
             Debug.Assert(nullable.IsValueType);
-            // ReSharper disable once AssignNullToNotNullAttribute
             il.Emit(OpCodes.Call, mi);
         }
 
@@ -747,7 +744,6 @@ namespace System.Linq.Expressions.Compiler
         {
             var mi = nullable.GetMethod("get_HasValue", BindingFlags.Instance | BindingFlags.Public);
             Debug.Assert(nullable.IsValueType);
-            // ReSharper disable once AssignNullToNotNullAttribute
             il.Emit(OpCodes.Call, mi);
         }
 
@@ -775,7 +771,6 @@ namespace System.Linq.Expressions.Compiler
             var nnTypeTo = typeTo.GetNonNullable();
             il.EmitConvertToType(typeFrom, nnTypeTo, isChecked, locals);
             var ci = typeTo.GetConstructor(new[] { nnTypeTo });
-            // ReSharper disable once AssignNullToNotNullAttribute
             il.Emit(OpCodes.Newobj, ci);
         }
 
@@ -845,7 +840,6 @@ namespace System.Linq.Expressions.Compiler
             il.EmitConvertToType(nnTypeFrom, nnTypeTo, isChecked, locals);
             // construct result type
             var ci = typeTo.GetConstructor(new[] { nnTypeTo });
-            // ReSharper disable once AssignNullToNotNullAttribute
             il.Emit(OpCodes.Newobj, ci);
             var labEnd = il.DefineLabel();
             il.Emit(OpCodes.Br_S, labEnd);
@@ -1135,7 +1129,6 @@ namespace System.Linq.Expressions.Compiler
 
             if (arrayType.IsSafeArray())
             {
-                // ReSharper disable once AssignNullToNotNullAttribute
                 il.Emit(OpCodes.Newarr, arrayType.GetElementType());
             }
             else

@@ -55,7 +55,6 @@ namespace System.Linq.Expressions.Interpreter
                 _t = t;
             }
 
-            // ReSharper disable once MemberHidesStaticFromOuterClass
             public new static CastInstruction Create(Type t)
             {
                 if (t.IsValueType && !t.IsNullable())
@@ -345,7 +344,6 @@ namespace System.Linq.Expressions.Interpreter
                 if (frame.Peek() == null)
                 {
                     // Trigger InvalidOperationException with same localized method as if we'd called the Value getter.
-                    // ReSharper disable once PossibleInvalidOperationException
                     return (int)default(int?);
                 }
 

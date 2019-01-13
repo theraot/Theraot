@@ -106,7 +106,6 @@ namespace Theraot.Core
             {
                 property = GetPropertyDelegated(type, typeof(EqualityComparer<>));
             }
-            // ReSharper disable once PossibleNullReferenceException
             Default = (IEqualityComparer<T>)property.GetValue(null, null);
         }
 
