@@ -361,6 +361,7 @@ namespace System.Collections
             var e = d.GetEnumerator();
             while (e.MoveNext())
             {
+                // ReSharper disable once VirtualMemberCallInConstructor
                 Add(e.Key, e.Value);
             }
         }
@@ -376,6 +377,7 @@ namespace System.Collections
             var e = d.GetEnumerator();
             while (e.MoveNext())
             {
+                // ReSharper disable once VirtualMemberCallInConstructor
                 Add(e.Key, e.Value);
             }
         }
@@ -419,7 +421,7 @@ namespace System.Collections
             // visit every bucket in the table exactly once within hashsize
             // iterations.  Violate this and it'll cause obscure bugs forever.
             // If you change this calculation for h2(key), update putEntry too!
-            incr = 1 + seed * HashHelpers.HashPrime % ((uint)hashsize - 1);
+            incr = 1 + (seed * HashHelpers.HashPrime % ((uint)hashsize - 1));
             return hashcode;
         }
 
@@ -915,7 +917,7 @@ namespace System.Collections
                 // Insert the key/value pair into this bucket if this bucket is empty and has never contained an entry
                 // OR
                 // This bucket once contained an entry but there has never been a collision
-                if (_buckets[bucketNumber].Key == null || _buckets[bucketNumber].Key == _buckets && (_buckets[bucketNumber].HashColl & 0x80000000) == 0)
+                if (_buckets[bucketNumber].Key == null || (_buckets[bucketNumber].Key == _buckets && (_buckets[bucketNumber].HashColl & 0x80000000) == 0))
                 {
                     // If we have found an available bucket that has never had a collision, but we've seen an available
                     // bucket in the past that has the collision bit set, use the previous bucket instead
@@ -996,7 +998,7 @@ namespace System.Collections
             Debug.Assert(hashcode >= 0, "hashcode >= 0");  // make sure collision bit (sign bit) wasn't set.
 
             var seed = (uint)hashcode;
-            var incr = unchecked(1 + seed * HashHelpers.HashPrime % ((uint)newBuckets.Length - 1));
+            var incr = unchecked(1 + (seed * HashHelpers.HashPrime % ((uint)newBuckets.Length - 1)));
             var bucketNumber = (int)(seed % (uint)newBuckets.Length);
             while (true)
             {
@@ -1109,12 +1111,16 @@ namespace System.Collections
                 if (keyComparerForSerialization == null)
                 {
                     info.AddValue(_comparerName, null, typeof(IComparer));
+#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
                     info.AddValue(_hashCodeProviderName, null, typeof(IHashCodeProvider));
+#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
                 }
                 else if (keyComparerForSerialization is CompatibleComparer c)
                 {
                     info.AddValue(_comparerName, c.Comparer, typeof(IComparer));
+#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
                     info.AddValue(_hashCodeProviderName, c.HashCodeProvider, typeof(IHashCodeProvider));
+#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
                 }
                 else
                 {
@@ -1159,7 +1165,9 @@ namespace System.Collections
             var hashsize = 0;
             IComparer c = null;
 
+#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
             IHashCodeProvider hcp = null;
+#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
 
             object[] serKeys = null;
             object[] serValues = null;
@@ -1187,7 +1195,9 @@ namespace System.Collections
                         break;
 
                     case _hashCodeProviderName:
+#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
                         hcp = (IHashCodeProvider)siInfo.GetValue(_hashCodeProviderName, typeof(IHashCodeProvider));
+#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
                         break;
 
                     case _keysName:
@@ -1340,11 +1350,6 @@ namespace System.Collections
             internal SyncHashtable(Hashtable table) : base(false)
             {
                 _table = table;
-            }
-
-            internal SyncHashtable(SerializationInfo info, StreamingContext context) : base(info, context)
-            {
-                throw new PlatformNotSupportedException();
             }
 
             public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -1630,6 +1635,7 @@ namespace System.Collections
         private readonly object _key;
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         private readonly object _value;
 
         public KeyValuePairs(object key, object value)
@@ -1641,13 +1647,17 @@ namespace System.Collections
 
     internal sealed class CompatibleComparer : IEqualityComparer
     {
+#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
         internal CompatibleComparer(IHashCodeProvider hashCodeProvider, IComparer comparer)
+#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
         {
             HashCodeProvider = hashCodeProvider;
             Comparer = comparer;
         }
 
+#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
         internal IHashCodeProvider HashCodeProvider { get; }
+#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
 
         internal IComparer Comparer { get; }
 
