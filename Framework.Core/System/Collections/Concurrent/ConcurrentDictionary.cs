@@ -394,7 +394,7 @@ namespace System.Collections.Concurrent
                 // This is what happens when you do the call on Microsoft's implementation
                 throw CreateArgumentNullExceptionKey(item.Key);
             }
-            return _wrapped.Remove(item.Key, input => EqualityComparer<TValue>.Default.Equals(item.Value, item.Value), out _);
+            return _wrapped.Remove(item.Key, input => EqualityComparer<TValue>.Default.Equals(input, item.Value), out _);
         }
 
         bool IDictionary<TKey, TValue>.Remove(TKey key)
