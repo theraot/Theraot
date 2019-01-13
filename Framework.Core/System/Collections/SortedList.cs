@@ -1,4 +1,4 @@
-#if LESSTHAN_NETSTANDARD13
+﻿#if LESSTHAN_NETSTANDARD13
 
 #pragma warning disable CA2235 // Mark all non-serializable fields
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
@@ -922,18 +922,7 @@ namespace System.Collections
                         throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                     }
 
-                    if (_getObjectRetType == Keys)
-                    {
-                        return _key;
-                }
-                    else if (_getObjectRetType == Values)
-                    {
-                        return _value;
-                    }
-                    else
-                    {
-                        return new DictionaryEntry(_key, _value);
-            }
+                    return _getObjectRetType == Keys ? _key : _getObjectRetType == Values ? _value : new DictionaryEntry(_key, _value);
                 }
             }
 

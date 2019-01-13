@@ -1,4 +1,4 @@
-#if LESSTHAN_NETSTANDARD13
+﻿#if LESSTHAN_NETSTANDARD13
 
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
 #pragma warning disable CA2235 // Mark all non-serializable fields
@@ -1203,6 +1203,9 @@ namespace System.Collections
 
                     case _valuesName:
                         serValues = (object[])siInfo.GetValue(_valuesName, typeof(object[]));
+                        break;
+                    default:
+                        // Unknown, skip
                         break;
                 }
             }
