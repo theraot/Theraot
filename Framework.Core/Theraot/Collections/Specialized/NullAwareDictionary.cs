@@ -10,18 +10,19 @@ using Theraot.Reflection;
 
 namespace Theraot.Collections.Specialized
 {
+    [Serializable]
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={Count}")]
     public sealed class NullAwareDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private readonly IEqualityComparer<TValue> _valueComparer;
-        private readonly Dictionary<TKey, TValue> _wrapped;
+        private readonly DictionaryEx<TKey, TValue> _wrapped;
         private bool _hasNull;
         private TValue[] _valueForNull;
 
         public NullAwareDictionary()
         {
-            _wrapped = new Dictionary<TKey, TValue>();
+            _wrapped = new DictionaryEx<TKey, TValue>();
             _hasNull = false;
             _valueForNull = new[] { default(TValue) };
             _valueComparer = EqualityComparer<TValue>.Default;
@@ -40,7 +41,7 @@ namespace Theraot.Collections.Specialized
 
         public NullAwareDictionary(IEqualityComparer<TKey> comparer)
         {
-            _wrapped = new Dictionary<TKey, TValue>(comparer);
+            _wrapped = new DictionaryEx<TKey, TValue>(comparer);
             _hasNull = false;
             _valueForNull = new[] { default(TValue) };
             _valueComparer = EqualityComparer<TValue>.Default;
