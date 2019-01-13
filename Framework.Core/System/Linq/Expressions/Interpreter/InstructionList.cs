@@ -17,7 +17,6 @@ using Theraot.Collections.ThreadSafe;
 
 namespace System.Linq.Expressions.Interpreter
 {
-    [SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
     [DebuggerTypeProxy(typeof(DebugView))]
     internal /*readonly*/ struct InstructionArray
     {
@@ -71,7 +70,6 @@ namespace System.Linq.Expressions.Interpreter
     }
 
     [DebuggerTypeProxy(typeof(DebugView))]
-    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     internal sealed class InstructionList
     {
         private readonly List<Instruction> _instructions = new List<Instruction>();

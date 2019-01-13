@@ -358,7 +358,6 @@ namespace System.Linq.Expressions.Compiler
             il.Emit(fi.IsStatic ? OpCodes.Stsfld : OpCodes.Stfld, fi);
         }
 
-        [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
         internal static void EmitNew(this ILGenerator il, ConstructorInfo ci)
         {
             Debug.Assert(ci != null);
@@ -868,7 +867,6 @@ namespace System.Linq.Expressions.Compiler
             il.Emit(OpCodes.Box, typeFrom);
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private static void EmitNumericConversion(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked)
         {
             var tc = typeTo.GetTypeCode();

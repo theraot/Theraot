@@ -14,10 +14,8 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal sealed class InterpretedFrame
     {
-        [SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         public readonly IStrongBox[] Closure;
 
-        [SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         public readonly object[] Data;
 
         public int InstructionIndex;
@@ -26,11 +24,9 @@ namespace System.Linq.Expressions.Interpreter
 
         internal readonly Interpreter Interpreter;
 
-        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         [ThreadStatic]
         private static InterpretedFrame _currentFrame;
 
-        [SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         private readonly int[] _continuations;
 
         private int _continuationIndex;

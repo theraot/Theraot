@@ -22,7 +22,6 @@ namespace System.Linq.Expressions.Interpreter
         public override string InstructionName => "And";
         public override int ProducedStack => 1;
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         public static Instruction Create(Type type)
         {
             switch (type.GetNonNullable().GetTypeCode())

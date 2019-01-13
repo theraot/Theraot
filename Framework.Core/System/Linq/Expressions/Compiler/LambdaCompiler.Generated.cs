@@ -30,7 +30,6 @@ namespace System.Linq.Expressions.Compiler
             return false;
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void EmitExpression(Expression node, CompilationFlags flags)
         {
             // When compiling deep trees, we run the risk of triggering a terminating StackOverflowException,

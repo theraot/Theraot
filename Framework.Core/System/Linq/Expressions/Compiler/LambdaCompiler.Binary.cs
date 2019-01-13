@@ -228,7 +228,6 @@ namespace System.Linq.Expressions.Compiler
             FreeLocal(locResult);
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void EmitLiftedBinaryOp(ExpressionType op, Type leftType, Type rightType, Type resultType, bool liftedToNull)
         {
             Debug.Assert(leftType.IsNullable() || rightType.IsNullable());
@@ -454,7 +453,6 @@ namespace System.Linq.Expressions.Compiler
             IL.Emit(OpCodes.And);
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void EmitUnliftedBinaryOp(ExpressionType op, Type leftType, Type rightType)
         {
             Debug.Assert(!leftType.IsNullable());

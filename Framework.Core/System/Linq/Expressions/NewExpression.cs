@@ -162,7 +162,6 @@ namespace System.Linq.Expressions
             }
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private static void ValidateNewArgs(ConstructorInfo constructor, ref Expression[] arguments, ref ReadOnlyCollection<MemberInfo> members)
         {
             ParameterInfo[] pis;

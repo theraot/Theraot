@@ -627,7 +627,6 @@ namespace System.Threading.Tasks
             return InternalStart(scheduler, inline, true);
         }
 
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)

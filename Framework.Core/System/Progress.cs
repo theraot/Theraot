@@ -39,7 +39,6 @@ namespace System
             ProgressChanged += (sender, args) => handler(args);
         }
 
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event NewEventHandler<T> ProgressChanged;
 
         public void Report(T value)

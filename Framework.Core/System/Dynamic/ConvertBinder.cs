@@ -40,7 +40,6 @@ namespace System.Dynamic
         /// <summary>
         /// The type to convert to.
         /// </summary>
-        [SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
         public Type Type { get; }
 
         /// <summary>

@@ -25,7 +25,6 @@ namespace System.Linq.Expressions.Interpreter
         public override string InstructionName => "NotEqual";
         public override int ProducedStack => 1;
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         public static Instruction Create(Type type, bool liftedToNull)
         {
             if (liftedToNull)

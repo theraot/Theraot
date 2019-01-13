@@ -20,10 +20,8 @@ using AstUtils = System.Linq.Expressions.Utils;
 
 namespace System.Linq.Expressions.Interpreter
 {
-    [SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
     internal /*readonly*/ struct InterpretedFrameInfo
     {
-        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         private readonly DebugInfo _debugInfo;
 
         private readonly string _methodName;
@@ -257,7 +255,6 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     internal sealed class LightCompiler
     {
         private static readonly LocalDefinition[] _emptyLocals = ArrayReservoir<LocalDefinition>.EmptyArray;
@@ -2042,7 +2039,6 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void CompileNoLabelPush(Expression expr)
         {
             // When compiling deep trees, we run the risk of triggering a terminating StackOverflowException,
@@ -3209,7 +3205,6 @@ namespace System.Linq.Expressions.Interpreter
     /// <summary>
     /// The re-throw instruction will throw this exception
     /// </summary>
-    [SuppressMessage("Microsoft.Usage", "CA2237:MarkISerializableTypesWithSerializable")]
     internal sealed class RethrowException : Exception
     {
         public RethrowException()

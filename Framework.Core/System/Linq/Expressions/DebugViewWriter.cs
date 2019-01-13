@@ -14,7 +14,6 @@ using System.Reflection;
 
 namespace System.Linq.Expressions
 {
-    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     internal sealed class DebugViewWriter : ExpressionVisitor
     {
         private const int _maxColumn = 120;
@@ -226,7 +225,6 @@ namespace System.Linq.Expressions
 
         #region The AST Output
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         protected internal override Expression VisitBinary(BinaryExpression node)
         {
             if (node.NodeType == ExpressionType.ArrayIndex)
@@ -684,7 +682,6 @@ namespace System.Linq.Expressions
             return node;
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         protected internal override Expression VisitUnary(UnaryExpression node)
         {
             switch (node.NodeType)
@@ -920,7 +917,6 @@ namespace System.Linq.Expressions
         }
 
         // the greater the higher
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private static int GetOperatorPrecedence(Expression node)
         {
             // Roughly matches C# operator precedence, with some additional
@@ -1051,7 +1047,6 @@ namespace System.Linq.Expressions
             return false;
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private static bool NeedsParentheses(Expression parent, Expression child)
         {
             Debug.Assert(parent != null);

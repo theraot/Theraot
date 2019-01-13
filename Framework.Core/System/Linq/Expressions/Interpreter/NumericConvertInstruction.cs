@@ -58,7 +58,6 @@ namespace System.Linq.Expressions.Interpreter
 
         protected abstract object Convert(object obj);
 
-        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
         internal sealed class Checked : NumericConvertInstruction
         {
             public Checked(TypeCode from, TypeCode to, bool isLiftedToNull)
@@ -210,7 +209,6 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
         internal sealed class Unchecked : NumericConvertInstruction
         {
             public Unchecked(TypeCode from, TypeCode to, bool isLiftedToNull)

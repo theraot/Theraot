@@ -28,7 +28,6 @@ namespace System.Linq.Expressions.Compiler
     /// contain multiple lambdas, the Compiler class is responsible for compiling the whole tree, individual
     /// lambdas are then compiled by the LambdaCompiler.
     /// </summary>
-    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     internal sealed partial class LambdaCompiler : ILocalCache
     {
         // Runtime constants bound to the delegate

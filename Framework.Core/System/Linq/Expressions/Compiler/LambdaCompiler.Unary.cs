@@ -230,7 +230,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void EmitUnaryOperator(ExpressionType op, Type operandType, Type resultType)
         {
             var operandIsNullable = operandType.IsNullable();

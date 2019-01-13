@@ -238,7 +238,6 @@ namespace System.Linq.Expressions.Interpreter
 
     #region Initialize
 
-    [SuppressMessage("Microsoft.Design", "CA1012:AbstractTypesShouldNotHaveConstructors")]
     internal abstract class InitializeLocalInstruction : LocalAccessInstruction
     {
         internal InitializeLocalInstruction(int index)

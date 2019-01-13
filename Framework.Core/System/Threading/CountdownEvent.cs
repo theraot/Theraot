@@ -201,7 +201,6 @@ namespace System.Threading
             return Wait(TimeSpan.FromMilliseconds(millisecondsTimeout), cancellationToken);
         }
 
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_event")]
         protected virtual void Dispose(bool disposing)
         {
             // Thread Safe Dispose

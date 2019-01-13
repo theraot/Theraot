@@ -32,7 +32,6 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// Temporary support for disabling crashing if tasks go unobserved.
         /// </summary>
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2207:InitializeValueTypeStaticFieldsInline")]
         static AsyncVoidMethodBuilder()
         {
             PreventUnobservedTaskExceptions();

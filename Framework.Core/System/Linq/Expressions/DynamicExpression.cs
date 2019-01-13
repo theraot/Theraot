@@ -249,7 +249,6 @@ namespace System.Linq.Expressions
         /// The <see cref="DelegateType">DelegateType</see> property of the result will be inferred
         /// from the types of the arguments and the specified return type.
         /// </remarks>
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1061:DoNotHideBaseClassMethods")]
         public new static DynamicExpression Dynamic(CallSiteBinder binder, Type returnType, IEnumerable<Expression> arguments)
         {
             return ExpressionExtension.Dynamic(binder, returnType, arguments);
@@ -358,7 +357,6 @@ namespace System.Linq.Expressions
         /// <see cref="Binder">Binder</see>, and
         /// <see cref="Arguments">Arguments</see> set to the specified values.
         /// </returns>
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1061:DoNotHideBaseClassMethods")]
         public new static DynamicExpression MakeDynamic(Type delegateType, CallSiteBinder binder, IEnumerable<Expression> arguments)
         {
             return ExpressionExtension.MakeDynamic(delegateType, binder, arguments);

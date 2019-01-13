@@ -72,7 +72,6 @@ namespace System.Linq.Expressions.Compiler
         /// to detect misuse of the <see cref="Mark"/> and <see cref="Free"/> methods.
         /// </summary>
         [Conditional("DEBUG")]
-        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         private void VerifyTemps() => _tm.VerifyTemps();
 
         /// <summary>
@@ -177,7 +176,6 @@ namespace System.Linq.Expressions.Compiler
             /// to detect misuse of the <see cref="Mark"/> and <see cref="Free"/> methods.
             /// </summary>
             [Conditional("DEBUG")]
-            [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
             internal void VerifyTemps()
             {
                 Debug.Assert(_usedTemps == null || _usedTemps.Count == 0);

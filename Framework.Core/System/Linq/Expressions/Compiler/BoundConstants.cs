@@ -186,7 +186,6 @@ namespace System.Linq.Expressions.Compiler
                 return Value == other.Value && Type == other.Type;
             }
 
-            [SuppressMessage("Microsoft.Usage", "CA2231:OverloadOperatorEqualsOnOverridingValueTypeEquals")]
             public override bool Equals(object obj)
             {
                 return obj is TypedConstant constant && Equals(constant);

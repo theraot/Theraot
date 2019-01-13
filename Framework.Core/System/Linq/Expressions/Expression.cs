@@ -20,7 +20,6 @@ namespace System.Linq.Expressions
     /// <summary>
     /// The base type for all nodes in Expression Trees.
     /// </summary>
-    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     public abstract partial class Expression
     {
         private static readonly CacheDict<Type, MethodInfo> _lambdaDelegateCache = new CacheDict<Type, MethodInfo>(40);
@@ -89,7 +88,6 @@ comparand: null
         /// <summary>
         /// The <see cref="Type"/> of the value represented by this <see cref="Expression"/>.
         /// </summary>
-        [SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
         public virtual Type Type
         {
             get

@@ -75,7 +75,6 @@ namespace System.Linq.Expressions
         /// The type of value that is passed when jumping to the label
         /// (or System.Void if no value should be passed).
         /// </summary>
-        [SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
         public Type Type { get; }
 
         /// <summary>
