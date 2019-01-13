@@ -349,8 +349,7 @@ namespace System.Threading
         {
             var expected = Volatile.Read(ref _count);
             previous = expected;
-            // Note: checking this way to avoid overflow
-            if (_maxCount.HasValue && _maxCount - releaseCount < expected)
+            if (_maxCount.HasValue && expected + (long)releaseCount > (long)_maxCount)
             {
                 throw new SemaphoreFullException();
             }

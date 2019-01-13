@@ -481,7 +481,7 @@ namespace System.Collections.Concurrent
 
         public bool TryTake(out T item)
         {
-            return Data.TryTake(out item, Timeout.Infinite, CancellationToken.None);
+            return Data.TryTake(out item);
         }
 
         public bool TryTake(out T item, TimeSpan timeout)
@@ -585,6 +585,16 @@ namespace System.Collections.Concurrent
                 {
                     Interlocked.Decrement(ref _addWaiters);
                 }
+            }
+
+            public bool TryTake(out T item)
+            {
+                item = default;
+                if (_collection.Count == 0)
+                {
+                    return false;
+                }
+                return TryTake(out item, -1, CancellationToken.None);
             }
 
             public bool TryTake(out T item, int millisecondsTimeout, CancellationToken cancellationToken)

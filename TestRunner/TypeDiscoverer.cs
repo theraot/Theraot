@@ -21,6 +21,7 @@
 #else
             types = new []
 			{
+				typeof(Assert),
 				typeof(AvailabilityTests),
 				typeof(Console),
 				typeof(DataGenerator),
@@ -30,7 +31,6 @@
 				typeof(DataGeneratorAttribute),
 				typeof(UseGeneratorAttribute),
 				typeof(InterfaceTests),
-				typeof(Assert),
 				typeof(Program),
 				typeof(AssertionFailedException),
 				typeof(CategoryAttribute),
@@ -44,6 +44,7 @@
 				typeof(System.Threading.ThreadPoolTest),
 				typeof(System.Threading.ThreadTest),
 				typeof(System.Threading.TimerTest),
+				typeof(System.Collections.Concurrent.BlockingCollectionTest),
 			};
 #endif
 		}
