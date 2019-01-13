@@ -15,11 +15,14 @@ namespace System.Dynamic
     /// Describes arguments in the dynamic binding process.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// <see cref="ArgumentCount"/> - all inclusive number of arguments.
     /// <see cref="ArgumentNames"/> - names for those arguments that are named.
-    ///
+    /// </para>
+    /// <para>
     /// Argument names match to the argument values in left to right order
     /// and last name corresponds to the last argument.
+    /// </para>
     /// </remarks>
     /// <example>
     /// <code>
