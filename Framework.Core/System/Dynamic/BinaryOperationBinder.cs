@@ -4,7 +4,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Linq.Expressions;
 
@@ -99,7 +98,7 @@ namespace System.Dynamic
                 case ExpressionType.Power:
                 case ExpressionType.RightShift:
                 case ExpressionType.Subtract:
-#if NET20 || NET30
+#if LESSTHAN_NET35
                 case ExpressionType.AddAssign:
                 case ExpressionType.AndAssign:
                 case ExpressionType.DivideAssign:
