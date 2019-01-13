@@ -21,7 +21,7 @@ namespace TestRunner.System.Collections.Concurrent
             stopWatch.Start();
             a.TryTake(out var _, 200);
             stopWatch.Stop();
-            Assert.IsTrue(stopWatch.ElapsedMilliseconds > 200);
+            Assert.IsTrue(stopWatch.ElapsedMilliseconds >= 200);
         }
     }
 }

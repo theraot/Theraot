@@ -16,7 +16,9 @@ namespace TestRunner.System.Linq
         [Test]
         public static void MaxOfEmptyEnumerableThrows()
         {
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             Assert.Throws<InvalidOperationException>(() => Enumerable.Max(new double[]{}));
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             Assert.Throws<InvalidOperationException>(() => Enumerable.Max(new float[]{}));
         }
 

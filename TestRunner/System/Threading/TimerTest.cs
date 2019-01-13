@@ -57,7 +57,7 @@ namespace TestRunner.System.Threading
             var timer = new Timer(_ => Interlocked.Increment(ref data[0]), null, 700, 217);
             Thread.Sleep(1000);
             Assert.AreEqual(2, Volatile.Read(ref data[0]));
-            timer.Change(700, 285);
+            timer.Change(700, 217);
             Thread.Sleep(1000);
             Assert.AreEqual(4, Volatile.Read(ref data[0]));
             timer.Dispose();
