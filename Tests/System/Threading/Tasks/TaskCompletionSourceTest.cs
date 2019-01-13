@@ -72,7 +72,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentOutOfRangeException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -83,7 +83,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentOutOfRangeException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -181,7 +181,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -191,7 +191,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             Assert.AreEqual(TaskStatus.WaitingForActivation, _completionSource.Task.Status, "r1");

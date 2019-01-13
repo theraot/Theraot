@@ -134,7 +134,7 @@ namespace MonoTests.System.Threading.Tasks
                     }
                     catch (InvalidOperationException ex)
                     {
-                        GC.KeepAlive(ex);
+                        Theraot.No.Op(ex);
                     }
                 }
             }
@@ -165,7 +165,7 @@ namespace MonoTests.System.Threading.Tasks
                     }
                     catch (Exception ex)
                     {
-                        GC.KeepAlive(ex);
+                        Theraot.No.Op(ex);
                         thrown = true;
                     }
 
@@ -262,7 +262,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentNullException e)
             {
-                GC.KeepAlive(e);
+                Theraot.No.Op(e);
             }
 
             try
@@ -272,7 +272,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentNullException e)
             {
-                GC.KeepAlive(e);
+                Theraot.No.Op(e);
             }
 
             try
@@ -282,7 +282,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentOutOfRangeException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -292,7 +292,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentOutOfRangeException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -322,7 +322,7 @@ namespace MonoTests.System.Threading.Tasks
                     }
                     catch (InvalidOperationException ex)
                     {
-                        GC.KeepAlive(ex);
+                        Theraot.No.Op(ex);
                     }
 
                     Assert.IsTrue(cont.Wait(1000), "#3");
@@ -412,7 +412,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (InvalidOperationException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -429,7 +429,7 @@ namespace MonoTests.System.Threading.Tasks
                 }
                 catch (InvalidOperationException ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
 
                 try
@@ -584,7 +584,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -601,7 +601,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (InvalidOperationException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -653,7 +653,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -1457,7 +1457,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (Exception ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
             foreach (var t in tasks)
             {
@@ -1467,7 +1467,7 @@ namespace MonoTests.System.Threading.Tasks
                 }
                 catch (Exception ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
             }
         }
@@ -1509,7 +1509,7 @@ namespace MonoTests.System.Threading.Tasks
 
             protected override void QueueTask(Task task)
             {
-                GC.KeepAlive(task);
+                Theraot.No.Op(task);
             }
 
             protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
@@ -1605,7 +1605,7 @@ namespace MonoTests.System.Threading.Tasks
                 }
                 catch (AggregateException e)
                 {
-                    GC.KeepAlive(e);
+                    Theraot.No.Op(e);
                 }
 
                 Assert.AreEqual(TaskStatus.Faulted, t2.Status, "#2");
@@ -1717,7 +1717,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentOutOfRangeException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -1740,7 +1740,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (InvalidOperationException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -1851,7 +1851,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -1866,7 +1866,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (AggregateException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             Assert.IsTrue(t.IsCanceled, "#2");
@@ -1900,7 +1900,7 @@ namespace MonoTests.System.Threading.Tasks
                 }
                 catch (Exception ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
                 Assert.AreEqual(TaskStatus.Faulted, t.Status, "#2");
             }
@@ -2042,7 +2042,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -2160,7 +2160,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (InvalidOperationException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
             // Do not dispose Task
             var task = new Task(ActionHelper.GetNoopAction());
@@ -2176,7 +2176,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (InvalidOperationException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -2195,7 +2195,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -2205,7 +2205,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -2293,7 +2293,7 @@ namespace MonoTests.System.Threading.Tasks
                         }
                         catch (AggregateException ex)
                         {
-                            GC.KeepAlive(ex);
+                            Theraot.No.Op(ex);
                         }
                     }
                 }
@@ -2342,7 +2342,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -2352,7 +2352,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -2450,7 +2450,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (InvalidOperationException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Do not dispose Task
@@ -2467,7 +2467,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (InvalidOperationException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -2486,7 +2486,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -2496,7 +2496,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -2506,7 +2506,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -2641,7 +2641,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (InvalidOperationException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Do not dispose Task
@@ -2661,7 +2661,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (InvalidOperationException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -2680,7 +2680,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -2690,7 +2690,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -2700,7 +2700,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 

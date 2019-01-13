@@ -21,7 +21,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentNullException e)
             {
-                GC.KeepAlive(e);
+                Theraot.No.Op(e);
             }
 
             try
@@ -33,7 +33,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentNullException e)
             {
-                GC.KeepAlive(e);
+                Theraot.No.Op(e);
             }
 
             try
@@ -45,7 +45,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentOutOfRangeException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -57,7 +57,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (ArgumentOutOfRangeException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -137,7 +137,7 @@ namespace MonoTests.System.Threading.Tasks
                     }
                     catch (InvalidOperationException ex)
                     {
-                        GC.KeepAlive(ex);
+                        Theraot.No.Op(ex);
                     }
 
                     Assert.IsTrue(cont.Wait(1000), "#3");
@@ -184,7 +184,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (InvalidOperationException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -346,7 +346,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             catch (InvalidOperationException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -496,7 +496,7 @@ namespace MonoTests.System.Threading.Tasks
                 }
                 catch (AggregateException e)
                 {
-                    GC.KeepAlive(e);
+                    Theraot.No.Op(e);
                 }
 
                 Assert.AreEqual(TaskStatus.Faulted, t2.Status, "#2");

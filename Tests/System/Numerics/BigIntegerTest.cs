@@ -145,7 +145,7 @@ namespace MonoTests.System.Numerics
             }
             catch (ArgumentOutOfRangeException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             Assert.AreEqual(1, (int)BigInteger.Pow(99999, 0), "#2");
@@ -165,7 +165,7 @@ namespace MonoTests.System.Numerics
             }
             catch (ArgumentOutOfRangeException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
             try
             {
@@ -174,7 +174,7 @@ namespace MonoTests.System.Numerics
             }
             catch (DivideByZeroException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             Assert.AreEqual(4L, (long)BigInteger.ModPow(3, 2, 5), "#2");
@@ -253,7 +253,7 @@ namespace MonoTests.System.Numerics
             }
             catch (DivideByZeroException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -601,7 +601,7 @@ namespace MonoTests.System.Numerics
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             Assert.AreEqual(0, (int)new BigInteger(new byte[0]), "#2");
@@ -783,7 +783,7 @@ namespace MonoTests.System.Numerics
             }
             catch (OverflowException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -793,7 +793,7 @@ namespace MonoTests.System.Numerics
             }
             catch (OverflowException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -803,7 +803,7 @@ namespace MonoTests.System.Numerics
             }
             catch (OverflowException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             Assert.AreEqual(int.MaxValue, (int)new BigInteger(int.MaxValue), "#4");
@@ -820,7 +820,7 @@ namespace MonoTests.System.Numerics
             }
             catch (OverflowException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             //long.MaxValue + 1
@@ -831,7 +831,7 @@ namespace MonoTests.System.Numerics
             }
             catch (OverflowException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             //TODO long.MinValue - 1
@@ -842,7 +842,7 @@ namespace MonoTests.System.Numerics
             }
             catch (OverflowException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             Assert.AreEqual(long.MaxValue, (long)new BigInteger(long.MaxValue), "#4");
@@ -915,7 +915,7 @@ namespace MonoTests.System.Numerics
             }
             catch (OverflowException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -925,7 +925,7 @@ namespace MonoTests.System.Numerics
             }
             catch (OverflowException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -940,7 +940,7 @@ namespace MonoTests.System.Numerics
             }
             catch (OverflowException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
             try
             {
@@ -950,7 +950,7 @@ namespace MonoTests.System.Numerics
             }
             catch (OverflowException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
             try
             {
@@ -960,7 +960,7 @@ namespace MonoTests.System.Numerics
             }
             catch (OverflowException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             Assert.AreEqual(10000, (int)new BigInteger(10000.2), "#4");
@@ -1026,7 +1026,7 @@ namespace MonoTests.System.Numerics
             }
             catch (OverflowException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -1036,7 +1036,7 @@ namespace MonoTests.System.Numerics
             }
             catch (OverflowException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             Assert.AreEqual(0m, (decimal)new BigInteger(0), "#4");
@@ -1064,7 +1064,7 @@ namespace MonoTests.System.Numerics
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -1074,7 +1074,7 @@ namespace MonoTests.System.Numerics
             }
             catch (FormatException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -1084,7 +1084,7 @@ namespace MonoTests.System.Numerics
             }
             catch (FormatException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -1094,7 +1094,7 @@ namespace MonoTests.System.Numerics
             }
             catch (FormatException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -1104,7 +1104,7 @@ namespace MonoTests.System.Numerics
             }
             catch (FormatException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -1114,7 +1114,7 @@ namespace MonoTests.System.Numerics
             }
             catch (FormatException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             Assert.AreEqual(10, (int)BigInteger.Parse("+10"), "#7");
@@ -1148,7 +1148,7 @@ namespace MonoTests.System.Numerics
             }
             catch (FormatException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -1158,7 +1158,7 @@ namespace MonoTests.System.Numerics
             }
             catch (OverflowException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -1513,7 +1513,7 @@ namespace MonoTests.System.Numerics
             }
             catch (OverflowException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
     }

@@ -66,9 +66,9 @@ namespace MonoTests.System.Threading
                 v.EnterUpgradeableReadLock();
                 Assert.Fail("1");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException exception)
             {
-                GC.KeepAlive(v);
+                Theraot.No.Op(exception);
             }
 
             try
@@ -76,9 +76,9 @@ namespace MonoTests.System.Threading
                 v.EnterReadLock();
                 Assert.Fail("2");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException exception)
             {
-                GC.KeepAlive(v);
+                Theraot.No.Op(exception);
             }
 
             try
@@ -86,9 +86,9 @@ namespace MonoTests.System.Threading
                 v.EnterWriteLock();
                 Assert.Fail("3");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException exception)
             {
-                GC.KeepAlive(v);
+                Theraot.No.Op(exception);
             }
         }
 
@@ -102,9 +102,9 @@ namespace MonoTests.System.Threading
                 rwl.Dispose();
                 Assert.Fail("1");
             }
-            catch (SynchronizationLockException)
+            catch (SynchronizationLockException exception)
             {
-                GC.KeepAlive(rwl);
+                Theraot.No.Op(exception);
             }
         }
 
@@ -118,9 +118,9 @@ namespace MonoTests.System.Threading
                 rwl.Dispose();
                 Assert.Fail("1");
             }
-            catch (SynchronizationLockException)
+            catch (SynchronizationLockException exception)
             {
-                GC.KeepAlive(rwl);
+                Theraot.No.Op(exception);
             }
         }
 
@@ -134,9 +134,9 @@ namespace MonoTests.System.Threading
                 rwl.Dispose();
                 Assert.Fail("1");
             }
-            catch (SynchronizationLockException)
+            catch (SynchronizationLockException exception)
             {
-                GC.KeepAlive(rwl);
+                Theraot.No.Op(exception);
             }
         }
 
@@ -149,9 +149,9 @@ namespace MonoTests.System.Threading
                 v.TryEnterReadLock(-2);
                 Assert.Fail("1");
             }
-            catch (ArgumentOutOfRangeException)
+            catch (ArgumentOutOfRangeException exception)
             {
-                GC.KeepAlive(v);
+                Theraot.No.Op(exception);
             }
 
             try
@@ -159,9 +159,9 @@ namespace MonoTests.System.Threading
                 v.TryEnterReadLock(TimeSpan.MaxValue);
                 Assert.Fail("2");
             }
-            catch (ArgumentOutOfRangeException)
+            catch (ArgumentOutOfRangeException exception)
             {
-                GC.KeepAlive(v);
+                Theraot.No.Op(exception);
             }
 
             try
@@ -169,9 +169,9 @@ namespace MonoTests.System.Threading
                 v.TryEnterReadLock(TimeSpan.MinValue);
                 Assert.Fail("3");
             }
-            catch (ArgumentOutOfRangeException)
+            catch (ArgumentOutOfRangeException exception)
             {
-                GC.KeepAlive(v);
+                Theraot.No.Op(exception);
             }
         }
 
@@ -184,9 +184,9 @@ namespace MonoTests.System.Threading
                 v.TryEnterUpgradeableReadLock(-2);
                 Assert.Fail("1");
             }
-            catch (ArgumentOutOfRangeException)
+            catch (ArgumentOutOfRangeException exception)
             {
-                GC.KeepAlive(v);
+                Theraot.No.Op(exception);
             }
 
             try
@@ -194,9 +194,9 @@ namespace MonoTests.System.Threading
                 v.TryEnterUpgradeableReadLock(TimeSpan.MaxValue);
                 Assert.Fail("2");
             }
-            catch (ArgumentOutOfRangeException)
+            catch (ArgumentOutOfRangeException exception)
             {
-                GC.KeepAlive(v);
+                Theraot.No.Op(exception);
             }
 
             try
@@ -204,9 +204,9 @@ namespace MonoTests.System.Threading
                 v.TryEnterUpgradeableReadLock(TimeSpan.MinValue);
                 Assert.Fail("3");
             }
-            catch (ArgumentOutOfRangeException)
+            catch (ArgumentOutOfRangeException exception)
             {
-                GC.KeepAlive(v);
+                Theraot.No.Op(exception);
             }
         }
 
@@ -219,9 +219,9 @@ namespace MonoTests.System.Threading
                 v.TryEnterWriteLock(-2);
                 Assert.Fail("1");
             }
-            catch (ArgumentOutOfRangeException)
+            catch (ArgumentOutOfRangeException exception)
             {
-                GC.KeepAlive(v);
+                Theraot.No.Op(exception);
             }
 
             try
@@ -229,9 +229,9 @@ namespace MonoTests.System.Threading
                 v.TryEnterWriteLock(TimeSpan.MaxValue);
                 Assert.Fail("2");
             }
-            catch (ArgumentOutOfRangeException)
+            catch (ArgumentOutOfRangeException exception)
             {
-                GC.KeepAlive(v);
+                Theraot.No.Op(exception);
             }
 
             try
@@ -239,9 +239,9 @@ namespace MonoTests.System.Threading
                 v.TryEnterWriteLock(TimeSpan.MinValue);
                 Assert.Fail("3");
             }
-            catch (ArgumentOutOfRangeException)
+            catch (ArgumentOutOfRangeException exception)
             {
-                GC.KeepAlive(v);
+                Theraot.No.Op(exception);
             }
         }
 
@@ -276,9 +276,9 @@ namespace MonoTests.System.Threading
                     v.EnterReadLock();
                     Assert.Fail("1");
                 }
-                catch (LockRecursionException)
+                catch (LockRecursionException exception)
                 {
-                    GC.KeepAlive(v);
+                    Theraot.No.Op(exception);
                 }
 
                 try
@@ -286,9 +286,9 @@ namespace MonoTests.System.Threading
                     v.EnterWriteLock();
                     Assert.Fail("2");
                 }
-                catch (LockRecursionException)
+                catch (LockRecursionException exception)
                 {
-                    GC.KeepAlive(v);
+                    Theraot.No.Op(exception);
                 }
                 v.ExitReadLock();
             }
@@ -334,9 +334,9 @@ namespace MonoTests.System.Threading
                     v.EnterWriteLock();
                     Assert.Fail("1");
                 }
-                catch (LockRecursionException)
+                catch (LockRecursionException exception)
                 {
-                    GC.KeepAlive(v);
+                    Theraot.No.Op(exception);
                 }
 
                 try
@@ -344,9 +344,9 @@ namespace MonoTests.System.Threading
                     v.EnterReadLock();
                     Assert.Fail("2");
                 }
-                catch (LockRecursionException)
+                catch (LockRecursionException exception)
                 {
-                    GC.KeepAlive(v);
+                    Theraot.No.Op(exception);
                 }
                 v.ExitWriteLock();
             }
@@ -392,9 +392,9 @@ namespace MonoTests.System.Threading
                     v.EnterUpgradeableReadLock();
                     Assert.Fail("2");
                 }
-                catch (LockRecursionException)
+                catch (LockRecursionException exception)
                 {
-                    GC.KeepAlive(v);
+                    Theraot.No.Op(exception);
                 }
                 v.ExitUpgradeableReadLock();
             }

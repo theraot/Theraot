@@ -99,7 +99,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             cwt.Add("zzz", null);//ok
@@ -111,7 +111,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -160,7 +160,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             object key = "foo";
@@ -178,7 +178,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
             catch (MissingMethodException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -194,7 +194,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -204,7 +204,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             object key = "foo";
@@ -385,7 +385,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             Assert.IsFalse(cwt.Remove("x"), "#1");
@@ -409,7 +409,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             Assert.IsFalse(cwt.TryGetValue("foo", out res), "#1");

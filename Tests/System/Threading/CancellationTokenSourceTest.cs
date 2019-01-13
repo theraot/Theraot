@@ -133,7 +133,7 @@ namespace MonoTests.System.Threading
                 }
                 catch (ApplicationException ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
 
                 cts.Cancel();
@@ -156,7 +156,7 @@ namespace MonoTests.System.Threading
                 }
                 catch (ApplicationException ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
 
                 cts.Cancel();
@@ -315,7 +315,7 @@ namespace MonoTests.System.Threading
                 }
                 catch (ArgumentNullException ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
 
                 try
@@ -325,7 +325,7 @@ namespace MonoTests.System.Threading
                 }
                 catch (ArgumentException ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
             }
         }
@@ -354,7 +354,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -364,7 +364,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -377,7 +377,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -387,7 +387,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -398,7 +398,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -409,7 +409,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -470,7 +470,7 @@ namespace MonoTests.System.Threading
             }
             catch (AggregateException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -568,7 +568,7 @@ namespace MonoTests.System.Threading
                 }
                 catch (ArgumentException ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
             }
         }
@@ -586,7 +586,7 @@ namespace MonoTests.System.Threading
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -620,7 +620,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -630,7 +630,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -642,7 +642,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -652,7 +652,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -662,7 +662,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
             try
             {
@@ -671,7 +671,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 

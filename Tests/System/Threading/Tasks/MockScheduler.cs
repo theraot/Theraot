@@ -15,7 +15,7 @@ namespace MonoTests.System.Threading.Tasks
 
         protected override void QueueTask(Task task)
         {
-            GC.KeepAlive(task);
+            Theraot.No.Op(task);
         }
 
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)

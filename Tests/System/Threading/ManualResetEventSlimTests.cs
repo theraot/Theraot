@@ -66,7 +66,7 @@ namespace MonoTests.System.Threading
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -78,7 +78,7 @@ namespace MonoTests.System.Threading
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -117,7 +117,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             mre.Set();
@@ -129,7 +129,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -139,7 +139,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -227,7 +227,7 @@ namespace MonoTests.System.Threading
                 }
                 catch (OperationCanceledException exception)
                 {
-                    GC.KeepAlive(exception);
+                    Theraot.No.Op(exception);
                 }
             }
         }
@@ -346,7 +346,7 @@ namespace MonoTests.System.Threading
                     }
                     catch (OperationCanceledException ex)
                     {
-                        GC.KeepAlive(ex);
+                        Theraot.No.Op(ex);
                     }
                 }
             }

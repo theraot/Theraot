@@ -132,8 +132,7 @@ namespace MonoTests.System.Threading
                 }
                 catch (Exception exc)
                 {
-                    // Pokemon
-                    GC.KeepAlive(exc);
+                    Theraot.No.Op(exc);
                 }
             });
             thread.Start();

@@ -139,7 +139,6 @@ namespace TestRunner
             }
             catch (TException exception)
             {
-                GC.KeepAlive(exception);
                 return exception;
             }
             catch (Exception exception)
@@ -166,7 +165,6 @@ namespace TestRunner
             }
             catch (TException exception)
             {
-                GC.KeepAlive(exception);
                 return exception;
             }
             catch (Exception exception)
@@ -193,7 +191,6 @@ namespace TestRunner
             }
             catch (AggregateException aggregateException) when (aggregateException.InnerException is TException exception)
             {
-                GC.KeepAlive(exception);
                 return exception;
             }
             catch (AggregateException aggregateException) when (aggregateException.InnerException is Exception exception)

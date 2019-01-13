@@ -26,11 +26,11 @@ namespace Tests.Theraot.Collections
             }
             catch (T)
             {
-                GC.KeepAlive(action);
+                // Empty
             }
             catch (Exception exception)
             {
-                GC.KeepAlive(exception);
+                Theraot.No.Op(exception);
                 Assert.Fail("Expected: " + typeof(T).Name);
             }
         }

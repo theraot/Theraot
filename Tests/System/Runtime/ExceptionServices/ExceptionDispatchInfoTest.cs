@@ -46,7 +46,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -134,7 +134,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
             }
             catch (Exception ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -143,7 +143,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
             }
             catch (Exception ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try

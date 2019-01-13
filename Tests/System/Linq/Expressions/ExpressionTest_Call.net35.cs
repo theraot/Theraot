@@ -116,7 +116,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             public void Bar(string s)
             {
-                GC.KeepAlive(s);
+                Theraot.No.Op(s);
             }
         }
 
@@ -201,10 +201,10 @@ namespace MonoTests.System.Linq.Expressions
         public static void EineGenericMethod<TX, TY>(string foo, int bar)
         {
             // Used via Reflection
-            GC.KeepAlive(foo);
-            GC.KeepAlive(bar);
-            GC.KeepAlive(typeof(TX));
-            GC.KeepAlive(typeof(TY));
+            Theraot.No.Op(foo);
+            Theraot.No.Op(bar);
+            Theraot.No.Op(typeof(TX));
+            Theraot.No.Op(typeof(TY));
         }
 
         [Test]
@@ -350,7 +350,7 @@ namespace MonoTests.System.Linq.Expressions
 
         public static void FooRef(ref string s)
         {
-            GC.KeepAlive(s);
+            Theraot.No.Op(s);
         }
 
         [Test]
@@ -509,7 +509,7 @@ namespace MonoTests.System.Linq.Expressions
 
         public static void AcceptsIEnumerable(IEnumerable<object> o)
         {
-            GC.KeepAlive(o);
+            Theraot.No.Op(o);
         }
 
         [Test]

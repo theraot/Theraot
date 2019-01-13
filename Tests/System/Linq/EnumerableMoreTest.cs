@@ -117,11 +117,11 @@ namespace MonoTests.System.Linq
             }
             catch (T)
             {
-                GC.KeepAlive(action);
+                // Empty
             }
             catch (Exception exception)
             {
-                GC.KeepAlive(exception);
+                Theraot.No.Op(exception);
                 Assert.Fail("Expected: " + typeof(T).Name);
             }
         }

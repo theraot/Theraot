@@ -54,7 +54,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             public Foo(string s)
             {
-                GC.KeepAlive(s);
+                Theraot.No.Op(s);
             }
         }
 
@@ -193,7 +193,7 @@ namespace MonoTests.System.Linq.Expressions
 
             public string Tzap
             {
-                set { GC.KeepAlive(value); }
+                set { Theraot.No.Op(value); }
             }
 
             public FakeAnonymousType(string foo)

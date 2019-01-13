@@ -352,7 +352,7 @@ namespace MonoTests.System.Collections.Concurrent
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 

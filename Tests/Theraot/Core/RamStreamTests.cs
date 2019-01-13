@@ -24,8 +24,7 @@ namespace Test
             }
             catch (ObjectDisposedException exception)
             {
-                // NoOp
-                GC.KeepAlive(exception);
+                Theraot.No.Op(exception);
             }
             try
             {
@@ -34,8 +33,7 @@ namespace Test
             }
             catch (ObjectDisposedException exception)
             {
-                // NoOp
-                GC.KeepAlive(exception);
+                Theraot.No.Op(exception);
             }
             try
             {
@@ -44,8 +42,7 @@ namespace Test
             }
             catch (ObjectDisposedException exception)
             {
-                // NoOp
-                GC.KeepAlive(exception);
+                Theraot.No.Op(exception);
             }
         }
 
@@ -223,8 +220,7 @@ namespace Test
             }
             catch (ArgumentException exception)
             {
-                // NoOp
-                GC.KeepAlive(exception);
+                Theraot.No.Op(exception);
             }
 
             stream.Seek(0, SeekOrigin.Begin);
@@ -301,8 +297,7 @@ namespace Test
             }
             catch (ArgumentException exception)
             {
-                // NoOp
-                GC.KeepAlive(exception);
+                Theraot.No.Op(exception);
             }
 
             stream.Seek(0, SeekOrigin.Begin);
@@ -347,8 +342,7 @@ namespace Test
             }
             catch (ArgumentException exception)
             {
-                // NoOp
-                GC.KeepAlive(exception);
+                Theraot.No.Op(exception);
             }
         }
 
@@ -423,8 +417,7 @@ namespace Test
             }
             catch (IOException exception)
             {
-                // NoOp
-                GC.KeepAlive(exception);
+                Theraot.No.Op(exception);
             }
             Assert.AreEqual(int.MaxValue + 1L, stream.Seek(int.MaxValue + 1L, SeekOrigin.Begin));
             Assert.AreEqual(int.MaxValue + 1L, stream.Position);

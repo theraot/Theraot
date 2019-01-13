@@ -333,13 +333,13 @@ namespace MonoTests.System.Linq.Expressions
         {
             public static bool operator true(A x)
             {
-                GC.KeepAlive(x);
+                Theraot.No.Op(x);
                 return true;
             }
 
             public static bool operator false(A x)
             {
-                GC.KeepAlive(x);
+                Theraot.No.Op(x);
                 return false;
             }
         }
@@ -348,21 +348,21 @@ namespace MonoTests.System.Linq.Expressions
         {
             public static B operator &(B x, B y)
             {
-                GC.KeepAlive(x);
-                GC.KeepAlive(y);
+                Theraot.No.Op(x);
+                Theraot.No.Op(y);
                 return new B();
             }
 
             public static bool op_True<T>(B x)
             {
-                GC.KeepAlive(x);
-                GC.KeepAlive(typeof(T));
+                Theraot.No.Op(x);
+                Theraot.No.Op(typeof(T));
                 return true;
             }
 
             public static bool op_False(B x)
             {
-                GC.KeepAlive(x);
+                Theraot.No.Op(x);
                 return false;
             }
         }

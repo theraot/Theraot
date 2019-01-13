@@ -70,23 +70,23 @@ namespace MonoTests.System.Collections.ObjectModel
             try
             {
                 var x = new ObservableCollection<int>(null);
-                GC.KeepAlive(x);
+                Theraot.No.Op(x);
                 Assert.Fail("#1");
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
             {
                 var x = new ObservableCollection<int>((IEnumerable<int>)null);
-                GC.KeepAlive(x);
+                Theraot.No.Op(x);
                 Assert.Fail("#2");
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -97,7 +97,7 @@ namespace MonoTests.System.Collections.ObjectModel
             var col = new ObservableCollection<int>();
             col.CollectionChanged += (sender, e) =>
             {
-                GC.KeepAlive(sender);
+                Theraot.No.Op(sender);
                 reached = true;
                 Assert.AreEqual(NotifyCollectionChangedAction.Add, e.Action, "INS_1");
                 Assert.AreEqual(0, e.NewStartingIndex, "INS_2");
@@ -118,7 +118,7 @@ namespace MonoTests.System.Collections.ObjectModel
             col.Insert(0, 5);
             col.CollectionChanged += (sender, e) =>
             {
-                GC.KeepAlive(sender);
+                Theraot.No.Op(sender);
                 reached = true;
                 Assert.AreEqual(NotifyCollectionChangedAction.Remove, e.Action, "REMAT_1");
                 Assert.AreEqual(-1, e.NewStartingIndex, "REMAT_2");
@@ -142,7 +142,7 @@ namespace MonoTests.System.Collections.ObjectModel
             col.Insert(3, 3);
             col.CollectionChanged += (sender, e) =>
             {
-                GC.KeepAlive(sender);
+                Theraot.No.Op(sender);
                 reached = true;
                 Assert.AreEqual(NotifyCollectionChangedAction.Move, e.Action, "MOVE_1");
                 Assert.AreEqual(3, e.NewStartingIndex, "MOVE_2");
@@ -166,14 +166,14 @@ namespace MonoTests.System.Collections.ObjectModel
 
             ((INotifyPropertyChanged)collection).PropertyChanged += (sender, e) =>
             {
-                GC.KeepAlive(sender);
+                Theraot.No.Op(sender);
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
 
             collection.CollectionChanged += (sender, e) =>
             {
-                GC.KeepAlive(sender);
+                Theraot.No.Op(sender);
                 args = e;
             };
 
@@ -200,14 +200,14 @@ namespace MonoTests.System.Collections.ObjectModel
 
             ((INotifyPropertyChanged)collection).PropertyChanged += (sender, e) =>
             {
-                GC.KeepAlive(sender);
+                Theraot.No.Op(sender);
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
 
             collection.CollectionChanged += (sender, e) =>
             {
-                GC.KeepAlive(sender);
+                Theraot.No.Op(sender);
                 args = e;
             };
 
@@ -234,14 +234,14 @@ namespace MonoTests.System.Collections.ObjectModel
 
             ((INotifyPropertyChanged)collection).PropertyChanged += (sender, e) =>
             {
-                GC.KeepAlive(sender);
+                Theraot.No.Op(sender);
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
 
             collection.CollectionChanged += (sender, e) =>
             {
-                GC.KeepAlive(sender);
+                Theraot.No.Op(sender);
                 args = e;
             };
 
@@ -267,7 +267,7 @@ namespace MonoTests.System.Collections.ObjectModel
 
             PropertyChangedEventHandler pceh = (sender, e) =>
             {
-                GC.KeepAlive(sender);
+                Theraot.No.Op(sender);
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
@@ -277,14 +277,14 @@ namespace MonoTests.System.Collections.ObjectModel
 
             collection.CollectionChanged += (sender, e) =>
             {
-                GC.KeepAlive(sender);
+                Theraot.No.Op(sender);
                 args = e;
             };
 
             collection.CollectionChanged += (sender, e) =>
             {
-                GC.KeepAlive(sender);
-                GC.KeepAlive(e);
+                Theraot.No.Op(sender);
+                Theraot.No.Op(e);
                 // This one will attempt to break reentrancy
                 try
                 {
@@ -293,7 +293,7 @@ namespace MonoTests.System.Collections.ObjectModel
                 }
                 catch (InvalidOperationException ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
             };
 
@@ -323,15 +323,15 @@ namespace MonoTests.System.Collections.ObjectModel
 
                 CollectionChanged += (sender, e) =>
                 {
-                    GC.KeepAlive(sender);
+                    Theraot.No.Op(sender);
                     args = e;
                 };
 
                 // We need a second callback for reentrancy to matter
                 CollectionChanged += (sender, e) =>
                 {
-                    GC.KeepAlive(sender);
-                    GC.KeepAlive(e);
+                    Theraot.No.Op(sender);
+                    Theraot.No.Op(e);
                     // Doesn't need to do anything; just needs more than one callback registered.
                 };
 
@@ -343,7 +343,7 @@ namespace MonoTests.System.Collections.ObjectModel
                 }
                 catch (InvalidOperationException ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
 
                 // Release the first reentrant
@@ -357,7 +357,7 @@ namespace MonoTests.System.Collections.ObjectModel
                 }
                 catch (InvalidOperationException ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
 
                 // Release the reentrant a second time
@@ -394,14 +394,14 @@ namespace MonoTests.System.Collections.ObjectModel
 
             ((INotifyPropertyChanged)collection).PropertyChanged += (sender, e) =>
             {
-                GC.KeepAlive(sender);
+                Theraot.No.Op(sender);
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
 
             collection.CollectionChanged += (sender, e) =>
             {
-                GC.KeepAlive(sender);
+                Theraot.No.Op(sender);
                 args = e;
             };
 

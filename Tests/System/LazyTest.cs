@@ -97,7 +97,7 @@ namespace MonoTests.System
             }
             catch (MissingMemberException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -105,7 +105,7 @@ namespace MonoTests.System
         {
             public NoDefaultCtorClass(int i)
             {
-                GC.KeepAlive(i);
+                Theraot.No.Op(i);
             }
         }
 
@@ -175,7 +175,7 @@ namespace MonoTests.System
             }
             catch (InvalidOperationException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -199,7 +199,7 @@ namespace MonoTests.System
             }
             catch (Exception ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -209,7 +209,7 @@ namespace MonoTests.System
             }
             catch (Exception ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             fail[0] = false;
@@ -220,7 +220,7 @@ namespace MonoTests.System
             }
             catch (Exception ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             var rec = new[] { true };
@@ -233,7 +233,7 @@ namespace MonoTests.System
             }
             catch (InvalidOperationException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             rec[0] = false;
@@ -244,7 +244,7 @@ namespace MonoTests.System
             }
             catch (InvalidOperationException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -271,7 +271,7 @@ namespace MonoTests.System
             }
             catch (Exception ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -281,7 +281,7 @@ namespace MonoTests.System
             }
             catch (Exception ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             Assert.AreEqual(2, invoke[0], "#3");
@@ -326,7 +326,7 @@ namespace MonoTests.System
             }
             catch (Exception ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
             Assert.AreEqual(1, invoke, "#2");
 
@@ -337,7 +337,7 @@ namespace MonoTests.System
             }
             catch (Exception ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
             Assert.AreEqual(1, invoke, "#4");
 
@@ -349,7 +349,7 @@ namespace MonoTests.System
             }
             catch (Exception ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
             Assert.AreEqual(1, invoke, "#6");
 
@@ -363,7 +363,7 @@ namespace MonoTests.System
             }
             catch (InvalidOperationException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             rec[0] = false;
@@ -374,7 +374,7 @@ namespace MonoTests.System
             }
             catch (InvalidOperationException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 

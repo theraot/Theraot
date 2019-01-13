@@ -424,8 +424,7 @@ namespace Tests.Theraot.Threading.Needles
             }
             catch (Exception exception)
             {
-                // Catch'em all
-                GC.KeepAlive(exception);
+                Theraot.No.Op(exception);
             }
             // We did not commit
             Assert.AreEqual(5, needleA.Value);

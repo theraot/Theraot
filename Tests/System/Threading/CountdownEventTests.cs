@@ -50,7 +50,7 @@ namespace MonoTests.System.Threading
             }
             catch (ArgumentOutOfRangeException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -85,7 +85,7 @@ namespace MonoTests.System.Threading
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
 
                 try
@@ -95,7 +95,7 @@ namespace MonoTests.System.Threading
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
             }
         }
@@ -112,7 +112,7 @@ namespace MonoTests.System.Threading
                 }
                 catch (InvalidOperationException ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
             }
             using (var ev = new CountdownEvent(1))
@@ -125,7 +125,7 @@ namespace MonoTests.System.Threading
                 }
                 catch (InvalidOperationException ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
             }
         }
@@ -202,7 +202,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -212,7 +212,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -222,7 +222,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -232,7 +232,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -242,7 +242,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -252,7 +252,7 @@ namespace MonoTests.System.Threading
             }
             catch (ObjectDisposedException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -424,7 +424,7 @@ namespace MonoTests.System.Threading
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
 
                 try
@@ -434,7 +434,7 @@ namespace MonoTests.System.Threading
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {
-                    GC.KeepAlive(ex);
+                    Theraot.No.Op(ex);
                 }
             }
         }

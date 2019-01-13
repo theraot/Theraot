@@ -134,7 +134,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 

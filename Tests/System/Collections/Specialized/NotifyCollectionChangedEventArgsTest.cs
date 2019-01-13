@@ -54,7 +54,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Remove
@@ -65,7 +65,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Move
@@ -76,7 +76,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Replace
@@ -87,7 +87,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -119,7 +119,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Remove
@@ -140,7 +140,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Move
@@ -151,7 +151,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Replace
@@ -162,7 +162,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Add some items, and repeat
@@ -219,7 +219,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Move
@@ -230,7 +230,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Replace
@@ -241,7 +241,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -293,7 +293,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -303,7 +303,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Reset
@@ -314,7 +314,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Move
@@ -325,7 +325,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Add
@@ -336,7 +336,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Remove
@@ -347,7 +347,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -397,7 +397,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -407,7 +407,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Remove
@@ -422,7 +422,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -432,7 +432,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Reset
@@ -445,7 +445,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -455,7 +455,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -465,7 +465,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Move
@@ -476,7 +476,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Replace
@@ -487,7 +487,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -519,7 +519,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -529,7 +529,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -539,7 +539,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Move
@@ -550,7 +550,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Replace
@@ -561,7 +561,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -590,7 +590,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Move
@@ -601,7 +601,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Add
@@ -612,7 +612,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Remove
@@ -623,7 +623,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -667,7 +667,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             try
@@ -677,7 +677,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentNullException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Reset
@@ -688,7 +688,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Move
@@ -699,7 +699,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Add
@@ -710,7 +710,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Remove
@@ -721,7 +721,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -755,7 +755,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Reset
@@ -766,7 +766,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Replace
@@ -777,7 +777,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Add
@@ -788,7 +788,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Remove
@@ -799,7 +799,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -834,7 +834,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Replace
@@ -845,7 +845,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Add
@@ -856,7 +856,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Remove
@@ -867,7 +867,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 
@@ -891,7 +891,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Move
@@ -913,7 +913,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
 
             // Trying with Remove
@@ -924,7 +924,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
     }

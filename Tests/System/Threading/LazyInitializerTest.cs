@@ -69,7 +69,7 @@ namespace MonoTests.System.Threading
             }
             catch (InvalidOperationException ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
             }
         }
 

@@ -228,7 +228,7 @@ namespace System.Threading
                     catch (InvalidCastException exception)
                     {
                         // Already canceled
-                        GC.KeepAlive(exception);
+                        Theraot.No.Op(exception);
                     }
                 },
                 millisecondsTimeout,
@@ -245,7 +245,7 @@ namespace System.Threading
                     catch (InvalidOperationException exception)
                     {
                         // Already timeout
-                        GC.KeepAlive(exception);
+                        Theraot.No.Op(exception);
                     }
                 }
             );

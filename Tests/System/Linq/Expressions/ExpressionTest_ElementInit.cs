@@ -96,7 +96,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             public void Add(string s)
             {
-                GC.KeepAlive(s);
+                Theraot.No.Op(s);
             }
 
             public void Baz()

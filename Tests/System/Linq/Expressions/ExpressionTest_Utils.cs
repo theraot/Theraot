@@ -138,12 +138,12 @@ namespace MonoTests.System.Linq.Expressions
 
         public static void WrongUnaryReturnVoid(OpClass a)
         {
-            GC.KeepAlive(a);
+            Theraot.No.Op(a);
         }
 
         public static OpClass WrongUnaryParameterCount(OpClass a, OpClass b)
         {
-            GC.KeepAlive(b);
+            Theraot.No.Op(b);
             return a;
         }
 
@@ -212,8 +212,7 @@ namespace MonoTests.System.Linq.Expressions
 
         public void DoNothing()
         {
-            // Just to avoid a compiler warning
-            GC.KeepAlive(OnTest);
+            // Empty
         }
 
         public static int StaticField;

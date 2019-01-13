@@ -493,7 +493,7 @@ namespace MonoTests.System.Collections.Generic
             }
             catch (Exception ex)
             {
-                GC.KeepAlive(ex);
+                Theraot.No.Op(ex);
                 return true;
             }
         }

@@ -8,7 +8,7 @@ namespace System.Diagnostics.Contracts.Tests
         public static void Target(string s)
         {
             Contract.Requires(s != null);
-            GC.KeepAlive(s);
+            Theraot.No.Op(s);
         }
 
         [Test]
