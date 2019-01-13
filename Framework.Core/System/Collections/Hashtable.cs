@@ -4,6 +4,7 @@
 #pragma warning disable CA2235 // Mark all non-serializable fields
 #pragma warning disable CC0021 // Use nameof
 #pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable IDE1006 // Naming Styles
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
 // ReSharper disable once VirtualMemberCallInConstructor
 
@@ -759,7 +760,7 @@ namespace System.Collections
             var hashsize = 0;
             IComparer c = null;
 
-            IHashCodeProvider hcp = null;
+            IHashCodeProvider hashCodeProvider = null;
 
             object[] serKeys = null;
             object[] serValues = null;
@@ -787,7 +788,7 @@ namespace System.Collections
                         break;
 
                     case _hashCodeProviderName:
-                        hcp = (IHashCodeProvider)siInfo.GetValue(_hashCodeProviderName, typeof(IHashCodeProvider));
+                        hashCodeProvider = (IHashCodeProvider)siInfo.GetValue(_hashCodeProviderName, typeof(IHashCodeProvider));
                         break;
 
                     case _keysName:
@@ -807,9 +808,9 @@ namespace System.Collections
             _loadSize = (int)(_loadFactor * hashsize);
 
             // V1 object doesn't has _keyComparer field.
-            if (EqualityComparer == null && (c != null || hcp != null))
+            if (EqualityComparer == null && (c != null || hashCodeProvider != null))
             {
-                EqualityComparer = new CompatibleComparer(hcp, c);
+                EqualityComparer = new CompatibleComparer(hashCodeProvider, c);
             }
 
             _buckets = new Bucket[hashsize];
@@ -1278,6 +1279,7 @@ namespace System.Collections
             // What should GetObject return?
             private object _currentKey;
             private object _currentValue;
+
             internal HashtableEnumerator(Hashtable hashtable, int getObjRetType)
             {
                 _hashtable = hashtable;
@@ -1350,6 +1352,7 @@ namespace System.Collections
             }
 
             public object Clone() => MemberwiseClone();
+
             public bool MoveNext()
             {
                 if (_version != _hashtable._version)
@@ -1372,6 +1375,7 @@ namespace System.Collections
                 _current = false;
                 return false;
             }
+
             public void Reset()
             {
                 if (_version != _hashtable._version)
@@ -1556,6 +1560,7 @@ namespace System.Collections
             {
                 throw new PlatformNotSupportedException();
             }
+
             public override void OnDeserialization(object sender)
             {
                 // Does nothing.  We have to implement this because our parent HT implements it,
@@ -1570,6 +1575,7 @@ namespace System.Collections
                     _table.Remove(key);
                 }
             }
+
             internal override KeyValuePairs[] ToKeyValuePairsArray()
             {
                 return _table.ToKeyValuePairsArray();
@@ -1739,6 +1745,7 @@ namespace System.Collections
 
         internal IComparer Comparer { get; }
         internal IHashCodeProvider HashCodeProvider { get; }
+
         public int Compare(object a, object b)
         {
             if (a == b)
@@ -1770,6 +1777,7 @@ namespace System.Collections
         }
 
         public new bool Equals(object x, object y) => Compare(x, y) == 0;
+
         public int GetHashCode(object obj)
         {
             if (obj == null)
