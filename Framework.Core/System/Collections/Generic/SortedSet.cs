@@ -12,6 +12,8 @@ namespace System.Collections.Generic
     public class SortedSet<T> : ISet<T>, ICollection, ISerializable, IDeserializationCallback
     {
         private readonly AVLTree<T, T> _wrapped;
+
+        [NonSerialized]
         private SerializationInfo _serializationInfo;
 
         public SortedSet()
