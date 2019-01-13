@@ -359,13 +359,13 @@ namespace System.Collections
         public virtual ICollection Values => _values ?? (_values = new ValueCollection(this));
 
         [Obsolete("Please use KeyComparer properties.")]
-        protected IComparer Comparer
+        protected IComparer comparer
         {
             get
             {
-                if (EqualityComparer is CompatibleComparer comparer)
+                if (EqualityComparer is CompatibleComparer compatibleComparer)
                 {
-                    return comparer.Comparer;
+                    return compatibleComparer.Comparer;
                 }
 
                 if (EqualityComparer == null)
@@ -394,13 +394,13 @@ namespace System.Collections
         protected IEqualityComparer EqualityComparer { get; private set; }
 
         [Obsolete("Please use EqualityComparer property.")]
-        protected IHashCodeProvider Hcp
+        protected IHashCodeProvider hcp
         {
             get
             {
-                if (EqualityComparer is CompatibleComparer comparer)
+                if (EqualityComparer is CompatibleComparer compatbileComparer)
                 {
-                    return comparer.HashCodeProvider;
+                    return compatbileComparer.HashCodeProvider;
                 }
 
                 if (EqualityComparer == null)
