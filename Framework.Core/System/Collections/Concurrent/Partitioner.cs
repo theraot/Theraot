@@ -200,7 +200,7 @@ namespace System.Collections.Concurrent
             (
                 _source,
                 EqualityComparer<int>.Default,
-                arg => Interlocked.Increment(ref index) % partitionCount,
+                _ => Interlocked.Increment(ref index) % partitionCount,
                 obj => obj
             );
             return Extensions.WrapAsIList(groups.ConvertProgressive(g => g.GetEnumerator()));
