@@ -3,7 +3,7 @@
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
 #pragma warning disable CA2235 // Mark all non-serializable fields
 #pragma warning disable CC0021 // Use nameof
-#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
+#pragma warning disable CS0618 // Type or member is obsolete
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
 // ReSharper disable once VirtualMemberCallInConstructor
 
