@@ -67,16 +67,16 @@ namespace System.Collections
     [Serializable]
     public class SortedList : IDictionary, ICloneable
     {
-        private object[] _keys;
-        private object[] _values;
-        private int _size;
-        private int _version;
-        private IComparer _comparer;
-        private KeyList _keyList;
-        private ValueList _valueList;
-
         // Copy of Array.MaxArrayLength
         internal const int MaxArrayLength = 0X7FEFFFFF;
+
+        private IComparer _comparer;
+        private KeyList _keyList;
+        private object[] _keys;
+        private int _size;
+        private ValueList _valueList;
+        private object[] _values;
+        private int _version;
 
         // Constructs a new sorted list. The sorted list is initially empty and has
         // a capacity of zero. Upon adding the first element to the sorted list the
@@ -87,14 +87,6 @@ namespace System.Collections
         public SortedList()
         {
             Init();
-        }
-
-        private void Init()
-        {
-            _keys = ArrayReservoir<object>.EmptyArray;
-            _values = ArrayReservoir<object>.EmptyArray;
-            _size = 0;
-            _comparer = new Comparer(CultureInfo.CurrentCulture);
         }
 
         // Constructs a new sorted list. The sorted list is initially empty and has
@@ -191,25 +183,6 @@ namespace System.Collections
             _size = d.Count;
         }
 
-        // Adds an entry with the given key and value to this sorted list. An
-        // ArgumentException is thrown if the key is already present in the sorted list.
-        //
-        public virtual void Add(object key, object value)
-        {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key), "Key cannot be null.");
-            }
-
-            var i = Array.BinarySearch(_keys, 0, _size, key, _comparer);
-            if (i >= 0)
-            {
-                throw new ArgumentException("Item has already been added. Key in dictionary: '{GetKey(i)}'  Key being added: '{key}'");
-            }
-
-            Insert(~i, key, value);
-        }
-
         // Returns the capacity of this sorted list. The capacity of a sorted list
         // represents the allocated length of the internal arrays used to store the
         // keys and values of the list, and thus also indicates the maximum number
@@ -255,11 +228,22 @@ namespace System.Collections
         //
         public virtual int Count => _size;
 
+        public virtual bool IsFixedSize => false;
+
+        // Is this SortedList read-only?
+        public virtual bool IsReadOnly => false;
+
+        // Is this SortedList synchronized (thread-safe)?
+        public virtual bool IsSynchronized => false;
+
         // Returns a collection representing the keys of this sorted list. This
         // method returns the same object as GetKeyList, but typed as an
         // ICollection instead of an IList.
         //
         public virtual ICollection Keys => GetKeyList();
+
+        // Synchronization root for this object.
+        public virtual object SyncRoot => this;
 
         // Returns a collection representing the values of this sorted list. This
         // method returns the same object as GetValueList, but typed as an
@@ -267,16 +251,69 @@ namespace System.Collections
         //
         public virtual ICollection Values => GetValueList();
 
-        // Is this SortedList read-only?
-        public virtual bool IsReadOnly => false;
+        // Returns the value associated with the given key. If an entry with the
+        // given key is not found, the returned value is null.
+        //
+        public virtual object this[object key]
+        {
+            get
+            {
+                var i = IndexOfKey(key);
+                if (i >= 0)
+                {
+                    return _values[i];
+                }
 
-        public virtual bool IsFixedSize => false;
+                return null;
+            }
+            set
+            {
+                if (key == null)
+                {
+                    throw new ArgumentNullException(nameof(key), "Key cannot be null.");
+                }
 
-        // Is this SortedList synchronized (thread-safe)?
-        public virtual bool IsSynchronized => false;
+                var i = Array.BinarySearch(_keys, 0, _size, key, _comparer);
+                if (i >= 0)
+                {
+                    _values[i] = value;
+                    _version++;
+                    return;
+                }
+                Insert(~i, key, value);
+            }
+        }
 
-        // Synchronization root for this object.
-        public virtual object SyncRoot => this;
+        // Returns a thread-safe SortedList.
+        //
+        public static SortedList Synchronized(SortedList list)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+
+            return new SyncSortedList(list);
+        }
+
+        // Adds an entry with the given key and value to this sorted list. An
+        // ArgumentException is thrown if the key is already present in the sorted list.
+        //
+        public virtual void Add(object key, object value)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key), "Key cannot be null.");
+            }
+
+            var i = Array.BinarySearch(_keys, 0, _size, key, _comparer);
+            if (i >= 0)
+            {
+                throw new ArgumentException("Item has already been added. Key in dictionary: '{GetKey(i)}'  Key being added: '{key}'");
+            }
+
+            Insert(~i, key, value);
+        }
 
         // Removes all entries from this sorted list.
         public virtual void Clear()
@@ -359,42 +396,6 @@ namespace System.Collections
             }
         }
 
-        // Copies the values in this SortedList to an KeyValuePairs array.
-        // KeyValuePairs is different from Dictionary Entry in that it has special
-        // debugger attributes on its fields.
-
-        internal virtual KeyValuePairs[] ToKeyValuePairsArray()
-        {
-            var array = new KeyValuePairs[Count];
-            for (var i = 0; i < Count; i++)
-            {
-                array[i] = new KeyValuePairs(_keys[i], _values[i]);
-            }
-            return array;
-        }
-
-        // Ensures that the capacity of this sorted list is at least the given
-        // minimum value. If the current capacity of the list is less than
-        // min, the capacity is increased to twice the current capacity or
-        // to min, whichever is larger.
-        private void EnsureCapacity(int min)
-        {
-            var newCapacity = _keys.Length == 0 ? 16 : _keys.Length * 2;
-            // Allow the list to grow to maximum possible capacity (~2G elements) before encountering overflow.
-            // Note that this check works even when _items.Length overflowed thanks to the (uint) cast
-            if ((uint)newCapacity > MaxArrayLength)
-            {
-                newCapacity = MaxArrayLength;
-            }
-
-            if (newCapacity < min)
-            {
-                newCapacity = min;
-            }
-
-            Capacity = newCapacity;
-        }
-
         // Returns the value of the entry at the given index.
         //
         public virtual object GetByIndex(int index)
@@ -472,39 +473,6 @@ namespace System.Collections
             return _valueList ?? (_valueList = new ValueList(this));
         }
 
-        // Returns the value associated with the given key. If an entry with the
-        // given key is not found, the returned value is null.
-        //
-        public virtual object this[object key]
-        {
-            get
-            {
-                var i = IndexOfKey(key);
-                if (i >= 0)
-                {
-                    return _values[i];
-                }
-
-                return null;
-            }
-            set
-            {
-                if (key == null)
-                {
-                    throw new ArgumentNullException(nameof(key), "Key cannot be null.");
-                }
-
-                var i = Array.BinarySearch(_keys, 0, _size, key, _comparer);
-                if (i >= 0)
-                {
-                    _values[i] = value;
-                    _version++;
-                    return;
-                }
-                Insert(~i, key, value);
-            }
-        }
-
         // Returns the index of the entry with a given key in this sorted list. The
         // key is located through a binary search, and thus the average execution
         // time of this method is proportional to Log2(size), where
@@ -534,23 +502,17 @@ namespace System.Collections
             return Array.IndexOf(_values, value, 0, _size);
         }
 
-        // Inserts an entry with a given key and value at a given index.
-        private void Insert(int index, object key, object value)
+        // Removes an entry from this sorted list. If an entry with the specified
+        // key exists in the sorted list, it is removed. An ArgumentException is
+        // thrown if the key is null.
+        //
+        public virtual void Remove(object key)
         {
-            if (_size == _keys.Length)
+            var i = IndexOfKey(key);
+            if (i >= 0)
             {
-                EnsureCapacity(_size + 1);
+                RemoveAt(i);
             }
-
-            if (index < _size)
-            {
-                Array.Copy(_keys, index, _keys, index + 1, _size - index);
-                Array.Copy(_values, index, _values, index + 1, _size - index);
-            }
-            _keys[index] = key;
-            _values[index] = value;
-            _size++;
-            _version++;
         }
 
         // Removes the entry at the given index. The size of the sorted list is
@@ -574,19 +536,6 @@ namespace System.Collections
             _version++;
         }
 
-        // Removes an entry from this sorted list. If an entry with the specified
-        // key exists in the sorted list, it is removed. An ArgumentException is
-        // thrown if the key is null.
-        //
-        public virtual void Remove(object key)
-        {
-            var i = IndexOfKey(key);
-            if (i >= 0)
-            {
-                RemoveAt(i);
-            }
-        }
-
         // Sets the value at an index to a given value.  The previous value of
         // the given entry is overwritten.
         //
@@ -599,18 +548,6 @@ namespace System.Collections
 
             _values[index] = value;
             _version++;
-        }
-
-        // Returns a thread-safe SortedList.
-        //
-        public static SortedList Synchronized(SortedList list)
-        {
-            if (list == null)
-            {
-                throw new ArgumentNullException(nameof(list));
-            }
-
-            return new SyncSortedList(list);
         }
 
         // Sets the capacity of this sorted list to the size of the sorted list.
@@ -627,6 +564,305 @@ namespace System.Collections
             Capacity = _size;
         }
 
+        internal virtual KeyValuePairs[] ToKeyValuePairsArray()
+        {
+            var array = new KeyValuePairs[Count];
+            for (var i = 0; i < Count; i++)
+            {
+                array[i] = new KeyValuePairs(_keys[i], _values[i]);
+            }
+            return array;
+        }
+
+        // Copies the values in this SortedList to an KeyValuePairs array.
+        // KeyValuePairs is different from Dictionary Entry in that it has special
+        // debugger attributes on its fields.
+        // Ensures that the capacity of this sorted list is at least the given
+        // minimum value. If the current capacity of the list is less than
+        // min, the capacity is increased to twice the current capacity or
+        // to min, whichever is larger.
+        private void EnsureCapacity(int min)
+        {
+            var newCapacity = _keys.Length == 0 ? 16 : _keys.Length * 2;
+            // Allow the list to grow to maximum possible capacity (~2G elements) before encountering overflow.
+            // Note that this check works even when _items.Length overflowed thanks to the (uint) cast
+            if ((uint)newCapacity > MaxArrayLength)
+            {
+                newCapacity = MaxArrayLength;
+            }
+
+            if (newCapacity < min)
+            {
+                newCapacity = min;
+            }
+
+            Capacity = newCapacity;
+        }
+
+        private void Init()
+        {
+            _keys = ArrayReservoir<object>.EmptyArray;
+            _values = ArrayReservoir<object>.EmptyArray;
+            _size = 0;
+            _comparer = new Comparer(CultureInfo.CurrentCulture);
+        }
+
+        // Inserts an entry with a given key and value at a given index.
+        private void Insert(int index, object key, object value)
+        {
+            if (_size == _keys.Length)
+            {
+                EnsureCapacity(_size + 1);
+            }
+
+            if (index < _size)
+            {
+                Array.Copy(_keys, index, _keys, index + 1, _size - index);
+                Array.Copy(_values, index, _values, index + 1, _size - index);
+            }
+            _keys[index] = key;
+            _values[index] = value;
+            _size++;
+            _version++;
+        }
+
+        // internal debug view class for sorted list
+        internal class SortedListDebugView
+        {
+            private readonly SortedList _sortedList;
+
+            public SortedListDebugView(SortedList sortedList)
+            {
+                _sortedList = sortedList ?? throw new ArgumentNullException(nameof(sortedList));
+            }
+
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public KeyValuePairs[] Items => _sortedList.ToKeyValuePairsArray();
+        }
+
+        [Serializable]
+        private sealed class KeyList : IList
+        {
+            private readonly SortedList _sortedList;
+
+            internal KeyList(SortedList sortedList)
+            {
+                _sortedList = sortedList;
+            }
+
+            public int Count => _sortedList._size;
+
+            public bool IsFixedSize => true;
+            public bool IsReadOnly => true;
+            public bool IsSynchronized => _sortedList.IsSynchronized;
+
+            public object SyncRoot => _sortedList.SyncRoot;
+
+            public object this[int index]
+            {
+                get => _sortedList.GetKey(index);
+                set => throw new NotSupportedException("Mutating a key collection derived from a dictionary is not allowed.");
+            }
+
+            public int Add(object value)
+            {
+                throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
+            }
+
+            public void Clear()
+            {
+                throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
+            }
+
+            public bool Contains(object value)
+            {
+                return _sortedList.Contains(value);
+            }
+
+            public void CopyTo(Array array, int arrayIndex)
+            {
+                if (array != null && array.Rank != 1)
+                {
+                    throw new ArgumentException("Only single dimensional arrays are supported for the requested action.", nameof(array));
+                }
+
+                // defer error checking to Array.Copy
+                Array.Copy(_sortedList._keys, 0, array, arrayIndex, _sortedList.Count);
+            }
+
+            public IEnumerator GetEnumerator()
+            {
+                return new SortedListEnumerator(_sortedList, 0, _sortedList.Count, SortedListEnumerator.Keys);
+            }
+
+            public int IndexOf(object value)
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(value), "Key cannot be null.");
+                }
+
+                var i = Array.BinarySearch(_sortedList._keys, 0,
+                                           _sortedList.Count, value, _sortedList._comparer);
+                if (i >= 0)
+                {
+                    return i;
+                }
+
+                return -1;
+            }
+
+            public void Insert(int index, object value)
+            {
+                throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
+            }
+
+            public void Remove(object value)
+            {
+                throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
+            }
+
+            public void RemoveAt(int index)
+            {
+                throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
+            }
+        }
+
+        private sealed class SortedListEnumerator : IDictionaryEnumerator, ICloneable
+        {
+            internal const int DictEntry = 3;
+            internal const int Keys = 1;
+            internal const int Values = 2;
+            private readonly int _endIndex;
+            private readonly int _getObjectRetType;
+            private readonly SortedList _sortedList;
+            private readonly int _startIndex;
+
+            // Store for Reset.
+            private readonly int _version;
+
+            private bool _current;
+            private int _index;
+            private object _key;
+            private object _value;
+
+            // Is the current element valid?
+            // What should GetObject return?
+            internal SortedListEnumerator(SortedList sortedList, int index, int count, int getObjRetType)
+            {
+                _sortedList = sortedList;
+                _index = index;
+                _startIndex = index;
+                _endIndex = index + count;
+                _version = sortedList._version;
+                _getObjectRetType = getObjRetType;
+                _current = false;
+            }
+
+            public object Current
+            {
+                get
+                {
+                    if (!_current)
+                    {
+                        throw new InvalidOperationException("Enumeration has either not started or has already finished.");
+                    }
+
+                    return _getObjectRetType == Keys ? _key : _getObjectRetType == Values ? _value : new DictionaryEntry(_key, _value);
+                }
+            }
+
+            public DictionaryEntry Entry
+            {
+                get
+                {
+                    if (_version != _sortedList._version)
+                    {
+                        throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
+                    }
+
+                    if (!_current)
+                    {
+                        throw new InvalidOperationException("Enumeration has either not started or has already finished.");
+                    }
+
+                    return new DictionaryEntry(_key, _value);
+                }
+            }
+
+            public object Key
+            {
+                get
+                {
+                    if (_version != _sortedList._version)
+                    {
+                        throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
+                    }
+
+                    if (!_current)
+                    {
+                        throw new InvalidOperationException("Enumeration has either not started or has already finished.");
+                    }
+
+                    return _key;
+                }
+            }
+
+            public object Value
+            {
+                get
+                {
+                    if (_version != _sortedList._version)
+                    {
+                        throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
+                    }
+
+                    if (!_current)
+                    {
+                        throw new InvalidOperationException("Enumeration has either not started or has already finished.");
+                    }
+
+                    return _value;
+                }
+            }
+
+            public object Clone() => MemberwiseClone();
+
+            public bool MoveNext()
+            {
+                if (_version != _sortedList._version)
+                {
+                    throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
+                }
+
+                if (_index < _endIndex)
+                {
+                    _key = _sortedList._keys[_index];
+                    _value = _sortedList._values[_index];
+                    _index++;
+                    _current = true;
+                    return true;
+                }
+                _key = null;
+                _value = null;
+                _current = false;
+                return false;
+            }
+
+            public void Reset()
+            {
+                if (_version != _sortedList._version)
+                {
+                    throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
+                }
+
+                _index = _startIndex;
+                _current = false;
+                _key = null;
+                _value = null;
+            }
+        }
+
         [Serializable]
         private class SyncSortedList : SortedList
         {
@@ -641,18 +877,20 @@ namespace System.Collections
                 IsFixedSize = list.IsFixedSize;
             }
 
+            public override int Capacity
+            {
+                get { lock (_root) { return _list.Capacity; } }
+            }
+
             public override int Count
             {
                 get { lock (_root) { return _list.Count; } }
             }
 
-            public override object SyncRoot => _root;
-
-            public override bool IsReadOnly { get; }
-
             public override bool IsFixedSize { get; }
-
+            public override bool IsReadOnly { get; }
             public override bool IsSynchronized => true;
+            public override object SyncRoot => _root;
 
             public override object this[object key]
             {
@@ -678,11 +916,6 @@ namespace System.Collections
                 {
                     _list.Add(key, value);
                 }
-            }
-
-            public override int Capacity
-            {
-                get { lock (_root) { return _list.Capacity; } }
             }
 
             public override void Clear()
@@ -794,19 +1027,19 @@ namespace System.Collections
                 }
             }
 
-            public override void RemoveAt(int index)
-            {
-                lock (_root)
-                {
-                    _list.RemoveAt(index);
-                }
-            }
-
             public override void Remove(object key)
             {
                 lock (_root)
                 {
                     _list.Remove(key);
+                }
+            }
+
+            public override void RemoveAt(int index)
+            {
+                lock (_root)
+                {
+                    _list.RemoveAt(index);
                 }
             }
 
@@ -827,227 +1060,6 @@ namespace System.Collections
             }
         }
 
-        private sealed class SortedListEnumerator : IDictionaryEnumerator, ICloneable
-        {
-            private readonly SortedList _sortedList;
-            private object _key;
-            private object _value;
-            private int _index;
-            private readonly int _startIndex;        // Store for Reset.
-            private readonly int _endIndex;
-            private readonly int _version;
-            private bool _current;       // Is the current element valid?
-            private readonly int _getObjectRetType;  // What should GetObject return?
-
-            internal const int Keys = 1;
-            internal const int Values = 2;
-            internal const int DictEntry = 3;
-
-            internal SortedListEnumerator(SortedList sortedList, int index, int count, int getObjRetType)
-            {
-                _sortedList = sortedList;
-                _index = index;
-                _startIndex = index;
-                _endIndex = index + count;
-                _version = sortedList._version;
-                _getObjectRetType = getObjRetType;
-                _current = false;
-            }
-
-            public object Clone() => MemberwiseClone();
-
-            public object Key
-            {
-                get
-                {
-                    if (_version != _sortedList._version)
-                    {
-                        throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
-                    }
-
-                    if (!_current)
-                    {
-                        throw new InvalidOperationException("Enumeration has either not started or has already finished.");
-                    }
-
-                    return _key;
-                }
-            }
-
-            public bool MoveNext()
-            {
-                if (_version != _sortedList._version)
-                {
-                    throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
-                }
-
-                if (_index < _endIndex)
-                {
-                    _key = _sortedList._keys[_index];
-                    _value = _sortedList._values[_index];
-                    _index++;
-                    _current = true;
-                    return true;
-                }
-                _key = null;
-                _value = null;
-                _current = false;
-                return false;
-            }
-
-            public DictionaryEntry Entry
-            {
-                get
-                {
-                    if (_version != _sortedList._version)
-                    {
-                        throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
-                    }
-
-                    if (!_current)
-                    {
-                        throw new InvalidOperationException("Enumeration has either not started or has already finished.");
-                    }
-
-                    return new DictionaryEntry(_key, _value);
-                }
-            }
-
-            public object Current
-            {
-                get
-                {
-                    if (!_current)
-                    {
-                        throw new InvalidOperationException("Enumeration has either not started or has already finished.");
-                    }
-
-                    return _getObjectRetType == Keys ? _key : _getObjectRetType == Values ? _value : new DictionaryEntry(_key, _value);
-                }
-            }
-
-            public object Value
-            {
-                get
-                {
-                    if (_version != _sortedList._version)
-                    {
-                        throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
-                    }
-
-                    if (!_current)
-                    {
-                        throw new InvalidOperationException("Enumeration has either not started or has already finished.");
-                    }
-
-                    return _value;
-                }
-            }
-
-            public void Reset()
-            {
-                if (_version != _sortedList._version)
-                {
-                    throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
-                }
-
-                _index = _startIndex;
-                _current = false;
-                _key = null;
-                _value = null;
-            }
-        }
-
-        [Serializable]
-        private sealed class KeyList : IList
-        {
-            private readonly SortedList _sortedList;
-
-            internal KeyList(SortedList sortedList)
-            {
-                _sortedList = sortedList;
-            }
-
-            public int Count => _sortedList._size;
-
-            public bool IsReadOnly => true;
-
-            public bool IsFixedSize => true;
-
-            public bool IsSynchronized => _sortedList.IsSynchronized;
-
-            public object SyncRoot => _sortedList.SyncRoot;
-
-            public int Add(object value)
-            {
-                throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
-            }
-
-            public void Clear()
-            {
-                throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
-            }
-
-            public bool Contains(object value)
-            {
-                return _sortedList.Contains(value);
-            }
-
-            public void CopyTo(Array array, int arrayIndex)
-            {
-                if (array != null && array.Rank != 1)
-                {
-                    throw new ArgumentException("Only single dimensional arrays are supported for the requested action.", nameof(array));
-                }
-
-                // defer error checking to Array.Copy
-                Array.Copy(_sortedList._keys, 0, array, arrayIndex, _sortedList.Count);
-            }
-
-            public void Insert(int index, object value)
-            {
-                throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
-            }
-
-            public object this[int index]
-            {
-                get => _sortedList.GetKey(index);
-                set => throw new NotSupportedException("Mutating a key collection derived from a dictionary is not allowed.");
-            }
-
-            public IEnumerator GetEnumerator()
-            {
-                return new SortedListEnumerator(_sortedList, 0, _sortedList.Count, SortedListEnumerator.Keys);
-            }
-
-            public int IndexOf(object value)
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(value), "Key cannot be null.");
-                }
-
-                var i = Array.BinarySearch(_sortedList._keys, 0,
-                                           _sortedList.Count, value, _sortedList._comparer);
-                if (i >= 0)
-                {
-                    return i;
-                }
-
-                return -1;
-            }
-
-            public void Remove(object value)
-            {
-                throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
-            }
-
-            public void RemoveAt(int index)
-            {
-                throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
-            }
-        }
-
         [Serializable]
         private sealed class ValueList : IList
         {
@@ -1060,13 +1072,17 @@ namespace System.Collections
 
             public int Count => _sortedList._size;
 
-            public bool IsReadOnly => true;
-
             public bool IsFixedSize => true;
-
+            public bool IsReadOnly => true;
             public bool IsSynchronized => _sortedList.IsSynchronized;
 
             public object SyncRoot => _sortedList.SyncRoot;
+
+            public object this[int index]
+            {
+                get => _sortedList.GetByIndex(index);
+                set => throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
+            }
 
             public int Add(object value)
             {
@@ -1094,17 +1110,6 @@ namespace System.Collections
                 Array.Copy(_sortedList._values, 0, array, arrayIndex, _sortedList.Count);
             }
 
-            public void Insert(int index, object value)
-            {
-                throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
-            }
-
-            public object this[int index]
-            {
-                get => _sortedList.GetByIndex(index);
-                set => throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
-            }
-
             public IEnumerator GetEnumerator()
             {
                 return new SortedListEnumerator(_sortedList, 0, _sortedList.Count, SortedListEnumerator.Values);
@@ -1113,6 +1118,11 @@ namespace System.Collections
             public int IndexOf(object value)
             {
                 return Array.IndexOf(_sortedList._values, value, 0, _sortedList.Count);
+            }
+
+            public void Insert(int index, object value)
+            {
+                throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
             }
 
             public void Remove(object value)
@@ -1124,20 +1134,6 @@ namespace System.Collections
             {
                 throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
             }
-        }
-
-        // internal debug view class for sorted list
-        internal class SortedListDebugView
-        {
-            private readonly SortedList _sortedList;
-
-            public SortedListDebugView(SortedList sortedList)
-            {
-                _sortedList = sortedList ?? throw new ArgumentNullException(nameof(sortedList));
-            }
-
-            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public KeyValuePairs[] Items => _sortedList.ToKeyValuePairsArray();
         }
     }
 }
