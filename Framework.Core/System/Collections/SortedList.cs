@@ -15,7 +15,6 @@
 ===========================================================*/
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Theraot.Collections.ThreadSafe;
 
@@ -145,6 +144,7 @@ namespace System.Collections
         public SortedList(IComparer comparer, int capacity)
             : this(comparer)
         {
+            // ReSharper disable once VirtualMemberCallInConstructor
             Capacity = capacity;
         }
 
@@ -714,19 +714,19 @@ namespace System.Collections
                 }
             }
 
-            public override bool ContainsValue(object key)
+            public override bool ContainsValue(object value)
             {
                 lock (_root)
                 {
-                    return _list.ContainsValue(key);
+                    return _list.ContainsValue(value);
                 }
             }
 
-            public override void CopyTo(Array array, int index)
+            public override void CopyTo(Array array, int arrayIndex)
             {
                 lock (_root)
                 {
-                    _list.CopyTo(array, index);
+                    _list.CopyTo(array, arrayIndex);
                 }
             }
 
@@ -862,7 +862,7 @@ namespace System.Collections
                         throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
                     }
 
-                    if (_current == false)
+                    if (!_current)
                     {
                         throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                     }
@@ -901,7 +901,7 @@ namespace System.Collections
                         throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
                     }
 
-                    if (_current == false)
+                    if (!_current)
                     {
                         throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                     }
@@ -914,7 +914,7 @@ namespace System.Collections
             {
                 get
                 {
-                    if (_current == false)
+                    if (!_current)
                     {
                         throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                     }
@@ -943,7 +943,7 @@ namespace System.Collections
                         throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
                     }
 
-                    if (_current == false)
+                    if (!_current)
                     {
                         throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                     }
@@ -986,7 +986,7 @@ namespace System.Collections
 
             public object SyncRoot => _sortedList.SyncRoot;
 
-            public int Add(object key)
+            public int Add(object value)
             {
                 throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
             }
@@ -996,9 +996,9 @@ namespace System.Collections
                 throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
             }
 
-            public bool Contains(object key)
+            public bool Contains(object value)
             {
-                return _sortedList.Contains(key);
+                return _sortedList.Contains(value);
             }
 
             public void CopyTo(Array array, int arrayIndex)
@@ -1028,15 +1028,15 @@ namespace System.Collections
                 return new SortedListEnumerator(_sortedList, 0, _sortedList.Count, SortedListEnumerator.Keys);
             }
 
-            public int IndexOf(object key)
+            public int IndexOf(object value)
             {
-                if (key == null)
+                if (value == null)
                 {
-                    throw new ArgumentNullException(nameof(key), "Key cannot be null.");
+                    throw new ArgumentNullException(nameof(value), "Key cannot be null.");
                 }
 
                 var i = Array.BinarySearch(_sortedList._keys, 0,
-                                           _sortedList.Count, key, _sortedList._comparer);
+                                           _sortedList.Count, value, _sortedList._comparer);
                 if (i >= 0)
                 {
                     return i;
@@ -1045,7 +1045,7 @@ namespace System.Collections
                 return -1;
             }
 
-            public void Remove(object key)
+            public void Remove(object value)
             {
                 throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
             }
@@ -1076,7 +1076,7 @@ namespace System.Collections
 
             public object SyncRoot => _sortedList.SyncRoot;
 
-            public int Add(object key)
+            public int Add(object value)
             {
                 throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");
             }
