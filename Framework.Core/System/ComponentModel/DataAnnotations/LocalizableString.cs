@@ -1,6 +1,6 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
-//BASEDON: https://github.com/dotnet/corefx/blob/master/src/System.ComponentModel.Annotations/src/System/ComponentModel/DataAnnotations/LocalizableString.cs
+// BASEDON: https://github.com/dotnet/corefx/blob/master/src/System.ComponentModel.Annotations/src/System/ComponentModel/DataAnnotations/LocalizableString.cs
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -130,8 +130,7 @@ namespace System.ComponentModel.DataAnnotations
                     var badlyConfigured = false;
 
                     // Make sure we found the property and it's the correct type, and that the type itself is public
-                    if (!resourceTypeInfo.IsVisible || property == null ||
-                        property.PropertyType != typeof(string))
+                    if (!resourceTypeInfo.IsVisible || property == null || property.PropertyType != typeof(string))
                     {
                         badlyConfigured = true;
                     }
