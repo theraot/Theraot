@@ -258,7 +258,7 @@ namespace System.Linq.Expressions
             DefaultBody = defaultBody;
             Comparison = comparison;
             _cases = cases;
-            _casesAsReadOnlyCollection = ArrayReadOnlyCollection.Create<SwitchCase>(_cases);
+            _casesAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_cases);
         }
 
         /// <summary>

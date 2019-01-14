@@ -170,7 +170,7 @@ namespace System.Linq.Expressions
             _handlers = handlers;
             Finally = @finally;
             Fault = fault;
-            _handlersAsReadOnlyCollection = ArrayReadOnlyCollection.Create<CatchBlock>(_handlers);
+            _handlersAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_handlers);
         }
 
         /// <summary>

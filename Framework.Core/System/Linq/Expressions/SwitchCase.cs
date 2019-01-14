@@ -57,7 +57,7 @@ namespace System.Linq.Expressions
         {
             Body = body;
             _testValues = testValues;
-            _textValuesAsReadOnlyCollection = ArrayReadOnlyCollection.Create<Expression>(_testValues);
+            _textValuesAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_testValues);
         }
 
         /// <summary>

@@ -630,7 +630,7 @@ namespace System.Linq.Expressions.Compiler
             var switchValue = Expression.Variable(typeof(string), "switchValue");
             var switchIndex = Expression.Variable(typeof(int), "switchIndex");
             var reduced = Expression.Block(
-                ArrayReadOnlyCollection.Create<ParameterExpression>(switchIndex, switchValue),
+                ArrayReadOnlyCollection.Create(switchIndex, switchValue),
                 ArrayReadOnlyCollection.Create<Expression>(
                     Expression.Assign(switchValue, node.SwitchValue),
                     Expression.IfThenElse(

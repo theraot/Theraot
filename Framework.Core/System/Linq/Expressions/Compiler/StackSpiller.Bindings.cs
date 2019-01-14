@@ -106,7 +106,7 @@ namespace System.Linq.Expressions.Compiler
                                 newInitializer[i] = new ElementInit(_initializers[i].AddMethod, cr[0, -1]);
                             }
                         }
-                        return new MemberListBinding(Binding.Member, ArrayReadOnlyCollection.Create<ElementInit>(newInitializer));
+                        return new MemberListBinding(Binding.Member, ArrayReadOnlyCollection.Create(newInitializer));
                 }
                 throw ContractUtils.Unreachable;
             }

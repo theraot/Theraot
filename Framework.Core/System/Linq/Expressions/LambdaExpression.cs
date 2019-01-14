@@ -1034,7 +1034,7 @@ namespace System.Linq.Expressions
             : base(body)
         {
             _parameters = parameters;
-            _parametersAsReadOnlyCollection = ArrayReadOnlyCollection.Create<ParameterExpression>(_parameters);
+            _parametersAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_parameters);
         }
 
         internal override int ParameterCount => _parameters.Length;

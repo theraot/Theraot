@@ -134,7 +134,7 @@ namespace System.Linq.Expressions
             : base(MemberBindingType.MemberBinding, member)
         {
             _bindings = bindings;
-            _bindingsAsReadOnlyCollection = ArrayReadOnlyCollection.Create<MemberBinding>(_bindings);
+            _bindingsAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_bindings);
         }
 
         /// <summary>

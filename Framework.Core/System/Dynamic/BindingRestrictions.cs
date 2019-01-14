@@ -213,7 +213,7 @@ namespace System.Dynamic
 
                 var temp = Expression.Parameter(typeof(object), null);
                 return Expression.Block(
-                    ArrayReadOnlyCollection.Create<ParameterExpression>(temp),
+                    ArrayReadOnlyCollection.Create(temp),
                     ArrayReadOnlyCollection.Create<Expression>(
 #if ENABLEDYNAMICPROGRAMMING
                         Expression.Assign(

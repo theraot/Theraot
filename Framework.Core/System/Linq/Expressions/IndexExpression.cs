@@ -447,7 +447,7 @@ namespace System.Linq.Expressions
             Object = instance;
             Indexer = indexer;
             _arguments = arguments;
-            _argumentsAsReadOnlyCollection = ArrayReadOnlyCollection.Create<Expression>(_arguments);
+            _argumentsAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_arguments);
         }
 
         /// <summary>

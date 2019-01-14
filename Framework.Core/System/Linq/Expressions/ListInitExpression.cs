@@ -83,7 +83,7 @@ namespace System.Linq.Expressions
             {
                 initList[i] = ElementInit(addMethod, initializerList[i]);
             }
-            return ListInit(newExpression, ArrayReadOnlyCollection.Create<ElementInit>(initList));
+            return ListInit(newExpression, ArrayReadOnlyCollection.Create(initList));
         }
 
         /// <summary>

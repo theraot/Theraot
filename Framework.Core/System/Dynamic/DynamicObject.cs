@@ -473,7 +473,7 @@ namespace System.Dynamic
                     paramArgs[i] = Expression.Convert(args[i], typeof(object));
                 }
 
-                return ArrayReadOnlyCollection.Create<Expression>(paramArgs);
+                return ArrayReadOnlyCollection.Create(paramArgs);
             }
 
             /// <summary>
@@ -620,7 +620,7 @@ namespace System.Dynamic
 
                 var callDynamic = new DynamicMetaObject(
                     Expression.Block(
-                        ArrayReadOnlyCollection.Create<ParameterExpression>(result, callArgs),
+                        ArrayReadOnlyCollection.Create(result, callArgs),
                         ArrayReadOnlyCollection.Create<Expression>(
                             method != DynamicObjectTryBinaryOperation ? Expression.Assign(callArgs, Expression.NewArrayInit(typeof(object), callArgsValue)) : Expression.Assign(callArgs, callArgsValue[0]),
                             Expression.Condition(
@@ -674,7 +674,7 @@ namespace System.Dynamic
                 //
                 var callDynamic = new DynamicMetaObject(
                     Expression.Block(
-                        ArrayReadOnlyCollection.Create<ParameterExpression>(callArgs),
+                        ArrayReadOnlyCollection.Create(callArgs),
                         ArrayReadOnlyCollection.Create<Expression>(
                             Expression.Assign(callArgs, Expression.NewArrayInit(typeof(object), callArgsValue)),
                             Expression.Condition(
@@ -743,7 +743,7 @@ namespace System.Dynamic
 
                 var callDynamic = new DynamicMetaObject(
                     Expression.Block(
-                        ArrayReadOnlyCollection.Create<ParameterExpression>(result, callArgs),
+                        ArrayReadOnlyCollection.Create(result, callArgs),
                         ArrayReadOnlyCollection.Create<Expression>(
                             Expression.Assign(callArgs, Expression.NewArrayInit(typeof(object), callArgsValue)),
                             Expression.Condition(

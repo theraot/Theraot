@@ -23,7 +23,7 @@ namespace System.Linq.Expressions
         internal ElementInit(MethodInfo addMethod, Expression[] arguments)
         {
             AddMethod = addMethod;
-            _argumentsAsReadOnlyCollection = ArrayReadOnlyCollection.Create<Expression>(arguments);
+            _argumentsAsReadOnlyCollection = ArrayReadOnlyCollection.Create(arguments);
         }
 
         /// <summary>
