@@ -18,11 +18,11 @@ namespace System.ComponentModel.DataAnnotations
     {
         #region Member Fields
 
-        private readonly LocalizableString _description = new LocalizableString("Description");
-        private readonly LocalizableString _groupName = new LocalizableString("GroupName");
-        private readonly LocalizableString _name = new LocalizableString("Name");
-        private readonly LocalizableString _prompt = new LocalizableString("Prompt");
-        private readonly LocalizableString _shortName = new LocalizableString("ShortName");
+        private readonly LocalizableString _description = new LocalizableString(nameof(Description));
+        private readonly LocalizableString _groupName = new LocalizableString(nameof(GroupName));
+        private readonly LocalizableString _name = new LocalizableString(nameof(Name));
+        private readonly LocalizableString _prompt = new LocalizableString(nameof(Prompt));
+        private readonly LocalizableString _shortName = new LocalizableString(nameof(ShortName));
         private bool? _autoGenerateField;
         private bool? _autoGenerateFilter;
         private int? _order;
@@ -111,7 +111,7 @@ namespace System.ComponentModel.DataAnnotations
             get => _description.Value;
             set
             {
-                if (_description.Value != value)
+                if (!string.Equals(_description.Value, value, StringComparison.Ordinal))
                 {
                     _description.Value = value;
                 }
@@ -142,7 +142,7 @@ namespace System.ComponentModel.DataAnnotations
             get => _groupName.Value;
             set
             {
-                if (_groupName.Value != value)
+                if (!string.Equals(_groupName.Value, value, StringComparison.Ordinal))
                 {
                     _groupName.Value = value;
                 }
@@ -173,7 +173,7 @@ namespace System.ComponentModel.DataAnnotations
             get => _name.Value;
             set
             {
-                if (_name.Value != value)
+                if (!string.Equals(_name.Value, value, StringComparison.Ordinal))
                 {
                     _name.Value = value;
                 }
@@ -230,7 +230,7 @@ namespace System.ComponentModel.DataAnnotations
             get => _prompt.Value;
             set
             {
-                if (_prompt.Value != value)
+                if (!string.Equals(_prompt.Value, value, StringComparison.Ordinal))
                 {
                     _prompt.Value = value;
                 }
@@ -286,7 +286,7 @@ namespace System.ComponentModel.DataAnnotations
             get => _shortName.Value;
             set
             {
-                if (_shortName.Value != value)
+                if (!string.Equals(_shortName.Value, value, StringComparison.Ordinal))
                 {
                     _shortName.Value = value;
                 }
