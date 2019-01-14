@@ -20,7 +20,7 @@ namespace System.Dynamic.Utils
             var res = new T[list.Count + 1];
             res[0] = item;
             list.CopyTo(res, 1);
-            return ArrayReadOnlyCollection<T>.Create(res);
+            return ArrayReadOnlyCollection.Create<T>(res);
         }
 
 #endif
@@ -74,7 +74,7 @@ namespace System.Dynamic.Utils
                 return arrayReadOnlyCollection;
             }
             var array = Extensions.AsArray(enumerable);
-            return array.Length == 0 ? EmptyCollection<T>.Instance : ArrayReadOnlyCollection<T>.Create(array);
+            return array.Length == 0 ? EmptyCollection<T>.Instance : ArrayReadOnlyCollection.Create<T>(array);
         }
     }
 }

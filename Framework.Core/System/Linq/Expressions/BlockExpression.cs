@@ -479,7 +479,7 @@ namespace System.Linq.Expressions
             Debug.Assert(expressions.Length != 0);
 
             _expressions = expressions;
-            _expressionsAsReadOnlyCollection = ArrayReadOnlyCollection<Expression>.Create(_expressions);
+            _expressionsAsReadOnlyCollection = ArrayReadOnlyCollection.Create<Expression>(_expressions);
         }
 
         internal override int ExpressionCount => _expressions.Length;
@@ -583,7 +583,7 @@ namespace System.Linq.Expressions
         internal ScopeExpression(ParameterExpression[] variables)
         {
             _variables = variables;
-            _variablesAsReadOnlyCollection = ArrayReadOnlyCollection<ParameterExpression>.Create(_variables);
+            _variablesAsReadOnlyCollection = ArrayReadOnlyCollection.Create<ParameterExpression>(_variables);
         }
 
         protected IReadOnlyList<ParameterExpression> VariablesList => _variablesAsReadOnlyCollection;
@@ -619,7 +619,7 @@ namespace System.Linq.Expressions
             : base(variables)
         {
             _body = body;
-            _bodyAsReadOnlyCollection = ArrayReadOnlyCollection<Expression>.Create(_body);
+            _bodyAsReadOnlyCollection = ArrayReadOnlyCollection.Create<Expression>(_body);
         }
 
         internal override int ExpressionCount => _body.Length;

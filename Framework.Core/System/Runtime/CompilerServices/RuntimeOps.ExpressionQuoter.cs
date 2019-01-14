@@ -156,7 +156,7 @@ namespace System.Runtime.CompilerServices
                 // Otherwise, we need to return an object that merges them
                 return Expression.Call(
                     RuntimeOpsMergeRuntimeVariables,
-                    Expression.RuntimeVariables(ArrayReadOnlyCollection<ParameterExpression>.Create(vars.ToArray())),
+                    Expression.RuntimeVariables(ArrayReadOnlyCollection.Create<ParameterExpression>(vars.ToArray())),
                     boxesConst,
                     Expression.Constant(indexes)
                 );

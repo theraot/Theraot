@@ -758,7 +758,7 @@ namespace System.Linq.Expressions
             : base(lambda, returnType)
         {
             _arguments = arguments;
-            _argumentsAsReadOnly = ArrayReadOnlyCollection<Expression>.Create(_arguments);
+            _argumentsAsReadOnly = ArrayReadOnlyCollection.Create<Expression>(_arguments);
         }
 
         public override int ArgumentCount => _arguments.Length;

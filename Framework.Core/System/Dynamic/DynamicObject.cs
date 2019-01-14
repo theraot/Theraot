@@ -473,7 +473,7 @@ namespace System.Dynamic
                     paramArgs[i] = Expression.Convert(args[i], typeof(object));
                 }
 
-                return ArrayReadOnlyCollection<Expression>.Create(paramArgs);
+                return ArrayReadOnlyCollection.Create<Expression>(paramArgs);
             }
 
             /// <summary>
@@ -584,13 +584,13 @@ namespace System.Dynamic
                         Expression.Throw(
                             Expression.New(
                                 InvalidCastExceptionCtorString,
-                                ArrayReadOnlyCollection<Expression>.Create(
+                                ArrayReadOnlyCollection.Create<Expression>(
                                     Expression.Call(
                                         StringFormatStringObjectArray,
                                         Expression.Constant(convertFailed),
                                         Expression.NewArrayInit(
                                             typeof(object),
-                                            ArrayReadOnlyCollection<Expression>.Create(
+                                            ArrayReadOnlyCollection.Create<Expression>(
                                                 Expression.Condition(
                                                     Expression.Equal(resultMetaObject.Expression, AstUtils.Null),
                                                     Expression.Constant("null"),
@@ -620,8 +620,8 @@ namespace System.Dynamic
 
                 var callDynamic = new DynamicMetaObject(
                     Expression.Block(
-                        ArrayReadOnlyCollection<ParameterExpression>.Create(result, callArgs),
-                        ArrayReadOnlyCollection<Expression>.Create(
+                        ArrayReadOnlyCollection.Create<ParameterExpression>(result, callArgs),
+                        ArrayReadOnlyCollection.Create<Expression>(
                             method != DynamicObjectTryBinaryOperation ? Expression.Assign(callArgs, Expression.NewArrayInit(typeof(object), callArgsValue)) : Expression.Assign(callArgs, callArgsValue[0]),
                             Expression.Condition(
                                 Expression.Call(
@@ -674,8 +674,8 @@ namespace System.Dynamic
                 //
                 var callDynamic = new DynamicMetaObject(
                     Expression.Block(
-                        ArrayReadOnlyCollection<ParameterExpression>.Create(callArgs),
-                        ArrayReadOnlyCollection<Expression>.Create(
+                        ArrayReadOnlyCollection.Create<ParameterExpression>(callArgs),
+                        ArrayReadOnlyCollection.Create<Expression>(
                             Expression.Assign(callArgs, Expression.NewArrayInit(typeof(object), callArgsValue)),
                             Expression.Condition(
                                 Expression.Call(
@@ -743,8 +743,8 @@ namespace System.Dynamic
 
                 var callDynamic = new DynamicMetaObject(
                     Expression.Block(
-                        ArrayReadOnlyCollection<ParameterExpression>.Create(result, callArgs),
-                        ArrayReadOnlyCollection<Expression>.Create(
+                        ArrayReadOnlyCollection.Create<ParameterExpression>(result, callArgs),
+                        ArrayReadOnlyCollection.Create<Expression>(
                             Expression.Assign(callArgs, Expression.NewArrayInit(typeof(object), callArgsValue)),
                             Expression.Condition(
                                 Expression.Call(

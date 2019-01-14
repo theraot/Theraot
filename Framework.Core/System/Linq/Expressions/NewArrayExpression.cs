@@ -75,7 +75,7 @@ namespace System.Linq.Expressions
             }
             if (newList != null)
             {
-                initializerList = ArrayReadOnlyCollection<Expression>.Create(newList);
+                initializerList = ArrayReadOnlyCollection.Create<Expression>(newList);
             }
 
             return NewArrayExpression.Make(ExpressionType.NewArrayInit, type.MakeArrayType(), initializerList);
@@ -163,7 +163,7 @@ namespace System.Linq.Expressions
         {
             _expressions = expressions;
             Type = type;
-            _expressionsAsReadOnlyCollection = ArrayReadOnlyCollection<Expression>.Create(_expressions);
+            _expressionsAsReadOnlyCollection = ArrayReadOnlyCollection.Create<Expression>(_expressions);
         }
 
         /// <summary>
