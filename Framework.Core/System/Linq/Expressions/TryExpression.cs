@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions
 {
@@ -160,7 +161,7 @@ namespace System.Linq.Expressions
     public sealed class TryExpression : Expression
     {
         private readonly CatchBlock[] _handlers;
-        private readonly TrueReadOnlyCollection<CatchBlock> _handlersAsReadOnlyCollection;
+        private readonly ArrayReadOnlyCollection<CatchBlock> _handlersAsReadOnlyCollection;
 
         internal TryExpression(Type type, Expression body, Expression @finally, Expression fault, CatchBlock[] handlers)
         {
@@ -169,7 +170,7 @@ namespace System.Linq.Expressions
             _handlers = handlers;
             Finally = @finally;
             Fault = fault;
-            _handlersAsReadOnlyCollection = new TrueReadOnlyCollection<CatchBlock>(_handlers);
+            _handlersAsReadOnlyCollection = new ArrayReadOnlyCollection<CatchBlock>(_handlers);
         }
 
         /// <summary>

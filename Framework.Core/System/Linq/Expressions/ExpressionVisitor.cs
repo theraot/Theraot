@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions
 {
@@ -56,7 +57,7 @@ namespace System.Linq.Expressions
             {
                 return nodes;
             }
-            return new TrueReadOnlyCollection<T>(newNodes);
+            return new ArrayReadOnlyCollection<T>(newNodes);
         }
 
         /// <summary>
@@ -99,7 +100,7 @@ namespace System.Linq.Expressions
             {
                 return nodes;
             }
-            return new TrueReadOnlyCollection<Expression>(newNodes);
+            return new ArrayReadOnlyCollection<Expression>(newNodes);
         }
 
         /// <summary>
@@ -163,7 +164,7 @@ namespace System.Linq.Expressions
             {
                 return nodes;
             }
-            return new TrueReadOnlyCollection<T>(newNodes);
+            return new ArrayReadOnlyCollection<T>(newNodes);
         }
 
         /// <summary>

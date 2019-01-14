@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Linq.Expressions;
 using System.Linq.Expressions.Compiler;
+using Theraot.Collections.Specialized;
 using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Runtime.CompilerServices
@@ -155,7 +156,7 @@ namespace System.Runtime.CompilerServices
                 // Otherwise, we need to return an object that merges them
                 return Expression.Call(
                     RuntimeOpsMergeRuntimeVariables,
-                    Expression.RuntimeVariables(new TrueReadOnlyCollection<ParameterExpression>(vars.ToArray())),
+                    Expression.RuntimeVariables(new ArrayReadOnlyCollection<ParameterExpression>(vars.ToArray())),
                     boxesConst,
                     Expression.Constant(indexes)
                 );

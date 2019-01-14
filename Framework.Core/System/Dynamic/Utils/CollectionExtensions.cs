@@ -6,7 +6,8 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
+using Theraot.Collections;
+using Theraot.Collections.Specialized;
 
 namespace System.Dynamic.Utils
 {
@@ -14,12 +15,12 @@ namespace System.Dynamic.Utils
     {
 #if LESSTHAN_NET35
 
-        public static TrueReadOnlyCollection<T> AddFirst<T>(this ReadOnlyCollection<T> list, T item)
+        public static ArrayReadOnlyCollection<T> AddFirst<T>(this ReadOnlyCollection<T> list, T item)
         {
             var res = new T[list.Count + 1];
             res[0] = item;
             list.CopyTo(res, 1);
-            return new TrueReadOnlyCollection<T>(res);
+            return new ArrayReadOnlyCollection<T>(res);
         }
 
 #endif
@@ -62,25 +63,18 @@ namespace System.Dynamic.Utils
             return h;
         }
 
-        /// <summary>
-        /// Wraps the provided enumerable into a ReadOnlyCollection{T}
-        ///
-        /// Copies all of the data into a new array, so the data can't be
-        /// changed after creation. The exception is if the enumerable is
-        /// already a ReadOnlyCollection{T}, in which case we just return it.
-        /// </summary>
-        public static ReadOnlyCollection<T> ToTrueReadOnly<T>(this IEnumerable<T> enumerable)
+        public static ArrayReadOnlyCollection<T> ToTrueReadOnly<T>(this IEnumerable<T> enumerable)
         {
             if (enumerable == null)
             {
-                return EmptyReadOnlyCollection<T>.Instance;
+                return EmptyCollection<T>.Instance;
             }
-            if (enumerable is TrueReadOnlyCollection<T> trueReadOnlyCollection)
+            if (enumerable is ArrayReadOnlyCollection<T> ArrayReadOnlyCollection)
             {
-                return trueReadOnlyCollection;
+                return ArrayReadOnlyCollection;
             }
-            var array = Theraot.Collections.Extensions.AsArray(enumerable);
-            return array.Length == 0 ? EmptyReadOnlyCollection<T>.Instance : new TrueReadOnlyCollection<T>(array);
+            var array = Extensions.AsArray(enumerable);
+            return array.Length == 0 ? EmptyCollection<T>.Instance : new ArrayReadOnlyCollection<T>(array);
         }
     }
 }

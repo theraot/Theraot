@@ -10,6 +10,8 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections;
+using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions
 {
@@ -491,7 +493,7 @@ namespace System.Linq.Expressions
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
         {
-            return EmptyReadOnlyCollection<Expression>.Instance;
+            return EmptyCollection<Expression>.Instance;
         }
 
         internal override InvocationExpression Rewrite(Expression lambda, Expression[] arguments)
@@ -750,13 +752,13 @@ namespace System.Linq.Expressions
     internal sealed class InvocationExpressionN : InvocationExpression
     {
         private readonly Expression[] _arguments;
-        private readonly TrueReadOnlyCollection<Expression> _argumentsAsReadOnly;
+        private readonly ArrayReadOnlyCollection<Expression> _argumentsAsReadOnly;
 
         public InvocationExpressionN(Expression lambda, Expression[] arguments, Type returnType)
             : base(lambda, returnType)
         {
             _arguments = arguments;
-            _argumentsAsReadOnly = new TrueReadOnlyCollection<Expression>(_arguments);
+            _argumentsAsReadOnly = new ArrayReadOnlyCollection<Expression>(_arguments);
         }
 
         public override int ArgumentCount => _arguments.Length;

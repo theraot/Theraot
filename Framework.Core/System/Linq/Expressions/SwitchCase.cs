@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions
 {
@@ -50,13 +51,13 @@ namespace System.Linq.Expressions
     public sealed class SwitchCase
     {
         private readonly Expression[] _testValues;
-        private readonly TrueReadOnlyCollection<Expression> _textValuesAsReadOnlyCollection;
+        private readonly ArrayReadOnlyCollection<Expression> _textValuesAsReadOnlyCollection;
 
         internal SwitchCase(Expression body, Expression[] testValues)
         {
             Body = body;
             _testValues = testValues;
-            _textValuesAsReadOnlyCollection = new TrueReadOnlyCollection<Expression>(_testValues);
+            _textValuesAsReadOnlyCollection = new ArrayReadOnlyCollection<Expression>(_testValues);
         }
 
         /// <summary>

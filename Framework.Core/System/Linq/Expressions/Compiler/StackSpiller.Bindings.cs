@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -105,7 +106,7 @@ namespace System.Linq.Expressions.Compiler
                                 newInitializer[i] = new ElementInit(_initializers[i].AddMethod, cr[0, -1]);
                             }
                         }
-                        return new MemberListBinding(Binding.Member, new TrueReadOnlyCollection<ElementInit>(newInitializer));
+                        return new MemberListBinding(Binding.Member, new ArrayReadOnlyCollection<ElementInit>(newInitializer));
                 }
                 throw ContractUtils.Unreachable;
             }

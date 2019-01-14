@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Compiler
@@ -102,7 +103,7 @@ namespace System.Linq.Expressions.Compiler
                 var newBody = body.Node;
                 if (_tm.Temps.Count > 0)
                 {
-                    newBody = Expression.Block(_tm.Temps, new TrueReadOnlyCollection<Expression>(newBody));
+                    newBody = Expression.Block(_tm.Temps, new ArrayReadOnlyCollection<Expression>(newBody));
                 }
 
                 // Clone the lambda, replacing the body & variables.
@@ -474,7 +475,7 @@ namespace System.Linq.Expressions.Compiler
                             newInitializer[i] = new ElementInit(initializers[i].AddMethod, cr[0, -1]);
                         }
                     }
-                    expr = new ListInitExpression((NewExpression)rewrittenNew, new TrueReadOnlyCollection<ElementInit>(newInitializer));
+                    expr = new ListInitExpression((NewExpression)rewrittenNew, new ArrayReadOnlyCollection<ElementInit>(newInitializer));
                     break;
 
                 case RewriteAction.SpillStack:
@@ -718,7 +719,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (cr.Rewrite)
             {
-                expr = NewArrayExpression.Make(node.NodeType, node.Type, new TrueReadOnlyCollection<Expression>(cr[0, -1]));
+                expr = NewArrayExpression.Make(node.NodeType, node.Type, new ArrayReadOnlyCollection<Expression>(cr[0, -1]));
             }
 
             return cr.Finish(expr);

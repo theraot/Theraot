@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions
 {
@@ -17,12 +18,12 @@ namespace System.Linq.Expressions
     /// </summary>
     public sealed class ElementInit : IArgumentProvider
     {
-        private readonly TrueReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
+        private readonly ArrayReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
 
         internal ElementInit(MethodInfo addMethod, Expression[] arguments)
         {
             AddMethod = addMethod;
-            _argumentsAsReadOnlyCollection = new TrueReadOnlyCollection<Expression>(arguments);
+            _argumentsAsReadOnlyCollection = new ArrayReadOnlyCollection<Expression>(arguments);
         }
 
         /// <summary>

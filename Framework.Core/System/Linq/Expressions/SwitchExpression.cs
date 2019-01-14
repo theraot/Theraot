@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 using Theraot.Reflection;
 
 namespace System.Linq.Expressions
@@ -248,7 +249,7 @@ namespace System.Linq.Expressions
     public sealed class SwitchExpression : Expression
     {
         private readonly SwitchCase[] _cases;
-        private readonly TrueReadOnlyCollection<SwitchCase> _casesAsReadOnlyCollection;
+        private readonly ArrayReadOnlyCollection<SwitchCase> _casesAsReadOnlyCollection;
 
         internal SwitchExpression(Type type, Expression switchValue, Expression defaultBody, MethodInfo comparison, SwitchCase[] cases)
         {
@@ -257,7 +258,7 @@ namespace System.Linq.Expressions
             DefaultBody = defaultBody;
             Comparison = comparison;
             _cases = cases;
-            _casesAsReadOnlyCollection = new TrueReadOnlyCollection<SwitchCase>(_cases);
+            _casesAsReadOnlyCollection = new ArrayReadOnlyCollection<SwitchCase>(_cases);
         }
 
         /// <summary>

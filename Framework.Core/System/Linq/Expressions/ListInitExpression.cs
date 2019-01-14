@@ -10,6 +10,8 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections;
+using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions
 {
@@ -40,7 +42,7 @@ namespace System.Linq.Expressions
             var initializerList = initializers.ToTrueReadOnly();
             if (initializerList.Count == 0)
             {
-                return new ListInitExpression(newExpression, EmptyReadOnlyCollection<ElementInit>.Instance);
+                return new ListInitExpression(newExpression, EmptyCollection<ElementInit>.Instance);
             }
 
             var addMethod = FindMethod(newExpression.Type, "Add", null, new[] { initializerList[0] }, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
@@ -81,7 +83,7 @@ namespace System.Linq.Expressions
             {
                 initList[i] = ElementInit(addMethod, initializerList[i]);
             }
-            return ListInit(newExpression, new TrueReadOnlyCollection<ElementInit>(initList));
+            return ListInit(newExpression, new ArrayReadOnlyCollection<ElementInit>(initList));
         }
 
         /// <summary>

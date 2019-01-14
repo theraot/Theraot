@@ -10,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 using Theraot.Reflection;
 using static System.Linq.Expressions.CachedReflectionInfo;
 
@@ -229,8 +230,8 @@ namespace System.Linq.Expressions
             Debug.Assert(opTrueFalse != null);
 
             return Block(
-                new TrueReadOnlyCollection<ParameterExpression>(left),
-                new TrueReadOnlyCollection<Expression>(
+                new ArrayReadOnlyCollection<ParameterExpression>(left),
+                new ArrayReadOnlyCollection<Expression>(
                     Assign(left, Left),
                     Condition(
                         Property(left, "HasValue"),
@@ -238,8 +239,8 @@ namespace System.Linq.Expressions
                             Call(opTrueFalse, Call(left, "GetValueOrDefault", null)),
                             left,
                             Block(
-                                new TrueReadOnlyCollection<ParameterExpression>(right),
-                                new TrueReadOnlyCollection<Expression>(
+                                new ArrayReadOnlyCollection<ParameterExpression>(right),
+                                new ArrayReadOnlyCollection<Expression>(
                                     Assign(right, Right),
                                     Condition(
                                         Property(right, "HasValue"),
@@ -442,8 +443,8 @@ namespace System.Linq.Expressions
             Expression e4 = temp2;
 
             return Block(
-                new TrueReadOnlyCollection<ParameterExpression>(temp1, temp2),
-                new TrueReadOnlyCollection<Expression>(e1, e2, e3, e4)
+                new ArrayReadOnlyCollection<ParameterExpression>(temp1, temp2),
+                new ArrayReadOnlyCollection<Expression>(e1, e2, e3, e4)
             );
         }
 

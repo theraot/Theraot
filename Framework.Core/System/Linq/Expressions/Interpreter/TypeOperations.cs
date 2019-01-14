@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Interpreter
@@ -543,7 +544,7 @@ namespace System.Linq.Expressions.Interpreter
                 // Otherwise, we need to return an object that merges them.
                 return Expression.Invoke(
                     Expression.Constant(new Func<IRuntimeVariables, IRuntimeVariables, int[], IRuntimeVariables>(MergeRuntimeVariables)),
-                    Expression.RuntimeVariables(new TrueReadOnlyCollection<ParameterExpression>(vars.ToArray())),
+                    Expression.RuntimeVariables(new ArrayReadOnlyCollection<ParameterExpression>(vars.ToArray())),
                     boxesConst,
                     Expression.Constant(indexes)
                 );

@@ -11,6 +11,8 @@ using System.Dynamic.Utils;
 using System.Linq.Expressions.Compiler;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections;
+using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Reflection;
 using DelegateHelpers = System.Linq.Expressions.Compiler.DelegateHelpers;
@@ -820,7 +822,7 @@ namespace System.Linq.Expressions
 
         internal override int ParameterCount => 0;
 
-        internal override ReadOnlyCollection<ParameterExpression> GetOrMakeParameters() => EmptyReadOnlyCollection<ParameterExpression>.Instance;
+        internal override ReadOnlyCollection<ParameterExpression> GetOrMakeParameters() => EmptyCollection<ParameterExpression>.Instance;
 
         internal override ParameterExpression GetParameter(int index)
         {
@@ -1026,13 +1028,13 @@ namespace System.Linq.Expressions
     internal class ExpressionN<TDelegate> : Expression<TDelegate>
     {
         private readonly ParameterExpression[] _parameters;
-        private readonly TrueReadOnlyCollection<ParameterExpression> _parametersAsReadOnlyCollection;
+        private readonly ArrayReadOnlyCollection<ParameterExpression> _parametersAsReadOnlyCollection;
 
         public ExpressionN(Expression body, ParameterExpression[] parameters)
             : base(body)
         {
             _parameters = parameters;
-            _parametersAsReadOnlyCollection = new TrueReadOnlyCollection<ParameterExpression>(_parameters);
+            _parametersAsReadOnlyCollection = new ArrayReadOnlyCollection<ParameterExpression>(_parameters);
         }
 
         internal override int ParameterCount => _parameters.Length;

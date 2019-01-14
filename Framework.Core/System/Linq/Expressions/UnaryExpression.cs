@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 using Theraot.Reflection;
 
 namespace System.Linq.Expressions
@@ -1034,7 +1035,7 @@ namespace System.Linq.Expressions
                 block[i] = Assign(temps[i], arg);
                 i++;
             }
-            index = MakeIndex(temps[0], index.Indexer, new TrueReadOnlyCollection<Expression>(args));
+            index = MakeIndex(temps[0], index.Indexer, new ArrayReadOnlyCollection<Expression>(args));
             if (!prefix)
             {
                 var lastTemp = temps[i] = Parameter(index.Type, name: null);
@@ -1050,7 +1051,7 @@ namespace System.Linq.Expressions
                 block[i/*++*/] = Assign(index, FunctionalOp(index));
             }
             Debug.Assert(i == block.Length);
-            return Block(new TrueReadOnlyCollection<ParameterExpression>(temps), new TrueReadOnlyCollection<Expression>(block));
+            return Block(new ArrayReadOnlyCollection<ParameterExpression>(temps), new ArrayReadOnlyCollection<Expression>(block));
         }
 
         private Expression ReduceMember()
@@ -1073,8 +1074,8 @@ namespace System.Linq.Expressions
                 // temp1 = value
                 // temp1.member = op(temp1.member)
                 return Block(
-                    new TrueReadOnlyCollection<ParameterExpression>(temp1),
-                    new TrueReadOnlyCollection<Expression>(
+                    new ArrayReadOnlyCollection<ParameterExpression>(temp1),
+                    new ArrayReadOnlyCollection<Expression>(
                         initTemp1,
                         Assign(member, FunctionalOp(member))
                     )
@@ -1089,8 +1090,8 @@ namespace System.Linq.Expressions
             // temp2
             var temp2 = Parameter(member.Type, name: null);
             return Block(
-                new TrueReadOnlyCollection<ParameterExpression>(temp1, temp2),
-                new TrueReadOnlyCollection<Expression>(
+                new ArrayReadOnlyCollection<ParameterExpression>(temp1, temp2),
+                new ArrayReadOnlyCollection<Expression>(
                     initTemp1,
                     Assign(temp2, member),
                     Assign(member, FunctionalOp(temp2)),
@@ -1115,8 +1116,8 @@ namespace System.Linq.Expressions
             // temp
             var temp = Parameter(Operand.Type, name: null);
             return Block(
-                new TrueReadOnlyCollection<ParameterExpression>(temp),
-                new TrueReadOnlyCollection<Expression>
+                new ArrayReadOnlyCollection<ParameterExpression>(temp),
+                new ArrayReadOnlyCollection<Expression>
                 (Assign(temp, Operand), Assign(Operand, FunctionalOp(temp)), temp)
             );
         }

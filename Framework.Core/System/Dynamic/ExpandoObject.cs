@@ -14,6 +14,7 @@ using System.Dynamic.Utils;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 using AstUtils = System.Linq.Expressions.Utils;
 
@@ -948,8 +949,8 @@ namespace System.Dynamic
 
                 result = new DynamicMetaObject(
                     Expression.Block(
-                        new TrueReadOnlyCollection<ParameterExpression>(value),
-                        new TrueReadOnlyCollection<Expression>(
+                        new ArrayReadOnlyCollection<ParameterExpression>(value),
+                        new ArrayReadOnlyCollection<Expression>(
                             Expression.Condition(
                                 tryGetValue,
                                 result.Expression,

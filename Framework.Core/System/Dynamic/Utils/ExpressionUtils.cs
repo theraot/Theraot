@@ -9,7 +9,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using Theraot.Collections;
 using Theraot.Reflection;
@@ -102,7 +101,7 @@ namespace System.Dynamic.Utils
             }
 
             // otherwise make sure only read-only collection every gets exposed
-            Interlocked.CompareExchange(ref collection, (TrueReadOnlyCollection<T>)value.ToTrueReadOnly(), value);
+            Interlocked.CompareExchange(ref collection, value.ToTrueReadOnly(), value);
 
             // and return it
             return (ReadOnlyCollection<T>)collection;
@@ -291,7 +290,7 @@ namespace System.Dynamic.Utils
             }
 
             // Ensure arguments is safe to enumerate twice.
-            // If we have to build a collection, build a TrueReadOnlyCollection<T>
+            // If we have to build a collection, build a ArrayReadOnlyCollection<T>
             // so it won't be built a second time if used.
             if (!(replacement is ICollection<T> replacementCol))
             {

@@ -21,8 +21,8 @@ namespace Theraot.Collections
                 case T[] array:
                     return array;
 #if LESSTHAN_NET40
-                case TrueReadOnlyCollection<T> trueReadOnlyCollection:
-                    return trueReadOnlyCollection.Wrapped;
+                case ArrayReadOnlyCollection<T> ArrayReadOnlyCollection:
+                    return ArrayReadOnlyCollection.Wrapped;
 #endif
                 case ICollection<T> collection when collection.Count == 0:
                     return ArrayReservoir<T>.EmptyArray;

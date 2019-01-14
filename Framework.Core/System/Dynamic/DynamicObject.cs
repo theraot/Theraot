@@ -12,6 +12,7 @@ using System.Dynamic.Utils;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 using static System.Linq.Expressions.CachedReflectionInfo;
 using AstUtils = System.Linq.Expressions.Utils;
@@ -472,7 +473,7 @@ namespace System.Dynamic
                     paramArgs[i] = Expression.Convert(args[i], typeof(object));
                 }
 
-                return new TrueReadOnlyCollection<Expression>(paramArgs);
+                return new ArrayReadOnlyCollection<Expression>(paramArgs);
             }
 
             /// <summary>
@@ -583,13 +584,13 @@ namespace System.Dynamic
                         Expression.Throw(
                             Expression.New(
                                 InvalidCastExceptionCtorString,
-                                new TrueReadOnlyCollection<Expression>(
+                                new ArrayReadOnlyCollection<Expression>(
                                     Expression.Call(
                                         StringFormatStringObjectArray,
                                         Expression.Constant(convertFailed),
                                         Expression.NewArrayInit(
                                             typeof(object),
-                                            new TrueReadOnlyCollection<Expression>(
+                                            new ArrayReadOnlyCollection<Expression>(
                                                 Expression.Condition(
                                                     Expression.Equal(resultMetaObject.Expression, AstUtils.Null),
                                                     Expression.Constant("null"),
@@ -619,8 +620,8 @@ namespace System.Dynamic
 
                 var callDynamic = new DynamicMetaObject(
                     Expression.Block(
-                        new TrueReadOnlyCollection<ParameterExpression>(result, callArgs),
-                        new TrueReadOnlyCollection<Expression>(
+                        new ArrayReadOnlyCollection<ParameterExpression>(result, callArgs),
+                        new ArrayReadOnlyCollection<Expression>(
                             method != DynamicObjectTryBinaryOperation ? Expression.Assign(callArgs, Expression.NewArrayInit(typeof(object), callArgsValue)) : Expression.Assign(callArgs, callArgsValue[0]),
                             Expression.Condition(
                                 Expression.Call(
@@ -673,8 +674,8 @@ namespace System.Dynamic
                 //
                 var callDynamic = new DynamicMetaObject(
                     Expression.Block(
-                        new TrueReadOnlyCollection<ParameterExpression>(callArgs),
-                        new TrueReadOnlyCollection<Expression>(
+                        new ArrayReadOnlyCollection<ParameterExpression>(callArgs),
+                        new ArrayReadOnlyCollection<Expression>(
                             Expression.Assign(callArgs, Expression.NewArrayInit(typeof(object), callArgsValue)),
                             Expression.Condition(
                                 Expression.Call(
@@ -742,8 +743,8 @@ namespace System.Dynamic
 
                 var callDynamic = new DynamicMetaObject(
                     Expression.Block(
-                        new TrueReadOnlyCollection<ParameterExpression>(result, callArgs),
-                        new TrueReadOnlyCollection<Expression>(
+                        new ArrayReadOnlyCollection<ParameterExpression>(result, callArgs),
+                        new ArrayReadOnlyCollection<Expression>(
                             Expression.Assign(callArgs, Expression.NewArrayInit(typeof(object), callArgsValue)),
                             Expression.Condition(
                                 Expression.Call(

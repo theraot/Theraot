@@ -11,6 +11,8 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Theraot.Collections;
+using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 
 namespace System.Linq.Expressions
@@ -142,7 +144,7 @@ namespace System.Linq.Expressions
 
         internal virtual ReadOnlyCollection<ParameterExpression> GetOrMakeVariables()
         {
-            return EmptyReadOnlyCollection<ParameterExpression>.Instance;
+            return EmptyCollection<ParameterExpression>.Instance;
         }
 
         /// <summary>
@@ -470,14 +472,14 @@ namespace System.Linq.Expressions
     internal class BlockN : BlockExpression
     {
         private readonly Expression[] _expressions;
-        private readonly TrueReadOnlyCollection<Expression> _expressionsAsReadOnlyCollection;
+        private readonly ArrayReadOnlyCollection<Expression> _expressionsAsReadOnlyCollection;
 
         internal BlockN(Expression[] expressions)
         {
             Debug.Assert(expressions.Length != 0);
 
             _expressions = expressions;
-            _expressionsAsReadOnlyCollection = new TrueReadOnlyCollection<Expression>(_expressions);
+            _expressionsAsReadOnlyCollection = new ArrayReadOnlyCollection<Expression>(_expressions);
         }
 
         internal override int ExpressionCount => _expressions.Length;
@@ -576,12 +578,12 @@ namespace System.Linq.Expressions
     internal class ScopeExpression : BlockExpression
     {
         private readonly ParameterExpression[] _variables;      // list of variables or ReadOnlyCollection if the user has accessed the read-only collection
-        private readonly TrueReadOnlyCollection<ParameterExpression> _variablesAsReadOnlyCollection;
+        private readonly ArrayReadOnlyCollection<ParameterExpression> _variablesAsReadOnlyCollection;
 
         internal ScopeExpression(ParameterExpression[] variables)
         {
             _variables = variables;
-            _variablesAsReadOnlyCollection = new TrueReadOnlyCollection<ParameterExpression>(_variables);
+            _variablesAsReadOnlyCollection = new ArrayReadOnlyCollection<ParameterExpression>(_variables);
         }
 
         protected IReadOnlyList<ParameterExpression> VariablesList => _variablesAsReadOnlyCollection;
@@ -611,13 +613,13 @@ namespace System.Linq.Expressions
     internal class ScopeN : ScopeExpression
     {
         private readonly Expression[] _body;
-        private readonly TrueReadOnlyCollection<Expression> _bodyAsReadOnlyCollection;
+        private readonly ArrayReadOnlyCollection<Expression> _bodyAsReadOnlyCollection;
 
         internal ScopeN(ParameterExpression[] variables, Expression[] body)
             : base(variables)
         {
             _body = body;
-            _bodyAsReadOnlyCollection = new TrueReadOnlyCollection<Expression>(_body);
+            _bodyAsReadOnlyCollection = new ArrayReadOnlyCollection<Expression>(_body);
         }
 
         internal override int ExpressionCount => _body.Length;
@@ -911,7 +913,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="BlockExpression"/>.</returns>
         public static BlockExpression Block(IEnumerable<Expression> expressions)
         {
-            return Block(EmptyReadOnlyCollection<ParameterExpression>.Instance, expressions);
+            return Block(EmptyCollection<ParameterExpression>.Instance, expressions);
         }
 
         /// <summary>
@@ -934,7 +936,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="BlockExpression"/>.</returns>
         public static BlockExpression Block(Type type, IEnumerable<Expression> expressions)
         {
-            return Block(type, EmptyReadOnlyCollection<ParameterExpression>.Instance, expressions);
+            return Block(type, EmptyCollection<ParameterExpression>.Instance, expressions);
         }
 
         /// <summary>

@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 using AstUtils = System.Linq.Expressions.Utils;
 
 namespace System.Dynamic
@@ -212,8 +213,8 @@ namespace System.Dynamic
 
                 var temp = Expression.Parameter(typeof(object), null);
                 return Expression.Block(
-                    new TrueReadOnlyCollection<ParameterExpression>(temp),
-                    new TrueReadOnlyCollection<Expression>(
+                    new ArrayReadOnlyCollection<ParameterExpression>(temp),
+                    new ArrayReadOnlyCollection<Expression>(
 #if ENABLEDYNAMICPROGRAMMING
                         Expression.Assign(
                             temp,

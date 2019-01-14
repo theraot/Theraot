@@ -7,6 +7,7 @@
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 using Theraot.Reflection;
 using static System.Linq.Expressions.CachedReflectionInfo;
 
@@ -131,8 +132,8 @@ namespace System.Linq.Expressions
             parameter = Parameter(typeof(object));
 
             return Block(
-                new TrueReadOnlyCollection<ParameterExpression>(parameter),
-                new TrueReadOnlyCollection<Expression>(
+                new ArrayReadOnlyCollection<ParameterExpression>(parameter),
+                new ArrayReadOnlyCollection<Expression>(
                     Assign(parameter, Expression),
                     ByValParameterTypeEqual(parameter)
                 )
@@ -153,8 +154,8 @@ namespace System.Linq.Expressions
             {
                 var temp = Parameter(typeof(Type));
                 getType = Block(
-                    new TrueReadOnlyCollection<ParameterExpression>(temp),
-                    new TrueReadOnlyCollection<Expression>(
+                    new ArrayReadOnlyCollection<ParameterExpression>(temp),
+                    new ArrayReadOnlyCollection<Expression>(
                         Assign(temp, getType),
                         temp
                     )

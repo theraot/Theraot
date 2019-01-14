@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions
 {
@@ -127,13 +128,13 @@ namespace System.Linq.Expressions
     public sealed class MemberMemberBinding : MemberBinding
     {
         private readonly MemberBinding[] _bindings;
-        private readonly TrueReadOnlyCollection<MemberBinding> _bindingsAsReadOnlyCollection;
+        private readonly ArrayReadOnlyCollection<MemberBinding> _bindingsAsReadOnlyCollection;
 
         internal MemberMemberBinding(MemberInfo member, MemberBinding[] bindings)
             : base(MemberBindingType.MemberBinding, member)
         {
             _bindings = bindings;
-            _bindingsAsReadOnlyCollection = new TrueReadOnlyCollection<MemberBinding>(_bindings);
+            _bindingsAsReadOnlyCollection = new ArrayReadOnlyCollection<MemberBinding>(_bindings);
         }
 
         /// <summary>

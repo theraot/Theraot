@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions
 {
@@ -50,13 +51,13 @@ namespace System.Linq.Expressions
     public sealed class MemberInitExpression : Expression
     {
         private readonly MemberBinding[] _bindings;
-        private readonly TrueReadOnlyCollection<MemberBinding> _bindingsAsReadOnlyCollection;
+        private readonly ArrayReadOnlyCollection<MemberBinding> _bindingsAsReadOnlyCollection;
 
         internal MemberInitExpression(NewExpression newExpression, MemberBinding[] bindings)
         {
             NewExpression = newExpression;
             _bindings = bindings;
-            _bindingsAsReadOnlyCollection = new TrueReadOnlyCollection<MemberBinding>(_bindings);
+            _bindingsAsReadOnlyCollection = new ArrayReadOnlyCollection<MemberBinding>(_bindings);
         }
 
         /// <summary>Gets the bindings that describe how to initialize the members of the newly created object.</summary>

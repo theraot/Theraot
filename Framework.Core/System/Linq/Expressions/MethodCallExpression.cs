@@ -10,6 +10,8 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections;
+using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Reflection;
 
@@ -791,7 +793,7 @@ namespace System.Linq.Expressions
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
         {
-            return EmptyReadOnlyCollection<Expression>.Instance;
+            return EmptyCollection<Expression>.Instance;
         }
 
         internal override MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
@@ -1000,13 +1002,13 @@ namespace System.Linq.Expressions
     internal sealed class InstanceMethodCallExpressionN : InstanceMethodCallExpression, IArgumentProvider
     {
         private readonly Expression[] _arguments;
-        private readonly TrueReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
+        private readonly ArrayReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
 
         public InstanceMethodCallExpressionN(MethodInfo method, Expression instance, Expression[] args)
             : base(method, instance)
         {
             _arguments = args;
-            _argumentsAsReadOnlyCollection = new TrueReadOnlyCollection<Expression>(_arguments);
+            _argumentsAsReadOnlyCollection = new ArrayReadOnlyCollection<Expression>(_arguments);
         }
 
         public override int ArgumentCount => _arguments.Length;
@@ -1046,7 +1048,7 @@ namespace System.Linq.Expressions
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
         {
-            return EmptyReadOnlyCollection<Expression>.Instance;
+            return EmptyCollection<Expression>.Instance;
         }
 
         internal override MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
@@ -1419,13 +1421,13 @@ namespace System.Linq.Expressions
     internal sealed class MethodCallExpressionN : MethodCallExpression, IArgumentProvider
     {
         private readonly Expression[] _arguments;
-        private readonly TrueReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
+        private readonly ArrayReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
 
         public MethodCallExpressionN(MethodInfo method, Expression[] args)
             : base(method)
         {
             _arguments = args;
-            _argumentsAsReadOnlyCollection = new TrueReadOnlyCollection<Expression>(_arguments);
+            _argumentsAsReadOnlyCollection = new ArrayReadOnlyCollection<Expression>(_arguments);
         }
 
         public override int ArgumentCount => _arguments.Length;

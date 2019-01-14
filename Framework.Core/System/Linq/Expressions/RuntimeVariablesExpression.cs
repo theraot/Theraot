@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions
 {
@@ -52,12 +53,12 @@ namespace System.Linq.Expressions
     public sealed class RuntimeVariablesExpression : Expression
     {
         private readonly ParameterExpression[] _variables;
-        private readonly TrueReadOnlyCollection<ParameterExpression> _variablesAsReadOnlyCollection;
+        private readonly ArrayReadOnlyCollection<ParameterExpression> _variablesAsReadOnlyCollection;
 
         internal RuntimeVariablesExpression(ParameterExpression[] variables)
         {
             _variables = variables;
-            _variablesAsReadOnlyCollection = new TrueReadOnlyCollection<ParameterExpression>(_variables);
+            _variablesAsReadOnlyCollection = new ArrayReadOnlyCollection<ParameterExpression>(_variables);
         }
 
         /// <summary>

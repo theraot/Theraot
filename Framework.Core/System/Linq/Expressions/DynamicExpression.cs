@@ -11,6 +11,7 @@ using System.Dynamic.Utils;
 using System.Linq.Expressions.Compiler;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 using Theraot.Reflection;
 using DelegateHelpers = System.Linq.Expressions.Compiler.DelegateHelpers;
 
@@ -715,13 +716,13 @@ namespace System.Linq.Expressions
     internal class DynamicExpressionN : DynamicExpression, IArgumentProvider
     {
         private readonly Expression[] _arguments;
-        private readonly TrueReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
+        private readonly ArrayReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
 
         internal DynamicExpressionN(Type delegateType, CallSiteBinder binder, Expression[] arguments)
             : base(delegateType, binder)
         {
             _arguments = arguments;
-            _argumentsAsReadOnlyCollection = new TrueReadOnlyCollection<Expression>(_arguments);
+            _argumentsAsReadOnlyCollection = new ArrayReadOnlyCollection<Expression>(_arguments);
         }
 
         int IArgumentProvider.ArgumentCount => _arguments.Length;
