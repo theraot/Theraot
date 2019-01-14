@@ -1,5 +1,9 @@
 #if LESSTHAN_NET45
 
+#pragma warning disable CA1032 // Implement standard exception constructors
+#pragma warning disable CA1064 // Exceptions should be public
+#pragma warning disable RCS1194 // Implement exception constructors.
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
