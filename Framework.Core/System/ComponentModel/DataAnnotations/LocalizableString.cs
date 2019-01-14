@@ -77,7 +77,7 @@ namespace System.ComponentModel.DataAnnotations
             get => _propertyValue;
             set
             {
-                if (_propertyValue != value)
+                if (!string.Equals(_propertyValue, value, StringComparison.Ordinal))
                 {
                     ClearCache();
                     _propertyValue = value;
@@ -111,13 +111,14 @@ namespace System.ComponentModel.DataAnnotations
         /// </returns>
         public string GetLocalizableValue()
         {
-            if (_cachedResult == null)
+            var cachedResult = _cachedResult;
+            if (cachedResult == null)
             {
                 // If the property value is null, then just cache that value
                 // If the resource type is null, then property value is literal, so cache it
                 if (_propertyValue == null || _resourceType == null)
                 {
-                    _cachedResult = () => _propertyValue;
+                    cachedResult = () => _propertyValue;
                 }
                 else
                 {
@@ -148,18 +149,18 @@ namespace System.ComponentModel.DataAnnotations
                     if (badlyConfigured)
                     {
                         var exceptionMessage = $"Localization failed ({_propertyName}, {_resourceType.FullName}, _propertyValue)";
-                        _cachedResult = () => throw new InvalidOperationException(exceptionMessage);
+                        cachedResult = () => throw new InvalidOperationException(exceptionMessage);
                     }
                     else
                     {
                         // We have a valid property, so cache the resource
-                        _cachedResult = () => (string)property.GetValue(null, null);
+                        cachedResult = () => (string)property.GetValue(null, null);
                     }
                 }
             }
-
             // Return the cached result
-            return _cachedResult();
+            _cachedResult = cachedResult;
+            return cachedResult();
         }
 
         /// <summary>
