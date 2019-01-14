@@ -242,7 +242,7 @@ namespace System.Linq.Expressions
                 }
                 if (newMembers != null)
                 {
-                    members = new ArrayReadOnlyCollection<MemberInfo>(newMembers);
+                    members = ArrayReadOnlyCollection<MemberInfo>.Create(newMembers);
                 }
             }
             else if (arguments != null && arguments.Length > 0)
@@ -270,7 +270,7 @@ namespace System.Linq.Expressions
             Constructor = constructor;
             _arguments = arguments;
             Members = members;
-            _argumentsAsReadOnlyCollection = new ArrayReadOnlyCollection<Expression>(_arguments);
+            _argumentsAsReadOnlyCollection = ArrayReadOnlyCollection<Expression>.Create(_arguments);
         }
 
         /// <summary>

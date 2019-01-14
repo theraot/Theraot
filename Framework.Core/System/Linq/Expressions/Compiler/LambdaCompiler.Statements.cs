@@ -573,14 +573,14 @@ namespace System.Linq.Expressions.Compiler
                 {
                     if (t.Value != null)
                     {
-                        initializers.Add(Expression.ElementInit(add, new ArrayReadOnlyCollection<Expression>(t, Utils.Constant(i))));
+                        initializers.Add(Expression.ElementInit(add, ArrayReadOnlyCollection<Expression>.Create(t, Utils.Constant(i))));
                     }
                     else
                     {
                         nullCase = i;
                     }
                 }
-                cases.UncheckedAdd(Expression.SwitchCase(node.Cases[i].Body, new ArrayReadOnlyCollection<Expression>(Utils.Constant(i))));
+                cases.UncheckedAdd(Expression.SwitchCase(node.Cases[i].Body, ArrayReadOnlyCollection<Expression>.Create(Utils.Constant(i))));
             }
 
             // Create the field to hold the lazily initialized dictionary
@@ -596,7 +596,7 @@ namespace System.Linq.Expressions.Compiler
                     Expression.ListInit(
                         Expression.New(
                             DictionaryOfStringInt32CtorInt32,
-                            new ArrayReadOnlyCollection<Expression>(
+                            ArrayReadOnlyCollection<Expression>.Create(
                                 Utils.Constant(initializers.Count)
                             )
                         ),
@@ -630,8 +630,8 @@ namespace System.Linq.Expressions.Compiler
             var switchValue = Expression.Variable(typeof(string), "switchValue");
             var switchIndex = Expression.Variable(typeof(int), "switchIndex");
             var reduced = Expression.Block(
-                new ArrayReadOnlyCollection<ParameterExpression>(switchIndex, switchValue),
-                new ArrayReadOnlyCollection<Expression>(
+                ArrayReadOnlyCollection<ParameterExpression>.Create(switchIndex, switchValue),
+                ArrayReadOnlyCollection<Expression>.Create(
                     Expression.Assign(switchValue, node.SwitchValue),
                     Expression.IfThenElse(
                         Expression.Equal(switchValue, Expression.Constant(null, typeof(string))),

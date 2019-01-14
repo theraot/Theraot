@@ -58,7 +58,7 @@ namespace System.Linq.Expressions
         internal RuntimeVariablesExpression(ParameterExpression[] variables)
         {
             _variables = variables;
-            _variablesAsReadOnlyCollection = new ArrayReadOnlyCollection<ParameterExpression>(_variables);
+            _variablesAsReadOnlyCollection = ArrayReadOnlyCollection<ParameterExpression>.Create(_variables);
         }
 
         /// <summary>

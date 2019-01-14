@@ -949,8 +949,8 @@ namespace System.Dynamic
 
                 result = new DynamicMetaObject(
                     Expression.Block(
-                        new ArrayReadOnlyCollection<ParameterExpression>(value),
-                        new ArrayReadOnlyCollection<Expression>(
+                        ArrayReadOnlyCollection<ParameterExpression>.Create(value),
+                        ArrayReadOnlyCollection<Expression>.Create(
                             Expression.Condition(
                                 tryGetValue,
                                 result.Expression,

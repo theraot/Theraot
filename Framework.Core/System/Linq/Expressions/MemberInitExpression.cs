@@ -57,7 +57,7 @@ namespace System.Linq.Expressions
         {
             NewExpression = newExpression;
             _bindings = bindings;
-            _bindingsAsReadOnlyCollection = new ArrayReadOnlyCollection<MemberBinding>(_bindings);
+            _bindingsAsReadOnlyCollection = ArrayReadOnlyCollection<MemberBinding>.Create(_bindings);
         }
 
         /// <summary>Gets the bindings that describe how to initialize the members of the newly created object.</summary>

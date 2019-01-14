@@ -20,7 +20,7 @@ namespace System.Dynamic.Utils
             var res = new T[list.Count + 1];
             res[0] = item;
             list.CopyTo(res, 1);
-            return new ArrayReadOnlyCollection<T>(res);
+            return ArrayReadOnlyCollection<T>.Create(res);
         }
 
 #endif
@@ -69,12 +69,12 @@ namespace System.Dynamic.Utils
             {
                 return EmptyCollection<T>.Instance;
             }
-            if (enumerable is ArrayReadOnlyCollection<T> ArrayReadOnlyCollection)
+            if (enumerable is ArrayReadOnlyCollection<T> arrayReadOnlyCollection)
             {
-                return ArrayReadOnlyCollection;
+                return arrayReadOnlyCollection;
             }
             var array = Extensions.AsArray(enumerable);
-            return array.Length == 0 ? EmptyCollection<T>.Instance : new ArrayReadOnlyCollection<T>(array);
+            return array.Length == 0 ? EmptyCollection<T>.Instance : ArrayReadOnlyCollection<T>.Create(array);
         }
     }
 }

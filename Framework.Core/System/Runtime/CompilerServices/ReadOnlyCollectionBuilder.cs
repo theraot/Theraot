@@ -479,7 +479,7 @@ namespace System.Runtime.CompilerServices
             Count = 0;
             _version++;
 
-            return new ArrayReadOnlyCollection<T>(items);
+            return ArrayReadOnlyCollection<T>.Create(items);
         }
 
         private static bool IsCompatibleObject(object value)

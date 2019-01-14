@@ -57,7 +57,7 @@ namespace System.Linq.Expressions
             {
                 return nodes;
             }
-            return new ArrayReadOnlyCollection<T>(newNodes);
+            return ArrayReadOnlyCollection<T>.Create(newNodes);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace System.Linq.Expressions
             {
                 return nodes;
             }
-            return new ArrayReadOnlyCollection<Expression>(newNodes);
+            return ArrayReadOnlyCollection<Expression>.Create(newNodes);
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace System.Linq.Expressions
             {
                 return nodes;
             }
-            return new ArrayReadOnlyCollection<T>(newNodes);
+            return ArrayReadOnlyCollection<T>.Create(newNodes);
         }
 
         /// <summary>

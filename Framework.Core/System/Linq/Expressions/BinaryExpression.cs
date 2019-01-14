@@ -230,8 +230,8 @@ namespace System.Linq.Expressions
             Debug.Assert(opTrueFalse != null);
 
             return Block(
-                new ArrayReadOnlyCollection<ParameterExpression>(left),
-                new ArrayReadOnlyCollection<Expression>(
+                ArrayReadOnlyCollection<ParameterExpression>.Create(left),
+                ArrayReadOnlyCollection<Expression>.Create(
                     Assign(left, Left),
                     Condition(
                         Property(left, "HasValue"),
@@ -239,8 +239,8 @@ namespace System.Linq.Expressions
                             Call(opTrueFalse, Call(left, "GetValueOrDefault", null)),
                             left,
                             Block(
-                                new ArrayReadOnlyCollection<ParameterExpression>(right),
-                                new ArrayReadOnlyCollection<Expression>(
+                                ArrayReadOnlyCollection<ParameterExpression>.Create(right),
+                                ArrayReadOnlyCollection<Expression>.Create(
                                     Assign(right, Right),
                                     Condition(
                                         Property(right, "HasValue"),
@@ -443,8 +443,8 @@ namespace System.Linq.Expressions
             Expression e4 = temp2;
 
             return Block(
-                new ArrayReadOnlyCollection<ParameterExpression>(temp1, temp2),
-                new ArrayReadOnlyCollection<Expression>(e1, e2, e3, e4)
+                ArrayReadOnlyCollection<ParameterExpression>.Create(temp1, temp2),
+                ArrayReadOnlyCollection<Expression>.Create(e1, e2, e3, e4)
             );
         }
 

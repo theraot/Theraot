@@ -722,7 +722,7 @@ namespace System.Linq.Expressions
             : base(delegateType, binder)
         {
             _arguments = arguments;
-            _argumentsAsReadOnlyCollection = new ArrayReadOnlyCollection<Expression>(_arguments);
+            _argumentsAsReadOnlyCollection = ArrayReadOnlyCollection<Expression>.Create(_arguments);
         }
 
         int IArgumentProvider.ArgumentCount => _arguments.Length;
