@@ -22,11 +22,7 @@ namespace TestRunner
                 return;
             }
             var assembly = typeof(TypeDiscoverer).GetTypeInfo().Assembly;
-#if LESSTHAN_NETSTANDARD15
-            types = assembly.DefinedTypes.Select(typeInfo => typeInfo.AsType()).ToArray();
-#else
             types = assembly.GetTypes();
-#endif
         }
     }
 }
