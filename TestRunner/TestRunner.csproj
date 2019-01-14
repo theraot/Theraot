@@ -92,19 +92,6 @@
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Update="TypeDiscoverer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>TypeDiscoverer.tt</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="TypeDiscoverer.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>TypeDiscoverer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
     <PackageReference Include="System.ValueTuple">
       <Version>4.5.0</Version>
