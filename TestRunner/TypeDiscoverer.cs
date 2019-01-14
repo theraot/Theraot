@@ -16,9 +16,7 @@
             {
                 return;
             }
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_5 || NETSTANDARD1_6
-            types = global::System.Reflection.IntrospectionExtensions.GetTypeInfo(typeof(TypeDiscoverer)).Assembly.GetTypes();
-#else
+#if LESSTHAN_NETSTANDARD15
             types = new []
 			{
 				typeof(Assert),
@@ -47,6 +45,8 @@
 				typeof(System.Threading.TimerTest),
 				typeof(System.Collections.Concurrent.BlockingCollectionTest),
 			};
+#else
+            types = global::System.Reflection.IntrospectionExtensions.GetTypeInfo(typeof(TypeDiscoverer)).Assembly.GetTypes();
 #endif
 		}
     }
