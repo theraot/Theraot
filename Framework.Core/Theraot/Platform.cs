@@ -2,7 +2,7 @@
 {
     public static class Platform
     {
-        public const string Version =
+        public static string Version { get; } =
 #if NET20
                 "net20"
 #elif NET30
