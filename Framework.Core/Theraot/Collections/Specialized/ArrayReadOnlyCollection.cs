@@ -10,7 +10,7 @@ namespace Theraot.Collections.Specialized
             return new ArrayReadOnlyCollection<T>(list);
         }
 
-        public static ArrayReadOnlyCollection<T> FromEnumerable<T>(IEnumerable<T> enumerable)
+        public static ArrayReadOnlyCollection<T> ToTrueReadOnly<T>(this IEnumerable<T> enumerable)
         {
             if (enumerable == null)
             {
