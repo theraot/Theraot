@@ -37,13 +37,15 @@ namespace System.Linq.Expressions.Compiler
     // element in the array
     //
     /// <summary>
+    /// <para>
     /// Stores information about locals and arguments that are hoisted into
     /// the closure array because they're referenced in an inner lambda.
-    ///
+    /// </para>
+    /// <para>
     /// This class is sometimes emitted as a runtime constant for internal
     /// use to hoist variables/parameters in quoted expressions
-    ///
-    /// Invariant: this class stores no mutable state
+    /// </para>
+    /// <para>Invariant: this class stores no mutable state</para>
     /// </summary>
     internal sealed class HoistedLocals
     {
