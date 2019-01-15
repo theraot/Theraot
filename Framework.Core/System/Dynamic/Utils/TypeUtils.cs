@@ -72,7 +72,7 @@ namespace System.Dynamic.Utils
             // Don't use BindingFlags.Static
             foreach (var method in type.GetMethods())
             {
-                if (method.Name == name && method.IsStatic && method.MatchesArgumentTypes(types))
+                if (string.Equals(method.Name, name, StringComparison.Ordinal) && method.IsStatic && method.MatchesArgumentTypes(types))
                 {
                     return method;
                 }
@@ -85,7 +85,7 @@ namespace System.Dynamic.Utils
             // Don't use BindingFlags.Static
             foreach (var method in type.GetMethods())
             {
-                if (method.Name == name && method.IsStatic && method.MatchesArgumentTypes(types))
+                if (string.Equals(method.Name, name, StringComparison.Ordinal) && method.IsStatic && method.MatchesArgumentTypes(types))
                 {
                     return method;
                 }
@@ -480,7 +480,6 @@ namespace System.Dynamic.Utils
                 {
                     return false;
                 }
-
             }
             return true;
         }
@@ -752,7 +751,6 @@ namespace System.Dynamic.Utils
                     {
                         return true;
                     }
-
                 }
                 if (source.IsArray)
                 {
