@@ -1,5 +1,8 @@
 #if LESSTHAN_NET35
 
+#pragma warning disable CA1822 // Mark members as static
+#pragma warning disable CC0091 // Use static method
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -23,14 +26,6 @@ namespace System.Dynamic
     /// </remarks>
     public abstract class DynamicMetaObjectBinder : CallSiteBinder
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DynamicMetaObjectBinder"/> class.
-        /// </summary>
-        protected DynamicMetaObjectBinder()
-        {
-            // Empty
-        }
-
         /// <summary>
         /// The result type of the operation.
         /// </summary>
@@ -78,9 +73,7 @@ namespace System.Dynamic
             if (IsStandardBinder)
             {
                 expectedResult = ReturnType;
-
-                if (returnLabel.Type != typeof(void) &&
-                    !returnLabel.Type.IsReferenceAssignableFromInternal(expectedResult))
+                if (returnLabel.Type != typeof(void) && !returnLabel.Type.IsReferenceAssignableFromInternal(expectedResult))
                 {
                     throw Error.BinderNotCompatibleWithCallSite(expectedResult, this, returnLabel.Type);
                 }
@@ -106,8 +99,7 @@ namespace System.Dynamic
             var restrictions = binding.Restrictions;
 
             // Ensure the result matches the expected result type.
-            if (expectedResult != typeof(void) &&
-                !expectedResult.IsReferenceAssignableFromInternal(body.Type))
+            if (expectedResult != typeof(void) && !expectedResult.IsReferenceAssignableFromInternal(body.Type))
             {
                 //
                 // Blame the last person that handled the result: assume it's
@@ -128,7 +120,6 @@ namespace System.Dynamic
             {
                 throw Error.DynamicBindingNeedsRestrictions(target.Value.GetType(), this);
             }
-
 
             // Add the return
             if (body.NodeType != ExpressionType.Goto)
@@ -194,6 +185,7 @@ namespace System.Dynamic
         /// <returns>The update expression.</returns>
         public Expression GetUpdateExpression(Type type)
         {
+            // Should not be static
             return Expression.Goto(UpdateLabel, type);
         }
 
