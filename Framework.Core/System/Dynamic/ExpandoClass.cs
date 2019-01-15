@@ -47,11 +47,6 @@ namespace System.Dynamic
             Keys = keys;
         }
 
-        /// <summary>
-        /// Finds or creates a new ExpandoClass given the existing set of keys
-        /// in this ExpandoClass plus the new key to be added. Members in an
-        /// ExpandoClass are always stored case sensitively.
-        /// </summary>
         internal ExpandoClass FindNewClass(string newKey, object lockObject)
         {
             // just XOR the newKey hash code
@@ -89,9 +84,6 @@ namespace System.Dynamic
             }
         }
 
-        /// <summary>
-        /// Gets the index at which the value should be stored for the specified name.
-        /// </summary>
         internal int GetValueIndex(string name, bool caseInsensitive, ExpandoObject obj)
         {
             if (caseInsensitive)
@@ -102,10 +94,6 @@ namespace System.Dynamic
             return GetValueIndexCaseSensitive(name, obj.LockObject);
         }
 
-        /// <summary>
-        /// Gets the index at which the value should be stored for the specified name
-        /// case sensitively. Returns the index even if the member is marked as deleted.
-        /// </summary>
         internal int GetValueIndexCaseSensitive(string name, object lockObject)
         {
             lock (lockObject)
@@ -126,10 +114,6 @@ namespace System.Dynamic
             }
         }
 
-        /// <summary>
-        /// Gets the lists of transitions that are valid from this ExpandoClass
-        /// to an ExpandoClass whose keys hash to the appropriate hash code.
-        /// </summary>
         private List<WeakReference> GetTransitionList(int hashCode)
         {
             if (_transitions == null)
@@ -180,7 +164,6 @@ namespace System.Dynamic
                             return ExpandoObject.AmbiguousMatchFound;
                         }
                     }
-
                 }
             }
             //There is exactly one member with case insensitive match.
