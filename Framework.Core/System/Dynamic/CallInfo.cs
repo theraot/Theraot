@@ -57,7 +57,7 @@ namespace System.Dynamic
         {
             ContractUtils.RequiresNotNull(argNames, nameof(argNames));
 
-            var argNameCol = argNames.ToTrueReadOnly();
+            var argNameCol = argNames.ToReadOnlyCollection();
 
             if (argCount < argNameCol.Count)
             {

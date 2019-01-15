@@ -70,7 +70,7 @@ namespace System.Linq.Expressions
             if (expressions != null)
             {
                 // Ensure variables is safe to enumerate twice.
-                // (If this means a second call to ToTrueReadOnly it will return quickly).
+                // (If this means a second call to ToReadOnlyCollection it will return quickly).
                 ICollection<ParameterExpression> vars;
                 if (variables == null)
                 {
@@ -81,17 +81,17 @@ namespace System.Linq.Expressions
                     vars = variables as ICollection<ParameterExpression>;
                     if (vars == null)
                     {
-                        variables = vars = variables.ToTrueReadOnly();
+                        variables = vars = variables.ToReadOnlyCollection();
                     }
                 }
 
                 if (SameVariables(vars))
                 {
                     // Ensure expressions is safe to enumerate twice.
-                    // (If this means a second call to ToTrueReadOnly it will return quickly).
+                    // (If this means a second call to ToReadOnlyCollection it will return quickly).
                     if (!(expressions is ICollection<Expression> expressionsAsCollection))
                     {
-                        expressions = expressionsAsCollection = expressions.ToTrueReadOnly();
+                        expressions = expressionsAsCollection = expressions.ToReadOnlyCollection();
                     }
                     if (SameExpressions(expressionsAsCollection))
                     {

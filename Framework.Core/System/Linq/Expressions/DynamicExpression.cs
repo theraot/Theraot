@@ -103,7 +103,7 @@ namespace System.Linq.Expressions
                 args = arguments as ICollection<Expression>;
                 if (args == null)
                 {
-                    arguments = args = arguments.ToTrueReadOnly();
+                    arguments = args = arguments.ToReadOnlyCollection();
                 }
             }
 

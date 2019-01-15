@@ -499,7 +499,7 @@ namespace System.Linq.Expressions.Compiler
                 _closureHoistedLocals = _parent.NearestHoistedLocals;
             }
 
-            var hoistedVars = GetVariables().Where(p => Definitions[p] == VariableStorageKind.Hoisted).ToTrueReadOnly();
+            var hoistedVars = GetVariables().Where(p => Definitions[p] == VariableStorageKind.Hoisted).ToReadOnlyCollection();
 
             if (hoistedVars.Count > 0)
             {

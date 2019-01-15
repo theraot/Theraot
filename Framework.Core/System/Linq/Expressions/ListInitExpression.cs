@@ -39,7 +39,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(newExpression, nameof(newExpression));
             ContractUtils.RequiresNotNull(initializers, nameof(initializers));
 
-            var initializerList = initializers.ToTrueReadOnly();
+            var initializerList = initializers.ToReadOnlyCollection();
             if (initializerList.Count == 0)
             {
                 return new ListInitExpression(newExpression, EmptyCollection<ElementInit>.Instance);
@@ -77,7 +77,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(newExpression, nameof(newExpression));
             ContractUtils.RequiresNotNull(initializers, nameof(initializers));
 
-            var initializerList = initializers.ToTrueReadOnly();
+            var initializerList = initializers.ToReadOnlyCollection();
             var initList = new ElementInit[initializerList.Count];
             for (var i = 0; i < initializerList.Count; i++)
             {
@@ -118,7 +118,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(newExpression, nameof(newExpression));
             ContractUtils.RequiresNotNull(initializers, nameof(initializers));
-            var initializerList = initializers.ToTrueReadOnly();
+            var initializerList = initializers.ToReadOnlyCollection();
             ValidateListInitArgs(newExpression.Type, initializerList, nameof(newExpression));
             return new ListInitExpression(newExpression, initializerList);
         }

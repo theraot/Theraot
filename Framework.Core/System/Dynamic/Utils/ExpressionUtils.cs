@@ -102,7 +102,7 @@ namespace System.Dynamic.Utils
             }
 
             // otherwise make sure only read-only collection every gets exposed
-            Interlocked.CompareExchange(ref collection, value.ToTrueReadOnly(), value);
+            Interlocked.CompareExchange(ref collection, value.ToReadOnlyCollection(), value);
 
             // and return it
             return (ReadOnlyCollection<T>)collection;
@@ -295,7 +295,7 @@ namespace System.Dynamic.Utils
             // so it won't be built a second time if used.
             if (!(replacement is ICollection<T> replacementCol))
             {
-                replacement = replacementCol = replacement.ToTrueReadOnly();
+                replacement = replacementCol = replacement.ToReadOnlyCollection();
             }
 
             return SameElementsInCollection(replacementCol, current);

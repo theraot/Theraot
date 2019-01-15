@@ -45,7 +45,7 @@ namespace System.Linq.Expressions
             }
 
             TypeUtils.ValidateType(type, nameof(type));
-            var initializerList = initializers.ToTrueReadOnly();
+            var initializerList = initializers.ToReadOnlyCollection();
 
             Expression[] newList = null;
             for (int i = 0, n = initializerList.Count; i < n; i++)
@@ -114,7 +114,7 @@ namespace System.Linq.Expressions
 
             TypeUtils.ValidateType(type, nameof(type));
 
-            var boundsList = bounds.ToTrueReadOnly();
+            var boundsList = bounds.ToReadOnlyCollection();
 
             var dimensions = boundsList.Count;
             if (dimensions <= 0)

@@ -607,7 +607,7 @@ namespace System.Linq.Expressions
                 throw Error.ArgumentMustBeArray(nameof(array));
             }
 
-            var indexList = indexes.ToTrueReadOnly();
+            var indexList = indexes.ToReadOnlyCollection();
             if (arrayType.GetArrayRank() != indexList.Count)
             {
                 throw Error.IncorrectNumberOfIndexes();
@@ -694,7 +694,7 @@ namespace System.Linq.Expressions
                     args = arguments as ICollection<Expression>;
                     if (args == null)
                     {
-                        arguments = args = arguments.ToTrueReadOnly();
+                        arguments = args = arguments.ToReadOnlyCollection();
                     }
                 }
 

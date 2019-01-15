@@ -70,7 +70,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(constructor.DeclaringType, nameof(constructor) + "." + nameof(constructor.DeclaringType));
             TypeUtils.ValidateType(constructor.DeclaringType, nameof(constructor), allowByRef: true, allowPointer: true);
             ValidateConstructor(constructor, nameof(constructor));
-            var memberList = members.ToTrueReadOnly();
+            var memberList = members.ToReadOnlyCollection();
             var argList = Theraot.Collections.Extensions.AsArray(arguments);
             ValidateNewArgs(constructor, ref argList, ref memberList);
             return new NewExpression(constructor, argList, memberList);

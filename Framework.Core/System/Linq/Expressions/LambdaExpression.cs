@@ -98,7 +98,7 @@ namespace System.Linq.Expressions
                     pars = parameters as ICollection<ParameterExpression>;
                     if (pars == null)
                     {
-                        parameters = pars = parameters.ToTrueReadOnly();
+                        parameters = pars = parameters.ToReadOnlyCollection();
                     }
                 }
 
