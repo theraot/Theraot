@@ -9,20 +9,6 @@ namespace Theraot.Collections.Specialized
         {
             return new ArrayReadOnlyCollection<T>(list);
         }
-
-        public static ArrayReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> enumerable)
-        {
-            if (enumerable == null)
-            {
-                return EmptyCollection<T>.Instance;
-            }
-            if (enumerable is ArrayReadOnlyCollection<T> arrayReadOnlyCollection)
-            {
-                return arrayReadOnlyCollection;
-            }
-            var array = Extensions.AsArray(enumerable);
-            return array.Length == 0 ? EmptyCollection<T>.Instance : Create(array);
-        }
     }
 
     public class ArrayReadOnlyCollection<T> : ReadOnlyCollectionEx<T>

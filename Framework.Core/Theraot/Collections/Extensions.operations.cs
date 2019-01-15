@@ -156,6 +156,20 @@ namespace Theraot.Collections
             yield return source;
         }
 
+        public static ArrayReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> enumerable)
+        {
+            if (enumerable == null)
+            {
+                return EmptyCollection<T>.Instance;
+            }
+            if (enumerable is ArrayReadOnlyCollection<T> arrayReadOnlyCollection)
+            {
+                return arrayReadOnlyCollection;
+            }
+            var array = Extensions.AsArray(enumerable);
+            return array.Length == 0 ? EmptyCollection<T>.Instance : ArrayReadOnlyCollection.Create(array);
+        }
+
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static ICollection<T> WrapAsICollection<T>(IEnumerable<T> source)
         {
