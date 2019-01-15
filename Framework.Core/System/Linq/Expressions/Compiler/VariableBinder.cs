@@ -159,7 +159,8 @@ namespace System.Linq.Expressions.Compiler
                 referenceScope.ReferenceCount = new Dictionary<ParameterExpression, int>();
             }
 
-            Helpers.IncrementCount(node, referenceScope.ReferenceCount);
+            referenceScope.ReferenceCount.TryGetValue(node, out var count);
+            referenceScope.ReferenceCount[node] = count + 1;
             return node;
         }
 

@@ -52,7 +52,9 @@ namespace System.Linq.Expressions.Compiler
             {
                 _values.Add(value);
             }
-            Helpers.IncrementCount(new TypedConstant(value, type), _references);
+            var key = new TypedConstant(value, type);
+            _references.TryGetValue(key, out var count);
+            _references[key] = count + 1;
         }
 
         /// <summary>
