@@ -42,10 +42,6 @@ namespace System.Linq.Expressions.Compiler
 
         internal int Count => _values.Count;
 
-        /// <summary>
-        /// Called by VariableBinder. Adds the constant to the list (if needed)
-        /// and increases the reference count by one
-        /// </summary>
         internal void AddReference(object value, Type type)
         {
             if (_indexes.TryAdd(value, _values.Count))
@@ -57,10 +53,6 @@ namespace System.Linq.Expressions.Compiler
             _references[key] = count + 1;
         }
 
-        /// <summary>
-        /// Emit code to cache frequently used constants into IL locals,
-        /// instead of pulling them out of the array each time
-        /// </summary>
         internal void EmitCacheConstants(LambdaCompiler lc)
         {
             var count = 0;
@@ -102,9 +94,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        /// Emits a live object as a constant
-        /// </summary>
         internal void EmitConstant(LambdaCompiler lc, object value, Type type)
         {
             Debug.Assert(!ILGen.CanEmitConstant(value, type));
