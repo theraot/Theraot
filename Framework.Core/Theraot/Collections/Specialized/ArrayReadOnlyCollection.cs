@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Theraot.Collections.Specialized
@@ -19,5 +20,18 @@ namespace Theraot.Collections.Specialized
         }
 
         internal T[] Wrapped { get; }
+
+        public override int GetHashCode()
+        {
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+            var cmp = EqualityComparer<T>.Default;
+            var h = 6551;
+            foreach (var t in this)
+            {
+                h ^= (h << 5) ^ cmp.GetHashCode(t);
+            }
+            return h;
+        }
     }
 }

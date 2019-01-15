@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Dynamic.Utils;
 using System.Linq.Expressions;
 using Theraot.Collections;
+using Theraot.Collections.Specialized;
 
 namespace System.Dynamic
 {
@@ -36,6 +37,8 @@ namespace System.Dynamic
     /// </example>
     public sealed class CallInfo
     {
+        private readonly ArrayReadOnlyCollection<string> _argumentNames;
+
         /// <summary>
         /// Creates a new <see cref="CallInfo"/> that represents arguments in the dynamic binding process.
         /// </summary>
@@ -67,7 +70,7 @@ namespace System.Dynamic
             ContractUtils.RequiresNotNullItems(argNameCol, nameof(argNames));
 
             ArgumentCount = argCount;
-            ArgumentNames = argNameCol;
+            _argumentNames = argNameCol;
         }
 
         /// <summary>
@@ -78,7 +81,7 @@ namespace System.Dynamic
         /// <summary>
         /// The argument names.
         /// </summary>
-        public ReadOnlyCollection<string> ArgumentNames { get; }
+        public ReadOnlyCollection<string> ArgumentNames => _argumentNames;
 
         /// <summary>
         /// Determines whether the specified <see cref="CallInfo"/> instance is considered equal to the current instance.
@@ -87,7 +90,7 @@ namespace System.Dynamic
         /// <returns>true if the specified instance is equal to the current one otherwise, false.</returns>
         public override bool Equals(object obj)
         {
-            return obj is CallInfo other && ArgumentCount == other.ArgumentCount && ArgumentNames.ListEquals(other.ArgumentNames);
+            return obj is CallInfo other && ArgumentCount == other.ArgumentCount && _argumentNames.ListEquals(other._argumentNames);
         }
 
         /// <summary>
@@ -96,7 +99,7 @@ namespace System.Dynamic
         /// <returns>A hash code for the current <see cref="CallInfo"/>.</returns>
         public override int GetHashCode()
         {
-            return ArgumentCount ^ ArgumentNames.ListHashCode();
+            return ArgumentCount ^ _argumentNames.GetHashCode();
         }
     }
 }
