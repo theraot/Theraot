@@ -507,6 +507,50 @@ namespace Theraot.Collections
             return IsSupersetOf(source, other, false);
         }
 
+        public static bool ListEquals<T>(this IReadOnlyList<T> first, IReadOnlyList<T> second)
+        {
+            if (first == second)
+            {
+                return true;
+            }
+            var count = first.Count;
+            if (count != second.Count)
+            {
+                return false;
+            }
+            var cmp = EqualityComparer<T>.Default;
+            for (var i = 0; i != count; ++i)
+            {
+                if (!cmp.Equals(first[i], second[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static bool ListEquals<T>(this IList<T> first, IList<T> second)
+        {
+            if (first == second)
+            {
+                return true;
+            }
+            var count = first.Count;
+            if (count != second.Count)
+            {
+                return false;
+            }
+            var cmp = EqualityComparer<T>.Default;
+            for (var i = 0; i != count; ++i)
+            {
+                if (!cmp.Equals(first[i], second[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         public static void Move<T>(this IList<T> list, int oldIndex, int newIndex)
         {
             if (list == null)
@@ -981,7 +1025,43 @@ namespace Theraot.Collections
 
 #if TARGETS_NET || LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
 
+        public static bool TryDequeue<T>(this Queue<T> source, out T item)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            try
+            {
+                item = source.Dequeue();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default;
+                return false;
+            }
+        }
+
         public static bool TryPeek<T>(this Stack<T> source, out T item)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            try
+            {
+                item = source.Peek();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default;
+                return false;
+            }
+        }
+
+        public static bool TryPeek<T>(this Queue<T> source, out T item)
         {
             if (source == null)
             {
@@ -1016,43 +1096,6 @@ namespace Theraot.Collections
                 return false;
             }
         }
-
-        public static bool TryPeek<T>(this Queue<T> source, out T item)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            try
-            {
-                item = source.Peek();
-                return true;
-            }
-            catch (InvalidOperationException)
-            {
-                item = default;
-                return false;
-            }
-        }
-
-        public static bool TryDequeue<T>(this Queue<T> source, out T item)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            try
-            {
-                item = source.Dequeue();
-                return true;
-            }
-            catch (InvalidOperationException)
-            {
-                item = default;
-                return false;
-            }
-        }
-
 #endif
     }
 

@@ -24,32 +24,6 @@ namespace System.Dynamic.Utils
 
 #endif
 
-        public static bool ListEquals<T>(this ReadOnlyCollection<T> first, ReadOnlyCollection<T> second)
-        {
-            if (first == second)
-            {
-                return true;
-            }
-
-            var count = first.Count;
-
-            if (count != second.Count)
-            {
-                return false;
-            }
-
-            var cmp = EqualityComparer<T>.Default;
-            for (var i = 0; i != count; ++i)
-            {
-                if (!cmp.Equals(first[i], second[i]))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         // We could probably improve the hashing here
         public static int ListHashCode<T>(this ReadOnlyCollection<T> list)
         {
