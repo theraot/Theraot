@@ -15,18 +15,12 @@ namespace System.Linq.Expressions.Compiler
     {
         private const MethodAttributes _ctorAttributes = MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public;
 
-        private const MethodImplAttributes _implAttributes = MethodImplAttributes.Runtime | MethodImplAttributes.Managed;
+        private const MethodImplAttributes _implAttributes = (MethodImplAttributes)((int)MethodImplAttributes.Runtime | (int)MethodImplAttributes.Managed);
 
         private const MethodAttributes _invokeAttributes = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual;
 
         private static readonly Type[] _delegateCtorSignature = { typeof(object), typeof(IntPtr) };
 
-        /// <summary>
-        /// Finds a delegate type for a CallSite using the types in the ReadOnlyCollection of Expression.
-        ///
-        /// We take the read-only collection of Expression explicitly to avoid allocating memory (an array
-        /// of types) on lookup of delegate types.
-        /// </summary>
         internal static Type MakeCallSiteDelegate(Expression[] types, Type returnType)
         {
             lock (_delegateCache)
@@ -55,12 +49,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        /// Finds a delegate type for a CallSite using the MetaObject array.
-        ///
-        /// We take the array of MetaObject explicitly to avoid allocating memory (an array of types) on
-        /// lookup of delegate types.
-        /// </summary>
         internal static Type MakeDeferredSiteDelegate(DynamicMetaObject[] args, Type returnType)
         {
             lock (_delegateCache)
