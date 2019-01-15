@@ -74,10 +74,6 @@ namespace System.Dynamic
         /// </summary>
         internal ExpandoClass Class => _data.Class;
 
-        /// <summary>
-        /// Returns true if the member at the specified index has been deleted,
-        /// otherwise false. Call this function holding the lock.
-        /// </summary>
         internal bool IsDeletedMember(int index)
         {
             lock (LockObject)
@@ -95,11 +91,6 @@ namespace System.Dynamic
             }
         }
 
-        /// <summary>
-        /// Internal helper to promote a class.  Called from our RuntimeOps helper.  This
-        /// version simply doesn't expose the ExpandoData object which is a private
-        /// data structure.
-        /// </summary>
         internal void PromoteClass(object oldClass, object newClass)
         {
             lock (LockObject)
@@ -108,9 +99,6 @@ namespace System.Dynamic
             }
         }
 
-        /// <summary>
-        /// Deletes the data stored for the specified class at the specified index.
-        /// </summary>
         internal bool TryDeleteValue(object indexClass, int index, string name, bool ignoreCase, object deleteValue)
         {
             string propertyName;
@@ -160,11 +148,6 @@ namespace System.Dynamic
             return true;
         }
 
-        /// <summary>
-        /// Try to get the data stored for the specified class at the specified index.  If the
-        /// class has changed a full lookup for the slot will be performed and the correct
-        /// value will be retrieved.
-        /// </summary>
         internal bool TryGetValue(object indexClass, int index, string name, bool ignoreCase, out object value)
         {
             // read the data now.  The data is immutable so we get a consistent view.
@@ -209,12 +192,6 @@ namespace System.Dynamic
             return true;
         }
 
-        /// <summary>
-        /// Sets the data for the specified class at the specified index.  If the class has
-        /// changed then a full look for the slot will be performed.  If the new class does
-        /// not have the provided slot then the Expando's class will change. Only case sensitive
-        /// setter is supported in ExpandoObject.
-        /// </summary>
         internal void TrySetValue(object indexClass, int index, object value, string name, bool ignoreCase, bool add)
         {
             string propertyName;
@@ -276,10 +253,6 @@ namespace System.Dynamic
             _propertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        /// <summary>
-        /// Promotes the class from the old type to the new type and returns the new
-        /// ExpandoData object.
-        /// </summary>
         private ExpandoData PromoteClassCore(ExpandoClass oldClass, ExpandoClass newClass)
         {
             lock (LockObject)
@@ -458,6 +431,7 @@ namespace System.Dynamic
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            // ReSharper disable once UnusedMember.Local
             public string[] Items
             {
                 get
@@ -612,6 +586,7 @@ namespace System.Dynamic
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            // ReSharper disable once UnusedMember.Local
             public object[] Items
             {
                 get
@@ -879,10 +854,6 @@ namespace System.Dynamic
                 }
             }
 
-            /// <summary>
-            /// Adds a dynamic test which checks if the version has changed.  The test is only necessary for
-            /// performance as the methods will do the correct thing if called with an incorrect version.
-            /// </summary>
             private DynamicMetaObject AddDynamicTestAndDefer(DynamicMetaObjectBinder binder, ExpandoClass @class, ExpandoClass originalClass, DynamicMetaObject succeeds)
             {
                 var ifTestSucceeds = succeeds.Expression;
@@ -964,11 +935,6 @@ namespace System.Dynamic
                 return AddDynamicTestAndDefer(binder, Value.Class, null, result);
             }
 
-            /// <summary>
-            /// Gets the class and the index associated with the given name.  Does not update the expando object.  Instead
-            /// this returns both the original and desired new class.  A rule is created which includes the test for the
-            /// original class, the promotion to the new class, and the set/delete based on the class post-promotion.
-            /// </summary>
             private ExpandoClass GetClassEnsureIndex(string name, bool caseInsensitive, ExpandoObject obj, out ExpandoClass @class, out int index)
             {
                 var originalClass = Value.Class;
@@ -1038,10 +1004,11 @@ namespace System.Dynamic
             internal readonly ExpandoClass Class;
 
             /// <summary>
-            /// data stored in the expando object, key names are stored in the class.
-            ///
+            /// <para>data stored in the expando object, key names are stored in the class.</para>
+            /// <para>
             /// Expando._data must be locked when mutating the value.  Otherwise a copy of it
             /// could be made and lose values.
+            /// </para>
             /// </summary>
             private readonly object[] _dataArray;
 
@@ -1083,9 +1050,6 @@ namespace System.Dynamic
                 }
             }
 
-            /// <summary>
-            /// Update the associated class and increases the storage for the data array if needed.
-            /// </summary>
             internal ExpandoData UpdateClass(ExpandoClass newClass)
             {
                 if (_dataArray.Length >= newClass.Keys.Length)
