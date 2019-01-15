@@ -40,7 +40,7 @@ namespace System.Dynamic.Utils
     }
 
     internal abstract class ListProvider<T> : IList<T>
-            where T : class
+        where T : class
     {
         protected abstract int ElementCount { get; }
         protected abstract T First { get; }
@@ -123,7 +123,7 @@ namespace System.Dynamic.Utils
             Debug.Assert(n > 0);
             if (index + n > array.Length)
             {
-                throw new ArgumentException();
+                throw new ArgumentException(string.Empty, nameof(array));
             }
 
             array[index++] = First;
