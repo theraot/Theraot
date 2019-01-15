@@ -1,5 +1,7 @@
 #if LESSTHAN_NET45
 
+#pragma warning disable RECS0017 // Possible compare of value type with 'null'
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -19,7 +21,7 @@ namespace System.Dynamic.Utils
         {
             get
             {
-                Debug.Assert(false, "Unreachable");
+                Debug.Fail(nameof(Unreachable));
                 return new InvalidOperationException("Code supposed to be unreachable");
             }
         }
@@ -46,11 +48,6 @@ namespace System.Dynamic.Utils
             }
         }
 
-        /// <summary>
-        /// Requires the range [offset, offset + count] to be a subset of [0, array.Count].
-        /// </summary>
-        /// <exception cref="ArgumentNullException">Array is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Offset or count are out of range.</exception>
         public static void RequiresArrayRange<T>(IList<T> array, int offset, int count, string offsetName, string countName)
         {
             Debug.Assert(!string.IsNullOrEmpty(offsetName));
