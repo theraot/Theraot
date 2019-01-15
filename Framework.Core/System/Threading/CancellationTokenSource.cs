@@ -159,20 +159,18 @@ namespace System.Threading
                 throw new ArgumentOutOfRangeException(nameof(millisecondsDelay));
             }
             CheckDisposed();
-            if (Volatile.Read(ref _cancelRequested) == 0 && millisecondsDelay != Timeout.Infinite)
+            if (Volatile.Read(ref _cancelRequested) == 0 && millisecondsDelay != Timeout.Infinite && _timeout == null)
             {
-                if (_timeout == null)
+                // Have to be careful not to create secondary background timer
+                var newTimer = RootedTimeout.Launch(Callback, Timeout.Infinite);
+                var oldTimer = Interlocked.CompareExchange(ref _timeout, newTimer, null);
+                if (oldTimer != null)
                 {
-                    // Have to be careful not to create secondary background timer
-                    var newTimer = RootedTimeout.Launch(Callback, Timeout.Infinite);
-                    var oldTimer = Interlocked.CompareExchange(ref _timeout, newTimer, null);
-                    if (oldTimer != null)
-                    {
-                        newTimer.Cancel();
-                    }
-                    _timeout.Change(millisecondsDelay);
+                    newTimer.Cancel();
                 }
+                _timeout.Change(millisecondsDelay);
             }
+
         }
 
         [DebuggerNonUserCode]

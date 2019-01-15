@@ -299,17 +299,13 @@ namespace System.Linq.Expressions
         private static void ValidateGotoType(Type expectedType, ref Expression value, string paramName)
         {
             ExpressionUtils.RequiresCanRead(value, paramName);
-            if (expectedType != typeof(void))
+            // C# auto-quotes return values, so we'll do that here
+            if (expectedType != typeof(void) && !expectedType.IsReferenceAssignableFromInternal(value.Type) && !TryQuote(expectedType, ref value))
             {
-                if (!expectedType.IsReferenceAssignableFromInternal(value.Type))
-                {
-                    // C# auto-quotes return values, so we'll do that here
-                    if (!TryQuote(expectedType, ref value))
-                    {
-                        throw Error.ExpressionTypeDoesNotMatchLabel(value.Type, expectedType);
-                    }
-                }
+                throw Error.ExpressionTypeDoesNotMatchLabel(value.Type, expectedType);
             }
+
+
         }
     }
 

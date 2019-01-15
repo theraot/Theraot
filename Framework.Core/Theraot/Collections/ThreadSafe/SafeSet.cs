@@ -139,13 +139,11 @@ namespace Theraot.Collections.ThreadSafe
             var hashCode = Comparer.GetHashCode(value);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (_bucket.TryGet(hashCode + attempts, out var found))
+                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.Equals(found, value))
                 {
-                    if (Comparer.Equals(found, value))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
+
             }
             return false;
         }
@@ -166,13 +164,11 @@ namespace Theraot.Collections.ThreadSafe
             }
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (_bucket.TryGet(hashCode + attempts, out var found))
+                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.GetHashCode(found) == hashCode && check(found))
                 {
-                    if (Comparer.GetHashCode(found) == hashCode && check(found))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
+
             }
             return false;
         }
@@ -458,14 +454,12 @@ namespace Theraot.Collections.ThreadSafe
             value = default;
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (_bucket.TryGet(hashCode + attempts, out var found))
+                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.GetHashCode(found) == hashCode && check(found))
                 {
-                    if (Comparer.GetHashCode(found) == hashCode && check(found))
-                    {
-                        value = found;
-                        return true;
-                    }
+                    value = found;
+                    return true;
                 }
+
             }
             return false;
         }

@@ -1055,13 +1055,11 @@ namespace System.Linq.Expressions
                     return new ScopeWithType(variables, expressions, type);
                 }
                 var last = expressions.Last();
-                if (type != typeof(void))
+                if (type != typeof(void) && !type.IsReferenceAssignableFromInternal(last.Type))
                 {
-                    if (!type.IsReferenceAssignableFromInternal(last.Type))
-                    {
-                        throw Error.ArgumentTypesMustMatch();
-                    }
+                    throw Error.ArgumentTypesMustMatch();
                 }
+
                 if (type != last.Type)
                 {
                     return new ScopeWithType(variables, expressions, type);

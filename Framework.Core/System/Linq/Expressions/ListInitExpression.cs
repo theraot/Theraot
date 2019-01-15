@@ -188,13 +188,11 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public ListInitExpression Update(NewExpression newExpression, IEnumerable<ElementInit> initializers)
         {
-            if (newExpression == NewExpression & initializers != null)
+            if (newExpression == NewExpression & initializers != null && ExpressionUtils.SameElements(ref initializers, Theraot.Collections.Extensions.AsArray(Initializers)))
             {
-                if (ExpressionUtils.SameElements(ref initializers, Theraot.Collections.Extensions.AsArray(Initializers)))
-                {
-                    return this;
-                }
+                return this;
             }
+
 
             return ListInit(newExpression, initializers);
         }

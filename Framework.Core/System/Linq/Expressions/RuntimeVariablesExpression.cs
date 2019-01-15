@@ -88,13 +88,11 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public RuntimeVariablesExpression Update(IEnumerable<ParameterExpression> variables)
         {
-            if (variables != null)
+            if (variables != null && ExpressionUtils.SameElements(ref variables, _variables))
             {
-                if (ExpressionUtils.SameElements(ref variables, _variables))
-                {
-                    return this;
-                }
+                return this;
             }
+
 
             return RuntimeVariables(variables);
         }

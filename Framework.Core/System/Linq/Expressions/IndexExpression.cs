@@ -300,13 +300,11 @@ namespace System.Linq.Expressions
 
                     TypeUtils.ValidateType(pType, nameof(indexes), i);
 
-                    if (!pType.IsReferenceAssignableFromInternal(arg.Type))
+                    if (!pType.IsReferenceAssignableFromInternal(arg.Type) && !TryQuote(pType, ref arg))
                     {
-                        if (!TryQuote(pType, ref arg))
-                        {
-                            throw Error.ExpressionTypeDoesNotMatchMethodParameter(arg.Type, pType, method, nameof(arguments), i);
-                        }
+                        throw Error.ExpressionTypeDoesNotMatchMethodParameter(arg.Type, pType, method, nameof(arguments), i);
                     }
+
                     if (newArgs == null && arg != arguments[i])
                     {
                         newArgs = new Expression[arguments.Length];
@@ -508,13 +506,11 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public IndexExpression Update(Expression @object, IEnumerable<Expression> arguments)
         {
-            if (@object == Object & arguments != null)
+            if (@object == Object & arguments != null && ExpressionUtils.SameElements(ref arguments, _arguments))
             {
-                if (ExpressionUtils.SameElements(ref arguments, _arguments))
-                {
-                    return this;
-                }
+                return this;
             }
+
 
             return MakeIndex(@object, Indexer, arguments);
         }

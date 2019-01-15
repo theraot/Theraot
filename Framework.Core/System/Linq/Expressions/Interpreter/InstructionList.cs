@@ -373,19 +373,17 @@ namespace System.Linq.Expressions.Interpreter
                     return;
                 }
 
-                if (value is int i)
+                if (value is int i && i >= _pushIntMinCachedValue && i <= _pushIntMaxCachedValue)
                 {
-                    if (i >= _pushIntMinCachedValue && i <= _pushIntMaxCachedValue)
+                    if (_ints == null)
                     {
-                        if (_ints == null)
-                        {
-                            _ints = new Instruction[_pushIntMaxCachedValue - _pushIntMinCachedValue + 1];
-                        }
-                        i -= _pushIntMinCachedValue;
-                        Emit(_ints[i] ?? (_ints[i] = new LoadObjectInstruction(i)));
-                        return;
+                        _ints = new Instruction[_pushIntMaxCachedValue - _pushIntMinCachedValue + 1];
                     }
+                    i -= _pushIntMinCachedValue;
+                    Emit(_ints[i] ?? (_ints[i] = new LoadObjectInstruction(i)));
+                    return;
                 }
+
             }
 
             if (_objects == null)

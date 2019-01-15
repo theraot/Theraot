@@ -615,13 +615,11 @@ namespace System.Linq
             {
                 foreach (var element in source)
                 {
-                    if (element != null)
+                    if (element != null && (max == null || comparer.Compare(element, max) > 0))
                     {
-                        if (max == null || comparer.Compare(element, max) > 0)
-                        {
-                            max = element;
-                        }
+                        max = element;
                     }
+
                 }
                 return max;
             }

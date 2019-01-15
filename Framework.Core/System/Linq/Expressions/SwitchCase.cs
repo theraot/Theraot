@@ -88,13 +88,11 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public SwitchCase Update(IEnumerable<Expression> testValues, Expression body)
         {
-            if (body == Body & testValues != null)
+            if (body == Body & testValues != null && ExpressionUtils.SameElements(ref testValues, _testValues))
             {
-                if (ExpressionUtils.SameElements(ref testValues, _testValues))
-                {
-                    return this;
-                }
+                return this;
             }
+
 
             return Expression.SwitchCase(body, testValues);
         }

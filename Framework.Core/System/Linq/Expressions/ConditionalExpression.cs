@@ -151,14 +151,12 @@ namespace System.Linq.Expressions
                 throw Error.ArgumentMustBeBoolean(nameof(test));
             }
 
-            if (type != typeof(void))
+            if (type != typeof(void) && (!type.IsReferenceAssignableFromInternal(ifTrue.Type) ||
+    !type.IsReferenceAssignableFromInternal(ifFalse.Type)))
             {
-                if (!type.IsReferenceAssignableFromInternal(ifTrue.Type) ||
-                    !type.IsReferenceAssignableFromInternal(ifFalse.Type))
-                {
-                    throw Error.ArgumentTypesMustMatch();
-                }
+                throw Error.ArgumentTypesMustMatch();
             }
+
 
             return ConditionalExpression.Make(test, ifTrue, ifFalse, type);
         }

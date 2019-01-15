@@ -618,13 +618,11 @@ namespace System.Linq.Expressions
             {
                 throw Error.IncorrectNumberOfLambdaDeclarationParameters();
             }
-            if (mi.ReturnType != typeof(void) && !mi.ReturnType.IsReferenceAssignableFromInternal(body.Type))
+            if (mi.ReturnType != typeof(void) && !mi.ReturnType.IsReferenceAssignableFromInternal(body.Type) && !TryQuote(mi.ReturnType, ref body))
             {
-                if (!TryQuote(mi.ReturnType, ref body))
-                {
-                    throw Error.ExpressionTypeDoesNotMatchReturn(body.Type, mi.ReturnType);
-                }
+                throw Error.ExpressionTypeDoesNotMatchReturn(body.Type, mi.ReturnType);
             }
+
         }
 
         private static TryGetFuncActionArgsResult ValidateTryGetFuncActionArgs(Type[] typeArgs)

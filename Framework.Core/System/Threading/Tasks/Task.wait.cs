@@ -286,13 +286,11 @@ namespace System.Threading.Tasks
                     {
                         cancellationSeen |= task.IsCanceled;
                     }
-                    if (task.IsWaitNotificationEnabled)
+                    if (task.IsWaitNotificationEnabled && task.NotifyDebuggerOfWaitCompletionIfNecessary())
                     {
-                        if (task.NotifyDebuggerOfWaitCompletionIfNecessary())
-                        {
-                            break;
-                        }
+                        break;
                     }
+
                 }
                 if (cancellationSeen && !exceptionSeen)
                 {

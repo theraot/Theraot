@@ -156,13 +156,11 @@ namespace Theraot.Collections.ThreadSafe
             var hashCode = GetHashCode(item.Key);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (_bucket.TryGet(hashCode + attempts, out var found))
+                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.Equals(found.Key, item.Key))
                 {
-                    if (Comparer.Equals(found.Key, item.Key))
-                    {
-                        return _valueComparer.Equals(found.Value, item.Value);
-                    }
+                    return _valueComparer.Equals(found.Value, item.Value);
                 }
+
             }
             return false;
         }
@@ -179,13 +177,11 @@ namespace Theraot.Collections.ThreadSafe
             var hashCode = GetHashCode(key);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (_bucket.TryGet(hashCode + attempts, out var found))
+                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.Equals(found.Key, key))
                 {
-                    if (Comparer.Equals(found.Key, key))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
+
             }
             return false;
         }
@@ -206,13 +202,11 @@ namespace Theraot.Collections.ThreadSafe
             }
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (_bucket.TryGet(hashCode + attempts, out var found))
+                if (_bucket.TryGet(hashCode + attempts, out var found) && GetHashCode(found.Key) == hashCode && keyCheck(found.Key))
                 {
-                    if (GetHashCode(found.Key) == hashCode && keyCheck(found.Key))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
+
             }
             return false;
         }
@@ -238,13 +232,11 @@ namespace Theraot.Collections.ThreadSafe
             }
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (_bucket.TryGet(hashCode + attempts, out var found))
+                if (_bucket.TryGet(hashCode + attempts, out var found) && GetHashCode(found.Key) == hashCode && keyCheck(found.Key) && valueCheck(found.Value))
                 {
-                    if (GetHashCode(found.Key) == hashCode && keyCheck(found.Key) && valueCheck(found.Value))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
+
             }
             return false;
         }
@@ -823,14 +815,12 @@ namespace Theraot.Collections.ThreadSafe
             var hashCode = GetHashCode(key);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (_bucket.TryGet(hashCode + attempts, out var found))
+                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.Equals(found.Key, key))
                 {
-                    if (Comparer.Equals(found.Key, key))
-                    {
-                        value = found.Value;
-                        return true;
-                    }
+                    value = found.Value;
+                    return true;
                 }
+
             }
             return false;
         }
@@ -1345,14 +1335,12 @@ namespace Theraot.Collections.ThreadSafe
             value = default;
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (_bucket.TryGet(hashCode + attempts, out var found))
+                if (_bucket.TryGet(hashCode + attempts, out var found) && GetHashCode(found.Key) == hashCode && keyCheck(found.Key))
                 {
-                    if (GetHashCode(found.Key) == hashCode && keyCheck(found.Key))
-                    {
-                        value = found.Value;
-                        return true;
-                    }
+                    value = found.Value;
+                    return true;
                 }
+
             }
             return false;
         }

@@ -164,25 +164,23 @@ namespace System.Dynamic
                 var keys = Keys;
                 for (var i = keys.Length - 1; i >= 0; i--)
                 {
+                    //if the matching member is deleted, continue searching
                     if (string.Equals(
-                        keys[i],
-                        name,
-                        StringComparison.OrdinalIgnoreCase))
+                    keys[i],
+                    name,
+                    StringComparison.OrdinalIgnoreCase) && !obj.IsDeletedMember(i))
                     {
-                        //if the matching member is deleted, continue searching
-                        if (!obj.IsDeletedMember(i))
+                        if (caseInsensitiveMatch == ExpandoObject.NoMatch)
                         {
-                            if (caseInsensitiveMatch == ExpandoObject.NoMatch)
-                            {
-                                caseInsensitiveMatch = i;
-                            }
-                            else
-                            {
-                                //Ambiguous match, stop searching
-                                return ExpandoObject.AmbiguousMatchFound;
-                            }
+                            caseInsensitiveMatch = i;
+                        }
+                        else
+                        {
+                            //Ambiguous match, stop searching
+                            return ExpandoObject.AmbiguousMatchFound;
                         }
                     }
+
                 }
             }
             //There is exactly one member with case insensitive match.

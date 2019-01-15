@@ -380,14 +380,12 @@ namespace System.Linq.Expressions.Compiler
 
             foreach (var refCount in ReferenceCount)
             {
-                if (ShouldCache(refCount.Key, refCount.Value))
+                if (ShouldCache(refCount.Key, refCount.Value) && ResolveVariable(refCount.Key) is ElementBoxStorage storage)
                 {
-                    if (ResolveVariable(refCount.Key) is ElementBoxStorage storage)
-                    {
-                        storage.EmitLoadBox();
-                        CacheBoxToLocal(storage.Compiler, refCount.Key);
-                    }
+                    storage.EmitLoadBox();
+                    CacheBoxToLocal(storage.Compiler, refCount.Key);
                 }
+
             }
         }
 

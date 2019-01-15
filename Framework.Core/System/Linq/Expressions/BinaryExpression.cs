@@ -870,20 +870,16 @@ namespace System.Linq.Expressions
                 throw Error.IncorrectNumberOfMethodCallArguments(method, nameof(method));
             }
 
-            if (!ParameterIsAssignable(pms[0], left))
+            if (!ParameterIsAssignable(pms[0], left) && !(left.IsNullable() && ParameterIsAssignable(pms[0], left.GetNonNullable())))
             {
-                if (!(left.IsNullable() && ParameterIsAssignable(pms[0], left.GetNonNullable())))
-                {
-                    throw Error.OperandTypesDoNotMatchParameters(nodeType, method.Name);
-                }
+                throw Error.OperandTypesDoNotMatchParameters(nodeType, method.Name);
             }
-            if (!ParameterIsAssignable(pms[1], right))
+
+            if (!ParameterIsAssignable(pms[1], right) && !(right.IsNullable() && ParameterIsAssignable(pms[1], right.GetNonNullable())))
             {
-                if (!(right.IsNullable() && ParameterIsAssignable(pms[1], right.GetNonNullable())))
-                {
-                    throw Error.OperandTypesDoNotMatchParameters(nodeType, method.Name);
-                }
+                throw Error.OperandTypesDoNotMatchParameters(nodeType, method.Name);
             }
+
             if (pms[0].ParameterType != pms[1].ParameterType)
             {
                 throw Error.UserDefinedOpMustHaveConsistentTypes(nodeType, method.Name);
@@ -920,13 +916,11 @@ namespace System.Linq.Expressions
                 throw Error.IncorrectNumberOfMethodCallArguments(opTrue, paramName);
             }
 
-            if (!ParameterIsAssignable(pmsOpTrue[0], left))
+            if (!ParameterIsAssignable(pmsOpTrue[0], left) && !(left.IsNullable() && ParameterIsAssignable(pmsOpTrue[0], left.GetNonNullable())))
             {
-                if (!(left.IsNullable() && ParameterIsAssignable(pmsOpTrue[0], left.GetNonNullable())))
-                {
-                    throw Error.OperandTypesDoNotMatchParameters(nodeType, opTrue.Name);
-                }
+                throw Error.OperandTypesDoNotMatchParameters(nodeType, opTrue.Name);
             }
+
         }
 
         #region Equality Operators

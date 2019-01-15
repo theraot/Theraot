@@ -361,17 +361,15 @@ namespace System.Threading
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
+            // Set disposed
+            if (disposing && Interlocked.Exchange(ref _status, (int)Status.Disposed) != (int)Status.Disposed)
             {
-                // Set disposed
-                if (Interlocked.Exchange(ref _status, (int)Status.Disposed) != (int)Status.Disposed)
-                {
-                    // Get and erase handle
-                    var handle = Interlocked.Exchange(ref _handle, null);
-                    // Close it
-                    handle?.Close();
-                }
+                // Get and erase handle
+                var handle = Interlocked.Exchange(ref _handle, null);
+                // Close it
+                handle?.Close();
             }
+
         }
 
         private ManualResetEvent GetOrCreateWaitHandle()

@@ -209,13 +209,11 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(target), "The target string is null.");
             }
             var length = target.Length;
-            if (_position + length <= _length)
+            if (_position + length <= _length && string.CompareOrdinal(target, 0, String, _position, length) == 0)
             {
-                if (string.CompareOrdinal(target, 0, String, _position, length) == 0)
-                {
-                    return true;
-                }
+                return true;
             }
+
             return false;
         }
 
@@ -338,14 +336,12 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(target), "The target string is null.");
             }
             var length = target.Length;
-            if (_position + length <= _length)
+            if (_position + length <= _length && string.CompareOrdinal(target, 0, String, _position, length) == 0)
             {
-                if (string.CompareOrdinal(target, 0, String, _position, length) == 0)
-                {
-                    _position += length;
-                    return true;
-                }
+                _position += length;
+                return true;
             }
+
             return false;
         }
 
@@ -1035,14 +1031,12 @@ namespace Theraot.Core
                 if (target.Length != 0)
                 {
                     var position = String.IndexOf(target, _position, stringComparison);
-                    if (position != -1)
+                    if (position != -1 && (!result || position < bestPosition))
                     {
-                        if (!result || position < bestPosition)
-                        {
-                            bestPosition = position;
-                            result = true;
-                        }
+                        bestPosition = position;
+                        result = true;
                     }
+
                 }
             }
             if (result)
@@ -1098,15 +1092,13 @@ namespace Theraot.Core
                 if (target.Length != 0)
                 {
                     var position = String.IndexOf(target, _position, stringComparison);
-                    if (position != -1)
+                    if (position != -1 && (!result || position < bestPosition))
                     {
-                        if (!result || position < bestPosition)
-                        {
-                            found = target;
-                            bestPosition = position;
-                            result = true;
-                        }
+                        found = target;
+                        bestPosition = position;
+                        result = true;
                     }
+
                 }
             }
             if (result)
@@ -1139,14 +1131,12 @@ namespace Theraot.Core
             foreach (var target in targets)
             {
                 var position = String.IndexOf(target, _position);
-                if (position != -1)
+                if (position != -1 && (!result || position < bestPosition))
                 {
-                    if (!result || position < bestPosition)
-                    {
-                        bestPosition = position;
-                        result = true;
-                    }
+                    bestPosition = position;
+                    result = true;
                 }
+
             }
             if (result)
             {

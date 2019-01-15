@@ -209,14 +209,12 @@ namespace System.Threading
                 return TaskEx.FromCanceled<bool>(cancellationToken);
             }
             var source = new TaskCompletionSource<bool>();
-            if (_canEnter.Wait(0, cancellationToken))
+            if (_canEnter.Wait(0, cancellationToken) && TryOffset(-1, out var dummy))
             {
-                if (TryOffset(-1, out var dummy))
-                {
-                    source.SetResult(true);
-                    return source.Task;
-                }
+                source.SetResult(true);
+                return source.Task;
             }
+
             RootedTimeout.Launch
             (
                 () =>

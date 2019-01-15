@@ -274,27 +274,25 @@ namespace Theraot.Collections.ThreadSafe
                 var foundFirst = Interlocked.CompareExchange(ref first, null, null);
                 // Try to restore second
                 var foundSecond = Interlocked.CompareExchange(ref second, foundFirst, null);
-                if (foundSecond == null)
+                // second was set to first
+                if (foundSecond == null && foundFirst == null)
                 {
-                    // second was set to first
+                    // We need to recreate the first
+                    var result = factory();
+                    // Try to set to first
+                    foundFirst = Interlocked.CompareExchange(ref first, result, null);
                     if (foundFirst == null)
                     {
-                        // We need to recreate the first
-                        var result = factory();
-                        // Try to set to first
-                        foundFirst = Interlocked.CompareExchange(ref first, result, null);
-                        if (foundFirst == null)
+                        // first was set to result
+                        if (result != null)
                         {
-                            // first was set to result
-                            if (result != null)
-                            {
-                                Interlocked.Increment(ref use);
-                            }
-                            // Try to set to second
-                            Interlocked.CompareExchange(ref second, result, null);
+                            Interlocked.Increment(ref use);
                         }
+                        // Try to set to second
+                        Interlocked.CompareExchange(ref second, result, null);
                     }
                 }
+
             }
             finally
             {

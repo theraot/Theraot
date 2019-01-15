@@ -103,13 +103,11 @@ namespace System.Runtime.Serialization
             var newSize = MemberCount * 2;
 
             // In the pathological case, we may wrap
-            if (newSize < MemberCount)
+            if (newSize < MemberCount && int.MaxValue > MemberCount)
             {
-                if (int.MaxValue > MemberCount)
-                {
-                    newSize = int.MaxValue;
-                }
+                newSize = int.MaxValue;
             }
+
 
             // Allocate more space and copy the data
             var newMembers = new string[newSize];

@@ -114,13 +114,11 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public MemberListBinding Update(IEnumerable<ElementInit> initializers)
         {
-            if (initializers != null)
+            if (initializers != null && ExpressionUtils.SameElements(ref initializers, Theraot.Collections.Extensions.AsArray(Initializers)))
             {
-                if (ExpressionUtils.SameElements(ref initializers, Theraot.Collections.Extensions.AsArray(Initializers)))
-                {
-                    return this;
-                }
+                return this;
             }
+
 
             return Expression.ListBind(Member, initializers);
         }

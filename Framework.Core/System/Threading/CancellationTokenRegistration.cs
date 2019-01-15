@@ -52,13 +52,11 @@ namespace System.Threading
         public void Dispose()
         {
             var source = _source;
-            if (source != null)
+            if (source != null && source.RemoveCallback(_id))
             {
-                if (source.RemoveCallback(_id))
-                {
-                    _source = null;
-                }
+                _source = null;
             }
+
         }
 
         public bool Equals(CancellationTokenRegistration other)

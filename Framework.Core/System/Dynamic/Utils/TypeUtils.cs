@@ -103,13 +103,11 @@ namespace System.Dynamic.Utils
             {
                 return true;
             }
-            if (!left.IsValueType && !right.IsValueType)
+            if (!left.IsValueType && !right.IsValueType && (left.IsReferenceAssignableFromInternal(right) || right.IsReferenceAssignableFromInternal(left)))
             {
-                if (left.IsReferenceAssignableFromInternal(right) || right.IsReferenceAssignableFromInternal(left))
-                {
-                    return true;
-                }
+                return true;
             }
+
             if (left != right)
             {
                 return false;
@@ -478,13 +476,11 @@ namespace System.Dynamic.Utils
                         return false;
                     }
                 }
-                else if (PrivateIsContravariant(genericParameter))
+                else if (PrivateIsContravariant(genericParameter) && (sourceArgument.IsValueType || destArgument.IsValueType))
                 {
-                    if (sourceArgument.IsValueType || destArgument.IsValueType)
-                    {
-                        return false;
-                    }
+                    return false;
                 }
+
             }
             return true;
         }
@@ -752,13 +748,11 @@ namespace System.Dynamic.Utils
                             return true;
                         }
                     }
-                    else if (target.IsInterface)
+                    else if (target.IsInterface && source.IsClass && !source.IsSealed)
                     {
-                        if (source.IsClass && !source.IsSealed)
-                        {
-                            return true;
-                        }
+                        return true;
                     }
+
                 }
                 if (source.IsArray)
                 {

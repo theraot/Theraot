@@ -223,13 +223,11 @@ namespace System.Linq.Expressions
         {
             if (customType)
             {
-                if (resultType != typeof(void))
+                if (resultType != typeof(void) && !resultType.IsReferenceAssignableFromInternal(@case.Type))
                 {
-                    if (!resultType.IsReferenceAssignableFromInternal(@case.Type))
-                    {
-                        throw Error.ArgumentTypesMustMatch(parameterName);
-                    }
+                    throw Error.ArgumentTypesMustMatch(parameterName);
                 }
+
             }
             else
             {
@@ -317,13 +315,11 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public SwitchExpression Update(Expression switchValue, IEnumerable<SwitchCase> cases, Expression defaultBody)
         {
-            if (switchValue == SwitchValue & defaultBody == DefaultBody & cases != null)
+            if (switchValue == SwitchValue & defaultBody == DefaultBody & cases != null && ExpressionUtils.SameElements(ref cases, _cases))
             {
-                if (ExpressionUtils.SameElements(ref cases, _cases))
-                {
-                    return this;
-                }
+                return this;
             }
+
             return Switch(Type, switchValue, defaultBody, Comparison, cases);
         }
 

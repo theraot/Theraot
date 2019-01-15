@@ -39,13 +39,11 @@ namespace System.Dynamic.Utils
 
                 case ExpressionType.MemberAccess:
                     var member = (MemberExpression)expression;
-                    if (member.Member is PropertyInfo prop)
+                    if (member.Member is PropertyInfo prop && !prop.CanRead)
                     {
-                        if (!prop.CanRead)
-                        {
-                            throw Error.ExpressionMustBeReadable(paramName, idx);
-                        }
+                        throw Error.ExpressionMustBeReadable(paramName, idx);
                     }
+
                     break;
                 default:
                     break;
@@ -199,25 +197,23 @@ namespace System.Dynamic.Utils
                 pType = pType.GetElementType();
             }
             TypeUtils.ValidateType(pType, methodParamName, allowByRef: true, allowPointer: true);
-            if (!pType.IsReferenceAssignableFromInternal(arguments.Type))
+            if (!pType.IsReferenceAssignableFromInternal(arguments.Type) && !TryQuote(pType, ref arguments))
             {
-                if (!TryQuote(pType, ref arguments))
+                // Throw the right error for the node we were given
+                switch (nodeKind)
                 {
-                    // Throw the right error for the node we were given
-                    switch (nodeKind)
-                    {
-                        case ExpressionType.New:
-                            throw Error.ExpressionTypeDoesNotMatchConstructorParameter(arguments.Type, pType, argumentParamName, index);
-                        case ExpressionType.Invoke:
-                            throw Error.ExpressionTypeDoesNotMatchParameter(arguments.Type, pType, argumentParamName, index);
-                        case ExpressionType.Dynamic:
-                        case ExpressionType.Call:
-                            throw Error.ExpressionTypeDoesNotMatchMethodParameter(arguments.Type, pType, method, argumentParamName, index);
-                        default:
-                            throw ContractUtils.Unreachable;
-                    }
+                    case ExpressionType.New:
+                        throw Error.ExpressionTypeDoesNotMatchConstructorParameter(arguments.Type, pType, argumentParamName, index);
+                    case ExpressionType.Invoke:
+                        throw Error.ExpressionTypeDoesNotMatchParameter(arguments.Type, pType, argumentParamName, index);
+                    case ExpressionType.Dynamic:
+                    case ExpressionType.Call:
+                        throw Error.ExpressionTypeDoesNotMatchMethodParameter(arguments.Type, pType, method, argumentParamName, index);
+                    default:
+                        throw ContractUtils.Unreachable;
                 }
             }
+
             return arguments;
         }
 

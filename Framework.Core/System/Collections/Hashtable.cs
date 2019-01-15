@@ -1131,14 +1131,12 @@ namespace System.Collections
 
                 // The current bucket is full, and we have therefore collided.  We need to set the collision bit
                 // unless we have remembered an available slot previously.
-                if (emptySlotNumber == -1)
-                {// We don't need to set the collision bit here since we already have an empty slot
-                    if (_buckets[bucketNumber].HashColl >= 0)
-                    {
-                        _buckets[bucketNumber].HashColl |= unchecked((int)0x80000000);
-                        _occupancy++;
-                    }
+                if (emptySlotNumber == -1 && _buckets[bucketNumber].HashColl >= 0)
+                {
+                    _buckets[bucketNumber].HashColl |= unchecked((int)0x80000000);
+                    _occupancy++;
                 }
+
 
                 bucketNumber = (int)((bucketNumber + incr) % (uint)_buckets.Length);
             } while (++attempt < _buckets.Length);

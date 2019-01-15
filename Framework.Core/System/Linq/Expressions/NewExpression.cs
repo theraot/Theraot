@@ -189,26 +189,22 @@ namespace System.Linq.Expressions
                     }
 
                     ValidateAnonymousTypeMember(ref member, out var memberType, nameof(members), i);
-                    if (!memberType.IsReferenceAssignableFromInternal(arg.Type))
+                    if (!memberType.IsReferenceAssignableFromInternal(arg.Type) && !TryQuote(memberType, ref arg))
                     {
-                        if (!TryQuote(memberType, ref arg))
-                        {
-                            throw Error.ArgumentTypeDoesNotMatchMember(arg.Type, memberType, nameof(arguments), i);
-                        }
+                        throw Error.ArgumentTypeDoesNotMatchMember(arg.Type, memberType, nameof(arguments), i);
                     }
+
                     var pi = pis[i];
                     var pType = pi.ParameterType;
                     if (pType.IsByRef)
                     {
                         pType = pType.GetElementType();
                     }
-                    if (!pType.IsReferenceAssignableFromInternal(arg.Type))
+                    if (!pType.IsReferenceAssignableFromInternal(arg.Type) && !TryQuote(pType, ref arg))
                     {
-                        if (!TryQuote(pType, ref arg))
-                        {
-                            throw Error.ExpressionTypeDoesNotMatchConstructorParameter(arg.Type, pType, nameof(arguments), i);
-                        }
+                        throw Error.ExpressionTypeDoesNotMatchConstructorParameter(arg.Type, pType, nameof(arguments), i);
                     }
+
                     if (newArguments == null && arg != arguments[i])
                     {
                         newArguments = new Expression[arguments.Length];

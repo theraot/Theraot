@@ -334,30 +334,28 @@ namespace System.Linq.Expressions.Compiler
         // assumes the instance is already on the stack
         private void EmitMemberAddress(MemberInfo member, Type objectType)
         {
-            if (member is FieldInfo field)
-            {
-                // Verifiable code may not take the address of an init-only field.
-                // If we are asked to do so then get the value out of the field, stuff it
-                // into a local of the same type, and then take the address of the local.
-                // Typically this is what we want to do anyway; if we are saying
-                // Foo.bar.ToString() for a static value-typed field bar then we don't need
-                // the address of field bar to do the call.  The address of a local which
-                // has the same value as bar is sufficient.
+            // Verifiable code may not take the address of an init-only field.
+            // If we are asked to do so then get the value out of the field, stuff it
+            // into a local of the same type, and then take the address of the local.
+            // Typically this is what we want to do anyway; if we are saying
+            // Foo.bar.ToString() for a static value-typed field bar then we don't need
+            // the address of field bar to do the call.  The address of a local which
+            // has the same value as bar is sufficient.
 
-                // The C# compiler will not compile a lambda expression tree
-                // which writes to the address of an init-only field. But one could
-                // probably use the expression tree API to build such an expression.
-                // (When compiled, such an expression would fail silently.)  It might
-                // be worth it to add checking to the expression tree API to ensure
-                // that it is illegal to attempt to write to an init-only field,
-                // the same way that it is illegal to write to a read-only property.
-                // The same goes for literal fields.
-                if (!field.IsLiteral && !field.IsInitOnly)
-                {
-                    IL.EmitFieldAddress(field);
-                    return;
-                }
+            // The C# compiler will not compile a lambda expression tree
+            // which writes to the address of an init-only field. But one could
+            // probably use the expression tree API to build such an expression.
+            // (When compiled, such an expression would fail silently.)  It might
+            // be worth it to add checking to the expression tree API to ensure
+            // that it is illegal to attempt to write to an init-only field,
+            // the same way that it is illegal to write to a read-only property.
+            // The same goes for literal fields.
+            if (member is FieldInfo field && !field.IsLiteral && !field.IsInitOnly)
+            {
+                IL.EmitFieldAddress(field);
+                return;
             }
+
 
             EmitMemberGet(member, objectType);
             var temp = GetLocal(GetMemberType(member));

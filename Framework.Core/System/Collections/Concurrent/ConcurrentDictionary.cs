@@ -123,13 +123,11 @@ namespace System.Collections.Concurrent
                     throw new ArgumentNullException(nameof(key));
                 }
                 // keep the is operator
-                if (key is TKey keyAsTKey)
+                if (key is TKey keyAsTKey && _wrapped.TryGetValue(keyAsTKey, out var result))
                 {
-                    if (_wrapped.TryGetValue(keyAsTKey, out var result))
-                    {
-                        return result;
-                    }
+                    return result;
                 }
+
                 return null;
             }
             set
@@ -257,13 +255,11 @@ namespace System.Collections.Concurrent
                 // This is what happens when you do the call on Microsoft's implementation
                 throw CreateArgumentNullExceptionKey(item.Key);
             }
-            if (_wrapped.TryGetValue(item.Key, out var found))
+            if (_wrapped.TryGetValue(item.Key, out var found) && EqualityComparer<TValue>.Default.Equals(found, item.Value))
             {
-                if (EqualityComparer<TValue>.Default.Equals(found, item.Value))
-                {
-                    return true;
-                }
+                return true;
             }
+
             return false;
         }
 

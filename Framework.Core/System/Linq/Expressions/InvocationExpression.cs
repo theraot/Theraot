@@ -444,13 +444,11 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public InvocationExpression Update(Expression expression, IEnumerable<Expression> arguments)
         {
-            if (expression == Expression & arguments != null)
+            if (expression == Expression & arguments != null && ExpressionUtils.SameElements(ref arguments, Theraot.Collections.Extensions.AsArray(Arguments)))
             {
-                if (ExpressionUtils.SameElements(ref arguments, Theraot.Collections.Extensions.AsArray(Arguments)))
-                {
-                    return this;
-                }
+                return this;
             }
+
 
             return Invoke(expression, arguments);
         }

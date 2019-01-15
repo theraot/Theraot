@@ -216,13 +216,11 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public TryExpression Update(Expression body, IEnumerable<CatchBlock> handlers, Expression @finally, Expression fault)
         {
-            if (body == Body & @finally == Finally & fault == Fault)
+            if (body == Body & @finally == Finally & fault == Fault && ExpressionUtils.SameElements(ref handlers, _handlers))
             {
-                if (ExpressionUtils.SameElements(ref handlers, _handlers))
-                {
-                    return this;
-                }
+                return this;
             }
+
 
             return MakeTry(Type, body, @finally, fault, handlers);
         }

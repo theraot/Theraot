@@ -150,13 +150,11 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public MemberMemberBinding Update(IEnumerable<MemberBinding> bindings)
         {
-            if (bindings != null)
+            if (bindings != null && ExpressionUtils.SameElements(ref bindings, _bindings))
             {
-                if (ExpressionUtils.SameElements(ref bindings, _bindings))
-                {
-                    return this;
-                }
+                return this;
             }
+
 
             return Expression.MemberBind(Member, bindings);
         }

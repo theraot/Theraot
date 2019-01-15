@@ -349,17 +349,15 @@ namespace System.Linq.Expressions.Interpreter
         /// </summary>
         protected static bool TryGetLightLambdaTarget(object instance, out LightLambda lightLambda)
         {
-            if (instance is Delegate del)
+            if (instance is Delegate del && del.Target is Func<object[], object> thunk)
             {
-                if (del.Target is Func<object[], object> thunk)
+                lightLambda = thunk.Target as LightLambda;
+                if (lightLambda != null)
                 {
-                    lightLambda = thunk.Target as LightLambda;
-                    if (lightLambda != null)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
+
 
             lightLambda = null;
             return false;

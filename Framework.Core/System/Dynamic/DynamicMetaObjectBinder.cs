@@ -124,13 +124,11 @@ namespace System.Dynamic
             // if the target is IDO, standard binders ask it to bind the rule so we may have a target-specific binding.
             // it makes sense to restrict on the target's type in such cases.
             // ideally IDO meta-objects should do this, but they often miss that type of "this" is significant.
-            if (IsStandardBinder && args[0] is IDynamicMetaObjectProvider)
+            if (IsStandardBinder && args[0] is IDynamicMetaObjectProvider && restrictions == BindingRestrictions.Empty)
             {
-                if (restrictions == BindingRestrictions.Empty)
-                {
-                    throw Error.DynamicBindingNeedsRestrictions(target.Value.GetType(), this);
-                }
+                throw Error.DynamicBindingNeedsRestrictions(target.Value.GetType(), this);
             }
+
 
             // Add the return
             if (body.NodeType != ExpressionType.Goto)

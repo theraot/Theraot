@@ -310,13 +310,11 @@ namespace System.Threading.Tasks
                         }
                         observedExceptions.AddRange(task._exceptionsHolder.GetExceptionDispatchInfos());
                     }
-                    else if (task.IsCanceled)
+                    else if (task.IsCanceled && canceledTask == null)
                     {
-                        if (canceledTask == null)
-                        {
-                            canceledTask = task; // use the first task that's canceled
-                        }
+                        canceledTask = task; // use the first task that's canceled
                     }
+
                     // Regardless of completion state, if the task has its debug bit set, transfer it to the
                     // WhenAll task.  We must do this before we complete the task.
                     if (task.IsWaitNotificationEnabled)
