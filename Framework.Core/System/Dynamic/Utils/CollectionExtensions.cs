@@ -12,18 +12,6 @@ namespace System.Dynamic.Utils
 {
     internal static class CollectionExtensions
     {
-#if LESSTHAN_NET35
-
-        public static ArrayReadOnlyCollection<T> AddFirst<T>(this ReadOnlyCollection<T> list, T item)
-        {
-            var res = new T[list.Count + 1];
-            res[0] = item;
-            list.CopyTo(res, 1);
-            return ArrayReadOnlyCollection.Create(res);
-        }
-
-#endif
-
         // We could probably improve the hashing here
         public static int ListHashCode<T>(this ReadOnlyCollection<T> list)
         {

@@ -2,9 +2,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 
 #if FAT
 
@@ -33,6 +35,20 @@ namespace Theraot.Collections
             return res;
         }
 
+        public static ArrayReadOnlyCollection<T> AddFirst<T>(this ReadOnlyCollection<T> list, T item)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+            var res = new T[list.Count + 1];
+            res[0] = item;
+            list.CopyTo(res, 1);
+            return ArrayReadOnlyCollection.Create(res);
+        }
+
         public static T[] AddLast<T>(this T[] array, T item)
         {
             if (array == null)
@@ -46,6 +62,19 @@ namespace Theraot.Collections
             res[array.Length] = item;
             return res;
         }
+
+        public static ArrayReadOnlyCollection<T> AddLast<T>(this ReadOnlyCollection<T> list, T item)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+            var res = new T[list.Count + 1];
+            list.CopyTo(res, 0);
+            res[list.Count] = item;
+            return ArrayReadOnlyCollection.Create(res);
+        }
+
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CanCopyTo(int count, Array array)
