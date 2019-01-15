@@ -142,9 +142,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        /// Emits a Ldind* instruction for the appropriate type
-        /// </summary>
         internal static void EmitLoadValueIndirect(this ILGenerator il, Type type)
         {
             Debug.Assert(type != null);
@@ -219,10 +216,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        // Emits the Ldelem* instruction for the appropriate type
-        /// <summary>
-        /// Emits a Stelem* instruction for the appropriate type.
-        /// </summary>
         internal static void EmitStoreElement(this ILGenerator il, Type type)
         {
             Debug.Assert(type != null);
@@ -272,9 +265,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        /// Emits a Stind* instruction for the appropriate type.
-        /// </summary>
         internal static void EmitStoreValueIndirect(this ILGenerator il, Type type)
         {
             Debug.Assert(type != null);
@@ -510,7 +500,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 il.Emit(OpCodes.Ldtoken, mb);
                 var dt = mb.DeclaringType;
-                if (dt != null && dt.IsGenericType)
+                if (dt?.IsGenericType == true)
                 {
                     il.Emit(OpCodes.Ldtoken, dt);
                     il.Emit(OpCodes.Call, MethodBaseGetMethodFromHandleRuntimeMethodHandleRuntimeTypeHandle);
@@ -550,9 +540,9 @@ namespace System.Linq.Expressions.Compiler
                 case TypeCode.Decimal:
                 case TypeCode.String:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         private static void EmitPrimitive(this ILGenerator il, uint value)
@@ -562,7 +552,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static void EmitPrimitive(this ILGenerator il, long value)
         {
-            if (int.MinValue <= value & value <= uint.MaxValue)
+            if (int.MinValue <= value && value <= uint.MaxValue)
             {
                 il.EmitPrimitive(unchecked((int)value));
                 // While often not of consequence depending on what follows, there are cases where this
@@ -694,13 +684,16 @@ namespace System.Linq.Expressions.Compiler
             var nnExprType = typeFrom.GetNonNullable();
             var nnType = typeTo.GetNonNullable();
 
-            if (typeFrom.IsInterface || // interface cast
-               typeTo.IsInterface ||
-               typeFrom == typeof(object) || // boxing cast
-               typeTo == typeof(object) ||
-               typeFrom == typeof(Enum) ||
-               typeFrom == typeof(ValueType) ||
-               TypeUtils.IsLegalExplicitVariantDelegateConversion(typeFrom, typeTo))
+            if
+            (
+               typeFrom.IsInterface // interface cast
+               || typeTo.IsInterface
+               || typeFrom == typeof(object) // boxing cast
+               || typeTo == typeof(object)
+               || typeFrom == typeof(Enum)
+               || typeFrom == typeof(ValueType)
+               || TypeUtils.IsLegalExplicitVariantDelegateConversion(typeFrom, typeTo)
+            )
             {
                 il.EmitCastToType(typeFrom, typeTo);
             }
@@ -974,6 +967,8 @@ namespace System.Linq.Expressions.Compiler
                             }
 
                             break;
+                        default:
+                            break;
                     }
 
                     convCode = isChecked
@@ -998,6 +993,8 @@ namespace System.Linq.Expressions.Compiler
                             }
 
                             break;
+                        default:
+                            break;
                     }
 
                     convCode = isChecked
@@ -1020,6 +1017,8 @@ namespace System.Linq.Expressions.Compiler
                                 return;
                             }
 
+                            break;
+                        default:
                             break;
                     }
 
@@ -1044,6 +1043,8 @@ namespace System.Linq.Expressions.Compiler
                                 return;
                             }
 
+                            break;
+                        default:
                             break;
                     }
 
@@ -1085,10 +1086,6 @@ namespace System.Linq.Expressions.Compiler
 
         #region Arrays
 
-        /// <summary>
-        /// Emits an array of constant values provided in the given array.
-        /// The array is strongly typed.
-        /// </summary>
         internal static void EmitArray<T>(this ILGenerator il, T[] items, ILocalCache locals)
         {
             Debug.Assert(items != null);
@@ -1104,9 +1101,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        /// Emits an array of values of count size.
-        /// </summary>
         internal static void EmitArray(this ILGenerator il, Type elementType, int count)
         {
             Debug.Assert(elementType != null);
@@ -1116,11 +1110,6 @@ namespace System.Linq.Expressions.Compiler
             il.Emit(OpCodes.Newarr, elementType);
         }
 
-        /// <summary>
-        /// Emits an array construction code.
-        /// The code assumes that bounds for all dimensions
-        /// are already emitted.
-        /// </summary>
         internal static void EmitArray(this ILGenerator il, Type arrayType)
         {
             Debug.Assert(arrayType != null);
@@ -1147,10 +1136,6 @@ namespace System.Linq.Expressions.Compiler
 
         #region Support for emitting constants
 
-        /// <summary>
-        /// Emits default(T)
-        /// Semantics match C# compiler behavior
-        /// </summary>
         internal static void EmitDefault(this ILGenerator il, Type type, ILocalCache locals)
         {
             switch (type.GetTypeCode())
