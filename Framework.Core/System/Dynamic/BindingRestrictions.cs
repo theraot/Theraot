@@ -128,10 +128,6 @@ namespace System.Dynamic
         /// <returns>The expression tree representing the restrictions.</returns>
         public Expression ToExpression() => GetExpression();
 
-        /// <summary>
-        /// The method takes a DynamicMetaObject, and returns an instance restriction for testing null if the object
-        /// holds a null value, otherwise returns a type restriction.
-        /// </summary>
         internal static BindingRestrictions GetTypeRestriction(DynamicMetaObject obj)
         {
             Debug.Assert(obj != null);
