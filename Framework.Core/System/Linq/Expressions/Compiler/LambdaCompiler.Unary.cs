@@ -61,7 +61,7 @@ namespace System.Linq.Expressions.Compiler
                 if (node.IsLifted && (!node.Type.IsValueType || !node.Operand.Type.IsValueType))
                 {
                     var pis = node.Method.GetParameters();
-                    Debug.Assert(pis != null && pis.Length == 1);
+                    Debug.Assert(pis.Length == 1);
                     var paramType = pis[0].ParameterType;
                     if (paramType.IsByRef)
                     {
@@ -183,6 +183,7 @@ namespace System.Linq.Expressions.Compiler
                     EmitBinaryOperator(ExpressionType.SubtractChecked, nnType, nnType, nnType, liftedToNull: false);
 
                     // construct result
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     IL.Emit(OpCodes.Newobj, type.GetConstructor(new[] { nnType }));
                     IL.Emit(OpCodes.Br_S, end);
 
@@ -278,6 +279,7 @@ namespace System.Linq.Expressions.Compiler
 
                         // construct result
                         var ci = resultType.GetConstructor(new[] { nnOperandType });
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         IL.Emit(OpCodes.Newobj, ci);
                         IL.Emit(OpCodes.Br_S, labEnd);
 
@@ -359,6 +361,8 @@ namespace System.Linq.Expressions.Compiler
                 case ExpressionType.Decrement:
                     EmitConstantOne(resultType);
                     IL.Emit(OpCodes.Sub);
+                    break;
+                default:
                     break;
             }
 

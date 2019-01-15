@@ -64,26 +64,11 @@ namespace System.Linq.Expressions.Compiler
                 var e = node.GetExpression(index);
                 var next = node.GetExpression(index + 1);
 
-                CompilationFlags tailCallFlag;
-                if (tailCall != CompilationFlags.EmitAsNoTail)
-                {
-                    if (next is GotoExpression g && (g.Value == null || !Significant(g.Value)) && ReferenceLabel(g.Target).CanReturn)
-                    {
-                        // Since tail call flags are not passed into EmitTryExpression, CanReturn means the goto will be emitted
-                        // as Ret. Therefore we can emit the current expression with tail call.
-                        tailCallFlag = CompilationFlags.EmitAsTail;
-                    }
-                    else
-                    {
-                        // In the middle of the block.
-                        // We may do better here by marking it as Tail if the following expressions are not going to emit any IL.
-                        tailCallFlag = CompilationFlags.EmitAsMiddle;
-                    }
-                }
-                else
-                {
-                    tailCallFlag = CompilationFlags.EmitAsNoTail;
-                }
+                var tailCallFlag = tailCall != CompilationFlags.EmitAsNoTail
+                    ? next is GotoExpression g && (g.Value == null || !Significant(g.Value)) && ReferenceLabel(g.Target).CanReturn
+                        ? CompilationFlags.EmitAsTail
+                        : CompilationFlags.EmitAsMiddle
+                    : CompilationFlags.EmitAsNoTail;
 
                 flags = UpdateEmitAsTailCallFlag(flags, tailCallFlag);
                 EmitExpressionAsVoid(e, flags);
@@ -142,8 +127,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EnterScope(object node)
         {
-            if (HasVariables(node) &&
-                (_scope.MergedScopes == null || !_scope.MergedScopes.Contains(node as BlockExpression)))
+            if (HasVariables(node) && (_scope.MergedScopes?.Contains(node as BlockExpression) != true))
             {
                 if (!_tree.Scopes.TryGetValue(node, out var scope))
                 {
@@ -237,9 +221,6 @@ namespace System.Linq.Expressions.Compiler
             return (buckets.Count + count) * 2 > jumpTableSlots;
         }
 
-        /// <summary>
-        /// Gets the common test value type of the SwitchExpression.
-        /// </summary>
         private static Type GetTestValueType(SwitchExpression node)
         {
             if (node.Comparison == null)
@@ -276,11 +257,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        /// Creates the label for this case.
-        /// Optimization: if the body is just a goto, and we can branch
-        /// to it, put the goto target directly in the jump table.
-        /// </summary>
         private void DefineSwitchCaseLabel(SwitchCase @case, out Label label, out bool isGoto)
         {
             // if it's a goto with no value
@@ -568,8 +544,9 @@ namespace System.Linq.Expressions.Compiler
             var add = DictionaryOfStringInt32AddStringInt32;
             for (int i = 0, n = node.Cases.Count; i < n; i++)
             {
-                foreach (ConstantExpression t in node.Cases[i].TestValues)
+                foreach (var expression in node.Cases[i].TestValues)
                 {
+                    var t = (ConstantExpression) expression;
                     if (t.Value != null)
                     {
                         initializers.Add(Expression.ElementInit(add, ArrayReadOnlyCollection.Create<Expression>(t, Utils.Constant(i))));
@@ -661,8 +638,7 @@ namespace System.Linq.Expressions.Compiler
             // Make sure the switch value type and the right side type
             // are types we can optimize
             var type = node.SwitchValue.Type;
-            if (!CanOptimizeSwitchType(type) ||
-                !TypeUtils.AreEquivalent(type, node.Cases[0].TestValues[0].Type))
+            if (!CanOptimizeSwitchType(type) || !TypeUtils.AreEquivalent(type, node.Cases[0].TestValues[0].Type))
             {
                 return false;
             }
@@ -688,8 +664,9 @@ namespace System.Linq.Expressions.Compiler
             {
                 DefineSwitchCaseLabel(node.Cases[i], out labels[i], out isGoto[i]);
 
-                foreach (ConstantExpression test in node.Cases[i].TestValues)
+                foreach (var expression in node.Cases[i].TestValues)
                 {
+                    var test = (ConstantExpression) expression;
                     // Guaranteed to work thanks to CanOptimizeSwitchType.
                     //
                     // Use decimal because it can hold Int64 or UInt64 without
@@ -783,11 +760,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        /// Emits the start of a catch block.  The exception value that is provided by the
-        /// CLR is stored in the variable specified by the catch block or popped if no
-        /// variable is provided.
-        /// </summary>
         private void EmitCatchStart(CatchBlock cb)
         {
             if (cb.Filter == null)
@@ -896,6 +868,7 @@ namespace System.Linq.Expressions.Compiler
                 if (tryType != typeof(void))
                 {
                     //store the value of the catch block body
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     IL.Emit(OpCodes.Stloc, value);
                 }
 
@@ -934,6 +907,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (tryType != typeof(void))
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 IL.Emit(OpCodes.Ldloc, value);
                 FreeLocal(value);
             }

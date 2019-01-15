@@ -30,8 +30,11 @@ namespace System.Linq.Expressions.Compiler
             // Otherwise implement the C# semantics that allow equality
             // comparisons on non-primitive nullable structs that don't
             // overload "=="
-            if ((b.NodeType == ExpressionType.Equal || b.NodeType == ExpressionType.NotEqual) &&
-                (b.Type == typeof(bool) || b.Type == typeof(bool?)))
+            if
+            (
+                (b.NodeType == ExpressionType.Equal || b.NodeType == ExpressionType.NotEqual)
+                && (b.Type == typeof(bool) || b.Type == typeof(bool?))
+            )
             {
                 // If we have x==null, x!=null, null==x or null!=x where x is
                 // nullable but not null, then generate a call to x.HasValue.
@@ -140,6 +143,8 @@ namespace System.Linq.Expressions.Compiler
                 case TypeCode.Int16:
                     IL.Emit(IsChecked(op) ? OpCodes.Conv_Ovf_I2 : OpCodes.Conv_I2);
                     break;
+                default:
+                    break;
             }
         }
 
@@ -209,6 +214,7 @@ namespace System.Linq.Expressions.Compiler
 
             // construct result type
             var ci = resultType.GetConstructor(new[] { resultType.GetNonNullable() });
+            // ReSharper disable once AssignNullToNotNullAttribute
             IL.Emit(OpCodes.Newobj, ci);
             IL.Emit(OpCodes.Stloc, locResult);
             IL.Emit(OpCodes.Br_S, labEnd);
@@ -284,6 +290,8 @@ namespace System.Linq.Expressions.Compiler
                         Debug.Assert(resultType == typeof(bool));
                         EmitLiftedRelational(op, leftType);
                     }
+                    break;
+                default:
                     break;
             }
         }
@@ -455,7 +463,7 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(!leftType.IsNullable());
             Debug.Assert(!rightType.IsNullable());
-            Debug.Assert(leftType.IsPrimitive || (op == ExpressionType.Equal || op == ExpressionType.NotEqual) && (!leftType.IsValueType || leftType.IsEnum));
+            Debug.Assert(leftType.IsPrimitive || ((op == ExpressionType.Equal || op == ExpressionType.NotEqual) && (!leftType.IsValueType || leftType.IsEnum)));
 
             switch (op)
             {
@@ -567,6 +575,8 @@ namespace System.Linq.Expressions.Compiler
                     IL.Emit(leftType.IsUnsigned() ? OpCodes.Shr_Un : OpCodes.Shr);
                     // Guaranteed to fit within result type: no conversion
                     return;
+                default:
+                    break;
             }
 
             EmitConvertArithmeticResult(op, leftType);

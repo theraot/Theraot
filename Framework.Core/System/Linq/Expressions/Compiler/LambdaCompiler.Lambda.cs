@@ -111,12 +111,6 @@ namespace System.Linq.Expressions.Compiler
             IL.EmitNew(ClosureObjectArrayObjectArray);
         }
 
-        /// <summary>
-        /// Emits code which creates new instance of the delegateType delegate.
-        ///
-        /// Since the delegate is getting closed over the "Closure" argument, this
-        /// cannot be used with virtual/instance methods (inner must be static method)
-        /// </summary>
         private void EmitDelegateConstruction(LambdaCompiler inner)
         {
             var delegateType = inner._lambda.Type;
@@ -126,6 +120,7 @@ namespace System.Linq.Expressions.Compiler
                 _boundConstants.EmitConstant(this, dynamicMethod, typeof(DynamicMethod));
                 IL.EmitType(delegateType);
                 EmitClosureCreation(inner);
+                // ReSharper disable once AssignNullToNotNullAttribute
                 IL.Emit(OpCodes.Callvirt, typeof(DynamicMethod).GetMethod(nameof(DynamicMethod.CreateDelegate), new[] { typeof(Type), typeof(object) }));
                 IL.Emit(OpCodes.Castclass, delegateType);
             }

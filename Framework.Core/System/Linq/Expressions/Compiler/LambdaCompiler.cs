@@ -166,20 +166,11 @@ namespace System.Linq.Expressions.Compiler
             IL.EmitLoadArg(0);
         }
 
-        /// <summary>
-        /// Returns the index-th argument. This method provides access to the actual arguments
-        /// defined on the lambda itself, and excludes the possible 0-th closure argument.
-        /// </summary>
         internal void EmitLambdaArgument(int index)
         {
             IL.EmitLoadArg(GetLambdaArgument(index));
         }
 
-        /// <summary>
-        /// Gets the argument slot corresponding to the parameter at the given
-        /// index. Assumes that the method takes a certain number of prefix
-        /// arguments, followed by the real parameters stored in Parameters
-        /// </summary>
         internal int GetLambdaArgument(int index)
         {
             return index + (_hasClosureArgument ? 1 : 0) + (_method.IsStatic ? 0 : 1);
@@ -202,20 +193,11 @@ namespace System.Linq.Expressions.Compiler
             return _method.CreateDelegate(_lambda.Type, new Closure(_boundConstants.ToArray(), null));
         }
 
-        /// <summary>
-        /// Creates an uninitialized field suitable for private implementation details
-        /// Works with DynamicMethods or TypeBuilders.
-        /// </summary>
         private MemberExpression CreateLazyInitializedField<T>(string name)
         {
-            if (_method is DynamicMethod)
-            {
-                return Expression.Field(Expression.Constant(new StrongBox<T>(default)), "Value");
-            }
-            else
-            {
-                return Expression.Field(null, CreateStaticField(name, typeof(T)));
-            }
+            return _method is DynamicMethod
+                ? Expression.Field(Expression.Constant(new StrongBox<T>(default)), "Value")
+                : Expression.Field(null, CreateStaticField(name, typeof(T)));
         }
 
         private FieldBuilder CreateStaticField(string name, Type type)
@@ -258,12 +240,6 @@ namespace System.Linq.Expressions.Compiler
             return c.CreateDelegate();
         }
 
-        /// <summary>
-        /// Mutates the MethodBuilder parameter, filling in IL, parameters,
-        /// and return type.
-        ///
-        /// (probably shouldn't be modifying parameters/return type...)
-        /// </summary>
         internal static void Compile(LambdaExpression lambda, MethodBuilder method)
         {
             // 1. Bind lambda

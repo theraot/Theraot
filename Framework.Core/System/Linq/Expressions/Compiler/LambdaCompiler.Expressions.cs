@@ -1,5 +1,10 @@
 #if LESSTHAN_NET35
 
+#pragma warning disable CA1822 // Mark members as static
+#pragma warning disable CC0091 // Use static method
+// ReSharper disable MemberCanBeMadeStatic.Local
+// ReSharper disable AssignNullToNotNullAttribute
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -16,60 +21,30 @@ namespace System.Linq.Expressions.Compiler
 {
     internal partial class LambdaCompiler
     {
-        [Flags]
-        internal enum CompilationFlags
-        {
-            EmitExpressionStart = 0x0001,
-            EmitNoExpressionStart = 0x0002,
-            EmitAsDefaultType = 0x0010,
-            EmitAsVoidType = 0x0020,
-            EmitAsTail = 0x0100,   // at the tail position of a lambda, tail call can be safely emitted
-            EmitAsMiddle = 0x0200, // in the middle of a lambda, tail call can be emitted if it is in a return
-            EmitAsNoTail = 0x0400, // neither at the tail or in a return, or tail call is not turned on, no tail call is emitted
-
-            EmitExpressionStartMask = 0x000f,
-            EmitAsTypeMask = 0x00f0,
-            EmitAsTailCallMask = 0x0f00
-        }
-
-        /// <summary>
-        /// Generates code for this expression in a value position.
-        /// This method will leave the value of the expression
-        /// on the top of the stack typed as Type.
-        /// </summary>
         internal void EmitExpression(Expression node)
         {
             EmitExpression(node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitExpressionStart);
         }
 
-        /// <summary>
-        /// Update the flag with a new EmitAsTailCall flag
-        /// </summary>
         private static CompilationFlags UpdateEmitAsTailCallFlag(CompilationFlags flags, CompilationFlags newValue)
         {
             Debug.Assert(newValue == CompilationFlags.EmitAsTail || newValue == CompilationFlags.EmitAsMiddle || newValue == CompilationFlags.EmitAsNoTail);
             var oldValue = flags & CompilationFlags.EmitAsTailCallMask;
-            return flags ^ oldValue | newValue;
+            return (flags ^ oldValue) | newValue;
         }
 
-        /// <summary>
-        /// Update the flag with a new EmitAsType flag
-        /// </summary>
         private static CompilationFlags UpdateEmitAsTypeFlag(CompilationFlags flags, CompilationFlags newValue)
         {
             Debug.Assert(newValue == CompilationFlags.EmitAsDefaultType || newValue == CompilationFlags.EmitAsVoidType);
             var oldValue = flags & CompilationFlags.EmitAsTypeMask;
-            return flags ^ oldValue | newValue;
+            return (flags ^ oldValue) | newValue;
         }
 
-        /// <summary>
-        /// Update the flag with a new EmitExpressionStart flag
-        /// </summary>
         private static CompilationFlags UpdateEmitExpressionStartFlag(CompilationFlags flags, CompilationFlags newValue)
         {
             Debug.Assert(newValue == CompilationFlags.EmitExpressionStart || newValue == CompilationFlags.EmitNoExpressionStart);
             var oldValue = flags & CompilationFlags.EmitExpressionStartMask;
-            return flags ^ oldValue | newValue;
+            return (flags ^ oldValue) | newValue;
         }
 
         private void EmitAssign(AssignBinaryExpression node, CompilationFlags emitAs)
@@ -462,18 +437,13 @@ namespace System.Linq.Expressions.Compiler
             {
                 return false;
             }
-            if (mi.DeclaringType.IsValueType)
+            if (mi.DeclaringType?.IsValueType != false)
             {
                 return false;
             }
             return true;
         }
 
-        /// <summary>
-        /// Emits arguments to a call, and returns an array of writebacks that
-        /// should happen after the call. For emitting dynamic expressions, we
-        /// need to skip the first parameter of the method (the call site).
-        /// </summary>
         private List<WriteBack> EmitArguments(MethodBase method, IArgumentProvider args, int skipParameters = 0)
         {
             var pis = method.GetParameters();
@@ -493,12 +463,7 @@ namespace System.Linq.Expressions.Compiler
                     var wb = EmitAddressWriteBack(argument, type);
                     if (wb != null)
                     {
-                        if (writeBacks == null)
-                        {
-                            writeBacks = new List<WriteBack>();
-                        }
-
-                        writeBacks.Add(wb);
+                        (writeBacks ?? (writeBacks = new List<WriteBack>())).Add(wb);
                     }
                 }
                 else
@@ -535,7 +500,7 @@ namespace System.Linq.Expressions.Compiler
             }
             // if the obj has a value type, its address is passed to the method call so we cannot destroy the
             // stack by emitting a tail call
-            if (obj != null && obj.Type.IsValueType)
+            if (obj?.Type.IsValueType == true)
             {
                 EmitMethodCall(method, methodCallExpr, objectType);
             }
@@ -622,7 +587,6 @@ namespace System.Linq.Expressions.Compiler
                 type = type.GetElementType();
 
                 Debug.Assert(instance.NodeType == ExpressionType.Parameter);
-                Debug.Assert(type.IsValueType);
 
                 EmitExpression(instance);
             }
@@ -763,7 +727,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (node.Constructor != null)
             {
-                if (node.Constructor.DeclaringType.IsAbstract)
+                if (node.Constructor.DeclaringType?.IsAbstract == true)
                 {
                     throw Error.NonAbstractConstructorRequired();
                 }
@@ -815,8 +779,7 @@ namespace System.Linq.Expressions.Compiler
             // Try to determine the result statically
             var result = ConstantCheck.AnalyzeTypeIs(node);
 
-            if (result == AnalyzeTypeIsResult.KnownTrue ||
-                result == AnalyzeTypeIsResult.KnownFalse)
+            if (result == AnalyzeTypeIsResult.KnownTrue || result == AnalyzeTypeIsResult.KnownFalse)
             {
                 // Result is known statically, so just emit the expression for
                 // its side effects and return the result
@@ -908,7 +871,7 @@ namespace System.Linq.Expressions.Compiler
                 return memberPropertyInfo.PropertyType;
             }
             Debug.Assert(member is FieldInfo || member is PropertyInfo);
-            throw new ArgumentException(nameof(member));
+            throw new ArgumentException(string.Empty,nameof(member));
         }
 
         private void EmitBinding(MemberBinding binding, Type objectType)
@@ -925,6 +888,8 @@ namespace System.Linq.Expressions.Compiler
 
                 case MemberBindingType.MemberBinding:
                     EmitMemberMemberBinding((MemberMemberBinding)binding);
+                    break;
+                default:
                     break;
             }
         }
@@ -996,7 +961,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 if (!(binding.Member is PropertyInfo propertyInfo))
                 {
-                    throw new ArgumentException(nameof(binding));
+                    throw new ArgumentException(string.Empty, nameof(binding));
                 }
                 EmitCall(objectType, propertyInfo.GetSetMethod(nonPublic: true));
             }
@@ -1097,83 +1062,6 @@ namespace System.Linq.Expressions.Compiler
 
             switch (nodeType)
             {
-                default:
-                case ExpressionType.LessThan:
-                case ExpressionType.LessThanOrEqual:
-                case ExpressionType.GreaterThan:
-                case ExpressionType.GreaterThanOrEqual:
-                    {
-                        var exit = IL.DefineLabel();
-                        var exitNull = IL.DefineLabel();
-                        var anyNull = GetLocal(typeof(bool));
-                        for (int i = 0, n = paramList.Length; i < n; i++)
-                        {
-                            var v = paramList[i];
-                            var arg = argList[i];
-                            if (arg.Type.IsNullable())
-                            {
-                                _scope.AddLocal(this, v);
-                                EmitAddress(arg, arg.Type);
-                                IL.Emit(OpCodes.Dup);
-                                IL.EmitHasValue(arg.Type);
-                                IL.Emit(OpCodes.Ldc_I4_0);
-                                IL.Emit(OpCodes.Ceq);
-                                IL.Emit(OpCodes.Stloc, anyNull);
-                                IL.EmitGetValueOrDefault(arg.Type);
-                                _scope.EmitSet(v);
-                            }
-                            else
-                            {
-                                _scope.AddLocal(this, v);
-                                EmitExpression(arg);
-                                if (!arg.Type.IsValueType)
-                                {
-                                    IL.Emit(OpCodes.Dup);
-                                    IL.Emit(OpCodes.Ldnull);
-                                    IL.Emit(OpCodes.Ceq);
-                                    IL.Emit(OpCodes.Stloc, anyNull);
-                                }
-                                _scope.EmitSet(v);
-                            }
-                            IL.Emit(OpCodes.Ldloc, anyNull);
-                            IL.Emit(OpCodes.Brtrue, exitNull);
-                        }
-                        EmitMethodCallExpression(mc);
-                        if (resultType.IsNullable() && !TypeUtils.AreEquivalent(resultType, mc.Type))
-                        {
-                            var ci = resultType.GetConstructor(new[] { mc.Type });
-                            IL.Emit(OpCodes.Newobj, ci);
-                        }
-                        IL.Emit(OpCodes.Br_S, exit);
-                        IL.MarkLabel(exitNull);
-                        if (TypeUtils.AreEquivalent(resultType, mc.Type.GetNullable()))
-                        {
-                            if (resultType.IsValueType)
-                            {
-                                var result = GetLocal(resultType);
-                                IL.Emit(OpCodes.Ldloca, result);
-                                IL.Emit(OpCodes.Initobj, resultType);
-                                IL.Emit(OpCodes.Ldloc, result);
-                                FreeLocal(result);
-                            }
-                            else
-                            {
-                                IL.Emit(OpCodes.Ldnull);
-                            }
-                        }
-                        else
-                        {
-                            Debug.Assert(nodeType == ExpressionType.LessThan
-                                || nodeType == ExpressionType.LessThanOrEqual
-                                || nodeType == ExpressionType.GreaterThan
-                                || nodeType == ExpressionType.GreaterThanOrEqual);
-
-                            IL.Emit(OpCodes.Ldc_I4_0);
-                        }
-                        IL.MarkLabel(exit);
-                        FreeLocal(anyNull);
-                        return;
-                    }
                 case ExpressionType.Equal:
                 case ExpressionType.NotEqual:
                     {
@@ -1260,6 +1148,79 @@ namespace System.Linq.Expressions.Compiler
                         IL.MarkLabel(exit);
                         FreeLocal(anyNull);
                         FreeLocal(allNull);
+                        return;
+                    }
+                default:
+                    {
+                        var exit = IL.DefineLabel();
+                        var exitNull = IL.DefineLabel();
+                        var anyNull = GetLocal(typeof(bool));
+                        for (int i = 0, n = paramList.Length; i < n; i++)
+                        {
+                            var v = paramList[i];
+                            var arg = argList[i];
+                            if (arg.Type.IsNullable())
+                            {
+                                _scope.AddLocal(this, v);
+                                EmitAddress(arg, arg.Type);
+                                IL.Emit(OpCodes.Dup);
+                                IL.EmitHasValue(arg.Type);
+                                IL.Emit(OpCodes.Ldc_I4_0);
+                                IL.Emit(OpCodes.Ceq);
+                                IL.Emit(OpCodes.Stloc, anyNull);
+                                IL.EmitGetValueOrDefault(arg.Type);
+                                _scope.EmitSet(v);
+                            }
+                            else
+                            {
+                                _scope.AddLocal(this, v);
+                                EmitExpression(arg);
+                                if (!arg.Type.IsValueType)
+                                {
+                                    IL.Emit(OpCodes.Dup);
+                                    IL.Emit(OpCodes.Ldnull);
+                                    IL.Emit(OpCodes.Ceq);
+                                    IL.Emit(OpCodes.Stloc, anyNull);
+                                }
+                                _scope.EmitSet(v);
+                            }
+                            IL.Emit(OpCodes.Ldloc, anyNull);
+                            IL.Emit(OpCodes.Brtrue, exitNull);
+                        }
+                        EmitMethodCallExpression(mc);
+                        if (resultType.IsNullable() && !TypeUtils.AreEquivalent(resultType, mc.Type))
+                        {
+                            var ci = resultType.GetConstructor(new[] { mc.Type });
+                            IL.Emit(OpCodes.Newobj, ci);
+                        }
+                        IL.Emit(OpCodes.Br_S, exit);
+                        IL.MarkLabel(exitNull);
+                        if (TypeUtils.AreEquivalent(resultType, mc.Type.GetNullable()))
+                        {
+                            if (resultType.IsValueType)
+                            {
+                                var result = GetLocal(resultType);
+                                IL.Emit(OpCodes.Ldloca, result);
+                                IL.Emit(OpCodes.Initobj, resultType);
+                                IL.Emit(OpCodes.Ldloc, result);
+                                FreeLocal(result);
+                            }
+                            else
+                            {
+                                IL.Emit(OpCodes.Ldnull);
+                            }
+                        }
+                        else
+                        {
+                            Debug.Assert(nodeType == ExpressionType.LessThan
+                                || nodeType == ExpressionType.LessThanOrEqual
+                                || nodeType == ExpressionType.GreaterThan
+                                || nodeType == ExpressionType.GreaterThanOrEqual);
+
+                            IL.Emit(OpCodes.Ldc_I4_0);
+                        }
+                        IL.MarkLabel(exit);
+                        FreeLocal(anyNull);
                         return;
                     }
             }

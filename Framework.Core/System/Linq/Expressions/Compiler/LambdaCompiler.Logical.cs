@@ -15,18 +15,11 @@ namespace System.Linq.Expressions.Compiler
     {
         #region Conditional
 
-        /// <summary>
-        /// returns true if the expression is not empty, otherwise false.
-        /// </summary>
         private static bool NotEmpty(Expression node)
         {
             return !(node is DefaultExpression empty) || empty.Type != typeof(void);
         }
 
-        /// <summary>
-        /// returns true if the expression is NOT empty and is not debug info,
-        /// or a block that contains only insignificant expressions.
-        /// </summary>
         private static bool Significant(Expression node)
         {
             if (node is BlockExpression block)
@@ -148,8 +141,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 Debug.Assert(b.Conversion.ParameterCount == 1);
                 var p = b.Conversion.GetParameter(0);
-                Debug.Assert(p.Type.IsAssignableFrom(b.Left.Type) ||
-                             p.Type.IsAssignableFrom(nnLeftType));
+                Debug.Assert(p.Type.IsAssignableFrom(b.Left.Type) || p.Type.IsAssignableFrom(nnLeftType));
 
                 // emit the delegate instance
                 EmitLambdaExpression(b.Conversion);
@@ -596,21 +588,25 @@ namespace System.Linq.Expressions.Compiler
         /// <param name="node">The expression to emit.</param>
         /// <param name="label">The label to conditionally branch to.</param>
         /// <remarks>
+        /// <para>
         /// This function optimizes equality and short circuiting logical
         /// operators to avoid double-branching, minimize instruction count,
         /// and generate similar IL to the C# compiler. This is important for
         /// the JIT to optimize patterns like:
         ///     x != null AndAlso x.GetType() == typeof(SomeType)
-        ///
+        /// </para>
+        /// <para>
         /// One optimization we don't do: we always emits at least one
         /// conditional branch to the label, and always possibly falls through,
         /// even if we know if the branch will always succeed or always fail.
         /// We do this to avoid generating unreachable code, which is fine for
         /// the CLR JIT, but doesn't verify with peverify.
-        ///
+        /// </para>
+        /// <para>
         /// This kind of optimization could be implemented safely, by doing
         /// constant folding over conditionals and logical expressions at the
         /// tree level.
+        /// </para>
         /// </remarks>
         private void EmitExpressionAndBranch(bool branchValue, Expression node, Label label)
         {

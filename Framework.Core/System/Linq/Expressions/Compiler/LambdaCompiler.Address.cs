@@ -83,9 +83,12 @@ namespace System.Linq.Expressions.Compiler
             // get the address of a member of a multi-dimensional array, we'll be trying to
             // get the address of a Get method, and it will fail to do so. Instead, detect
             // this situation and replace it with a call to the Address method.
-            if (!node.Method.IsStatic &&
-                node.Object.Type.IsArray &&
-                node.Method == node.Object.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance))
+            if
+            (
+                !node.Method.IsStatic
+                && node.Object.Type.IsArray
+                && node.Method == node.Object.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance)
+            )
             {
                 var mi = node.Object.Type.GetMethod("Address", BindingFlags.Public | BindingFlags.Instance);
 
@@ -140,7 +143,7 @@ namespace System.Linq.Expressions.Compiler
 
         private WriteBack AddressOfWriteBack(IndexExpression node)
         {
-            if (node.Indexer == null || !node.Indexer.CanWrite)
+            if (node.Indexer?.CanWrite != true)
             {
                 return null;
             }
@@ -312,6 +315,8 @@ namespace System.Linq.Expressions.Compiler
                     case ExpressionType.Index:
                         result = AddressOfWriteBack((IndexExpression)node);
                         break;
+                    default:
+                        break;
                 }
             }
             if (result == null)
@@ -355,7 +360,6 @@ namespace System.Linq.Expressions.Compiler
                 IL.EmitFieldAddress(field);
                 return;
             }
-
 
             EmitMemberGet(member, objectType);
             var temp = GetLocal(GetMemberType(member));
