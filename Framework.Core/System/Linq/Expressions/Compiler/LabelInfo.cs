@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection.Emit;
+using Theraot.Core;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -273,7 +274,7 @@ namespace System.Linq.Expressions.Compiler
 
             // We didn't find an outward jump. Look for a jump across blocks
             var def = _definitions.First();
-            var common = Helpers.CommonNode(def, reference, b => b.Parent);
+            var common = GraphHelper.CommonNode(def, reference, b => b.Parent);
 
             // Assume we can do a ret/branch
             _opCode = CanReturn ? OpCodes.Ret : OpCodes.Br;
