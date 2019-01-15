@@ -44,14 +44,17 @@ namespace System.Linq.Expressions.Compiler
     }
 
     /// <summary>
+    /// <para>
     /// CompilerScope is the data structure which the Compiler keeps information
     /// related to compiling scopes. It stores the following information:
     ///   1. Parent relationship (for resolving variables)
     ///   2. Information about hoisted variables
     ///   3. Information for resolving closures
-    ///
+    /// </para>
+    /// <para>
     /// Instances are produced by VariableBinder, which does a tree walk
     /// looking for scope nodes: LambdaExpression, BlockExpression, and CatchBlock.
+    /// </para>
     /// </summary>
     internal sealed partial class CompilerScope
     {
@@ -75,9 +78,8 @@ namespace System.Linq.Expressions.Compiler
         internal readonly object Node;
 
         /// <summary>
-        /// Scopes whose variables were merged into this one
-        ///
-        /// Created lazily as we create hundreds of compiler scopes w/o merging scopes when compiling rules.
+        /// <para>Scopes whose variables were merged into this one</para>
+        /// <para>Created lazily as we create hundreds of compiler scopes w/o merging scopes when compiling rules.</para>
         /// </summary>
         internal HashSet<BlockExpression> MergedScopes;
 
@@ -152,11 +154,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        /// Called when entering a lambda/block. Performs all variable allocation
-        /// needed, including creating hoisted locals and IL locals for accessing
-        /// parent locals
-        /// </summary>
         internal CompilerScope Enter(LambdaCompiler lc, CompilerScope parent)
         {
             SetParent(lc, parent);
@@ -246,9 +243,6 @@ namespace System.Linq.Expressions.Compiler
 
         #region Variable access
 
-        /// <summary>
-        /// Adds a new virtual variable corresponding to an IL local
-        /// </summary>
         internal void AddLocal(LambdaCompiler gen, ParameterExpression variable)
         {
             _locals.Add(variable, new LocalStorage(gen, variable));
@@ -274,10 +268,6 @@ namespace System.Linq.Expressions.Compiler
             return ResolveVariable(variable, NearestHoistedLocals);
         }
 
-        /// <summary>
-        /// Resolve a local variable in this scope or a closed over scope
-        /// Throws if the variable is not defined
-        /// </summary>
         private Storage ResolveVariable(ParameterExpression variable, HoistedLocals hoistedLocals)
         {
             // Search IL locals and arguments, but only in this lambda
@@ -346,15 +336,7 @@ namespace System.Linq.Expressions.Compiler
                     // Also, for inlined lambdas we'll create a local, which
                     // is possibly a byref local if the parameter is byref.
                     //
-                    Storage s;
-                    if (IsMethod && lc.Parameters.Contains(v))
-                    {
-                        s = new ArgumentStorage(lc, v);
-                    }
-                    else
-                    {
-                        s = new LocalStorage(lc, v);
-                    }
+                    var s = IsMethod && lc.Parameters.Contains(v) ? (Storage)new ArgumentStorage(lc, v) : new LocalStorage(lc, v);
                     _locals.Add(v, s);
                 }
             }
@@ -385,7 +367,6 @@ namespace System.Linq.Expressions.Compiler
                     storage.EmitLoadBox();
                     CacheBoxToLocal(storage.Compiler, refCount.Key);
                 }
-
             }
         }
 
@@ -442,17 +423,20 @@ namespace System.Linq.Expressions.Compiler
                 {
                     // array[i] = new StrongBox<T>(argument);
                     lc.EmitLambdaArgument(index);
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new[] { v.Type }));
                 }
                 else if (v == _hoistedLocals.ParentVariable)
                 {
                     // array[i] = new StrongBox<T>(closure.Locals);
                     ResolveVariable(v, _closureHoistedLocals).EmitLoad();
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new[] { v.Type }));
                 }
                 else
                 {
                     // array[i] = new StrongBox<T>();
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(Type.EmptyTypes));
                 }
                 // if we want to cache this into a local, do it now
