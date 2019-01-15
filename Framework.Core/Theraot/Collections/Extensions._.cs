@@ -536,28 +536,6 @@ namespace Theraot.Collections
             return IsSupersetOf(source, other, false);
         }
 
-        public static bool ListEquals<T>(this IReadOnlyList<T> first, IReadOnlyList<T> second)
-        {
-            if (first == second)
-            {
-                return true;
-            }
-            var count = first.Count;
-            if (count != second.Count)
-            {
-                return false;
-            }
-            var cmp = EqualityComparer<T>.Default;
-            for (var i = 0; i != count; ++i)
-            {
-                if (!cmp.Equals(first[i], second[i]))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
         public static bool ListEquals<T>(this IList<T> first, IList<T> second)
         {
             if (first == second)
@@ -618,6 +596,27 @@ namespace Theraot.Collections
             return false;
         }
 
+        public static bool ReadOnlyListEquals<T>(this IReadOnlyList<T> first, IReadOnlyList<T> second)
+        {
+            if (first == second)
+            {
+                return true;
+            }
+            var count = first.Count;
+            if (count != second.Count)
+            {
+                return false;
+            }
+            var cmp = EqualityComparer<T>.Default;
+            for (var i = 0; i != count; ++i)
+            {
+                if (!cmp.Equals(first[i], second[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
         public static bool Remove<T>(this ICollection<T> source, T item, IEqualityComparer<T> comparer)
         {
             if (source == null)
