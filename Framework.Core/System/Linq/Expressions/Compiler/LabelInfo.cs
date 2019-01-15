@@ -248,19 +248,18 @@ namespace System.Linq.Expressions.Compiler
                     // found it, jump is valid!
                     return;
                 }
-                if (j.Kind == LabelScopeKind.Finally ||
-                    j.Kind == LabelScopeKind.Filter)
+                if (j.Kind == LabelScopeKind.Finally || j.Kind == LabelScopeKind.Filter)
                 {
                     break;
                 }
-                if (j.Kind == LabelScopeKind.Try ||
-                    j.Kind == LabelScopeKind.Catch)
+                if (j.Kind == LabelScopeKind.Try || j.Kind == LabelScopeKind.Catch)
                 {
                     _opCode = OpCodes.Leave;
                 }
             }
 
             _acrossBlockJump = true;
+
             if (_node != null && _node.Type != typeof(void))
             {
                 throw Error.NonLocalJumpWithValue(_node.Name);
@@ -268,7 +267,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (_definitions.Count > 1)
             {
-                throw Error.AmbiguousJump(_node.Name);
+                throw Error.AmbiguousJump(_node?.Name);
             }
 
             // We didn't find an outward jump. Look for a jump across blocks
@@ -289,8 +288,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     throw Error.ControlCannotLeaveFilterTest();
                 }
-                if (j.Kind == LabelScopeKind.Try ||
-                    j.Kind == LabelScopeKind.Catch)
+                if (j.Kind == LabelScopeKind.Try || j.Kind == LabelScopeKind.Catch)
                 {
                     _opCode = OpCodes.Leave;
                 }
@@ -350,21 +348,16 @@ namespace System.Linq.Expressions.Compiler
                     case LabelScopeKind.Switch:
                     case LabelScopeKind.Lambda:
                         return true;
+                    default:
+                        return false;
                 }
-                return false;
             }
         }
 
         internal void AddLabelInfo(LabelTarget target, LabelInfo info)
         {
             Debug.Assert(CanJumpInto);
-
-            if (_labels == null)
-            {
-                _labels = new Dictionary<LabelTarget, LabelInfo>();
-            }
-
-            _labels.Add(target, info);
+            (_labels ?? (_labels = new Dictionary<LabelTarget, LabelInfo>())).Add(target, info);
         }
 
         internal bool ContainsTarget(LabelTarget target)
