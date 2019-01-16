@@ -41,6 +41,8 @@ namespace System.Linq.Expressions.Compiler
                     case MemberBindingType.MemberBinding:
                         var member = (MemberMemberBinding)binding;
                         return new MemberMemberBindingRewriter(member, spiller, stack);
+                    default:
+                        break;
                 }
                 throw Error.UnhandledBinding();
             }
@@ -106,6 +108,8 @@ namespace System.Linq.Expressions.Compiler
                             }
                         }
                         return new MemberListBinding(Binding.Member, ArrayReadOnlyCollection.Create(newInitializer));
+                    default:
+                        break;
                 }
                 throw ContractUtils.Unreachable;
             }
@@ -166,6 +170,8 @@ namespace System.Linq.Expressions.Compiler
 
                     case RewriteAction.Copy:
                         return new MemberAssignment(Binding.Member, _rhs);
+                    default:
+                        break;
                 }
                 throw ContractUtils.Unreachable;
             }
@@ -219,6 +225,8 @@ namespace System.Linq.Expressions.Compiler
                             newBindings[i] = _bindingRewriters[i].AsBinding();
                         }
                         return new MemberMemberBinding(Binding.Member, newBindings);
+                    default:
+                        break;
                 }
                 throw ContractUtils.Unreachable;
             }

@@ -38,33 +38,6 @@ namespace System.Linq.Expressions.Compiler
         }
 
         /// <summary>
-        /// Should the parent nodes be rewritten, and in what way?
-        /// </summary>
-        /// <remarks>
-        /// Designed so bitwise-or produces the correct result when merging two
-        /// subtrees. In particular, SpillStack is preferred over Copy which is
-        /// preferred over None.
-        /// </remarks>
-        [Flags]
-        private enum RewriteAction
-        {
-            /// <summary>
-            /// No rewrite needed.
-            /// </summary>
-            None = 0,
-
-            /// <summary>
-            /// Copy into a new node.
-            /// </summary>
-            Copy = 1,
-
-            /// <summary>
-            /// Spill stack into temps.
-            /// </summary>
-            SpillStack = 3
-        }
-
-        /// <summary>
         /// Indicates whether the evaluation stack is empty.
         /// </summary>
         private enum Stack
@@ -73,12 +46,6 @@ namespace System.Linq.Expressions.Compiler
             NonEmpty
         }
 
-        /// <summary>
-        /// Analyzes a lambda, producing a new one that has correct invariants
-        /// for codegen. In particular, it spills the IL stack to temps in
-        /// places where it's invalid to have a non-empty stack (for example,
-        /// entering a try statement).
-        /// </summary>
         internal static LambdaExpression AnalyzeLambda(LambdaExpression lambda)
         {
             return lambda.Accept(new StackSpiller(Stack.Empty));
@@ -117,41 +84,17 @@ namespace System.Linq.Expressions.Compiler
             // Primitive value types are okay because they are all read-only,
             // but we can't rely on this for non-primitive types. So we have
             // to either throw NotSupported or use ref locals.
-            return instance != null && instance.Type.IsValueType && instance.Type.GetTypeCode() == TypeCode.Object;
+            return instance?.Type.IsValueType == true && instance.Type.GetTypeCode() == TypeCode.Object;
         }
 
-        /// <summary>
-        /// If we are spilling, requires that there are no byref arguments to
-        /// the method call.
-        ///
-        /// Used for:
-        ///   DynamicExpression,
-        ///   UnaryExpression,
-        ///   BinaryExpression.
-        /// </summary>
-        /// <remarks>
-        /// We could support this if spilling happened later in the compiler.
-        /// Other expressions that can emit calls with arguments (such as
-        /// ListInitExpression and IndexExpression) don't allow byref arguments.
-        /// </remarks>
         private static void RequireNoRefArgs(MethodBase method)
         {
-            if (method != null && method.GetParameters().Any(p => p.ParameterType.IsByRef))
+            if (method?.GetParameters().Any(p => p.ParameterType.IsByRef) == true)
             {
                 throw Error.TryNotSupportedForMethodsWithRefArgs(method);
             }
         }
 
-        /// <summary>
-        /// Requires that the instance is not a value type (primitive types are
-        /// okay because they're immutable).
-        ///
-        /// Used for:
-        ///  MemberExpression (for properties).
-        /// </summary>
-        /// <remarks>
-        /// We could support this if spilling happened later in the compiler.
-        /// </remarks>
         private static void RequireNotRefInstance(Expression instance)
         {
             if (IsRefInstance(instance))
@@ -583,8 +526,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (expression.Action != RewriteAction.None)
             {
-                if (expression.Action == RewriteAction.SpillStack &&
-                    node.Member is PropertyInfo)
+                if (expression.Action == RewriteAction.SpillStack && node.Member is PropertyInfo)
                 {
                     // Only need to validate properties because reading a field
                     // is always side-effect free.
@@ -688,14 +630,9 @@ namespace System.Linq.Expressions.Compiler
 
             if (cr.Rewrite)
             {
-                if (node.Object != null)
-                {
-                    expr = new InstanceMethodCallExpressionN(node.Method, cr[0], cr[1, -1]);
-                }
-                else
-                {
-                    expr = new MethodCallExpressionN(node.Method, cr[1, -1]);
-                }
+                expr = node.Object != null
+                    ? (Expression) new InstanceMethodCallExpressionN(node.Method, cr[0], cr[1, -1])
+                    : new MethodCallExpressionN(node.Method, cr[1, -1]);
             }
 
             return cr.Finish(expr);
@@ -1096,11 +1033,6 @@ namespace System.Linq.Expressions.Compiler
 
         #region Cloning
 
-        /// <summary>
-        /// Will clone an IList into an array of the same size, and copy
-        /// all values up to (and NOT including) the max index.
-        /// </summary>
-        /// <returns>The cloned array.</returns>
         private static T[] Clone<T>(T[] original, int max)
         {
             Debug.Assert(original != null);

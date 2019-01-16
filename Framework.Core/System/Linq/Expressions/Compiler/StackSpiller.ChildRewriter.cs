@@ -15,14 +15,17 @@ namespace System.Linq.Expressions.Compiler
     internal partial class StackSpiller
     {
         /// <summary>
+        /// <para>
         /// Rewrites child expressions, spilling them into temps if needed. The
         /// stack starts in the initial state, and after the first subexpression
         /// is added it is changed to non-empty.
-        ///
+        /// </para>
+        /// <para>
         /// When all children have been added, the caller should rewrite the
         /// node if Rewrite is true. Then, it should call Finish with either
         /// the original expression or the rewritten expression. Finish will call
         /// Expression.Block if necessary and return a new Result.
+        /// </para>
         /// </summary>
         private sealed class ChildRewriter
         {
@@ -83,8 +86,8 @@ namespace System.Linq.Expressions.Compiler
 
             /// <summary>
             /// Creates a new child rewriter instance using the specified initial
-            /// evaluation <see cref="stack"/> state and the number of child
-            /// expressions specified in <see cref="count"/>.
+            /// evaluation <paramref name="stack"/> state and the number of child
+            /// expressions specified in <paramref name="count"/>.
             /// </summary>
             /// <param name="self">The parent stack spiller.</param>
             /// <param name="stack">The initial evaluation stack state.</param>
@@ -363,6 +366,8 @@ namespace System.Linq.Expressions.Compiler
                                 return false;
                             }
                         }
+                        break;
+                    default:
                         break;
                 }
 

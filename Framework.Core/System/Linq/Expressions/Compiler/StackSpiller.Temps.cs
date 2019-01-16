@@ -187,14 +187,9 @@ namespace System.Linq.Expressions.Compiler
             /// <param name="temp">The temporary variable to mark as no longer in use.</param>
             private void FreeTemp(ParameterExpression temp)
             {
-                Debug.Assert(_freeTemps == null || !_freeTemps.Contains(temp));
+                Debug.Assert(_freeTemps?.Contains(temp) != true);
 
-                if (_freeTemps == null)
-                {
-                    _freeTemps = new List<ParameterExpression>();
-                }
-
-                _freeTemps.Add(temp);
+                (_freeTemps ?? (_freeTemps = new List<ParameterExpression>())).Add(temp);
             }
 
             /// <summary>
@@ -206,15 +201,10 @@ namespace System.Linq.Expressions.Compiler
             /// <returns>The original temporary variable.</returns>
             private ParameterExpression UseTemp(ParameterExpression temp)
             {
-                Debug.Assert(_freeTemps == null || !_freeTemps.Contains(temp));
-                Debug.Assert(_usedTemps == null || !_usedTemps.Contains(temp));
+                Debug.Assert(_freeTemps?.Contains(temp) != true);
+                Debug.Assert(_usedTemps?.Contains(temp) != true);
 
-                if (_usedTemps == null)
-                {
-                    _usedTemps = new Stack<ParameterExpression>();
-                }
-
-                _usedTemps.Push(temp);
+                (_usedTemps ?? (_usedTemps = new Stack<ParameterExpression>())).Push(temp);
 
                 return temp;
             }
