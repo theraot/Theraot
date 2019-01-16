@@ -171,13 +171,6 @@ namespace System.Linq.Expressions
             throw ContractUtils.Unreachable;
         }
 
-        /// <summary>
-        /// Makes a copy of this node replacing the args with the provided values.  The
-        /// number of the args needs to match the number of the current block.
-        ///
-        /// This helper is provided to allow re-writing of nodes to not depend on the specific optimized
-        /// subclass of DynamicExpression which is being used.
-        /// </summary>
         internal virtual DynamicExpression Rewrite(Expression[] args)
         {
             throw ContractUtils.Unreachable;
@@ -188,9 +181,6 @@ namespace System.Linq.Expressions
             throw ContractUtils.Unreachable;
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             if (visitor is DynamicExpressionVisitor dynVisitor)
@@ -500,7 +490,7 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments != null && arguments.Count == 1)
+            if (arguments?.Count == 1)
             {
                 using (var en = arguments.GetEnumerator())
                 {
@@ -552,7 +542,7 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments != null && arguments.Count == 2)
+            if (arguments?.Count == 2)
             {
                 if (_arg0 is Expression[] alreadyArray)
                 {
@@ -615,7 +605,7 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments != null && arguments.Count == 3)
+            if (arguments?.Count == 3)
             {
                 if (_arg0 is Expression[] alreadyArray)
                 {
@@ -684,7 +674,7 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments != null && arguments.Count == 4)
+            if (arguments?.Count == 4)
             {
                 if (_arg0 is Expression[] alreadyArray)
                 {
@@ -1066,6 +1056,8 @@ namespace System.Linq.Expressions
 
                 case 4:
                     return MakeDynamic(delegateType, binder, argumentList[0], argumentList[1], argumentList[2], argumentList[3]);
+                default:
+                    break;
             }
 
             ContractUtils.RequiresNotNull(delegateType, nameof(delegateType));
