@@ -10,10 +10,11 @@ using System.Dynamic.Utils;
 namespace System.Linq.Expressions
 {
     /// <summary>
-    /// Emits or clears a sequence point for debug information.
-    ///
+    /// <para>Emits or clears a sequence point for debug information.</para>
+    /// <para>
     /// This allows the debugger to highlight the correct source code when
     /// debugging.
+    /// </para>
     /// </summary>
     [DebuggerTypeProxy(typeof(DebugInfoExpressionProxy))]
     public class DebugInfoExpression : Expression
@@ -65,9 +66,6 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type => typeof(void);
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitDebugInfo(this);
