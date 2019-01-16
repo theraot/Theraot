@@ -145,7 +145,7 @@ namespace System.Linq.Expressions
             }
             else if (variable.IsByRef)
             {
-                throw Error.VariableMustNotBeByRef(variable, variable.Type, nameof(variable));
+                throw new ArgumentException(SR.Format(SR.VariableMustNotBeByRef, variable, variable.Type), nameof(variable));
             }
             ExpressionUtils.RequiresCanRead(body, nameof(body));
             if (filter != null)
