@@ -16,7 +16,7 @@ namespace System.Linq.Expressions
     {
         internal static Exception AccessorsCannotHaveByRefArgs(string paramName, int index)
         {
-            return AccessorsCannotHaveByRefArgs(GetParamName(paramName, index));
+            return new ArgumentException(Strings.AccessorsCannotHaveByRefArgs, GetParamName(paramName, index));
         }
 
         internal static Exception AccessorsCannotHaveVarArgs(string paramName)
@@ -56,7 +56,7 @@ namespace System.Linq.Expressions
 
         internal static Exception ArgumentMemberNotDeclOnType(object p0, object p1, string paramName, int index)
         {
-            return ArgumentMemberNotDeclOnType(p0, p1, GetParamName(paramName, index));
+            return new ArgumentException(Strings.ArgumentMemberNotDeclOnType(p0, p1), GetParamName(paramName, index));
         }
 
         internal static Exception ArgumentMustBeArray(string paramName)
@@ -64,14 +64,9 @@ namespace System.Linq.Expressions
             return new ArgumentException(Strings.ArgumentMustBeArray, paramName);
         }
 
-        internal static Exception ArgumentMustBeArrayIndexType(string paramName)
-        {
-            return new ArgumentException(Strings.ArgumentMustBeArrayIndexType, paramName);
-        }
-
         internal static Exception ArgumentMustBeArrayIndexType(string paramName, int index)
         {
-            return ArgumentMustBeArrayIndexType(GetParamName(paramName, index));
+            return new ArgumentException(Strings.ArgumentMustBeArrayIndexType, GetParamName(paramName, index));
         }
 
         internal static Exception ArgumentMustBeBoolean(string paramName)
@@ -86,17 +81,17 @@ namespace System.Linq.Expressions
 
         internal static Exception ArgumentMustBeFieldInfoOrPropertyInfoOrMethod(string paramName, int index)
         {
-            return ArgumentMustBeFieldInfoOrPropertyInfoOrMethod(GetParamName(paramName, index));
+            return new ArgumentException(Strings.ArgumentMustBeFieldInfoOrPropertyInfoOrMethod, GetParamName(paramName, index));
         }
 
         internal static Exception ArgumentMustBeInstanceMember(string paramName, int index)
         {
-            return ArgumentMustBeInstanceMember(GetParamName(paramName, index));
+            return new ArgumentException(Strings.ArgumentMustBeInstanceMember, GetParamName(paramName, index));
         }
 
         internal static Exception ArgumentMustBeInteger(string paramName, int index)
         {
-            return ArgumentMustBeInteger(GetParamName(paramName, index));
+            return new ArgumentException(Strings.ArgumentMustBeInteger, GetParamName(paramName, index));
         }
 
         internal static Exception ArgumentMustBeSingleDimensionalArrayType(string paramName)
@@ -121,7 +116,7 @@ namespace System.Linq.Expressions
 
         internal static Exception ArgumentTypeDoesNotMatchMember(object p0, object p1, string paramName, int index)
         {
-            return ArgumentTypeDoesNotMatchMember(p0, p1, GetParamName(paramName, index));
+            return new ArgumentException(Strings.ArgumentTypeDoesNotMatchMember(p0, p1), GetParamName(paramName, index));
         }
 
         internal static Exception ArgumentTypesMustMatch()
@@ -241,7 +236,7 @@ namespace System.Linq.Expressions
 
         internal static Exception DuplicateVariable(object p0, string paramName, int index)
         {
-            return DuplicateVariable(p0, GetParamName(paramName, index));
+            return new ArgumentException(Strings.DuplicateVariable(p0), GetParamName(paramName, index));
         }
 
         internal static Exception DynamicBinderResultNotAssignable(object p0, object p1, object p2)
@@ -289,14 +284,9 @@ namespace System.Linq.Expressions
             return new ArgumentException(Strings.EqualityMustReturnBoolean(p0), paramName);
         }
 
-        internal static Exception ExpressionMustBeReadable(string paramName)
-        {
-            return new ArgumentException(Strings.ExpressionMustBeReadable, paramName);
-        }
-
         internal static Exception ExpressionMustBeReadable(string paramName, int index)
         {
-            return ExpressionMustBeReadable(GetParamName(paramName, index));
+            return new ArgumentException(Strings.ExpressionMustBeReadable, GetParamName(paramName, index));
         }
 
         internal static Exception ExpressionMustBeWriteable(string paramName)
@@ -314,14 +304,9 @@ namespace System.Linq.Expressions
             return new ArgumentException(Strings.ExpressionTypeDoesNotMatchAssignment(p0, p1));
         }
 
-        internal static Exception ExpressionTypeDoesNotMatchConstructorParameter(object p0, object p1, string paramName)
-        {
-            return new ArgumentException(Strings.ExpressionTypeDoesNotMatchConstructorParameter(p0, p1), paramName);
-        }
-
         internal static Exception ExpressionTypeDoesNotMatchConstructorParameter(object p0, object p1, string paramName, int index)
         {
-            return ExpressionTypeDoesNotMatchConstructorParameter(p0, p1, GetParamName(paramName, index));
+            return new ArgumentException(Strings.ExpressionTypeDoesNotMatchConstructorParameter(p0, p1), GetParamName(paramName, index));
         }
 
         internal static Exception ExpressionTypeDoesNotMatchLabel(object p0, object p1)
@@ -329,24 +314,14 @@ namespace System.Linq.Expressions
             return new ArgumentException(Strings.ExpressionTypeDoesNotMatchLabel(p0, p1));
         }
 
-        internal static Exception ExpressionTypeDoesNotMatchMethodParameter(object p0, object p1, object p2, string paramName)
-        {
-            return new ArgumentException(Strings.ExpressionTypeDoesNotMatchMethodParameter(p0, p1, p2), paramName);
-        }
-
         internal static Exception ExpressionTypeDoesNotMatchMethodParameter(object p0, object p1, object p2, string paramName, int index)
         {
-            return ExpressionTypeDoesNotMatchMethodParameter(p0, p1, p2, GetParamName(paramName, index));
-        }
-
-        internal static Exception ExpressionTypeDoesNotMatchParameter(object p0, object p1, string paramName)
-        {
-            return new ArgumentException(Strings.ExpressionTypeDoesNotMatchParameter(p0, p1), paramName);
+            return new ArgumentException(Strings.ExpressionTypeDoesNotMatchMethodParameter(p0, p1, p2), GetParamName(paramName, index));
         }
 
         internal static Exception ExpressionTypeDoesNotMatchParameter(object p0, object p1, string paramName, int index)
         {
-            return ExpressionTypeDoesNotMatchParameter(p0, p1, GetParamName(paramName, index));
+            return new ArgumentException(Strings.ExpressionTypeDoesNotMatchParameter(p0, p1), GetParamName(paramName, index));
         }
 
         internal static Exception ExpressionTypeDoesNotMatchReturn(object p0, object p1)
@@ -561,7 +536,7 @@ namespace System.Linq.Expressions
 
         internal static Exception MethodNotPropertyAccessor(object p0, object p1, string paramName, int index)
         {
-            return MethodNotPropertyAccessor(p0, p1, GetParamName(paramName, index));
+            return new ArgumentException(Strings.MethodNotPropertyAccessor(p0, p1), GetParamName(paramName, index));
         }
 
         internal static Exception MethodWithArgsDoesNotExistOnType(object p0, object p1)
@@ -629,14 +604,9 @@ namespace System.Linq.Expressions
             return new ArgumentException(Strings.NotAMemberOfAnyType(p0), paramName);
         }
 
-        internal static Exception NotAMemberOfType(object p0, object p1, string paramName)
-        {
-            return new ArgumentException(Strings.NotAMemberOfType(p0, p1), paramName);
-        }
-
         internal static Exception NotAMemberOfType(object p0, object p1, string paramName, int index)
         {
-            return NotAMemberOfType(p0, p1, GetParamName(paramName, index));
+            return new ArgumentException(Strings.NotAMemberOfType(p0, p1), GetParamName(paramName, index));
         }
 
         internal static Exception NotSupported()
@@ -694,14 +664,9 @@ namespace System.Linq.Expressions
             return new ArgumentException(Strings.PropertyDoesNotHaveAccessor(p0), paramName);
         }
 
-        internal static Exception PropertyDoesNotHaveGetter(object p0, string paramName)
-        {
-            return new ArgumentException(Strings.PropertyDoesNotHaveGetter(p0), paramName);
-        }
-
         internal static Exception PropertyDoesNotHaveGetter(object p0, string paramName, int index)
         {
-            return PropertyDoesNotHaveGetter(p0, GetParamName(paramName, index));
+            return new ArgumentException(Strings.PropertyDoesNotHaveGetter(p0), GetParamName(paramName, index));
         }
 
         internal static Exception PropertyDoesNotHaveSetter(object p0, string paramName)
@@ -814,14 +779,9 @@ namespace System.Linq.Expressions
             return TypeContainsGenericParameters(p0, GetParamName(paramName, index));
         }
 
-        internal static Exception TypeIsGeneric(object p0, string paramName)
-        {
-            return new ArgumentException(Strings.TypeIsGeneric(p0), paramName);
-        }
-
         internal static Exception TypeIsGeneric(object p0, string paramName, int index)
         {
-            return TypeIsGeneric(p0, GetParamName(paramName, index));
+            return new ArgumentException(Strings.TypeIsGeneric(p0), GetParamName(paramName, index));
         }
 
         internal static Exception TypeMissingDefaultConstructor(object p0, string paramName)
@@ -914,49 +874,9 @@ namespace System.Linq.Expressions
             return new ArgumentException(Strings.UserDefinedOpMustHaveValidReturnType(p0, p1));
         }
 
-        internal static Exception VariableMustNotBeByRef(object p0, object p1, string paramName)
-        {
-            return new ArgumentException(Strings.VariableMustNotBeByRef(p0, p1), paramName);
-        }
-
         internal static Exception VariableMustNotBeByRef(object p0, object p1, string paramName, int index)
         {
-            return VariableMustNotBeByRef(p0, p1, GetParamName(paramName, index));
-        }
-
-        private static Exception AccessorsCannotHaveByRefArgs(string paramName)
-        {
-            return new ArgumentException(Strings.AccessorsCannotHaveByRefArgs, paramName);
-        }
-
-        private static Exception ArgumentMemberNotDeclOnType(object p0, object p1, string paramName)
-        {
-            return new ArgumentException(Strings.ArgumentMemberNotDeclOnType(p0, p1), paramName);
-        }
-
-        private static Exception ArgumentMustBeFieldInfoOrPropertyInfoOrMethod(string paramName)
-        {
-            return new ArgumentException(Strings.ArgumentMustBeFieldInfoOrPropertyInfoOrMethod, paramName);
-        }
-
-        private static Exception ArgumentMustBeInstanceMember(string paramName)
-        {
-            return new ArgumentException(Strings.ArgumentMustBeInstanceMember, paramName);
-        }
-
-        private static Exception ArgumentMustBeInteger(string paramName)
-        {
-            return new ArgumentException(Strings.ArgumentMustBeInteger, paramName);
-        }
-
-        private static Exception ArgumentTypeDoesNotMatchMember(object p0, object p1, string paramName)
-        {
-            return new ArgumentException(Strings.ArgumentTypeDoesNotMatchMember(p0, p1), paramName);
-        }
-
-        private static Exception DuplicateVariable(object p0, string paramName)
-        {
-            return new ArgumentException(Strings.DuplicateVariable(p0), paramName);
+            return new ArgumentException(Strings.VariableMustNotBeByRef(p0, p1), GetParamName(paramName, index));
         }
 
         private static string GetParamName(string paramName, int index)
@@ -967,11 +887,6 @@ namespace System.Linq.Expressions
             }
 
             return paramName;
-        }
-
-        private static Exception MethodNotPropertyAccessor(object p0, object p1, string paramName)
-        {
-            return new ArgumentException(Strings.MethodNotPropertyAccessor(p0, p1), paramName);
         }
 
         private static Exception TypeContainsGenericParameters(object p0, string paramName)
