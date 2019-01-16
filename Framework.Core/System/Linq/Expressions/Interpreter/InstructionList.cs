@@ -205,9 +205,6 @@ namespace System.Linq.Expressions.Interpreter
             UpdateStackDepth(instruction);
         }
 
-        /// <summary>
-        /// Attaches a cookie to the last emitted instruction.
-        /// </summary>
         [Conditional("DEBUG")]
         public void SetDebugCookie(object cookie)
         {
@@ -275,8 +272,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private void UpdateStackDepth(Instruction instruction)
         {
-            Debug.Assert(instruction.ConsumedStack >= 0 && instruction.ProducedStack >= 0 &&
-                instruction.ConsumedContinuations >= 0 && instruction.ProducedContinuations >= 0, "bad instruction " + instruction);
+            Debug.Assert(instruction.ConsumedStack >= 0 && instruction.ProducedStack >= 0 && instruction.ConsumedContinuations >= 0 && instruction.ProducedContinuations >= 0, "bad instruction " + instruction);
 
             CurrentStackDepth -= instruction.ConsumedStack;
             Debug.Assert(CurrentStackDepth >= 0, "negative stack depth " + instruction);
@@ -365,7 +361,7 @@ namespace System.Linq.Expressions.Interpreter
                 return;
             }
 
-            if (type == null || type.IsValueType)
+            if (type?.IsValueType != false)
             {
                 if (value is bool b)
                 {
@@ -383,7 +379,6 @@ namespace System.Linq.Expressions.Interpreter
                     Emit(_ints[i] ?? (_ints[i] = new LoadObjectInstruction(i)));
                     return;
                 }
-
             }
 
             if (_objects == null)
@@ -931,20 +926,13 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        private Instruction GetLoadField(FieldInfo field)
+        private static Instruction GetLoadField(FieldInfo field)
         {
             lock (_loadFields)
             {
                 if (!_loadFields.TryGetValue(field, out var instruction))
                 {
-                    if (field.IsStatic)
-                    {
-                        instruction = new LoadStaticFieldInstruction(field);
-                    }
-                    else
-                    {
-                        instruction = new LoadFieldInstruction(field);
-                    }
+                    instruction = field.IsStatic ? (Instruction)new LoadStaticFieldInstruction(field) : new LoadFieldInstruction(field);
                     _loadFields.Add(field, instruction);
                 }
                 return instruction;

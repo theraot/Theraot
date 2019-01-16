@@ -16,6 +16,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private DecrementInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 1;

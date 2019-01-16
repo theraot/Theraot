@@ -1,5 +1,10 @@
 #if LESSTHAN_NET35
 
+#pragma warning disable RECS0018 // Comparison of floating point numbers with equality operator
+#pragma warning disable RECS0088 // Comparing equal expression for equality is usually useless
+// ReSharper disable CompareOfFloatsByEqualityOperator
+// ReSharper disable EqualExpressionComparison
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.

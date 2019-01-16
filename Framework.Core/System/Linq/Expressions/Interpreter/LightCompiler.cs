@@ -348,6 +348,8 @@ namespace System.Linq.Expressions.Interpreter
 
                     case ExpressionType.MemberAccess:
                         return ((MemberExpression)node).Member is FieldInfo;
+                    default:
+                        break;
                         // ExpressionType.Unbox does have the behaviour writeback is used to simulate, but
                         // it doesn't need explicit writeback to produce it, so include it in the default
                         // false cases.
@@ -397,9 +399,6 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        /// <summary>
-        /// Emits the address of the specified node.
-        /// </summary>
         private ByRefUpdater CompileAddress(Expression node, int index)
         {
             if (index != -1 || ShouldWritebackNode(node))
@@ -492,9 +491,12 @@ namespace System.Linq.Expressions.Interpreter
                         // get the address of a Get method, and it will fail to do so. Instead, detect
                         // this situation and replace it with a call to the Address method.
                         var call = (MethodCallExpression)node;
-                        if (!call.Method.IsStatic &&
-                            call.Object.Type.IsArray &&
-                            call.Method == call.Object.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance))
+                        if
+                        (
+                            !call.Method.IsStatic
+                            && call.Object.Type.IsArray
+                            && call.Method == call.Object.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance)
+                    )
                         {
                             return CompileMultiDimArrayAccess(
                                 call.Object,
@@ -502,6 +504,8 @@ namespace System.Linq.Expressions.Interpreter
                                 index
                             );
                         }
+                        break;
+                    default:
                         break;
                 }
             }
@@ -1312,7 +1316,7 @@ namespace System.Linq.Expressions.Interpreter
 
             // value:
             Compile(node.Right);
-            LocalDefinition local = default;
+            var local = default(LocalDefinition);
             if (!asVoid)
             {
                 local = _locals.DefineLocal(Expression.Parameter(node.Right.Type), Instructions.Count);
@@ -2908,7 +2912,7 @@ namespace System.Linq.Expressions.Interpreter
             return new Interpreter(lambdaName, _locals, Instructions.ToArray(), debugInfos);
         }
 
-        private bool MaybeMutableValueType(Type type)
+        private static bool MaybeMutableValueType(Type type)
         {
             return type.IsValueType && !type.IsEnum && !type.IsPrimitive;
         }
@@ -2973,8 +2977,7 @@ namespace System.Linq.Expressions.Interpreter
                         {
                             return false;
                         }
-                        if (_labelBlock.Parent.Kind == LabelScopeKind.Switch &&
-                            _labelBlock.Parent.ContainsTarget(label))
+                        if (_labelBlock.Parent.Kind == LabelScopeKind.Switch && _labelBlock.Parent.ContainsTarget(label))
                         {
                             return false;
                         }

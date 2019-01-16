@@ -15,6 +15,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private AndInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 2;
@@ -63,7 +64,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push((bool)left ? null : Utils.BoxedFalse);
                     return 1;
                 }
-                frame.Push((bool)left & (bool)right);
+                frame.Push((bool)left && (bool)right);
                 return 1;
             }
         }

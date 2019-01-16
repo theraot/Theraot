@@ -132,9 +132,6 @@ namespace System.Linq.Expressions.Interpreter
             return Create(info, info.GetParameters());
         }
 
-        /// <summary>
-        /// Creates a new ReflectedCaller which can be used to quickly invoke the provided MethodInfo.
-        /// </summary>
         public static CallInstruction Create(MethodInfo info, ParameterInfo[] parameters)
         {
             var argumentCount = parameters.Length;
@@ -145,7 +142,7 @@ namespace System.Linq.Expressions.Interpreter
 
             // A workaround for CLR behavior (Unable to create delegates for Array.Get/Set):
             // T[]::Address - not supported by ETs due to T& return value
-            if (info.DeclaringType != null && info.DeclaringType.IsArray && (info.Name == "Get" || info.Name == "Set"))
+            if (info.DeclaringType?.IsArray == true && (string.Equals(info.Name, "Get", StringComparison.Ordinal) || string.Equals(info.Name, "Set", StringComparison.Ordinal)))
             {
                 return GetArrayAccessor(info, argumentCount);
             }
@@ -228,10 +225,10 @@ namespace System.Linq.Expressions.Interpreter
         private static CallInstruction GetArrayAccessor(MethodInfo info, int argumentCount)
         {
             var arrayType = info.DeclaringType;
-            var isGetter = info.Name == "Get";
+            var isGetter = string.Equals(info.Name, "Get", StringComparison.Ordinal);
             MethodInfo alternativeMethod = null;
 
-            switch (arrayType.GetArrayRank())
+            switch (arrayType?.GetArrayRank())
             {
                 case 1:
                     alternativeMethod = isGetter ?
@@ -249,6 +246,8 @@ namespace System.Linq.Expressions.Interpreter
                     alternativeMethod = isGetter ?
                         arrayType.GetMethod("GetValue", new[] { typeof(int), typeof(int), typeof(int) }) :
                         typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter3));
+                    break;
+                default:
                     break;
             }
 
@@ -342,11 +341,6 @@ namespace System.Linq.Expressions.Interpreter
 
         #endregion Instruction
 
-        /// <summary>
-        /// If the target of invocation happens to be a delegate
-        /// over enclosed instance lightLambda, return that instance.
-        /// We can interpret LightLambdas directly.
-        /// </summary>
         protected static bool TryGetLightLambdaTarget(object instance, out LightLambda lightLambda)
         {
             if (instance is Delegate del && del.Target is Func<object[], object> thunk)
@@ -357,7 +351,6 @@ namespace System.Linq.Expressions.Interpreter
                     return true;
                 }
             }
-
 
             lightLambda = null;
             return false;

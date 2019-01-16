@@ -15,6 +15,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private LeftShiftInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 2;

@@ -1,5 +1,7 @@
 #if LESSTHAN_NET35
 
+#pragma warning disable CA1305 // Specify IFormatProvider
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -12,6 +14,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             // If the value is null, unbox and cast to throw an InvalidOperationException
             // that the desktop throws.
+            // ReSharper disable once PossibleInvalidOperationException
             return val == null ? (int)(int?)val : Convert.ToInt32(val);
         }
     }
@@ -22,6 +25,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private ArrayLengthInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 1;
@@ -42,6 +46,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private GetArrayItemInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 2;
@@ -60,22 +65,21 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed class NewArrayBoundsInstruction : Instruction
     {
         private readonly Type _elementType;
-        private readonly int _rank;
 
         internal NewArrayBoundsInstruction(Type elementType, int rank)
         {
             _elementType = elementType;
-            _rank = rank;
+            ConsumedStack = rank;
         }
 
-        public override int ConsumedStack => _rank;
+        public override int ConsumedStack { get; }
         public override string InstructionName => "NewArrayBounds";
         public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame)
         {
-            var lengths = new int[_rank];
-            for (var i = _rank - 1; i >= 0; i--)
+            var lengths = new int[ConsumedStack];
+            for (var i = ConsumedStack - 1; i >= 0; i--)
             {
                 var length = ConvertHelper.ToInt32NoNull(frame.Pop());
 
@@ -95,23 +99,22 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class NewArrayInitInstruction : Instruction
     {
-        private readonly int _elementCount;
         private readonly Type _elementType;
 
         internal NewArrayInitInstruction(Type elementType, int elementCount)
         {
             _elementType = elementType;
-            _elementCount = elementCount;
+            ConsumedStack = elementCount;
         }
 
-        public override int ConsumedStack => _elementCount;
+        public override int ConsumedStack { get; }
         public override string InstructionName => "NewArrayInit";
         public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame)
         {
-            var array = Array.CreateInstance(_elementType, _elementCount);
-            for (var i = _elementCount - 1; i >= 0; i--)
+            var array = Array.CreateInstance(_elementType, ConsumedStack);
+            for (var i = ConsumedStack - 1; i >= 0; i--)
             {
                 array.SetValue(frame.Pop(), i);
             }
@@ -150,6 +153,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private SetArrayItemInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 3;

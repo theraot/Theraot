@@ -109,7 +109,7 @@ namespace System.Linq.Expressions
                 var b = bindings[i];
                 ContractUtils.RequiresNotNull(b, nameof(bindings));
                 b.ValidateAsDefinedHere(i);
-                if (!b.Member.DeclaringType.IsAssignableFrom(type))
+                if (b.Member.DeclaringType?.IsAssignableFrom(type) != true)
                 {
                     throw Error.NotAMemberOfType(b.Member.Name, type, nameof(bindings), i);
                 }
@@ -121,7 +121,6 @@ namespace System.Linq.Expressions
     /// Represents initializing members of a member of a newly created object.
     /// </summary>
     /// <remarks>
-    /// Use the <see cref="Expression.MemberBind"/> factory methods to create a <see cref="MemberMemberBinding"/>.
     /// The value of the <see cref="MemberBinding.BindingType"/> property of a <see cref="MemberMemberBinding"/> object is <see cref="MemberBinding"/>.
     /// </remarks>
     public sealed class MemberMemberBinding : MemberBinding
@@ -130,7 +129,9 @@ namespace System.Linq.Expressions
         private readonly ArrayReadOnlyCollection<MemberBinding> _bindingsAsReadOnlyCollection;
 
         internal MemberMemberBinding(MemberInfo member, MemberBinding[] bindings)
+#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
             : base(MemberBindingType.MemberBinding, member)
+#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
         {
             _bindings = bindings;
             _bindingsAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_bindings);
@@ -154,7 +155,6 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
-
 
             return Expression.MemberBind(Member, bindings);
         }

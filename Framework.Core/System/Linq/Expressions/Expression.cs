@@ -477,7 +477,7 @@ comparand: null
             {
                 case ExpressionType.Index:
                     var indexer = ((IndexExpression)expression).Indexer;
-                    if (indexer == null || indexer.CanWrite)
+                    if (indexer?.CanWrite != false)
                     {
                         return;
                     }
@@ -505,6 +505,8 @@ comparand: null
 
                 case ExpressionType.Parameter:
                     return;
+                default:
+                    break;
             }
 
             throw Error.ExpressionMustBeWriteable(paramName);

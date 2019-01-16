@@ -346,7 +346,7 @@ namespace System.Linq.Expressions.Interpreter
                     // In the second path, the continuation mechanism is not involved and frame.InstructionIndex is not updated
 #if DEBUG
                     var isFromJump = frame.IsJumpHappened();
-                    Debug.Assert(!isFromJump || isFromJump && Handler.FinallyStartIndex == frame.InstructionIndex, "we should already jump to the first instruction of the finally");
+                    Debug.Assert(!isFromJump || (isFromJump && Handler.FinallyStartIndex == frame.InstructionIndex), "we should already jump to the first instruction of the finally");
 #endif
                     // run the finally block
                     // we cannot jump out of the finally block, and we cannot have an immediate rethrow in it
@@ -459,6 +459,7 @@ namespace System.Linq.Expressions.Interpreter
     }
 
     /// <summary>
+    /// <para>
     /// This instruction implements a goto expression that can jump out of any expression.
     /// It pops values (arguments) from the evaluation stack that the expression tree nodes in between
     /// the goto expression and the target label node pushed and not consumed yet.
@@ -466,7 +467,8 @@ namespace System.Linq.Expressions.Interpreter
     /// a value and jumps right after the first argument (the carried value will be used as the first argument).
     /// Goto can jump into an arbitrary child of a BlockExpression since the block doesn't accumulate values
     /// on evaluation stack as its child expressions are being evaluated.
-    ///
+    /// </para>
+    /// <para>
     /// Goto needs to execute any finally blocks on the way to the target label.
     /// <example>
     /// {
@@ -478,9 +480,11 @@ namespace System.Linq.Expressions.Interpreter
     /// The jump needs to execute both finally blocks, the first one on stack level 4 the
     /// second one on stack level 2. So, it needs to jump the first finally block, pop 2 items from the stack,
     /// run second finally block and pop another 2 items from the stack and set instruction pointer to label L.
-    ///
+    /// </para>
+    /// <para>
     /// Goto also needs to rethrow ThreadAbortException iff it jumps out of a catch handler and
     /// the current thread is in "abort requested" state.
+    /// </para>
     /// </summary>
     internal sealed class GotoInstruction : IndexedBranchInstruction
     {
@@ -529,36 +533,6 @@ namespace System.Linq.Expressions.Interpreter
                 return _cache[index] ?? (_cache[index] = new GotoInstruction(labelIndex, hasResult, hasValue, labelTargetGetsValue));
             }
             return new GotoInstruction(labelIndex, hasResult, hasValue, labelTargetGetsValue);
-        }
-    }
-
-    internal abstract class IndexedBranchInstruction : Instruction
-    {
-        internal readonly int LabelIndex;
-        protected const int CacheSize = 32;
-
-        protected IndexedBranchInstruction(int labelIndex)
-        {
-            LabelIndex = labelIndex;
-        }
-
-        public RuntimeLabel GetLabel(InterpretedFrame frame)
-        {
-            Debug.Assert(LabelIndex != UnknownInstrIndex);
-            return frame.Interpreter.Labels[LabelIndex];
-        }
-
-        public override string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects)
-        {
-            Debug.Assert(LabelIndex != UnknownInstrIndex);
-            var targetIndex = labelIndexer(LabelIndex);
-            return ToString() + (targetIndex != BranchLabel.UnknownIndex ? " -> " + targetIndex : "");
-        }
-
-        public override string ToString()
-        {
-            Debug.Assert(LabelIndex != UnknownInstrIndex);
-            return InstructionName + "[" + LabelIndex + "]";
         }
     }
 
@@ -749,39 +723,6 @@ namespace System.Linq.Expressions.Interpreter
 
             return _cases.TryGetValue((string)value, out var target) ? target : 1;
         }
-    }
-
-    internal sealed class ThrowInstruction : Instruction
-    {
-        internal static readonly ThrowInstruction Rethrow = new ThrowInstruction(true, true);
-        internal static readonly ThrowInstruction Throw = new ThrowInstruction(true, false);
-        internal static readonly ThrowInstruction VoidRethrow = new ThrowInstruction(false, true);
-        internal static readonly ThrowInstruction VoidThrow = new ThrowInstruction(false, false);
-        private readonly bool _hasResult, _rethrow;
-
-        private ThrowInstruction(bool hasResult, bool isRethrow)
-        {
-            _hasResult = hasResult;
-            _rethrow = isRethrow;
-        }
-
-        public override int ConsumedStack => 1;
-        public override string InstructionName => "Throw";
-        public override int ProducedStack => _hasResult ? 1 : 0;
-
-        public override int Run(InterpretedFrame frame)
-        {
-            var ex = WrapThrownObject(frame.Pop());
-            if (_rethrow)
-            {
-                throw new RethrowException();
-            }
-
-            throw ex;
-        }
-
-        private static Exception WrapThrownObject(object thrown) =>
-            thrown == null ? null : thrown as Exception ?? new /*RuntimeWrappedException(thrown)*/ Exception();
     }
 }
 

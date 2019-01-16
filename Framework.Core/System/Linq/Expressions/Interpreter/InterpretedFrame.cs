@@ -1,5 +1,8 @@
 #if LESSTHAN_NET35
 
+#pragma warning disable CA1822 // Mark members as static
+#pragma warning disable CC0091 // Use static method
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -150,7 +153,7 @@ namespace System.Linq.Expressions.Interpreter
         public static bool IsInterpretedFrame(MethodBase method)
         {
             //ContractUtils.RequiresNotNull(method, nameof(method));
-            return method.DeclaringType == typeof(Interpreter) && method.Name == "Run";
+            return method.DeclaringType == typeof(Interpreter) && string.Equals(method.Name, "Run", StringComparison.Ordinal);
         }
 
         public IEnumerable<InterpretedFrameInfo> GetStackTraceDebugInfo()
@@ -183,9 +186,6 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-#if DEBUG
-#endif
-
         #endregion Stack Trace
 
         #region Continuations
@@ -194,7 +194,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             // TODO: we know this at compile time (except for compiled loop):
             var target = Interpreter.Labels[labelIndex];
-            Debug.Assert(!gotoExceptionHandler || gotoExceptionHandler && _continuationIndex == target.ContinuationStackDepth,
+            Debug.Assert(!gotoExceptionHandler || (gotoExceptionHandler && _continuationIndex == target.ContinuationStackDepth),
                 "When it's time to jump to the exception handler, all previous finally blocks should already be processed");
 
             if (_continuationIndex == target.ContinuationStackDepth)
