@@ -2828,7 +2828,7 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(index, nameof(index));
             if (index.Type != typeof(int))
             {
-                throw new ArgumentException(SR.ArgumentMustBeArrayIndexType, nameof(index));
+                throw new ArgumentException("Argument for array index must be of type Int32", nameof(index));
             }
 
             var arrayType = array.Type;

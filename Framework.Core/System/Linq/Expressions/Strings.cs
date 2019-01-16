@@ -11,16 +11,6 @@ namespace System.Linq.Expressions
     /// </summary>
     internal static class Strings
     {
-
-        /// <summary>
-        /// A string like "More than one method '{0}' on type '{1}' is compatible with the supplied arguments."
-        /// </summary>
-        internal static string MethodWithMoreThanOneMatch(object p0, object p1) => SR.Format(SR.MethodWithMoreThanOneMatch, p0, p1);
-
-        /// <summary>
-        /// A string like "{0} must be greater than or equal to {1}"
-        /// </summary>
-        internal static string OutOfRange(object p0, object p1) => SR.Format(SR.OutOfRange, p0, p1);
     }
 }
 
