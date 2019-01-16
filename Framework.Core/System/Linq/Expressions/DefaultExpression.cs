@@ -33,9 +33,6 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
         public override Type Type { get; }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitDefault(this);
