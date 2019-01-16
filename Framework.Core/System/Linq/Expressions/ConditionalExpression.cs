@@ -88,9 +88,6 @@ namespace System.Linq.Expressions
             return AstUtils.Empty;
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitConditional(this);
@@ -151,12 +148,10 @@ namespace System.Linq.Expressions
                 throw Error.ArgumentMustBeBoolean(nameof(test));
             }
 
-            if (type != typeof(void) && (!type.IsReferenceAssignableFromInternal(ifTrue.Type) ||
-    !type.IsReferenceAssignableFromInternal(ifFalse.Type)))
+            if (type != typeof(void) && (!type.IsReferenceAssignableFromInternal(ifTrue.Type) || !type.IsReferenceAssignableFromInternal(ifFalse.Type)))
             {
                 throw Error.ArgumentTypesMustMatch();
             }
-
 
             return ConditionalExpression.Make(test, ifTrue, ifFalse, type);
         }
