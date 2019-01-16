@@ -66,9 +66,6 @@ namespace System.Linq.Expressions
 
         private int Depth => Base + Delta;
 
-        /// <summary>
-        /// Write out the given AST
-        /// </summary>
         internal static void WriteTo(Expression node, TextWriter writer)
         {
             Debug.Assert(node != null);
@@ -143,7 +140,7 @@ namespace System.Linq.Expressions
             // Output all lambda expression definitions.
             // in the order of their appearances in the tree.
             //
-            while (_lambdas != null && _lambdas.Count > 0)
+            while (_lambdas?.Count > 0)
             {
                 WriteLine();
                 WriteLine();
@@ -202,6 +199,8 @@ namespace System.Linq.Expressions
                 case Flow.NewLine:
                     WriteLine();
                     Write(new string(' ', Depth));
+                    break;
+                default:
                     break;
             }
             Write(s);
@@ -379,8 +378,7 @@ namespace System.Linq.Expressions
                     "'{0}'",
                     value));
             }
-            else if (value is int && node.Type == typeof(int)
-              || value is bool && node.Type == typeof(bool))
+            else if ((value is int && node.Type == typeof(int)) || (value is bool && node.Type == typeof(bool)))
             {
                 Out(value.ToString());
             }
@@ -676,6 +674,8 @@ namespace System.Linq.Expressions
                 case ExpressionType.TypeEqual:
                     Out(Flow.Space, ".TypeEqual", Flow.Space);
                     break;
+                default:
+                    break;
             }
             Out(node.TypeOperand.ToString());
             return node;
@@ -761,6 +761,8 @@ namespace System.Linq.Expressions
                 case ExpressionType.Unbox:
                     Out(".Unbox");
                     break;
+                default:
+                    break;
             }
 
             ParenthesizedVisit(node, node.Operand);
@@ -782,6 +784,8 @@ namespace System.Linq.Expressions
 
                 case ExpressionType.PostIncrementAssign:
                     Out("++");
+                    break;
+                default:
                     break;
             }
             return node;
@@ -859,10 +863,6 @@ namespace System.Linq.Expressions
             return node;
         }
 
-        /// <summary>
-        /// Return true if the input string contains any whitespace character.
-        /// Otherwise false.
-        /// </summary>
         private static bool ContainsWhiteSpace(string name)
         {
             foreach (var c in name)
@@ -1064,6 +1064,8 @@ namespace System.Linq.Expressions
                 case ExpressionType.IsFalse:
                 case ExpressionType.Unbox:
                     return true;
+                default:
+                    break;
             }
 
             var childOpPrecedence = GetOperatorPrecedence(child);
@@ -1109,14 +1111,14 @@ namespace System.Linq.Expressions
                         Debug.Assert(binary != null);
                         // Need to have parenthesis for the right operand.
                         return child == binary.Right;
+                    default:
+                        return true;
                 }
-                return true;
             }
 
             // Special case: negate of a constant needs parentheses, to
             // disambiguate it from a negative constant.
-            if (child != null && child.NodeType == ExpressionType.Constant &&
-                (parent.NodeType == ExpressionType.Negate || parent.NodeType == ExpressionType.NegateChecked))
+            if (child.NodeType == ExpressionType.Constant && (parent.NodeType == ExpressionType.Negate || parent.NodeType == ExpressionType.NegateChecked))
             {
                 return true;
             }
@@ -1210,7 +1212,7 @@ namespace System.Linq.Expressions
 
         private void VisitExpressions<T>(char open, char separator, T[] expressions, Action<T> visit)
         {
-            Out(open.ToString());
+            Out($"{open}");
 
             if (expressions != null)
             {
@@ -1228,9 +1230,11 @@ namespace System.Linq.Expressions
                     }
                     else
                     {
-                        Out(separator.ToString(), Flow.NewLine);
+                        Out($"{separator}", Flow.NewLine);
                     }
+#pragma warning disable CC0031 // Check for null before calling a delegate
                     visit(e);
+#pragma warning restore CC0031 // Check for null before calling a delegate
                 }
                 Dedent();
             }
@@ -1248,7 +1252,7 @@ namespace System.Linq.Expressions
             {
                 NewLine();
             }
-            Out(close.ToString(), Flow.Break);
+            Out($"{close}", Flow.Break);
         }
 
         private void WriteLambda(LambdaExpression lambda)
