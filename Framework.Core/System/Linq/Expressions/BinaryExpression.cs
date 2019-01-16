@@ -52,8 +52,7 @@ namespace System.Linq.Expressions
                 if (Left.Type.IsNullable())
                 {
                     var method = GetMethod();
-                    return method == null ||
-                        !TypeUtils.AreEquivalent(method.GetParameters()[0].ParameterType.GetNonRefTypeInternal(), Left.Type);
+                    return method == null || !TypeUtils.AreEquivalent(method.GetParameters()[0].ParameterType.GetNonRefTypeInternal(), Left.Type);
                 }
                 return false;
             }
@@ -88,12 +87,11 @@ namespace System.Linq.Expressions
                 var method = GetMethod();
                 var kind = NodeType;
 
-                return
-                    (kind == ExpressionType.AndAlso || kind == ExpressionType.OrElse) &&
-                    TypeUtils.AreEquivalent(right, left) &&
-                    left.IsNullable() &&
-                    method != null &&
-                    TypeUtils.AreEquivalent(method.ReturnType, left.GetNonNullable());
+                return (kind == ExpressionType.AndAlso || kind == ExpressionType.OrElse)
+                    && TypeUtils.AreEquivalent(right, left)
+                    && left.IsNullable()
+                    && method != null
+                    && TypeUtils.AreEquivalent(method.ReturnType, left.GetNonNullable());
             }
         }
 
@@ -106,8 +104,10 @@ namespace System.Linq.Expressions
                 var method = GetMethod();
                 var kind = NodeType;
 
-                return (kind == ExpressionType.Equal || kind == ExpressionType.NotEqual) &&
-                    method == null && !left.IsValueType && !right.IsValueType;
+                return (kind == ExpressionType.Equal || kind == ExpressionType.NotEqual)
+                       && method == null
+                       && !left.IsValueType
+                       && !right.IsValueType;
             }
         }
 
@@ -261,9 +261,6 @@ namespace System.Linq.Expressions
             );
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitBinary(this);
@@ -345,8 +342,9 @@ namespace System.Linq.Expressions
                 case ExpressionType.LeftShiftAssign:
                 case ExpressionType.ExclusiveOrAssign:
                     return true;
+                default:
+                    return false;
             }
-            return false;
         }
 
         private Expression ReduceIndex()
@@ -699,10 +697,15 @@ namespace System.Linq.Expressions
                 return new MethodBinaryExpression(binaryType, left, right, method.ReturnType, method);
             }
             // check for lifted call
-            if (left.Type.IsNullable() && right.Type.IsNullable() &&
-                ParameterIsAssignable(pms[0], left.Type.GetNonNullable()) &&
-                ParameterIsAssignable(pms[1], right.Type.GetNonNullable()) &&
-                method.ReturnType.IsValueType && !method.ReturnType.IsNullable())
+            if
+            (
+                left.Type.IsNullable()
+                && right.Type.IsNullable()
+                && ParameterIsAssignable(pms[0], left.Type.GetNonNullable())
+                && ParameterIsAssignable(pms[1], right.Type.GetNonNullable())
+                && method.ReturnType.IsValueType
+                && !method.ReturnType.IsNullable()
+            )
             {
                 if (method.ReturnType != typeof(bool) || liftToNull)
                 {
@@ -748,7 +751,7 @@ namespace System.Linq.Expressions
                 var nnLeftType = left.Type.GetNonNullable();
                 var nnRightType = right.Type.GetNonNullable();
                 method = GetUserDefinedBinaryOperator(binaryType, nnLeftType, nnRightType, name);
-                if (method != null && method.ReturnType.IsValueType && !method.ReturnType.IsNullable())
+                if (method?.ReturnType.IsValueType == true && !method.ReturnType.IsNullable())
                 {
                     if (method.ReturnType != typeof(bool) || liftToNull)
                     {
@@ -796,10 +799,10 @@ namespace System.Linq.Expressions
 
         private static bool IsLiftingConditionalLogicalOperator(Type left, Type right, MethodInfo method, ExpressionType binaryType)
         {
-            return right.IsNullable() &&
-                    left.IsNullable() &&
-                    method == null &&
-                    (binaryType == ExpressionType.AndAlso || binaryType == ExpressionType.OrElse);
+            return right.IsNullable()
+                   && left.IsNullable()
+                   && method == null
+                   && (binaryType == ExpressionType.AndAlso || binaryType == ExpressionType.OrElse);
         }
 
         private static bool IsNullComparison(Expression left, Expression right)
@@ -825,9 +828,7 @@ namespace System.Linq.Expressions
 
         private static bool IsValidLiftedConditionalLogicalOperator(Type left, Type right, ParameterInfo[] pms)
         {
-            return TypeUtils.AreEquivalent(left, right) &&
-                   right.IsNullable() &&
-                   TypeUtils.AreEquivalent(pms[1].ParameterType, right.GetNonNullable());
+            return TypeUtils.AreEquivalent(left, right) && right.IsNullable() && TypeUtils.AreEquivalent(pms[1].ParameterType, right.GetNonNullable());
         }
 
         private static void ValidateMethodInfo(MethodInfo method, string paramName)
@@ -899,8 +900,7 @@ namespace System.Linq.Expressions
             }
             var opTrue = TypeUtils.GetBooleanOperator(declaringType, "op_True");
             var opFalse = TypeUtils.GetBooleanOperator(declaringType, "op_False");
-            if (opTrue == null || opTrue.ReturnType != typeof(bool) ||
-                opFalse == null || opFalse.ReturnType != typeof(bool))
+            if (opTrue == null || opTrue.ReturnType != typeof(bool) || opFalse == null || opFalse.ReturnType != typeof(bool))
             {
                 throw Error.LogicalOperatorMustHaveBooleanOperators(nodeType, method.Name);
             }
@@ -920,7 +920,6 @@ namespace System.Linq.Expressions
             {
                 throw Error.OperandTypesDoNotMatchParameters(nodeType, opTrue.Name);
             }
-
         }
 
         #region Equality Operators
@@ -942,8 +941,8 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <param name="left">An <see cref="Expression"/> to set the <see cref="BinaryExpression.Left"/> property equal to.</param>
         /// <param name="right">An <see cref="Expression"/> to set the <see cref="BinaryExpression.Right"/> property equal to.</param>
-        /// <param name="method">A <see cref="MethodInfo"/> to set the <see cref="BinaryExpression.Method"/> property equal to.</param>
         /// <param name="liftToNull">true to set IsLiftedToNull to true; false to set IsLiftedToNull to false.</param>
+        /// <param name="method">A <see cref="MethodInfo"/> to set the <see cref="BinaryExpression.Method"/> property equal to.</param>
         /// <returns>A <see cref="BinaryExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Equal"/>
         /// and the <see cref="BinaryExpression.Left"/>, <see cref="BinaryExpression.Right"/>, <see cref="BinaryExpression.IsLiftedToNull"/>, and <see cref="BinaryExpression.Method"/> properties set to the specified values.
         /// </returns>
@@ -1032,10 +1031,17 @@ namespace System.Linq.Expressions
         private static BinaryExpression GetEqualityComparisonOperator(ExpressionType binaryType, string opName, Expression left, Expression right, bool liftToNull)
         {
             // known comparison - numeric types, bools, object, enums
-            if (left.Type == right.Type && (left.Type.IsNumeric() ||
-                left.Type == typeof(object) ||
-                left.Type.IsBool() ||
-                left.Type.GetNonNullable().IsEnum))
+            if
+            (
+                left.Type == right.Type
+                &&
+                (
+                    left.Type.IsNumeric()
+                    || left.Type == typeof(object)
+                    || left.Type.IsBool()
+                    || left.Type.GetNonNullable().IsEnum
+                )
+            )
             {
                 if (left.Type.IsNullable() && liftToNull)
                 {
@@ -1083,8 +1089,8 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <param name="left">An <see cref="Expression"/> to set the <see cref="BinaryExpression.Left"/> property equal to.</param>
         /// <param name="right">An <see cref="Expression"/> to set the <see cref="BinaryExpression.Right"/> property equal to.</param>
-        /// <param name="method">A <see cref="MethodInfo"/> to set the <see cref="BinaryExpression.Method"/> property equal to.</param>
         /// <param name="liftToNull">true to set IsLiftedToNull to true; false to set IsLiftedToNull to false.</param>
+        /// <param name="method">A <see cref="MethodInfo"/> to set the <see cref="BinaryExpression.Method"/> property equal to.</param>
         /// <returns>A <see cref="BinaryExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.GreaterThan"/>
         /// and the <see cref="BinaryExpression.Left"/>, <see cref="BinaryExpression.Right"/>, <see cref="BinaryExpression.IsLiftedToNull"/>, and <see cref="BinaryExpression.Method"/> properties set to the specified values.
         /// </returns>
@@ -1124,8 +1130,8 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <param name="left">An <see cref="Expression"/> to set the <see cref="BinaryExpression.Left"/> property equal to.</param>
         /// <param name="right">An <see cref="Expression"/> to set the <see cref="BinaryExpression.Right"/> property equal to.</param>
-        /// <param name="method">A <see cref="MethodInfo"/> to set the <see cref="BinaryExpression.Method"/> property equal to.</param>
         /// <param name="liftToNull">true to set IsLiftedToNull to true; false to set IsLiftedToNull to false.</param>
+        /// <param name="method">A <see cref="MethodInfo"/> to set the <see cref="BinaryExpression.Method"/> property equal to.</param>
         /// <returns>A <see cref="BinaryExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.GreaterThanOrEqual"/>
         /// and the <see cref="BinaryExpression.Left"/>, <see cref="BinaryExpression.Right"/>, <see cref="BinaryExpression.IsLiftedToNull"/>, and <see cref="BinaryExpression.Method"/> properties set to the specified values.
         /// </returns>
@@ -1150,8 +1156,8 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <param name="left">An <see cref="Expression"/> to set the <see cref="BinaryExpression.Left"/> property equal to.</param>
         /// <param name="right">An <see cref="Expression"/> to set the <see cref="BinaryExpression.Right"/> property equal to.</param>
-        /// <param name="method">A <see cref="MethodInfo"/> to set the <see cref="BinaryExpression.Method"/> property equal to.</param>
         /// <param name="liftToNull">true to set IsLiftedToNull to true; false to set IsLiftedToNull to false.</param>
+        /// <param name="method">A <see cref="MethodInfo"/> to set the <see cref="BinaryExpression.Method"/> property equal to.</param>
         /// <returns>A <see cref="BinaryExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.LessThan"/>
         /// and the <see cref="BinaryExpression.Left"/>, <see cref="BinaryExpression.Right"/>, <see cref="BinaryExpression.IsLiftedToNull"/>, and <see cref="BinaryExpression.Method"/> properties set to the specified values.
         /// </returns>
@@ -1183,8 +1189,8 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <param name="left">An <see cref="Expression"/> to set the <see cref="BinaryExpression.Left"/> property equal to.</param>
         /// <param name="right">An <see cref="Expression"/> to set the <see cref="BinaryExpression.Right"/> property equal to.</param>
-        /// <param name="method">A <see cref="MethodInfo"/> to set the <see cref="BinaryExpression.Method"/> property equal to.</param>
         /// <param name="liftToNull">true to set IsLiftedToNull to true; false to set IsLiftedToNull to false.</param>
+        /// <param name="method">A <see cref="MethodInfo"/> to set the <see cref="BinaryExpression.Method"/> property equal to.</param>
         /// <returns>A <see cref="BinaryExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.LessThanOrEqual"/>
         /// and the <see cref="BinaryExpression.Left"/>, <see cref="BinaryExpression.Right"/>, <see cref="BinaryExpression.IsLiftedToNull"/>, and <see cref="BinaryExpression.Method"/> properties set to the specified values.
         /// </returns>
@@ -1389,8 +1395,7 @@ namespace System.Linq.Expressions
             }
             // The parameter of the conversion lambda must either be assignable
             // from the erased or unerased type of the left hand side.
-            if (!ParameterIsAssignable(pms[0], left.Type.GetNonNullable()) &&
-                !ParameterIsAssignable(pms[0], left.Type))
+            if (!ParameterIsAssignable(pms[0], left.Type.GetNonNullable()) && !ParameterIsAssignable(pms[0], left.Type))
             {
                 throw Error.OperandTypesDoNotMatchParameters(ExpressionType.Coalesce, conversion.ToString());
             }
