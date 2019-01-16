@@ -24,6 +24,7 @@ namespace System.Linq.Expressions
     {
         internal BlockExpression()
         {
+            // Empty
         }
 
         /// <summary>
@@ -102,19 +103,6 @@ namespace System.Linq.Expressions
             return Block(Type, variables, expressions);
         }
 
-        /// <summary>
-        /// Helper used for ensuring we only return 1 instance of a ReadOnlyCollection of T.
-        ///
-        /// This is similar to the ReturnReadOnly which only takes a single argument. This version
-        /// supports nodes which hold onto 5 Expressions and puts all of the arguments into the
-        /// ReadOnlyCollection.
-        ///
-        /// Ultimately this means if we create the read-only collection we will be slightly more wasteful as we'll
-        /// have a read-only collection + some fields in the type.  The DLR internally avoids accessing anything
-        /// which would force the read-only collection to be created.
-        ///
-        /// This is used by BlockExpression5 and MethodCallExpression5.
-        /// </summary>
         internal static ReadOnlyCollection<Expression> ReturnReadOnlyExpressions(BlockExpression provider, ref object collection)
         {
             if (collection is Expression tObj)
@@ -146,16 +134,6 @@ namespace System.Linq.Expressions
             return EmptyCollection<ParameterExpression>.Instance;
         }
 
-        /// <summary>
-        /// Makes a copy of this node replacing the parameters/args with the provided values.  The
-        /// shape of the parameters/args needs to match the shape of the current block - in other
-        /// words there should be the same # of parameters and args.
-        ///
-        /// parameters can be null in which case the existing parameters are used.
-        ///
-        /// This helper is provided to allow re-writing of nodes to not depend on the specific optimized
-        /// subclass of BlockExpression which is being used.
-        /// </summary>
         internal virtual BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
         {
             throw ContractUtils.Unreachable;
@@ -169,9 +147,6 @@ namespace System.Linq.Expressions
         internal virtual bool SameVariables(ICollection<ParameterExpression> variables) =>
                     variables == null || variables.Count == 0;
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitBlock(this);
@@ -781,7 +756,7 @@ namespace System.Linq.Expressions
             Debug.Assert(n > 0);
             if (index + n > array.Length)
             {
-                throw new ArgumentException();
+                throw new ArgumentException(string.Empty, nameof(array));
             }
 
             array[index++] = _arg0;
