@@ -154,12 +154,8 @@ namespace System.Linq.Expressions.Compiler
             }
 
             Debug.Assert(referenceScope != null);
-            if (referenceScope.ReferenceCount == null)
-            {
-                referenceScope.ReferenceCount = new Dictionary<ParameterExpression, int>();
-            }
 
-            referenceScope.ReferenceCount.TryGetValue(node, out var count);
+            (referenceScope.ReferenceCount ?? (referenceScope.ReferenceCount = new Dictionary<ParameterExpression, int>())).TryGetValue(node, out var count);
             referenceScope.ReferenceCount[node] = count + 1;
             return node;
         }
@@ -210,15 +206,7 @@ namespace System.Linq.Expressions.Compiler
         // array accesses.
         private ReadOnlyCollection<Expression> MergeScopes(Expression node)
         {
-            ReadOnlyCollection<Expression> body;
-            if (node is LambdaExpression lambda)
-            {
-                body = new ReadOnlyCollection<Expression>(new[] { lambda.Body });
-            }
-            else
-            {
-                body = ((BlockExpression)node).Expressions;
-            }
+            var body = node is LambdaExpression lambda ? new ReadOnlyCollection<Expression>(new[] { lambda.Body }) : ((BlockExpression)node).Expressions;
 
             var currentScope = _scopes.Peek();
 
@@ -241,11 +229,8 @@ namespace System.Linq.Expressions.Compiler
                     }
 
                     // Otherwise, merge it
-                    if (currentScope.MergedScopes == null)
-                    {
-                        currentScope.MergedScopes = new HashSet<BlockExpression>(ReferenceEqualityComparer<BlockExpression>.Instance);
-                    }
-                    currentScope.MergedScopes.Add(block);
+
+                    (currentScope.MergedScopes ?? (currentScope.MergedScopes = new HashSet<BlockExpression>(ReferenceEqualityComparer<BlockExpression>.Instance))).Add(block);
                     foreach (var v in block.Variables)
                     {
                         currentScope.Definitions.Add(v, VariableStorageKind.Local);
