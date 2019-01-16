@@ -50,9 +50,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public object Value { get; }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitConstant(this);
