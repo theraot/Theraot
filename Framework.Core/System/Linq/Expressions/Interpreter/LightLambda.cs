@@ -1,12 +1,13 @@
 #if LESSTHAN_NET35
 
+#pragma warning disable CC0021 // Use nameof
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
 using System.Dynamic.Utils;
-using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -160,7 +161,7 @@ namespace System.Linq.Expressions.Interpreter
 
                     var instructionView = instructionViews[i];
 
-                    sb.AppendFormat(CultureInfo.InvariantCulture, "{0}IP_{1}: {2}", _indent, i.ToString().PadLeft(4, '0'), instructionView.GetValue()).AppendLine();
+                    sb.Append(_indent).Append("IP_").AppendFormat("{0:0000}", i).Append(": ").AppendLine(instructionView.GetValue());
                 }
 
                 EmitExits(sb, instructions.Length);

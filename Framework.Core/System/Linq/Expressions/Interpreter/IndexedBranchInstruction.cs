@@ -1,5 +1,7 @@
 #if LESSTHAN_NET35
 
+#pragma warning disable CC0031 // Check for null before calling a delegate
+
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -24,9 +26,7 @@ namespace System.Linq.Expressions.Interpreter
         public override string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects)
         {
             Debug.Assert(LabelIndex != UnknownInstrIndex);
-#pragma warning disable CC0031 // Check for null before calling a delegate
             var targetIndex = labelIndexer(LabelIndex);
-#pragma warning restore CC0031 // Check for null before calling a delegate
             return ToString() + (targetIndex != BranchLabel.UnknownIndex ? " -> " + targetIndex : "");
         }
 

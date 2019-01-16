@@ -15,6 +15,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private OrInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 2;
@@ -64,7 +65,7 @@ namespace System.Linq.Expressions.Interpreter
                     return 1;
                 }
 
-                frame.Push((bool)left | (bool)right);
+                frame.Push((bool)left || (bool)right);
                 return 1;
             }
         }

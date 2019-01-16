@@ -16,6 +16,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private MulInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 2;

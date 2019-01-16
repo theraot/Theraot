@@ -1,5 +1,7 @@
 #if LESSTHAN_NET35
 
+#pragma warning disable CC0021 // Use nameof
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -100,7 +102,7 @@ namespace System.Linq.Expressions.Interpreter
                     return null;
                 }
                 //return the last one that is smaller
-                i = i - 1;
+                i--;
             }
 
             return debugInfos[i];
@@ -121,7 +123,9 @@ namespace System.Linq.Expressions.Interpreter
             //We allow comparison between int and DebugInfo here
             int IComparer<DebugInfo>.Compare(DebugInfo x, DebugInfo y)
             {
+                // ReSharper disable once PossibleNullReferenceException
                 var d1Index = x.Index;
+                // ReSharper disable once PossibleNullReferenceException
                 var d2Index = y.Index;
                 if (d1Index > d2Index)
                 {
@@ -446,13 +450,11 @@ namespace System.Linq.Expressions.Interpreter
 
                             return new IndexMethodByRefUpdater(objTmp, indexLocals, indexNode.Indexer.GetSetMethod(), index);
                         }
-                        else if (indexNode.ArgumentCount == 1)
-                        {
-                            return CompileArrayIndexAddress(indexNode.Object, indexNode.GetArgument(0), index);
-                        }
                         else
                         {
-                            return CompileMultiDimArrayAccess(indexNode.Object, indexNode, index);
+                            return indexNode.ArgumentCount == 1
+                                ? CompileArrayIndexAddress(indexNode.Object, indexNode.GetArgument(0), index)
+                                : CompileMultiDimArrayAccess(indexNode.Object, indexNode, index);
                         }
                     case ExpressionType.MemberAccess:
                         var member = (MemberExpression)node;
@@ -1027,17 +1029,13 @@ namespace System.Linq.Expressions.Interpreter
                 return;
             }
 
-            if (typeFrom.IsValueType &&
-                typeTo.IsNullable() &&
-                typeTo.GetNonNullable() == typeFrom)
+            if (typeFrom.IsValueType && typeTo.IsNullable() && typeTo.GetNonNullable() == typeFrom)
             {
                 // VT -> vt?, no conversion necessary
                 return;
             }
 
-            if (typeTo.IsValueType &&
-                typeFrom.IsNullable() &&
-                typeFrom.GetNonNullable() == typeTo)
+            if (typeTo.IsValueType && typeFrom.IsNullable() && typeFrom.GetNonNullable() == typeTo)
             {
                 // VT? -> vt, call get_Value
                 Instructions.Emit(NullableMethodCallInstruction.CreateGetValue());
@@ -1159,7 +1157,7 @@ namespace System.Linq.Expressions.Interpreter
 
                 Instructions.EmitStoreLocal(opTemp.Index);
 
-                if (!operandType.IsValueType || operandType.IsNullable() && node.IsLiftedToNull)
+                if (!operandType.IsValueType || (operandType.IsNullable() && node.IsLiftedToNull))
                 {
                     Instructions.EmitLoadLocal(opTemp.Index);
                     Instructions.EmitLoad(null, typeof(object));
@@ -1249,7 +1247,7 @@ namespace System.Linq.Expressions.Interpreter
         private void CompileEqual(Expression left, Expression right, bool liftedToNull)
         {
 #if DEBUG
-            Debug.Assert(IsNullComparison(left, right) || left.Type == right.Type || !left.Type.IsValueType && !right.Type.IsValueType);
+            Debug.Assert(IsNullComparison(left, right) || left.Type == right.Type || (!left.Type.IsValueType && !right.Type.IsValueType));
 #endif
             Compile(left);
             Compile(right);
@@ -1329,6 +1327,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else if (index.ArgumentCount != 1)
             {
+                // ReSharper disable once PossibleNullReferenceException
                 Instructions.EmitCall(index.Object.Type.GetMethod("Set", BindingFlags.Public | BindingFlags.Instance));
             }
             else
@@ -1387,8 +1386,9 @@ namespace System.Linq.Expressions.Interpreter
                 var switchCase = node.Cases[i];
 
                 var caseOffset = Instructions.Count - switchIndex;
-                foreach (ConstantExpression testValue in switchCase.TestValues)
+                foreach (var expression in switchCase.TestValues)
                 {
+                    var testValue = (ConstantExpression) expression;
                     var key = (T)testValue.Value;
                     caseDict.TryAdd(key, caseOffset);
                 }
@@ -1416,6 +1416,7 @@ namespace System.Linq.Expressions.Interpreter
                         node.Expression,
                         compMethod
                     ),
+                    // ReSharper disable once PossibleNullReferenceException
                     compMethod.ReturnType.GetInvokeMethod(),
                     node
                 );
@@ -1687,7 +1688,7 @@ namespace System.Linq.Expressions.Interpreter
                         EmitThisForMethodCall(from);
                     }
 
-                    if (!method.IsStatic && from != null && from.Type.IsNullable())
+                    if (!method.IsStatic && from?.Type.IsNullable() == true)
                     {
                         // reflection doesn't let us call methods on Nullable<T> when the value
                         // is null...  so we get to special case those methods!
@@ -1816,6 +1817,10 @@ namespace System.Linq.Expressions.Interpreter
                         CompileMemberInit(memberMember.Bindings);
                         Instructions.EmitPop();
                         break;
+                    default:
+                        // Should not happen
+                        Debug.Fail(string.Empty);
+                        break;
                 }
             }
         }
@@ -1861,12 +1866,7 @@ namespace System.Linq.Expressions.Interpreter
                     var updater = CompileAddress(arg, i);
                     if (updater != null)
                     {
-                        if (updaters == null)
-                        {
-                            updaters = new List<ByRefUpdater>();
-                        }
-
-                        updaters.Add(updater);
+                        (updaters ?? (updaters = new List<ByRefUpdater>())).Add(updater);
                     }
                 }
                 else
@@ -1875,8 +1875,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            if (!method.IsStatic &&
-                @object.Type.IsNullable())
+            if (!method.IsStatic && @object.Type.IsNullable())
             {
                 // reflection doesn't let us call methods on Nullable<T> when the value
                 // is null...  so we get to special case those methods!
@@ -1981,7 +1980,7 @@ namespace System.Linq.Expressions.Interpreter
 
             if (node.Constructor != null)
             {
-                if (node.Constructor.DeclaringType.IsAbstract)
+                if (node.Constructor.DeclaringType?.IsAbstract != false)
                 {
                     throw Error.NonAbstractConstructorRequired();
                 }
@@ -1998,11 +1997,7 @@ namespace System.Linq.Expressions.Interpreter
                         var updater = CompileAddress(arg, i);
                         if (updater != null)
                         {
-                            if (updaters == null)
-                            {
-                                updaters = new List<ByRefUpdater>();
-                            }
-                            updaters.Add(updater);
+                            (updaters ?? (updaters = new List<ByRefUpdater>())).Add(updater);
                         }
                     }
                     else
@@ -2125,7 +2120,7 @@ namespace System.Linq.Expressions.Interpreter
         private void CompileNotEqual(Expression left, Expression right, bool liftedToNull)
         {
 #if DEBUG
-            Debug.Assert(IsNullComparison(left, right) || left.Type == right.Type || !left.Type.IsValueType && !right.Type.IsValueType);
+            Debug.Assert(IsNullComparison(left, right) || left.Type == right.Type || (!left.Type.IsValueType && !right.Type.IsValueType));
 #endif
             Compile(left);
             Compile(right);
@@ -2248,8 +2243,9 @@ namespace System.Linq.Expressions.Interpreter
                 var switchCase = node.Cases[i];
 
                 var caseOffset = Instructions.Count - switchIndex;
-                foreach (ConstantExpression testValue in switchCase.TestValues)
+                foreach (var expression in switchCase.TestValues)
                 {
+                    var testValue = (ConstantExpression) expression;
                     var key = (string)testValue.Value;
                     if (key == null)
                     {
@@ -2327,6 +2323,8 @@ namespace System.Linq.Expressions.Interpreter
                         case TypeCode.Int64:
                             CompileIntSwitchExpression<object>(node);
                             return;
+                        default:
+                            break;
                     }
                 }
 
@@ -2334,7 +2332,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     // If we have a comparison other than string equality, bail
                     var equality = StringOpEqualityStringString;
-                    if (equality != null && !equality.IsStatic)
+                    if (equality?.IsStatic == false)
                     {
                         equality = null;
                     }
@@ -3191,29 +3189,6 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    /// <summary>
-    /// The re-throw instruction will throw this exception
-    /// </summary>
-    internal sealed class RethrowException : Exception
-    {
-        public RethrowException()
-        {
-            // Empty
-        }
-
-        public RethrowException(string message)
-            : base(message)
-        {
-            // Empty
-        }
-
-        public RethrowException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-            // Empty
-        }
-    }
-
     internal sealed class TryCatchFinallyHandler
     {
         internal readonly int FinallyEndIndex;
@@ -3323,9 +3298,10 @@ namespace System.Linq.Expressions.Interpreter
                     return true;
                 }
             }
-            catch
+            catch (Exception captured)
             {
                 // Silently eating exceptions and returning false matches the CLR behavior.
+                Theraot.No.Op(captured);
             }
 
             frame.StackIndex = stackIndex;

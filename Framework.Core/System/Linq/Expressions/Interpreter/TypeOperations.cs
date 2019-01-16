@@ -1,5 +1,7 @@
 #if LESSTHAN_NET35
 
+#pragma warning disable CC0021 // Use nameof
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -42,94 +44,94 @@ namespace System.Linq.Expressions.Interpreter
                 case TypeCode.UInt16: return _uInt16 ?? (_uInt16 = new CastInstructionT<ushort>());
                 case TypeCode.UInt32: return _uInt32 ?? (_uInt32 = new CastInstructionT<uint>());
                 case TypeCode.UInt64: return _uInt64 ?? (_uInt64 = new CastInstructionT<ulong>());
+                default: return CastInstructionNoT.Create(t);
             }
+        }
+    }
 
-            return CastInstructionNoT.Create(t);
+    internal abstract class CastInstructionNoT : CastInstruction
+    {
+        private readonly Type _t;
+
+        private CastInstructionNoT(Type t)
+        {
+            _t = t;
         }
 
-        private abstract class CastInstructionNoT : CastInstruction
+        public new static CastInstruction Create(Type t)
         {
-            private readonly Type _t;
-
-            private CastInstructionNoT(Type t)
+            if (t.IsValueType && !t.IsNullable())
             {
-                _t = t;
+                return new Value(t);
             }
 
-            public new static CastInstruction Create(Type t)
+            return new Ref(t);
+        }
+
+        public override int Run(InterpretedFrame frame)
+        {
+            var value = frame.Pop();
+            if (value != null)
             {
-                if (t.IsValueType && !t.IsNullable())
+                var valueType = value.GetType();
+
+                if (!valueType.HasReferenceConversionTo(_t) &&  !valueType.HasIdentityPrimitiveOrNullableConversionTo(_t))
                 {
-                    return new Value(t);
+                    throw new InvalidCastException();
                 }
 
-                return new Ref(t);
+                if (!_t.IsAssignableFrom(valueType))
+                {
+                    throw new InvalidCastException();
+                }
+
+                frame.Push(value);
+            }
+            else
+            {
+                ConvertNull(frame);
+            }
+            return 1;
+        }
+
+        protected abstract void ConvertNull(InterpretedFrame frame);
+
+        private sealed class Ref : CastInstructionNoT
+        {
+            public Ref(Type t)
+                : base(t)
+            {
             }
 
-            public override int Run(InterpretedFrame frame)
+            protected override void ConvertNull(InterpretedFrame frame)
             {
-                var value = frame.Pop();
-                if (value != null)
-                {
-                    var valueType = value.GetType();
-
-                    if (!valueType.HasReferenceConversionTo(_t) &&
-                        !valueType.HasIdentityPrimitiveOrNullableConversionTo(_t))
-                    {
-                        throw new InvalidCastException();
-                    }
-
-                    if (!_t.IsAssignableFrom(valueType))
-                    {
-                        throw new InvalidCastException();
-                    }
-
-                    frame.Push(value);
-                }
-                else
-                {
-                    ConvertNull(frame);
-                }
-                return 1;
-            }
-
-            protected abstract void ConvertNull(InterpretedFrame frame);
-
-            private sealed class Ref : CastInstructionNoT
-            {
-                public Ref(Type t)
-                    : base(t)
-                {
-                }
-
-                protected override void ConvertNull(InterpretedFrame frame)
-                {
-                    frame.Push(null);
-                }
-            }
-
-            private sealed class Value : CastInstructionNoT
-            {
-                public Value(Type t)
-                    : base(t)
-                {
-                }
-
-                protected override void ConvertNull(InterpretedFrame frame)
-                {
-                    throw new NullReferenceException();
-                }
+                frame.Push(null);
             }
         }
 
-        private sealed class CastInstructionT<T> : CastInstruction
+        private sealed class Value : CastInstructionNoT
         {
-            public override int Run(InterpretedFrame frame)
+            public Value(Type t)
+                : base(t)
             {
-                var value = frame.Pop();
-                frame.Push((T)value);
-                return 1;
             }
+
+            protected override void ConvertNull(InterpretedFrame frame)
+            {
+#pragma warning disable CA2201 // Do not raise reserved exception types
+                throw new NullReferenceException();
+#pragma warning restore CA2201 // Do not raise reserved exception types
+            }
+        }
+    }
+
+    internal sealed class CastInstructionT<T> : CastInstruction
+    {
+        public override int Run(InterpretedFrame frame)
+        {
+            var value = frame.Pop();
+            frame.Push((T)value);
+            return 1;
         }
     }
 
@@ -284,14 +286,9 @@ namespace System.Linq.Expressions.Interpreter
                 case "Equals": return _equals ?? (_equals = new EqualsClass());
                 case "GetHashCode": return _getHashCode ?? (_getHashCode = new GetHashCodeClass());
                 case "GetValueOrDefault":
-                    if (argCount == 0)
-                    {
-                        return new GetValueOrDefault(mi);
-                    }
-                    else
-                    {
-                        return _getValueOrDefault1 ?? (_getValueOrDefault1 = new GetValueOrDefault1());
-                    }
+                    return argCount == 0
+                        ? new GetValueOrDefault(mi)
+                        : _getValueOrDefault1 ?? (_getValueOrDefault1 = new GetValueOrDefault1());
                 case "ToString": return _toString ?? (_toString = new ToStringClass());
                 default:
                     // System.Nullable doesn't have other instance methods
@@ -345,6 +342,7 @@ namespace System.Linq.Expressions.Interpreter
                 if (frame.Peek() == null)
                 {
                     // Trigger InvalidOperationException with same localized method as if we'd called the Value getter.
+                    // ReSharper disable once PossibleInvalidOperationException
                     return (int)default(int?);
                 }
 

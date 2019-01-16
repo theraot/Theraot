@@ -441,20 +441,18 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class RuntimeVariablesInstruction : Instruction
     {
-        private readonly int _count;
-
         public RuntimeVariablesInstruction(int count)
         {
-            _count = count;
+            ConsumedStack = count;
         }
 
-        public override int ConsumedStack => _count;
+        public override int ConsumedStack { get; }
         public override string InstructionName => "GetRuntimeVariables";
         public override int ProducedStack => 1;
 
         public override int Run(InterpretedFrame frame)
         {
-            var ret = new IStrongBox[_count];
+            var ret = new IStrongBox[ConsumedStack];
             for (var i = ret.Length - 1; i >= 0; i--)
             {
                 ret[i] = (IStrongBox)frame.Pop();

@@ -15,6 +15,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private DupInstruction()
         {
+            // Empty
         }
 
         public override string InstructionName => "Dup";

@@ -16,6 +16,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private ModuloInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 2;

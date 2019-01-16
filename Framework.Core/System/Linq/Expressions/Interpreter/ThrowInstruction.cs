@@ -1,5 +1,7 @@
 #if LESSTHAN_NET35
 
+#pragma warning disable CC0021 // Use nameof
+
 namespace System.Linq.Expressions.Interpreter
 {
     internal sealed class ThrowInstruction : Instruction
@@ -17,7 +19,8 @@ namespace System.Linq.Expressions.Interpreter
         }
 
         public override int ConsumedStack => 1;
-        public override string InstructionName => @"Throw";
+
+        public override string InstructionName => "Throw";
         public override int ProducedStack => _hasResult ? 1 : 0;
 
         public override int Run(InterpretedFrame frame)

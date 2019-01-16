@@ -12,6 +12,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private NullCheckInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 1;

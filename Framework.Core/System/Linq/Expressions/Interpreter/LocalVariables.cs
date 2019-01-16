@@ -99,11 +99,7 @@ namespace System.Linq.Expressions.Interpreter
             if (_variables.TryGetValue(variable, out var existing))
             {
                 newScope = new VariableScope(result, start, existing);
-                if (existing.ChildScopes == null)
-                {
-                    existing.ChildScopes = new List<VariableScope>();
-                }
-                existing.ChildScopes.Add(newScope);
+                (existing.ChildScopes ?? (existing.ChildScopes = new List<VariableScope>())).Add(newScope);
             }
             else
             {
@@ -116,18 +112,13 @@ namespace System.Linq.Expressions.Interpreter
 
         public bool TryGetLocalOrClosure(ParameterExpression var, out LocalVariable local)
         {
+            local = null;
             if (_variables.TryGetValue(var, out var scope))
             {
                 local = scope.Variable;
                 return true;
             }
-            if (ClosureVariables != null && ClosureVariables.TryGetValue(var, out local))
-            {
-                return true;
-            }
-
-            local = null;
-            return false;
+            return ClosureVariables?.TryGetValue(var, out local) == true;
         }
 
         public void UndefineLocal(LocalDefinition definition, int end)

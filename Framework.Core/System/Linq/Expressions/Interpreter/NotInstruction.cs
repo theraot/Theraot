@@ -15,6 +15,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private NotInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 1;
