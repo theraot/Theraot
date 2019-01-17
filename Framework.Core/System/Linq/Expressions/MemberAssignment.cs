@@ -24,7 +24,7 @@ namespace System.Linq.Expressions
             ValidateSettableFieldOrPropertyMember(member, out var memberType);
             if (!memberType.IsAssignableFrom(expression.Type))
             {
-                throw Error.ArgumentTypesMustMatch();
+                throw new ArgumentException("Argument types do not match");
             }
             return new MemberAssignment(member, expression);
         }
@@ -48,7 +48,7 @@ namespace System.Linq.Expressions
             var decType = member.DeclaringType;
             if (decType == null)
             {
-                throw Error.NotAMemberOfAnyType(member, nameof(member));
+                throw new ArgumentException($"'{member}' is not a member of any type", nameof(member));
             }
 
             // Null paramName as there are two paths here with different parameter names at the API
@@ -58,7 +58,7 @@ namespace System.Linq.Expressions
                 case PropertyInfo pi:
                     if (!pi.CanWrite)
                     {
-                        throw Error.PropertyDoesNotHaveSetter(pi, nameof(member));
+                        throw new ArgumentException($"The property '{pi}' has no 'set' accessor", nameof(member));
                     }
 
                     memberType = pi.PropertyType;
@@ -69,7 +69,7 @@ namespace System.Linq.Expressions
                     break;
 
                 default:
-                    throw Error.ArgumentMustBeFieldInfoOrPropertyInfo(nameof(member));
+                    throw new ArgumentException("Argument must be either a FieldInfo or PropertyInfo", nameof(member));
             }
         }
     }

@@ -124,7 +124,7 @@ namespace System.Dynamic
                     || idoMetaObject.Value == null
                     || idoMetaObject.Expression != expression)
                 {
-                    throw Error.InvalidMetaObjectCreated(ido.GetType());
+                    throw new InvalidOperationException($"An IDynamicMetaObjectProvider {ido.GetType()} created an invalid DynamicMetaObject instance.");
                 }
 
                 return idoMetaObject;

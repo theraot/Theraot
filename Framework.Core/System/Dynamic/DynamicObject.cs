@@ -516,7 +516,7 @@ namespace System.Dynamic
                     var variable = args[i] as ParameterExpression;
                     if (variable == null && variable == null)
                     {
-                        throw Error.InvalidArgumentValue(nameof(args));
+                        throw new ArgumentException("Invalid argument value", nameof(args));
                     }
                     if (variable.IsByRef)
                     {
@@ -574,12 +574,7 @@ namespace System.Dynamic
                     Debug.Assert(convert.Method == null);
 
                     // Prepare a good exception message in case the convert will fail
-                    var convertFailed = Strings.DynamicObjectResultNotAssignable(
-                        "{0}",
-                        Value.GetType(),
-                        binder.GetType(),
-                        binder.ReturnType
-                    );
+                    var convertFailed = $"The result type '{{0}}' of the dynamic binding produced by the object with type '{Value.GetType()}' for the binder '{binder.GetType()}' is not compatible with the result type '{binder.ReturnType}' expected by the call site.";
 
                     // If the return type can not be assigned null then just check for type assignability otherwise allow null.
                     var condition = binder.ReturnType.IsValueType && Nullable.GetUnderlyingType(binder.ReturnType) == null ?

@@ -281,7 +281,7 @@ namespace System.Linq.Expressions
             {
                 if (target.Type != typeof(void))
                 {
-                    throw Error.LabelMustBeVoidOrHaveExpression(nameof(target));
+                    throw new ArgumentException("Label type must be System.Void if an expression is not supplied", nameof(target));
                 }
 
                 if (type != null)
@@ -302,7 +302,7 @@ namespace System.Linq.Expressions
             // C# auto-quotes return values, so we'll do that here
             if (expectedType != typeof(void) && !expectedType.IsReferenceAssignableFromInternal(value.Type) && !TryQuote(expectedType, ref value))
             {
-                throw Error.ExpressionTypeDoesNotMatchLabel(value.Type, expectedType);
+                throw new ArgumentException($"Expression of type '{value.Type}' cannot be used for label of type '{expectedType}'");
             }
 
 

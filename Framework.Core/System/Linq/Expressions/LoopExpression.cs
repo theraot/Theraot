@@ -44,7 +44,7 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(body, nameof(body));
             if (@continue != null && @continue.Type != typeof(void))
             {
-                throw Error.LabelTypeMustBeVoid(nameof(@continue));
+                throw new ArgumentException("Type must be System.Void for this label argument", nameof(@continue));
             }
 
             return new LoopExpression(body, @break, @continue);

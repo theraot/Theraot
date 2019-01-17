@@ -259,13 +259,13 @@ namespace System.Linq.Expressions.Compiler
             }
             if (definition == null)
             {
-                throw Error.UndefinedVariable(node.Name, node.Type, CurrentLambdaName);
+                throw new InvalidOperationException($"variable '{node.Name}' of type '{node.Type}' referenced from scope '{CurrentLambdaName}', but it is not defined");
             }
             if (storage == VariableStorageKind.Hoisted)
             {
                 if (node.IsByRef)
                 {
-                    throw Error.CannotCloseOverByRef(node.Name, CurrentLambdaName);
+                    throw new InvalidOperationException($"Cannot close over byref parameter '{node.Name}' referenced in lambda '{CurrentLambdaName}'");
                 }
                 definition.Definitions[node] = VariableStorageKind.Hoisted;
             }

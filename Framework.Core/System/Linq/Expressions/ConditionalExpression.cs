@@ -113,11 +113,11 @@ namespace System.Linq.Expressions
 
             if (test.Type != typeof(bool))
             {
-                throw Error.ArgumentMustBeBoolean(nameof(test));
+                throw new ArgumentException("Argument must be boolean", nameof(test));
             }
             if (!TypeUtils.AreEquivalent(ifTrue.Type, ifFalse.Type))
             {
-                throw Error.ArgumentTypesMustMatch();
+                throw new ArgumentException("Argument types do not match");
             }
 
             return ConditionalExpression.Make(test, ifTrue, ifFalse, ifTrue.Type);
@@ -145,12 +145,12 @@ namespace System.Linq.Expressions
 
             if (test.Type != typeof(bool))
             {
-                throw Error.ArgumentMustBeBoolean(nameof(test));
+                throw new ArgumentException("Argument must be boolean", nameof(test));
             }
 
             if (type != typeof(void) && (!type.IsReferenceAssignableFromInternal(ifTrue.Type) || !type.IsReferenceAssignableFromInternal(ifFalse.Type)))
             {
-                throw Error.ArgumentTypesMustMatch();
+                throw new ArgumentException("Argument types do not match");
             }
 
             return ConditionalExpression.Make(test, ifTrue, ifFalse, type);

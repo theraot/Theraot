@@ -175,7 +175,7 @@ namespace System.Linq.Expressions
             {
                 case 0: return ExpressionUtils.ReturnObject<Expression>(_arg0);
                 case 1: return _arg1;
-                default: throw Error.ArgumentOutOfRange(nameof(index));
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
@@ -240,7 +240,7 @@ namespace System.Linq.Expressions
                 case 0: return ExpressionUtils.ReturnObject<Expression>(_arg0);
                 case 1: return _arg1;
                 case 2: return _arg2;
-                default: throw Error.ArgumentOutOfRange(nameof(index));
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
@@ -311,7 +311,7 @@ namespace System.Linq.Expressions
                 case 1: return _arg1;
                 case 2: return _arg2;
                 case 3: return _arg3;
-                default: throw Error.ArgumentOutOfRange(nameof(index));
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
@@ -388,7 +388,7 @@ namespace System.Linq.Expressions
                 case 2: return _arg2;
                 case 3: return _arg3;
                 case 4: return _arg4;
-                default: throw Error.ArgumentOutOfRange(nameof(index));
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
@@ -504,7 +504,7 @@ namespace System.Linq.Expressions
             switch (index)
             {
                 case 0: return ExpressionUtils.ReturnObject<Expression>(_body);
-                default: throw Error.ArgumentOutOfRange(nameof(index));
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
@@ -749,7 +749,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(array, nameof(array));
             if (index < 0)
             {
-                throw Error.ArgumentOutOfRange(nameof(index));
+                throw new ArgumentOutOfRangeException(nameof(index));
             }
 
             var n = _block.ExpressionCount;
@@ -1004,11 +1004,11 @@ namespace System.Linq.Expressions
                     ContractUtils.RequiresNotNull(v, collectionName, i);
                     if (v.IsByRef)
                     {
-                        throw Error.VariableMustNotBeByRef(v, v.Type, collectionName, i);
+                        throw new ArgumentException($"Variable '{v}' uses unsupported type '{v.Type}'. Reference types are not supported for variables.", i >= 0 ? $"{collectionName}[{i}]" : collectionName);
                     }
                     if (!set.Add(v))
                     {
-                        throw Error.DuplicateVariable(v, collectionName, i);
+                        throw new ArgumentException($"Found duplicate parameter '{v}'. Each ParameterExpression in the list must be a unique object.", i >= 0 ? $"{collectionName}[{i}]" : collectionName);
                     }
                 }
             }
@@ -1024,7 +1024,7 @@ namespace System.Linq.Expressions
                 {
                     if (type != typeof(void))
                     {
-                        throw Error.ArgumentTypesMustMatch();
+                        throw new ArgumentException("Argument types do not match");
                     }
 
                     return new ScopeWithType(variables, expressions, type);
@@ -1032,7 +1032,7 @@ namespace System.Linq.Expressions
                 var last = expressions.Last();
                 if (type != typeof(void) && !type.IsReferenceAssignableFromInternal(last.Type))
                 {
-                    throw Error.ArgumentTypesMustMatch();
+                    throw new ArgumentException("Argument types do not match");
                 }
 
                 if (type != last.Type)
@@ -1063,8 +1063,7 @@ namespace System.Linq.Expressions
                 case 3: return new Block3(expressions[0], expressions[1], expressions[2]);
                 case 4: return new Block4(expressions[0], expressions[1], expressions[2], expressions[3]);
                 case 5: return new Block5(expressions[0], expressions[1], expressions[2], expressions[3], expressions[4]);
-                default:
-                    return new BlockN(expressions);
+                default: return new BlockN(expressions);
             }
         }
     }

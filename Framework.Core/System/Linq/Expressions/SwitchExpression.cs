@@ -93,7 +93,7 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(switchValue, nameof(switchValue));
             if (switchValue.Type == typeof(void))
             {
-                throw Error.ArgumentCannotBeOfTypeVoid(nameof(switchValue));
+                throw new ArgumentException(SR.ArgumentCannotBeOfTypeVoid, nameof(switchValue));
             }
 
             var caseArray = Theraot.Collections.Extensions.AsArray(cases);
@@ -126,7 +126,7 @@ namespace System.Linq.Expressions
                 var pms = comparison.GetParameters();
                 if (pms.Length != 2)
                 {
-                    throw Error.IncorrectNumberOfMethodCallArguments(comparison, nameof(comparison));
+                    throw new ArgumentException($"Incorrect number of arguments supplied for call to method '{comparison}'", nameof(comparison));
                 }
                 // Validate that the switch value's type matches the comparison method's
                 // left hand side parameter type.
@@ -137,7 +137,7 @@ namespace System.Linq.Expressions
                     liftedCall = ParameterIsAssignable(leftParam, switchValue.Type.GetNonNullable());
                     if (!liftedCall)
                     {
-                        throw Error.SwitchValueTypeDoesNotMatchComparisonMethodParameter(switchValue.Type, leftParam.ParameterType);
+                        throw new ArgumentException($"Switch value of type '{switchValue.Type}' cannot be used for the comparison method parameter of type '{leftParam.ParameterType}'");
                     }
                 }
 
@@ -155,13 +155,13 @@ namespace System.Linq.Expressions
                         {
                             if (!rightOperandType.IsNullable())
                             {
-                                throw Error.TestValueTypeDoesNotMatchComparisonMethodParameter(rightOperandType, rightParam.ParameterType);
+                                throw new ArgumentException($"Test value of type '{rightOperandType}' cannot be used for the comparison method parameter of type '{rightParam.ParameterType}'");
                             }
                             rightOperandType = rightOperandType.GetNonNullable();
                         }
                         if (!ParameterIsAssignable(rightParam, rightOperandType))
                         {
-                            throw Error.TestValueTypeDoesNotMatchComparisonMethodParameter(rightOperandType, rightParam.ParameterType);
+                            throw new ArgumentException($"Test value of type '{rightOperandType}' cannot be used for the comparison method parameter of type '{rightParam.ParameterType}'");
                         }
                     }
                 }
@@ -169,7 +169,7 @@ namespace System.Linq.Expressions
                 // if we have a non-boolean user-defined equals, we don't want it.
                 if (comparison.ReturnType != typeof(bool))
                 {
-                    throw Error.EqualityMustReturnBoolean(comparison, nameof(comparison));
+                    throw new ArgumentException($"The user-defined equality method '{comparison}' must return a boolean value.", nameof(comparison));
                 }
             }
             else if (caseArray.Length != 0)
@@ -186,7 +186,7 @@ namespace System.Linq.Expressions
                     {
                         if (!TypeUtils.AreEquivalent(firstTestValue.Type, c.TestValues[i].Type))
                         {
-                            throw Error.AllTestValuesMustHaveSameType(nameof(cases));
+                            throw new ArgumentException("All test values must have the same type.", nameof(cases));
                         }
                     }
                 }
@@ -204,7 +204,7 @@ namespace System.Linq.Expressions
             {
                 if (resultType != typeof(void))
                 {
-                    throw Error.DefaultBodyMustBeSupplied(nameof(defaultBody));
+                    throw new ArgumentException("Default body must be supplied if case bodies are not System.Void.", nameof(defaultBody));
                 }
             }
             else
@@ -225,7 +225,7 @@ namespace System.Linq.Expressions
             {
                 if (resultType != typeof(void) && !resultType.IsReferenceAssignableFromInternal(@case.Type))
                 {
-                    throw Error.ArgumentTypesMustMatch(parameterName);
+                    throw new ArgumentException("Argument types do not match", parameterName);
                 }
 
             }
@@ -233,7 +233,7 @@ namespace System.Linq.Expressions
             {
                 if (resultType != @case.Type)
                 {
-                    throw Error.AllCaseBodiesMustHaveSameType(parameterName);
+                    throw new ArgumentException("All case bodies and the default body must have the same type.", parameterName);
                 }
             }
         }

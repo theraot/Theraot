@@ -596,12 +596,12 @@ namespace System.Dynamic.Utils
             {
                 if (!allowByRef && type.IsByRef)
                 {
-                    throw Error.TypeMustNotBeByRef(paramName);
+                    throw new ArgumentException("type must not be ByRef", paramName);
                 }
 
                 if (!allowPointer && type.IsPointer)
                 {
-                    throw Error.TypeMustNotBePointer(paramName);
+                    throw new ArgumentException("Type must not be a pointer type", paramName);
                 }
             }
         }
@@ -616,8 +616,8 @@ namespace System.Dynamic.Utils
             if (type.ContainsGenericParameters)
             {
                 throw type.IsGenericTypeDefinition
-                    ? Error.TypeIsGeneric(type, paramName, index)
-                    : Error.TypeContainsGenericParameters(type, paramName, index);
+                    ? new ArgumentException($"Type {type} is a generic type definition", index >= 0 ? $"{paramName}[{index}]" : paramName)
+                    : new ArgumentException($"Type {type} contains generic parameters", index >= 0 ? $"{paramName}[{index}]" : paramName);
             }
 
             return true;

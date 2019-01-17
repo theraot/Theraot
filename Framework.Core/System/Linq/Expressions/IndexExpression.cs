@@ -64,13 +64,13 @@ namespace System.Linq.Expressions
             var arrayType = array.Type;
             if (!arrayType.IsArray)
             {
-                throw Error.ArgumentMustBeArray(nameof(array));
+                throw new ArgumentException("Argument must be array", nameof(array));
             }
 
             var indexList = Theraot.Collections.Extensions.AsArray(indexes);
             if (arrayType.GetArrayRank() != indexList.Length)
             {
-                throw Error.IncorrectNumberOfIndexes();
+                throw new ArgumentException("Incorrect number of indexes");
             }
 
             foreach (var e in indexList)
@@ -78,7 +78,7 @@ namespace System.Linq.Expressions
                 ExpressionUtils.RequiresCanRead(e, nameof(indexes));
                 if (e.Type != typeof(int))
                 {
-                    throw Error.ArgumentMustBeArrayIndexType(nameof(indexes));
+                    throw new ArgumentException("Argument for array index must be of type Int32", nameof(indexes));
                 }
             }
 
@@ -124,10 +124,10 @@ namespace System.Linq.Expressions
             {
                 if (arguments == null || arguments.Length == 0)
                 {
-                    throw Error.InstancePropertyWithoutParameterNotDefinedForType(propertyName, type);
+                    throw new ArgumentException($"Instance property '{propertyName}' that takes no argument is not defined for type '{type}'");
                 }
 
-                throw Error.InstancePropertyWithSpecifiedParametersNotDefinedForType(propertyName, GetArgTypesString(arguments), type, nameof(propertyName));
+                throw new ArgumentException($"Instance property '{propertyName}{GetArgTypesString(arguments)}' is not defined for type '{type}'", nameof(propertyName));
             }
             return pi;
         }
@@ -146,7 +146,7 @@ namespace System.Linq.Expressions
                     }
                     else
                     {
-                        throw Error.PropertyWithMoreThanOneMatch(propertyName, type);
+                        throw new InvalidOperationException($"More than one property '{propertyName}' on type '{type}' is compatible with the supplied arguments.");
                     }
                 }
             }
@@ -253,21 +253,21 @@ namespace System.Linq.Expressions
             ValidateMethodInfo(method, nameof(method));
             if ((method.CallingConvention & CallingConventions.VarArgs) != 0)
             {
-                throw Error.AccessorsCannotHaveVarArgs(paramName);
+                throw new ArgumentException("Accessor method should not have VarArgs.", paramName);
             }
 
             if (method.IsStatic)
             {
                 if (instance != null)
                 {
-                    throw Error.OnlyStaticPropertiesHaveNullInstance(nameof(instance));
+                    throw new ArgumentException("Static property requires null instance, non-static property requires non-null instance.", nameof(instance));
                 }
             }
             else
             {
                 if (instance == null)
                 {
-                    throw Error.OnlyStaticPropertiesHaveNullInstance(nameof(instance));
+                    throw new ArgumentException("Static property requires null instance, non-static property requires non-null instance.", nameof(instance));
                 }
 
                 ExpressionUtils.RequiresCanRead(instance, nameof(instance));
@@ -283,7 +283,7 @@ namespace System.Linq.Expressions
             {
                 if (indexes.Length != arguments.Length)
                 {
-                    throw Error.IncorrectNumberOfMethodCallArguments(method, paramName);
+                    throw new ArgumentException($"Incorrect number of arguments supplied for call to method '{method}'", paramName);
                 }
                 Expression[] newArgs = null;
                 for (int i = 0, n = indexes.Length; i < n; i++)
@@ -295,14 +295,14 @@ namespace System.Linq.Expressions
                     var pType = pi.ParameterType;
                     if (pType.IsByRef)
                     {
-                        throw Error.AccessorsCannotHaveByRefArgs(nameof(indexes), i);
+                        throw new ArgumentException("Accessor indexes cannot be passed ByRef.", i >= 0 ? $"{nameof(indexes)}[{i}]" : nameof(indexes));
                     }
 
                     TypeUtils.ValidateType(pType, nameof(indexes), i);
 
                     if (!pType.IsReferenceAssignableFromInternal(arg.Type) && !TryQuote(pType, ref arg))
                     {
-                        throw Error.ExpressionTypeDoesNotMatchMethodParameter(arg.Type, pType, method, nameof(arguments), i);
+                        throw new ArgumentException($"Expression of type '{arg.Type}' cannot be used for parameter of type '{pType}' of method '{method}'", i >= 0 ? $"{nameof(arguments)}[{i}]" : nameof(arguments));
                     }
 
                     if (newArgs == null && arg != arguments[i])
@@ -325,7 +325,7 @@ namespace System.Linq.Expressions
             }
             else if (arguments.Length > 0)
             {
-                throw Error.IncorrectNumberOfMethodCallArguments(method, paramName);
+                throw new ArgumentException($"Incorrect number of arguments supplied for call to method '{method}'", paramName);
             }
         }
 
@@ -344,11 +344,11 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(indexer, paramName);
             if (indexer.PropertyType.IsByRef)
             {
-                throw Error.PropertyCannotHaveRefType(paramName);
+                throw new ArgumentException("Property cannot have a managed pointer type.", paramName);
             }
             if (indexer.PropertyType == typeof(void))
             {
-                throw Error.PropertyTypeCannotBeVoid(paramName);
+                throw new ArgumentException("Property cannot have a void type.", paramName);
             }
 
             ParameterInfo[] getParameters = null;
@@ -357,7 +357,7 @@ namespace System.Linq.Expressions
             {
                 if (getter.ReturnType != indexer.PropertyType)
                 {
-                    throw Error.PropertyTypeMustMatchGetter(paramName);
+                    throw new ArgumentException("Property type must match the value type of getter", paramName);
                 }
 
                 getParameters = getter.GetParameters();
@@ -370,40 +370,40 @@ namespace System.Linq.Expressions
                 var setParameters = setter.GetParameters();
                 if (setParameters.Length == 0)
                 {
-                    throw Error.SetterHasNoParams(paramName);
+                    throw new ArgumentException("Setter must have parameters.", paramName);
                 }
 
                 // valueType is the type of the value passed to the setter (last parameter)
                 var valueType = setParameters[setParameters.Length - 1].ParameterType;
                 if (valueType.IsByRef)
                 {
-                    throw Error.PropertyCannotHaveRefType(paramName);
+                    throw new ArgumentException("Property cannot have a managed pointer type.", paramName);
                 }
                 if (setter.ReturnType != typeof(void))
                 {
-                    throw Error.SetterMustBeVoid(paramName);
+                    throw new ArgumentException("Setter should have void type.", paramName);
                 }
                 if (indexer.PropertyType != valueType)
                 {
-                    throw Error.PropertyTypeMustMatchSetter(paramName);
+                    throw new ArgumentException("Property type must match the value type of setter", paramName);
                 }
 
                 if (getter != null)
                 {
                     if (getter.IsStatic ^ setter.IsStatic)
                     {
-                        throw Error.BothAccessorsMustBeStatic(paramName);
+                        throw new ArgumentException("Both accessors must be static.", paramName);
                     }
                     if (getParameters.Length != setParameters.Length - 1)
                     {
-                        throw Error.IndexesOfSetGetMustMatch(paramName);
+                        throw new ArgumentException("Indexing parameters of getter and setter must match.", paramName);
                     }
 
                     for (var i = 0; i < getParameters.Length; i++)
                     {
                         if (getParameters[i].ParameterType != setParameters[i].ParameterType)
                         {
-                            throw Error.IndexesOfSetGetMustMatch(paramName);
+                            throw new ArgumentException("Indexing parameters of getter and setter must match.", paramName);
                         }
                     }
                 }
@@ -414,7 +414,7 @@ namespace System.Linq.Expressions
             }
             else if (getter == null)
             {
-                throw Error.PropertyDoesNotHaveAccessor(indexer, paramName);
+                throw new ArgumentException($"The property '{indexer}' has no 'get' or 'set' accessors", paramName);
             }
         }
 

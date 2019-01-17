@@ -113,7 +113,7 @@ namespace System.Dynamic
                     index = data.Class.GetValueIndex(name, ignoreCase, this);
                     if (index == AmbiguousMatchFound)
                     {
-                        throw Error.AmbiguousMatchInExpandoObject(name);
+                        throw new AmbiguousMatchException($"More than one key matching '{name}' was found in the ExpandoObject.");
                     }
                 }
                 if (index == NoMatch)
@@ -168,7 +168,7 @@ namespace System.Dynamic
                 index = data.Class.GetValueIndex(name, ignoreCase, this);
                 if (index == AmbiguousMatchFound)
                 {
-                    throw Error.AmbiguousMatchInExpandoObject(name);
+                    throw new AmbiguousMatchException($"More than one key matching '{name}' was found in the ExpandoObject.");
                 }
             }
 
@@ -208,7 +208,7 @@ namespace System.Dynamic
                     index = data.Class.GetValueIndex(name, ignoreCase, this);
                     if (index == AmbiguousMatchFound)
                     {
-                        throw Error.AmbiguousMatchInExpandoObject(name);
+                        throw new AmbiguousMatchException($"More than one key matching '{name}' was found in the ExpandoObject.");
                     }
                     if (index == NoMatch)
                     {
@@ -243,7 +243,7 @@ namespace System.Dynamic
                 }
                 else if (add)
                 {
-                    throw Error.SameKeyExistsInExpando(name);
+                    throw new ArgumentException($"An element with the same key '{name}' already exists in the ExpandoObject.", nameof(name));
                 }
                 data[index] = value;
                 propertyName = data.Class.Keys[index];
@@ -328,7 +328,7 @@ namespace System.Dynamic
                 if (_expando._data.Version != _expandoVersion || _expandoData != _expando._data)
                 {
                     //the underlying expando object has changed
-                    throw Error.CollectionModifiedWhileEnumerating();
+                    throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
                 }
             }
 
@@ -347,12 +347,12 @@ namespace System.Dynamic
 
             public void Add(string item)
             {
-                throw Error.CollectionReadOnly();
+                throw new NotSupportedException("Collection is read-only.");
             }
 
             public void Clear()
             {
-                throw Error.CollectionReadOnly();
+                throw new NotSupportedException("Collection is read-only.");
             }
 
             public bool Contains(string item)
@@ -384,7 +384,7 @@ namespace System.Dynamic
 
             public bool Remove(string item)
             {
-                throw Error.CollectionReadOnly();
+                throw new NotSupportedException("Collection is read-only.");
             }
 
 #endregion ICollection<string> Members
@@ -468,7 +468,7 @@ namespace System.Dynamic
                 if (_expando._data.Version != _expandoVersion || _expandoData != _expando._data)
                 {
                     //the underlying expando object has changed
-                    throw Error.CollectionModifiedWhileEnumerating();
+                    throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
                 }
             }
 
@@ -487,12 +487,12 @@ namespace System.Dynamic
 
             public void Add(object item)
             {
-                throw Error.CollectionReadOnly();
+                throw new NotSupportedException("Collection is read-only.");
             }
 
             public void Clear()
             {
-                throw Error.CollectionReadOnly();
+                throw new NotSupportedException("Collection is read-only.");
             }
 
             public bool Contains(object item)
@@ -535,7 +535,7 @@ namespace System.Dynamic
 
             public bool Remove(object item)
             {
-                throw Error.CollectionReadOnly();
+                throw new NotSupportedException("Collection is read-only.");
             }
 
 #endregion ICollection<string> Members
@@ -612,7 +612,7 @@ namespace System.Dynamic
             {
                 if (!TryGetValueForKey(key, out var value))
                 {
-                    throw Error.KeyDoesNotExistInExpando(key);
+                    throw new KeyNotFoundException($"The specified key '{key}' does not exist in the ExpandoObject.");
                 }
                 return value;
             }
@@ -741,7 +741,7 @@ namespace System.Dynamic
                     // The underlying expando object has changed:
                     // 1) the version of the expando data changed
                     // 2) the data object is changed
-                    throw Error.CollectionModifiedWhileEnumerating();
+                    throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
                 }
                 // Capture the value into a temp so we don't inadvertently
                 // return Uninitialized.

@@ -33,7 +33,7 @@ namespace System.Dynamic.Utils
                     var index = (IndexExpression)expression;
                     if (index.Indexer?.CanRead == false)
                     {
-                        throw Error.ExpressionMustBeReadable(paramName, idx);
+                        throw new ArgumentException("Expression must be readable", idx >= 0 ? $"{paramName}[{idx}]" : paramName);
                     }
                     break;
 
@@ -41,7 +41,7 @@ namespace System.Dynamic.Utils
                     var member = (MemberExpression)expression;
                     if (member.Member is PropertyInfo prop && !prop.CanRead)
                     {
-                        throw Error.ExpressionMustBeReadable(paramName, idx);
+                        throw new ArgumentException("Expression must be readable", idx >= 0 ? $"{paramName}[{idx}]" : paramName);
                     }
 
                     break;
@@ -134,12 +134,12 @@ namespace System.Dynamic.Utils
                 switch (nodeKind)
                 {
                     case ExpressionType.New:
-                        throw Error.IncorrectNumberOfConstructorArguments();
+                        throw new ArgumentException("Incorrect number of arguments for constructor");
                     case ExpressionType.Invoke:
-                        throw Error.IncorrectNumberOfLambdaArguments();
+                        throw new InvalidOperationException("Incorrect number of arguments supplied for lambda invocation");
                     case ExpressionType.Dynamic:
                     case ExpressionType.Call:
-                        throw Error.IncorrectNumberOfMethodCallArguments(method, nameof(method));
+                        throw new ArgumentException($"Incorrect number of arguments supplied for call to method '{method}'", nameof(method));
                     default:
                         throw ContractUtils.Unreachable;
                 }
@@ -150,7 +150,7 @@ namespace System.Dynamic.Utils
         {
             if (((IParameterProvider)lambda).ParameterCount >= ushort.MaxValue)
             {
-                throw Error.InvalidProgram();
+                throw new InvalidProgramException();
             }
         }
 
@@ -203,12 +203,12 @@ namespace System.Dynamic.Utils
                 switch (nodeKind)
                 {
                     case ExpressionType.New:
-                        throw Error.ExpressionTypeDoesNotMatchConstructorParameter(arguments.Type, pType, argumentParamName, index);
+                        throw new ArgumentException($"Expression of type '{arguments.Type}' cannot be used for constructor parameter of type '{pType}'", index >= 0 ? $"{argumentParamName}[{index}]" : argumentParamName);
                     case ExpressionType.Invoke:
-                        throw Error.ExpressionTypeDoesNotMatchParameter(arguments.Type, pType, argumentParamName, index);
+                        throw new ArgumentException($"Expression of type '{arguments.Type}' cannot be used for parameter of type '{pType}'", index >= 0 ? $"{argumentParamName}[{index}]" : argumentParamName);
                     case ExpressionType.Dynamic:
                     case ExpressionType.Call:
-                        throw Error.ExpressionTypeDoesNotMatchMethodParameter(arguments.Type, pType, method, argumentParamName, index);
+                        throw new ArgumentException($"Expression of type '{arguments.Type}' cannot be used for parameter of type '{pType}' of method '{method}'", index >= 0 ? $"{argumentParamName}[{index}]" : argumentParamName);
                     default:
                         throw ContractUtils.Unreachable;
                 }

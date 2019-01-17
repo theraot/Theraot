@@ -26,7 +26,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(type, nameof(type));
             if (type.IsByRef)
             {
-                throw Error.TypeMustNotBeByRef(nameof(type));
+                throw new ArgumentException("type must not be ByRef", nameof(type));
             }
 
             return new TypeBinaryExpression(expression, type, ExpressionType.TypeEqual);
@@ -44,7 +44,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(type, nameof(type));
             if (type.IsByRef)
             {
-                throw Error.TypeMustNotBeByRef(nameof(type));
+                throw new ArgumentException("type must not be ByRef", nameof(type));
             }
 
             return new TypeBinaryExpression(expression, type, ExpressionType.TypeIs);

@@ -64,7 +64,7 @@ namespace System.Dynamic
 
             if (argCount < argNameCol.Count)
             {
-                throw Error.ArgCntMustBeGreaterThanNameCnt();
+                throw new ArgumentException("Argument count must be greater than number of named arguments.");
             }
 
             ContractUtils.RequiresNotNullItems(argNameCol, nameof(argNames));

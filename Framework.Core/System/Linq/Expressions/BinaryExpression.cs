@@ -480,7 +480,7 @@ namespace System.Linq.Expressions
             TypeUtils.ValidateType(right.Type, nameof(right), allowByRef: true, allowPointer: true);
             if (!left.Type.IsReferenceAssignableFromInternal(right.Type))
             {
-                throw Error.ExpressionTypeDoesNotMatchAssignment(right.Type, left.Type);
+                throw new ArgumentException($"Expression of type '{right.Type}' cannot be used for assignment to type '{left.Type}'");
             }
             return new AssignBinaryExpression(left, right);
         }
@@ -646,7 +646,7 @@ namespace System.Linq.Expressions
                     return MultiplyAssignChecked(left, right, method, conversion);
 
                 default:
-                    throw Error.UnhandledBinary(binaryType, nameof(binaryType));
+                    throw new ArgumentException($"Unhandled binary: {binaryType}", nameof(binaryType));
             }
         }
 
@@ -668,7 +668,7 @@ namespace System.Linq.Expressions
                 // return type must be assignable back to the left type
                 if (!left.Type.IsReferenceAssignableFromInternal(b.Type))
                 {
-                    throw Error.UserDefinedOpMustHaveValidReturnType(binaryType, b.Method.Name);
+                    throw new ArgumentException($"The user-defined operator method '{b.Method.Name}' for operator '{binaryType}' must return the same type as its parameter or a derived type.");
                 }
             }
             else
@@ -687,7 +687,7 @@ namespace System.Linq.Expressions
             var pms = method.GetParameters();
             if (pms.Length != 2)
             {
-                throw Error.IncorrectNumberOfMethodCallArguments(method, nameof(method));
+                throw new ArgumentException($"Incorrect number of arguments supplied for call to method '{method}'", nameof(method));
             }
 
             if (ParameterIsAssignable(pms[0], left.Type) && ParameterIsAssignable(pms[1], right.Type))
@@ -714,7 +714,7 @@ namespace System.Linq.Expressions
 
                 return new MethodBinaryExpression(binaryType, left, right, typeof(bool), method);
             }
-            throw Error.OperandTypesDoNotMatchParameters(binaryType, method.Name);
+            throw new InvalidOperationException($"The operands for operator '{binaryType}' do not match the parameters of method '{method.Name}'.");
         }
 
         private static BinaryExpression GetUserDefinedAssignOperatorOrThrow(ExpressionType binaryType, string name, Expression left, Expression right, LambdaExpression conversion, bool liftToNull)
@@ -725,7 +725,7 @@ namespace System.Linq.Expressions
                 // return type must be assignable back to the left type
                 if (!left.Type.IsReferenceAssignableFromInternal(b.Type))
                 {
-                    throw Error.UserDefinedOpMustHaveValidReturnType(binaryType, b.Method.Name);
+                    throw new ArgumentException($"The user-defined operator method '{b.Method.Name}' for operator '{binaryType}' must return the same type as its parameter or a derived type.");
                 }
             }
             else
@@ -794,7 +794,7 @@ namespace System.Linq.Expressions
                 ValidateParamsWithOperandsOrThrow(pis[1].ParameterType, right.Type, binaryType, name);
                 return b;
             }
-            throw Error.BinaryOperatorNotDefined(binaryType, left.Type, right.Type);
+            throw new InvalidOperationException($"The binary operator {binaryType} is not defined for the types '{left.Type}' and '{right.Type}'.");
         }
 
         private static bool IsLiftingConditionalLogicalOperator(Type left, Type right, MethodInfo method, ExpressionType binaryType)
@@ -835,7 +835,9 @@ namespace System.Linq.Expressions
         {
             if (method.ContainsGenericParameters)
             {
-                throw method.IsGenericMethodDefinition ? Error.MethodIsGeneric(method, paramName) : Error.MethodContainsGenericParameters(method, paramName);
+                throw method.IsGenericMethodDefinition
+                    ? new ArgumentException($"Method {method} is a generic method definition", paramName)
+                    : new ArgumentException($"Method {method} contains generic parameters", paramName);
             }
         }
 
@@ -845,12 +847,12 @@ namespace System.Linq.Expressions
             ValidateMethodInfo(method, nameof(method));
             if (!method.IsStatic)
             {
-                throw Error.UserDefinedOperatorMustBeStatic(method, nameof(method));
+                throw new ArgumentException($"User-defined operator method '{method}' must be static.", nameof(method));
             }
 
             if (method.ReturnType == typeof(void))
             {
-                throw Error.UserDefinedOperatorMustNotBeVoid(method, nameof(method));
+                throw new ArgumentException($"User-defined operator method '{method}' must not be void.", nameof(method));
             }
         }
 
@@ -858,7 +860,7 @@ namespace System.Linq.Expressions
         {
             if (paramType.IsNullable() && !operandType.IsNullable())
             {
-                throw Error.OperandTypesDoNotMatchParameters(exprType, name);
+                throw new InvalidOperationException($"The operands for operator '{exprType}' do not match the parameters of method '{name}'.");
             }
         }
 
@@ -868,26 +870,26 @@ namespace System.Linq.Expressions
             var pms = method.GetParameters();
             if (pms.Length != 2)
             {
-                throw Error.IncorrectNumberOfMethodCallArguments(method, nameof(method));
+                throw new ArgumentException($"Incorrect number of arguments supplied for call to method '{method}'", nameof(method));
             }
 
             if (!ParameterIsAssignable(pms[0], left) && !(left.IsNullable() && ParameterIsAssignable(pms[0], left.GetNonNullable())))
             {
-                throw Error.OperandTypesDoNotMatchParameters(nodeType, method.Name);
+                throw new InvalidOperationException($"The operands for operator '{nodeType}' do not match the parameters of method '{method.Name}'.");
             }
 
             if (!ParameterIsAssignable(pms[1], right) && !(right.IsNullable() && ParameterIsAssignable(pms[1], right.GetNonNullable())))
             {
-                throw Error.OperandTypesDoNotMatchParameters(nodeType, method.Name);
+                throw new InvalidOperationException($"The operands for operator '{nodeType}' do not match the parameters of method '{method.Name}'.");
             }
 
             if (pms[0].ParameterType != pms[1].ParameterType)
             {
-                throw Error.UserDefinedOpMustHaveConsistentTypes(nodeType, method.Name);
+                throw new ArgumentException($"The user-defined operator method '{method.Name}' for operator '{nodeType}' must have identical parameter and return types.");
             }
             if (method.ReturnType != pms[0].ParameterType)
             {
-                throw Error.UserDefinedOpMustHaveConsistentTypes(nodeType, method.Name);
+                throw new ArgumentException($"The user-defined operator method '{method.Name}' for operator '{nodeType}' must have identical parameter and return types.");
             }
             if (IsValidLiftedConditionalLogicalOperator(left, right, pms))
             {
@@ -896,13 +898,13 @@ namespace System.Linq.Expressions
             var declaringType = method.DeclaringType;
             if (declaringType == null)
             {
-                throw Error.LogicalOperatorMustHaveBooleanOperators(nodeType, method.Name);
+                throw new ArgumentException($"The user-defined operator method '{method.Name}' for operator '{nodeType}' must have associated boolean True and False operators.");
             }
             var opTrue = TypeUtils.GetBooleanOperator(declaringType, "op_True");
             var opFalse = TypeUtils.GetBooleanOperator(declaringType, "op_False");
             if (opTrue == null || opTrue.ReturnType != typeof(bool) || opFalse == null || opFalse.ReturnType != typeof(bool))
             {
-                throw Error.LogicalOperatorMustHaveBooleanOperators(nodeType, method.Name);
+                throw new ArgumentException($"The user-defined operator method '{method.Name}' for operator '{nodeType}' must have associated boolean True and False operators.");
             }
             VerifyOpTrueFalse(nodeType, left, opFalse, nameof(method));
             VerifyOpTrueFalse(nodeType, left, opTrue, nameof(method));
@@ -913,12 +915,12 @@ namespace System.Linq.Expressions
             var pmsOpTrue = opTrue.GetParameters();
             if (pmsOpTrue.Length != 1)
             {
-                throw Error.IncorrectNumberOfMethodCallArguments(opTrue, paramName);
+                throw new ArgumentException($"Incorrect number of arguments supplied for call to method '{opTrue}'", paramName);
             }
 
             if (!ParameterIsAssignable(pmsOpTrue[0], left) && !(left.IsNullable() && ParameterIsAssignable(pmsOpTrue[0], left.GetNonNullable())))
             {
-                throw Error.OperandTypesDoNotMatchParameters(nodeType, opTrue.Name);
+                throw new InvalidOperationException($"The operands for operator '{nodeType}' do not match the parameters of method '{opTrue.Name}'.");
             }
         }
 
@@ -1006,7 +1008,7 @@ namespace System.Linq.Expressions
             {
                 return new LogicalBinaryExpression(ExpressionType.Equal, left, right);
             }
-            throw Error.ReferenceEqualityNotDefined(left.Type, right.Type);
+            throw new InvalidOperationException($"Reference equality is not defined for the types '{left.Type}' and '{right.Type}'.");
         }
 
         /// <summary>
@@ -1025,7 +1027,7 @@ namespace System.Linq.Expressions
             {
                 return new LogicalBinaryExpression(ExpressionType.NotEqual, left, right);
             }
-            throw Error.ReferenceEqualityNotDefined(left.Type, right.Type);
+            throw new InvalidOperationException($"Reference equality is not defined for the types '{left.Type}' and '{right.Type}'.");
         }
 
         private static BinaryExpression GetEqualityComparisonOperator(ExpressionType binaryType, string opName, Expression left, Expression right, bool liftToNull)
@@ -1065,7 +1067,7 @@ namespace System.Linq.Expressions
 
                 return new LogicalBinaryExpression(binaryType, left, right);
             }
-            throw Error.BinaryOperatorNotDefined(binaryType, left.Type, right.Type);
+            throw new InvalidOperationException($"The binary operator {binaryType} is not defined for the types '{left.Type}' and '{right.Type}'.");
         }
 
         #endregion Equality Operators
@@ -1270,7 +1272,7 @@ namespace System.Linq.Expressions
                     returnType = left.Type.IsNullable() && TypeUtils.AreEquivalent(method.ReturnType, left.Type.GetNonNullable()) ? left.Type : method.ReturnType;
                     return new MethodBinaryExpression(ExpressionType.AndAlso, left, right, returnType, method);
                 }
-                throw Error.BinaryOperatorNotDefined(ExpressionType.AndAlso, left.Type, right.Type);
+                throw new InvalidOperationException($"The binary operator {ExpressionType.AndAlso} is not defined for the types '{left.Type}' and '{right.Type}'.");
             }
             ValidateUserDefinedConditionalLogicOperator(ExpressionType.AndAlso, left.Type, right.Type, method);
             returnType = left.Type.IsNullable() && TypeUtils.AreEquivalent(method.ReturnType, left.Type.GetNonNullable()) ? left.Type : method.ReturnType;
@@ -1324,7 +1326,7 @@ namespace System.Linq.Expressions
                     returnType = left.Type.IsNullable() && method.ReturnType == left.Type.GetNonNullable() ? left.Type : method.ReturnType;
                     return new MethodBinaryExpression(ExpressionType.OrElse, left, right, returnType, method);
                 }
-                throw Error.BinaryOperatorNotDefined(ExpressionType.OrElse, left.Type, right.Type);
+                throw new InvalidOperationException($"The binary operator {ExpressionType.OrElse} is not defined for the types '{left.Type}' and '{right.Type}'.");
             }
             ValidateUserDefinedConditionalLogicOperator(ExpressionType.OrElse, left.Type, right.Type, method);
             returnType = left.Type.IsNullable() && method.ReturnType == left.Type.GetNonNullable() ? left.Type : method.ReturnType;
@@ -1369,7 +1371,7 @@ namespace System.Linq.Expressions
 
             if (left.Type.IsValueType && !left.Type.IsNullable())
             {
-                throw Error.CoalesceUsedOnNonNullType();
+                throw new InvalidOperationException("Coalesce used with type that cannot be null");
             }
 
             var delegateType = conversion.Type;
@@ -1377,13 +1379,13 @@ namespace System.Linq.Expressions
             var method = delegateType.GetInvokeMethod();
             if (method.ReturnType == typeof(void))
             {
-                throw Error.UserDefinedOperatorMustNotBeVoid(conversion, nameof(conversion));
+                throw new ArgumentException($"User-defined operator method '{conversion}' must not be void.", nameof(conversion));
             }
             var pms = method.GetParameters();
             Debug.Assert(pms.Length == conversion.ParameterCount);
             if (pms.Length != 1)
             {
-                throw Error.IncorrectNumberOfMethodCallArguments(conversion, nameof(conversion));
+                throw new ArgumentException($"Incorrect number of arguments supplied for call to method '{conversion}'", nameof(conversion));
             }
             // The return type must match exactly.
             // We could weaken this restriction and
@@ -1391,13 +1393,13 @@ namespace System.Linq.Expressions
             // the return type of the lambda.
             if (!TypeUtils.AreEquivalent(method.ReturnType, right.Type))
             {
-                throw Error.OperandTypesDoNotMatchParameters(ExpressionType.Coalesce, conversion.ToString());
+                throw new InvalidOperationException($"The operands for operator '{ExpressionType.Coalesce}' do not match the parameters of method '{conversion}'.");
             }
             // The parameter of the conversion lambda must either be assignable
             // from the erased or unerased type of the left hand side.
             if (!ParameterIsAssignable(pms[0], left.Type.GetNonNullable()) && !ParameterIsAssignable(pms[0], left.Type))
             {
-                throw Error.OperandTypesDoNotMatchParameters(ExpressionType.Coalesce, conversion.ToString());
+                throw new InvalidOperationException($"The operands for operator '{ExpressionType.Coalesce}' do not match the parameters of method '{conversion}'.");
             }
             return new CoalesceConversionBinaryExpression(left, right, conversion);
         }
@@ -1407,7 +1409,7 @@ namespace System.Linq.Expressions
             var leftStripped = left.GetNonNullable();
             if (left.IsValueType && !left.IsNullable())
             {
-                throw Error.CoalesceUsedOnNonNullType();
+                throw new InvalidOperationException("Coalesce used with type that cannot be null");
             }
 
             if (left.IsNullable() && right.IsImplicitlyConvertibleToInternal(leftStripped))
@@ -1425,7 +1427,7 @@ namespace System.Linq.Expressions
                 return right;
             }
 
-            throw Error.ArgumentTypesMustMatch();
+            throw new ArgumentException("Argument types do not match");
         }
 
         #endregion Coalescing Expressions
@@ -1517,7 +1519,7 @@ namespace System.Linq.Expressions
                     // conversion is not supported for binary ops on arithmetic types without operator overloading
                     if (conversion != null)
                     {
-                        throw Error.ConversionIsNotSupportedForArithmeticTypes();
+                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
                     }
                     return new SimpleBinaryExpression(ExpressionType.AddAssign, left, right, left.Type);
                 }
@@ -1578,7 +1580,7 @@ namespace System.Linq.Expressions
                     // conversion is not supported for binary ops on arithmetic types without operator overloading
                     if (conversion != null)
                     {
-                        throw Error.ConversionIsNotSupportedForArithmeticTypes();
+                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
                     }
                     return new SimpleBinaryExpression(ExpressionType.AddAssignChecked, left, right, left.Type);
                 }
@@ -1708,7 +1710,7 @@ namespace System.Linq.Expressions
                     // conversion is not supported for binary ops on arithmetic types without operator overloading
                     if (conversion != null)
                     {
-                        throw Error.ConversionIsNotSupportedForArithmeticTypes();
+                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
                     }
                     return new SimpleBinaryExpression(ExpressionType.AndAssign, left, right, left.Type);
                 }
@@ -1802,7 +1804,7 @@ namespace System.Linq.Expressions
                     // conversion is not supported for binary ops on arithmetic types without operator overloading
                     if (conversion != null)
                     {
-                        throw Error.ConversionIsNotSupportedForArithmeticTypes();
+                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
                     }
                     return new SimpleBinaryExpression(ExpressionType.DivideAssign, left, right, left.Type);
                 }
@@ -1896,7 +1898,7 @@ namespace System.Linq.Expressions
                     // conversion is not supported for binary ops on arithmetic types without operator overloading
                     if (conversion != null)
                     {
-                        throw Error.ConversionIsNotSupportedForArithmeticTypes();
+                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
                     }
                     return new SimpleBinaryExpression(ExpressionType.ExclusiveOrAssign, left, right, left.Type);
                 }
@@ -1991,7 +1993,7 @@ namespace System.Linq.Expressions
                     // conversion is not supported for binary ops on arithmetic types without operator overloading
                     if (conversion != null)
                     {
-                        throw Error.ConversionIsNotSupportedForArithmeticTypes();
+                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
                     }
                     var resultType = GetResultTypeOfShift(left.Type, right.Type);
                     return new SimpleBinaryExpression(ExpressionType.LeftShiftAssign, left, right, resultType);
@@ -2086,7 +2088,7 @@ namespace System.Linq.Expressions
                     // conversion is not supported for binary ops on arithmetic types without operator overloading
                     if (conversion != null)
                     {
-                        throw Error.ConversionIsNotSupportedForArithmeticTypes();
+                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
                     }
                     return new SimpleBinaryExpression(ExpressionType.ModuloAssign, left, right, left.Type);
                 }
@@ -2180,7 +2182,7 @@ namespace System.Linq.Expressions
                     // conversion is not supported for binary ops on arithmetic types without operator overloading
                     if (conversion != null)
                     {
-                        throw Error.ConversionIsNotSupportedForArithmeticTypes();
+                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
                     }
                     return new SimpleBinaryExpression(ExpressionType.MultiplyAssign, left, right, left.Type);
                 }
@@ -2238,7 +2240,7 @@ namespace System.Linq.Expressions
                     // conversion is not supported for binary ops on arithmetic types without operator overloading
                     if (conversion != null)
                     {
-                        throw Error.ConversionIsNotSupportedForArithmeticTypes();
+                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
                     }
                     return new SimpleBinaryExpression(ExpressionType.MultiplyAssignChecked, left, right, left.Type);
                 }
@@ -2368,7 +2370,7 @@ namespace System.Linq.Expressions
                     // conversion is not supported for binary ops on arithmetic types without operator overloading
                     if (conversion != null)
                     {
-                        throw Error.ConversionIsNotSupportedForArithmeticTypes();
+                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
                     }
                     return new SimpleBinaryExpression(ExpressionType.OrAssign, left, right, left.Type);
                 }
@@ -2421,7 +2423,7 @@ namespace System.Linq.Expressions
                         b = GetUserDefinedBinaryOperator(ExpressionType.Power, name, left, right, liftToNull: true);
                         if (b == null)
                         {
-                            throw Error.BinaryOperatorNotDefined(ExpressionType.Power, left.Type, right.Type);
+                            throw new InvalidOperationException($"The binary operator {ExpressionType.Power} is not defined for the types '{left.Type}' and '{right.Type}'.");
                         }
                     }
 
@@ -2482,7 +2484,7 @@ namespace System.Linq.Expressions
                 method = MathPowDoubleDouble;
                 if (method == null)
                 {
-                    throw Error.BinaryOperatorNotDefined(ExpressionType.PowerAssign, left.Type, right.Type);
+                    throw new InvalidOperationException($"The binary operator {ExpressionType.PowerAssign} is not defined for the types '{left.Type}' and '{right.Type}'.");
                 }
             }
             return GetMethodBasedAssignOperator(ExpressionType.PowerAssign, left, right, method, conversion, liftToNull: true);
@@ -2574,7 +2576,7 @@ namespace System.Linq.Expressions
                     // conversion is not supported for binary ops on arithmetic types without operator overloading
                     if (conversion != null)
                     {
-                        throw Error.ConversionIsNotSupportedForArithmeticTypes();
+                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
                     }
                     var resultType = GetResultTypeOfShift(left.Type, right.Type);
                     return new SimpleBinaryExpression(ExpressionType.RightShiftAssign, left, right, resultType);
@@ -2669,7 +2671,7 @@ namespace System.Linq.Expressions
                     // conversion is not supported for binary ops on arithmetic types without operator overloading
                     if (conversion != null)
                     {
-                        throw Error.ConversionIsNotSupportedForArithmeticTypes();
+                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
                     }
                     return new SimpleBinaryExpression(ExpressionType.SubtractAssign, left, right, left.Type);
                 }
@@ -2727,7 +2729,7 @@ namespace System.Linq.Expressions
                     // conversion is not supported for binary ops on arithmetic types without operator overloading
                     if (conversion != null)
                     {
-                        throw Error.ConversionIsNotSupportedForArithmeticTypes();
+                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
                     }
                     return new SimpleBinaryExpression(ExpressionType.SubtractAssignChecked, left, right, left.Type);
                 }
@@ -2797,17 +2799,17 @@ namespace System.Linq.Expressions
             Debug.Assert(pms.Length == conversion.ParameterCount);
             if (pms.Length != 1)
             {
-                throw Error.IncorrectNumberOfMethodCallArguments(conversion, nameof(conversion));
+                throw new ArgumentException($"Incorrect number of arguments supplied for call to method '{conversion}'", nameof(conversion));
             }
             if (!TypeUtils.AreEquivalent(mi.ReturnType, left.Type))
             {
-                throw Error.OperandTypesDoNotMatchParameters(nodeType, conversion.ToString());
+                throw new InvalidOperationException($"The operands for operator '{nodeType}' do not match the parameters of method '{conversion}'.");
             }
             Debug.Assert(method != null);
             // The parameter type of conversion lambda must be the same as the return type of the overload method
             if (!TypeUtils.AreEquivalent(pms[0].ParameterType, method.ReturnType))
             {
-                throw Error.OverloadOperatorTypeDoesNotMatchConversionType(nodeType, conversion.ToString());
+                throw new InvalidOperationException($"The return type of overload method for operator '{nodeType}' does not match the parameter type of conversion method '{conversion.ToString()}'.");
             }
         }
 
@@ -2834,11 +2836,11 @@ namespace System.Linq.Expressions
             var arrayType = array.Type;
             if (!arrayType.IsArray)
             {
-                throw Error.ArgumentMustBeArray(nameof(array));
+                throw new ArgumentException("Argument must be array", nameof(array));
             }
             if (arrayType.GetArrayRank() != 1)
             {
-                throw Error.IncorrectNumberOfIndexes();
+                throw new ArgumentException("Incorrect number of indexes");
             }
 
             return new SimpleBinaryExpression(ExpressionType.ArrayIndex, array, index, arrayType.GetElementType());
@@ -2853,6 +2855,7 @@ namespace System.Linq.Expressions
         internal AssignBinaryExpression(Expression left, Expression right)
             : base(left, right)
         {
+            // Empty
         }
 
         public sealed override ExpressionType NodeType => ExpressionType.Assign;
@@ -2877,6 +2880,7 @@ namespace System.Linq.Expressions
         internal ByRefAssignBinaryExpression(Expression left, Expression right)
             : base(left, right)
         {
+            // Empty
         }
 
         internal override bool IsByRef => true;

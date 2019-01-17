@@ -91,7 +91,7 @@ namespace System.Linq.Expressions.Compiler
         {
             if (method?.GetParameters().Any(p => p.ParameterType.IsByRef) == true)
             {
-                throw Error.TryNotSupportedForMethodsWithRefArgs(method);
+                throw new NotSupportedException($"TryExpression is not supported as an argument to method '{method}' because it has an argument with by-ref type. Construct the tree so the TryExpression is not nested inside of this expression.");
             }
         }
 
@@ -99,7 +99,7 @@ namespace System.Linq.Expressions.Compiler
         {
             if (IsRefInstance(instance))
             {
-                throw Error.TryNotSupportedForValueTypeInstances(instance.Type);
+                throw new NotSupportedException($"TryExpression is not supported as a child expression when accessing a member on type '{instance.Type}' because it is a value type. Construct the tree so the TryExpression is not nested inside of this expression.");
             }
         }
 
@@ -179,7 +179,7 @@ namespace System.Linq.Expressions.Compiler
                     return RewriteExtensionAssignment(node, stack);
 
                 default:
-                    throw Error.InvalidLvalue(node.Left.NodeType);
+                    throw new InvalidOperationException($"Invalid lvalue for assignment: {node.Left.NodeType}.");
             }
         }
 

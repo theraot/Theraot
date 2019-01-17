@@ -97,7 +97,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(type, nameof(type));
             if (type == typeof(void))
             {
-                throw Error.ArgumentCannotBeOfTypeVoid(nameof(type));
+                throw new ArgumentException(SR.ArgumentCannotBeOfTypeVoid, nameof(type));
             }
             TypeUtils.ValidateType(type, nameof(type));
 
@@ -106,7 +106,7 @@ namespace System.Linq.Expressions
                 var ci = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SingleOrDefault(c => c.GetParameters().Length == 0);
                 if (ci == null)
                 {
-                    throw Error.TypeMissingDefaultConstructor(type, nameof(type));
+                    throw new ArgumentException($"Type '{type}' does not have a default constructor", nameof(type));
                 }
                 return New(ci);
             }
@@ -119,7 +119,7 @@ namespace System.Linq.Expressions
             {
                 if (field.IsStatic)
                 {
-                    throw Error.ArgumentMustBeInstanceMember(paramName, index);
+                    throw new ArgumentException("Argument must be an instance member", index >= 0 ? $"{paramName}[{index}]" : paramName);
                 }
                 memberType = field.FieldType;
                 return;
@@ -129,11 +129,11 @@ namespace System.Linq.Expressions
             {
                 if (!pi.CanRead)
                 {
-                    throw Error.PropertyDoesNotHaveGetter(pi, paramName, index);
+                    throw new ArgumentException($"The property '{pi}' has no 'get' accessor", index >= 0 ? $"{paramName}[{index}]" : paramName);
                 }
                 if (pi.GetGetMethod().IsStatic)
                 {
-                    throw Error.ArgumentMustBeInstanceMember(paramName, index);
+                    throw new ArgumentException("Argument must be an instance member", index >= 0 ? $"{paramName}[{index}]" : paramName);
                 }
                 memberType = pi.PropertyType;
                 return;
@@ -143,7 +143,7 @@ namespace System.Linq.Expressions
             {
                 if (method.IsStatic)
                 {
-                    throw Error.ArgumentMustBeInstanceMember(paramName, index);
+                    throw new ArgumentException("Argument must be an instance member", index >= 0 ? $"{paramName}[{index}]" : paramName);
                 }
 
                 var prop = GetProperty(method, paramName, index);
@@ -151,14 +151,14 @@ namespace System.Linq.Expressions
                 memberType = prop.PropertyType;
                 return;
             }
-            throw Error.ArgumentMustBeFieldInfoOrPropertyInfoOrMethod(paramName, index);
+            throw new ArgumentException("Argument must be either a FieldInfo, PropertyInfo or MethodInfo", index >= 0 ? $"{paramName}[{index}]" : paramName);
         }
 
         private static void ValidateConstructor(ConstructorInfo constructor, string paramName)
         {
             if (constructor.IsStatic)
             {
-                throw Error.NonStaticConstructorRequired(paramName);
+                throw new ArgumentException("The constructor should not be static", paramName);
             }
         }
 
@@ -169,11 +169,11 @@ namespace System.Linq.Expressions
             {
                 if (arguments.Length != pis.Length)
                 {
-                    throw Error.IncorrectNumberOfConstructorArguments();
+                    throw new ArgumentException("Incorrect number of arguments for constructor");
                 }
                 if (arguments.Length != members.Count)
                 {
-                    throw Error.IncorrectNumberOfArgumentsForMembers();
+                    throw new ArgumentException("Incorrect number of arguments for the given members ");
                 }
                 Expression[] newArguments = null;
                 MemberInfo[] newMembers = null;
@@ -185,13 +185,13 @@ namespace System.Linq.Expressions
                     ContractUtils.RequiresNotNull(member, nameof(members), i);
                     if (!TypeUtils.AreEquivalent(member.DeclaringType, constructor.DeclaringType))
                     {
-                        throw Error.ArgumentMemberNotDeclOnType(member.Name, constructor.DeclaringType.Name, nameof(members), i);
+                        throw new ArgumentException($" The member '{member.Name}' is not declared on type '{constructor.DeclaringType.Name}' being created", i >= 0 ? $"{nameof(members)}[{i}]" : nameof(members));
                     }
 
                     ValidateAnonymousTypeMember(ref member, out var memberType, nameof(members), i);
                     if (!memberType.IsReferenceAssignableFromInternal(arg.Type) && !TryQuote(memberType, ref arg))
                     {
-                        throw Error.ArgumentTypeDoesNotMatchMember(arg.Type, memberType, nameof(arguments), i);
+                        throw new ArgumentException($" Argument type '{arg.Type}' does not match the corresponding member type '{memberType}'", i >= 0 ? $"{nameof(arguments)}[{i}]" : nameof(arguments));
                     }
 
                     var pi = pis[i];
@@ -202,7 +202,7 @@ namespace System.Linq.Expressions
                     }
                     if (!pType.IsReferenceAssignableFromInternal(arg.Type) && !TryQuote(pType, ref arg))
                     {
-                        throw Error.ExpressionTypeDoesNotMatchConstructorParameter(arg.Type, pType, nameof(arguments), i);
+                        throw new ArgumentException($"Expression of type '{arg.Type}' cannot be used for constructor parameter of type '{pType}'", i >= 0 ? $"{nameof(arguments)}[{i}]" : nameof(arguments));
                     }
 
                     if (newArguments == null && arg != arguments[i])
@@ -242,11 +242,11 @@ namespace System.Linq.Expressions
             }
             else if (arguments != null && arguments.Length > 0)
             {
-                throw Error.IncorrectNumberOfConstructorArguments();
+                throw new ArgumentException("Incorrect number of arguments for constructor");
             }
             else if (members != null && members.Count > 0)
             {
-                throw Error.IncorrectNumberOfMembersForGivenConstructor();
+                throw new ArgumentException("Incorrect number of members for constructor");
             }
         }
     }

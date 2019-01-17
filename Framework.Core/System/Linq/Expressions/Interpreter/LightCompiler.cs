@@ -378,7 +378,7 @@ namespace System.Linq.Expressions.Interpreter
                     break;
                 }
             }
-            throw Error.RethrowRequiresCatch();
+            throw new InvalidOperationException("Rethrow statement is valid only inside a Catch block.");
         }
 
         private void Compile(Expression expr, bool asVoid)
@@ -576,7 +576,7 @@ namespace System.Linq.Expressions.Interpreter
                     break;
 
                 default:
-                    throw Error.InvalidLvalue(node.Left.NodeType);
+                    throw new InvalidOperationException($"Invalid lvalue for assignment: {node.Left.NodeType}.");
             }
         }
 
@@ -829,7 +829,7 @@ namespace System.Linq.Expressions.Interpreter
                         break;
 
                     default:
-                        throw new PlatformNotSupportedException(SR.Format(SR.UnsupportedExpressionType, node.NodeType));
+                        throw new PlatformNotSupportedException($"The expression type '{node.NodeType}' is not supported");
                 }
             }
         }
@@ -1649,7 +1649,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     if (forBinding)
                     {
-                        throw Error.InvalidProgram();
+                        throw new InvalidProgramException();
                     }
 
                     if (fi.IsInitOnly)
@@ -1680,7 +1680,7 @@ namespace System.Linq.Expressions.Interpreter
                     var method = pi.GetGetMethod(nonPublic: true);
                     if (forBinding && method.IsStatic)
                     {
-                        throw Error.InvalidProgram();
+                        throw new InvalidProgramException();
                     }
 
                     if (from != null)
@@ -1721,7 +1721,7 @@ namespace System.Linq.Expressions.Interpreter
                 var method = pi.GetSetMethod(nonPublic: true);
                 if (forBinding && method.IsStatic)
                 {
-                    throw Error.InvalidProgram();
+                    throw new InvalidProgramException();
                 }
 
                 EmitThisForMethodCall(value);
@@ -1747,7 +1747,7 @@ namespace System.Linq.Expressions.Interpreter
                 Debug.Assert(fi != null);
                 if (fi.IsLiteral)
                 {
-                    throw Error.NotSupported();
+                    throw new NotSupportedException();
                 }
 
                 if (forBinding && fi.IsStatic)
@@ -1810,7 +1810,7 @@ namespace System.Linq.Expressions.Interpreter
                         var type = GetMemberType(memberMember.Member);
                         if (memberMember.Member is PropertyInfo && type.IsValueType)
                         {
-                            throw Error.CannotAutoInitializeValueTypeMemberThroughProperty(memberMember.Bindings);
+                            throw new InvalidOperationException($"Cannot auto initialize members of value type through property '{memberMember.Bindings}', use assignment instead");
                         }
 
                         CompileMember(null, memberMember.Member, forBinding: true);
@@ -1982,7 +1982,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 if (node.Constructor.DeclaringType?.IsAbstract != false)
                 {
-                    throw Error.NonAbstractConstructorRequired();
+                    throw new InvalidOperationException("Can't compile a NewExpression with a constructor declared on an abstract class");
                 }
 
                 var parameters = node.Constructor.GetParameters();
@@ -2700,7 +2700,7 @@ namespace System.Linq.Expressions.Interpreter
                         break;
 
                     default:
-                        throw new PlatformNotSupportedException(SR.Format(SR.UnsupportedExpressionType, node.NodeType));
+                        throw new PlatformNotSupportedException($"The expression type '{node.NodeType}' is not supported");
                 }
             }
         }

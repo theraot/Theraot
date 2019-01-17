@@ -100,7 +100,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 if (j.ContainsTarget(_node))
                 {
-                    throw Error.LabelTargetAlreadyDefined(_node.Name);
+                    throw new InvalidOperationException($"Cannot redefine label '{_node.Name}' in an inner block.");
                 }
             }
 
@@ -121,7 +121,7 @@ namespace System.Linq.Expressions.Interpreter
                 // now invalid
                 if (_acrossBlockJump)
                 {
-                    throw Error.AmbiguousJump(_node.Name);
+                    throw new InvalidOperationException($"Cannot jump to ambiguous label '{_node.Name}'.");
                 }
                 // For local jumps, we need a new IL label
                 // This is okay because:
@@ -151,7 +151,7 @@ namespace System.Linq.Expressions.Interpreter
             // Make sure that if this label was jumped to, it is also defined
             if (_references.Count > 0 && !HasDefinitions)
             {
-                throw Error.LabelTargetUndefined(_node.Name);
+                throw new InvalidOperationException($"Cannot jump to undefined label '{_node.Name}'.");
             }
         }
 
@@ -225,12 +225,12 @@ namespace System.Linq.Expressions.Interpreter
             _acrossBlockJump = true;
             if (_node != null && _node.Type != typeof(void))
             {
-                throw Error.NonLocalJumpWithValue(_node.Name);
+                throw new InvalidOperationException($"Cannot jump to non-local label '{_node.Name}' with a value. Only jumps to labels defined in outer blocks can pass values.");
             }
 
             if (HasMultipleDefinitions)
             {
-                throw Error.AmbiguousJump(_node?.Name);
+                throw new InvalidOperationException($"Cannot jump to ambiguous label '{_node?.Name}'.");
             }
 
             // We didn't find an outward jump. Look for a jump across blocks
@@ -242,11 +242,11 @@ namespace System.Linq.Expressions.Interpreter
             {
                 if (j.Kind == LabelScopeKind.Finally)
                 {
-                    throw Error.ControlCannotLeaveFinally();
+                    throw new InvalidOperationException("Control cannot leave a finally block.");
                 }
                 if (j.Kind == LabelScopeKind.Filter)
                 {
-                    throw Error.ControlCannotLeaveFilterTest();
+                    throw new InvalidOperationException("Control cannot leave a filter test.");
                 }
             }
 
@@ -257,10 +257,10 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     if (j.Kind == LabelScopeKind.Expression)
                     {
-                        throw Error.ControlCannotEnterExpression();
+                        throw new InvalidOperationException("Control cannot enter an expression--only statements can be jumped into.");
                     }
 
-                    throw Error.ControlCannotEnterTry();
+                    throw new InvalidOperationException("Control cannot enter a try block.");
                 }
             }
         }

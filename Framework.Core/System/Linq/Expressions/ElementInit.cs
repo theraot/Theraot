@@ -113,21 +113,21 @@ namespace System.Linq.Expressions
             var pis = addMethod.GetParameters();
             if (pis.Length == 0)
             {
-                throw Error.ElementInitializerMethodWithZeroArgs(paramName);
+                throw new ArgumentException("Element initializer method must have at least 1 parameter", paramName);
             }
             if (!addMethod.Name.Equals("Add", StringComparison.OrdinalIgnoreCase))
             {
-                throw Error.ElementInitializerMethodNotAdd(paramName);
+                throw new ArgumentException("Element initializer method must be named 'Add'", paramName);
             }
             if (addMethod.IsStatic)
             {
-                throw Error.ElementInitializerMethodStatic(paramName);
+                throw new ArgumentException("Element initializer method must be an instance method", paramName);
             }
             foreach (var pi in pis)
             {
                 if (pi.ParameterType.IsByRef)
                 {
-                    throw Error.ElementInitializerMethodNoRefOutParam(pi.Name, addMethod.Name, paramName);
+                    throw new ArgumentException($"Parameter '{pi.Name}' of element initializer method '{addMethod.Name}' must not be a pass by reference parameter", paramName);
                 }
             }
         }

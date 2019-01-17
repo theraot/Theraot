@@ -78,7 +78,7 @@ namespace System.Runtime.CompilerServices
             ContractUtils.RequiresNotNull(binder, nameof(binder));
             if (!delegateType.IsSubclassOf(typeof(MulticastDelegate)))
             {
-                throw Error.TypeMustBeDerivedFromSystemDelegate();
+                throw new ArgumentException("Type must be derived from System.Delegate");
             }
 
             var ctors = _siteCtors;

@@ -109,7 +109,7 @@ namespace System.Linq.Expressions
                 var exprType = TypeUtils.FindGenericType(typeof(Expression<>), expression.Type);
                 if (exprType == null)
                 {
-                    throw Error.ExpressionTypeNotInvocable(expression.Type, nameof(expression));
+                    throw new ArgumentException($"Expression of type '{expression.Type}' cannot be invoked", nameof(expression));
                 }
                 delegateType = exprType.GetGenericArguments()[0];
             }

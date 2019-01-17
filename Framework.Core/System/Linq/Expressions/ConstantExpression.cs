@@ -112,7 +112,7 @@ namespace System.Linq.Expressions
                 }
             }
 
-            throw Error.ArgumentTypesMustMatch();
+            throw new ArgumentException("Argument types do not match");
         }
     }
 

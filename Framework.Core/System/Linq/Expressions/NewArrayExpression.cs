@@ -41,7 +41,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(initializers, nameof(initializers));
             if (type == typeof(void))
             {
-                throw Error.ArgumentCannotBeOfTypeVoid(nameof(type));
+                throw new ArgumentException(SR.ArgumentCannotBeOfTypeVoid, nameof(type));
             }
 
             TypeUtils.ValidateType(type, nameof(type));
@@ -57,7 +57,7 @@ namespace System.Linq.Expressions
                 {
                     if (!TryQuote(type, ref expr))
                     {
-                        throw Error.ExpressionTypeCannotInitializeArrayType(expr.Type, type);
+                        throw new InvalidOperationException($"An expression of type '{expr.Type}' cannot be used to initialize an array of type '{type}'");
                     }
                     if (newList == null)
                     {
@@ -109,7 +109,7 @@ namespace System.Linq.Expressions
 
             if (type == typeof(void))
             {
-                throw Error.ArgumentCannotBeOfTypeVoid(nameof(type));
+                throw new ArgumentException(SR.ArgumentCannotBeOfTypeVoid, nameof(type));
             }
 
             TypeUtils.ValidateType(type, nameof(type));
@@ -119,7 +119,7 @@ namespace System.Linq.Expressions
             var dimensions = boundsList.Count;
             if (dimensions <= 0)
             {
-                throw Error.BoundsCannotBeLessThanOne(nameof(bounds));
+                throw new ArgumentException("Bounds count cannot be less than 1", nameof(bounds));
             }
 
             for (var i = 0; i < dimensions; i++)
@@ -128,7 +128,7 @@ namespace System.Linq.Expressions
                 ExpressionUtils.RequiresCanRead(expr, nameof(bounds), i);
                 if (!expr.Type.IsInteger())
                 {
-                    throw Error.ArgumentMustBeInteger(nameof(bounds), i);
+                    throw new ArgumentException("Argument must be of an integer type", i >= 0 ? $"{nameof(bounds)}[{i}]" : nameof(bounds));
                 }
             }
 

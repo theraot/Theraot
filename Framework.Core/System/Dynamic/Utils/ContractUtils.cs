@@ -44,7 +44,7 @@ namespace System.Dynamic.Utils
 
             if (!precondition)
             {
-                throw Error.InvalidArgumentValue(paramName);
+                throw new ArgumentException("Invalid argument value", paramName);
             }
         }
 
@@ -80,7 +80,7 @@ namespace System.Dynamic.Utils
             RequiresNotNull(collection, paramName);
             if (collection.Count == 0)
             {
-                throw Error.NonEmptyCollectionRequired(paramName);
+                throw new ArgumentException("Non-empty collection required", paramName);
             }
         }
 

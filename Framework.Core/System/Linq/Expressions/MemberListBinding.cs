@@ -78,7 +78,7 @@ namespace System.Linq.Expressions
         {
             if (!typeof(IEnumerable).IsAssignableFrom(listType))
             {
-                throw Error.TypeNotIEnumerable(listType, listTypeParamName);
+                throw new ArgumentException($"Type '{listType}' is not IEnumerable", listTypeParamName);
             }
             for (int i = 0, n = initializers.Count; i < n; i++)
             {

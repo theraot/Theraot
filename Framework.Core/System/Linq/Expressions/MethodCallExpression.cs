@@ -470,15 +470,15 @@ namespace System.Linq.Expressions
             {
                 if (typeArgs != null && typeArgs.Length > 0)
                 {
-                    throw Error.GenericMethodWithArgsDoesNotExistOnType(methodName, type);
+                    throw new InvalidOperationException($"No generic method '{methodName}' on type '{type}' is compatible with the supplied type arguments and arguments. No type arguments should be provided if the method is non-generic. ");
                 }
 
-                throw Error.MethodWithArgsDoesNotExistOnType(methodName, type);
+                throw new InvalidOperationException($"No method '{methodName}' on type '{type}' is compatible with the supplied arguments.");
             }
 
             if (count > 1)
             {
-                throw Error.MethodWithMoreThanOneMatch(methodName, type);
+                throw new InvalidOperationException($"More than one method '{methodName}' on type '{type}' is compatible with the supplied arguments.");
             }
 
             return method;
@@ -507,8 +507,7 @@ namespace System.Linq.Expressions
                 {
                     pType = pType.GetElementType();
                 }
-                if (!pType.IsReferenceAssignableFromInternal(argType) &&
-                    !(pType.IsSameOrSubclassOfInternal(typeof(LambdaExpression)) && pType.IsInstanceOfType(arg)))
+                if (!pType.IsReferenceAssignableFromInternal(argType) && !(pType.IsSameOrSubclassOfInternal(typeof(LambdaExpression)) && pType.IsInstanceOfType(arg)))
                 {
                     return false;
                 }
@@ -536,7 +535,7 @@ namespace System.Linq.Expressions
         {
             if (!TypeUtils.IsValidInstanceType(method, instanceType))
             {
-                throw Error.InstanceAndMethodTypeMismatch(method, method.DeclaringType, instanceType);
+                throw new ArgumentException($"Method '{method}' declared on type '{method.DeclaringType}' cannot be called with instance of type '{instanceType}'");
             }
         }
 
@@ -559,14 +558,14 @@ namespace System.Linq.Expressions
             {
                 if (instance != null)
                 {
-                    throw Error.OnlyStaticMethodsHaveNullInstance();
+                    throw new ArgumentException("Static method requires null instance, non-static method requires non-null instance.");
                 }
             }
             else
             {
                 if (instance == null)
                 {
-                    throw Error.OnlyStaticMethodsHaveNullInstance();
+                    throw new ArgumentException("Static method requires null instance, non-static method requires non-null instance.");
                 }
 
                 ExpressionUtils.RequiresCanRead(instance, nameof(instance));
@@ -603,13 +602,13 @@ namespace System.Linq.Expressions
             var arrayType = array.Type;
             if (!arrayType.IsArray)
             {
-                throw Error.ArgumentMustBeArray(nameof(array));
+                throw new ArgumentException("Argument must be array", nameof(array));
             }
 
             var indexList = indexes.ToReadOnlyCollection();
             if (arrayType.GetArrayRank() != indexList.Count)
             {
-                throw Error.IncorrectNumberOfIndexes();
+                throw new ArgumentException("Incorrect number of indexes");
             }
 
             for (int i = 0, n = indexList.Count; i < n; i++)
@@ -619,7 +618,7 @@ namespace System.Linq.Expressions
                 ExpressionUtils.RequiresCanRead(e, nameof(indexes), i);
                 if (e.Type != typeof(int))
                 {
-                    throw Error.ArgumentMustBeArrayIndexType(nameof(indexes), i);
+                    throw new ArgumentException("Argument for array index must be of type Int32", i >= 0 ? $"{nameof(indexes)}[{i}]" : nameof(indexes));
                 }
             }
 

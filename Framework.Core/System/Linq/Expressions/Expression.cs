@@ -80,7 +80,7 @@ comparand: null
                 }
 
                 // the extension expression failed to override NodeType
-                throw Error.ExtensionNodeMustOverrideProperty("Expression.NodeType");
+                throw new InvalidOperationException($"Extension node must override the property Expression.NodeType.");
             }
         }
 
@@ -97,7 +97,7 @@ comparand: null
                 }
 
                 // the extension expression failed to override Type
-                throw Error.ExtensionNodeMustOverrideProperty("Expression.Type");
+                throw new InvalidOperationException($"Extension node must override the property {"Expression.Type"}.");
             }
         }
 
@@ -351,7 +351,7 @@ comparand: null
         {
             if (CanReduce)
             {
-                throw Error.ReducibleMustOverrideReduce();
+                throw new ArgumentException("reducible nodes must override Expression.Reduce()");
             }
 
             return this;
@@ -371,7 +371,7 @@ comparand: null
         {
             if (!CanReduce)
             {
-                throw Error.MustBeReducible();
+                throw new ArgumentException("must be reducible node");
             }
 
             var newNode = Reduce();
@@ -380,12 +380,12 @@ comparand: null
             // 2. Reduction must return a new node whose result type can be assigned to the type of the original node
             if (newNode == null || newNode == this)
             {
-                throw Error.MustReduceToDifferent();
+                throw new ArgumentException("node cannot reduce to itself or null");
             }
 
             if (!Type.IsReferenceAssignableFromInternal(newNode.Type))
             {
-                throw Error.ReducedNotCompatible();
+                throw new ArgumentException("cannot assign from the reduced node type to the original node type");
             }
 
             return newNode;
@@ -450,7 +450,7 @@ comparand: null
         {
             if (!CanReduce)
             {
-                throw Error.MustBeReducible();
+                throw new ArgumentException("must be reducible node");
             }
 
             return visitor.Visit(ReduceAndCheck());
@@ -509,7 +509,7 @@ comparand: null
                     break;
             }
 
-            throw Error.ExpressionMustBeWriteable(paramName);
+            throw new ArgumentException("Expression must be writeable", paramName);
         }
 
         private class ExtensionInfo

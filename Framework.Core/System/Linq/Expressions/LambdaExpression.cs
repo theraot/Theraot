@@ -174,7 +174,7 @@ namespace System.Linq.Expressions
                 case TryGetFuncActionArgsResult.ArgumentNull:
                     throw new ArgumentNullException(nameof(typeArgs));
                 case TryGetFuncActionArgsResult.ByRef:
-                    throw Error.TypeMustNotBeByRef(nameof(typeArgs));
+                    throw new ArgumentException("type must not be ByRef", nameof(typeArgs));
                 default:
 
                     // This includes pointers or void. We allow the exception that comes
@@ -182,7 +182,7 @@ namespace System.Linq.Expressions
                     var result = DelegateHelpers.GetActionType(typeArgs);
                     if (result == null)
                     {
-                        throw Error.IncorrectNumberOfTypeArgsForAction(nameof(typeArgs));
+                        throw new ArgumentException("An incorrect number of type args were specified for the declaration of an Action type.", nameof(typeArgs));
                     }
 
                     return result;
@@ -219,7 +219,7 @@ namespace System.Linq.Expressions
                 case TryGetFuncActionArgsResult.ArgumentNull:
                     throw new ArgumentNullException(nameof(typeArgs));
                 case TryGetFuncActionArgsResult.ByRef:
-                    throw Error.TypeMustNotBeByRef(nameof(typeArgs));
+                    throw new ArgumentException("type must not be ByRef", nameof(typeArgs));
                 default:
 
                     // This includes pointers or void. We allow the exception that comes
@@ -227,7 +227,7 @@ namespace System.Linq.Expressions
                     var result = DelegateHelpers.GetFuncType(typeArgs);
                     if (result == null)
                     {
-                        throw Error.IncorrectNumberOfTypeArgsForFunc(nameof(typeArgs));
+                        throw new ArgumentException("An incorrect number of type args were specified for the declaration of a Func type.", nameof(typeArgs));
                     }
 
                     return result;
@@ -447,7 +447,7 @@ namespace System.Linq.Expressions
                     typeArgs[i] = param.IsByRef ? param.Type.MakeByRefType() : param.Type;
                     if (!set.Add(param))
                     {
-                        throw Error.DuplicateVariable(param, nameof(parameters), i);
+                        throw new ArgumentException($"Found duplicate parameter '{param}'. Each ParameterExpression in the list must be a unique object.", i >= 0 ? $"{nameof(parameters)}[{i}]" : nameof(parameters));
                     }
                 }
             }
@@ -565,7 +565,7 @@ namespace System.Linq.Expressions
 
             if (!typeof(MulticastDelegate).IsAssignableFrom(delegateType) || delegateType == typeof(MulticastDelegate))
             {
-                throw Error.LambdaTypeMustBeDerivedFromSystemDelegate(paramName);
+                throw new ArgumentException("Lambda type parameter must be derived from System.Delegate", paramName);
             }
 
             TypeUtils.ValidateType(delegateType, nameof(delegateType), allowByRef: true, allowPointer: true);
@@ -586,7 +586,7 @@ namespace System.Linq.Expressions
             {
                 if (pis.Length != parameters.Length)
                 {
-                    throw Error.IncorrectNumberOfLambdaDeclarationParameters();
+                    throw new ArgumentException("Incorrect number of parameters supplied for lambda declaration");
                 }
                 var set = new HashSet<ParameterExpression>();
                 for (int i = 0, n = pis.Length; i < n; i++)
@@ -600,27 +600,27 @@ namespace System.Linq.Expressions
                         if (!pType.IsByRef)
                         {
                             //We cannot pass a parameter of T& to a delegate that takes T or any non-ByRef type.
-                            throw Error.ParameterExpressionNotValidAsDelegate(pex.Type.MakeByRefType(), pType);
+                            throw new ArgumentException($"ParameterExpression of type '{pex.Type.MakeByRefType()}' cannot be used for delegate parameter of type '{pType}'");
                         }
                         pType = pType.GetElementType();
                     }
                     if (!pex.Type.IsReferenceAssignableFromInternal(pType))
                     {
-                        throw Error.ParameterExpressionNotValidAsDelegate(pex.Type, pType);
+                        throw new ArgumentException($"ParameterExpression of type '{pex.Type}' cannot be used for delegate parameter of type '{pType}'");
                     }
                     if (!set.Add(pex))
                     {
-                        throw Error.DuplicateVariable(pex, nameof(parameters), i);
+                        throw new ArgumentException($"Found duplicate parameter '{pex}'. Each ParameterExpression in the list must be a unique object.", i >= 0 ? $"{nameof(parameters)}[{i}]" : nameof(parameters));
                     }
                 }
             }
             else if (parameters.Length > 0)
             {
-                throw Error.IncorrectNumberOfLambdaDeclarationParameters();
+                throw new ArgumentException("Incorrect number of parameters supplied for lambda declaration");
             }
             if (mi.ReturnType != typeof(void) && !mi.ReturnType.IsReferenceAssignableFromInternal(body.Type) && !TryQuote(mi.ReturnType, ref body))
             {
-                throw Error.ExpressionTypeDoesNotMatchReturn(body.Type, mi.ReturnType);
+                throw new ArgumentException($"Expression of type '{body.Type}' cannot be used for return type '{mi.ReturnType}'");
             }
 
         }
@@ -765,7 +765,7 @@ namespace System.Linq.Expressions
             ContractUtils.Requires(method.IsStatic, nameof(method));
             if (!(method.DeclaringType is Reflection.Emit.TypeBuilder))
             {
-                throw Error.MethodBuilderDoesNotHaveTypeBuilder();
+                throw new ArgumentException("MethodBuilder does not have a valid TypeBuilder");
             }
 
             LambdaCompiler.Compile(this, method);
@@ -824,7 +824,7 @@ namespace System.Linq.Expressions
 
         internal override ParameterExpression GetParameter(int index)
         {
-            throw Error.ArgumentOutOfRange(nameof(index));
+            throw new ArgumentOutOfRangeException(nameof(index));
         }
 
         internal override Expression<TDelegate> Rewrite(Expression body, ParameterExpression[] parameters)
@@ -858,7 +858,7 @@ namespace System.Linq.Expressions
             switch (index)
             {
                 case 0: return ExpressionUtils.ReturnObject<ParameterExpression>(_par0);
-                default: throw Error.ArgumentOutOfRange(nameof(index));
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
@@ -912,7 +912,7 @@ namespace System.Linq.Expressions
             {
                 case 0: return ExpressionUtils.ReturnObject<ParameterExpression>(_par0);
                 case 1: return _par1;
-                default: throw Error.ArgumentOutOfRange(nameof(index));
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
@@ -978,7 +978,7 @@ namespace System.Linq.Expressions
                 case 0: return ExpressionUtils.ReturnObject<ParameterExpression>(_par0);
                 case 1: return _par1;
                 case 2: return _par2;
-                default: throw Error.ArgumentOutOfRange(nameof(index));
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 

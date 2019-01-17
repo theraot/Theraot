@@ -42,7 +42,7 @@ namespace System.Linq.Expressions.Compiler
                     break;
                 }
             }
-            throw Error.RethrowRequiresCatch();
+            throw new InvalidOperationException("Rethrow statement is valid only inside a Catch block.");
         }
 
         private void Emit(BlockExpression node, CompilationFlags flags)
@@ -755,7 +755,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 if (j.Kind == LabelScopeKind.Filter)
                 {
-                    throw Error.TryNotAllowedInFilter();
+                    throw new InvalidOperationException("Try expression is not allowed inside a filter body.");
                 }
             }
         }

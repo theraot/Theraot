@@ -35,7 +35,7 @@ namespace System.Linq.Expressions
             {
                 if (@finally != null || @catch.Length > 0)
                 {
-                    throw Error.FaultCannotHaveCatchOrFinally(nameof(fault));
+                    throw new ArgumentException("fault cannot be used with catch or finally clauses", nameof(fault));
                 }
                 ExpressionUtils.RequiresCanRead(fault, nameof(fault));
             }
@@ -45,7 +45,7 @@ namespace System.Linq.Expressions
             }
             else if (@catch.Length == 0)
             {
-                throw Error.TryMustHaveCatchFinallyOrFault();
+                throw new ArgumentException("try must have at least one catch, finally, or fault clause");
             }
 
             return new TryExpression(type ?? body.Type, body, @finally, fault, @catch);
@@ -107,13 +107,13 @@ namespace System.Linq.Expressions
                 {
                     if (!type.IsReferenceAssignableFromInternal(tryBody.Type))
                     {
-                        throw Error.ArgumentTypesMustMatch();
+                        throw new ArgumentException("Argument types do not match");
                     }
                     foreach (var cb in handlers)
                     {
                         if (!type.IsReferenceAssignableFromInternal(cb.Body.Type))
                         {
-                            throw Error.ArgumentTypesMustMatch();
+                            throw new ArgumentException("Argument types do not match");
                         }
                     }
                 }
@@ -126,7 +126,7 @@ namespace System.Linq.Expressions
                     Debug.Assert(cb.Body != null);
                     if (cb.Body.Type != typeof(void))
                     {
-                        throw Error.BodyOfCatchMustHaveSameTypeAsBodyOfTry();
+                        throw new ArgumentException("Body of catch must have the same type as body of try.");
                     }
                 }
             }
@@ -139,7 +139,7 @@ namespace System.Linq.Expressions
                     Debug.Assert(cb.Body != null);
                     if (!TypeUtils.AreEquivalent(cb.Body.Type, type))
                     {
-                        throw Error.BodyOfCatchMustHaveSameTypeAsBodyOfTry();
+                        throw new ArgumentException("Body of catch must have the same type as body of try.");
                     }
                 }
             }

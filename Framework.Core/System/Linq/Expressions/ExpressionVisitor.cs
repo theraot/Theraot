@@ -119,7 +119,7 @@ namespace System.Linq.Expressions
             node = Visit(node) as T;
             if (node == null)
             {
-                throw Error.MustRewriteToSameNode(callerName, typeof(T), callerName);
+                throw new InvalidOperationException($"When called from '{callerName}', rewriting a node of type '{typeof(T)}' must return a non-null value of the same type. Alternatively, override '{callerName}' and change it to not visit children of this type.");
             }
             return node;
         }
@@ -141,7 +141,7 @@ namespace System.Linq.Expressions
             {
                 if (!(Visit(nodes[i]) is T node))
                 {
-                    throw Error.MustRewriteToSameNode(callerName, typeof(T), callerName);
+                    throw new InvalidOperationException($"When called from '{callerName}', rewriting a node of type '{typeof(T)}' must return a non-null value of the same type. Alternatively, override '{callerName}' and change it to not visit children of this type.");
                 }
 
                 if (newNodes != null)
@@ -597,7 +597,7 @@ namespace System.Linq.Expressions
                     return VisitMemberListBinding((MemberListBinding)node);
 
                 default:
-                    throw Error.UnhandledBindingType(node.BindingType);
+                    throw new ArgumentException($"Unhandled Binding Type: {node.BindingType}");
             }
         }
 
@@ -640,7 +640,7 @@ namespace System.Linq.Expressions
             {
                 if (after.Method != null)
                 {
-                    throw Error.MustRewriteWithoutMethod(after.Method, nameof(VisitBinary));
+                    throw new InvalidOperationException($"Rewritten expression calls operator method '{after.Method}', but the original node had no operator method. If this is is intentional, override '{nameof(VisitBinary)}' and change it to allow this rewrite.");
                 }
 
                 ValidateChildType(before.Left.Type, after.Left.Type, nameof(VisitBinary));
@@ -668,7 +668,7 @@ namespace System.Linq.Expressions
             }
 
             // Otherwise, it's an invalid type change.
-            throw Error.MustRewriteChildToSameType(before, after, methodName);
+            throw new InvalidOperationException($"Rewriting child expression from type '{before}' to type '{after}' is not allowed, because it would change the meaning of the operation. If this is intentional, override '{methodName}' and change it to allow this rewrite.");
         }
 
         // We wouldn't need this if switch didn't infer the method.
@@ -678,7 +678,7 @@ namespace System.Linq.Expressions
             // it might not be the right thing.
             if (before.Comparison == null && after.Comparison != null)
             {
-                throw Error.MustRewriteWithoutMethod(after.Comparison, nameof(VisitSwitch));
+                throw new InvalidOperationException($"Rewritten expression calls operator method '{after.Comparison}', but the original node had no operator method. If this is is intentional, override '{nameof(VisitSwitch)}' and change it to allow this rewrite.");
             }
             return after;
         }
@@ -697,7 +697,7 @@ namespace System.Linq.Expressions
             {
                 if (after.Method != null)
                 {
-                    throw Error.MustRewriteWithoutMethod(after.Method, nameof(VisitUnary));
+                    throw new InvalidOperationException($"Rewritten expression calls operator method '{after.Method}', but the original node had no operator method. If this is is intentional, override '{nameof(VisitUnary)}' and change it to allow this rewrite.");
                 }
 
                 // rethrow has null operand

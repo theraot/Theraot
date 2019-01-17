@@ -220,7 +220,7 @@ namespace System.Linq.Expressions.Interpreter
                     return res;
                 }
 
-                throw new KeyNotFoundException(SR.Format("The given key '{0}' was not present in the dictionary.", key.ToString()));
+                throw new KeyNotFoundException($"The given key '{key}' was not present in the dictionary.");
             }
             set
             {

@@ -28,20 +28,20 @@ namespace System.Linq.Expressions
             {
                 if (expression != null)
                 {
-                    throw Error.OnlyStaticFieldsHaveNullInstance(nameof(expression));
+                    throw new ArgumentException("Static field requires null instance, non-static field requires non-null instance.", nameof(expression));
                 }
             }
             else
             {
                 if (expression == null)
                 {
-                    throw Error.OnlyStaticFieldsHaveNullInstance(nameof(field));
+                    throw new ArgumentException("Static field requires null instance, non-static field requires non-null instance.", nameof(field));
                 }
 
                 ExpressionUtils.RequiresCanRead(expression, nameof(expression));
                 if (!field.DeclaringType.IsReferenceAssignableFromInternal(expression.Type))
                 {
-                    throw Error.FieldInfoNotDefinedForType(field.DeclaringType, field.Name, expression.Type);
+                    throw new ArgumentException($"Field '{field.DeclaringType}.{field.Name}' is not defined for type '{expression.Type}'");
                 }
             }
             return MemberExpression.Make(expression, field);
@@ -63,7 +63,7 @@ namespace System.Linq.Expressions
                            ?? expression.Type.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
             if (fi == null)
             {
-                throw Error.InstanceFieldNotDefinedForType(fieldName, expression.Type);
+                throw new ArgumentException($"Instance field '{fieldName}' is not defined for type '{expression.Type}'");
             }
             return Field(expression, fi);
         }
@@ -85,7 +85,7 @@ namespace System.Linq.Expressions
 
             if (fi == null)
             {
-                throw Error.FieldNotDefinedForType(fieldName, type);
+                throw new ArgumentException($"Field '{fieldName}' is not defined for type '{type}'");
             }
             return Field(expression, fi);
         }
@@ -109,7 +109,7 @@ namespace System.Linq.Expressions
                               ?? expression.Type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
             if (pi == null)
             {
-                throw Error.InstancePropertyNotDefinedForType(propertyName, expression.Type, nameof(propertyName));
+                throw new ArgumentException($"Instance property '{propertyName}' is not defined for type '{expression.Type}'", nameof(propertyName));
             }
             return Property(expression, pi);
         }
@@ -130,7 +130,7 @@ namespace System.Linq.Expressions
                               ?? type.GetProperty(propertyName, BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
             if (pi == null)
             {
-                throw Error.PropertyNotDefinedForType(propertyName, type, nameof(propertyName));
+                throw new ArgumentException($"Property '{propertyName}' is not defined for type '{type}'", nameof(propertyName));
             }
             return Property(expression, pi);
         }
@@ -153,37 +153,37 @@ namespace System.Linq.Expressions
 
                 if (mi == null)
                 {
-                    throw Error.PropertyDoesNotHaveAccessor(property, nameof(property));
+                    throw new ArgumentException($"The property '{property}' has no 'get' or 'set' accessors", nameof(property));
                 }
 
                 if (mi.GetParameters().Length != 1)
                 {
-                    throw Error.IncorrectNumberOfMethodCallArguments(mi, nameof(property));
+                    throw new ArgumentException($"Incorrect number of arguments supplied for call to method '{mi}'", nameof(property));
                 }
             }
             else if (mi.GetParameters().Length != 0)
             {
-                throw Error.IncorrectNumberOfMethodCallArguments(mi, nameof(property));
+                throw new ArgumentException($"Incorrect number of arguments supplied for call to method '{mi}'", nameof(property));
             }
 
             if (mi.IsStatic)
             {
                 if (expression != null)
                 {
-                    throw Error.OnlyStaticPropertiesHaveNullInstance(nameof(expression));
+                    throw new ArgumentException("Static property requires null instance, non-static property requires non-null instance.", nameof(expression));
                 }
             }
             else
             {
                 if (expression == null)
                 {
-                    throw Error.OnlyStaticPropertiesHaveNullInstance(nameof(property));
+                    throw new ArgumentException("Static property requires null instance, non-static property requires non-null instance.", nameof(property));
                 }
 
                 ExpressionUtils.RequiresCanRead(expression, nameof(expression));
                 if (!TypeUtils.IsValidInstanceType(property, expression.Type))
                 {
-                    throw Error.PropertyNotDefinedForType(property, expression.Type, nameof(property));
+                    throw new ArgumentException($"Property '{property}' is not defined for type '{expression.Type}'", nameof(property));
                 }
             }
 
@@ -239,7 +239,7 @@ namespace System.Linq.Expressions
                 }
             }
 
-            throw Error.MethodNotPropertyAccessor(mi.DeclaringType, mi.Name, paramName, index);
+            throw new ArgumentException($"The method '{mi.DeclaringType}.{mi.Name}' is not a property accessor", index >= 0 ? $"{paramName}[{index}]" : paramName);
         }
 
         #endregion Property
@@ -261,7 +261,7 @@ namespace System.Linq.Expressions
             {
                 return Property(expression, pi);
             }
-            throw Error.MemberNotFieldOrProperty(member, nameof(member));
+            throw new ArgumentException($"Member '{member}' not field or property", nameof(member));
         }
 
         /// <summary>
@@ -297,8 +297,7 @@ namespace System.Linq.Expressions
             {
                 return Field(expression, fi);
             }
-
-            throw Error.NotAMemberOfType(propertyOrFieldName, expression.Type, nameof(propertyOrFieldName));
+            throw new ArgumentException($"{propertyOrFieldName}' is not a member of type '{expression.Type}'", nameof(propertyOrFieldName));
         }
     }
 

@@ -8,7 +8,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
-using LinqError = System.Linq.Expressions.Error;
 
 namespace System.Dynamic.Utils
 {
@@ -116,7 +115,7 @@ namespace System.Dynamic.Utils
             ContractUtils.RequiresNotNull(array, nameof(array));
             if (index < 0)
             {
-                throw LinqError.ArgumentOutOfRange(nameof(index));
+                throw new ArgumentOutOfRangeException(nameof(index));
             }
 
             var n = ElementCount;

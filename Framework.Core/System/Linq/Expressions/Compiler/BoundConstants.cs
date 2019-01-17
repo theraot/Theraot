@@ -59,7 +59,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 if (!lc.CanEmitBoundConstants)
                 {
-                    throw Error.CannotCompileConstant(reference.Key.Value);
+                    throw new InvalidOperationException($"CompileToMethod cannot compile constant '{reference.Key.Value}' because it is a non-trivial value, such as a live object. Instead, create an expression tree that can construct this value.");
                 }
                 if (ShouldCache(reference.Value))
                 {
@@ -99,7 +99,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (!lc.CanEmitBoundConstants)
             {
-                throw Error.CannotCompileConstant(value);
+                throw new InvalidOperationException($"CompileToMethod cannot compile constant '{value}' because it is a non-trivial value, such as a live object. Instead, create an expression tree that can construct this value.");
             }
 
             if (_cache.TryGetValue(new TypedConstant(value, type), out var local))

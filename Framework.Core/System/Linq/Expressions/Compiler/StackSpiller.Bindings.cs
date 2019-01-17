@@ -44,7 +44,7 @@ namespace System.Linq.Expressions.Compiler
                     default:
                         break;
                 }
-                throw Error.UnhandledBinding();
+                throw new ArgumentException("Unhandled binding ");
             }
 
             internal abstract MemberBinding AsBinding();
@@ -55,7 +55,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 if (Binding.Member is PropertyInfo property && property.PropertyType.IsValueType)
                 {
-                    throw Error.CannotAutoInitializeValueTypeMemberThroughProperty(property);
+                    throw new InvalidOperationException($"Cannot auto initialize members of value type through property '{property}', use assignment instead");
                 }
             }
         }

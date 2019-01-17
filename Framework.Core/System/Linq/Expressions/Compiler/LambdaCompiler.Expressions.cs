@@ -104,7 +104,7 @@ namespace System.Linq.Expressions.Compiler
         {
             if (!(_method is DynamicMethod))
             {
-                throw Error.CannotCompileDynamic();
+                throw new NotSupportedException("Dynamic expressions are not supported by CompileToMethod. Instead, create an expression tree that uses System.Runtime.CompilerServices.CallSite.");
             }
             var node = (IDynamicExpression)expr;
 
@@ -478,7 +478,7 @@ namespace System.Linq.Expressions.Compiler
         {
             if (method.CallingConvention == CallingConventions.VarArgs)
             {
-                throw Error.UnexpectedVarArgsCall(method);
+                throw new InvalidOperationException($"Unexpected VarArgs call to method '{method}'");
             }
 
             var callOp = UseVirtual(method) ? OpCodes.Callvirt : OpCodes.Call;
@@ -729,7 +729,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 if (node.Constructor.DeclaringType?.IsAbstract == true)
                 {
-                    throw Error.NonAbstractConstructorRequired();
+                    throw new InvalidOperationException("Can't compile a NewExpression with a constructor declared on an abstract class");
                 }
 
                 var wb = EmitArguments(node.Constructor, node);
@@ -1021,7 +1021,7 @@ namespace System.Linq.Expressions.Compiler
             var type = GetMemberType(binding.Member);
             if (binding.Member is PropertyInfo && type.IsValueType)
             {
-                throw Error.CannotAutoInitializeValueTypeElementThroughProperty(binding.Member);
+                throw new InvalidOperationException($"Cannot auto initialize elements of value type through property '{binding.Member}', use assignment instead");
             }
             if (type.IsValueType)
             {
@@ -1039,7 +1039,7 @@ namespace System.Linq.Expressions.Compiler
             var type = GetMemberType(binding.Member);
             if (binding.Member is PropertyInfo && type.IsValueType)
             {
-                throw Error.CannotAutoInitializeValueTypeMemberThroughProperty(binding.Member);
+                throw new InvalidOperationException($"Cannot auto initialize members of value type through property '{binding.Member}', use assignment instead");
             }
             if (type.IsValueType)
             {

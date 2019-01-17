@@ -304,7 +304,7 @@ namespace System.Linq.Expressions.Compiler
             // by an internal error, e.g. a scope was created but it bypassed
             // VariableBinder.
             //
-            throw Error.UndefinedVariable(variable.Name, variable.Type, CurrentLambdaName);
+            throw new InvalidOperationException($"variable '{variable.Name}' of type '{variable.Type}' referenced from scope '{CurrentLambdaName}', but it is not defined");
         }
 
         #endregion Variable access

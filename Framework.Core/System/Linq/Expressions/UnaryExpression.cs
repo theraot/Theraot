@@ -28,10 +28,10 @@ namespace System.Linq.Expressions
             {
                 if (!array.Type.IsArray || !typeof(Array).IsAssignableFrom(array.Type))
                 {
-                    throw Error.ArgumentMustBeArray(nameof(array));
+                    throw new ArgumentException("Argument must be array", nameof(array));
                 }
 
-                throw Error.ArgumentMustBeSingleDimensionalArrayType(nameof(array));
+                throw new ArgumentException("Argument must be single dimensional array type", nameof(array));
             }
             return new UnaryExpression(ExpressionType.ArrayLength, array, typeof(int), null);
         }
@@ -328,7 +328,7 @@ namespace System.Linq.Expressions
                     return PostDecrementAssign(operand, method);
 
                 default:
-                    throw Error.UnhandledUnary(unaryType, nameof(unaryType));
+                    throw new ArgumentException($"Unhandled unary: {unaryType}", nameof(unaryType));
             }
         }
 
@@ -573,7 +573,7 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(expression, nameof(expression));
             if (!(expression is LambdaExpression lambda))
             {
-                throw Error.QuotedExpressionMustBeLambda(nameof(expression));
+                throw new ArgumentException("Quoted expression must be a lambda", nameof(expression));
             }
 
             return new UnaryExpression(ExpressionType.Quote, lambda, lambda.PublicType, null);
@@ -623,7 +623,7 @@ namespace System.Linq.Expressions
                 ExpressionUtils.RequiresCanRead(value, nameof(value));
                 if (value.Type.IsValueType)
                 {
-                    throw Error.ArgumentMustNotHaveValueType(nameof(value));
+                    throw new ArgumentException("Argument must not have a value type.", nameof(value));
                 }
             }
             return new UnaryExpression(ExpressionType.Throw, value, type, null);
@@ -642,7 +642,7 @@ namespace System.Linq.Expressions
             TypeUtils.ValidateType(type, nameof(type));
             if (type.IsValueType && !type.IsNullable())
             {
-                throw Error.IncorrectTypeForTypeAs(type, nameof(type));
+                throw new ArgumentException($"The type used in TypeAs Expression must be of reference or nullable type, {type} is neither", nameof(type));
             }
 
             return new UnaryExpression(ExpressionType.TypeAs, expression, type, null);
@@ -695,11 +695,11 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(type, nameof(type));
             if (!expression.Type.IsInterface && expression.Type != typeof(object))
             {
-                throw Error.InvalidUnboxType(nameof(expression));
+                throw new ArgumentException("Can only unbox from an object or interface type to a value type.", nameof(expression));
             }
             if (!type.IsValueType)
             {
-                throw Error.InvalidUnboxType(nameof(type));
+                throw new ArgumentException("Can only unbox from an object or interface type to a value type.", nameof(type));
             }
 
             TypeUtils.ValidateType(type, nameof(type));
@@ -713,7 +713,7 @@ namespace System.Linq.Expressions
             var pms = method.GetParameters();
             if (pms.Length != 1)
             {
-                throw Error.IncorrectNumberOfMethodCallArguments(method, nameof(method));
+                throw new ArgumentException($"Incorrect number of arguments supplied for call to method '{method}'", nameof(method));
             }
             if (ParameterIsAssignable(pms[0], operand.Type) && TypeUtils.AreEquivalent(method.ReturnType, convertToType))
             {
@@ -727,7 +727,7 @@ namespace System.Linq.Expressions
             {
                 return new UnaryExpression(unaryType, operand, convertToType, method);
             }
-            throw Error.OperandTypesDoNotMatchParameters(unaryType, method.Name);
+            throw new InvalidOperationException($"The operands for operator '{unaryType}' do not match the parameters of method '{method.Name}'.");
         }
 
         private static UnaryExpression GetMethodBasedUnaryOperator(ExpressionType unaryType, Expression operand, MethodInfo method)
@@ -737,7 +737,7 @@ namespace System.Linq.Expressions
             var pms = method.GetParameters();
             if (pms.Length != 1)
             {
-                throw Error.IncorrectNumberOfMethodCallArguments(method, nameof(method));
+                throw new ArgumentException($"Incorrect number of arguments supplied for call to method '{method}'", nameof(method));
             }
 
             if (ParameterIsAssignable(pms[0], operand.Type))
@@ -753,7 +753,7 @@ namespace System.Linq.Expressions
                 return new UnaryExpression(unaryType, operand, method.ReturnType.GetNullable(), method);
             }
 
-            throw Error.OperandTypesDoNotMatchParameters(unaryType, method.Name);
+            throw new InvalidOperationException($"The operands for operator '{unaryType}' do not match the parameters of method '{method.Name}'.");
         }
 
         private static UnaryExpression GetUserDefinedCoercion(ExpressionType coercionType, Expression expression, Type convertToType)
@@ -773,7 +773,7 @@ namespace System.Linq.Expressions
             {
                 return u;
             }
-            throw Error.CoercionOperatorNotDefined(expression.Type, convertToType);
+            throw new InvalidOperationException($"No coercion operator is defined between types '{expression.Type}' and '{convertToType}'.");
         }
 
         private static UnaryExpression GetUserDefinedUnaryOperator(ExpressionType unaryType, string name, Expression operand)
@@ -807,7 +807,7 @@ namespace System.Linq.Expressions
                 ValidateParamsWithOperandsOrThrow(u.Method.GetParameters()[0].ParameterType, operand.Type, unaryType, name);
                 return u;
             }
-            throw Error.UnaryOperatorNotDefined(unaryType, operand.Type);
+            throw new InvalidOperationException($"The unary operator {unaryType} is not defined for the type '{operand.Type}'.");
         }
 
         private static UnaryExpression MakeOpAssignUnary(ExpressionType kind, Expression expression, MethodInfo method)
@@ -841,7 +841,7 @@ namespace System.Linq.Expressions
             // return type must be assignable back to the operand type
             if (!expression.Type.IsReferenceAssignableFromInternal(result.Type))
             {
-                throw Error.UserDefinedOpMustHaveValidReturnType(kind, method.Name);
+                throw new ArgumentException($"The user-defined operator method '{method.Name}' for operator '{kind}' must return the same type as its parameter or a derived type.");
             }
             return result;
         }

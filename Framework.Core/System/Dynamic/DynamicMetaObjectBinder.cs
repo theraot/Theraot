@@ -55,11 +55,11 @@ namespace System.Dynamic
             ContractUtils.RequiresNotNull(returnLabel, nameof(returnLabel));
             if (args.Length == 0)
             {
-                throw Error.OutOfRange("args.Length", 1);
+                throw new ArgumentOutOfRangeException(nameof(args), "args.Length must be greater than or equal to 1");
             }
             if (parameters.Count == 0)
             {
-                throw Error.OutOfRange("parameters.Count", 1);
+                throw new ArgumentOutOfRangeException(nameof(parameters), $"parameters.Count must be greater than or equal to 1");
             }
             if (args.Length != parameters.Count)
             {
@@ -75,7 +75,7 @@ namespace System.Dynamic
                 expectedResult = ReturnType;
                 if (returnLabel.Type != typeof(void) && !returnLabel.Type.IsReferenceAssignableFromInternal(expectedResult))
                 {
-                    throw Error.BinderNotCompatibleWithCallSite(expectedResult, this, returnLabel.Type);
+                    throw new InvalidOperationException($"The result type '{expectedResult}' of the binder '{this}' is not compatible with the result type '{returnLabel.Type}' expected by the call site.");
                 }
             }
             else
@@ -92,7 +92,7 @@ namespace System.Dynamic
 
             if (binding == null)
             {
-                throw Error.BindingCannotBeNull();
+                throw new InvalidOperationException("Bind cannot return null.");
             }
 
             var body = binding.Expression;
@@ -107,10 +107,10 @@ namespace System.Dynamic
                 //
                 if (target.Value is IDynamicMetaObjectProvider)
                 {
-                    throw Error.DynamicObjectResultNotAssignable(body.Type, target.Value.GetType(), this, expectedResult);
+                    throw new InvalidCastException($"The result type '{body.Type}' of the dynamic binding produced by the object with type '{target.Value.GetType()}' for the binder '{this}' is not compatible with the result type '{expectedResult}' expected by the call site.");
                 }
 
-                throw Error.DynamicBinderResultNotAssignable(body.Type, this, expectedResult);
+                throw new InvalidCastException($"The result type '{body.Type}' of the dynamic binding produced by binder '{this}' is not compatible with the result type '{expectedResult}' expected by the call site.");
             }
 
             // if the target is IDO, standard binders ask it to bind the rule so we may have a target-specific binding.
@@ -118,7 +118,7 @@ namespace System.Dynamic
             // ideally IDO meta-objects should do this, but they often miss that type of "this" is significant.
             if (IsStandardBinder && args[0] is IDynamicMetaObjectProvider && restrictions == BindingRestrictions.Empty)
             {
-                throw Error.DynamicBindingNeedsRestrictions(target.Value.GetType(), this);
+                throw new InvalidOperationException($"The result of the dynamic binding produced by the object with type '{target.Value.GetType()}' for the binder '{this}' needs at least one restriction.");
             }
 
             // Add the return

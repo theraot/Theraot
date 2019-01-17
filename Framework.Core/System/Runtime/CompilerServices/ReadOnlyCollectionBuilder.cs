@@ -332,7 +332,7 @@ namespace System.Runtime.CompilerServices
                 }
                 catch (InvalidCastException)
                 {
-                    throw Error.InvalidTypeException(value, typeof(T), nameof(value));
+                    throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
                 }
             }
         }
@@ -346,7 +346,7 @@ namespace System.Runtime.CompilerServices
             }
             catch (InvalidCastException)
             {
-                throw Error.InvalidTypeException(value, typeof(T), nameof(value));
+                throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
             }
             return Count - 1;
         }
@@ -379,7 +379,7 @@ namespace System.Runtime.CompilerServices
             }
             catch (InvalidCastException)
             {
-                throw Error.InvalidTypeException(value, typeof(T), nameof(value));
+                throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
             }
         }
 
@@ -490,7 +490,7 @@ namespace System.Runtime.CompilerServices
         {
             if (value == null && default(T) != null)
             {
-                throw Error.InvalidNullValue(typeof(T), argument);
+                throw new ArgumentException($"The value null is not of type '{typeof(T)}' and cannot be used in this collection.", argument);
             }
         }
 
@@ -547,7 +547,7 @@ namespace System.Runtime.CompilerServices
                 {
                     if (_index == 0 || _index > _builder.Count)
                     {
-                        throw Error.EnumerationIsDone();
+                        throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                     }
                     return Current;
                 }
@@ -568,7 +568,7 @@ namespace System.Runtime.CompilerServices
                     return false;
                 }
 
-                throw Error.CollectionModifiedWhileEnumerating();
+                throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
             }
 
             #endregion IEnumerator Members
@@ -579,7 +579,7 @@ namespace System.Runtime.CompilerServices
             {
                 if (_version != _builder._version)
                 {
-                    throw Error.CollectionModifiedWhileEnumerating();
+                    throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
                 }
                 _index = 0;
                 Current = default;

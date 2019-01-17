@@ -156,27 +156,27 @@ namespace System.Linq.Expressions
         {
             if (startLine < 1)
             {
-                throw Error.OutOfRange(nameof(startLine), 1);
+                throw new ArgumentOutOfRangeException(nameof(startLine), $"{nameof(startLine)} must be greater than or equal to {1}");
             }
             if (startColumn < 1)
             {
-                throw Error.OutOfRange(nameof(startColumn), 1);
+                throw new ArgumentOutOfRangeException(nameof(startColumn), $"{nameof(startColumn)} must be greater than or equal to {1}");
             }
             if (endLine < 1)
             {
-                throw Error.OutOfRange(nameof(endLine), 1);
+                throw new ArgumentOutOfRangeException(nameof(endLine), $"{nameof(endLine)} must be greater than or equal to {1}");
             }
             if (endColumn < 1)
             {
-                throw Error.OutOfRange(nameof(endColumn), 1);
+                throw new ArgumentOutOfRangeException(nameof(endColumn), $"{nameof(endColumn)} must be greater than or equal to {1}");
             }
             if (startLine > endLine)
             {
-                throw Error.StartEndMustBeOrdered();
+                throw new ArgumentException("Start and End must be well ordered");
             }
             if (startLine == endLine && startColumn > endColumn)
             {
-                throw Error.StartEndMustBeOrdered();
+                throw new ArgumentException("Start and End must be well ordered");
             }
         }
     }

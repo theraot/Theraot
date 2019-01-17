@@ -45,7 +45,7 @@ namespace System.Runtime.CompilerServices
             Theraot.No.Op(binder);
             Theraot.No.Op(site);
             Theraot.No.Op(args);
-            throw Error.NoOrInvalidRuleProduced();
+            throw new InvalidOperationException("No or Invalid rule produced");
         }
 
         /// <summary>

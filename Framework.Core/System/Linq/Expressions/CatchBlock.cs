@@ -153,7 +153,7 @@ namespace System.Linq.Expressions
                 ExpressionUtils.RequiresCanRead(filter, nameof(filter));
                 if (filter.Type != typeof(bool))
                 {
-                    throw Error.ArgumentMustBeBoolean(nameof(filter));
+                    throw new ArgumentException("Argument must be boolean", nameof(filter));
                 }
             }
 

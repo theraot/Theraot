@@ -69,7 +69,7 @@ namespace System.Linq.Expressions
 
             if (type == typeof(void))
             {
-                throw Error.ArgumentCannotBeOfTypeVoid(nameof(type));
+                throw new ArgumentException(SR.ArgumentCannotBeOfTypeVoid, nameof(type));
             }
         }
     }

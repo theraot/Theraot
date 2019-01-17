@@ -77,7 +77,7 @@ namespace System.Linq.Expressions
             var decType = member.DeclaringType;
             if (decType == null)
             {
-                throw Error.NotAMemberOfAnyType(member, nameof(member));
+                throw new ArgumentException($"'{member}' is not a member of any type", nameof(member));
             }
 
             // Null paramName as there are several paths here with different parameter names at the API
@@ -87,7 +87,7 @@ namespace System.Linq.Expressions
                 case PropertyInfo pi:
                     if (!pi.CanRead)
                     {
-                        throw Error.PropertyDoesNotHaveGetter(pi, nameof(member));
+                        throw new ArgumentException($"The property '{pi}' has no 'get' accessor", nameof(member));
                     }
 
                     memberType = pi.PropertyType;
@@ -98,7 +98,7 @@ namespace System.Linq.Expressions
                     break;
 
                 default:
-                    throw Error.ArgumentMustBeFieldInfoOrPropertyInfo(nameof(member));
+                    throw new ArgumentException("Argument must be either a FieldInfo or PropertyInfo", nameof(member));
             }
         }
 
@@ -111,7 +111,7 @@ namespace System.Linq.Expressions
                 b.ValidateAsDefinedHere(i);
                 if (b.Member.DeclaringType?.IsAssignableFrom(type) != true)
                 {
-                    throw Error.NotAMemberOfType(b.Member.Name, type, nameof(bindings), i);
+                    throw new ArgumentException($"{b.Member.Name}' is not a member of type '{type}'", i >= 0 ? $"{nameof(bindings)}[{i}]" : nameof(bindings));
                 }
             }
         }
