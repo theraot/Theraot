@@ -16,6 +16,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private SubInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 2;
@@ -191,6 +192,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private SubOvfInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 2;

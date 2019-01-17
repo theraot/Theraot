@@ -80,7 +80,7 @@ comparand: null
                 }
 
                 // the extension expression failed to override NodeType
-                throw new InvalidOperationException($"Extension node must override the property Expression.NodeType.");
+                throw new InvalidOperationException("Extension node must override the property Expression.NodeType.");
             }
         }
 
@@ -97,7 +97,7 @@ comparand: null
                 }
 
                 // the extension expression failed to override Type
-                throw new InvalidOperationException($"Extension node must override the property {"Expression.Type"}.");
+                throw new InvalidOperationException("Extension node must override the property Expression.Type.");
             }
         }
 

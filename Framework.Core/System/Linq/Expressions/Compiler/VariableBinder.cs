@@ -26,6 +26,7 @@ namespace System.Linq.Expressions.Compiler
 
         private VariableBinder()
         {
+            // Empty
         }
 
         private string CurrentLambdaName

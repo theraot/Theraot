@@ -93,10 +93,6 @@ namespace System.Linq.Expressions.Interpreter
 
     internal static class ExceptionHelpers
     {
-        /// <summary>
-        /// Updates an exception before it's getting re-thrown so
-        /// we can present a reasonable stack trace to the user.
-        /// </summary>
         public static void UnwrapAndRethrow(TargetInvocationException exception)
         {
             ExceptionDispatchInfo.Capture(exception.InnerException).Throw();
@@ -123,9 +119,9 @@ namespace System.Linq.Expressions.Interpreter
 
                 case 3:
                     return Utils.BoxedInt3;
+                default:
+                    return i;
             }
-
-            return i;
         }
 
         internal static object GetPrimitiveDefaultValue(Type type)

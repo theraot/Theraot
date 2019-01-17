@@ -2809,7 +2809,7 @@ namespace System.Linq.Expressions
             // The parameter type of conversion lambda must be the same as the return type of the overload method
             if (!TypeUtils.AreEquivalent(pms[0].ParameterType, method.ReturnType))
             {
-                throw new InvalidOperationException($"The return type of overload method for operator '{nodeType}' does not match the parameter type of conversion method '{conversion.ToString()}'.");
+                throw new InvalidOperationException($"The return type of overload method for operator '{nodeType}' does not match the parameter type of conversion method '{conversion}'.");
             }
         }
 

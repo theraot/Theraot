@@ -59,7 +59,7 @@ namespace System.Dynamic
             }
             if (parameters.Count == 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(parameters), $"parameters.Count must be greater than or equal to 1");
+                throw new ArgumentOutOfRangeException(nameof(parameters), "parameters.Count must be greater than or equal to 1");
             }
             if (args.Length != parameters.Count)
             {
