@@ -93,13 +93,9 @@ namespace System.Linq.Expressions
                 return this;
             }
 
-
             return RuntimeVariables(variables);
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitRuntimeVariables(this);

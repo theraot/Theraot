@@ -1,5 +1,7 @@
 #if LESSTHAN_NET35
 
+#pragma warning disable CC0021 // Use nameof
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -127,7 +129,7 @@ namespace System.Linq.Expressions
     /// Represents a constructor call that has a collection initializer.
     /// </summary>
     /// <remarks>
-    /// Use the <see cref="Expression.ListInit"/> factory methods to create a ListInitExpression.
+    /// Use the <see cref="Expression.ListInit(System.Linq.Expressions.NewExpression,System.Linq.Expressions.Expression[])"/> factory methods to create a ListInitExpression.
     /// The value of the <see cref="NodeType" /> property of a ListInitExpression is ListInit.
     /// </remarks>
     [DebuggerTypeProxy(typeof(ListInitExpressionProxy))]
@@ -188,18 +190,14 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public ListInitExpression Update(NewExpression newExpression, IEnumerable<ElementInit> initializers)
         {
-            if (newExpression == NewExpression & initializers != null && ExpressionUtils.SameElements(ref initializers, Theraot.Collections.Extensions.AsArray(Initializers)))
+            if (newExpression == NewExpression && initializers != null && ExpressionUtils.SameElements(ref initializers, Theraot.Collections.Extensions.AsArray(Initializers)))
             {
                 return this;
             }
 
-
             return ListInit(newExpression, initializers);
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitListInit(this);

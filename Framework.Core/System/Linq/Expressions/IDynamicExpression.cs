@@ -22,11 +22,14 @@ namespace System.Linq.Expressions
         object CreateCallSite();
 
         /// <summary>
+        /// <para>
         /// Rewrite this node replacing the args with the provided values.  The
         /// number of the args needs to match the number of the current block.
-        ///
+        /// </para>
+        /// <para>
         /// This helper is provided to allow re-writing of nodes to not depend on the specific
         /// class of DynamicExpression which is being used.
+        /// </para>
         /// </summary>
         Expression Rewrite(Expression[] args);
     }

@@ -48,7 +48,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal static LambdaExpression AnalyzeLambda(LambdaExpression lambda)
         {
-            return lambda.Accept(new StackSpiller(Stack.Empty));
+            return lambda.AcceptStackSpiller(new StackSpiller(Stack.Empty));
         }
 
         // Called by Expression<T>.Accept(StackSpiller).
@@ -345,7 +345,7 @@ namespace System.Linq.Expressions.Compiler
 
                 // Lambda body also executes on current stack.
                 var spiller = new StackSpiller(stack);
-                lambda = lambda.Accept(spiller);
+                lambda = lambda.AcceptStackSpiller(spiller);
 
                 if (cr.Rewrite || spiller._lambdaRewrite != RewriteAction.None)
                 {

@@ -80,7 +80,9 @@ namespace System.Linq.Expressions
     public sealed class MemberAssignment : MemberBinding
     {
         internal MemberAssignment(MemberInfo member, Expression expression)
+#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
             : base(MemberBindingType.Assignment, member)
+#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
         {
             Expression = expression;
         }

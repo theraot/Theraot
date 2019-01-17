@@ -66,7 +66,9 @@ namespace System.Linq.Expressions
             public Expression Body => _node.Body;
             public Expression Filter => _node.Filter;
             public Type Test => _node.Test;
+#pragma warning disable RECS0146 // Member hides static member from outer class
             public ParameterExpression Variable => _node.Variable;
+#pragma warning restore RECS0146 // Member hides static member from outer class
         }
 
         internal class ConditionalExpressionProxy

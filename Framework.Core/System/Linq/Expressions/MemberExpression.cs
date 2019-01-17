@@ -215,7 +215,7 @@ namespace System.Linq.Expressions
             // same as that returned by reflection.
             // Check for this condition and try and get the method from reflection.
             var type = method.DeclaringType;
-            return type.IsInterface && method.Name == propertyMethod.Name && type.GetMethod(method.Name) == propertyMethod;
+            return type?.IsInterface == true && string.Equals(method.Name, propertyMethod.Name, StringComparison.Ordinal) && type.GetMethod(method.Name) == propertyMethod;
         }
 
         private static PropertyInfo GetProperty(MethodInfo mi, string paramName, int index = -1)
@@ -367,9 +367,6 @@ namespace System.Linq.Expressions
             throw ContractUtils.Unreachable;
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitMember(this);

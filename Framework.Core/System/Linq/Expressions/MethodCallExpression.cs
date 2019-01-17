@@ -288,8 +288,8 @@ namespace System.Linq.Expressions
                 arguments = ArrayReservoir<Expression>.EmptyArray;
             }
 
-            var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
-            return Call(instance, FindMethod(instance.Type, methodName, typeArguments, arguments, flags), arguments);
+            const BindingFlags Flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
+            return Call(instance, FindMethod(instance.Type, methodName, typeArguments, arguments, Flags), arguments);
         }
 
         /// <summary>Creates a <see cref="MethodCallExpression"/> that represents a call to a static (Shared in Visual Basic) method by calling the appropriate factory method.</summary>
@@ -314,8 +314,8 @@ namespace System.Linq.Expressions
                 arguments = ArrayReservoir<Expression>.EmptyArray;
             }
 
-            var flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
-            return Call(null, FindMethod(type, methodName, typeArguments, arguments, flags), arguments);
+            const BindingFlags Flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
+            return Call(null, FindMethod(type, methodName, typeArguments, arguments, Flags), arguments);
         }
 
         /// <summary>Creates a <see cref="MethodCallExpression"/> that represents a method call.</summary>
@@ -346,6 +346,8 @@ namespace System.Linq.Expressions
 
                 case 3:
                     return Call(instance, method, argumentList[0], argumentList[1], argumentList[2]);
+                default:
+                    break;
             }
 
             if (instance == null)
@@ -357,6 +359,8 @@ namespace System.Linq.Expressions
 
                     case 5:
                         return Call(method, argumentList[0], argumentList[1], argumentList[2], argumentList[3], argumentList[4]);
+                    default:
+                        break;
                 }
             }
 
@@ -452,7 +456,7 @@ namespace System.Linq.Expressions
                     if (moo != null && IsCompatible(moo, args))
                     {
                         // favor public over non-public methods
-                        if (method == null || !method.IsPublic && moo.IsPublic)
+                        if (method == null || (!method.IsPublic && moo.IsPublic))
                         {
                             method = moo;
                             count = 1;
@@ -468,7 +472,7 @@ namespace System.Linq.Expressions
 
             if (count == 0)
             {
-                if (typeArgs != null && typeArgs.Length > 0)
+                if (typeArgs?.Length > 0)
                 {
                     throw new InvalidOperationException($"No generic method '{methodName}' on type '{type}' is compatible with the supplied type arguments and arguments. No type arguments should be provided if the method is non-generic. ");
                 }
@@ -507,7 +511,7 @@ namespace System.Linq.Expressions
                 {
                     pType = pType.GetElementType();
                 }
-                if (!pType.IsReferenceAssignableFromInternal(argType) && !(pType.IsSameOrSubclassOfInternal(typeof(LambdaExpression)) && pType.IsInstanceOfType(arg)))
+                if (pType?.IsReferenceAssignableFromInternal(argType) == false && !(pType.IsSameOrSubclassOfInternal(typeof(LambdaExpression)) && pType.IsInstanceOfType(arg)))
                 {
                     return false;
                 }
@@ -712,14 +716,6 @@ namespace System.Linq.Expressions
             throw ContractUtils.Unreachable;
         }
 
-        /// <summary>
-        /// Returns a new MethodCallExpression replacing the existing instance/args with the
-        /// newly provided instance and args.    Arguments can be null to use the existing
-        /// arguments.
-        ///
-        /// This helper is provided to allow re-writing of nodes to not depend on the specific optimized
-        /// subclass of MethodCallExpression which is being used.
-        /// </summary>
         internal virtual MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
         {
             throw ContractUtils.Unreachable;
@@ -730,9 +726,6 @@ namespace System.Linq.Expressions
             throw ContractUtils.Unreachable;
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitMethodCall(this);
@@ -846,7 +839,7 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments != null && arguments.Count == 1)
+            if (arguments?.Count == 1)
             {
                 using (var en = arguments.GetEnumerator())
                 {
@@ -903,7 +896,7 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments != null && arguments.Count == 2)
+            if (arguments?.Count == 2)
             {
                 if (_arg0 is Expression[] alreadyArray)
                 {
@@ -971,7 +964,7 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments != null && arguments.Count == 3)
+            if (arguments?.Count == 3)
             {
                 if (_arg0 is Expression[] alreadyArray)
                 {
@@ -1102,7 +1095,7 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments != null && arguments.Count == 1)
+            if (arguments?.Count == 1)
             {
                 using (var en = arguments.GetEnumerator())
                 {
@@ -1159,7 +1152,7 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments != null && arguments.Count == 2)
+            if (arguments?.Count == 2)
             {
                 if (_arg0 is Expression[] alreadyArray)
                 {
@@ -1227,7 +1220,7 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments != null && arguments.Count == 3)
+            if (arguments?.Count == 3)
             {
                 if (_arg0 is Expression[] alreadyArray)
                 {
@@ -1301,7 +1294,7 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments != null && arguments.Count == 4)
+            if (arguments?.Count == 4)
             {
                 if (_arg0 is Expression[] alreadyArray)
                 {
@@ -1382,7 +1375,7 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments != null && arguments.Count == 5)
+            if (arguments?.Count == 5)
             {
                 if (_arg0 is Expression[] alreadyArray)
                 {

@@ -151,6 +151,8 @@ namespace System.Linq.Expressions
                     case TypeCode.UInt16: return new PrimitiveParameterExpression<ushort>(name);
                     case TypeCode.UInt32: return new PrimitiveParameterExpression<uint>(name);
                     case TypeCode.UInt64: return new PrimitiveParameterExpression<ulong>(name);
+                    default:
+                        break;
                 }
             }
 
@@ -159,9 +161,6 @@ namespace System.Linq.Expressions
 
         internal virtual bool GetIsByRef() => false;
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitParameter(this);

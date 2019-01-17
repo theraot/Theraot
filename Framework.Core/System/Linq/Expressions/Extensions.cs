@@ -95,7 +95,7 @@ namespace System.Linq.Expressions
                     return;
 
                 default:
-                    throw new ArgumentException();
+                    throw new ArgumentException(string.Empty);
             }
         }
 
@@ -121,7 +121,7 @@ namespace System.Linq.Expressions
                     return onProperty((PropertyInfo)self);
 
                 default:
-                    throw new ArgumentException();
+                    throw new ArgumentException(string.Empty);
             }
         }
     }

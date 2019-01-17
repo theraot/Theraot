@@ -6,9 +6,6 @@
 
 namespace System.Linq.Expressions
 {
-    /// <summary>
-    /// See <see cref="IArgumentProvider"/> for design considerations.
-    /// </summary>
     internal interface IParameterProvider
     {
         /// <summary>

@@ -132,17 +132,7 @@ namespace System.Linq.Expressions
                 }
             }
 
-            Type arrayType;
-            if (dimensions == 1)
-            {
-                //To get a vector, need call Type.MakeArrayType().
-                //Type.MakeArrayType(1) gives a non-vector array, which will cause type check error.
-                arrayType = type.MakeArrayType();
-            }
-            else
-            {
-                arrayType = type.MakeArrayType(dimensions);
-            }
+            var arrayType = dimensions == 1 ? type.MakeArrayType() : type.MakeArrayType(dimensions);
 
             return NewArrayExpression.Make(ExpressionType.NewArrayBounds, arrayType, boundsList);
         }
@@ -211,9 +201,6 @@ namespace System.Linq.Expressions
             return new NewArrayBoundsExpression(type, expressionsArray);
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitNewArray(this);

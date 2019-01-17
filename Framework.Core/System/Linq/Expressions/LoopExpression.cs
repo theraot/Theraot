@@ -110,9 +110,6 @@ namespace System.Linq.Expressions
             return Loop(body, breakLabel, continueLabel);
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitLoop(this);

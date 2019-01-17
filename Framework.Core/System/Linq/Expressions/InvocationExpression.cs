@@ -88,6 +88,8 @@ namespace System.Linq.Expressions
 
                 case 5:
                     return Invoke(expression, argumentList[0], argumentList[1], argumentList[2], argumentList[3], argumentList[4]);
+                default:
+                    break;
             }
 
             ExpressionUtils.RequiresCanRead(expression, nameof(expression));
@@ -444,11 +446,10 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public InvocationExpression Update(Expression expression, IEnumerable<Expression> arguments)
         {
-            if (expression == Expression & arguments != null && ExpressionUtils.SameElements(ref arguments, Theraot.Collections.Extensions.AsArray(Arguments)))
+            if (expression == Expression && arguments != null && ExpressionUtils.SameElements(ref arguments, Theraot.Collections.Extensions.AsArray(Arguments)))
             {
                 return this;
             }
-
 
             return Invoke(expression, arguments);
         }
@@ -463,9 +464,6 @@ namespace System.Linq.Expressions
             throw ContractUtils.Unreachable;
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitInvocation(this);

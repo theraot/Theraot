@@ -304,8 +304,6 @@ namespace System.Linq.Expressions
             {
                 throw new ArgumentException($"Expression of type '{value.Type}' cannot be used for label of type '{expectedType}'");
             }
-
-
         }
     }
 
@@ -368,9 +366,6 @@ namespace System.Linq.Expressions
             return MakeGoto(Kind, target, value, Type);
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitGoto(this);

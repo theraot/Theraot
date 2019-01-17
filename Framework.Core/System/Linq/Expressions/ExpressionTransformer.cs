@@ -122,7 +122,9 @@ namespace System.Linq.Expressions
                     return VisitListInit((ListInitExpression)exp);
 
                 default:
+#pragma warning disable CA2201 // Do not raise reserved exception types
                     throw new Exception($"Unhandled expression type: '{exp.NodeType}'");
+#pragma warning restore CA2201 // Do not raise reserved exception types
             }
         }
 
@@ -152,7 +154,9 @@ namespace System.Linq.Expressions
                     return VisitMemberListBinding((MemberListBinding)binding);
 
                 default:
+#pragma warning disable CA2201 // Do not raise reserved exception types
                     throw new Exception($"Unhandled binding type '{binding.BindingType}'");
+#pragma warning restore CA2201 // Do not raise reserved exception types
             }
         }
 

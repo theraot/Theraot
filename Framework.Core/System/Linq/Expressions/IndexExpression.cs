@@ -42,7 +42,7 @@ namespace System.Linq.Expressions
         /// <param name="array">An expression representing the array to index.</param>
         /// <param name="indexes">An array containing expressions used to index the array.</param>
         /// <remarks>The expression representing the array can be obtained by using the <see cref="MakeMemberAccess"/> method,
-        /// or through <see cref="NewArrayBounds"/> or <see cref="NewArrayInit"/>.</remarks>
+        /// or through <see cref="NewArrayBounds(System.Type,System.Linq.Expressions.Expression[])"/> or <see cref="NewArrayInit(System.Type,System.Linq.Expressions.Expression[])"/>.</remarks>
         /// <returns>The created <see cref="IndexExpression"/>.</returns>
         public static IndexExpression ArrayAccess(Expression array, params Expression[] indexes)
         {
@@ -55,7 +55,7 @@ namespace System.Linq.Expressions
         /// <param name="array">An expression representing the array to index.</param>
         /// <param name="indexes">An <see cref="IEnumerable{T}"/> containing expressions used to index the array.</param>
         /// <remarks>The expression representing the array can be obtained by using the <see cref="MakeMemberAccess"/> method,
-        /// or through <see cref="NewArrayBounds"/> or <see cref="NewArrayInit"/>.</remarks>
+        /// or through <see cref="NewArrayBounds(System.Type,System.Linq.Expressions.Expression[])"/> or <see cref="NewArrayInit(System.Type,System.Linq.Expressions.Expression[])"/>.</remarks>
         /// <returns>The created <see cref="IndexExpression"/>.</returns>
         public static IndexExpression ArrayAccess(Expression array, IEnumerable<Expression> indexes)
         {
@@ -106,10 +106,6 @@ namespace System.Linq.Expressions
 
         #region methods for finding a PropertyInfo by its name
 
-        /// <summary>
-        /// The method finds the instance property with the specified name in a type. The property's type signature needs to be compatible with
-        /// the arguments if it is a indexer. If the arguments is null or empty, we get a normal property.
-        /// </summary>
         private static PropertyInfo FindInstanceProperty(Type type, string propertyName, Expression[] arguments)
         {
             // bind to public names first
@@ -437,7 +433,7 @@ namespace System.Linq.Expressions
         {
             if (indexer == null)
             {
-                Debug.Assert(instance != null && instance.Type.IsArray);
+                Debug.Assert(instance?.Type.IsArray == true);
                 Debug.Assert(instance.Type.GetArrayRank() == arguments.Length);
             }
 
@@ -506,11 +502,10 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public IndexExpression Update(Expression @object, IEnumerable<Expression> arguments)
         {
-            if (@object == Object & arguments != null && ExpressionUtils.SameElements(ref arguments, _arguments))
+            if (@object == Object && arguments != null && ExpressionUtils.SameElements(ref arguments, _arguments))
             {
                 return this;
             }
-
 
             return MakeIndex(@object, Indexer, arguments);
         }
@@ -523,9 +518,6 @@ namespace System.Linq.Expressions
             return MakeIndex(instance, Indexer, arguments ?? _arguments);
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitIndex(this);

@@ -32,7 +32,10 @@ namespace System.Linq.Expressions
         public static ReadOnlyCollection<T> Visit<T>(ReadOnlyCollection<T> nodes, Func<T, T> elementVisitor)
         {
             ContractUtils.RequiresNotNull(nodes, nameof(nodes));
-            ContractUtils.RequiresNotNull(elementVisitor, nameof(elementVisitor));
+            if (elementVisitor == null)
+            {
+                throw new ArgumentNullException(nameof(elementVisitor));
+            }
             T[] newNodes = null;
             for (int i = 0, n = nodes.Count; i < n; i++)
             {
@@ -193,7 +196,7 @@ namespace System.Linq.Expressions
         protected internal virtual Expression VisitBlock(BlockExpression node)
         {
             var nodes = ExpressionVisitorUtils.VisitBlockExpressions(this, node);
-            var v = VisitAndConvert(node.Variables, "VisitBlock");
+            var v = VisitAndConvert(node.Variables, nameof(VisitBlock));
 
             if (v == node.Variables && nodes == null)
             {

@@ -107,11 +107,10 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public MemberInitExpression Update(NewExpression newExpression, IEnumerable<MemberBinding> bindings)
         {
-            if (newExpression == NewExpression & bindings != null && ExpressionUtils.SameElements(ref bindings, _bindings))
+            if (newExpression == NewExpression && bindings != null && ExpressionUtils.SameElements(ref bindings, _bindings))
             {
                 return this;
             }
-
 
             return MemberInit(newExpression, bindings);
         }
@@ -151,9 +150,6 @@ namespace System.Linq.Expressions
             }
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitMemberInit(this);

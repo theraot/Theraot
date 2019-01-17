@@ -185,7 +185,7 @@ namespace System.Linq.Expressions
                     ContractUtils.RequiresNotNull(member, nameof(members), i);
                     if (!TypeUtils.AreEquivalent(member.DeclaringType, constructor.DeclaringType))
                     {
-                        throw new ArgumentException($" The member '{member.Name}' is not declared on type '{constructor.DeclaringType.Name}' being created", i >= 0 ? $"{nameof(members)}[{i}]" : nameof(members));
+                        throw new ArgumentException($" The member '{member.Name}' is not declared on type '{constructor.DeclaringType?.Name}' being created", i >= 0 ? $"{nameof(members)}[{i}]" : nameof(members));
                     }
 
                     ValidateAnonymousTypeMember(ref member, out var memberType, nameof(members), i);
@@ -240,11 +240,11 @@ namespace System.Linq.Expressions
                     members = ArrayReadOnlyCollection.Create(newMembers);
                 }
             }
-            else if (arguments != null && arguments.Length > 0)
+            else if (arguments?.Length > 0)
             {
                 throw new ArgumentException("Incorrect number of arguments for constructor");
             }
-            else if (members != null && members.Count > 0)
+            else if (members?.Count > 0)
             {
                 throw new ArgumentException("Incorrect number of members for constructor");
             }
@@ -324,9 +324,6 @@ namespace System.Linq.Expressions
             return Members != null ? New(Constructor, arguments, Members) : New(Constructor, arguments);
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitNew(this);

@@ -76,9 +76,6 @@ namespace System.Linq.Expressions
             return esb.ToString();
         }
 
-        /// <summary>
-        /// Output a given ElementInit to a string.
-        /// </summary>
         internal static string ElementInitBindingToString(ElementInit node)
         {
             Debug.Assert(node != null);
@@ -87,9 +84,6 @@ namespace System.Linq.Expressions
             return esb.ToString();
         }
 
-        /// <summary>
-        /// Output a given expression tree to a string.
-        /// </summary>
         internal static string ExpressionToString(Expression node)
         {
             Debug.Assert(node != null);
@@ -98,9 +92,6 @@ namespace System.Linq.Expressions
             return esb.ToString();
         }
 
-        /// <summary>
-        /// Output a given member binding to a string.
-        /// </summary>
         internal static string MemberBindingToString(MemberBinding node)
         {
             Debug.Assert(node != null);
@@ -321,7 +312,7 @@ namespace System.Linq.Expressions
                     Out(sValue);
                     Out('\"');
                 }
-                else if (sValue == node.Value.GetType().ToString())
+                else if (string.Equals(sValue, node.Value.GetType().ToString(), StringComparison.Ordinal))
                 {
                     Out("value(");
                     Out(sValue);
@@ -365,8 +356,8 @@ namespace System.Linq.Expressions
         protected internal override Expression VisitExtension(Expression node)
         {
             // Prefer an overridden ToString, if available.
-            var toString = node.GetType().GetMethod("ToString", Type.EmptyTypes);
-            if (toString.DeclaringType != typeof(Expression) && !toString.IsStatic)
+            var toString = node.GetType().GetMethod(nameof(ToString), Type.EmptyTypes);
+            if ((toString != null) && (toString.DeclaringType != typeof(Expression) && !toString.IsStatic))
             {
                 Out(node.ToString());
                 return node;
@@ -413,7 +404,7 @@ namespace System.Linq.Expressions
             else
             {
                 Debug.Assert(node.Indexer != null);
-                Out(node.Indexer.DeclaringType.Name);
+                Out(node.Indexer.DeclaringType?.Name);
             }
             if (node.Indexer != null)
             {
@@ -440,10 +431,9 @@ namespace System.Linq.Expressions
         {
             Out("Invoke(");
             Visit(node.Expression);
-            var sep = ", ";
             for (int i = 0, n = node.ArgumentCount; i < n; i++)
             {
-                Out(sep);
+                Out(", ");
                 Visit(node.GetArgument(i));
             }
             Out(')');
@@ -469,12 +459,11 @@ namespace System.Linq.Expressions
             {
                 // (p1, p2, ..., pn) => body
                 Out('(');
-                var sep = ", ";
                 for (int i = 0, n = node.ParameterCount; i < n; i++)
                 {
                     if (i > 0)
                     {
-                        Out(sep);
+                        Out(", ");
                     }
                     Visit(node.GetParameter(i));
                 }
@@ -515,8 +504,7 @@ namespace System.Linq.Expressions
 
         protected internal override Expression VisitMemberInit(MemberInitExpression node)
         {
-            if (node.NewExpression.ArgumentCount == 0 &&
-                node.NewExpression.Type.Name.Contains('<'))
+            if (node.NewExpression.ArgumentCount == 0 && node.NewExpression.Type.Name.Contains('<'))
             {
                 // anonymous type constructor
                 Out("new");
@@ -610,6 +598,8 @@ namespace System.Linq.Expressions
                     Out("new [] ");
                     VisitExpressions('{', node.Expressions, '}');
                     break;
+                default:
+                    break;
             }
             return node;
         }
@@ -665,6 +655,8 @@ namespace System.Linq.Expressions
 
                 case ExpressionType.TypeEqual:
                     Out(" TypeEqual ");
+                    break;
+                default:
                     break;
             }
             Out(node.TypeOperand.Name);
@@ -746,13 +738,12 @@ namespace System.Linq.Expressions
         protected override ElementInit VisitElementInit(ElementInit node)
         {
             Out(node.AddMethod.ToString());
-            var sep = ", ";
             Out('(');
             for (int i = 0, n = node.ArgumentCount; i < n; i++)
             {
                 if (i > 0)
                 {
-                    Out(sep);
+                    Out(", ");
                 }
                 Visit(node.GetArgument(i));
             }
@@ -836,7 +827,7 @@ namespace System.Linq.Expressions
             else
             {
                 // For static members, include the type name
-                Out(member.DeclaringType.Name);
+                Out(member.DeclaringType?.Name);
             }
 
             Out('.');
