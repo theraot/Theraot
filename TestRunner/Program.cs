@@ -64,7 +64,7 @@ namespace TestRunner
                 );
                 report.Append("\r\n\r\n");
             }
-            Console.WriteLine(report.ToString());
+            Console.WriteLine(report);
         }
 
         public static void Main()
@@ -147,14 +147,7 @@ namespace TestRunner
                 {
                     throw new ArgumentException();
                 }
-                if (method.IsStatic)
-                {
-                    _instance = null;
-                }
-                else
-                {
-                    _instance = Activator.CreateInstance(type);
-                }
+                _instance = method.IsStatic ? null : Activator.CreateInstance(type);
                 _delegate = TypeHelper.BuildDelegate(method, _instance);
                 _parameterInfos = method.GetParameters();
                 _isolatedThread = testMethod.TestAttribute.IsolatedThread;
@@ -291,16 +284,19 @@ namespace TestRunner
     {
         public AssertionFailedException()
         {
+            // Empty
         }
 
         public AssertionFailedException(string message)
             : base(message)
         {
+            // Empty
         }
 
         public AssertionFailedException(string message, Exception inner)
             : base(message, inner)
         {
+            // Empty
         }
     }
 
