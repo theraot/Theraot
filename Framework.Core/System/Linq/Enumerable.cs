@@ -1,5 +1,8 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable CC0031 // Check for null before calling a delegate
+#pragma warning disable RECS0017 // Possible compare of value type with 'null'
+
 using System.Collections;
 using System.Collections.Generic;
 using Theraot.Core;
@@ -259,14 +262,11 @@ namespace System.Linq
                 {
                     if (enumerator.MoveNext())
                     {
-                        while (true)
+                        do
                         {
                             yield return enumerator.Current;
-                            if (!enumerator.MoveNext())
-                            {
-                                break;
-                            }
                         }
+                        while (enumerator.MoveNext());
                     }
                     else
                     {
@@ -345,7 +345,7 @@ namespace System.Linq
                 }
                 count++;
             }
-            throw new ArgumentOutOfRangeException();
+            throw new ArgumentOutOfRangeException(nameof(index));
         }
 
         public static TSource ElementAtOrDefault<TSource>(this IEnumerable<TSource> source, int index)
@@ -749,7 +749,7 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(selector));
             }
 
-            return Select(source, (item, i) => selector(item));
+            return Select(source, (item, _) => selector(item));
         }
 
         public static IEnumerable<TResult> Select<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, int, TResult> selector)
@@ -1017,7 +1017,7 @@ namespace System.Linq
 
         public static IEnumerable<TSource> Skip<TSource>(this IEnumerable<TSource> source, int count)
         {
-            return SkipWhile(source, (item, i) => i < count);
+            return SkipWhile(source, (_, i) => i < count);
         }
 
         public static IEnumerable<TSource> SkipWhile<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -1026,7 +1026,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
-            return SkipWhile(source, (item, i) => predicate(item));
+            return SkipWhile(source, (item, _) => predicate(item));
         }
 
         public static IEnumerable<TSource> SkipWhile<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> predicate)
@@ -1098,7 +1098,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
-            return TakeWhile(source, (item, i) => predicate(item));
+            return TakeWhile(source, (item, _) => predicate(item));
         }
 
         public static IEnumerable<TSource> TakeWhile<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> predicate)
@@ -1277,7 +1277,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
-            return Where(source, (item, i) => predicate(item));
+            return Where(source, (item, _) => predicate(item));
         }
 
         public static IEnumerable<TSource> Where<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> predicate)

@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable RECS0017 // Possible compare of value type with 'null'
+
 using System.Collections.Generic;
 using Theraot.Reflection;
 
@@ -619,7 +621,6 @@ namespace System.Linq
                     {
                         max = element;
                     }
-
                 }
                 return max;
             }
@@ -1057,7 +1058,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(selector));
             }
-            TResult ClosureSelector(TSource item, int i) => selector(item);
+            TResult ClosureSelector(TSource item, int _) => selector(item);
             return Max
             (
                 SelectExtracted
@@ -1731,7 +1732,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(selector));
             }
-            TResult ClosureSelector(TSource item, int i) => selector(item);
+            TResult ClosureSelector(TSource item, int _) => selector(item);
             return Min
             (
                 SelectExtracted
@@ -1750,7 +1751,7 @@ namespace System.Linq
             }
             if ((long)start + count - 1L > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(start));
             }
             return RangeExtracted();
 
