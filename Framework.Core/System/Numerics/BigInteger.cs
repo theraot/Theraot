@@ -1,5 +1,7 @@
 #if LESSTHAN_NET40
 
+#pragma warning disable CA2225 // Operator overloads have named alternates
+
 using System.Globalization;
 using Theraot.Core;
 
@@ -156,7 +158,7 @@ namespace System.Numerics
             else
             {
                 InternalSign = bits[0];
-                InternalSign = InternalSign * ((bits[3] & int.MinValue) == 0 ? 1 : -1);
+                InternalSign *= ((bits[3] & int.MinValue) == 0 ? 1 : -1);
                 InternalBits = null;
             }
         }
@@ -187,7 +189,7 @@ namespace System.Numerics
             if (valueLength > 4)
             {
                 var unalignedBytes = valueLength % 4;
-                var dwordCount = valueLength / 4 + (unalignedBytes == 0 ? 0 : 1);
+                var dwordCount = (valueLength / 4) + (unalignedBytes == 0 ? 0 : 1);
                 var isZero = true;
                 var internalBits = new uint[dwordCount];
                 var byteIndex = 3;
@@ -272,14 +274,7 @@ namespace System.Numerics
             }
             else
             {
-                if (isNegative)
-                {
-                    InternalSign = -1;
-                }
-                else
-                {
-                    InternalSign = 0;
-                }
+                InternalSign = isNegative ? -1 : 0;
                 for (var index = valueLength - 1; index >= 0; index--)
                 {
                     InternalSign <<= 8;
@@ -463,7 +458,7 @@ namespace System.Numerics
                 }
                 do
                 {
-                    index = index - 1;
+                    index--;
                     if (index >= 0)
                     {
                         continue;
@@ -540,6 +535,7 @@ namespace System.Numerics
         }
 
         public static explicit operator BigInteger(float value)
+
         {
             return new BigInteger(value);
         }
@@ -793,7 +789,7 @@ namespace System.Numerics
             var d = 0.5;
             var length = Length(value.InternalBits);
             var topBits = BitLengthOfUInt(value.InternalBits[length - 1]);
-            var bitlen = (length - 1) * 32 + topBits;
+            var bitlen = ((length - 1) * 32) + topBits;
             var currentBitMask = (uint)(1 << (topBits - 1 & 31));
             for (var index = length - 1; index >= 0; index--)
             {
@@ -801,14 +797,14 @@ namespace System.Numerics
                 {
                     if ((value.InternalBits[index] & currentBitMask) != 0)
                     {
-                        c = c + d;
+                        c += d;
                     }
-                    d = d * 0.5;
-                    currentBitMask = currentBitMask >> 1;
+                    d *= 0.5;
+                    currentBitMask >>= 1;
                 }
                 currentBitMask = unchecked((uint)int.MinValue);
             }
-            return (Math.Log(c) + 0.69314718055994529D * bitlen) / Math.Log(baseValue);
+            return (Math.Log(c) + (0.69314718055994529D * bitlen)) / Math.Log(baseValue);
         }
 
         /// <summary>Returns the base 10 logarithm of a specified number.</summary>
@@ -1228,7 +1224,7 @@ namespace System.Numerics
                 return value >> -shift;
             }
             var digitShift = shift / 32;
-            var smallShift = shift - digitShift * 32;
+            var smallShift = shift - (digitShift * 32);
             var partsForBitManipulation = GetPartsForBitManipulation(ref value, out var xd, out var xl);
             var zd = new uint[xl + digitShift + 1];
             if (smallShift != 0)
@@ -1461,7 +1457,7 @@ namespace System.Numerics
                 return value << -shift;
             }
             var digitShift = shift / 32;
-            var smallShift = shift - digitShift * 32;
+            var smallShift = shift - (digitShift * 32);
             var negative = GetPartsForBitManipulation(ref value, out var xd, out var xl);
             if (negative)
             {
@@ -1624,7 +1620,7 @@ namespace System.Numerics
                     MulUpper(ref resultMax, ref maxResultSize, maxSquare, maxSquareSize);
                     MulLower(ref resultMin, ref minResultSize, minSquare, minSquareSize);
                 }
-                expTmp = expTmp >> 1;
+                expTmp >>= 1;
                 if (expTmp == 0)
                 {
                     break;
@@ -1650,7 +1646,7 @@ namespace System.Numerics
                     NumericHelper.Swap(ref regResult, ref regTmp);
                     regResult.Mul(ref regSquare, ref regTmp);
                 }
-                expTmp = expTmp >> 1;
+                expTmp >>= 1;
                 if (expTmp == 0)
                 {
                     break;
@@ -1764,16 +1760,7 @@ namespace System.Numerics
                 {
                     return -other.InternalSign;
                 }
-                int result;
-                if (InternalSign >= other.InternalSign)
-                {
-                    result = InternalSign <= other.InternalSign ? 0 : 1;
-                }
-                else
-                {
-                    result = -1;
-                }
-                return result;
+                return InternalSign >= other.InternalSign ? InternalSign <= other.InternalSign ? 0 : 1 : -1;
             }
             if (other.InternalBits != null)
             {
@@ -1907,7 +1894,7 @@ namespace System.Numerics
             var index = Length(InternalBits);
             while (true)
             {
-                index = index - 1;
+                index--;
                 if (index < 0)
                 {
                     break;
@@ -2018,7 +2005,7 @@ namespace System.Numerics
             var numBits = 0;
             while (x > 0)
             {
-                x = x >> 1;
+                x >>= 1;
                 numBits++;
             }
             return numBits;
@@ -2029,7 +2016,7 @@ namespace System.Numerics
             var index = length;
             do
             {
-                index = index - 1;
+                index--;
                 if (index >= 0)
                 {
                     continue;
@@ -2052,18 +2039,7 @@ namespace System.Numerics
 
         private static bool GetPartsForBitManipulation(ref BigInteger x, out uint[] xd, out int xl)
         {
-            if (x.InternalBits != null)
-            {
-                xd = x.InternalBits;
-            }
-            else if (x.InternalSign >= 0)
-            {
-                xd = new[] { unchecked((uint)x.InternalSign) };
-            }
-            else
-            {
-                xd = new[] { unchecked((uint)-x.InternalSign) };
-            }
+            xd = x.InternalBits ?? (x.InternalSign >= 0 ? new[] { unchecked((uint)x.InternalSign) } : new[] { unchecked((uint)-x.InternalSign) });
             xl = x.InternalBits?.Length ?? 1;
             return x.InternalSign < 0;
         }
@@ -2079,7 +2055,7 @@ namespace System.Numerics
                 if (exp != 1)
                 {
                     ModPowSquareModValue(ref regVal, ref regMod, ref regTmp);
-                    exp = exp >> 1;
+                    exp >>= 1;
                 }
                 else
                 {
@@ -2097,7 +2073,7 @@ namespace System.Numerics
                     ModPowUpdateResult(ref regRes, ref regVal, ref regMod, ref regTmp);
                 }
                 ModPowSquareModValue(ref regVal, ref regMod, ref regTmp);
-                exp = exp >> 1;
+                exp >>= 1;
             }
         }
 
@@ -2122,12 +2098,12 @@ namespace System.Numerics
             if (hi == 0)
             {
                 uHiRes = NumericHelper.GetLo(num);
-                cuRes = cuRes + (cuMul - 1);
+                cuRes += (cuMul - 1);
             }
             else
             {
                 uHiRes = hi;
-                cuRes = cuRes + cuMul;
+                cuRes += cuMul;
             }
         }
 
@@ -2138,7 +2114,7 @@ namespace System.Numerics
             if (hi == 0)
             {
                 uHiRes = NumericHelper.GetLo(num);
-                cuRes = cuRes + (cuMul - 1);
+                cuRes += (cuMul - 1);
             }
             else
             {
@@ -2149,11 +2125,11 @@ namespace System.Numerics
                     if (num1 == 0)
                     {
                         hi = 1;
-                        cuRes = cuRes + 1;
+                        cuRes++;
                     }
                 }
                 uHiRes = hi;
-                cuRes = cuRes + cuMul;
+                cuRes += cuMul;
             }
         }
 
@@ -2189,10 +2165,10 @@ namespace System.Numerics
             }
             else if (valueExp > 11)
             {
-                valueMan = valueMan << 11;
-                valueExp = valueExp - 11;
-                var significantDword = (valueExp - 1) / 32 + 1;
-                var extraDword = significantDword * 32 - valueExp;
+                valueMan <<= 11;
+                valueExp -= 11;
+                var significantDword = ((valueExp - 1) / 32) + 1;
+                var extraDword = (significantDword * 32) - valueExp;
                 bits = new uint[significantDword + 2];
                 bits[significantDword + 1] = (uint)(valueMan >> (extraDword + 32 & 63));
                 bits[significantDword] = (uint)(valueMan >> (extraDword & 63));
@@ -2223,16 +2199,7 @@ namespace System.Numerics
 
         private static ulong ULong(int length, uint[] internalBits)
         {
-            ulong unsigned;
-            if (length <= 1)
-            {
-                unsigned = internalBits[0];
-            }
-            else
-            {
-                unsigned = NumericHelper.BuildUInt64(internalBits[1], internalBits[0]);
-            }
-            return unsigned;
+            return length <= 1 ? internalBits[0] : NumericHelper.BuildUInt64(internalBits[1], internalBits[0]);
         }
 
         private uint[] ToUInt32Array()
