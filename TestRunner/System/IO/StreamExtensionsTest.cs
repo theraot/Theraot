@@ -31,7 +31,7 @@ namespace TestRunner.System.IO
             var tokenSource = new CancellationTokenSource();
             tokenSource.Cancel();
             var buffer = new byte[10];
-            Assert.ThrowsAsync<OperationCanceledException>(() => stream.ReadAsync(buffer, 0, 10, tokenSource.Token));
+            Assert.AsyncThrows<OperationCanceledException>(() => stream.ReadAsync(buffer, 0, 10, tokenSource.Token));
         }
 
         [Test]
@@ -41,7 +41,7 @@ namespace TestRunner.System.IO
             var tokenSource = new CancellationTokenSource();
             tokenSource.Cancel();
             var buffer = new byte[10];
-            Assert.ThrowsAsync<OperationCanceledException>(() => stream.ReadAsync(buffer, 0, 10, tokenSource.Token));
+            Assert.AsyncThrows<OperationCanceledException>(() => stream.ReadAsync(buffer, 0, 10, tokenSource.Token));
         }
     }
 }

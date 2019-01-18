@@ -135,7 +135,7 @@ namespace TestRunner
         {
             try
             {
-                action();
+                action?.Invoke();
             }
             catch (TException exception)
             {
@@ -161,7 +161,7 @@ namespace TestRunner
         {
             try
             {
-                GC.KeepAlive(func());
+                GC.KeepAlive(func == null ? default : func.Invoke());
             }
             catch (TException exception)
             {
@@ -182,12 +182,12 @@ namespace TestRunner
             throw new AssertionFailedException($"Expected: {typeof(TException).Name}");
         }
 
-        public static TException ThrowsAsync<TException>(Func<Task> func, string message = null)
+        public static TException AsyncThrows<TException>(Func<Task> func, string message = null)
             where TException : Exception
         {
             try
             {
-                func().Wait();
+                func?.Invoke().Wait();
             }
             catch (AggregateException aggregateException) when (aggregateException.InnerException is TException exception)
             {
