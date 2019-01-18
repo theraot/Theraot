@@ -8,6 +8,7 @@ using ThreadState = System.Threading.ThreadState;
 namespace TestRunner.System.Threading
 {
     [TestFixture]
+    [Category("Performance")]
     public static class ThreadTest
     {
         [Test]
