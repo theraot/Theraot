@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Theraot;
 using Theraot.Collections.ThreadSafe;
 
 #if NET40
@@ -47,7 +48,7 @@ namespace TestRunner.System.Threading
             }
             catch (OperationCanceledException exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
                 return;
             }
 
