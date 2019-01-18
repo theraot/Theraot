@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Theraot.Core;
 using Theraot.Threading;
 using ThreadState = System.Threading.ThreadState;
 
@@ -14,7 +13,7 @@ namespace TestRunner.System.Threading
         [Test]
         public static void CurrentThreadInTaskIsBackgroundOrRunning()
         {
-            ThreadState found = default;
+            var found = default(ThreadState);
             TaskEx.Run(() => found = Thread.CurrentThread.ThreadState).Wait();
             Assert.IsTrue(found == ThreadState.Background || found == ThreadState.Running);
         }
@@ -35,15 +34,17 @@ namespace TestRunner.System.Threading
         [Test]
         public static void NewThreadWithNullParametrizedThreadStartThrows()
         {
-            ParameterizedThreadStart parameterizedStart = null;
-            Assert.Throws<ArgumentNullException, Thread>(() => new Thread(parameterizedStart));
+            const ParameterizedThreadStart ParameterizedStart = null;
+            // ReSharper disable once AssignNullToNotNullAttribute
+            Assert.Throws<ArgumentNullException, Thread>(() => new Thread(ParameterizedStart));
         }
 
         [Test]
         public static void NewThreadWithNullThreadStartThrows()
         {
-            ThreadStart start = null;
-            Assert.Throws<ArgumentNullException, Thread>(() => new Thread(start));
+            const ThreadStart Start = null;
+            // ReSharper disable once AssignNullToNotNullAttribute
+            Assert.Throws<ArgumentNullException, Thread>(() => new Thread(Start));
         }
 
         [Test]
@@ -61,7 +62,7 @@ namespace TestRunner.System.Threading
         public static void NewThreadWithParametrizedThreadStartRuns()
         {
             var value = 0;
-            var thread = new Thread(obj => value = 1);
+            var thread = new Thread(_ => value = 1);
             thread.Start(new object());
             thread.Join();
             Assert.AreEqual(1, value);
@@ -125,7 +126,7 @@ namespace TestRunner.System.Threading
         public static void StartingATaskThreadThrows()
         {
             Thread thread = null;
-            TaskEx.Run(() => { thread = Thread.CurrentThread; }).Wait();
+            TaskEx.Run(() => thread = Thread.CurrentThread).Wait();
             Assert.Throws<ThreadStateException>(thread.Start);
         }
 
@@ -162,7 +163,7 @@ namespace TestRunner.System.Threading
                 }
             );
             ThreadingHelper.SpinWaitWhileNull(ref thread);
-            Assert.IsTrue(EnumHelper.HasFlag(thread.ThreadState, ThreadState.Background));
+            Assert.IsTrue((thread.ThreadState & ThreadState.Background) != 0);
             ThreadingHelper.MemoryBarrier();
             Volatile.Write(ref signal[0], 1);
         }
@@ -170,19 +171,23 @@ namespace TestRunner.System.Threading
         [Test]
         public static void TaskThreadIsBackgroundWhileWaiting()
         {
-            var manualResetEvent = new ManualResetEvent(false);
-            Thread thread = null;
-            TaskEx.Run
-            (
-                () =>
-                {
-                    thread = Thread.CurrentThread;
-                    manualResetEvent.WaitOne();
-                }
-            );
-            ThreadingHelper.SpinWaitWhileNull(ref thread);
-            Assert.IsTrue(EnumHelper.HasFlag(thread.ThreadState, ThreadState.Background));
-            manualResetEvent.Set();
+            var manualResetEvent = new ManualResetEvent[1];
+            using (manualResetEvent[0] = new ManualResetEvent(false))
+            {
+                Thread thread = null;
+                var task = TaskEx.Run
+                (
+                    () =>
+                    {
+                        thread = Thread.CurrentThread;
+                        manualResetEvent[0].WaitOne();
+                    }
+                );
+                ThreadingHelper.SpinWaitWhileNull(ref thread);
+                Assert.IsTrue((thread.ThreadState & ThreadState.Background) != 0);
+                manualResetEvent[0].Set();
+                task.Wait();
+            }
         }
 
         [Test]
@@ -208,11 +213,15 @@ namespace TestRunner.System.Threading
         [Test]
         public static void ThreadIsRunningWhileWaiting()
         {
-            var manualResetEvent = new ManualResetEvent(false);
-            var thread = new Thread(() => { manualResetEvent.WaitOne(); });
-            thread.Start();
-            Assert.AreEqual(ThreadState.Running, thread.ThreadState);
-            manualResetEvent.Set();
+            var manualResetEvent = new ManualResetEvent[1];
+            using (manualResetEvent[0] = new ManualResetEvent(false))
+            {
+                var thread = new Thread(() => manualResetEvent[0].WaitOne());
+                thread.Start();
+                Assert.AreEqual(ThreadState.Running, thread.ThreadState);
+                manualResetEvent[0].Set();
+                thread.Join();
+            }
         }
 
         [Test]
@@ -263,7 +272,7 @@ namespace TestRunner.System.Threading
             var thread = Thread.CurrentThread;
             thread.Name = name;
             Assert.AreEqual(name, thread.Name);
-            Assert.Throws<InvalidOperationException>(() => { thread.Name = secondName; });
+            Assert.Throws<InvalidOperationException>(() => thread.Name = secondName);
         }
 
         [Test(IsolatedThread = true)]
@@ -272,7 +281,7 @@ namespace TestRunner.System.Threading
             var thread = Thread.CurrentThread;
             thread.Name = name;
             Assert.AreEqual(name, thread.Name);
-            Assert.Throws<InvalidOperationException>(() => { thread.Name = null; });
+            Assert.Throws<InvalidOperationException>(() => thread.Name = null);
         }
     }
 }
