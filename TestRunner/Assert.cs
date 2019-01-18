@@ -159,9 +159,10 @@ namespace TestRunner
         public static TException Throws<TException, T>(Func<T> func, string message = null)
             where TException : Exception
         {
+            T foundValue;
             try
             {
-                GC.KeepAlive(func == null ? default : func.Invoke());
+                foundValue = func == null ? default : func.Invoke();
             }
             catch (TException exception)
             {
@@ -177,9 +178,9 @@ namespace TestRunner
             }
             if (message != null)
             {
-                throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Message: {message}");
+                throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found value: {foundValue} - Message: {message}");
             }
-            throw new AssertionFailedException($"Expected: {typeof(TException).Name}");
+            throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found value: {foundValue}");
         }
 
         public static TException AsyncThrows<TException>(Func<Task> func, string message = null)
@@ -206,6 +207,33 @@ namespace TestRunner
                 throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Message: {message}");
             }
             throw new AssertionFailedException($"Expected: {typeof(TException).Name}");
+        }
+
+        public static TException AsyncThrows<TException, T>(Func<Task<T>> func, string message = null)
+            where TException : Exception
+        {
+            T foundValue;
+            try
+            {
+                foundValue = func == null ? default : func.Invoke().Result;
+            }
+            catch (AggregateException aggregateException) when (aggregateException.InnerException is TException exception)
+            {
+                return exception;
+            }
+            catch (AggregateException aggregateException) when (aggregateException.InnerException is Exception exception)
+            {
+                if (message != null)
+                {
+                    throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found: {exception} - Message: {message}", exception);
+                }
+                throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found: {exception}", exception);
+            }
+            if (message != null)
+            {
+                throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found value: {foundValue} - Message: {message}");
+            }
+            throw new AssertionFailedException($"Expected: {typeof(TException).Name} - Found value: {foundValue}");
         }
     }
 }
