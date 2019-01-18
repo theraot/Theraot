@@ -141,7 +141,7 @@ namespace System.Numerics
             for (var i = regNum._iuLast; i >= 0; i--)
             {
                 num = NumericHelper.BuildUInt64((uint)num, regNum._bits[i]);
-                num = num % num5;
+                num %= num5;
             }
             return (uint)num;
         }
@@ -150,7 +150,7 @@ namespace System.Numerics
         {
             if (_iuLast == 0)
             {
-                _uSmall = _uSmall + u;
+                _uSmall += u;
                 if (_uSmall >= u)
                 {
                     return;
@@ -233,7 +233,7 @@ namespace System.Numerics
                 num++;
             }
             var num1 = NumericHelper.CbitLowZero(_bits[num]);
-            return num1 + num * 32;
+            return num1 + (num * 32);
         }
 
         public void Div(ref BigIntegerBuilder regDen)
@@ -271,7 +271,7 @@ namespace System.Numerics
             {
                 num1 = NumericHelper.BuildUInt64((uint)num1, _bits[i]);
                 _bits[i] = (uint)(num1 / num5);
-                num1 = num1 % num5;
+                num1 %= num5;
             }
             Trim();
             return (uint)num1;
@@ -330,7 +330,7 @@ namespace System.Numerics
                 if (num1 > 0)
                 {
                     man = (man << num1) | (_bits[num - 1] >> (32 - num1));
-                    exp = exp - num1;
+                    exp -= num1;
                 }
             }
         }
@@ -876,7 +876,7 @@ namespace System.Numerics
 
         private static uint AddMulCarry(ref uint uAdd, uint uMul1, uint uMul2, uint uCarry)
         {
-            var num = uMul1 * (ulong)uMul2 + uAdd + uCarry;
+            var num = (uMul1 * (ulong)uMul2) + uAdd + uCarry;
             uAdd = (uint)num;
             return (uint)(num >> 32);
         }
@@ -926,8 +926,8 @@ namespace System.Numerics
                     }
                     if (high2 == ulong.MaxValue || high21 == ulong.MaxValue)
                     {
-                        high2 = high2 >> 1;
-                        high21 = high21 >> 1;
+                        high2 >>= 1;
+                        high21 >>= 1;
                     }
                     if (high2 == high21)
                     {
@@ -945,7 +945,7 @@ namespace System.Numerics
                             var num9 = high2 - high21;
                             while (num9 >= high21 && num8 < 32)
                             {
-                                num9 = num9 - high21;
+                                num9 -= high21;
                                 num8++;
                             }
                             if (num9 >= high21)
@@ -954,15 +954,15 @@ namespace System.Numerics
                                 if (num10 <= uint.MaxValue)
                                 {
                                     num8 = (uint)num10;
-                                    num9 = high2 - num8 * high21;
+                                    num9 = high2 - (num8 * high21);
                                 }
                                 else
                                 {
                                     break;
                                 }
                             }
-                            var num11 = num4 + num8 * (ulong)num6;
-                            var num12 = num5 + num8 * (ulong)num7;
+                            var num11 = num4 + (num8 * (ulong)num6);
+                            var num12 = num5 + (num8 * (ulong)num7);
                             if (num11 > 2147483647 || num12 > 2147483647)
                             {
                                 break;
@@ -980,7 +980,7 @@ namespace System.Numerics
                                 num9 = high21 - high2;
                                 while (num9 >= high2 && num8 < 32)
                                 {
-                                    num9 = num9 - high2;
+                                    num9 -= high2;
                                     num8++;
                                 }
                                 if (num9 >= high2)
@@ -989,15 +989,15 @@ namespace System.Numerics
                                     if (num13 <= uint.MaxValue)
                                     {
                                         num8 = (uint)num13;
-                                        num9 = high21 - num8 * high2;
+                                        num9 = high21 - (num8 * high2);
                                     }
                                     else
                                     {
                                         break;
                                     }
                                 }
-                                num11 = num7 + num8 * (ulong)num5;
-                                num12 = num6 + num8 * (ulong)num4;
+                                num11 = num7 + (num8 * (ulong)num5);
+                                num12 = num6 + (num8 * (ulong)num4);
                                 if (num11 > 2147483647 || num12 > 2147483647)
                                 {
                                     break;
@@ -1029,8 +1029,8 @@ namespace System.Numerics
                             {
                                 var num16 = reg1._bits[i];
                                 var num17 = reg2._bits[i];
-                                var num18 = (long)num16 * num4 - (long)num17 * num5 + num14;
-                                var num19 = (long)num17 * num7 - (long)num16 * num6 + num15;
+                                var num18 = ((long)num16 * num4) - ((long)num17 * num5) + num14;
+                                var num19 = ((long)num17 * num7) - ((long)num16 * num6) + num15;
                                 num14 = (int)(num18 >> 32);
                                 num15 = (int)(num19 >> 32);
                                 reg1._bits[i] = (uint)num18;
@@ -1107,10 +1107,10 @@ namespace System.Numerics
             if (num7 > 0)
             {
                 num5 = num5 << (num7 & 31) | num6 >> (num8 & 31);
-                num6 = num6 << (num7 & 31);
+                num6 <<= (num7 & 31);
                 if (num1 > 2)
                 {
-                    num6 = num6 | regDen._bits[num1 - 3] >> (num8 & 31);
+                    num6 |= regDen._bits[num1 - 3] >> (num8 & 31);
                 }
             }
             regNum.EnsureWritable();
@@ -1130,10 +1130,10 @@ namespace System.Numerics
                 if (num7 > 0)
                 {
                     num12 = num12 << (num7 & 63) | num13 >> (num8 & 31);
-                    num13 = num13 << (num7 & 31);
+                    num13 <<= (num7 & 31);
                     if (num9 + num1 >= 3)
                     {
-                        num13 = num13 | regNum._bits[num9 + num1 - 3] >> (num8 & 31);
+                        num13 |= regNum._bits[num9 + num1 - 3] >> (num8 & 31);
                     }
                 }
                 var num14 = num12 / num5;
@@ -1153,14 +1153,14 @@ namespace System.Numerics
                     var num16 = (ulong)0;
                     for (var i = 0; i < num1; i++)
                     {
-                        num16 = num16 + regDen._bits[i] * num14;
+                        num16 += (regDen._bits[i] * num14);
                         var num17 = (uint)num16;
-                        num16 = num16 >> 32;
+                        num16 >>= 32;
                         if (regNum._bits[num9 + i] < num17)
                         {
-                            num16 = num16 + 1;
+                            num16++;
                         }
-                        regNum._bits[num9 + i] = regNum._bits[num9 + i] - num17;
+                        regNum._bits[num9 + i] -= num17;
                     }
                     if (num11 < num16)
                     {
@@ -1169,7 +1169,7 @@ namespace System.Numerics
                         {
                             num18 = AddCarry(ref regNum._bits[num9 + j], regDen._bits[j], num18);
                         }
-                        num14 = num14 - 1;
+                        num14--;
                     }
                     regNum._iuLast = num9 + num1 - 1;
                 }
@@ -1191,7 +1191,7 @@ namespace System.Numerics
 
         private static uint MulCarry(ref uint u1, uint u2, uint uCarry)
         {
-            var num = u1 * (ulong)u2 + uCarry;
+            var num = (u1 * (ulong)u2) + uCarry;
             u1 = (uint)num;
             return (uint)(num >> 32);
         }
@@ -1248,7 +1248,7 @@ namespace System.Numerics
                     {
                         Array.Resize(ref _bits, _iuLast + 2);
                     }
-                    _iuLast = _iuLast + 1;
+                    _iuLast++;
                     _bits[_iuLast] = 1;
                     break;
                 }
