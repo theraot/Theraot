@@ -66,8 +66,7 @@ namespace System.Linq.Expressions
             TypeUtils.ValidateType(type, nameof(type));
             if (method == null)
             {
-                if (expression.Type.HasIdentityPrimitiveOrNullableConversionToInternal(type) ||
-                    expression.Type.HasReferenceConversionToInternal(type))
+                if (expression.Type.HasIdentityPrimitiveOrNullableConversionToInternal(type) || expression.Type.HasReferenceConversionToInternal(type))
                 {
                     return new UnaryExpression(ExpressionType.Convert, expression, type, null);
                 }
@@ -432,11 +431,7 @@ namespace System.Linq.Expressions
                     return new UnaryExpression(ExpressionType.Not, expression, expression.Type, null);
                 }
                 var u = GetUserDefinedUnaryOperator(ExpressionType.Not, "op_LogicalNot", expression);
-                if (u != null)
-                {
-                    return u;
-                }
-                return GetUserDefinedUnaryOperatorOrThrow(ExpressionType.Not, "op_OnesComplement", expression);
+                return u ?? GetUserDefinedUnaryOperatorOrThrow(ExpressionType.Not, "op_OnesComplement", expression);
             }
             return GetMethodBasedUnaryOperator(ExpressionType.Not, expression, method);
         }
@@ -720,10 +715,13 @@ namespace System.Linq.Expressions
                 return new UnaryExpression(unaryType, operand, method.ReturnType, method);
             }
             // check for lifted call
-            if ((operand.Type.IsNullable() || convertToType.IsNullable()) &&
-                ParameterIsAssignable(pms[0], operand.Type.GetNonNullable()) &&
-                (TypeUtils.AreEquivalent(method.ReturnType, convertToType.GetNonNullable()) ||
-                TypeUtils.AreEquivalent(method.ReturnType, convertToType)))
+            if
+            (
+                (operand.Type.IsNullable() || convertToType.IsNullable())
+                && ParameterIsAssignable(pms[0], operand.Type.GetNonNullable())
+                && (TypeUtils.AreEquivalent(method.ReturnType, convertToType.GetNonNullable())
+                    || TypeUtils.AreEquivalent(method.ReturnType, convertToType))
+            )
             {
                 return new UnaryExpression(unaryType, operand, convertToType, method);
             }
@@ -746,9 +744,12 @@ namespace System.Linq.Expressions
                 return new UnaryExpression(unaryType, operand, method.ReturnType, method);
             }
             // check for lifted call
-            if (operand.Type.IsNullable() &&
-                ParameterIsAssignable(pms[0], operand.Type.GetNonNullable()) &&
-                method.ReturnType.IsValueType && !method.ReturnType.IsNullable())
+            if
+            (
+                operand.Type.IsNullable()
+                && ParameterIsAssignable(pms[0], operand.Type.GetNonNullable())
+                && method.ReturnType.IsValueType && !method.ReturnType.IsNullable()
+            )
             {
                 return new UnaryExpression(unaryType, operand, method.ReturnType.GetNullable(), method);
             }
@@ -791,7 +792,7 @@ namespace System.Linq.Expressions
             {
                 types[0] = nnOperandType;
                 method = nnOperandType.GetStaticMethodInternal(name, types);
-                if (method != null && method.ReturnType.IsValueType && !method.ReturnType.IsNullable())
+                if (method?.ReturnType.IsValueType == true && !method.ReturnType.IsNullable())
                 {
                     return new UnaryExpression(unaryType, operand, method.ReturnType.GetNullable(), method);
                 }
@@ -841,7 +842,7 @@ namespace System.Linq.Expressions
             // return type must be assignable back to the operand type
             if (!expression.Type.IsReferenceAssignableFromInternal(result.Type))
             {
-                throw new ArgumentException($"The user-defined operator method '{method.Name}' for operator '{kind}' must return the same type as its parameter or a derived type.");
+                throw new ArgumentException($"The user-defined operator method '{method?.Name}' for operator '{kind}' must return the same type as its parameter or a derived type.");
             }
             return result;
         }
@@ -875,8 +876,9 @@ namespace System.Linq.Expressions
                     case ExpressionType.PostIncrementAssign:
                     case ExpressionType.PostDecrementAssign:
                         return true;
+                    default:
+                        return false;
                 }
-                return false;
             }
         }
 
@@ -896,8 +898,8 @@ namespace System.Linq.Expressions
                 var resultIsNullable = Type.IsNullable();
                 if (Method != null)
                 {
-                    return operandIsNullable && !TypeUtils.AreEquivalent(Method.GetParameters()[0].ParameterType, Operand.Type) ||
-                           resultIsNullable && !TypeUtils.AreEquivalent(Method.ReturnType, Type);
+                    return (operandIsNullable && !TypeUtils.AreEquivalent(Method.GetParameters()[0].ParameterType, Operand.Type))
+                           || (resultIsNullable && !TypeUtils.AreEquivalent(Method.ReturnType, Type));
                 }
                 return operandIsNullable || resultIsNullable;
             }
@@ -978,9 +980,6 @@ namespace System.Linq.Expressions
             return MakeUnary(NodeType, operand, Type, Method);
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitUnary(this);

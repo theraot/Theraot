@@ -8,18 +8,18 @@ namespace System.Linq.Expressions
 {
     internal static class Utils
     {
-        public static readonly object BoxedDefaultByte = default(byte);
-        public static readonly object BoxedDefaultChar = default(char);
-        public static readonly object BoxedDefaultDateTime = default(DateTime);
-        public static readonly object BoxedDefaultDecimal = default(decimal);
-        public static readonly object BoxedDefaultDouble = default(double);
-        public static readonly object BoxedDefaultInt16 = default(short);
-        public static readonly object BoxedDefaultInt64 = default(long);
-        public static readonly object BoxedDefaultSByte = default(sbyte);
-        public static readonly object BoxedDefaultSingle = default(float);
-        public static readonly object BoxedDefaultUInt16 = default(ushort);
-        public static readonly object BoxedDefaultUInt32 = default(uint);
-        public static readonly object BoxedDefaultUInt64 = default(ulong);
+        public static readonly object BoxedDefaultByte = (byte)0;
+        public static readonly object BoxedDefaultChar = '\0';
+        public static readonly object BoxedDefaultDateTime = new DateTime();
+        public static readonly object BoxedDefaultDecimal = 0m;
+        public static readonly object BoxedDefaultDouble = 0.0;
+        public static readonly object BoxedDefaultInt16 = (short)0;
+        public static readonly object BoxedDefaultInt64 = 0L;
+        public static readonly object BoxedDefaultSByte = (sbyte)0;
+        public static readonly object BoxedDefaultSingle = 0.0f;
+        public static readonly object BoxedDefaultUInt16 = (ushort)0;
+        public static readonly object BoxedDefaultUInt32 = 0u;
+        public static readonly object BoxedDefaultUInt64 = 0ul;
         public static readonly object BoxedFalse = false;
         public static readonly object BoxedInt0 = 0;
         public static readonly object BoxedInt1 = 1;

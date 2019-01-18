@@ -147,14 +147,15 @@ namespace System.Linq.Expressions
     }
 
     /// <summary>
-    /// Represents a try/catch/finally/fault block.
-    ///
+    /// <para>Represents a try/catch/finally/fault block.</para>
+    /// <para>
     /// The body is protected by the try block.
     /// The handlers consist of a set of <see cref="CatchBlock"/>s that can either be catch or filters.
     /// The fault runs if an exception is thrown.
     /// The finally runs regardless of how control exits the body.
     /// Only one of fault or finally can be supplied.
     /// The return type of the try block must match the return type of any associated catch statements.
+    /// </para>
     /// </summary>
     [DebuggerTypeProxy(typeof(TryExpressionProxy))]
     public sealed class TryExpression : Expression
@@ -216,18 +217,14 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public TryExpression Update(Expression body, IEnumerable<CatchBlock> handlers, Expression @finally, Expression fault)
         {
-            if (body == Body & @finally == Finally & fault == Fault && ExpressionUtils.SameElements(ref handlers, _handlers))
+            if (body == Body && @finally == Finally && fault == Fault && ExpressionUtils.SameElements(ref handlers, _handlers))
             {
                 return this;
             }
 
-
             return MakeTry(Type, body, @finally, fault, handlers);
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitTry(this);

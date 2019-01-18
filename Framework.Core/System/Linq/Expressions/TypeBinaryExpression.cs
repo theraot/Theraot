@@ -175,14 +175,9 @@ namespace System.Linq.Expressions
 
         private Expression ReduceConstantTypeEqual()
         {
-            var ce = Expression as ConstantExpression;
-            //TypeEqual(null, T) always returns false.
-            if (ce.Value == null)
-            {
-                return Utils.Constant(value: false);
-            }
-
-            return Utils.Constant(TypeOperand.GetNonNullable() == ce.Value.GetType());
+            return !(Expression is ConstantExpression ce) || ce.Value == null
+                ? Utils.Constant(value: false)
+                : Utils.Constant(TypeOperand.GetNonNullable() == ce.Value.GetType());
         }
 
         #endregion Reduce TypeEqual
@@ -207,9 +202,6 @@ namespace System.Linq.Expressions
             return TypeEqual(expression, TypeOperand);
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitTypeBinary(this);

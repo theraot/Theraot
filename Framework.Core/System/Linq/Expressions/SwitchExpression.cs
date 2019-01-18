@@ -100,23 +100,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNullItems(caseArray, nameof(cases));
 
             // Type of the result. Either provided, or it is type of the branches.
-            Type resultType;
-            if (type != null)
-            {
-                resultType = type;
-            }
-            else if (caseArray.Length != 0)
-            {
-                resultType = caseArray[0].Body.Type;
-            }
-            else if (defaultBody != null)
-            {
-                resultType = defaultBody.Type;
-            }
-            else
-            {
-                resultType = typeof(void);
-            }
+            var resultType = type ?? (caseArray.Length != 0 ? caseArray[0].Body.Type : defaultBody != null ? defaultBody.Type : typeof(void));
 
             var customType = type != null;
 
@@ -215,10 +199,6 @@ namespace System.Linq.Expressions
             return new SwitchExpression(resultType, switchValue, defaultBody, comparison, caseArray);
         }
 
-        /// <summary>
-        /// If custom type is provided, all branches must be reference assignable to the result type.
-        /// If no custom type is provided, all branches must have the same type - resultType.
-        /// </summary>
         private static void ValidateSwitchCaseType(Expression @case, bool customType, Type resultType, string parameterName)
         {
             if (customType)
@@ -227,7 +207,6 @@ namespace System.Linq.Expressions
                 {
                     throw new ArgumentException("Argument types do not match", parameterName);
                 }
-
             }
             else
             {
@@ -297,8 +276,7 @@ namespace System.Linq.Expressions
             {
                 if (SwitchValue.Type.IsNullable())
                 {
-                    return Comparison == null ||
-                        !TypeUtils.AreEquivalent(SwitchValue.Type, Comparison.GetParameters()[0].ParameterType.GetNonRefTypeInternal());
+                    return Comparison == null || !TypeUtils.AreEquivalent(SwitchValue.Type, Comparison.GetParameters()[0].ParameterType.GetNonRefTypeInternal());
                 }
                 return false;
             }
@@ -315,7 +293,7 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public SwitchExpression Update(Expression switchValue, IEnumerable<SwitchCase> cases, Expression defaultBody)
         {
-            if (switchValue == SwitchValue & defaultBody == DefaultBody & cases != null && ExpressionUtils.SameElements(ref cases, _cases))
+            if (switchValue == SwitchValue && defaultBody == DefaultBody && cases != null && ExpressionUtils.SameElements(ref cases, _cases))
             {
                 return this;
             }
@@ -323,9 +301,6 @@ namespace System.Linq.Expressions
             return Switch(Type, switchValue, defaultBody, Comparison, cases);
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitSwitch(this);
