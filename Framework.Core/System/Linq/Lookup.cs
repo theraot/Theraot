@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable CC0031 // Check for null before calling a delegate
+
 using System.Collections;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
@@ -14,14 +16,9 @@ namespace System.Linq
 
         internal Lookup(IEqualityComparer<TKey> comparer)
         {
-            if (typeof(TKey).CanBeNull())
-            {
-                _groupings = new NullAwareDictionary<TKey, Grouping<TKey, TElement>>(comparer);
-            }
-            else
-            {
-                _groupings = new Dictionary<TKey, Grouping<TKey, TElement>>(comparer);
-            }
+            _groupings = typeof(TKey).CanBeNull()
+                ? (IDictionary<TKey, Grouping<TKey, TElement>>)new NullAwareDictionary<TKey, Grouping<TKey, TElement>>(comparer)
+                : new Dictionary<TKey, Grouping<TKey, TElement>>(comparer);
         }
 
         public int Count => _groupings.Count;
