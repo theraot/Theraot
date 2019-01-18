@@ -44,7 +44,7 @@ namespace System.Numerics
                 if (Log10(value) > precision + 1)
                 {
                     var round = value % 10 >= 5;
-                    value = value / 10 + (round ? One : Zero);
+                    value = (value / 10) + (round ? One : Zero);
                 }
 
                 ReverseStringBuilder builder;
@@ -52,7 +52,7 @@ namespace System.Numerics
                 if (value.InternalBits == null)
                 {
                     builder = new ReverseStringBuilder(10);
-                    builder.Prepend(value.InternalSign.ToString("D"));
+                    builder.Prepend($"{value.InternalSign:D}");
                 }
                 else
                 {
@@ -96,14 +96,7 @@ namespace System.Numerics
                 {
                     if (fmt == 'g' || fmt == 'G' || fmt == 'r' || fmt == 'R')
                     {
-                        if (digits > 0)
-                        {
-                            format = "D" + digits.ToString(CultureInfo.InvariantCulture);
-                        }
-                        else
-                        {
-                            format = "D";
-                        }
+                        format = digits > 0 ? "D" + digits.ToString(CultureInfo.InvariantCulture) : "D";
                     }
                     return value.InternalSign.ToString(format, info);
                 }
@@ -229,7 +222,7 @@ namespace System.Numerics
             }
             var index = 0;
             var chr = format[index];
-            if (chr >= 'A' && chr <= 'Z' || chr >= 'a' && chr <= 'z')
+            if ((chr >= 'A' && chr <= 'Z') || (chr >= 'a' && chr <= 'z'))
             {
                 index++;
                 if (index < format.Length)
@@ -245,7 +238,7 @@ namespace System.Numerics
                             {
                                 break;
                             }
-                            digits = digits * 10 + (format[index] - '0');
+                            digits = (digits * 10) + (format[index] - '0');
                             index++;
                         } while (digits < 10);
                     }
@@ -521,7 +514,7 @@ namespace System.Numerics
             int maxConvertedLength;
             try
             {
-                maxConvertedLength = checked(sourceLength * 10 / 9 + 2);
+                maxConvertedLength = checked((sourceLength * 10 / 9) + 2);
             }
             catch (OverflowException e)
             {
@@ -586,13 +579,13 @@ namespace System.Numerics
                 var cipherBlock = converted[stringIndex];
                 for (var cch = NumericBaseLog10; --cch >= 0;)
                 {
-                    result.Prepend((char)('0' + cipherBlock % 10));
+                    result.Prepend((char)('0' + (cipherBlock % 10)));
                     cipherBlock /= 10;
                 }
             }
             for (var cipherBlock = converted[convertedLength - 1]; cipherBlock != 0;)
             {
-                result.Prepend((char)('0' + cipherBlock % 10));
+                result.Prepend((char)('0' + (cipherBlock % 10)));
                 cipherBlock /= 10;
             }
             return result;
@@ -601,7 +594,7 @@ namespace System.Numerics
         private static string FormatBigIntegerToHexString(BigInteger value, char format, int digits, NumberFormatInfo info)
         {
             var byteArray = value.ToByteArray();
-            var stringBuilder = new StringBuilder(byteArray.Length * 2 + 1);
+            var stringBuilder = new StringBuilder((byteArray.Length * 2) + 1);
             string str1;
             var length = byteArray.Length - 1;
             if (length > -1)
@@ -633,15 +626,7 @@ namespace System.Numerics
             if (digits > 0 && digits > stringBuilder.Length)
             {
                 var stringBuilder1 = stringBuilder;
-                string str;
-                if (value.InternalSign < 0)
-                {
-                    str = format != 'x' ? "F" : "f";
-                }
-                else
-                {
-                    str = "0";
-                }
+                var str = value.InternalSign < 0 ? format != 'x' ? "F" : "f" : "0";
                 stringBuilder1.Insert(0, str, digits - stringBuilder.Length);
             }
             return stringBuilder.ToString();
@@ -655,7 +640,7 @@ namespace System.Numerics
             }
 
             var len = number.Digits.Length; // there is no trailing '\0'
-            var bits = new byte[len / 2 + len % 2];
+            var bits = new byte[(len / 2) + (len % 2)];
 
             var shift = false;
             var isNegative = false;
