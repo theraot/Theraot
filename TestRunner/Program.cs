@@ -122,7 +122,9 @@ namespace TestRunner
         {
             return TypeDiscoverer.GetAllTypes()
                 .Where(type => type.HasAttribute<TestFixtureAttribute>())
-                .SelectMany(type => type.GetTypeInfo().GetMethods())
+                .Select(type => new TestFixture(type))
+                .Where(testFixture => testFixture.TestFixtureAttribute != null && !testFixture.Categories.Overlaps(ignoredCategories))
+                .SelectMany(testFixture => testFixture.Type.GetTypeInfo().GetMethods())
                 .Select(method => new TestMethod(method))
                 .Where(testMethod => testMethod.TestAttribute != null && !testMethod.Categories.Overlaps(ignoredCategories))
                 .Select(testMethod => new Test(testMethod));
@@ -264,6 +266,25 @@ namespace TestRunner
             public Type[] PreferredGenerators { get; }
             public TestAttribute TestAttribute { get; }
         }
+
+        private sealed class TestFixture
+        {
+            public TestFixture(Type type)
+            {
+                Type = type;
+                var testFixtureAttributes = type.GetAttributes<TestFixtureAttribute>(true);
+                if (testFixtureAttributes == null || testFixtureAttributes.Length <= 0)
+                {
+                    return;
+                }
+                TestFixtureAttribute = testFixtureAttributes[0];
+                Categories = type.GetAttributes<CategoryAttribute>(false).Select(category => category.Name);
+            }
+
+            public IEnumerable<string> Categories { get; }
+            public Type Type { get; }
+            public TestFixtureAttribute TestFixtureAttribute { get; }
+        }
     }
 
     public sealed class AssertionFailedException : Exception
@@ -283,7 +304,7 @@ namespace TestRunner
         }
     }
 
-    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false)]
     public sealed class CategoryAttribute : Attribute
     {
         public CategoryAttribute(string name)
