@@ -73,21 +73,17 @@ namespace System.Linq
         {
             if (type.IsGenericInstanceOf(typeof(IQueryable<>)))
             {
-                type = typeof(IEnumerable<>).MakeGenericTypeFrom(type);
+                return typeof(IEnumerable<>).MakeGenericTypeFrom(type);
             }
-            else if (type.IsGenericInstanceOf(typeof(IOrderedQueryable<>)))
+            if (type.IsGenericInstanceOf(typeof(IOrderedQueryable<>)))
             {
-                type = typeof(IOrderedEnumerable<>).MakeGenericTypeFrom(type);
+                return typeof(IOrderedEnumerable<>).MakeGenericTypeFrom(type);
             }
-            else if (type.IsGenericInstanceOf(typeof(Expression<>)))
+            if (type.IsGenericInstanceOf(typeof(Expression<>)))
             {
-                type = type.GetGenericArguments()[0];
+                return type.GetGenericArguments()[0];
             }
-            else if (type == typeof(IQueryable))
-            {
-                type = typeof(IEnumerable);
-            }
-            return type;
+            return type == typeof(IQueryable) ? typeof(IEnumerable) : type;
         }
 
         private static MethodInfo GetMatchingMethod(MethodInfo method, Type declaring)
@@ -123,7 +119,7 @@ namespace System.Linq
 
         private static bool MethodMatch(MethodInfo candidate, MethodInfo method)
         {
-            if (candidate.Name != method.Name || !HasExtensionAttribute(candidate))
+            if (!string.Equals(candidate.Name, method.Name, StringComparison.Ordinal) || !HasExtensionAttribute(candidate))
             {
                 return false;
             }
