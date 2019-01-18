@@ -6,6 +6,12 @@ namespace System.Linq
     {
         //Empty
     }
+
+    // ReSharper disable once UnusedTypeParameter
+    public abstract class EnumerableExecutor<T> : EnumerableExecutor
+    {
+        //Empty
+    }
 }
 
 #endif
