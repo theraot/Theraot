@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA2225 // Operator overloads have named alternates
+
 // Complex.cs: Complex number support
 
 // Author:
@@ -44,22 +46,22 @@ namespace System.Numerics
 
         public double Imaginary { get; }
 
-        public double Magnitude => Math.Sqrt(Imaginary * Imaginary + Real * Real);
+        public double Magnitude => Math.Sqrt((Imaginary * Imaginary) + (Real * Real));
 
         public double Phase => Math.Atan2(Imaginary, Real);
 
         public double Real { get; }
 
-        private double MagnitudeSquared => Imaginary * Imaginary + Real * Real;
+        private double MagnitudeSquared => (Imaginary * Imaginary) + (Real * Real);
 
         public static double Abs(Complex value)
         {
-            return Math.Sqrt(value.Imaginary * value.Imaginary + value.Real * value.Real);
+            return Math.Sqrt((value.Imaginary * value.Imaginary) + (value.Real * value.Real));
         }
 
         public static Complex Acos(Complex value)
         {
-            return -ImaginaryOne * Log(value + ImaginaryOne * Sqrt(One - value * value));
+            return -ImaginaryOne * Log(value + (ImaginaryOne * Sqrt(One - (value * value))));
         }
 
         public static Complex Add(Complex left, Complex right)
@@ -73,12 +75,12 @@ namespace System.Numerics
 
         public static Complex Asin(Complex value)
         {
-            return -ImaginaryOne * Log(ImaginaryOne * value + Sqrt(One - value * value));
+            return -ImaginaryOne * Log((ImaginaryOne * value) + Sqrt(One - (value * value)));
         }
 
         public static Complex Atan(Complex value)
         {
-            return ImaginaryOne / new Complex(2, 0) * (Log(One - ImaginaryOne * value) - Log(One + ImaginaryOne * value));
+            return ImaginaryOne / new Complex(2, 0) * (Log(One - (ImaginaryOne * value)) - Log(One + (ImaginaryOne * value)));
         }
 
         public static Complex Conjugate(Complex value)
@@ -109,8 +111,8 @@ namespace System.Numerics
             var divisorMagnitudeSquared = divisor.MagnitudeSquared;
             return new Complex
                 (
-                    (dividend.Real * divisor.Real + dividend.Imaginary * divisor.Imaginary) / divisorMagnitudeSquared,
-                    (dividend.Imaginary * divisor.Real - dividend.Real * divisor.Imaginary) / divisorMagnitudeSquared
+                    ((dividend.Real * divisor.Real) + (dividend.Imaginary * divisor.Imaginary)) / divisorMagnitudeSquared,
+                    ((dividend.Imaginary * divisor.Real) - (dividend.Real * divisor.Imaginary)) / divisorMagnitudeSquared
                 );
         }
 
@@ -220,8 +222,8 @@ namespace System.Numerics
         {
             return new Complex
                 (
-                    left.Real * right.Real - left.Imaginary * right.Imaginary,
-                    left.Real * right.Imaginary + left.Imaginary * right.Real
+                    (left.Real * right.Real) - (left.Imaginary * right.Imaginary),
+                    (left.Real * right.Imaginary) + (left.Imaginary * right.Real)
                 );
         }
 
@@ -253,18 +255,18 @@ namespace System.Numerics
         {
             return new Complex
                 (
-                    left.Real * right.Real - left.Imaginary * right.Imaginary,
-                    left.Real * right.Imaginary + left.Imaginary * right.Real
+                    (left.Real * right.Real) - (left.Imaginary * right.Imaginary),
+                    (left.Real * right.Imaginary) + (left.Imaginary * right.Real)
                 );
         }
 
         public static Complex operator /(Complex left, Complex right)
         {
-            var d = right.Real * right.Real + right.Imaginary * right.Imaginary;
+            var d = (right.Real * right.Real) + (right.Imaginary * right.Imaginary);
             return new Complex
                 (
-                    (left.Real * right.Real + left.Imaginary * right.Imaginary) / d,
-                    (left.Imaginary * right.Real - left.Real * right.Imaginary) / d
+                    ((left.Real * right.Real) + (left.Imaginary * right.Imaginary)) / d,
+                    ((left.Imaginary * right.Real) - (left.Real * right.Imaginary)) / d
                 );
         }
 
@@ -370,7 +372,9 @@ namespace System.Numerics
 
         public string ToString(string format)
         {
+#pragma warning disable CA1305 // Specify IFormatProvider
             return $"({Real.ToString(format)}, {Imaginary.ToString(format)})";
+#pragma warning restore CA1305 // Specify IFormatProvider
         }
 
         public string ToString(string format, IFormatProvider formatProvider)
