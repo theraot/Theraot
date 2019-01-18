@@ -4,6 +4,7 @@ using System.Threading;
 namespace TestRunner.System.Threading
 {
     [TestFixture]
+    [Category("Performance")]
     public static class TimerTest
     {
         [Test]
@@ -102,6 +103,7 @@ namespace TestRunner.System.Threading
             var timer = new Timer(_ => Interlocked.Increment(ref data[0]), null, 700, 217);
             Thread.Sleep(1000);
             Assert.AreEqual(2, Volatile.Read(ref data[0]));
+            // ReSharper disable once AccessToDisposedClosure
             Assert.Throws<ArgumentOutOfRangeException>(() => timer.Change(-2 - dueTime, Timeout.Infinite));
             timer.Dispose();
         }
@@ -116,6 +118,7 @@ namespace TestRunner.System.Threading
             var timer = new Timer(_ => Interlocked.Increment(ref data[0]), null, 700, 217);
             Thread.Sleep(1000);
             Assert.AreEqual(2, Volatile.Read(ref data[0]));
+            // ReSharper disable once AccessToDisposedClosure
             Assert.Throws<ArgumentOutOfRangeException>(() => timer.Change(Timeout.Infinite, -2 - period));
             timer.Dispose();
         }
