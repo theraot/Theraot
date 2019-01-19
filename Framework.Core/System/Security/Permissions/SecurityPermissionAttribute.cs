@@ -43,36 +43,28 @@ namespace System.Security.Permissions
             // Empty
         }
 
-        public SecurityPermissionFlag Flags { get; set; } = SecurityPermissionFlag.NoFlags;
-
         public bool Assertion
         {
             get => (Flags & SecurityPermissionFlag.Assertion) != 0;
             set => Flags = value ? Flags | SecurityPermissionFlag.Assertion : Flags & ~SecurityPermissionFlag.Assertion;
         }
 
-        public bool UnmanagedCode
+        public bool BindingRedirects
         {
-            get => (Flags & SecurityPermissionFlag.UnmanagedCode) != 0;
-            set => Flags = value ? Flags | SecurityPermissionFlag.UnmanagedCode : Flags & ~SecurityPermissionFlag.UnmanagedCode;
+            get => (Flags & SecurityPermissionFlag.BindingRedirects) != 0;
+            set => Flags = value ? Flags | SecurityPermissionFlag.BindingRedirects : Flags & ~SecurityPermissionFlag.BindingRedirects;
         }
 
-        public bool SkipVerification
+        public bool ControlAppDomain
         {
-            get => (Flags & SecurityPermissionFlag.SkipVerification) != 0;
-            set => Flags = value ? Flags | SecurityPermissionFlag.SkipVerification : Flags & ~SecurityPermissionFlag.SkipVerification;
+            get => (Flags & SecurityPermissionFlag.ControlAppDomain) != 0;
+            set => Flags = value ? Flags | SecurityPermissionFlag.ControlAppDomain : Flags & ~SecurityPermissionFlag.ControlAppDomain;
         }
 
-        public bool Execution
+        public bool ControlDomainPolicy
         {
-            get => (Flags & SecurityPermissionFlag.Execution) != 0;
-            set => Flags = value ? Flags | SecurityPermissionFlag.Execution : Flags & ~SecurityPermissionFlag.Execution;
-        }
-
-        public bool ControlThread
-        {
-            get => (Flags & SecurityPermissionFlag.ControlThread) != 0;
-            set => Flags = value ? Flags | SecurityPermissionFlag.ControlThread : Flags & ~SecurityPermissionFlag.ControlThread;
+            get => (Flags & SecurityPermissionFlag.ControlDomainPolicy) != 0;
+            set => Flags = value ? Flags | SecurityPermissionFlag.ControlDomainPolicy : Flags & ~SecurityPermissionFlag.ControlDomainPolicy;
         }
 
         public bool ControlEvidence
@@ -87,35 +79,25 @@ namespace System.Security.Permissions
             set => Flags = value ? Flags | SecurityPermissionFlag.ControlPolicy : Flags & ~SecurityPermissionFlag.ControlPolicy;
         }
 
-        public bool SerializationFormatter
-        {
-            get => (Flags & SecurityPermissionFlag.SerializationFormatter) != 0;
-            set => Flags = value ? Flags | SecurityPermissionFlag.SerializationFormatter : Flags & ~SecurityPermissionFlag.SerializationFormatter;
-        }
-
-        public bool ControlDomainPolicy
-        {
-            get => (Flags & SecurityPermissionFlag.ControlDomainPolicy) != 0;
-            set => Flags = value ? Flags | SecurityPermissionFlag.ControlDomainPolicy : Flags & ~SecurityPermissionFlag.ControlDomainPolicy;
-        }
-
         public bool ControlPrincipal
         {
             get => (Flags & SecurityPermissionFlag.ControlPrincipal) != 0;
             set => Flags = value ? Flags | SecurityPermissionFlag.ControlPrincipal : Flags & ~SecurityPermissionFlag.ControlPrincipal;
         }
 
-        public bool ControlAppDomain
+        public bool ControlThread
         {
-            get => (Flags & SecurityPermissionFlag.ControlAppDomain) != 0;
-            set => Flags = value ? Flags | SecurityPermissionFlag.ControlAppDomain : Flags & ~SecurityPermissionFlag.ControlAppDomain;
+            get => (Flags & SecurityPermissionFlag.ControlThread) != 0;
+            set => Flags = value ? Flags | SecurityPermissionFlag.ControlThread : Flags & ~SecurityPermissionFlag.ControlThread;
         }
 
-        public bool RemotingConfiguration
+        public bool Execution
         {
-            get => (Flags & SecurityPermissionFlag.RemotingConfiguration) != 0;
-            set => Flags = value ? Flags | SecurityPermissionFlag.RemotingConfiguration : Flags & ~SecurityPermissionFlag.RemotingConfiguration;
+            get => (Flags & SecurityPermissionFlag.Execution) != 0;
+            set => Flags = value ? Flags | SecurityPermissionFlag.Execution : Flags & ~SecurityPermissionFlag.Execution;
         }
+
+        public SecurityPermissionFlag Flags { get; set; } = SecurityPermissionFlag.NoFlags;
 
         [Runtime.InteropServices.ComVisible(true)]
         public bool Infrastructure
@@ -124,10 +106,28 @@ namespace System.Security.Permissions
             set => Flags = value ? Flags | SecurityPermissionFlag.Infrastructure : Flags & ~SecurityPermissionFlag.Infrastructure;
         }
 
-        public bool BindingRedirects
+        public bool RemotingConfiguration
         {
-            get => (Flags & SecurityPermissionFlag.BindingRedirects) != 0;
-            set => Flags = value ? Flags | SecurityPermissionFlag.BindingRedirects : Flags & ~SecurityPermissionFlag.BindingRedirects;
+            get => (Flags & SecurityPermissionFlag.RemotingConfiguration) != 0;
+            set => Flags = value ? Flags | SecurityPermissionFlag.RemotingConfiguration : Flags & ~SecurityPermissionFlag.RemotingConfiguration;
+        }
+
+        public bool SerializationFormatter
+        {
+            get => (Flags & SecurityPermissionFlag.SerializationFormatter) != 0;
+            set => Flags = value ? Flags | SecurityPermissionFlag.SerializationFormatter : Flags & ~SecurityPermissionFlag.SerializationFormatter;
+        }
+
+        public bool SkipVerification
+        {
+            get => (Flags & SecurityPermissionFlag.SkipVerification) != 0;
+            set => Flags = value ? Flags | SecurityPermissionFlag.SkipVerification : Flags & ~SecurityPermissionFlag.SkipVerification;
+        }
+
+        public bool UnmanagedCode
+        {
+            get => (Flags & SecurityPermissionFlag.UnmanagedCode) != 0;
+            set => Flags = value ? Flags | SecurityPermissionFlag.UnmanagedCode : Flags & ~SecurityPermissionFlag.UnmanagedCode;
         }
 
         public override IPermission CreatePermission()

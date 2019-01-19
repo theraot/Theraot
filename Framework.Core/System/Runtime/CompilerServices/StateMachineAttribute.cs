@@ -13,10 +13,6 @@ namespace System.Runtime.CompilerServices
     [Serializable]
     public class StateMachineAttribute : Attribute // Note: this class should not be sealed as per Microsoft's design
     {
-        /// <summary>
-        /// Gets the type that implements the state machine.
-        /// </summary>
-        public Type StateMachineType { get; }
 
         /// <summary>
         /// Initializes the attribute.
@@ -26,6 +22,10 @@ namespace System.Runtime.CompilerServices
         {
             StateMachineType = stateMachineType;
         }
+        /// <summary>
+        /// Gets the type that implements the state machine.
+        /// </summary>
+        public Type StateMachineType { get; }
     }
 }
 

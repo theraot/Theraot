@@ -80,9 +80,8 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class LocalVariables
     {
-        private readonly HybridReferenceDictionary<ParameterExpression, VariableScope> _variables = new HybridReferenceDictionary<ParameterExpression, VariableScope>();
         private int _localCount;
-
+        private readonly HybridReferenceDictionary<ParameterExpression, VariableScope> _variables = new HybridReferenceDictionary<ParameterExpression, VariableScope>();
         public int LocalCount { get; private set; }
 
         /// <summary>
@@ -178,11 +177,11 @@ namespace System.Linq.Expressions.Interpreter
         /// </summary>
         private sealed class VariableScope
         {
+            public List<VariableScope> ChildScopes;
             public readonly VariableScope Parent;
             public readonly int Start;
-            public readonly LocalVariable Variable;
-            public List<VariableScope> ChildScopes;
             public int Stop = int.MaxValue;
+            public readonly LocalVariable Variable;
 
             public VariableScope(LocalVariable variable, int start, VariableScope parent)
             {

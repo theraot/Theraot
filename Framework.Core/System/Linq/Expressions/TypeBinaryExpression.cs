@@ -87,6 +87,26 @@ namespace System.Linq.Expressions
         /// </summary>
         public Type TypeOperand { get; }
 
+        /// <summary>
+        /// Creates a new expression that is like this one, but using the
+        /// supplied children. If all of the children are the same, it will
+        /// return this expression.
+        /// </summary>
+        /// <param name="expression">The <see cref="Expression"/> property of the result.</param>
+        /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
+        public TypeBinaryExpression Update(Expression expression)
+        {
+            if (expression == Expression)
+            {
+                return this;
+            }
+            if (NodeType == ExpressionType.TypeIs)
+            {
+                return TypeIs(expression, TypeOperand);
+            }
+            return TypeEqual(expression, TypeOperand);
+        }
+
         internal Expression ReduceTypeEqual()
         {
             var cType = Expression.Type;
@@ -137,6 +157,11 @@ namespace System.Linq.Expressions
             );
         }
 
+        protected internal override Expression Accept(ExpressionVisitor visitor)
+        {
+            return visitor.VisitTypeBinary(this);
+        }
+
         // Helper that is used when re-eval of LHS is safe.
         private Expression ByValParameterTypeEqual(ParameterExpression value)
         {
@@ -176,31 +201,6 @@ namespace System.Linq.Expressions
             return !(Expression is ConstantExpression ce) || ce.Value == null
                 ? Utils.Constant(value: false)
                 : Utils.Constant(TypeOperand.GetNonNullable() == ce.Value.GetType());
-        }
-
-        /// <summary>
-        /// Creates a new expression that is like this one, but using the
-        /// supplied children. If all of the children are the same, it will
-        /// return this expression.
-        /// </summary>
-        /// <param name="expression">The <see cref="Expression"/> property of the result.</param>
-        /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
-        public TypeBinaryExpression Update(Expression expression)
-        {
-            if (expression == Expression)
-            {
-                return this;
-            }
-            if (NodeType == ExpressionType.TypeIs)
-            {
-                return TypeIs(expression, TypeOperand);
-            }
-            return TypeEqual(expression, TypeOperand);
-        }
-
-        protected internal override Expression Accept(ExpressionVisitor visitor)
-        {
-            return visitor.VisitTypeBinary(this);
         }
     }
 }

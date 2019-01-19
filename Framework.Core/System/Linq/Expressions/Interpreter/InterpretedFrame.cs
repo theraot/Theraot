@@ -29,9 +29,9 @@ namespace System.Linq.Expressions.Interpreter
         [ThreadStatic]
         private static InterpretedFrame _currentFrame;
 
-        private readonly int[] _continuations;
-
         private int _continuationIndex;
+
+        private readonly int[] _continuations;
         private int _pendingContinuation;
         private object _pendingValue;
 #if FEATURE_THREAD_ABORT
@@ -60,9 +60,32 @@ namespace System.Linq.Expressions.Interpreter
 
         public string Name => Interpreter.Name;
 
-        public DebugInfo GetDebugInfo(int instructionIndex)
+        public InterpretedFrame Parent { get; internal set; }
+
+        internal string[] Trace
         {
-            return DebugInfo.GetMatchingDebugInfo(Interpreter.DebugInfos, instructionIndex);
+            get
+            {
+                var trace = new List<string>();
+                var frame = this;
+                do
+                {
+                    trace.Add(frame.Name);
+                    frame = frame.Parent;
+                } while (frame != null);
+                return trace.ToArray();
+            }
+        }
+
+        public static InterpretedFrameInfo[] GetExceptionStackTrace(Exception exception)
+        {
+            return exception.Data[typeof(InterpretedFrameInfo)] as InterpretedFrameInfo[];
+        }
+
+        public static bool IsInterpretedFrame(MethodBase method)
+        {
+            //ContractUtils.RequiresNotNull(method, nameof(method));
+            return method.DeclaringType == typeof(Interpreter) && string.Equals(method.Name, "Run", StringComparison.Ordinal);
         }
 
         public void Dup()
@@ -70,6 +93,44 @@ namespace System.Linq.Expressions.Interpreter
             var i = StackIndex;
             Data[i] = Data[i - 1];
             StackIndex = i + 1;
+        }
+
+        public DebugInfo GetDebugInfo(int instructionIndex)
+        {
+            return DebugInfo.GetMatchingDebugInfo(Interpreter.DebugInfos, instructionIndex);
+        }
+
+        public IEnumerable<InterpretedFrameInfo> GetStackTraceDebugInfo()
+        {
+            var frame = this;
+            do
+            {
+                yield return new InterpretedFrameInfo(frame.Name, frame.GetDebugInfo(frame.InstructionIndex));
+                frame = frame.Parent;
+            } while (frame != null);
+        }
+
+        public int Goto(int labelIndex, object value, bool gotoExceptionHandler)
+        {
+            // TODO: we know this at compile time (except for compiled loop):
+            var target = Interpreter.Labels[labelIndex];
+            Debug.Assert(!gotoExceptionHandler || (gotoExceptionHandler && _continuationIndex == target.ContinuationStackDepth),
+                "When it's time to jump to the exception handler, all previous finally blocks should already be processed");
+
+            if (_continuationIndex == target.ContinuationStackDepth)
+            {
+                SetStackDepth(target.StackDepth);
+                if (value != Interpreter.NoValue)
+                {
+                    Data[StackIndex - 1] = value;
+                }
+                return target.Index - InstructionIndex;
+            }
+
+            // if we are in the middle of executing jump we forget the previous target and replace it by a new one:
+            _pendingContinuation = labelIndex;
+            _pendingValue = value;
+            return YieldToCurrentContinuation();
         }
 
         public object Peek()
@@ -117,92 +178,6 @@ namespace System.Linq.Expressions.Interpreter
             Data[StackIndex++] = value;
         }
 
-        internal void SetStackDepth(int depth)
-        {
-            StackIndex = Interpreter.LocalCount + depth;
-        }
-
-        public InterpretedFrame Parent { get; internal set; }
-
-        internal string[] Trace
-        {
-            get
-            {
-                var trace = new List<string>();
-                var frame = this;
-                do
-                {
-                    trace.Add(frame.Name);
-                    frame = frame.Parent;
-                } while (frame != null);
-                return trace.ToArray();
-            }
-        }
-
-        public static InterpretedFrameInfo[] GetExceptionStackTrace(Exception exception)
-        {
-            return exception.Data[typeof(InterpretedFrameInfo)] as InterpretedFrameInfo[];
-        }
-
-        public static bool IsInterpretedFrame(MethodBase method)
-        {
-            //ContractUtils.RequiresNotNull(method, nameof(method));
-            return method.DeclaringType == typeof(Interpreter) && string.Equals(method.Name, "Run", StringComparison.Ordinal);
-        }
-
-        public IEnumerable<InterpretedFrameInfo> GetStackTraceDebugInfo()
-        {
-            var frame = this;
-            do
-            {
-                yield return new InterpretedFrameInfo(frame.Name, frame.GetDebugInfo(frame.InstructionIndex));
-                frame = frame.Parent;
-            } while (frame != null);
-        }
-
-        internal InterpretedFrame Enter()
-        {
-            var currentFrame = _currentFrame;
-            _currentFrame = this;
-            return Parent = currentFrame;
-        }
-
-        internal void Leave(InterpretedFrame prevFrame)
-        {
-            _currentFrame = prevFrame;
-        }
-
-        internal void SaveTraceToException(Exception exception)
-        {
-            if (exception.Data[typeof(InterpretedFrameInfo)] == null)
-            {
-                exception.Data[typeof(InterpretedFrameInfo)] = new List<InterpretedFrameInfo>(GetStackTraceDebugInfo()).ToArray();
-            }
-        }
-
-        public int Goto(int labelIndex, object value, bool gotoExceptionHandler)
-        {
-            // TODO: we know this at compile time (except for compiled loop):
-            var target = Interpreter.Labels[labelIndex];
-            Debug.Assert(!gotoExceptionHandler || (gotoExceptionHandler && _continuationIndex == target.ContinuationStackDepth),
-                "When it's time to jump to the exception handler, all previous finally blocks should already be processed");
-
-            if (_continuationIndex == target.ContinuationStackDepth)
-            {
-                SetStackDepth(target.StackDepth);
-                if (value != Interpreter.NoValue)
-                {
-                    Data[StackIndex - 1] = value;
-                }
-                return target.Index - InstructionIndex;
-            }
-
-            // if we are in the middle of executing jump we forget the previous target and replace it by a new one:
-            _pendingContinuation = labelIndex;
-            _pendingValue = value;
-            return YieldToCurrentContinuation();
-        }
-
         public void PushContinuation(int continuation)
         {
             _continuations[_continuationIndex++] = continuation;
@@ -248,9 +223,21 @@ namespace System.Linq.Expressions.Interpreter
             return pendingTarget.Index - InstructionIndex;
         }
 
+        internal InterpretedFrame Enter()
+        {
+            var currentFrame = _currentFrame;
+            _currentFrame = this;
+            return Parent = currentFrame;
+        }
+
         internal bool IsJumpHappened()
         {
             return _pendingContinuation >= 0;
+        }
+
+        internal void Leave(InterpretedFrame prevFrame)
+        {
+            _currentFrame = prevFrame;
         }
 
         internal void PopPendingContinuation()
@@ -266,6 +253,19 @@ namespace System.Linq.Expressions.Interpreter
 
             _pendingContinuation = -1;
             _pendingValue = Interpreter.NoValue;
+        }
+
+        internal void SaveTraceToException(Exception exception)
+        {
+            if (exception.Data[typeof(InterpretedFrameInfo)] == null)
+            {
+                exception.Data[typeof(InterpretedFrameInfo)] = new List<InterpretedFrameInfo>(GetStackTraceDebugInfo()).ToArray();
+            }
+        }
+
+        internal void SetStackDepth(int depth)
+        {
+            StackIndex = Interpreter.LocalCount + depth;
         }
     }
 }

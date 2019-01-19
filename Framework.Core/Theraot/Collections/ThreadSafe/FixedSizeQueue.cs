@@ -65,12 +65,6 @@ namespace Theraot.Collections.ThreadSafe
             _entries.CopyTo(array, index);
         }
 
-        void ICollection.CopyTo(Array array, int index)
-        {
-            Extensions.CanCopyTo(Count, array, index);
-            Extensions.DeprecatedCopyTo(this, array, index);
-        }
-
         /// <summary>
         /// Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>
@@ -80,11 +74,6 @@ namespace Theraot.Collections.ThreadSafe
         public IEnumerator<T> GetEnumerator()
         {
             return _entries.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         /// <summary>
@@ -170,6 +159,17 @@ namespace Theraot.Collections.ThreadSafe
             }
             item = default;
             return false;
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            Extensions.CanCopyTo(Count, array, index);
+            Extensions.DeprecatedCopyTo(this, array, index);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

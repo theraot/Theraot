@@ -662,16 +662,6 @@ namespace System.Collections
             CopyEntries(array, arrayIndex);
         }
 
-        // Returns an enumerator for this hashtable.
-        // If modifications made to the hashtable while an enumeration is
-        // in progress, the MoveNext and Current methods of the
-        // enumerator will throw an exception.
-        //
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return new HashtableEnumerator(this, HashtableEnumerator.DictEntry);
-        }
-
         // Returns a dictionary enumerator for this hashtable.
         // If modifications made to the hashtable while an enumeration is
         // in progress, the MoveNext and Current methods of the
@@ -1015,6 +1005,16 @@ namespace System.Collections
             Rehash(rawSize);
         }
 
+        // Returns an enumerator for this hashtable.
+        // If modifications made to the hashtable while an enumeration is
+        // in progress, the MoveNext and Current methods of the
+        // enumerator will throw an exception.
+        //
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return new HashtableEnumerator(this, HashtableEnumerator.DictEntry);
+        }
+
         // ?InitHash? is basically an implementation of classic DoubleHashing (see http://en.wikipedia.org/wiki/Double_hashing)
         //
         // 1) The only ?correctness? requirement is that the ?increment? used to probe
@@ -1269,14 +1269,14 @@ namespace System.Collections
             internal const int DictEntry = 3;
             internal const int Keys = 1;
             internal const int Values = 2;
-            private readonly int _getObjectRetType;
-            private readonly Hashtable _hashtable;
-            private readonly int _version;
             private int _bucket;
             private bool _current;
             // What should GetObject return?
             private object _currentKey;
             private object _currentValue;
+            private readonly int _getObjectRetType;
+            private readonly Hashtable _hashtable;
+            private readonly int _version;
 
             internal HashtableEnumerator(Hashtable hashtable, int getObjRetType)
             {
@@ -1544,11 +1544,6 @@ namespace System.Collections
                 }
             }
 
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return _table.GetEnumerator();
-            }
-
             public override IDictionaryEnumerator GetEnumerator()
             {
                 return _table.GetEnumerator();
@@ -1577,6 +1572,11 @@ namespace System.Collections
             internal override KeyValuePairs[] ToKeyValuePairsArray()
             {
                 return _table.ToKeyValuePairsArray();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return _table.GetEnumerator();
             }
         }
 

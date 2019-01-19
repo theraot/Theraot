@@ -81,11 +81,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        void ICollection<T>.Add(T item)
-        {
-            AddNew(item);
-        }
-
         /// <summary>
         /// Adds the specified value.
         /// </summary>
@@ -200,11 +195,6 @@ namespace Theraot.Collections.ThreadSafe
         public IEnumerator<T> GetEnumerator()
         {
             return _bucket.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         /// <summary>
@@ -536,6 +526,11 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        void ICollection<T>.Add(T item)
+        {
+            AddNew(item);
+        }
+
         private void ExtendProbingIfNeeded(int attempts)
         {
             var diff = attempts - _probing;
@@ -543,6 +538,11 @@ namespace Theraot.Collections.ThreadSafe
             {
                 Interlocked.Add(ref _probing, diff);
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

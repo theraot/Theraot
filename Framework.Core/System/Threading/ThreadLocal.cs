@@ -85,9 +85,9 @@ namespace System.Threading
                 _wrapped.Value = value;
             }
         }
+        public IList<T> Values => _wrapped.Values;
 
         internal T ValueForDebugDisplay => _wrapped.ValueForDebugDisplay;
-        public IList<T> Values => _wrapped.Values;
 
         [DebuggerNonUserCode]
         public void Dispose()

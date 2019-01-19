@@ -104,6 +104,82 @@ namespace System.Linq.Expressions.Interpreter
         /// </summary>
         public abstract int ArgumentCount { get; }
 
+#if FEATURE_DLG_INVOKE
+        private static bool ShouldCache(MethodInfo info)
+        {
+            return true;
+        }
+#endif
+
+#if FEATURE_FAST_CREATE
+        /// <summary>
+        /// Gets the next type or null if no more types are available.
+        /// </summary>
+        private static Type TryGetParameterOrReturnType(MethodInfo target, ParameterInfo[] pi, int index)
+        {
+            if (!target.IsStatic)
+            {
+                index--;
+                if (index < 0)
+                {
+                    return target.DeclaringType;
+                }
+            }
+
+            if (index < pi.Length)
+            {
+                // next in signature
+                return pi[index].ParameterType;
+            }
+
+            if (target.ReturnType == typeof(void) || index > pi.Length)
+            {
+                // no more parameters
+                return null;
+            }
+
+            // last parameter on Invoke is return type
+            return target.ReturnType;
+        }
+
+        private static bool IndexIsNotReturnType(int index, MethodInfo target, ParameterInfo[] pi)
+        {
+            return pi.Length != index || (pi.Length == index && !target.IsStatic);
+        }
+#endif
+
+#if FEATURE_DLG_INVOKE
+        /// <summary>
+        /// Uses reflection to create new instance of the appropriate ReflectedCaller
+        /// </summary>
+        private static CallInstruction SlowCreate(MethodInfo info, ParameterInfo[] pis)
+        {
+            List<Type> types = new List<Type>();
+            if (!info.IsStatic) types.Add(info.DeclaringType);
+            foreach (ParameterInfo pi in pis)
+            {
+                types.Add(pi.ParameterType);
+            }
+            if (info.ReturnType != typeof(void))
+            {
+                types.Add(info.ReturnType);
+            }
+            Type[] arrTypes = types.ToArray();
+
+            try
+            {
+                return (CallInstruction)Activator.CreateInstance(GetHelperType(info, arrTypes), info);
+            }
+            catch (TargetInvocationException e)
+            {
+                ExceptionHelpers.UnwrapAndRethrow(e);
+                throw ContractUtils.Unreachable;
+            }
+        }
+#endif
+
+        public override int ConsumedStack => ArgumentCount;
+
         public override string InstructionName => "Call";
 
 #if FEATURE_DLG_INVOKE
@@ -220,6 +296,31 @@ namespace System.Linq.Expressions.Interpreter
 #endif
         }
 
+        protected static bool TryGetLightLambdaTarget(object instance, out LightLambda lightLambda)
+        {
+            if (instance is Delegate del && del.Target is Func<object[], object> thunk)
+            {
+                lightLambda = thunk.Target as LightLambda;
+                if (lightLambda != null)
+                {
+                    return true;
+                }
+            }
+
+            lightLambda = null;
+            return false;
+        }
+
+        protected object InterpretLambdaInvoke(LightLambda targetLambda, object[] args)
+        {
+            if (ProducedStack > 0)
+            {
+                return targetLambda.Run(args);
+            }
+
+            return targetLambda.RunVoid(args);
+        }
+
         private static CallInstruction GetArrayAccessor(MethodInfo info, int argumentCount)
         {
             var arrayType = info.DeclaringType;
@@ -255,107 +356,6 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             return Create(alternativeMethod);
-        }
-
-#if FEATURE_DLG_INVOKE
-        private static bool ShouldCache(MethodInfo info)
-        {
-            return true;
-        }
-#endif
-
-#if FEATURE_FAST_CREATE
-        /// <summary>
-        /// Gets the next type or null if no more types are available.
-        /// </summary>
-        private static Type TryGetParameterOrReturnType(MethodInfo target, ParameterInfo[] pi, int index)
-        {
-            if (!target.IsStatic)
-            {
-                index--;
-                if (index < 0)
-                {
-                    return target.DeclaringType;
-                }
-            }
-
-            if (index < pi.Length)
-            {
-                // next in signature
-                return pi[index].ParameterType;
-            }
-
-            if (target.ReturnType == typeof(void) || index > pi.Length)
-            {
-                // no more parameters
-                return null;
-            }
-
-            // last parameter on Invoke is return type
-            return target.ReturnType;
-        }
-
-        private static bool IndexIsNotReturnType(int index, MethodInfo target, ParameterInfo[] pi)
-        {
-            return pi.Length != index || (pi.Length == index && !target.IsStatic);
-        }
-#endif
-
-#if FEATURE_DLG_INVOKE
-        /// <summary>
-        /// Uses reflection to create new instance of the appropriate ReflectedCaller
-        /// </summary>
-        private static CallInstruction SlowCreate(MethodInfo info, ParameterInfo[] pis)
-        {
-            List<Type> types = new List<Type>();
-            if (!info.IsStatic) types.Add(info.DeclaringType);
-            foreach (ParameterInfo pi in pis)
-            {
-                types.Add(pi.ParameterType);
-            }
-            if (info.ReturnType != typeof(void))
-            {
-                types.Add(info.ReturnType);
-            }
-            Type[] arrTypes = types.ToArray();
-
-            try
-            {
-                return (CallInstruction)Activator.CreateInstance(GetHelperType(info, arrTypes), info);
-            }
-            catch (TargetInvocationException e)
-            {
-                ExceptionHelpers.UnwrapAndRethrow(e);
-                throw ContractUtils.Unreachable;
-            }
-        }
-#endif
-
-        public override int ConsumedStack => ArgumentCount;
-
-        protected static bool TryGetLightLambdaTarget(object instance, out LightLambda lightLambda)
-        {
-            if (instance is Delegate del && del.Target is Func<object[], object> thunk)
-            {
-                lightLambda = thunk.Target as LightLambda;
-                if (lightLambda != null)
-                {
-                    return true;
-                }
-            }
-
-            lightLambda = null;
-            return false;
-        }
-
-        protected object InterpretLambdaInvoke(LightLambda targetLambda, object[] args)
-        {
-            if (ProducedStack > 0)
-            {
-                return targetLambda.Run(args);
-            }
-
-            return targetLambda.RunVoid(args);
         }
     }
 

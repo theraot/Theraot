@@ -48,18 +48,6 @@ namespace System.Threading
         [SecurityCritical]
         private static ContextCallback _invokePostPhaseAction;
 
-        // Even phases event
-        private readonly ManualResetEventSlim _evenEvent;
-
-        // Odd phases event
-        private readonly ManualResetEventSlim _oddEvent;
-
-        // The execution context of the creator thread
-        private readonly ExecutionContext _ownerThreadContext;
-
-        // Post phase action after each phase
-        private readonly Action<Barrier> _postPhaseAction;
-
         // This is the ManagedThreadID of the postPhaseAction caller thread, this is used to determine if the SignalAndWait, Dispose or Add/RemoveParticipant caller thread is
         // the same thread as the postPhaseAction thread which means this method was called from the postPhaseAction which is illegal.
         // This value is captured before calling the action and reset back to zero after it.
@@ -83,43 +71,20 @@ namespace System.Threading
         // dispose flag
         private bool _disposed;
 
+        // Even phases event
+        private readonly ManualResetEventSlim _evenEvent;
+
         // In case the post phase action throws an exception, wraps it in BarrierPostPhaseException
         private Exception _exception;
 
-        /// <summary>
-        /// Gets the number of the barrier's current phase.
-        /// </summary>
-        public long CurrentPhaseNumber
-        {
-            // use the new Volatile.Read/Write method because it is cheaper than Interlocked.Read on AMD64 architecture
-            get => Volatile.Read(ref _currentPhase);
+        // Odd phases event
+        private readonly ManualResetEventSlim _oddEvent;
 
-            internal set => Volatile.Write(ref _currentPhase, value);
-        }
+        // The execution context of the creator thread
+        private readonly ExecutionContext _ownerThreadContext;
 
-        /// <summary>
-        /// Gets the total number of participants in the barrier.
-        /// </summary>
-        public int ParticipantCount => Volatile.Read(ref _currentTotalCount) & _totalMask;
-
-        /// <summary>
-        /// Gets the number of participants in the barrier that haven't yet signaled
-        /// in the current phase.
-        /// </summary>
-        /// <remarks>
-        /// This could be 0 during a post-phase action delegate execution or if the
-        /// ParticipantCount is 0.
-        /// </remarks>
-        public int ParticipantsRemaining
-        {
-            get
-            {
-                var currentTotal = Volatile.Read(ref _currentTotalCount);
-                var total = currentTotal & _totalMask;
-                var current = (currentTotal & _currentMask) >> 16;
-                return total - current;
-            }
-        }
+        // Post phase action after each phase
+        private readonly Action<Barrier> _postPhaseAction;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Barrier"/> class.
@@ -167,6 +132,41 @@ namespace System.Threading
             }
 
             _actionCallerId = 0;
+        }
+
+        /// <summary>
+        /// Gets the number of the barrier's current phase.
+        /// </summary>
+        public long CurrentPhaseNumber
+        {
+            // use the new Volatile.Read/Write method because it is cheaper than Interlocked.Read on AMD64 architecture
+            get => Volatile.Read(ref _currentPhase);
+
+            internal set => Volatile.Write(ref _currentPhase, value);
+        }
+
+        /// <summary>
+        /// Gets the total number of participants in the barrier.
+        /// </summary>
+        public int ParticipantCount => Volatile.Read(ref _currentTotalCount) & _totalMask;
+
+        /// <summary>
+        /// Gets the number of participants in the barrier that haven't yet signaled
+        /// in the current phase.
+        /// </summary>
+        /// <remarks>
+        /// This could be 0 during a post-phase action delegate execution or if the
+        /// ParticipantCount is 0.
+        /// </remarks>
+        public int ParticipantsRemaining
+        {
+            get
+            {
+                var currentTotal = Volatile.Read(ref _currentTotalCount);
+                var total = currentTotal & _totalMask;
+                var current = (currentTotal & _currentMask) >> 16;
+                return total - current;
+            }
         }
 
         /// <summary>

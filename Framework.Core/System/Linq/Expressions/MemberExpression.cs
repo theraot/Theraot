@@ -89,6 +89,26 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
+        /// Creates a <see cref="MemberExpression"/> accessing a property or field.
+        /// </summary>
+        /// <param name="expression">The containing object of the member.  This can be null for static members.</param>
+        /// <param name="member">The member to be accessed.</param>
+        /// <returns>The created <see cref="MemberExpression"/>.</returns>
+        public static MemberExpression MakeMemberAccess(Expression expression, MemberInfo member)
+        {
+            ContractUtils.RequiresNotNull(member, nameof(member));
+            if (member is FieldInfo fi)
+            {
+                return Field(expression, fi);
+            }
+            if (member is PropertyInfo pi)
+            {
+                return Property(expression, pi);
+            }
+            throw new ArgumentException($"Member '{member}' not field or property", nameof(member));
+        }
+
+        /// <summary>
         /// Creates a <see cref="MemberExpression"/> accessing a property.
         /// </summary>
         /// <param name="expression">The containing object of the property.  This can be null for static properties.</param>
@@ -199,6 +219,42 @@ namespace System.Linq.Expressions
             return Property(expression, GetProperty(propertyAccessor, nameof(propertyAccessor)));
         }
 
+        /// <summary>
+        /// Creates a <see cref="MemberExpression"/> accessing a property or field.
+        /// </summary>
+        /// <param name="expression">The containing object of the member.  This can be null for static members.</param>
+        /// <param name="propertyOrFieldName">The member to be accessed.</param>
+        /// <returns>The created <see cref="MemberExpression"/>.</returns>
+        public static MemberExpression PropertyOrField(Expression expression, string propertyOrFieldName)
+        {
+            ExpressionUtils.RequiresCanRead(expression, nameof(expression));
+            // bind to public names first
+            var pi = expression.Type.GetProperty(propertyOrFieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+            if (pi != null)
+            {
+                return Property(expression, pi);
+            }
+
+            var fi = expression.Type.GetField(propertyOrFieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+            if (fi != null)
+            {
+                return Field(expression, fi);
+            }
+
+            pi = expression.Type.GetProperty(propertyOrFieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+            if (pi != null)
+            {
+                return Property(expression, pi);
+            }
+
+            fi = expression.Type.GetField(propertyOrFieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+            if (fi != null)
+            {
+                return Field(expression, fi);
+            }
+            throw new ArgumentException($"{propertyOrFieldName}' is not a member of type '{expression.Type}'", nameof(propertyOrFieldName));
+        }
+
         private static bool CheckMethod(MethodInfo method, MethodInfo propertyMethod)
         {
             if (method.Equals(propertyMethod))
@@ -234,62 +290,6 @@ namespace System.Linq.Expressions
             }
 
             throw new ArgumentException($"The method '{mi.DeclaringType}.{mi.Name}' is not a property accessor", index >= 0 ? $"{paramName}[{index}]" : paramName);
-        }
-
-        /// <summary>
-        /// Creates a <see cref="MemberExpression"/> accessing a property or field.
-        /// </summary>
-        /// <param name="expression">The containing object of the member.  This can be null for static members.</param>
-        /// <param name="member">The member to be accessed.</param>
-        /// <returns>The created <see cref="MemberExpression"/>.</returns>
-        public static MemberExpression MakeMemberAccess(Expression expression, MemberInfo member)
-        {
-            ContractUtils.RequiresNotNull(member, nameof(member));
-            if (member is FieldInfo fi)
-            {
-                return Field(expression, fi);
-            }
-            if (member is PropertyInfo pi)
-            {
-                return Property(expression, pi);
-            }
-            throw new ArgumentException($"Member '{member}' not field or property", nameof(member));
-        }
-
-        /// <summary>
-        /// Creates a <see cref="MemberExpression"/> accessing a property or field.
-        /// </summary>
-        /// <param name="expression">The containing object of the member.  This can be null for static members.</param>
-        /// <param name="propertyOrFieldName">The member to be accessed.</param>
-        /// <returns>The created <see cref="MemberExpression"/>.</returns>
-        public static MemberExpression PropertyOrField(Expression expression, string propertyOrFieldName)
-        {
-            ExpressionUtils.RequiresCanRead(expression, nameof(expression));
-            // bind to public names first
-            var pi = expression.Type.GetProperty(propertyOrFieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
-            if (pi != null)
-            {
-                return Property(expression, pi);
-            }
-
-            var fi = expression.Type.GetField(propertyOrFieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
-            if (fi != null)
-            {
-                return Field(expression, fi);
-            }
-
-            pi = expression.Type.GetProperty(propertyOrFieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
-            if (pi != null)
-            {
-                return Property(expression, pi);
-            }
-
-            fi = expression.Type.GetField(propertyOrFieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
-            if (fi != null)
-            {
-                return Field(expression, fi);
-            }
-            throw new ArgumentException($"{propertyOrFieldName}' is not a member of type '{expression.Type}'", nameof(propertyOrFieldName));
         }
     }
 

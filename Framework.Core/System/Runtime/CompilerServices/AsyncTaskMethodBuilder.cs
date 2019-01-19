@@ -86,11 +86,6 @@ namespace System.Runtime.CompilerServices
             _builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
         }
 
-        void IAsyncMethodBuilder.PreBoxInitialization()
-        {
-            GC.KeepAlive(Task);
-        }
-
         /// <summary>
         /// Completes the <see cref="T:System.Threading.Tasks.Task"/> in the
         ///             <see cref="T:System.Threading.Tasks.TaskStatus">Faulted</see> state with the specified exception.
@@ -142,6 +137,11 @@ namespace System.Runtime.CompilerServices
         internal void SetNotificationForWaitCompletion(bool enabled)
         {
             _builder.SetNotificationForWaitCompletion(enabled);
+        }
+
+        void IAsyncMethodBuilder.PreBoxInitialization()
+        {
+            GC.KeepAlive(Task);
         }
     }
 
@@ -266,11 +266,6 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        void IAsyncMethodBuilder.PreBoxInitialization()
-        {
-            GC.KeepAlive(Task);
-        }
-
         /// <summary>
         /// Completes the <see cref="T:System.Threading.Tasks.Task`1"/> in the
         ///             <see cref="T:System.Threading.Tasks.TaskStatus">Faulted</see> state with the specified exception.
@@ -385,6 +380,11 @@ namespace System.Runtime.CompilerServices
             }
 
             return asyncMethodTaskCache.FromResult(result);
+        }
+
+        void IAsyncMethodBuilder.PreBoxInitialization()
+        {
+            GC.KeepAlive(Task);
         }
     }
 }

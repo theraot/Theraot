@@ -19,10 +19,6 @@ namespace System.Linq.Expressions
 
         private const int _tab = 4;
 
-        private readonly TextWriter _out;
-
-        private readonly Stack<int> _stack = new Stack<int>();
-
         private int _column;
         private Flow _flow;
 
@@ -40,10 +36,14 @@ namespace System.Linq.Expressions
         // the lambda definitions.
         private Queue<LambdaExpression> _lambdas;
 
+        private readonly TextWriter _out;
+
         // Associate every unique anonymous parameter or variable in the tree with an integer.
         // The id is used to create a name for the anonymous parameter or variable.
         //
         private Dictionary<ParameterExpression, int> _paramIds;
+
+        private readonly Stack<int> _stack = new Stack<int>();
 
         private DebugViewWriter(TextWriter file)
         {
@@ -72,149 +72,6 @@ namespace System.Linq.Expressions
             Debug.Assert(writer != null);
 
             new DebugViewWriter(writer).WriteTo(node);
-        }
-
-        private static int GetId<T>(T e, ref Dictionary<T, int> ids)
-        {
-            if (ids == null)
-            {
-                ids = new Dictionary<T, int> { { e, 1 } };
-                return 1;
-            }
-
-            if (!ids.TryGetValue(e, out var id))
-            {
-                // e is met the first time
-                id = ids.Count + 1;
-                ids.Add(e, id);
-            }
-            return id;
-        }
-
-        private void Dedent()
-        {
-            Delta -= _tab;
-        }
-
-        private int GetLabelTargetId(LabelTarget target)
-        {
-            Debug.Assert(string.IsNullOrEmpty(target.Name));
-            return GetId(target, ref _labelIds);
-        }
-
-        private int GetLambdaId(LambdaExpression le)
-        {
-            Debug.Assert(string.IsNullOrEmpty(le.Name));
-            return GetId(le, ref _lambdaIds);
-        }
-
-        private int GetParamId(ParameterExpression p)
-        {
-            Debug.Assert(string.IsNullOrEmpty(p.Name));
-            return GetId(p, ref _paramIds);
-        }
-
-        private void Indent()
-        {
-            Delta += _tab;
-        }
-
-        private void NewLine()
-        {
-            _flow = Flow.NewLine;
-        }
-
-        private void WriteTo(Expression node)
-        {
-            if (node is LambdaExpression lambda)
-            {
-                WriteLambda(lambda);
-            }
-            else
-            {
-                Visit(node);
-                Debug.Assert(_stack.Count == 0);
-            }
-
-            //
-            // Output all lambda expression definitions.
-            // in the order of their appearances in the tree.
-            //
-            while (_lambdas?.Count > 0)
-            {
-                WriteLine();
-                WriteLine();
-                WriteLambda(_lambdas.Dequeue());
-            }
-        }
-
-        private Flow CheckBreak(Flow flow)
-        {
-            if ((flow & Flow.Break) != 0)
-            {
-                if (_column > _maxColumn + Depth)
-                {
-                    flow = Flow.NewLine;
-                }
-                else
-                {
-                    flow &= ~Flow.Break;
-                }
-            }
-            return flow;
-        }
-
-        private Flow GetFlow(Flow flow)
-        {
-            var last = CheckBreak(_flow);
-            flow = CheckBreak(flow);
-
-            // Get the biggest flow that is requested None < Space < NewLine
-            return (Flow)Math.Max((int)last, (int)flow);
-        }
-
-        private void Out(string s)
-        {
-            Out(Flow.None, s);
-        }
-
-        private void Out(string s, Flow after)
-        {
-            Out(Flow.None, s, after);
-        }
-
-        private void Out(Flow before, string s, Flow after = Flow.None)
-        {
-            switch (GetFlow(before))
-            {
-                case Flow.None:
-                    break;
-
-                case Flow.Space:
-                    Write(" ");
-                    break;
-
-                case Flow.NewLine:
-                    WriteLine();
-                    Write(new string(' ', Depth));
-                    break;
-                default:
-                    break;
-            }
-            Write(s);
-            _flow = after;
-        }
-
-        private void Write(string s)
-        {
-            _out.Write(s);
-            _column += s.Length;
-        }
-
-        private void WriteLine()
-        {
-            _out.WriteLine();
-            _column = 0;
         }
 
         protected internal override Expression VisitBinary(BinaryExpression node)
@@ -909,6 +766,23 @@ namespace System.Linq.Expressions
             return name;
         }
 
+        private static int GetId<T>(T e, ref Dictionary<T, int> ids)
+        {
+            if (ids == null)
+            {
+                ids = new Dictionary<T, int> { { e, 1 } };
+                return 1;
+            }
+
+            if (!ids.TryGetValue(e, out var id))
+            {
+                // e is met the first time
+                id = ids.Count + 1;
+                ids.Add(e, id);
+            }
+            return id;
+        }
+
         // the greater the higher
         private static int GetOperatorPrecedence(Expression node)
         {
@@ -1126,9 +1000,45 @@ namespace System.Linq.Expressions
             return string.Format(CultureInfo.CurrentCulture, "'{0}'", name);
         }
 
+        private Flow CheckBreak(Flow flow)
+        {
+            if ((flow & Flow.Break) != 0)
+            {
+                if (_column > _maxColumn + Depth)
+                {
+                    flow = Flow.NewLine;
+                }
+                else
+                {
+                    flow &= ~Flow.Break;
+                }
+            }
+            return flow;
+        }
+
+        private void Dedent()
+        {
+            Delta -= _tab;
+        }
+
         private void DumpLabel(LabelTarget target)
         {
             Out(string.Format(CultureInfo.CurrentCulture, ".LabelTarget {0}:", GetLabelTargetName(target)));
+        }
+
+        private Flow GetFlow(Flow flow)
+        {
+            var last = CheckBreak(_flow);
+            flow = CheckBreak(flow);
+
+            // Get the biggest flow that is requested None < Space < NewLine
+            return (Flow)Math.Max((int)last, (int)flow);
+        }
+
+        private int GetLabelTargetId(LabelTarget target)
+        {
+            Debug.Assert(string.IsNullOrEmpty(target.Name));
+            return GetId(target, ref _labelIds);
         }
 
         private string GetLabelTargetName(LabelTarget target)
@@ -1142,6 +1052,12 @@ namespace System.Linq.Expressions
             return GetDisplayName(target.Name);
         }
 
+        private int GetLambdaId(LambdaExpression le)
+        {
+            Debug.Assert(string.IsNullOrEmpty(le.Name));
+            return GetId(le, ref _lambdaIds);
+        }
+
         private string GetLambdaName(LambdaExpression lambda)
         {
             if (string.IsNullOrEmpty(lambda.Name))
@@ -1149,6 +1065,54 @@ namespace System.Linq.Expressions
                 return "#Lambda" + GetLambdaId(lambda);
             }
             return GetDisplayName(lambda.Name);
+        }
+
+        private int GetParamId(ParameterExpression p)
+        {
+            Debug.Assert(string.IsNullOrEmpty(p.Name));
+            return GetId(p, ref _paramIds);
+        }
+
+        private void Indent()
+        {
+            Delta += _tab;
+        }
+
+        private void NewLine()
+        {
+            _flow = Flow.NewLine;
+        }
+
+        private void Out(string s)
+        {
+            Out(Flow.None, s);
+        }
+
+        private void Out(string s, Flow after)
+        {
+            Out(Flow.None, s, after);
+        }
+
+        private void Out(Flow before, string s, Flow after = Flow.None)
+        {
+            switch (GetFlow(before))
+            {
+                case Flow.None:
+                    break;
+
+                case Flow.Space:
+                    Write(" ");
+                    break;
+
+                case Flow.NewLine:
+                    WriteLine();
+                    Write(new string(' ', Depth));
+                    break;
+                default:
+                    break;
+            }
+            Write(s);
+            _flow = after;
         }
 
         // Prints ".instanceField" or "declaringType.staticField"
@@ -1249,6 +1213,12 @@ namespace System.Linq.Expressions
             Out($"{close}", Flow.Break);
         }
 
+        private void Write(string s)
+        {
+            _out.Write(s);
+            _column += s.Length;
+        }
+
         private void WriteLambda(LambdaExpression lambda)
         {
             Out(
@@ -1267,6 +1237,36 @@ namespace System.Linq.Expressions
             Dedent();
             Out(Flow.NewLine, "}");
             Debug.Assert(_stack.Count == 0);
+        }
+
+        private void WriteLine()
+        {
+            _out.WriteLine();
+            _column = 0;
+        }
+
+        private void WriteTo(Expression node)
+        {
+            if (node is LambdaExpression lambda)
+            {
+                WriteLambda(lambda);
+            }
+            else
+            {
+                Visit(node);
+                Debug.Assert(_stack.Count == 0);
+            }
+
+            //
+            // Output all lambda expression definitions.
+            // in the order of their appearances in the tree.
+            //
+            while (_lambdas?.Count > 0)
+            {
+                WriteLine();
+                WriteLine();
+                WriteLambda(_lambdas.Dequeue());
+            }
         }
     }
 }

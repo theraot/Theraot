@@ -47,11 +47,6 @@ namespace Theraot.Core
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public void Prepend(char character)
         {
             _buffer[--_start] = character;
@@ -91,6 +86,11 @@ namespace Theraot.Core
                 length = maxLength;
             }
             return new string(_buffer, _capacity - backIndex, length);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

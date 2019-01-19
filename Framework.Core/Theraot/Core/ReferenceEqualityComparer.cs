@@ -18,14 +18,14 @@ namespace Theraot.Core
 
         public static ReferenceEqualityComparer<T> Instance { get; } = new ReferenceEqualityComparer<T>();
 
-        bool IEqualityComparer<T>.Equals(T x, T y)
-        {
-            return ReferenceEquals(x, y);
-        }
-
         public int GetHashCode(T obj)
         {
             return obj.GetHashCode();
+        }
+
+        bool IEqualityComparer<T>.Equals(T x, T y)
+        {
+            return ReferenceEquals(x, y);
         }
     }
 }

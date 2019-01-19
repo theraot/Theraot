@@ -16,12 +16,12 @@ namespace System.Threading.Tasks
         internal static Task InternalCurrent;
 
         internal TaskScheduler ExecutingTaskScheduler;
-        protected readonly object State;
         protected object Action;
+        protected readonly object State;
         private static int _lastId;
         private readonly InternalTaskOptions _internalOptions;
-        private readonly Task _parent;
         private int _isDisposed;
+        private readonly Task _parent;
         private int _status;
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
@@ -183,20 +183,6 @@ namespace System.Threading.Tasks
         public static TaskFactory Factory => TaskFactory.DefaultInstance;
 
         public object AsyncState => State;
-
-        WaitHandle IAsyncResult.AsyncWaitHandle
-        {
-            get
-            {
-                if (Volatile.Read(ref _isDisposed) == 1)
-                {
-                    throw new ObjectDisposedException(nameof(Task));
-                }
-                return _waitHandle.Value.WaitHandle;
-            }
-        }
-
-        bool IAsyncResult.CompletedSynchronously => false;
         public TaskCreationOptions CreationOptions { get; }
 
         public AggregateException Exception
@@ -262,6 +248,20 @@ namespace System.Threading.Tasks
 
         internal ExecutionContext CapturedContext { get; set; }
 
+        WaitHandle IAsyncResult.AsyncWaitHandle
+        {
+            get
+            {
+                if (Volatile.Read(ref _isDisposed) == 1)
+                {
+                    throw new ObjectDisposedException(nameof(Task));
+                }
+                return _waitHandle.Value.WaitHandle;
+            }
+        }
+
+        bool IAsyncResult.CompletedSynchronously => false;
+
         private bool IsContinuationTask => (_internalOptions & InternalTaskOptions.ContinuationTask) != 0;
 
         private bool IsPromiseTask => (_internalOptions & InternalTaskOptions.PromiseTask) != 0;
@@ -280,20 +280,6 @@ namespace System.Threading.Tasks
         {
             Dispose(true);
             GC.SuppressFinalize(this);
-        }
-
-        void IThreadPoolWorkItem.ExecuteWorkItem()
-        {
-            ExecuteEntry(false);
-        }
-
-        void IThreadPoolWorkItem.MarkAborted(ThreadAbortException exception)
-        {
-            if (!IsCompleted)
-            {
-                HandleException(exception);
-                FinishThreadAbortedTask(true, false);
-            }
         }
 
         public void RunSynchronously()
@@ -654,6 +640,20 @@ namespace System.Threading.Tasks
             catch (OperationCanceledExceptionEx)
             {
                 throw new AggregateException(new TaskCanceledException(this));
+            }
+        }
+
+        void IThreadPoolWorkItem.ExecuteWorkItem()
+        {
+            ExecuteEntry(false);
+        }
+
+        void IThreadPoolWorkItem.MarkAborted(ThreadAbortException exception)
+        {
+            if (!IsCompleted)
+            {
+                HandleException(exception);
+                FinishThreadAbortedTask(true, false);
             }
         }
 

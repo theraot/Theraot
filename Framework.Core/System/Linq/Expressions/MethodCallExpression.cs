@@ -18,6 +18,55 @@ namespace System.Linq.Expressions
 {
     public partial class Expression
     {
+
+        /// <summary>Creates a <see cref="MethodCallExpression"/> that represents applying an array index operator to a multi-dimensional array.</summary>
+        /// <returns>A <see cref="BinaryExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.ArrayIndex"/> and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
+        /// <param name="array">An array of <see cref="Expression"/> instances - indexes for the array index operation.</param>
+        /// <param name="indexes">An array that contains <see cref="Expression"/> objects to use to populate the <see cref="MethodCallExpression.Arguments"/> collection.</param>
+        public static MethodCallExpression ArrayIndex(Expression array, params Expression[] indexes)
+        {
+            return ArrayIndex(array, (IEnumerable<Expression>)indexes);
+        }
+
+        /// <summary>Creates a <see cref="MethodCallExpression"/> that represents applying an array index operator to an array of rank more than one.</summary>
+        /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Arguments"/> properties set to the specified values.</returns>
+        /// <param name="array">An <see cref="Expression"/> to set the <see cref="MethodCallExpression.Object"/> property equal to.</param>
+        /// <param name="indexes">An <see cref="IEnumerable{T}"/> that contains <see cref="Expression"/> objects to use to populate the <see cref="MethodCallExpression.Arguments"/> collection.</param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="array"/> or <paramref name="indexes"/> is null.</exception>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="array"/>.Type does not represent an array type.-or-The rank of <paramref name="array"/>.Type does not match the number of elements in <paramref name="indexes"/>.-or-The <see cref="Type"/> property of one or more elements of <paramref name="indexes"/> does not represent the <see cref="int"/> type.</exception>
+        public static MethodCallExpression ArrayIndex(Expression array, IEnumerable<Expression> indexes)
+        {
+            ExpressionUtils.RequiresCanRead(array, nameof(array), -1);
+            ContractUtils.RequiresNotNull(indexes, nameof(indexes));
+
+            var arrayType = array.Type;
+            if (!arrayType.IsArray)
+            {
+                throw new ArgumentException("Argument must be array", nameof(array));
+            }
+
+            var indexList = indexes.ToReadOnlyCollection();
+            if (arrayType.GetArrayRank() != indexList.Count)
+            {
+                throw new ArgumentException("Incorrect number of indexes");
+            }
+
+            for (int i = 0, n = indexList.Count; i < n; i++)
+            {
+                var e = indexList[i];
+
+                ExpressionUtils.RequiresCanRead(e, nameof(indexes), i);
+                if (e.Type != typeof(int))
+                {
+                    throw new ArgumentException("Argument for array index must be of type Int32", i >= 0 ? $"{nameof(indexes)}[{i}]" : nameof(indexes));
+                }
+            }
+
+            var mi = array.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance);
+            return Call(array, mi, indexList);
+        }
         /// <summary>Creates a <see cref="MethodCallExpression"/> that represents a call to a static method that takes one argument.</summary>
         /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Method"/> properties set to the specified values.</returns>
         /// <param name="method">A <see cref="MethodInfo"/> to set the <see cref="MethodCallExpression.Method"/> property equal to.</param>
@@ -574,55 +623,6 @@ namespace System.Linq.Expressions
                 ValidateCallInstanceType(instance.Type, method);
             }
         }
-
-        /// <summary>Creates a <see cref="MethodCallExpression"/> that represents applying an array index operator to a multi-dimensional array.</summary>
-        /// <returns>A <see cref="BinaryExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.ArrayIndex"/> and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
-        /// <param name="array">An array of <see cref="Expression"/> instances - indexes for the array index operation.</param>
-        /// <param name="indexes">An array that contains <see cref="Expression"/> objects to use to populate the <see cref="MethodCallExpression.Arguments"/> collection.</param>
-        public static MethodCallExpression ArrayIndex(Expression array, params Expression[] indexes)
-        {
-            return ArrayIndex(array, (IEnumerable<Expression>)indexes);
-        }
-
-        /// <summary>Creates a <see cref="MethodCallExpression"/> that represents applying an array index operator to an array of rank more than one.</summary>
-        /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Arguments"/> properties set to the specified values.</returns>
-        /// <param name="array">An <see cref="Expression"/> to set the <see cref="MethodCallExpression.Object"/> property equal to.</param>
-        /// <param name="indexes">An <see cref="IEnumerable{T}"/> that contains <see cref="Expression"/> objects to use to populate the <see cref="MethodCallExpression.Arguments"/> collection.</param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="array"/> or <paramref name="indexes"/> is null.</exception>
-        /// <exception cref="ArgumentException">
-        /// <paramref name="array"/>.Type does not represent an array type.-or-The rank of <paramref name="array"/>.Type does not match the number of elements in <paramref name="indexes"/>.-or-The <see cref="Type"/> property of one or more elements of <paramref name="indexes"/> does not represent the <see cref="int"/> type.</exception>
-        public static MethodCallExpression ArrayIndex(Expression array, IEnumerable<Expression> indexes)
-        {
-            ExpressionUtils.RequiresCanRead(array, nameof(array), -1);
-            ContractUtils.RequiresNotNull(indexes, nameof(indexes));
-
-            var arrayType = array.Type;
-            if (!arrayType.IsArray)
-            {
-                throw new ArgumentException("Argument must be array", nameof(array));
-            }
-
-            var indexList = indexes.ToReadOnlyCollection();
-            if (arrayType.GetArrayRank() != indexList.Count)
-            {
-                throw new ArgumentException("Incorrect number of indexes");
-            }
-
-            for (int i = 0, n = indexList.Count; i < n; i++)
-            {
-                var e = indexList[i];
-
-                ExpressionUtils.RequiresCanRead(e, nameof(indexes), i);
-                if (e.Type != typeof(int))
-                {
-                    throw new ArgumentException("Argument for array index must be of type Int32", i >= 0 ? $"{nameof(indexes)}[{i}]" : nameof(indexes));
-                }
-            }
-
-            var mi = array.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance);
-            return Call(array, mi, indexList);
-        }
     }
 
     /// <summary>
@@ -635,6 +635,11 @@ namespace System.Linq.Expressions
         {
             Method = method;
         }
+
+        /// <summary>
+        /// Gets the number of argument expressions of the node.
+        /// </summary>
+        public virtual int ArgumentCount => throw ContractUtils.Unreachable;
 
         /// <summary>
         /// Gets a collection of expressions that represent arguments to the method call.
@@ -663,6 +668,16 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type => Method.ReturnType;
+
+        /// <summary>
+        /// Gets the argument expression with the specified <paramref name="index"/>.
+        /// </summary>
+        /// <param name="index">The index of the argument expression to get.</param>
+        /// <returns>The expression representing the argument at the specified <paramref name="index"/>.</returns>
+        public virtual Expression GetArgument(int index)
+        {
+            throw ContractUtils.Unreachable;
+        }
 
         /// <summary>
         /// Creates a new expression that is like this one, but using the
@@ -721,21 +736,6 @@ namespace System.Linq.Expressions
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitMethodCall(this);
-        }
-
-        /// <summary>
-        /// Gets the number of argument expressions of the node.
-        /// </summary>
-        public virtual int ArgumentCount => throw ContractUtils.Unreachable;
-
-        /// <summary>
-        /// Gets the argument expression with the specified <paramref name="index"/>.
-        /// </summary>
-        /// <param name="index">The index of the argument expression to get.</param>
-        /// <returns>The expression representing the argument at the specified <paramref name="index"/>.</returns>
-        public virtual Expression GetArgument(int index)
-        {
-            throw ContractUtils.Unreachable;
         }
     }
 
@@ -840,9 +840,9 @@ namespace System.Linq.Expressions
 
     internal sealed class InstanceMethodCallExpression2 : InstanceMethodCallExpression, IArgumentProvider
     {
-        private readonly Expression _arg1;
         private object _arg0;                // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-                                             // storage for the 2nd argument
+        private readonly Expression _arg1;
+        // storage for the 2nd argument
 
         public InstanceMethodCallExpression2(MethodInfo method, Expression instance, Expression arg0, Expression arg1)
             : base(method, instance)
@@ -906,9 +906,9 @@ namespace System.Linq.Expressions
 
     internal sealed class InstanceMethodCallExpression3 : InstanceMethodCallExpression, IArgumentProvider
     {
-        private readonly Expression _arg1, _arg2;
         private object _arg0;                       // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-                                                    // storage for the 2nd - 3rd argument
+        private readonly Expression _arg1, _arg2;
+        // storage for the 2nd - 3rd argument
 
         public InstanceMethodCallExpression3(MethodInfo method, Expression instance, Expression arg0, Expression arg1, Expression arg2)
             : base(method, instance)
@@ -1096,9 +1096,9 @@ namespace System.Linq.Expressions
 
     internal sealed class MethodCallExpression2 : MethodCallExpression, IArgumentProvider
     {
-        private readonly Expression _arg1;
         private object _arg0;               // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-                                            // storage for the 2nd arg
+        private readonly Expression _arg1;
+        // storage for the 2nd arg
 
         public MethodCallExpression2(MethodInfo method, Expression arg0, Expression arg1)
             : base(method)
@@ -1162,9 +1162,9 @@ namespace System.Linq.Expressions
 
     internal sealed class MethodCallExpression3 : MethodCallExpression, IArgumentProvider
     {
-        private readonly Expression _arg1, _arg2;
         private object _arg0;           // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-                                        // storage for the 2nd - 3rd args.
+        private readonly Expression _arg1, _arg2;
+        // storage for the 2nd - 3rd args.
 
         public MethodCallExpression3(MethodInfo method, Expression arg0, Expression arg1, Expression arg2)
             : base(method)
@@ -1234,9 +1234,9 @@ namespace System.Linq.Expressions
 
     internal sealed class MethodCallExpression4 : MethodCallExpression, IArgumentProvider
     {
-        private readonly Expression _arg1, _arg2, _arg3;
         private object _arg0;               // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-                                            // storage for the 2nd - 4th args.
+        private readonly Expression _arg1, _arg2, _arg3;
+        // storage for the 2nd - 4th args.
 
         public MethodCallExpression4(MethodInfo method, Expression arg0, Expression arg1, Expression arg2, Expression arg3)
             : base(method)
@@ -1312,9 +1312,9 @@ namespace System.Linq.Expressions
 
     internal sealed class MethodCallExpression5 : MethodCallExpression, IArgumentProvider
     {
-        private readonly Expression _arg1, _arg2, _arg3, _arg4;
         private object _arg0;           // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-                                        // storage for the 2nd - 5th args.
+        private readonly Expression _arg1, _arg2, _arg3, _arg4;
+        // storage for the 2nd - 5th args.
 
         public MethodCallExpression5(MethodInfo method, Expression arg0, Expression arg1, Expression arg2, Expression arg3, Expression arg4)
             : base(method)

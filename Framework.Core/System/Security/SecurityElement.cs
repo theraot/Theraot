@@ -16,17 +16,9 @@ namespace System.Security
 {
     public sealed class SecurityElement : ISecurityElementFactory
     {
-        private string _tag;
-        private string _text;
-        private ArrayList _children;
-        private ArrayList _attributes;
 
         private const int _attributesTypical = 4 * 2;  // 4 attributes, times 2 strings per attribute
         private const int _childrenTypical = 1;
-
-        private static readonly char[] _tagIllegalCharacters = { ' ', '<', '>' };
-        private static readonly char[] _textIllegalCharacters = { '<', '>' };
-        private static readonly char[] _valueIllegalCharacters = { '<', '>', '\"' };
         private static readonly char[] _escapeChars = { '<', '>', '\"', '\'', '&' };
 
         private static readonly string[] _escapeStringPairs = {
@@ -38,12 +30,13 @@ namespace System.Security
             "&", "&amp;"
         };
 
-        //-------------------------- Constructors ---------------------------
-
-        internal SecurityElement()
-        {
-            // Empty
-        }
+        private static readonly char[] _tagIllegalCharacters = { ' ', '<', '>' };
+        private static readonly char[] _textIllegalCharacters = { '<', '>' };
+        private static readonly char[] _valueIllegalCharacters = { '<', '>', '\"' };
+        private ArrayList _attributes;
+        private ArrayList _children;
+        private string _tag;
+        private string _text;
 
         public SecurityElement(string tag)
         {
@@ -82,26 +75,11 @@ namespace System.Security
             _text = text;
         }
 
-        //-------------------------- Properties -----------------------------
+        //-------------------------- Constructors ---------------------------
 
-        public string Tag
+        internal SecurityElement()
         {
-            get => _tag;
-
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(value));
-                }
-
-                if (!IsValidTag(value))
-                {
-                    throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element tag '{0}'.", value));
-                }
-
-                _tag = value;
-            }
+            // Empty
         }
 
         public Hashtable Attributes
@@ -161,6 +139,46 @@ namespace System.Security
             }
         }
 
+        public ArrayList Children
+        {
+            get
+            {
+                ConvertSecurityElementFactories();
+                return _children;
+            }
+
+            set
+            {
+                if (value?.Contains(null) == true)
+                {
+                    throw new ArgumentException("Cannot have a null child.");
+                }
+                _children = value;
+            }
+        }
+
+        //-------------------------- Properties -----------------------------
+
+        public string Tag
+        {
+            get => _tag;
+
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(value));
+                }
+
+                if (!IsValidTag(value))
+                {
+                    throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element tag '{0}'.", value));
+                }
+
+                _tag = value;
+            }
+        }
+
         public string Text
         {
             get => Unescape(_text);
@@ -183,66 +201,85 @@ namespace System.Security
             }
         }
 
-        public ArrayList Children
+        public static string Escape(string str)
         {
-            get
+            if (str == null)
             {
-                ConvertSecurityElementFactories();
-                return _children;
+                return null;
             }
 
-            set
+            StringBuilder sb = null;
+
+            var strLen = str.Length;
+            var newIndex = 0; // Pointer into the string that indicates the start index of the "remaining" string (that still needs to be processed).
+
+            while (true)
             {
-                if (value?.Contains(null) == true)
+                var index = str.IndexOfAny(_escapeChars, newIndex); // Pointer into the string that indicates the location of the current '&' character
+
+                if (index == -1)
                 {
-                    throw new ArgumentException("Cannot have a null child.");
-                }
-                _children = value;
-            }
-        }
-
-        internal void ConvertSecurityElementFactories()
-        {
-            if (_children == null)
-            {
-                return;
-            }
-
-            for (var i = 0; i < _children.Count; ++i)
-            {
-                if (_children[i] is ISecurityElementFactory iseFactory && !(_children[i] is SecurityElement))
-                {
-                    _children[i] = iseFactory.CreateSecurityElement();
-                }
-            }
-        }
-
-        //-------------------------- Public Methods -----------------------------
-
-        internal void AddAttributeSafe(string name, string value)
-        {
-            if (_attributes == null)
-            {
-                _attributes = new ArrayList(_attributesTypical);
-            }
-            else
-            {
-                var iMax = _attributes.Count;
-                Debug.Assert(iMax % 2 == 0, "Odd number of strings means the attr/value pairs were not added correctly");
-
-                for (var i = 0; i < iMax; i += 2)
-                {
-                    var strAttrName = (string)_attributes[i];
-
-                    if (string.Equals(strAttrName, name, StringComparison.Ordinal))
+                    if (sb == null)
                     {
-                        throw new ArgumentException("Attribute names must be unique.");
+                        return str;
                     }
+
+                    sb.Append(str, newIndex, strLen - newIndex);
+                    return sb.ToString();
                 }
+
+                (sb ?? (sb = new StringBuilder())).Append(str, newIndex, index - newIndex);
+                sb.Append(GetEscapeSequence(str[index]));
+
+                newIndex = index + 1;
             }
 
-            _attributes.Add(name);
-            _attributes.Add(value);
+            // no normal exit is possible
+        }
+
+        public static SecurityElement FromString(string xml)
+        {
+            if (xml == null)
+            {
+                throw new ArgumentNullException(nameof(xml));
+            }
+
+            return default;
+        }
+
+        public static bool IsValidAttributeName(string name)
+        {
+            return IsValidTag(name);
+        }
+
+        public static bool IsValidAttributeValue(string value)
+        {
+            if (value == null)
+            {
+                return false;
+            }
+
+            return value.IndexOfAny(_valueIllegalCharacters) == -1;
+        }
+
+        public static bool IsValidTag(string tag)
+        {
+            if (tag == null)
+            {
+                return false;
+            }
+
+            return tag.IndexOfAny(_tagIllegalCharacters) == -1;
+        }
+
+        public static bool IsValidText(string text)
+        {
+            if (text == null)
+            {
+                return false;
+            }
+
+            return text.IndexOfAny(_textIllegalCharacters) == -1;
         }
 
         public void AddAttribute(string name, string value)
@@ -278,6 +315,53 @@ namespace System.Security
             }
 
             (_children ?? (_children = new ArrayList(_childrenTypical))).Add(child);
+        }
+
+        public string Attribute(string name)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            // Note: we don't check for validity here because an
+            // if an invalid name is passed we simply won't find it.
+            if (_attributes == null)
+            {
+                return null;
+            }
+
+            // Go through all the attribute and see if we know about
+            // the one we are asked for
+            var iMax = _attributes.Count;
+            Debug.Assert(iMax % 2 == 0, "Odd number of strings means the attr/value pairs were not added correctly");
+
+            for (var i = 0; i < iMax; i += 2)
+            {
+                var strAttrName = (string)_attributes[i];
+
+                if (string.Equals(strAttrName, name, StringComparison.Ordinal))
+                {
+                    var strAttrValue = (string)_attributes[i + 1];
+
+                    return Unescape(strAttrValue);
+                }
+            }
+
+            // In the case where we didn't find it, we are expected to
+            // return null
+            return null;
+        }
+
+        public SecurityElement Copy()
+        {
+            var element = new SecurityElement(_tag, _text)
+            {
+                _children = _children == null ? null : new ArrayList(_children),
+                _attributes = _attributes == null ? null : new ArrayList(_attributes)
+            };
+
+            return element;
         }
 
         public bool Equal(SecurityElement other)
@@ -368,50 +452,115 @@ namespace System.Security
             return true;
         }
 
-        public SecurityElement Copy()
+        public SecurityElement SearchForChildByTag(string tag)
         {
-            var element = new SecurityElement(_tag, _text)
-            {
-                _children = _children == null ? null : new ArrayList(_children),
-                _attributes = _attributes == null ? null : new ArrayList(_attributes)
-            };
-
-            return element;
-        }
-
-        public static bool IsValidTag(string tag)
-        {
+            // Go through all the children and see if we can
+            // find the one are are asked for (matching tags)
             if (tag == null)
             {
-                return false;
+                throw new ArgumentNullException(nameof(tag));
             }
 
-            return tag.IndexOfAny(_tagIllegalCharacters) == -1;
-        }
-
-        public static bool IsValidText(string text)
-        {
-            if (text == null)
+            // Note: we don't check for a valid tag here because
+            // an invalid tag simply won't be found.
+            if (_children == null)
             {
-                return false;
+                return null;
             }
 
-            return text.IndexOfAny(_textIllegalCharacters) == -1;
-        }
-
-        public static bool IsValidAttributeName(string name)
-        {
-            return IsValidTag(name);
-        }
-
-        public static bool IsValidAttributeValue(string value)
-        {
-            if (value == null)
+            foreach (SecurityElement current in _children)
             {
-                return false;
+                if (current != null && string.Equals(current.Tag, tag, StringComparison.Ordinal))
+                {
+                    return current;
+                }
+            }
+            return null;
+        }
+
+        public string SearchForTextOfTag(string tag)
+        {
+            // Search on each child in order and each
+            // child's child, depth-first
+            if (tag == null)
+            {
+                throw new ArgumentNullException(nameof(tag));
             }
 
-            return value.IndexOfAny(_valueIllegalCharacters) == -1;
+            // Note: we don't check for a valid tag here because
+            // an invalid tag simply won't be found.
+            if (string.Equals(_tag, tag, StringComparison.Ordinal))
+            {
+                return Unescape(_text);
+            }
+
+            if (_children == null)
+            {
+                return null;
+            }
+
+            foreach (SecurityElement child in Children)
+            {
+                var text = child.SearchForTextOfTag(tag);
+                if (text != null)
+                {
+                    return text;
+                }
+            }
+            return null;
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            ToString(sb, (obj, str) => ((StringBuilder)obj).Append(str));
+
+            return sb.ToString();
+        }
+
+        //-------------------------- Public Methods -----------------------------
+
+        internal void AddAttributeSafe(string name, string value)
+        {
+            if (_attributes == null)
+            {
+                _attributes = new ArrayList(_attributesTypical);
+            }
+            else
+            {
+                var iMax = _attributes.Count;
+                Debug.Assert(iMax % 2 == 0, "Odd number of strings means the attr/value pairs were not added correctly");
+
+                for (var i = 0; i < iMax; i += 2)
+                {
+                    var strAttrName = (string)_attributes[i];
+
+                    if (string.Equals(strAttrName, name, StringComparison.Ordinal))
+                    {
+                        throw new ArgumentException("Attribute names must be unique.");
+                    }
+                }
+            }
+
+            _attributes.Add(name);
+            _attributes.Add(value);
+        }
+
+        internal void ConvertSecurityElementFactories()
+        {
+            if (_children == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < _children.Count; ++i)
+            {
+                if (_children[i] is ISecurityElementFactory iseFactory && !(_children[i] is SecurityElement))
+                {
+                    _children[i] = iseFactory.CreateSecurityElement();
+                }
+            }
         }
 
         private static string GetEscapeSequence(char c)
@@ -432,42 +581,6 @@ namespace System.Security
 
             DebugEx.Fail("Unable to find escape sequence for this character");
             return c.ToString();
-        }
-
-        public static string Escape(string str)
-        {
-            if (str == null)
-            {
-                return null;
-            }
-
-            StringBuilder sb = null;
-
-            var strLen = str.Length;
-            var newIndex = 0; // Pointer into the string that indicates the start index of the "remaining" string (that still needs to be processed).
-
-            while (true)
-            {
-                var index = str.IndexOfAny(_escapeChars, newIndex); // Pointer into the string that indicates the location of the current '&' character
-
-                if (index == -1)
-                {
-                    if (sb == null)
-                    {
-                        return str;
-                    }
-
-                    sb.Append(str, newIndex, strLen - newIndex);
-                    return sb.ToString();
-                }
-
-                (sb ?? (sb = new StringBuilder())).Append(str, newIndex, index - newIndex);
-                sb.Append(GetEscapeSequence(str[index]));
-
-                newIndex = index + 1;
-            }
-
-            // no normal exit is possible
         }
 
         private static string GetUnescapeSequence(string str, int index, out int newIndex)
@@ -527,13 +640,26 @@ namespace System.Security
             }
         }
 
-        public override string ToString()
+        string ISecurityElementFactory.Attribute(string attributeName)
         {
-            var sb = new StringBuilder();
+            return Attribute(attributeName);
+        }
 
-            ToString(sb, (obj, str) => ((StringBuilder)obj).Append(str));
+        object ISecurityElementFactory.Copy()
+        {
+            return Copy();
+        }
 
-            return sb.ToString();
+        //--------------- ISecurityElementFactory implementation -----------------
+
+        SecurityElement ISecurityElementFactory.CreateSecurityElement()
+        {
+            return this;
+        }
+
+        string ISecurityElementFactory.GetTag()
+        {
+            return Tag;
         }
 
         private void ToString(object obj, Action<object, string> write)
@@ -599,132 +725,6 @@ namespace System.Security
                 write(obj, ">");
                 write(obj, Environment.NewLine);
             }
-        }
-
-        public string Attribute(string name)
-        {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            // Note: we don't check for validity here because an
-            // if an invalid name is passed we simply won't find it.
-            if (_attributes == null)
-            {
-                return null;
-            }
-
-            // Go through all the attribute and see if we know about
-            // the one we are asked for
-            var iMax = _attributes.Count;
-            Debug.Assert(iMax % 2 == 0, "Odd number of strings means the attr/value pairs were not added correctly");
-
-            for (var i = 0; i < iMax; i += 2)
-            {
-                var strAttrName = (string)_attributes[i];
-
-                if (string.Equals(strAttrName, name, StringComparison.Ordinal))
-                {
-                    var strAttrValue = (string)_attributes[i + 1];
-
-                    return Unescape(strAttrValue);
-                }
-            }
-
-            // In the case where we didn't find it, we are expected to
-            // return null
-            return null;
-        }
-
-        public SecurityElement SearchForChildByTag(string tag)
-        {
-            // Go through all the children and see if we can
-            // find the one are are asked for (matching tags)
-            if (tag == null)
-            {
-                throw new ArgumentNullException(nameof(tag));
-            }
-
-            // Note: we don't check for a valid tag here because
-            // an invalid tag simply won't be found.
-            if (_children == null)
-            {
-                return null;
-            }
-
-            foreach (SecurityElement current in _children)
-            {
-                if (current != null && string.Equals(current.Tag, tag, StringComparison.Ordinal))
-                {
-                    return current;
-                }
-            }
-            return null;
-        }
-
-        public string SearchForTextOfTag(string tag)
-        {
-            // Search on each child in order and each
-            // child's child, depth-first
-            if (tag == null)
-            {
-                throw new ArgumentNullException(nameof(tag));
-            }
-
-            // Note: we don't check for a valid tag here because
-            // an invalid tag simply won't be found.
-            if (string.Equals(_tag, tag, StringComparison.Ordinal))
-            {
-                return Unescape(_text);
-            }
-
-            if (_children == null)
-            {
-                return null;
-            }
-
-            foreach (SecurityElement child in Children)
-            {
-                var text = child.SearchForTextOfTag(tag);
-                if (text != null)
-                {
-                    return text;
-                }
-            }
-            return null;
-        }
-
-        public static SecurityElement FromString(string xml)
-        {
-            if (xml == null)
-            {
-                throw new ArgumentNullException(nameof(xml));
-            }
-
-            return default;
-        }
-
-        //--------------- ISecurityElementFactory implementation -----------------
-
-        SecurityElement ISecurityElementFactory.CreateSecurityElement()
-        {
-            return this;
-        }
-
-        string ISecurityElementFactory.GetTag()
-        {
-            return Tag;
-        }
-
-        object ISecurityElementFactory.Copy()
-        {
-            return Copy();
-        }
-
-        string ISecurityElementFactory.Attribute(string attributeName)
-        {
-            return Attribute(attributeName);
         }
     }
 }

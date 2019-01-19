@@ -72,12 +72,6 @@ namespace System.Linq.Expressions.Compiler
         internal readonly bool IsMethod;
 
         /// <summary>
-        /// The expression node for this scope
-        /// Can be LambdaExpression, BlockExpression, or CatchBlock
-        /// </summary>
-        internal readonly object Node;
-
-        /// <summary>
         /// <para>Scopes whose variables were merged into this one</para>
         /// <para>Created lazily as we create hundreds of compiler scopes w/o merging scopes when compiling rules.</para>
         /// </summary>
@@ -91,16 +85,16 @@ namespace System.Linq.Expressions.Compiler
         internal bool NeedsClosure;
 
         /// <summary>
+        /// The expression node for this scope
+        /// Can be LambdaExpression, BlockExpression, or CatchBlock
+        /// </summary>
+        internal readonly object Node;
+
+        /// <summary>
         /// Each variable referenced within this scope, and how often it was referenced
         /// Populated by VariableBinder
         /// </summary>
         internal Dictionary<ParameterExpression, int> ReferenceCount;
-
-        /// <summary>
-        /// Mutable dictionary that maps non-hoisted variables to either local
-        /// slots or argument slots
-        /// </summary>
-        private readonly Dictionary<ParameterExpression, Storage> _locals = new Dictionary<ParameterExpression, Storage>();
 
         /// <summary>
         /// The closed over hoisted locals
@@ -112,6 +106,12 @@ namespace System.Linq.Expressions.Compiler
         /// Provides storage for variables that are referenced from nested lambdas
         /// </summary>
         private HoistedLocals _hoistedLocals;
+
+        /// <summary>
+        /// Mutable dictionary that maps non-hoisted variables to either local
+        /// slots or argument slots
+        /// </summary>
+        private readonly Dictionary<ParameterExpression, Storage> _locals = new Dictionary<ParameterExpression, Storage>();
 
         /// <summary>
         /// parent scope, if any
@@ -151,6 +151,63 @@ namespace System.Linq.Expressions.Compiler
                     s = s._parent;
                 }
                 throw ContractUtils.Unreachable;
+            }
+        }
+
+        internal void AddLocal(LambdaCompiler gen, ParameterExpression variable)
+        {
+            _locals.Add(variable, new LocalStorage(gen, variable));
+        }
+
+        internal void EmitAddressOf(ParameterExpression variable)
+        {
+            ResolveVariable(variable).EmitAddress();
+        }
+
+        internal void EmitGet(ParameterExpression variable)
+        {
+            ResolveVariable(variable).EmitLoad();
+        }
+
+        internal void EmitSet(ParameterExpression variable)
+        {
+            ResolveVariable(variable).EmitStore();
+        }
+
+        internal void EmitVariableAccess(LambdaCompiler lc, ReadOnlyCollection<ParameterExpression> vars)
+        {
+            if (NearestHoistedLocals != null && vars.Count > 0)
+            {
+                // Find what array each variable is on & its index
+                var indexes = new ArrayBuilder<long>(vars.Count);
+
+                foreach (var variable in vars)
+                {
+                    // For each variable, find what array it's defined on
+                    ulong parents = 0;
+                    var locals = NearestHoistedLocals;
+                    while (!locals.Indexes.ContainsKey(variable))
+                    {
+                        parents++;
+                        locals = locals.Parent;
+                        Debug.Assert(locals != null);
+                    }
+
+                    // combine the number of parents we walked, with the
+                    // real index of variable to get the index to emit.
+                    var index = (parents << 32) | (uint)locals.Indexes[variable];
+
+                    indexes.UncheckedAdd((long)index);
+                }
+
+                EmitGet(NearestHoistedLocals.SelfVariable);
+                lc.EmitConstantArray(indexes.ToArray());
+                lc.IL.Emit(OpCodes.Call, RuntimeOpsCreateRuntimeVariablesObjectArrayInt64Array);
+            }
+            else
+            {
+                // No visible variables
+                lc.IL.Emit(OpCodes.Call, RuntimeOpsCreateRuntimeVariables);
             }
         }
 
@@ -198,107 +255,6 @@ namespace System.Linq.Expressions.Compiler
             _locals.Clear();
 
             return parent;
-        }
-
-        internal void EmitVariableAccess(LambdaCompiler lc, ReadOnlyCollection<ParameterExpression> vars)
-        {
-            if (NearestHoistedLocals != null && vars.Count > 0)
-            {
-                // Find what array each variable is on & its index
-                var indexes = new ArrayBuilder<long>(vars.Count);
-
-                foreach (var variable in vars)
-                {
-                    // For each variable, find what array it's defined on
-                    ulong parents = 0;
-                    var locals = NearestHoistedLocals;
-                    while (!locals.Indexes.ContainsKey(variable))
-                    {
-                        parents++;
-                        locals = locals.Parent;
-                        Debug.Assert(locals != null);
-                    }
-
-                    // combine the number of parents we walked, with the
-                    // real index of variable to get the index to emit.
-                    var index = (parents << 32) | (uint)locals.Indexes[variable];
-
-                    indexes.UncheckedAdd((long)index);
-                }
-
-                EmitGet(NearestHoistedLocals.SelfVariable);
-                lc.EmitConstantArray(indexes.ToArray());
-                lc.IL.Emit(OpCodes.Call, RuntimeOpsCreateRuntimeVariablesObjectArrayInt64Array);
-            }
-            else
-            {
-                // No visible variables
-                lc.IL.Emit(OpCodes.Call, RuntimeOpsCreateRuntimeVariables);
-            }
-        }
-
-        internal void AddLocal(LambdaCompiler gen, ParameterExpression variable)
-        {
-            _locals.Add(variable, new LocalStorage(gen, variable));
-        }
-
-        internal void EmitAddressOf(ParameterExpression variable)
-        {
-            ResolveVariable(variable).EmitAddress();
-        }
-
-        internal void EmitGet(ParameterExpression variable)
-        {
-            ResolveVariable(variable).EmitLoad();
-        }
-
-        internal void EmitSet(ParameterExpression variable)
-        {
-            ResolveVariable(variable).EmitStore();
-        }
-
-        private Storage ResolveVariable(ParameterExpression variable)
-        {
-            return ResolveVariable(variable, NearestHoistedLocals);
-        }
-
-        private Storage ResolveVariable(ParameterExpression variable, HoistedLocals hoistedLocals)
-        {
-            // Search IL locals and arguments, but only in this lambda
-            for (var s = this; s != null; s = s._parent)
-            {
-                if (s._locals.TryGetValue(variable, out var storage))
-                {
-                    return storage;
-                }
-
-                // if this is a lambda, we're done
-                if (s.IsMethod)
-                {
-                    break;
-                }
-            }
-
-            // search hoisted locals
-            for (var h = hoistedLocals; h != null; h = h.Parent)
-            {
-                if (h.Indexes.TryGetValue(variable, out var index))
-                {
-                    return new ElementBoxStorage(
-                        ResolveVariable(h.SelfVariable, hoistedLocals),
-                        index,
-                        variable
-                    );
-                }
-            }
-
-            //
-            // If this is an unbound variable in the lambda, the error will be
-            // thrown from VariableBinder. So an error here is generally caused
-            // by an internal error, e.g. a scope was created but it bypassed
-            // VariableBinder.
-            //
-            throw new InvalidOperationException($"variable '{variable.Name}' of type '{variable.Type}' referenced from scope '{CurrentLambdaName}', but it is not defined");
         }
 
         private static ParameterExpression[] GetVariables(object scope)
@@ -461,6 +417,50 @@ namespace System.Linq.Expressions.Compiler
                     yield return param;
                 }
             }
+        }
+
+        private Storage ResolveVariable(ParameterExpression variable)
+        {
+            return ResolveVariable(variable, NearestHoistedLocals);
+        }
+
+        private Storage ResolveVariable(ParameterExpression variable, HoistedLocals hoistedLocals)
+        {
+            // Search IL locals and arguments, but only in this lambda
+            for (var s = this; s != null; s = s._parent)
+            {
+                if (s._locals.TryGetValue(variable, out var storage))
+                {
+                    return storage;
+                }
+
+                // if this is a lambda, we're done
+                if (s.IsMethod)
+                {
+                    break;
+                }
+            }
+
+            // search hoisted locals
+            for (var h = hoistedLocals; h != null; h = h.Parent)
+            {
+                if (h.Indexes.TryGetValue(variable, out var index))
+                {
+                    return new ElementBoxStorage(
+                        ResolveVariable(h.SelfVariable, hoistedLocals),
+                        index,
+                        variable
+                    );
+                }
+            }
+
+            //
+            // If this is an unbound variable in the lambda, the error will be
+            // thrown from VariableBinder. So an error here is generally caused
+            // by an internal error, e.g. a scope was created but it bypassed
+            // VariableBinder.
+            //
+            throw new InvalidOperationException($"variable '{variable.Name}' of type '{variable.Type}' referenced from scope '{CurrentLambdaName}', but it is not defined");
         }
 
         private void SetParent(LambdaCompiler lc, CompilerScope parent)

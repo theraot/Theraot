@@ -52,6 +52,17 @@ namespace System.Dynamic
         public virtual IEnumerable<string> GetDynamicMemberNames() => ArrayReservoir<string>.EmptyArray;
 
         /// <summary>
+        /// Returns the <see cref="DynamicMetaObject" /> responsible for binding operations performed on this object,
+        /// using the virtual methods provided by this class.
+        /// </summary>
+        /// <param name="parameter">The expression tree representation of the runtime value.</param>
+        /// <returns>
+        /// The <see cref="DynamicMetaObject" /> to bind this object.  The object can be encapsulated inside of another
+        /// <see cref="DynamicMetaObject"/> to provide custom behavior for individual actions.
+        /// </returns>
+        public virtual DynamicMetaObject GetMetaObject(Expression parameter) => new MetaDynamic(parameter, this);
+
+        /// <summary>
         /// Provides the implementation of performing a binary operation.  Derived classes can
         /// override this method to customize behavior.  When not overridden the call site requesting
         /// the binder determines the behavior.
@@ -816,7 +827,7 @@ namespace System.Dynamic
 
                 foreach (var memberInfo in methods)
                 {
-                    var methodInfo = (MethodInfo) memberInfo;
+                    var methodInfo = (MethodInfo)memberInfo;
                     if (methodInfo.DeclaringType != typeof(DynamicObject) && methodInfo.GetBaseDefinition() == method)
                     {
                         return true;
@@ -843,17 +854,6 @@ namespace System.Dynamic
                 }
             }
         }
-
-        /// <summary>
-        /// Returns the <see cref="DynamicMetaObject" /> responsible for binding operations performed on this object,
-        /// using the virtual methods provided by this class.
-        /// </summary>
-        /// <param name="parameter">The expression tree representation of the runtime value.</param>
-        /// <returns>
-        /// The <see cref="DynamicMetaObject" /> to bind this object.  The object can be encapsulated inside of another
-        /// <see cref="DynamicMetaObject"/> to provide custom behavior for individual actions.
-        /// </returns>
-        public virtual DynamicMetaObject GetMetaObject(Expression parameter) => new MetaDynamic(parameter, this);
     }
 }
 

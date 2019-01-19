@@ -82,11 +82,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public bool Insert(int index, T item)
         {
             var result = _bucketCore.DoMayIncrement
@@ -317,6 +312,11 @@ namespace Theraot.Collections.ThreadSafe
                     }
                 }
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

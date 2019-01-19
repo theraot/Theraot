@@ -24,14 +24,14 @@ namespace System.Runtime.CompilerServices
         private static int _preventUnobservedTaskExceptionsInvoked;
 
         /// <summary>
-        /// The synchronization context associated with this operation.
-        /// </summary>
-        private readonly SynchronizationContext _synchronizationContext;
-
-        /// <summary>
         /// State related to the IAsyncStateMachine.
         /// </summary>
         private AsyncMethodBuilderCore _coreState;
+
+        /// <summary>
+        /// The synchronization context associated with this operation.
+        /// </summary>
+        private readonly SynchronizationContext _synchronizationContext;
 
         /// <summary>
         /// Temporary support for disabling crashing if tasks go unobserved.
@@ -104,10 +104,6 @@ namespace System.Runtime.CompilerServices
             {
                 AsyncMethodBuilderCore.ThrowOnContext(ex, null);
             }
-        }
-
-        void IAsyncMethodBuilder.PreBoxInitialization()
-        {
         }
 
         /// <summary>
@@ -203,6 +199,10 @@ namespace System.Runtime.CompilerServices
             {
                 AsyncMethodBuilderCore.ThrowOnContext(ex, null);
             }
+        }
+
+        void IAsyncMethodBuilder.PreBoxInitialization()
+        {
         }
     }
 }

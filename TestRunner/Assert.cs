@@ -31,6 +31,43 @@ namespace TestRunner
             throw new AssertionFailedException($"Unexpected: {typeof(T).Name}({found}){(message == null ? string.Empty : $" - Message: {message}")}");
         }
 
+        public static TException AsyncThrows<TException>(Func<Task> func, string message = null)
+            where TException : Exception
+        {
+            try
+            {
+                func?.Invoke().Wait();
+            }
+            catch (AggregateException aggregateException) when (aggregateException.InnerException is TException exception)
+            {
+                return exception;
+            }
+            catch (AggregateException aggregateException) when (aggregateException.InnerException is Exception exception)
+            {
+                throw new AssertionFailedException(BuildMessage<TException>(exception, message), exception);
+            }
+            throw new AssertionFailedException(BuildMessage<TException>(message));
+        }
+
+        public static TException AsyncThrows<TException, T>(Func<Task<T>> func, string message = null)
+            where TException : Exception
+        {
+            T foundValue;
+            try
+            {
+                foundValue = func == null ? default : func.Invoke().Result;
+            }
+            catch (AggregateException aggregateException) when (aggregateException.InnerException is TException exception)
+            {
+                return exception;
+            }
+            catch (AggregateException aggregateException) when (aggregateException.InnerException is Exception exception)
+            {
+                throw new AssertionFailedException(BuildMessage<TException>(exception, message), exception);
+            }
+            throw new AssertionFailedException(BuildMessage<TException, T>(foundValue, message));
+        }
+
         public static void CollectionEquals<T>(IEnumerable<T> expected, IEnumerable<T> found, string message = null)
         {
             var expectedCollection = Extensions.AsICollection(expected);
@@ -125,43 +162,6 @@ namespace TestRunner
                 return exception;
             }
             catch (Exception exception)
-            {
-                throw new AssertionFailedException(BuildMessage<TException>(exception, message), exception);
-            }
-            throw new AssertionFailedException(BuildMessage<TException, T>(foundValue, message));
-        }
-
-        public static TException AsyncThrows<TException>(Func<Task> func, string message = null)
-            where TException : Exception
-        {
-            try
-            {
-                func?.Invoke().Wait();
-            }
-            catch (AggregateException aggregateException) when (aggregateException.InnerException is TException exception)
-            {
-                return exception;
-            }
-            catch (AggregateException aggregateException) when (aggregateException.InnerException is Exception exception)
-            {
-                throw new AssertionFailedException(BuildMessage<TException>(exception, message), exception);
-            }
-            throw new AssertionFailedException(BuildMessage<TException>(message));
-        }
-
-        public static TException AsyncThrows<TException, T>(Func<Task<T>> func, string message = null)
-            where TException : Exception
-        {
-            T foundValue;
-            try
-            {
-                foundValue = func == null ? default : func.Invoke().Result;
-            }
-            catch (AggregateException aggregateException) when (aggregateException.InnerException is TException exception)
-            {
-                return exception;
-            }
-            catch (AggregateException aggregateException) when (aggregateException.InnerException is Exception exception)
             {
                 throw new AssertionFailedException(BuildMessage<TException>(exception, message), exception);
             }

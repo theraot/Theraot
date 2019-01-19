@@ -60,11 +60,6 @@ namespace Theraot.Collections.ThreadSafe
             return _entries.GetEnumerator();
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         /// <summary>
         /// Removes the item at the specified index.
         /// </summary>
@@ -104,6 +99,11 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryGet(int index, out T value)
         {
             return _entries.TryGet(index, out value);
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

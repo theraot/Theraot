@@ -22,15 +22,15 @@ namespace Theraot.Collections.ThreadSafe
     public sealed partial class SafeDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private const int _defaultProbing = 1;
-        private readonly IEqualityComparer<TValue> _valueComparer;
         private Bucket<KeyValuePair<TKey, TValue>> _bucket;
-        private int _probing;
 
         [NonSerialized]
         private KeyCollection<TKey, TValue> _keyCollection;
+        private int _probing;
 
         [NonSerialized]
         private ValueCollection<TKey, TValue> _valueCollection;
+        private readonly IEqualityComparer<TValue> _valueComparer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SafeDictionary{TKey,TValue}" /> class.
@@ -74,15 +74,15 @@ namespace Theraot.Collections.ThreadSafe
             // Empty
         }
 
-        public int Count => _bucket.Count;
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
-
         public IEqualityComparer<TKey> Comparer { get; }
+
+        public int Count => _bucket.Count;
 
         public ICollection<TKey> Keys => TypeHelper.LazyCreate(ref _keyCollection, () => new KeyCollection<TKey, TValue>(this));
 
         public ICollection<TValue> Values => TypeHelper.LazyCreate(ref _valueCollection, () => new ValueCollection<TKey, TValue>(this));
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
 
         public TValue this[TKey key]
         {
@@ -96,16 +96,6 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             set => Set(key, value);
-        }
-
-        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
-        {
-            AddNew(item.Key, item.Value);
-        }
-
-        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
-        {
-            AddNew(key, value);
         }
 
         /// <summary>
@@ -149,20 +139,6 @@ namespace Theraot.Collections.ThreadSafe
         public IEnumerable<KeyValuePair<TKey, TValue>> ClearEnumerable()
         {
             return Interlocked.Exchange(ref _bucket, _bucket = new Bucket<KeyValuePair<TKey, TValue>>());
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
-        {
-            var hashCode = GetHashCode(item.Key);
-            for (var attempts = 0; attempts < _probing; attempts++)
-            {
-                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.Equals(found.Key, item.Key))
-                {
-                    return _valueComparer.Equals(found.Value, item.Value);
-                }
-
-            }
-            return false;
         }
 
         /// <summary>
@@ -265,11 +241,6 @@ namespace Theraot.Collections.ThreadSafe
             return _bucket.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
         {
             if (valueFactory == null)
@@ -322,36 +293,6 @@ namespace Theraot.Collections.ThreadSafe
             var result = new List<KeyValuePair<TKey, TValue>>(_bucket.Count);
             result.AddRange(_bucket);
             return result;
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
-        {
-            var hashCode = GetHashCode(item.Key);
-            for (var attempts = 0; attempts < _probing; attempts++)
-            {
-                var done = false;
-                var result = _bucket.RemoveAt
-                    (
-                        hashCode + attempts,
-                        found =>
-                        {
-                            if (Comparer.Equals(found.Key, item.Key))
-                            {
-                                done = true;
-                                if (_valueComparer.Equals(found.Value, item.Value))
-                                {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        }
-                    );
-                if (done)
-                {
-                    return result;
-                }
-            }
-            return false;
         }
 
         /// <summary>
@@ -1156,6 +1097,30 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
+        {
+            AddNew(item.Key, item.Value);
+        }
+
+        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
+        {
+            AddNew(key, value);
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
+        {
+            var hashCode = GetHashCode(item.Key);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.Equals(found.Key, item.Key))
+                {
+                    return _valueComparer.Equals(found.Value, item.Value);
+                }
+
+            }
+            return false;
+        }
+
         private void ExtendProbingIfNeeded(int attempts)
         {
             var diff = 1 + attempts - _probing;
@@ -1163,6 +1128,11 @@ namespace Theraot.Collections.ThreadSafe
             {
                 Interlocked.Add(ref _probing, diff);
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         private int GetHashCode(TKey key)
@@ -1178,6 +1148,36 @@ namespace Theraot.Collections.ThreadSafe
                 hashCode = 0;
             }
             return hashCode;
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
+        {
+            var hashCode = GetHashCode(item.Key);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                var done = false;
+                var result = _bucket.RemoveAt
+                    (
+                        hashCode + attempts,
+                        found =>
+                        {
+                            if (Comparer.Equals(found.Key, item.Key))
+                            {
+                                done = true;
+                                if (_valueComparer.Equals(found.Value, item.Value))
+                                {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+                    );
+                if (done)
+                {
+                    return result;
+                }
+            }
+            return false;
         }
     }
 

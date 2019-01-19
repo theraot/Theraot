@@ -678,8 +678,6 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Lambda;
 
-        int IParameterProvider.ParameterCount => ParameterCount;
-
         /// <summary>
         /// Gets the parameters of the lambda expression.
         /// </summary>
@@ -709,6 +707,8 @@ namespace System.Linq.Expressions
         internal abstract Type PublicType { get; }
         internal virtual bool TailCallCore => false;
         internal abstract Type TypeCore { get; }
+
+        int IParameterProvider.ParameterCount => ParameterCount;
 
         /// <summary>
         /// Produces a delegate that represents the lambda expression.
@@ -763,8 +763,6 @@ namespace System.Linq.Expressions
             LambdaCompiler.Compile(this, method);
         }
 
-        ParameterExpression IParameterProvider.GetParameter(int index) => GetParameter(index);
-
         internal abstract LambdaExpression AcceptStackSpiller(StackSpiller spiller);
 
         internal virtual ReadOnlyCollection<ParameterExpression> GetOrMakeParameters()
@@ -776,6 +774,8 @@ namespace System.Linq.Expressions
         {
             throw ContractUtils.Unreachable;
         }
+
+        ParameterExpression IParameterProvider.GetParameter(int index) => GetParameter(index);
     }
 
     //#if !FEATURE_COMPILE
@@ -884,8 +884,8 @@ namespace System.Linq.Expressions
 
     internal sealed class Expression2<TDelegate> : Expression<TDelegate>
     {
-        private readonly ParameterExpression _par1;
         private object _par0;
+        private readonly ParameterExpression _par1;
 
         public Expression2(Expression body, ParameterExpression par0, ParameterExpression par1)
             : base(body)
@@ -947,9 +947,9 @@ namespace System.Linq.Expressions
 
     internal sealed class Expression3<TDelegate> : Expression<TDelegate>
     {
+        private object _par0;
         private readonly ParameterExpression _par1;
         private readonly ParameterExpression _par2;
-        private object _par0;
 
         public Expression3(Expression body, ParameterExpression par0, ParameterExpression par1, ParameterExpression par2)
             : base(body)

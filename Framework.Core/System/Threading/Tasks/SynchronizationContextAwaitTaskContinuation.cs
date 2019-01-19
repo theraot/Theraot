@@ -8,12 +8,12 @@ namespace System.Threading.Tasks
     /// <summary>Task continuation for awaiting with a current synchronization context.</summary>
     internal sealed class SynchronizationContextAwaitTaskContinuation : AwaitTaskContinuation
     {
-        /// <summary>SendOrPostCallback delegate to invoke the action.</summary>
-        private static readonly SendOrPostCallback _postCallback = state => ((Action)state)(); // can't use InvokeAction as it's SecurityCritical
 
         /// <summary>Cached delegate for PostAction</summary>
         [SecurityCritical]
         private static ContextCallback _postActionCallback;
+        /// <summary>SendOrPostCallback delegate to invoke the action.</summary>
+        private static readonly SendOrPostCallback _postCallback = state => ((Action)state)(); // can't use InvokeAction as it's SecurityCritical
 
         /// <summary>The context with which to run the action.</summary>
         private readonly SynchronizationContext _syncContext;

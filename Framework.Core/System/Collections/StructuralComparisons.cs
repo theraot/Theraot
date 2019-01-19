@@ -15,6 +15,33 @@ namespace System.Collections
 
         private sealed class InternalComparer : IComparer, IEqualityComparer
         {
+
+            private static void CheckRank(object x, object y, Type typeX, Type typeY)
+            {
+                var xRankInfo = typeX.GetProperty("Rank");
+                var yRankInfo = typeY.GetProperty("Rank");
+                if (xRankInfo == null || yRankInfo == null)
+                {
+                    // should never happen
+                    throw new ArgumentException("Valid arrays required");
+                }
+                if ((int)xRankInfo.GetValue(x, ArrayReservoir<object>.EmptyArray) != 1)
+                {
+                    throw new ArgumentException("Only one-dimensional arrays are supported", nameof(x));
+                }
+                if ((int)yRankInfo.GetValue(y, ArrayReservoir<object>.EmptyArray) != 1)
+                {
+                    throw new ArgumentException("Only one-dimensional arrays are supported", nameof(y));
+                }
+            }
+
+            private static bool NullComparison(object x, object y, out bool result)
+            {
+                var xNull = x == null;
+                var yNull = y == null;
+                result = xNull == yNull;
+                return xNull || yNull;
+            }
             int IComparer.Compare(object x, object y)
             {
                 if (x is IStructuralComparable comparable)
@@ -101,33 +128,6 @@ namespace System.Collections
                     return comparer.GetHashCode(this);
                 }
                 return EqualityComparer<object>.Default.GetHashCode(obj);
-            }
-
-            private static void CheckRank(object x, object y, Type typeX, Type typeY)
-            {
-                var xRankInfo = typeX.GetProperty("Rank");
-                var yRankInfo = typeY.GetProperty("Rank");
-                if (xRankInfo == null || yRankInfo == null)
-                {
-                    // should never happen
-                    throw new ArgumentException("Valid arrays required");
-                }
-                if ((int)xRankInfo.GetValue(x, ArrayReservoir<object>.EmptyArray) != 1)
-                {
-                    throw new ArgumentException("Only one-dimensional arrays are supported", nameof(x));
-                }
-                if ((int)yRankInfo.GetValue(y, ArrayReservoir<object>.EmptyArray) != 1)
-                {
-                    throw new ArgumentException("Only one-dimensional arrays are supported", nameof(y));
-                }
-            }
-
-            private static bool NullComparison(object x, object y, out bool result)
-            {
-                var xNull = x == null;
-                var yNull = y == null;
-                result = xNull == yNull;
-                return xNull || yNull;
             }
         }
     }

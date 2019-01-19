@@ -29,16 +29,6 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         private sealed class ChildRewriter
         {
-            /// <summary>
-            /// The child expressions being rewritten.
-            /// </summary>
-            private readonly Expression[] _expressions;
-
-            /// <summary>
-            /// The parent stack spiller, used to perform rewrites of expressions
-            /// and to allocate temporary variables.
-            /// </summary>
-            private readonly StackSpiller _self;
 
             /// <summary>
             /// Indicates whether a child expression represents a ByRef value and
@@ -71,6 +61,10 @@ namespace System.Linq.Expressions.Compiler
             private List<Expression> _comma;
 
             private bool _done;
+            /// <summary>
+            /// The child expressions being rewritten.
+            /// </summary>
+            private readonly Expression[] _expressions;
 
             /// <summary>
             /// The index of the next expression to rewrite in <see cref="_expressions"/>.
@@ -81,6 +75,12 @@ namespace System.Linq.Expressions.Compiler
             /// The index of the last expression that requires a SpillStack action.
             /// </summary>
             private int _lastSpillIndex;
+
+            /// <summary>
+            /// The parent stack spiller, used to perform rewrites of expressions
+            /// and to allocate temporary variables.
+            /// </summary>
+            private readonly StackSpiller _self;
 
             private Stack _stack;
 
@@ -367,6 +367,7 @@ namespace System.Linq.Expressions.Compiler
                             }
                         }
                         break;
+
                     default:
                         break;
                 }

@@ -38,6 +38,9 @@ namespace System.Linq.Expressions.Compiler
         // True if the method's first argument is of type Closure
         private readonly bool _hasClosureArgument;
 
+        // Currently active LabelTargets and their mapping to IL labels
+        private LabelScopeInfo _labelBlock = new LabelScopeInfo(null, LabelScopeKind.Lambda);
+
         // Mapping of labels used for "long" jumps (jumping out and into blocks)
         private readonly Dictionary<LabelTarget, LabelInfo> _labelInfo = new Dictionary<LabelTarget, LabelInfo>();
 
@@ -46,17 +49,14 @@ namespace System.Linq.Expressions.Compiler
 
         private readonly MethodInfo _method;
 
+        // The currently active variable scope
+        private CompilerScope _scope;
+
         // Information on the entire lambda tree currently being compiled
         private readonly AnalyzedTree _tree;
 
         // The TypeBuilder backing this method, if any
         private readonly TypeBuilder _typeBuilder;
-
-        // Currently active LabelTargets and their mapping to IL labels
-        private LabelScopeInfo _labelBlock = new LabelScopeInfo(null, LabelScopeKind.Lambda);
-
-        // The currently active variable scope
-        private CompilerScope _scope;
 
         /// <summary>
         /// Creates a lambda compiler that will compile to a dynamic method
@@ -159,6 +159,40 @@ namespace System.Linq.Expressions.Compiler
             return IL.DeclareLocal(type);
         }
 
+        /// <summary>
+        /// Compiler entry point
+        /// </summary>
+        /// <param name="lambda">LambdaExpression to compile.</param>
+        /// <returns>The compiled delegate.</returns>
+        internal static Delegate Compile(LambdaExpression lambda)
+        {
+            lambda.ValidateArgumentCount();
+
+            // 1. Bind lambda
+            var tree = AnalyzeLambda(ref lambda);
+
+            // 2. Create lambda compiler
+            var c = new LambdaCompiler(tree, lambda);
+
+            // 3. Emit
+            c.EmitLambdaBody();
+
+            // 4. Return the delegate.
+            return c.CreateDelegate();
+        }
+
+        internal static void Compile(LambdaExpression lambda, MethodBuilder method)
+        {
+            // 1. Bind lambda
+            var tree = AnalyzeLambda(ref lambda);
+
+            // 2. Create lambda compiler
+            var c = new LambdaCompiler(tree, lambda, method);
+
+            // 3. Emit
+            c.EmitLambdaBody();
+        }
+
         internal void EmitClosureArgument()
         {
             Debug.Assert(_hasClosureArgument, "must have a Closure argument");
@@ -214,40 +248,6 @@ namespace System.Linq.Expressions.Compiler
             // See if we can find a return label, so we can emit better IL
             AddReturnLabel(_lambda);
             _boundConstants.EmitCacheConstants(this);
-        }
-
-        /// <summary>
-        /// Compiler entry point
-        /// </summary>
-        /// <param name="lambda">LambdaExpression to compile.</param>
-        /// <returns>The compiled delegate.</returns>
-        internal static Delegate Compile(LambdaExpression lambda)
-        {
-            lambda.ValidateArgumentCount();
-
-            // 1. Bind lambda
-            var tree = AnalyzeLambda(ref lambda);
-
-            // 2. Create lambda compiler
-            var c = new LambdaCompiler(tree, lambda);
-
-            // 3. Emit
-            c.EmitLambdaBody();
-
-            // 4. Return the delegate.
-            return c.CreateDelegate();
-        }
-
-        internal static void Compile(LambdaExpression lambda, MethodBuilder method)
-        {
-            // 1. Bind lambda
-            var tree = AnalyzeLambda(ref lambda);
-
-            // 2. Create lambda compiler
-            var c = new LambdaCompiler(tree, lambda, method);
-
-            // 3. Emit
-            c.EmitLambdaBody();
         }
     }
 }

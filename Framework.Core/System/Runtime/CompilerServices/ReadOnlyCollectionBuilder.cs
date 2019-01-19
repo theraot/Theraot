@@ -116,6 +116,15 @@ namespace System.Runtime.CompilerServices
         /// </summary>
         public int Count { get; private set; }
 
+        bool IList.IsFixedSize => false;
+
+        bool ICollection<T>.IsReadOnly => false;
+        bool IList.IsReadOnly => false;
+
+        bool ICollection.IsSynchronized => false;
+
+        object ICollection.SyncRoot => this;
+
         /// <summary>
         ///  Gets or sets the element at the specified index.
         /// </summary>
@@ -144,62 +153,23 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        /// <summary>
-        /// Returns the index of the first occurrence of a given value in the builder.
-        /// </summary>
-        /// <param name="item">An item to search for.</param>
-        /// <returns>The index of the first occurrence of an item.</returns>
-        public int IndexOf(T item)
+        object IList.this[int index]
         {
-            return Array.IndexOf(_items, item, 0, Count);
+            get => this[index];
+            set
+            {
+                ValidateNullValue(value, nameof(value));
+
+                try
+                {
+                    this[index] = (T)value;
+                }
+                catch (InvalidCastException)
+                {
+                    throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
+                }
+            }
         }
-
-        /// <summary>
-        /// Inserts an item to the <see cref="ReadOnlyCollectionBuilder{T}"/> at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index at which item should be inserted.</param>
-        /// <param name="item">The object to insert into the <see cref="ReadOnlyCollectionBuilder{T}"/>.</param>
-        public void Insert(int index, T item)
-        {
-            if (index > Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index));
-            }
-
-            if (Count == _items.Length)
-            {
-                EnsureCapacity(Count + 1);
-            }
-            if (index < Count)
-            {
-                Array.Copy(_items, index, _items, index + 1, Count - index);
-            }
-            _items[index] = item;
-            Count++;
-            _version++;
-        }
-
-        /// <summary>
-        /// Removes the <see cref="ReadOnlyCollectionBuilder{T}"/> item at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index of the item to remove.</param>
-        public void RemoveAt(int index)
-        {
-            if (index < 0 || index >= Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index));
-            }
-
-            Count--;
-            if (index < Count)
-            {
-                Array.Copy(_items, index + 1, _items, index, Count - index);
-            }
-            _items[Count] = default;
-            _version++;
-        }
-
-        bool ICollection<T>.IsReadOnly => false;
 
         /// <summary>
         /// Adds an item to the <see cref="ReadOnlyCollectionBuilder{T}"/>.
@@ -270,6 +240,47 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>A <see cref="IEnumerator{T}"/> that can be used to iterate through the collection.</returns>
+        public IEnumerator<T> GetEnumerator() => new Enumerator(this);
+
+        /// <summary>
+        /// Returns the index of the first occurrence of a given value in the builder.
+        /// </summary>
+        /// <param name="item">An item to search for.</param>
+        /// <returns>The index of the first occurrence of an item.</returns>
+        public int IndexOf(T item)
+        {
+            return Array.IndexOf(_items, item, 0, Count);
+        }
+
+        /// <summary>
+        /// Inserts an item to the <see cref="ReadOnlyCollectionBuilder{T}"/> at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index at which item should be inserted.</param>
+        /// <param name="item">The object to insert into the <see cref="ReadOnlyCollectionBuilder{T}"/>.</param>
+        public void Insert(int index, T item)
+        {
+            if (index > Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
+            if (Count == _items.Length)
+            {
+                EnsureCapacity(Count + 1);
+            }
+            if (index < Count)
+            {
+                Array.Copy(_items, index, _items, index + 1, Count - index);
+            }
+            _items[index] = item;
+            Count++;
+            _version++;
+        }
+
+        /// <summary>
         /// Removes the first occurrence of a specific object from the <see cref="ReadOnlyCollectionBuilder{T}"/>.
         /// </summary>
         /// <param name="item">The object to remove from the <see cref="ReadOnlyCollectionBuilder{T}"/>.</param>
@@ -289,105 +300,23 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the collection.
+        /// Removes the <see cref="ReadOnlyCollectionBuilder{T}"/> item at the specified index.
         /// </summary>
-        /// <returns>A <see cref="IEnumerator{T}"/> that can be used to iterate through the collection.</returns>
-        public IEnumerator<T> GetEnumerator() => new Enumerator(this);
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        bool IList.IsFixedSize => false;
-        bool IList.IsReadOnly => false;
-
-        object IList.this[int index]
+        /// <param name="index">The zero-based index of the item to remove.</param>
+        public void RemoveAt(int index)
         {
-            get => this[index];
-            set
+            if (index < 0 || index >= Count)
             {
-                ValidateNullValue(value, nameof(value));
-
-                try
-                {
-                    this[index] = (T)value;
-                }
-                catch (InvalidCastException)
-                {
-                    throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
-                }
-            }
-        }
-
-        int IList.Add(object value)
-        {
-            ValidateNullValue(value, nameof(value));
-            try
-            {
-                Add((T)value);
-            }
-            catch (InvalidCastException)
-            {
-                throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
-            }
-            return Count - 1;
-        }
-
-        bool IList.Contains(object value)
-        {
-            if (IsCompatibleObject(value))
-            {
-                return Contains((T)value);
+                throw new ArgumentOutOfRangeException(nameof(index));
             }
 
-            return false;
-        }
-
-        int IList.IndexOf(object value)
-        {
-            if (IsCompatibleObject(value))
+            Count--;
+            if (index < Count)
             {
-                return IndexOf((T)value);
+                Array.Copy(_items, index + 1, _items, index, Count - index);
             }
-            return -1;
-        }
-
-        void IList.Insert(int index, object value)
-        {
-            ValidateNullValue(value, nameof(value));
-            try
-            {
-                Insert(index, (T)value);
-            }
-            catch (InvalidCastException)
-            {
-                throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
-            }
-        }
-
-        void IList.Remove(object value)
-        {
-            if (IsCompatibleObject(value))
-            {
-                Remove((T)value);
-            }
-        }
-
-        bool ICollection.IsSynchronized => false;
-
-        object ICollection.SyncRoot => this;
-
-        void ICollection.CopyTo(Array array, int index)
-        {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-
-            if (array.Rank != 1)
-            {
-                throw new ArgumentException(string.Empty, nameof(array));
-            }
-
-            Array.Copy(_items, 0, array, index, Count);
+            _items[Count] = default;
+            _version++;
         }
 
         /// <summary>
@@ -460,6 +389,45 @@ namespace System.Runtime.CompilerServices
             }
         }
 
+        int IList.Add(object value)
+        {
+            ValidateNullValue(value, nameof(value));
+            try
+            {
+                Add((T)value);
+            }
+            catch (InvalidCastException)
+            {
+                throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
+            }
+            return Count - 1;
+        }
+
+        bool IList.Contains(object value)
+        {
+            if (IsCompatibleObject(value))
+            {
+                return Contains((T)value);
+            }
+
+            return false;
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (array.Rank != 1)
+            {
+                throw new ArgumentException(string.Empty, nameof(array));
+            }
+
+            Array.Copy(_items, 0, array, index, Count);
+        }
+
         private void EnsureCapacity(int min)
         {
             if (_items.Length < min)
@@ -477,11 +445,43 @@ namespace System.Runtime.CompilerServices
             }
         }
 
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        int IList.IndexOf(object value)
+        {
+            if (IsCompatibleObject(value))
+            {
+                return IndexOf((T)value);
+            }
+            return -1;
+        }
+
+        void IList.Insert(int index, object value)
+        {
+            ValidateNullValue(value, nameof(value));
+            try
+            {
+                Insert(index, (T)value);
+            }
+            catch (InvalidCastException)
+            {
+                throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
+            }
+        }
+
+        void IList.Remove(object value)
+        {
+            if (IsCompatibleObject(value))
+            {
+                Remove((T)value);
+            }
+        }
+
         private class Enumerator : IEnumerator<T>
         {
             private readonly ReadOnlyCollectionBuilder<T> _builder;
-            private readonly int _version;
             private int _index;
+            private readonly int _version;
 
             internal Enumerator(ReadOnlyCollectionBuilder<T> builder)
             {
@@ -493,10 +493,6 @@ namespace System.Runtime.CompilerServices
 
             public T Current { get; private set; }
 
-            public void Dispose()
-            {
-            }
-
             object IEnumerator.Current
             {
                 get
@@ -507,6 +503,10 @@ namespace System.Runtime.CompilerServices
                     }
                     return Current;
                 }
+            }
+
+            public void Dispose()
+            {
             }
 
             public bool MoveNext()

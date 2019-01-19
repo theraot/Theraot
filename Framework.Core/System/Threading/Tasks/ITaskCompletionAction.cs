@@ -213,10 +213,10 @@ namespace System.Threading.Tasks
         // Used in InternalWhenAll(Task[])
         private sealed class WhenAllPromise : Task<VoidStruct>, ITaskCompletionAction
         {
-            private readonly Task[] _tasks;
             private int _count;
             private int _done;
             private int _ready;
+            private readonly Task[] _tasks;
 
             internal WhenAllPromise(Task[] tasks)
             {
@@ -346,10 +346,10 @@ namespace System.Threading.Tasks
         // Used in InternalWhenAll<TResult>(Task<TResult>[])
         private sealed class WhenAllPromise<T> : Task<T[]>, ITaskCompletionAction
         {
-            private readonly Task<T>[] _tasks;
             private int _count;
             private int _done;
             private int _ready;
+            private readonly Task<T>[] _tasks;
 
             internal WhenAllPromise(Task<T>[] tasks)
             {

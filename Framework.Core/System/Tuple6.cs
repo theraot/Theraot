@@ -31,6 +31,21 @@ namespace System
 
         public T6 Item6 { get; }
 
+        public override bool Equals(object obj)
+        {
+            return ((IStructuralEquatable)this).Equals(obj, EqualityComparer<object>.Default);
+        }
+
+        public override int GetHashCode()
+        {
+            return ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
+        }
+
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.InvariantCulture, "({0}, {1}, {2}, {3}, {4}, {5})", Item1, Item2, Item3, Item4, Item5, Item6);
+        }
+
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
             return CompareTo(other, comparer);
@@ -39,47 +54,6 @@ namespace System
         int IComparable.CompareTo(object obj)
         {
             return CompareTo(obj, Comparer<object>.Default);
-        }
-
-        public override bool Equals(object obj)
-        {
-            return ((IStructuralEquatable)this).Equals(obj, EqualityComparer<object>.Default);
-        }
-
-        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
-        {
-            if (!(other is Tuple<T1, T2, T3, T4, T5, T6> tuple))
-            {
-                return false;
-            }
-            return
-                comparer.Equals(Item1, tuple.Item1) &&
-                comparer.Equals(Item2, tuple.Item2) &&
-                comparer.Equals(Item3, tuple.Item3) &&
-                comparer.Equals(Item4, tuple.Item4) &&
-                comparer.Equals(Item5, tuple.Item5) &&
-                comparer.Equals(Item6, tuple.Item6);
-        }
-
-        public override int GetHashCode()
-        {
-            return ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
-        }
-
-        int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
-        {
-            var hash = comparer.GetHashCode(Item1);
-            hash = (hash << 5) - hash + comparer.GetHashCode(Item2);
-            hash = (hash << 5) - hash + comparer.GetHashCode(Item3);
-            hash = (hash << 5) - hash + comparer.GetHashCode(Item4);
-            hash = (hash << 5) - hash + comparer.GetHashCode(Item5);
-            hash = (hash << 5) - hash + comparer.GetHashCode(Item6);
-            return hash;
-        }
-
-        public override string ToString()
-        {
-            return string.Format(CultureInfo.InvariantCulture, "({0}, {1}, {2}, {3}, {4}, {5})", Item1, Item2, Item3, Item4, Item5, Item6);
         }
 
         private int CompareTo(object other, IComparer comparer)
@@ -114,6 +88,32 @@ namespace System
                 result = comparer.Compare(Item6, tuple.Item6);
             }
             return result;
+        }
+
+        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
+        {
+            if (!(other is Tuple<T1, T2, T3, T4, T5, T6> tuple))
+            {
+                return false;
+            }
+            return
+                comparer.Equals(Item1, tuple.Item1) &&
+                comparer.Equals(Item2, tuple.Item2) &&
+                comparer.Equals(Item3, tuple.Item3) &&
+                comparer.Equals(Item4, tuple.Item4) &&
+                comparer.Equals(Item5, tuple.Item5) &&
+                comparer.Equals(Item6, tuple.Item6);
+        }
+
+        int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
+        {
+            var hash = comparer.GetHashCode(Item1);
+            hash = (hash << 5) - hash + comparer.GetHashCode(Item2);
+            hash = (hash << 5) - hash + comparer.GetHashCode(Item3);
+            hash = (hash << 5) - hash + comparer.GetHashCode(Item4);
+            hash = (hash << 5) - hash + comparer.GetHashCode(Item5);
+            hash = (hash << 5) - hash + comparer.GetHashCode(Item6);
+            return hash;
         }
     }
 }

@@ -48,12 +48,6 @@ namespace Theraot.Threading
             _callback = callback;
         }
 
-        void IDisposable.Dispose()
-        {
-            _timer.Dispose();
-            _callback = null;
-        }
-
         public void Stop()
         {
             var timer = _timer;
@@ -68,6 +62,12 @@ namespace Theraot.Threading
         private void Callback(object state)
         {
             _callback?.Invoke();
+        }
+
+        void IDisposable.Dispose()
+        {
+            _timer.Dispose();
+            _callback = null;
         }
     }
 }

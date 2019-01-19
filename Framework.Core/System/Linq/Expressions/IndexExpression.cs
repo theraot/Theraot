@@ -17,22 +17,6 @@ namespace System.Linq.Expressions
 {
     public partial class Expression
     {
-        /// <summary>
-        /// Creates an <see cref="IndexExpression"/> that represents accessing an indexed property in an object.
-        /// </summary>
-        /// <param name="instance">The object to which the property belongs. Should be null if the property is static(shared).</param>
-        /// <param name="indexer">An <see cref="Expression"/> representing the property to index.</param>
-        /// <param name="arguments">An <see cref="IEnumerable{Expression}"/> containing the arguments to be used to index the property.</param>
-        /// <returns>The created <see cref="IndexExpression"/>.</returns>
-        public static IndexExpression MakeIndex(Expression instance, PropertyInfo indexer, IEnumerable<Expression> arguments)
-        {
-            if (indexer != null)
-            {
-                return Property(instance, indexer, arguments);
-            }
-
-            return ArrayAccess(instance, arguments);
-        }
 
         /// <summary>
         /// Creates an <see cref="IndexExpression"/> to access an array.
@@ -82,6 +66,22 @@ namespace System.Linq.Expressions
 
             return new IndexExpression(array, null, indexList);
         }
+        /// <summary>
+        /// Creates an <see cref="IndexExpression"/> that represents accessing an indexed property in an object.
+        /// </summary>
+        /// <param name="instance">The object to which the property belongs. Should be null if the property is static(shared).</param>
+        /// <param name="indexer">An <see cref="Expression"/> representing the property to index.</param>
+        /// <param name="arguments">An <see cref="IEnumerable{Expression}"/> containing the arguments to be used to index the property.</param>
+        /// <returns>The created <see cref="IndexExpression"/>.</returns>
+        public static IndexExpression MakeIndex(Expression instance, PropertyInfo indexer, IEnumerable<Expression> arguments)
+        {
+            if (indexer != null)
+            {
+                return Property(instance, indexer, arguments);
+            }
+
+            return ArrayAccess(instance, arguments);
+        }
 
         /// <summary>
         /// Creates an <see cref="IndexExpression"/> representing the access to an indexed property.
@@ -97,6 +97,28 @@ namespace System.Linq.Expressions
             var pi = FindInstanceProperty(instance.Type, propertyName, arguments);
             return MakeIndexProperty(instance, pi, nameof(propertyName), arguments);
         }
+
+        /// <summary>
+        /// Creates an <see cref="IndexExpression"/> representing the access to an indexed property.
+        /// </summary>
+        /// <param name="instance">The object to which the property belongs. If the property is static/shared, it must be null.</param>
+        /// <param name="indexer">The <see cref="PropertyInfo"/> that represents the property to index.</param>
+        /// <param name="arguments">An array of <see cref="Expression"/> objects that are used to index the property.</param>
+        /// <returns>The created <see cref="IndexExpression"/>.</returns>
+        public static IndexExpression Property(Expression instance, PropertyInfo indexer, params Expression[] arguments)
+        {
+            return Property(instance, indexer, (IEnumerable<Expression>)arguments);
+        }
+
+        /// <summary>
+        /// Creates an <see cref="IndexExpression"/> representing the access to an indexed property.
+        /// </summary>
+        /// <param name="instance">The object to which the property belongs. If the property is static/shared, it must be null.</param>
+        /// <param name="indexer">The <see cref="PropertyInfo"/> that represents the property to index.</param>
+        /// <param name="arguments">An <see cref="IEnumerable{T}"/> of <see cref="Expression"/> objects that are used to index the property.</param>
+        /// <returns>The created <see cref="IndexExpression"/>.</returns>
+        public static IndexExpression Property(Expression instance, PropertyInfo indexer, IEnumerable<Expression> arguments) =>
+            MakeIndexProperty(instance, indexer, nameof(indexer), Theraot.Collections.Extensions.AsArray(arguments));
 
         private static PropertyInfo FindInstanceProperty(Type type, string propertyName, Expression[] arguments)
         {
@@ -203,28 +225,6 @@ namespace System.Linq.Expressions
             }
             return true;
         }
-
-        /// <summary>
-        /// Creates an <see cref="IndexExpression"/> representing the access to an indexed property.
-        /// </summary>
-        /// <param name="instance">The object to which the property belongs. If the property is static/shared, it must be null.</param>
-        /// <param name="indexer">The <see cref="PropertyInfo"/> that represents the property to index.</param>
-        /// <param name="arguments">An array of <see cref="Expression"/> objects that are used to index the property.</param>
-        /// <returns>The created <see cref="IndexExpression"/>.</returns>
-        public static IndexExpression Property(Expression instance, PropertyInfo indexer, params Expression[] arguments)
-        {
-            return Property(instance, indexer, (IEnumerable<Expression>)arguments);
-        }
-
-        /// <summary>
-        /// Creates an <see cref="IndexExpression"/> representing the access to an indexed property.
-        /// </summary>
-        /// <param name="instance">The object to which the property belongs. If the property is static/shared, it must be null.</param>
-        /// <param name="indexer">The <see cref="PropertyInfo"/> that represents the property to index.</param>
-        /// <param name="arguments">An <see cref="IEnumerable{T}"/> of <see cref="Expression"/> objects that are used to index the property.</param>
-        /// <returns>The created <see cref="IndexExpression"/>.</returns>
-        public static IndexExpression Property(Expression instance, PropertyInfo indexer, IEnumerable<Expression> arguments) =>
-            MakeIndexProperty(instance, indexer, nameof(indexer), Theraot.Collections.Extensions.AsArray(arguments));
 
         private static IndexExpression MakeIndexProperty(Expression instance, PropertyInfo indexer, string paramName, Expression[] argList)
         {

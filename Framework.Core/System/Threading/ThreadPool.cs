@@ -7,6 +7,31 @@ namespace System.Threading
 {
     public static class ThreadPool
     {
+        private static readonly Pool<ThreadPoolThread> _pool = new Pool<ThreadPoolThread>(1024, null);
+        private static int _threadCount;
+
+        private static readonly SafeQueue<Action> _work = new SafeQueue<Action>();
+
+        public static bool QueueUserWorkItem(WaitCallback callBack)
+        {
+            if (callBack == null)
+            {
+                throw new ArgumentNullException(nameof(callBack));
+            }
+            _work.Add(() => callBack(null));
+            if (Volatile.Read(ref _threadCount) < EnvironmentHelper.ProcessorCount)
+            {
+                if (_pool.TryGet(out var thread))
+                {
+                    thread.Awake();
+                }
+                else
+                {
+                    GC.KeepAlive(new ThreadPoolThread());
+                }
+            }
+            return true;
+        }
         private class ThreadPoolThread
         {
             private readonly AutoResetEvent _event;
@@ -16,6 +41,11 @@ namespace System.Threading
                 _event = new AutoResetEvent(false);
                 var thread = new Thread(Work);
                 thread.Start();
+            }
+
+            public void Awake()
+            {
+                _event.Set();
             }
 
             private void Work()
@@ -39,36 +69,6 @@ namespace System.Threading
                     _event.WaitOne();
                 }
             }
-
-            public void Awake()
-            {
-                _event.Set();
-            }
-        }
-
-        private static readonly SafeQueue<Action> _work = new SafeQueue<Action>();
-        private static readonly Pool<ThreadPoolThread> _pool = new Pool<ThreadPoolThread>(1024, null);
-        private static int _threadCount;
-
-        public static bool QueueUserWorkItem(WaitCallback callBack)
-        {
-            if (callBack == null)
-            {
-                throw new ArgumentNullException(nameof(callBack));
-            }
-            _work.Add(() => callBack(null));
-            if (Volatile.Read(ref _threadCount) < EnvironmentHelper.ProcessorCount)
-            {
-                if (_pool.TryGet(out var thread))
-                {
-                    thread.Awake();
-                }
-                else
-                {
-                    GC.KeepAlive(new ThreadPoolThread());
-                }
-            }
-            return true;
         }
     }
 }

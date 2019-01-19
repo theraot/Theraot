@@ -19,6 +19,21 @@ namespace System
 
         public T2 Item2 { get; }
 
+        public override bool Equals(object obj)
+        {
+            return ((IStructuralEquatable)this).Equals(obj, EqualityComparer<object>.Default);
+        }
+
+        public override int GetHashCode()
+        {
+            return ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
+        }
+
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.InvariantCulture, "({0}, {1})", Item1, Item2);
+        }
+
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
             return CompareTo(other, comparer);
@@ -27,39 +42,6 @@ namespace System
         int IComparable.CompareTo(object obj)
         {
             return CompareTo(obj, Comparer<object>.Default);
-        }
-
-        public override bool Equals(object obj)
-        {
-            return ((IStructuralEquatable)this).Equals(obj, EqualityComparer<object>.Default);
-        }
-
-        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
-        {
-            if (!(other is Tuple<T1, T2> tuple))
-            {
-                return false;
-            }
-            return
-                comparer.Equals(Item1, tuple.Item1) &&
-                comparer.Equals(Item2, tuple.Item2);
-        }
-
-        public override int GetHashCode()
-        {
-            return ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
-        }
-
-        int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
-        {
-            var hash = comparer.GetHashCode(Item1);
-            hash = (hash << 5) - hash + comparer.GetHashCode(Item2);
-            return hash;
-        }
-
-        public override string ToString()
-        {
-            return string.Format(CultureInfo.InvariantCulture, "({0}, {1})", Item1, Item2);
         }
 
         private int CompareTo(object other, IComparer comparer)
@@ -78,6 +60,24 @@ namespace System
                 result = comparer.Compare(Item2, tuple.Item2);
             }
             return result;
+        }
+
+        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
+        {
+            if (!(other is Tuple<T1, T2> tuple))
+            {
+                return false;
+            }
+            return
+                comparer.Equals(Item1, tuple.Item1) &&
+                comparer.Equals(Item2, tuple.Item2);
+        }
+
+        int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
+        {
+            var hash = comparer.GetHashCode(Item1);
+            hash = (hash << 5) - hash + comparer.GetHashCode(Item2);
+            return hash;
         }
     }
 }

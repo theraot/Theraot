@@ -25,6 +25,10 @@ namespace System.Runtime.Serialization
             Context = additional;
         }
 
+        public object Context { get; }
+
+        public StreamingContextStates State { get; }
+
         public override bool Equals(object obj)
         {
             if (!(obj is StreamingContext))
@@ -36,10 +40,6 @@ namespace System.Runtime.Serialization
         }
 
         public override int GetHashCode() => (int)State;
-
-        public StreamingContextStates State { get; }
-
-        public object Context { get; }
     }
 
     [Flags]

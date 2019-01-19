@@ -22,8 +22,8 @@ namespace System.ComponentModel.DataAnnotations
     /// </summary>
     internal class LocalizableString
     {
-        private readonly string _propertyName;
         private Func<string> _cachedResult;
+        private readonly string _propertyName;
         private string _propertyValue;
         private Type _resourceType;
 

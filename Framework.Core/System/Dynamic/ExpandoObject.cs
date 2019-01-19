@@ -47,11 +47,11 @@ namespace System.Dynamic
 
         private static readonly MethodInfo _expandoTrySetValue =
             typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.ExpandoTrySetValue));
-
-        private readonly IEvent<PropertyChangedEventArgs> _propertyChanged;
         private int _count;
         private ExpandoData _data;                                    // the data currently being held by the Expando object
-                                                                      // the count of available members
+
+        private readonly IEvent<PropertyChangedEventArgs> _propertyChanged;
+        // the count of available members
 
         // A marker object used to identify that a value is uninitialized.
 
@@ -66,11 +66,43 @@ namespace System.Dynamic
             LockObject = new object();
         }
 
+        event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+        {
+            add => _propertyChanged.Add(value.Method, value.Target);
+            remove => _propertyChanged.Remove(value.Method, value.Target);
+        }
+
         /// <summary>
         /// Exposes the ExpandoClass which we've associated with this
         /// Expando object.  Used for type checks in rules.
         /// </summary>
         internal ExpandoClass Class => _data.Class;
+
+        int ICollection<KeyValuePair<string, object>>.Count => _count;
+
+        bool ICollection<KeyValuePair<string, object>>.IsReadOnly => false;
+
+        ICollection<string> IDictionary<string, object>.Keys => new KeyCollection(this);
+
+        ICollection<object> IDictionary<string, object>.Values => new ValueCollection(this);
+
+        object IDictionary<string, object>.this[string key]
+        {
+            get
+            {
+                if (!TryGetValueForKey(key, out var value))
+                {
+                    throw new KeyNotFoundException($"The specified key '{key}' does not exist in the ExpandoObject.");
+                }
+                return value;
+            }
+            set
+            {
+                ContractUtils.RequiresNotNull(key, nameof(key));
+                // Pass null to the class, which forces lookup.
+                TrySetValue(null, -1, value, key, ignoreCase: false, add: false);
+            }
+        }
 
         internal bool IsDeletedMember(int index)
         {
@@ -251,6 +283,119 @@ namespace System.Dynamic
             _propertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        void IDictionary<string, object>.Add(string key, object value)
+        {
+            TryAddMember(key, value);
+        }
+
+        void ICollection<KeyValuePair<string, object>>.Add(KeyValuePair<string, object> item)
+        {
+            TryAddMember(item.Key, item.Value);
+        }
+
+        void ICollection<KeyValuePair<string, object>>.Clear()
+        {
+            // We remove both class and data!
+            ExpandoData data;
+            lock (LockObject)
+            {
+                data = _data;
+                _data = ExpandoData.Empty;
+                _count = 0;
+            }
+
+            // Notify property changed for all properties.
+            for (int i = 0, n = data.Class.Keys.Length; i < n; i++)
+            {
+                if (data[i] != Uninitialized)
+                {
+                    _propertyChanged.Invoke(this, new PropertyChangedEventArgs(data.Class.Keys[i]));
+                }
+            }
+        }
+
+        bool ICollection<KeyValuePair<string, object>>.Contains(KeyValuePair<string, object> item)
+        {
+            if (!TryGetValueForKey(item.Key, out var value))
+            {
+                return false;
+            }
+
+            return Equals(value, item.Value);
+        }
+
+        bool IDictionary<string, object>.ContainsKey(string key)
+        {
+            ContractUtils.RequiresNotNull(key, nameof(key));
+
+            var data = _data;
+            var index = data.Class.GetValueIndexCaseSensitive(key, LockObject);
+            return index >= 0 && data[index] != Uninitialized;
+        }
+
+        void ICollection<KeyValuePair<string, object>>.CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+        {
+            ContractUtils.RequiresNotNull(array, nameof(array));
+
+            // We want this to be atomic and not throw, though we must do the range checks inside this lock.
+            lock (LockObject)
+            {
+                ContractUtils.RequiresArrayRange(array, arrayIndex, _count, nameof(arrayIndex), nameof(ICollection<KeyValuePair<string, object>>.Count));
+                foreach (var item in this)
+                {
+                    array[arrayIndex++] = item;
+                }
+            }
+        }
+
+        private bool ExpandoContainsKey(string key)
+        {
+            lock (LockObject)
+            {
+                return _data.Class.GetValueIndexCaseSensitive(key, LockObject) >= 0;
+            }
+        }
+
+        IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
+        {
+            var data = _data;
+            return GetExpandoEnumerator(data, data.Version);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            var data = _data;
+            return GetExpandoEnumerator(data, data.Version);
+        }
+
+        // Note: takes the data and version as parameters so they will be
+        // captured before the first call to MoveNext().
+        private IEnumerator<KeyValuePair<string, object>> GetExpandoEnumerator(ExpandoData data, int version)
+        {
+            for (var i = 0; i < data.Class.Keys.Length; i++)
+            {
+                if (_data.Version != version || data != _data)
+                {
+                    // The underlying expando object has changed:
+                    // 1) the version of the expando data changed
+                    // 2) the data object is changed
+                    throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
+                }
+                // Capture the value into a temp so we don't inadvertently
+                // return Uninitialized.
+                var temp = data[i];
+                if (temp != Uninitialized)
+                {
+                    yield return new KeyValuePair<string, object>(data.Class.Keys[i], temp);
+                }
+            }
+        }
+
+        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
+        {
+            return new MetaExpando(parameter, this);
+        }
+
         private ExpandoData PromoteClassCore(ExpandoClass oldClass, ExpandoClass newClass)
         {
             lock (LockObject)
@@ -267,17 +412,16 @@ namespace System.Dynamic
             }
         }
 
-        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
+        bool IDictionary<string, object>.Remove(string key)
         {
-            return new MetaExpando(parameter, this);
+            ContractUtils.RequiresNotNull(key, nameof(key));
+            // Pass null to the class, which forces lookup.
+            return TryDeleteValue(null, -1, key, ignoreCase: false, deleteValue: Uninitialized);
         }
 
-        private bool ExpandoContainsKey(string key)
+        bool ICollection<KeyValuePair<string, object>>.Remove(KeyValuePair<string, object> item)
         {
-            lock (LockObject)
-            {
-                return _data.Class.GetValueIndexCaseSensitive(key, LockObject) >= 0;
-            }
+            return TryDeleteValue(null, -1, item.Key, ignoreCase: false, deleteValue: item.Value);
         }
 
         private void TryAddMember(string key, object value)
@@ -287,10 +431,103 @@ namespace System.Dynamic
             TrySetValue(null, -1, value, key, ignoreCase: false, add: true);
         }
 
+        bool IDictionary<string, object>.TryGetValue(string key, out object value)
+        {
+            return TryGetValueForKey(key, out value);
+        }
+
         private bool TryGetValueForKey(string key, out object value)
         {
             // Pass null to the class, which forces lookup.
             return TryGetValue(null, -1, key, ignoreCase: false, value: out value);
+        }
+
+        /// <summary>
+        /// Stores the class and the data associated with the class as one atomic
+        /// pair.  This enables us to do a class check in a thread safe manner w/o
+        /// requiring locks.
+        /// </summary>
+        private class ExpandoData
+        {
+            internal static readonly ExpandoData Empty = new ExpandoData();
+
+            /// <summary>
+            /// the dynamically assigned class associated with the Expando object
+            /// </summary>
+            internal readonly ExpandoClass Class;
+
+            /// <summary>
+            /// <para>data stored in the expando object, key names are stored in the class.</para>
+            /// <para>
+            /// Expando._data must be locked when mutating the value.  Otherwise a copy of it
+            /// could be made and lose values.
+            /// </para>
+            /// </summary>
+            private readonly object[] _dataArray;
+
+            /// <summary>
+            /// Constructs a new ExpandoData object with the specified class and data.
+            /// </summary>
+            private ExpandoData(ExpandoClass @class, object[] data, int version)
+            {
+                Class = @class;
+                _dataArray = data;
+                Version = version;
+            }
+
+            /// <summary>
+            /// Constructs an empty ExpandoData object with the empty class and no data.
+            /// </summary>
+            private ExpandoData()
+            {
+                Class = ExpandoClass.Empty;
+                _dataArray = ArrayReservoir<object>.EmptyArray;
+            }
+
+            internal int Length => _dataArray.Length;
+
+            internal int Version { get; private set; }
+
+            /// <summary>
+            /// Indexer for getting/setting the data
+            /// </summary>
+            internal object this[int index]
+            {
+                get => _dataArray[index];
+                set
+                {
+                    //when the array is updated, version increases, even the new value is the same
+                    //as previous. Dictionary type has the same behavior.
+                    Version++;
+                    _dataArray[index] = value;
+                }
+            }
+
+            internal ExpandoData UpdateClass(ExpandoClass newClass)
+            {
+                if (_dataArray.Length >= newClass.Keys.Length)
+                {
+                    // we have extra space in our buffer, just initialize it to Uninitialized.
+                    this[newClass.Keys.Length - 1] = Uninitialized;
+                    return new ExpandoData(newClass, _dataArray, Version);
+                }
+
+                // we've grown too much - we need a new object array
+                var oldLength = _dataArray.Length;
+                var arr = new object[GetAlignedSize(newClass.Keys.Length)];
+                Array.Copy(_dataArray, 0, arr, 0, _dataArray.Length);
+                var newData = new ExpandoData(newClass, arr, Version) { [oldLength] = Uninitialized };
+                return newData;
+            }
+
+            private static int GetAlignedSize(int len)
+            {
+                // the alignment of the array for storage of values (must be a power of two)
+                const int DataArrayAlignment = 8;
+
+                // round up and then mask off lower bits
+                return (len + (DataArrayAlignment - 1)) & ~(DataArrayAlignment - 1);
+            }
         }
 
         [DebuggerTypeProxy(typeof(KeyCollectionDebugView))]
@@ -417,292 +654,6 @@ namespace System.Dynamic
                     var items = new string[_collection.Count];
                     _collection.CopyTo(items, 0);
                     return items;
-                }
-            }
-        }
-
-        [DebuggerTypeProxy(typeof(ValueCollectionDebugView))]
-        [DebuggerDisplay("Count = {Count}")]
-        private class ValueCollection : ICollection<object>
-        {
-            private readonly ExpandoObject _expando;
-            private readonly int _expandoCount;
-            private readonly ExpandoData _expandoData;
-            private readonly int _expandoVersion;
-
-            internal ValueCollection(ExpandoObject expando)
-            {
-                lock (expando.LockObject)
-                {
-                    _expando = expando;
-                    _expandoVersion = expando._data.Version;
-                    _expandoCount = expando._count;
-                    _expandoData = expando._data;
-                }
-            }
-
-            private void CheckVersion()
-            {
-                if (_expando._data.Version != _expandoVersion || _expandoData != _expando._data)
-                {
-                    //the underlying expando object has changed
-                    throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
-                }
-            }
-
-            public int Count
-            {
-                get
-                {
-                    CheckVersion();
-                    return _expandoCount;
-                }
-            }
-
-            public bool IsReadOnly => true;
-
-            public void Add(object item)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public void Clear()
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public bool Contains(object item)
-            {
-                lock (_expando.LockObject)
-                {
-                    CheckVersion();
-
-                    var data = _expando._data;
-                    for (var i = 0; i < data.Class.Keys.Length; i++)
-                    {
-                        // See comment in TryDeleteValue; it's okay to call
-                        // object.Equals with the lock held.
-                        if (Equals(data[i], item))
-                        {
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-            }
-
-            public void CopyTo(object[] array, int arrayIndex)
-            {
-                ContractUtils.RequiresNotNull(array, nameof(array));
-                ContractUtils.RequiresArrayRange(array, arrayIndex, _expandoCount, nameof(arrayIndex), nameof(Count));
-                lock (_expando.LockObject)
-                {
-                    CheckVersion();
-                    var data = _expando._data;
-                    for (var i = 0; i < data.Class.Keys.Length; i++)
-                    {
-                        if (data[i] != Uninitialized)
-                        {
-                            array[arrayIndex++] = data[i];
-                        }
-                    }
-                }
-            }
-
-            public bool Remove(object item)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public IEnumerator<object> GetEnumerator()
-            {
-                var data = _expando._data;
-                for (var i = 0; i < data.Class.Keys.Length; i++)
-                {
-                    CheckVersion();
-                    // Capture the value into a temp so we don't inadvertently
-                    // return Uninitialized.
-                    var temp = data[i];
-                    if (temp != Uninitialized)
-                    {
-                        yield return temp;
-                    }
-                }
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-        }
-
-        // We create a non-generic type for the debug view for each different collection type
-        // that uses DebuggerTypeProxy, instead of defining a generic debug view type and
-        // using different instantiations. The reason for this is that support for generics
-        // with using DebuggerTypeProxy is limited. For C#, DebuggerTypeProxy supports only
-        // open types (from MSDN https://docs.microsoft.com/en-us/visualstudio/debugger/using-debuggertypeproxy-attribute).
-        private sealed class ValueCollectionDebugView
-        {
-            private readonly ICollection<object> _collection;
-
-            public ValueCollectionDebugView(ICollection<object> collection)
-            {
-                ContractUtils.RequiresNotNull(collection, nameof(collection));
-                _collection = collection;
-            }
-
-            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            // ReSharper disable once UnusedMember.Local
-            public object[] Items
-            {
-                get
-                {
-                    var items = new object[_collection.Count];
-                    _collection.CopyTo(items, 0);
-                    return items;
-                }
-            }
-        }
-
-        ICollection<string> IDictionary<string, object>.Keys => new KeyCollection(this);
-
-        ICollection<object> IDictionary<string, object>.Values => new ValueCollection(this);
-
-        object IDictionary<string, object>.this[string key]
-        {
-            get
-            {
-                if (!TryGetValueForKey(key, out var value))
-                {
-                    throw new KeyNotFoundException($"The specified key '{key}' does not exist in the ExpandoObject.");
-                }
-                return value;
-            }
-            set
-            {
-                ContractUtils.RequiresNotNull(key, nameof(key));
-                // Pass null to the class, which forces lookup.
-                TrySetValue(null, -1, value, key, ignoreCase: false, add: false);
-            }
-        }
-
-        void IDictionary<string, object>.Add(string key, object value)
-        {
-            TryAddMember(key, value);
-        }
-
-        bool IDictionary<string, object>.ContainsKey(string key)
-        {
-            ContractUtils.RequiresNotNull(key, nameof(key));
-
-            var data = _data;
-            var index = data.Class.GetValueIndexCaseSensitive(key, LockObject);
-            return index >= 0 && data[index] != Uninitialized;
-        }
-
-        bool IDictionary<string, object>.Remove(string key)
-        {
-            ContractUtils.RequiresNotNull(key, nameof(key));
-            // Pass null to the class, which forces lookup.
-            return TryDeleteValue(null, -1, key, ignoreCase: false, deleteValue: Uninitialized);
-        }
-
-        bool IDictionary<string, object>.TryGetValue(string key, out object value)
-        {
-            return TryGetValueForKey(key, out value);
-        }
-
-        int ICollection<KeyValuePair<string, object>>.Count => _count;
-
-        bool ICollection<KeyValuePair<string, object>>.IsReadOnly => false;
-
-        void ICollection<KeyValuePair<string, object>>.Add(KeyValuePair<string, object> item)
-        {
-            TryAddMember(item.Key, item.Value);
-        }
-
-        void ICollection<KeyValuePair<string, object>>.Clear()
-        {
-            // We remove both class and data!
-            ExpandoData data;
-            lock (LockObject)
-            {
-                data = _data;
-                _data = ExpandoData.Empty;
-                _count = 0;
-            }
-
-            // Notify property changed for all properties.
-            for (int i = 0, n = data.Class.Keys.Length; i < n; i++)
-            {
-                if (data[i] != Uninitialized)
-                {
-                    _propertyChanged.Invoke(this, new PropertyChangedEventArgs(data.Class.Keys[i]));
-                }
-            }
-        }
-
-        bool ICollection<KeyValuePair<string, object>>.Contains(KeyValuePair<string, object> item)
-        {
-            if (!TryGetValueForKey(item.Key, out var value))
-            {
-                return false;
-            }
-
-            return Equals(value, item.Value);
-        }
-
-        void ICollection<KeyValuePair<string, object>>.CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
-        {
-            ContractUtils.RequiresNotNull(array, nameof(array));
-
-            // We want this to be atomic and not throw, though we must do the range checks inside this lock.
-            lock (LockObject)
-            {
-                ContractUtils.RequiresArrayRange(array, arrayIndex, _count, nameof(arrayIndex), nameof(ICollection<KeyValuePair<string, object>>.Count));
-                foreach (var item in this)
-                {
-                    array[arrayIndex++] = item;
-                }
-            }
-        }
-
-        bool ICollection<KeyValuePair<string, object>>.Remove(KeyValuePair<string, object> item)
-        {
-            return TryDeleteValue(null, -1, item.Key, ignoreCase: false, deleteValue: item.Value);
-        }
-
-        IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
-        {
-            var data = _data;
-            return GetExpandoEnumerator(data, data.Version);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            var data = _data;
-            return GetExpandoEnumerator(data, data.Version);
-        }
-
-        // Note: takes the data and version as parameters so they will be
-        // captured before the first call to MoveNext().
-        private IEnumerator<KeyValuePair<string, object>> GetExpandoEnumerator(ExpandoData data, int version)
-        {
-            for (var i = 0; i < data.Class.Keys.Length; i++)
-            {
-                if (_data.Version != version || data != _data)
-                {
-                    // The underlying expando object has changed:
-                    // 1) the version of the expando data changed
-                    // 2) the data object is changed
-                    throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
-                }
-                // Capture the value into a temp so we don't inadvertently
-                // return Uninitialized.
-                var temp = data[i];
-                if (temp != Uninitialized)
-                {
-                    yield return new KeyValuePair<string, object>(data.Class.Keys[i], temp);
                 }
             }
         }
@@ -935,98 +886,147 @@ namespace System.Dynamic
             }
         }
 
-        /// <summary>
-        /// Stores the class and the data associated with the class as one atomic
-        /// pair.  This enables us to do a class check in a thread safe manner w/o
-        /// requiring locks.
-        /// </summary>
-        private class ExpandoData
+        [DebuggerTypeProxy(typeof(ValueCollectionDebugView))]
+        [DebuggerDisplay("Count = {Count}")]
+        private class ValueCollection : ICollection<object>
         {
-            internal static readonly ExpandoData Empty = new ExpandoData();
+            private readonly ExpandoObject _expando;
+            private readonly int _expandoCount;
+            private readonly ExpandoData _expandoData;
+            private readonly int _expandoVersion;
 
-            /// <summary>
-            /// the dynamically assigned class associated with the Expando object
-            /// </summary>
-            internal readonly ExpandoClass Class;
-
-            /// <summary>
-            /// <para>data stored in the expando object, key names are stored in the class.</para>
-            /// <para>
-            /// Expando._data must be locked when mutating the value.  Otherwise a copy of it
-            /// could be made and lose values.
-            /// </para>
-            /// </summary>
-            private readonly object[] _dataArray;
-
-            /// <summary>
-            /// Constructs a new ExpandoData object with the specified class and data.
-            /// </summary>
-            private ExpandoData(ExpandoClass @class, object[] data, int version)
+            internal ValueCollection(ExpandoObject expando)
             {
-                Class = @class;
-                _dataArray = data;
-                Version = version;
-            }
-
-            /// <summary>
-            /// Constructs an empty ExpandoData object with the empty class and no data.
-            /// </summary>
-            private ExpandoData()
-            {
-                Class = ExpandoClass.Empty;
-                _dataArray = ArrayReservoir<object>.EmptyArray;
-            }
-
-            internal int Length => _dataArray.Length;
-
-            internal int Version { get; private set; }
-
-            /// <summary>
-            /// Indexer for getting/setting the data
-            /// </summary>
-            internal object this[int index]
-            {
-                get => _dataArray[index];
-                set
+                lock (expando.LockObject)
                 {
-                    //when the array is updated, version increases, even the new value is the same
-                    //as previous. Dictionary type has the same behavior.
-                    Version++;
-                    _dataArray[index] = value;
+                    _expando = expando;
+                    _expandoVersion = expando._data.Version;
+                    _expandoCount = expando._count;
+                    _expandoData = expando._data;
                 }
             }
 
-            internal ExpandoData UpdateClass(ExpandoClass newClass)
+            private void CheckVersion()
             {
-                if (_dataArray.Length >= newClass.Keys.Length)
+                if (_expando._data.Version != _expandoVersion || _expandoData != _expando._data)
                 {
-                    // we have extra space in our buffer, just initialize it to Uninitialized.
-                    this[newClass.Keys.Length - 1] = Uninitialized;
-                    return new ExpandoData(newClass, _dataArray, Version);
+                    //the underlying expando object has changed
+                    throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
                 }
-
-                // we've grown too much - we need a new object array
-                var oldLength = _dataArray.Length;
-                var arr = new object[GetAlignedSize(newClass.Keys.Length)];
-                Array.Copy(_dataArray, 0, arr, 0, _dataArray.Length);
-                var newData = new ExpandoData(newClass, arr, Version) { [oldLength] = Uninitialized };
-                return newData;
             }
 
-            private static int GetAlignedSize(int len)
+            public int Count
             {
-                // the alignment of the array for storage of values (must be a power of two)
-                const int DataArrayAlignment = 8;
+                get
+                {
+                    CheckVersion();
+                    return _expandoCount;
+                }
+            }
 
-                // round up and then mask off lower bits
-                return (len + (DataArrayAlignment - 1)) & ~(DataArrayAlignment - 1);
+            public bool IsReadOnly => true;
+
+            public void Add(object item)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public void Clear()
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public bool Contains(object item)
+            {
+                lock (_expando.LockObject)
+                {
+                    CheckVersion();
+
+                    var data = _expando._data;
+                    for (var i = 0; i < data.Class.Keys.Length; i++)
+                    {
+                        // See comment in TryDeleteValue; it's okay to call
+                        // object.Equals with the lock held.
+                        if (Equals(data[i], item))
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }
+
+            public void CopyTo(object[] array, int arrayIndex)
+            {
+                ContractUtils.RequiresNotNull(array, nameof(array));
+                ContractUtils.RequiresArrayRange(array, arrayIndex, _expandoCount, nameof(arrayIndex), nameof(Count));
+                lock (_expando.LockObject)
+                {
+                    CheckVersion();
+                    var data = _expando._data;
+                    for (var i = 0; i < data.Class.Keys.Length; i++)
+                    {
+                        if (data[i] != Uninitialized)
+                        {
+                            array[arrayIndex++] = data[i];
+                        }
+                    }
+                }
+            }
+
+            public bool Remove(object item)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public IEnumerator<object> GetEnumerator()
+            {
+                var data = _expando._data;
+                for (var i = 0; i < data.Class.Keys.Length; i++)
+                {
+                    CheckVersion();
+                    // Capture the value into a temp so we don't inadvertently
+                    // return Uninitialized.
+                    var temp = data[i];
+                    if (temp != Uninitialized)
+                    {
+                        yield return temp;
+                    }
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
             }
         }
 
-        event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+        // We create a non-generic type for the debug view for each different collection type
+        // that uses DebuggerTypeProxy, instead of defining a generic debug view type and
+        // using different instantiations. The reason for this is that support for generics
+        // with using DebuggerTypeProxy is limited. For C#, DebuggerTypeProxy supports only
+        // open types (from MSDN https://docs.microsoft.com/en-us/visualstudio/debugger/using-debuggertypeproxy-attribute).
+        private sealed class ValueCollectionDebugView
         {
-            add => _propertyChanged.Add(value.Method, value.Target);
-            remove => _propertyChanged.Remove(value.Method, value.Target);
+            private readonly ICollection<object> _collection;
+
+            public ValueCollectionDebugView(ICollection<object> collection)
+            {
+                ContractUtils.RequiresNotNull(collection, nameof(collection));
+                _collection = collection;
+            }
+
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            // ReSharper disable once UnusedMember.Local
+            public object[] Items
+            {
+                get
+                {
+                    var items = new object[_collection.Count];
+                    _collection.CopyTo(items, 0);
+                    return items;
+                }
+            }
         }
     }
 }

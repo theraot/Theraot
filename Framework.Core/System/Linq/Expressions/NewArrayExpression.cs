@@ -16,6 +16,58 @@ namespace System.Linq.Expressions
 {
     public partial class Expression
     {
+
+        /// <summary>
+        /// Creates a <see cref="NewArrayExpression"/> that represents creating an array that has a specified rank.
+        /// </summary>
+        /// <param name="type">A <see cref="System.Type"/> that represents the element type of the array.</param>
+        /// <param name="bounds">An array that contains Expression objects to use to populate the <see cref="NewArrayExpression.Expressions"/> collection.</param>
+        /// <returns>A <see cref="NewArrayExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.NewArrayBounds"/> and the <see cref="NewArrayExpression.Expressions"/> property set to the specified value.</returns>
+        public static NewArrayExpression NewArrayBounds(Type type, params Expression[] bounds)
+        {
+            return NewArrayBounds(type, (IEnumerable<Expression>)bounds);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="NewArrayExpression"/> that represents creating an array that has a specified rank.
+        /// </summary>
+        /// <param name="type">A <see cref="System.Type"/> that represents the element type of the array.</param>
+        /// <param name="bounds">An <see cref="IEnumerable{T}"/> that contains <see cref="Expression"/> objects to use to populate the <see cref="NewArrayExpression.Expressions"/> collection.</param>
+        /// <returns>A <see cref="NewArrayExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.NewArrayBounds"/> and the <see cref="NewArrayExpression.Expressions"/> property set to the specified value.</returns>
+        public static NewArrayExpression NewArrayBounds(Type type, IEnumerable<Expression> bounds)
+        {
+            ContractUtils.RequiresNotNull(type, nameof(type));
+            ContractUtils.RequiresNotNull(bounds, nameof(bounds));
+
+            if (type == typeof(void))
+            {
+                throw new ArgumentException(SR.ArgumentCannotBeOfTypeVoid, nameof(type));
+            }
+
+            TypeUtils.ValidateType(type, nameof(type));
+
+            var boundsList = bounds.ToReadOnlyCollection();
+
+            var dimensions = boundsList.Count;
+            if (dimensions <= 0)
+            {
+                throw new ArgumentException("Bounds count cannot be less than 1", nameof(bounds));
+            }
+
+            for (var i = 0; i < dimensions; i++)
+            {
+                var expr = boundsList[i];
+                ExpressionUtils.RequiresCanRead(expr, nameof(bounds), i);
+                if (!expr.Type.IsInteger())
+                {
+                    throw new ArgumentException("Argument must be of an integer type", i >= 0 ? $"{nameof(bounds)}[{i}]" : nameof(bounds));
+                }
+            }
+
+            var arrayType = dimensions == 1 ? type.MakeArrayType() : type.MakeArrayType(dimensions);
+
+            return NewArrayExpression.Make(ExpressionType.NewArrayBounds, arrayType, boundsList);
+        }
         /// <summary>
         /// Creates a <see cref="NewArrayExpression"/> of the specified type from the provided initializers.
         /// </summary>
@@ -77,58 +129,6 @@ namespace System.Linq.Expressions
             }
 
             return NewArrayExpression.Make(ExpressionType.NewArrayInit, type.MakeArrayType(), initializerList);
-        }
-
-        /// <summary>
-        /// Creates a <see cref="NewArrayExpression"/> that represents creating an array that has a specified rank.
-        /// </summary>
-        /// <param name="type">A <see cref="System.Type"/> that represents the element type of the array.</param>
-        /// <param name="bounds">An array that contains Expression objects to use to populate the <see cref="NewArrayExpression.Expressions"/> collection.</param>
-        /// <returns>A <see cref="NewArrayExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.NewArrayBounds"/> and the <see cref="NewArrayExpression.Expressions"/> property set to the specified value.</returns>
-        public static NewArrayExpression NewArrayBounds(Type type, params Expression[] bounds)
-        {
-            return NewArrayBounds(type, (IEnumerable<Expression>)bounds);
-        }
-
-        /// <summary>
-        /// Creates a <see cref="NewArrayExpression"/> that represents creating an array that has a specified rank.
-        /// </summary>
-        /// <param name="type">A <see cref="System.Type"/> that represents the element type of the array.</param>
-        /// <param name="bounds">An <see cref="IEnumerable{T}"/> that contains <see cref="Expression"/> objects to use to populate the <see cref="NewArrayExpression.Expressions"/> collection.</param>
-        /// <returns>A <see cref="NewArrayExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.NewArrayBounds"/> and the <see cref="NewArrayExpression.Expressions"/> property set to the specified value.</returns>
-        public static NewArrayExpression NewArrayBounds(Type type, IEnumerable<Expression> bounds)
-        {
-            ContractUtils.RequiresNotNull(type, nameof(type));
-            ContractUtils.RequiresNotNull(bounds, nameof(bounds));
-
-            if (type == typeof(void))
-            {
-                throw new ArgumentException(SR.ArgumentCannotBeOfTypeVoid, nameof(type));
-            }
-
-            TypeUtils.ValidateType(type, nameof(type));
-
-            var boundsList = bounds.ToReadOnlyCollection();
-
-            var dimensions = boundsList.Count;
-            if (dimensions <= 0)
-            {
-                throw new ArgumentException("Bounds count cannot be less than 1", nameof(bounds));
-            }
-
-            for (var i = 0; i < dimensions; i++)
-            {
-                var expr = boundsList[i];
-                ExpressionUtils.RequiresCanRead(expr, nameof(bounds), i);
-                if (!expr.Type.IsInteger())
-                {
-                    throw new ArgumentException("Argument must be of an integer type", i >= 0 ? $"{nameof(bounds)}[{i}]" : nameof(bounds));
-                }
-            }
-
-            var arrayType = dimensions == 1 ? type.MakeArrayType() : type.MakeArrayType(dimensions);
-
-            return NewArrayExpression.Make(ExpressionType.NewArrayBounds, arrayType, boundsList);
         }
     }
 

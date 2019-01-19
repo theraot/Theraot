@@ -20,10 +20,10 @@ namespace System.Collections
     [Serializable]
     public sealed class Comparer : IComparer, ISerializable
     {
-        private readonly CompareInfo _compareInfo;
 
         public static readonly Comparer Default = new Comparer(CultureInfo.CurrentCulture);
         public static readonly Comparer DefaultInvariant = new Comparer(CultureInfo.InvariantCulture);
+        private readonly CompareInfo _compareInfo;
 
         public Comparer(CultureInfo culture)
         {
@@ -43,16 +43,6 @@ namespace System.Collections
             }
 
             _compareInfo = (CompareInfo)info.GetValue("CompareInfo", typeof(CompareInfo));
-        }
-
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            if (info == null)
-            {
-                throw new ArgumentNullException(nameof(info));
-            }
-
-            info.AddValue("CompareInfo", _compareInfo);
         }
 
         // Compares two Objects by calling CompareTo.
@@ -94,6 +84,16 @@ namespace System.Collections
             }
 
             throw new ArgumentException("At least one object must implement IComparable.");
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+            {
+                throw new ArgumentNullException(nameof(info));
+            }
+
+            info.AddValue("CompareInfo", _compareInfo);
         }
     }
 }

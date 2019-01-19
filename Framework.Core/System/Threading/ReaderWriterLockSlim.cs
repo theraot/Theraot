@@ -24,26 +24,14 @@ namespace System.Threading
         private const int _rwWaitUpgrade = 2;
         private const int _rwWrite = 4;
 
-        // This Stopwatch instance is used for all threads since .Elapsed is thread-safe
-        private static readonly Stopwatch _stopwatch = Stopwatch.StartNew();
-
         [ThreadStatic]
         private static Dictionary<int, ThreadLockState> _currentThreadState;
 
         // Incremented when a new object is created, should not be readonly
         private static int _idPool = int.MinValue;
 
-        private readonly ThreadLockState[] _fastStateCache;
-        private readonly int _id;
-        private readonly bool _noRecursion;
-        private readonly ManualResetEventSlim _readerDoneEvent;
-        private readonly ManualResetEventSlim _upgradableEvent;
-        private readonly AtomicBoolean _upgradableTaken;
-
-        /* These events are just here for the sake of having a CPU-efficient sleep
-        * when the wait for acquiring the lock is too long
-        */
-        private readonly ManualResetEventSlim _writerDoneEvent;
+        // This Stopwatch instance is used for all threads since .Elapsed is thread-safe
+        private static readonly Stopwatch _stopwatch = Stopwatch.StartNew();
         /* Some explanations: this field is the central point of the lock and keep track of all the requests
         * that are being made. The 3 lowest bits are used as flag to track "destructive" lock entries
         * (i.e attempting to take the write lock with or without having acquired an upgradeable lock beforehand).
@@ -52,7 +40,19 @@ namespace System.Threading
         * is no overflow safe guard to remain simple).
         */
         private bool _disposed;
+
+        private readonly ThreadLockState[] _fastStateCache;
+        private readonly int _id;
+        private readonly bool _noRecursion;
+        private readonly ManualResetEventSlim _readerDoneEvent;
         private int _rwLock;
+        private readonly ManualResetEventSlim _upgradableEvent;
+        private readonly AtomicBoolean _upgradableTaken;
+
+        /* These events are just here for the sake of having a CPU-efficient sleep
+        * when the wait for acquiring the lock is too long
+        */
+        private readonly ManualResetEventSlim _writerDoneEvent;
 
         public ReaderWriterLockSlim()
             : this(LockRecursionPolicy.NoRecursion)
@@ -457,6 +457,25 @@ namespace System.Threading
             return TryEnterWriteLock(CheckTimeout(timeout));
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+            if (disposing)
+            {
+                if (IsReadLockHeld || IsUpgradeableReadLockHeld || IsWriteLockHeld)
+                {
+                    throw new SynchronizationLockException("The lock is being disposed while still being used");
+                }
+                _upgradableEvent.Dispose();
+                _writerDoneEvent.Dispose();
+                _readerDoneEvent.Dispose();
+                _disposed = true;
+            }
+        }
+
         private static int CheckTimeout(TimeSpan timeout)
         {
             try
@@ -512,25 +531,6 @@ namespace System.Threading
             }
 
             return false;
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-            {
-                return;
-            }
-            if (disposing)
-            {
-                if (IsReadLockHeld || IsUpgradeableReadLockHeld || IsWriteLockHeld)
-                {
-                    throw new SynchronizationLockException("The lock is being disposed while still being used");
-                }
-                _upgradableEvent.Dispose();
-                _writerDoneEvent.Dispose();
-                _readerDoneEvent.Dispose();
-                _disposed = true;
-            }
         }
 
         private ThreadLockState GetGlobalThreadState()

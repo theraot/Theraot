@@ -20,9 +20,9 @@ namespace System.Linq.Expressions.Compiler
     {
         private readonly Stack<BoundConstants> _constants = new Stack<BoundConstants>();
         private readonly StackGuard _guard = new StackGuard();
+        private bool _inQuote;
         private readonly Stack<CompilerScope> _scopes = new Stack<CompilerScope>();
         private readonly AnalyzedTree _tree = new AnalyzedTree();
-        private bool _inQuote;
 
         private VariableBinder()
         {

@@ -64,139 +64,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public override Type Type => typeof(object);
 
-        object IDynamicExpression.CreateCallSite()
-        {
-            return CallSite.Create(DelegateType, Binder);
-        }
-
-        /// <summary>
-        /// Reduces the dynamic expression node to a simpler expression.
-        /// </summary>
-        /// <returns>The reduced expression.</returns>
-        public override Expression Reduce()
-        {
-            var site = Constant(CallSite.Create(DelegateType, Binder));
-            return Invoke(
-                        Field(
-                            site,
-                            "Target"),
-                        Arguments.AddFirst(site));
-        }
-
-        Expression IDynamicExpression.Rewrite(Expression[] args) => Rewrite(args);
-
-        /// <summary>
-        /// Creates a new expression that is like this one, but using the
-        /// supplied children. If all of the children are the same, it will
-        /// return this expression.
-        /// </summary>
-        /// <param name="arguments">The <see cref="Arguments" /> property of the result.</param>
-        /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
-        public DynamicExpression Update(IEnumerable<Expression> arguments)
-        {
-            ICollection<Expression> args;
-            if (arguments == null)
-            {
-                args = null;
-            }
-            else
-            {
-                args = arguments as ICollection<Expression>;
-                if (args == null)
-                {
-                    arguments = args = arguments.ToReadOnlyCollection();
-                }
-            }
-
-            if (SameArguments(args))
-            {
-                return this;
-            }
-
-            return ExpressionExtension.MakeDynamic(DelegateType, Binder, arguments);
-        }
-
-        internal static DynamicExpression Make(Type returnType, Type delegateType, CallSiteBinder binder, Expression[] arguments)
-        {
-            if (returnType == typeof(object))
-            {
-                return new DynamicExpressionN(delegateType, binder, arguments);
-            }
-
-            return new TypedDynamicExpressionN(returnType, delegateType, binder, arguments);
-        }
-
-        internal static DynamicExpression Make(Type returnType, Type delegateType, CallSiteBinder binder, Expression arg0)
-        {
-            if (returnType == typeof(object))
-            {
-                return new DynamicExpression1(delegateType, binder, arg0);
-            }
-
-            return new TypedDynamicExpression1(returnType, delegateType, binder, arg0);
-        }
-
-        internal static DynamicExpression Make(Type returnType, Type delegateType, CallSiteBinder binder, Expression arg0, Expression arg1)
-        {
-            if (returnType == typeof(object))
-            {
-                return new DynamicExpression2(delegateType, binder, arg0, arg1);
-            }
-
-            return new TypedDynamicExpression2(returnType, delegateType, binder, arg0, arg1);
-        }
-
-        internal static DynamicExpression Make(Type returnType, Type delegateType, CallSiteBinder binder, Expression arg0, Expression arg1, Expression arg2)
-        {
-            if (returnType == typeof(object))
-            {
-                return new DynamicExpression3(delegateType, binder, arg0, arg1, arg2);
-            }
-
-            return new TypedDynamicExpression3(returnType, delegateType, binder, arg0, arg1, arg2);
-        }
-
-        internal static DynamicExpression Make(Type returnType, Type delegateType, CallSiteBinder binder, Expression arg0, Expression arg1, Expression arg2, Expression arg3)
-        {
-            if (returnType == typeof(object))
-            {
-                return new DynamicExpression4(delegateType, binder, arg0, arg1, arg2, arg3);
-            }
-
-            return new TypedDynamicExpression4(returnType, delegateType, binder, arg0, arg1, arg2, arg3);
-        }
-
-        internal virtual ReadOnlyCollection<Expression> GetOrMakeArguments()
-        {
-            throw ContractUtils.Unreachable;
-        }
-
-        internal virtual DynamicExpression Rewrite(Expression[] args)
-        {
-            throw ContractUtils.Unreachable;
-        }
-
-        internal virtual bool SameArguments(ICollection<Expression> arguments)
-        {
-            throw ContractUtils.Unreachable;
-        }
-
-        protected internal override Expression Accept(ExpressionVisitor visitor)
-        {
-            if (visitor is DynamicExpressionVisitor dynVisitor)
-            {
-                return dynVisitor.VisitDynamic(this);
-            }
-
-            return base.Accept(visitor);
-        }
-
         int IArgumentProvider.ArgumentCount => throw ContractUtils.Unreachable;
-
-        Expression IArgumentProvider.GetArgument(int index)
-        {
-            throw ContractUtils.Unreachable;
-        }
 
         /// <summary>
         /// Creates a <see cref="DynamicExpression" /> that represents a dynamic operation bound by the provided <see cref="CallSiteBinder" />.
@@ -443,6 +311,138 @@ namespace System.Linq.Expressions
         {
             return ExpressionExtension.MakeDynamic(delegateType, binder, arg0, arg1, arg2, arg3);
         }
+
+        /// <summary>
+        /// Reduces the dynamic expression node to a simpler expression.
+        /// </summary>
+        /// <returns>The reduced expression.</returns>
+        public override Expression Reduce()
+        {
+            var site = Constant(CallSite.Create(DelegateType, Binder));
+            return Invoke(
+                        Field(
+                            site,
+                            "Target"),
+                        Arguments.AddFirst(site));
+        }
+
+        /// <summary>
+        /// Creates a new expression that is like this one, but using the
+        /// supplied children. If all of the children are the same, it will
+        /// return this expression.
+        /// </summary>
+        /// <param name="arguments">The <see cref="Arguments" /> property of the result.</param>
+        /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
+        public DynamicExpression Update(IEnumerable<Expression> arguments)
+        {
+            ICollection<Expression> args;
+            if (arguments == null)
+            {
+                args = null;
+            }
+            else
+            {
+                args = arguments as ICollection<Expression>;
+                if (args == null)
+                {
+                    arguments = args = arguments.ToReadOnlyCollection();
+                }
+            }
+
+            if (SameArguments(args))
+            {
+                return this;
+            }
+
+            return ExpressionExtension.MakeDynamic(DelegateType, Binder, arguments);
+        }
+
+        internal static DynamicExpression Make(Type returnType, Type delegateType, CallSiteBinder binder, Expression[] arguments)
+        {
+            if (returnType == typeof(object))
+            {
+                return new DynamicExpressionN(delegateType, binder, arguments);
+            }
+
+            return new TypedDynamicExpressionN(returnType, delegateType, binder, arguments);
+        }
+
+        internal static DynamicExpression Make(Type returnType, Type delegateType, CallSiteBinder binder, Expression arg0)
+        {
+            if (returnType == typeof(object))
+            {
+                return new DynamicExpression1(delegateType, binder, arg0);
+            }
+
+            return new TypedDynamicExpression1(returnType, delegateType, binder, arg0);
+        }
+
+        internal static DynamicExpression Make(Type returnType, Type delegateType, CallSiteBinder binder, Expression arg0, Expression arg1)
+        {
+            if (returnType == typeof(object))
+            {
+                return new DynamicExpression2(delegateType, binder, arg0, arg1);
+            }
+
+            return new TypedDynamicExpression2(returnType, delegateType, binder, arg0, arg1);
+        }
+
+        internal static DynamicExpression Make(Type returnType, Type delegateType, CallSiteBinder binder, Expression arg0, Expression arg1, Expression arg2)
+        {
+            if (returnType == typeof(object))
+            {
+                return new DynamicExpression3(delegateType, binder, arg0, arg1, arg2);
+            }
+
+            return new TypedDynamicExpression3(returnType, delegateType, binder, arg0, arg1, arg2);
+        }
+
+        internal static DynamicExpression Make(Type returnType, Type delegateType, CallSiteBinder binder, Expression arg0, Expression arg1, Expression arg2, Expression arg3)
+        {
+            if (returnType == typeof(object))
+            {
+                return new DynamicExpression4(delegateType, binder, arg0, arg1, arg2, arg3);
+            }
+
+            return new TypedDynamicExpression4(returnType, delegateType, binder, arg0, arg1, arg2, arg3);
+        }
+
+        internal virtual ReadOnlyCollection<Expression> GetOrMakeArguments()
+        {
+            throw ContractUtils.Unreachable;
+        }
+
+        internal virtual DynamicExpression Rewrite(Expression[] args)
+        {
+            throw ContractUtils.Unreachable;
+        }
+
+        internal virtual bool SameArguments(ICollection<Expression> arguments)
+        {
+            throw ContractUtils.Unreachable;
+        }
+
+        protected internal override Expression Accept(ExpressionVisitor visitor)
+        {
+            if (visitor is DynamicExpressionVisitor dynVisitor)
+            {
+                return dynVisitor.VisitDynamic(this);
+            }
+
+            return base.Accept(visitor);
+        }
+
+        object IDynamicExpression.CreateCallSite()
+        {
+            return CallSite.Create(DelegateType, Binder);
+        }
+
+        Expression IArgumentProvider.GetArgument(int index)
+        {
+            throw ContractUtils.Unreachable;
+        }
+
+        Expression IDynamicExpression.Rewrite(Expression[] args) => Rewrite(args);
     }
 
     internal class DynamicExpression1 : DynamicExpression, IArgumentProvider
@@ -456,15 +456,6 @@ namespace System.Linq.Expressions
         }
 
         int IArgumentProvider.ArgumentCount => 1;
-
-        Expression IArgumentProvider.GetArgument(int index)
-        {
-            switch (index)
-            {
-                case 0: return ExpressionUtils.ReturnObject<Expression>(_arg0);
-                default: throw new ArgumentOutOfRangeException(nameof(index));
-            }
-        }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
         {
@@ -491,13 +482,22 @@ namespace System.Linq.Expressions
 
             return false;
         }
+
+        Expression IArgumentProvider.GetArgument(int index)
+        {
+            switch (index)
+            {
+                case 0: return ExpressionUtils.ReturnObject<Expression>(_arg0);
+                default: throw new ArgumentOutOfRangeException(nameof(index));
+            }
+        }
     }
 
     internal class DynamicExpression2 : DynamicExpression, IArgumentProvider
     {
-        private readonly Expression _arg1;
         private object _arg0;                   // storage for the 1st argument or a read-only collection.  See IArgumentProvider for more info.
-                                                // storage for the 2nd argument
+        private readonly Expression _arg1;
+        // storage for the 2nd argument
 
         internal DynamicExpression2(Type delegateType, CallSiteBinder binder, Expression arg0, Expression arg1)
             : base(delegateType, binder)
@@ -507,16 +507,6 @@ namespace System.Linq.Expressions
         }
 
         int IArgumentProvider.ArgumentCount => 2;
-
-        Expression IArgumentProvider.GetArgument(int index)
-        {
-            switch (index)
-            {
-                case 0: return ExpressionUtils.ReturnObject<Expression>(_arg0);
-                case 1: return _arg1;
-                default: throw new ArgumentOutOfRangeException(nameof(index));
-            }
-        }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
         {
@@ -552,13 +542,23 @@ namespace System.Linq.Expressions
 
             return false;
         }
+
+        Expression IArgumentProvider.GetArgument(int index)
+        {
+            switch (index)
+            {
+                case 0: return ExpressionUtils.ReturnObject<Expression>(_arg0);
+                case 1: return _arg1;
+                default: throw new ArgumentOutOfRangeException(nameof(index));
+            }
+        }
     }
 
     internal class DynamicExpression3 : DynamicExpression, IArgumentProvider
     {
-        private readonly Expression _arg1, _arg2;
         private object _arg0;                       // storage for the 1st argument or a read-only collection.  See IArgumentProvider for more info.
-                                                    // storage for the 2nd & 3rd arguments
+        private readonly Expression _arg1, _arg2;
+        // storage for the 2nd & 3rd arguments
 
         internal DynamicExpression3(Type delegateType, CallSiteBinder binder, Expression arg0, Expression arg1, Expression arg2)
             : base(delegateType, binder)
@@ -569,17 +569,6 @@ namespace System.Linq.Expressions
         }
 
         int IArgumentProvider.ArgumentCount => 3;
-
-        Expression IArgumentProvider.GetArgument(int index)
-        {
-            switch (index)
-            {
-                case 0: return ExpressionUtils.ReturnObject<Expression>(_arg0);
-                case 1: return _arg1;
-                case 2: return _arg2;
-                default: throw new ArgumentOutOfRangeException(nameof(index));
-            }
-        }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
         {
@@ -619,13 +608,24 @@ namespace System.Linq.Expressions
 
             return false;
         }
+
+        Expression IArgumentProvider.GetArgument(int index)
+        {
+            switch (index)
+            {
+                case 0: return ExpressionUtils.ReturnObject<Expression>(_arg0);
+                case 1: return _arg1;
+                case 2: return _arg2;
+                default: throw new ArgumentOutOfRangeException(nameof(index));
+            }
+        }
     }
 
     internal class DynamicExpression4 : DynamicExpression, IArgumentProvider
     {
-        private readonly Expression _arg1, _arg2, _arg3;
         private object _arg0;                               // storage for the 1st argument or a read-only collection.  See IArgumentProvider for more info.
-                                                            // storage for the 2nd - 4th arguments
+        private readonly Expression _arg1, _arg2, _arg3;
+        // storage for the 2nd - 4th arguments
 
         internal DynamicExpression4(Type delegateType, CallSiteBinder binder, Expression arg0, Expression arg1, Expression arg2, Expression arg3)
             : base(delegateType, binder)
@@ -637,18 +637,6 @@ namespace System.Linq.Expressions
         }
 
         int IArgumentProvider.ArgumentCount => 4;
-
-        Expression IArgumentProvider.GetArgument(int index)
-        {
-            switch (index)
-            {
-                case 0: return ExpressionUtils.ReturnObject<Expression>(_arg0);
-                case 1: return _arg1;
-                case 2: return _arg2;
-                case 3: return _arg3;
-                default: throw new ArgumentOutOfRangeException(nameof(index));
-            }
-        }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
         {
@@ -692,6 +680,18 @@ namespace System.Linq.Expressions
 
             return false;
         }
+
+        Expression IArgumentProvider.GetArgument(int index)
+        {
+            switch (index)
+            {
+                case 0: return ExpressionUtils.ReturnObject<Expression>(_arg0);
+                case 1: return _arg1;
+                case 2: return _arg2;
+                case 3: return _arg3;
+                default: throw new ArgumentOutOfRangeException(nameof(index));
+            }
+        }
     }
 
     internal class DynamicExpressionN : DynamicExpression, IArgumentProvider
@@ -708,8 +708,6 @@ namespace System.Linq.Expressions
 
         int IArgumentProvider.ArgumentCount => _arguments.Length;
 
-        Expression IArgumentProvider.GetArgument(int index) => _arguments[index];
-
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
         {
             return _argumentsAsReadOnlyCollection;
@@ -724,6 +722,8 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression> arguments) =>
                             ExpressionUtils.SameElements(arguments, _arguments);
+
+        Expression IArgumentProvider.GetArgument(int index) => _arguments[index];
     }
 
     internal sealed class TypedDynamicExpression1 : DynamicExpression1

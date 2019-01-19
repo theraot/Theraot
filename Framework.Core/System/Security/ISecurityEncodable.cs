@@ -18,6 +18,27 @@ namespace System.Security
 
     public abstract class CodeAccessPermission : IPermission, IStackWalk
     {
+
+        public static void RevertAll()
+        {
+            // Empty
+        }
+
+        public static void RevertAssert()
+        {
+            // Empty
+        }
+
+        [Obsolete]
+        public static void RevertDeny()
+        {
+            // Empty
+        }
+
+        public static void RevertPermitOnly()
+        {
+            // Empty
+        }
         public void Assert()
         {
             // Empty
@@ -42,27 +63,6 @@ namespace System.Security
         public void PermitOnly()
         {
             throw new PlatformNotSupportedException();
-        }
-
-        public static void RevertAll()
-        {
-            // Empty
-        }
-
-        public static void RevertAssert()
-        {
-            // Empty
-        }
-
-        [Obsolete]
-        public static void RevertDeny()
-        {
-            // Empty
-        }
-
-        public static void RevertPermitOnly()
-        {
-            // Empty
         }
 
         public abstract SecurityElement ToXml();

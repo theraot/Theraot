@@ -10,14 +10,14 @@ namespace Theraot.Collections.ThreadSafe
     [Serializable]
     internal class BucketCore : IEnumerable<object>
     {
-        private const int _capacityLog2 = 8;
         private const int _capacity = 1 << _capacityLog2;
+        private const int _capacityLog2 = 8;
         private const int _mask = _capacity - 1;
         private const int _maxLevel = 1 + 31 / _capacityLog2;
-        private readonly int _level;
         private object[] _arrayFirst;
         private object[] _arraySecond;
         private int[] _arrayUse;
+        private readonly int _level;
 
         public BucketCore()
             : this(_maxLevel)
@@ -227,11 +227,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         private static bool Do(ref int use, ref object first, ref object second, DoAction callback)
         {
 #if DEBUG
@@ -369,6 +364,11 @@ namespace Theraot.Collections.ThreadSafe
             {
                 DoLeave(ref use, ref first, ref second);
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
 #if FAT

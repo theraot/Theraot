@@ -34,21 +34,14 @@ namespace System.Collections
     [Serializable]
     public class ArrayList : IList, ICloneable
     {
-        private object[] _items;
-        private int _size;
-        private int _version;
-
-        private const int _defaultCapacity = 4;
 
         // Copy of Array.MaxArrayLength
         internal const int MaxArrayLength = 0X7FEFFFFF;
 
-        // Note: this constructor is a bogus constructor that does nothing
-        // and is for use only with SyncArrayList.
-        internal ArrayList(bool trash)
-        {
-            Theraot.No.Op(trash);
-        }
+        private const int _defaultCapacity = 4;
+        private object[] _items;
+        private int _size;
+        private int _version;
 
         // Constructs a ArrayList. The list is initially empty and has a capacity
         // of zero. Upon adding the first element to the list the capacity is
@@ -93,6 +86,13 @@ namespace System.Collections
                 _items = new object[count];
                 AddRange(c);
             }
+        }
+
+        // Note: this constructor is a bogus constructor that does nothing
+        // and is for use only with SyncArrayList.
+        internal ArrayList(bool trash)
+        {
+            Theraot.No.Op(trash);
         }
 
         // Gets and sets the capacity of this list.  The capacity is the size of
@@ -185,6 +185,98 @@ namespace System.Collections
             }
 
             return new ListWrapper(list);
+        }
+
+        // Returns a list wrapper that is fixed at the current size.  Operations
+        // that add or remove items will fail, however, replacing items is allowed.
+        //
+        public static IList FixedSize(IList list)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+
+            return new FixedSizeList(list);
+        }
+
+        // Returns a list wrapper that is fixed at the current size.  Operations
+        // that add or remove items will fail, however, replacing items is allowed.
+        //
+        public static ArrayList FixedSize(ArrayList list)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+
+            return new FixedSizeArrayList(list);
+        }
+
+        // Returns a read-only IList wrapper for the given IList.
+        //
+        public static IList ReadOnly(IList list)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+
+            return new ReadOnlyList(list);
+        }
+
+        // Returns a read-only ArrayList wrapper for the given ArrayList.
+        //
+        public static ArrayList ReadOnly(ArrayList list)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+
+            return new ReadOnlyArrayList(list);
+        }
+
+        // Returns an IList that contains count copies of value.
+        //
+        public static ArrayList Repeat(object value, int count)
+        {
+            if (count < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count), "Non-negative number required.");
+            }
+
+            var list = new ArrayList(count > _defaultCapacity ? count : _defaultCapacity);
+            for (var i = 0; i < count; i++)
+            {
+                list.Add(value);
+            }
+
+            return list;
+        }
+
+        // Returns a thread-safe wrapper around an IList.
+        //
+        public static IList Synchronized(IList list)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+
+            return new SyncIList(list);
+        }
+
+        // Returns a thread-safe wrapper around a ArrayList.
+        //
+        public static ArrayList Synchronized(ArrayList list)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+
+            return new SyncArrayList(list);
         }
 
         // Adds the given object to the end of this list. The size of the list is
@@ -355,57 +447,6 @@ namespace System.Collections
             Array.Copy(_items, index, array, arrayIndex, count);
         }
 
-        // Ensures that the capacity of this list is at least the given minimum
-        // value. If the current capacity of the list is less than min, the
-        // capacity is increased to twice the current capacity or to min,
-        // whichever is larger.
-        private void EnsureCapacity(int min)
-        {
-            if (_items.Length < min)
-            {
-                var newCapacity = _items.Length == 0 ? _defaultCapacity : _items.Length * 2;
-                // Allow the list to grow to maximum possible capacity (~2G elements) before encountering overflow.
-                // Note that this check works even when _items.Length overflowed thanks to the (uint) cast
-                if ((uint)newCapacity > MaxArrayLength)
-                {
-                    newCapacity = MaxArrayLength;
-                }
-
-                if (newCapacity < min)
-                {
-                    newCapacity = min;
-                }
-
-                Capacity = newCapacity;
-            }
-        }
-
-        // Returns a list wrapper that is fixed at the current size.  Operations
-        // that add or remove items will fail, however, replacing items is allowed.
-        //
-        public static IList FixedSize(IList list)
-        {
-            if (list == null)
-            {
-                throw new ArgumentNullException(nameof(list));
-            }
-
-            return new FixedSizeList(list);
-        }
-
-        // Returns a list wrapper that is fixed at the current size.  Operations
-        // that add or remove items will fail, however, replacing items is allowed.
-        //
-        public static ArrayList FixedSize(ArrayList list)
-        {
-            if (list == null)
-            {
-                throw new ArgumentNullException(nameof(list));
-            }
-
-            return new FixedSizeArrayList(list);
-        }
-
         // Returns an enumerator for this list with the given
         // permission for removal of elements. If modifications made to the list
         // while an enumeration is in progress, the MoveNext and
@@ -439,6 +480,21 @@ namespace System.Collections
             }
 
             return new ArrayListEnumerator(this, index, count);
+        }
+
+        public virtual ArrayList GetRange(int index, int count)
+        {
+            if (index < 0 || count < 0)
+            {
+                throw new ArgumentOutOfRangeException(index < 0 ? nameof(index) : nameof(count), "Non-negative number required.");
+            }
+
+            if (_size - index < count)
+            {
+                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+            }
+
+            return new Range(this, index, count);
         }
 
         // Returns the index of the first occurrence of a given value in a range of
@@ -619,30 +675,6 @@ namespace System.Collections
             return Array.LastIndexOf((Array)_items, value, startIndex, count);
         }
 
-        // Returns a read-only IList wrapper for the given IList.
-        //
-        public static IList ReadOnly(IList list)
-        {
-            if (list == null)
-            {
-                throw new ArgumentNullException(nameof(list));
-            }
-
-            return new ReadOnlyList(list);
-        }
-
-        // Returns a read-only ArrayList wrapper for the given ArrayList.
-        //
-        public static ArrayList ReadOnly(ArrayList list)
-        {
-            if (list == null)
-            {
-                throw new ArgumentNullException(nameof(list));
-            }
-
-            return new ReadOnlyArrayList(list);
-        }
-
         // Removes the element at the given index. The size of the list is
         // decreased by one.
         //
@@ -710,24 +742,6 @@ namespace System.Collections
             }
         }
 
-        // Returns an IList that contains count copies of value.
-        //
-        public static ArrayList Repeat(object value, int count)
-        {
-            if (count < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(count), "Non-negative number required.");
-            }
-
-            var list = new ArrayList(count > _defaultCapacity ? count : _defaultCapacity);
-            for (var i = 0; i < count; i++)
-            {
-                list.Add(value);
-            }
-
-            return list;
-        }
-
         // Reverses the elements in this list.
         public virtual void Reverse()
         {
@@ -786,21 +800,6 @@ namespace System.Collections
             }
         }
 
-        public virtual ArrayList GetRange(int index, int count)
-        {
-            if (index < 0 || count < 0)
-            {
-                throw new ArgumentOutOfRangeException(index < 0 ? nameof(index) : nameof(count), "Non-negative number required.");
-            }
-
-            if (_size - index < count)
-            {
-                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
-            }
-
-            return new Range(this, index, count);
-        }
-
         // Sorts the elements in this list.  Uses the default comparer and
         // Array.Sort.
         public virtual void Sort()
@@ -842,30 +841,6 @@ namespace System.Collections
 
             Array.Sort(_items, index, count, comparer);
             _version++;
-        }
-
-        // Returns a thread-safe wrapper around an IList.
-        //
-        public static IList Synchronized(IList list)
-        {
-            if (list == null)
-            {
-                throw new ArgumentNullException(nameof(list));
-            }
-
-            return new SyncIList(list);
-        }
-
-        // Returns a thread-safe wrapper around a ArrayList.
-        //
-        public static ArrayList Synchronized(ArrayList list)
-        {
-            if (list == null)
-            {
-                throw new ArgumentNullException(nameof(list));
-            }
-
-            return new SyncArrayList(list);
         }
 
         // ToArray returns a new Object array containing the contents of the ArrayList.
@@ -913,6 +888,460 @@ namespace System.Collections
             Capacity = _size;
         }
 
+        // Ensures that the capacity of this list is at least the given minimum
+        // value. If the current capacity of the list is less than min, the
+        // capacity is increased to twice the current capacity or to min,
+        // whichever is larger.
+        private void EnsureCapacity(int min)
+        {
+            if (_items.Length < min)
+            {
+                var newCapacity = _items.Length == 0 ? _defaultCapacity : _items.Length * 2;
+                // Allow the list to grow to maximum possible capacity (~2G elements) before encountering overflow.
+                // Note that this check works even when _items.Length overflowed thanks to the (uint) cast
+                if ((uint)newCapacity > MaxArrayLength)
+                {
+                    newCapacity = MaxArrayLength;
+                }
+
+                if (newCapacity < min)
+                {
+                    newCapacity = min;
+                }
+
+                Capacity = newCapacity;
+            }
+        }
+
+        internal class ArrayListDebugView
+        {
+            private readonly ArrayList _arrayList;
+
+            public ArrayListDebugView(ArrayList arrayList)
+            {
+                _arrayList = arrayList ?? throw new ArgumentNullException(nameof(arrayList));
+            }
+
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public object[] Items => _arrayList.ToArray();
+        }
+
+        // Implements an enumerator for a ArrayList. The enumerator uses the
+        // internal version number of the list to ensure that no modifications are
+        // made to the list while an enumeration is in progress.
+        private sealed class ArrayListEnumerator : IEnumerator, ICloneable
+        {
+            private object _currentElement;
+            private readonly int _endIndex;       // Where to stop.
+            private int _index;
+            private readonly ArrayList _list;
+            private readonly int _startIndex;     // Save this for Reset.
+            private readonly int _version;
+
+            internal ArrayListEnumerator(ArrayList list, int index, int count)
+            {
+                _list = list;
+                _startIndex = index;
+                _index = index - 1;
+                _endIndex = _index + count;  // last valid index
+                _version = list._version;
+                _currentElement = null;
+            }
+
+            public object Current
+            {
+                get
+                {
+                    if (_index < _startIndex)
+                    {
+                        throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
+                    }
+
+                    if (_index > _endIndex)
+                    {
+                        throw new InvalidOperationException("Enumeration already finished.");
+                    }
+                    return _currentElement;
+                }
+            }
+
+            public object Clone() => MemberwiseClone();
+
+            public bool MoveNext()
+            {
+                if (_version != _list._version)
+                {
+                    throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
+                }
+
+                if (_index < _endIndex)
+                {
+                    _currentElement = _list[++_index];
+                    return true;
+                }
+
+                _index = _endIndex + 1;
+
+                return false;
+            }
+
+            public void Reset()
+            {
+                if (_version != _list._version)
+                {
+                    throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
+                }
+
+                _index = _startIndex - 1;
+            }
+        }
+
+        private sealed class ArrayListEnumeratorSimple : IEnumerator, ICloneable
+        {
+            // this object is used to indicate enumeration has not started or has terminated
+            private static readonly object _dummyObject = new object();
+            private object _currentElement;
+            private int _index;
+            private readonly bool _isArrayList;
+            private readonly ArrayList _list;
+            private readonly int _version;
+
+            internal ArrayListEnumeratorSimple(ArrayList list)
+            {
+                _list = list;
+                _index = -1;
+                _version = list._version;
+                _isArrayList = list.GetType() == typeof(ArrayList);
+                _currentElement = _dummyObject;
+            }
+
+            public object Current
+            {
+                get
+                {
+                    var temp = _currentElement;
+                    if (_dummyObject == temp)
+                    {
+                        // check if enumeration has not started or has terminated
+                        if (_index == -1)
+                        {
+                            throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
+                        }
+
+                        throw new InvalidOperationException("Enumeration already finished.");
+                    }
+
+                    return temp;
+                }
+            }
+
+            public object Clone() => MemberwiseClone();
+
+            public bool MoveNext()
+            {
+                if (_version != _list._version)
+                {
+                    throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
+                }
+
+                if (_isArrayList)
+                {  // avoid calling virtual methods if we are operating on ArrayList to improve performance
+                    if (_index < _list._size - 1)
+                    {
+                        _currentElement = _list._items[++_index];
+                        return true;
+                    }
+
+                    _currentElement = _dummyObject;
+                    _index = _list._size;
+                    return false;
+                }
+
+                if (_index < _list.Count - 1)
+                {
+                    _currentElement = _list[++_index];
+                    return true;
+                }
+
+                _index = _list.Count;
+                _currentElement = _dummyObject;
+                return false;
+            }
+
+            public void Reset()
+            {
+                if (_version != _list._version)
+                {
+                    throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
+                }
+
+                _currentElement = _dummyObject;
+                _index = -1;
+            }
+        }
+
+        private class FixedSizeArrayList : ArrayList
+        {
+            private ArrayList _list;
+
+            internal FixedSizeArrayList(ArrayList l)
+            {
+                _list = l;
+                _version = _list._version;
+            }
+
+            public override int Capacity
+            {
+                get => _list.Capacity;
+                set => throw new NotSupportedException("Collection was of a fixed size.");
+            }
+
+            public override int Count => _list.Count;
+
+            public override bool IsFixedSize => true;
+
+            public override bool IsReadOnly => _list.IsReadOnly;
+
+            public override bool IsSynchronized => _list.IsSynchronized;
+
+            public override object SyncRoot => _list.SyncRoot;
+
+            public override object this[int index]
+            {
+                get => _list[index];
+                set
+                {
+                    _list[index] = value;
+                    _version = _list._version;
+                }
+            }
+
+            public override int Add(object value)
+            {
+                throw new NotSupportedException("Collection was of a fixed size.");
+            }
+
+            public override void AddRange(ICollection c)
+            {
+                throw new NotSupportedException("Collection was of a fixed size.");
+            }
+
+            public override int BinarySearch(int index, int count, object value, IComparer comparer)
+            {
+                return _list.BinarySearch(index, count, value, comparer);
+            }
+
+            public override void Clear()
+            {
+                throw new NotSupportedException("Collection was of a fixed size.");
+            }
+
+            public override object Clone()
+            {
+                var arrayList = new FixedSizeArrayList(_list) { _list = (ArrayList)_list.Clone() };
+                return arrayList;
+            }
+
+            public override bool Contains(object value)
+            {
+                return _list.Contains(value);
+            }
+
+            public override void CopyTo(Array array, int arrayIndex)
+            {
+                _list.CopyTo(array, arrayIndex);
+            }
+
+            public override void CopyTo(int index, Array array, int arrayIndex, int count)
+            {
+                _list.CopyTo(index, array, arrayIndex, count);
+            }
+
+            public override IEnumerator GetEnumerator()
+            {
+                return _list.GetEnumerator();
+            }
+
+            public override IEnumerator GetEnumerator(int index, int count)
+            {
+                return _list.GetEnumerator(index, count);
+            }
+
+            public override ArrayList GetRange(int index, int count)
+            {
+                if (index < 0 || count < 0)
+                {
+                    throw new ArgumentOutOfRangeException(index < 0 ? nameof(index) : nameof(count), "Non-negative number required.");
+                }
+
+                if (Count - index < count)
+                {
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                }
+
+                return new Range(this, index, count);
+            }
+
+            public override int IndexOf(object value)
+            {
+                return _list.IndexOf(value);
+            }
+
+            public override int IndexOf(object value, int startIndex)
+            {
+                return _list.IndexOf(value, startIndex);
+            }
+
+            public override int IndexOf(object value, int startIndex, int count)
+            {
+                return _list.IndexOf(value, startIndex, count);
+            }
+
+            public override void Insert(int index, object value)
+            {
+                throw new NotSupportedException("Collection was of a fixed size.");
+            }
+
+            public override void InsertRange(int index, ICollection c)
+            {
+                throw new NotSupportedException("Collection was of a fixed size.");
+            }
+
+            public override int LastIndexOf(object value)
+            {
+                return _list.LastIndexOf(value);
+            }
+
+            public override int LastIndexOf(object value, int startIndex)
+            {
+                return _list.LastIndexOf(value, startIndex);
+            }
+
+            public override int LastIndexOf(object value, int startIndex, int count)
+            {
+                return _list.LastIndexOf(value, startIndex, count);
+            }
+
+            public override void Remove(object value)
+            {
+                throw new NotSupportedException("Collection was of a fixed size.");
+            }
+
+            public override void RemoveAt(int index)
+            {
+                throw new NotSupportedException("Collection was of a fixed size.");
+            }
+
+            public override void RemoveRange(int index, int count)
+            {
+                throw new NotSupportedException("Collection was of a fixed size.");
+            }
+
+            public override void Reverse(int index, int count)
+            {
+                _list.Reverse(index, count);
+                _version = _list._version;
+            }
+
+            public override void SetRange(int index, ICollection c)
+            {
+                _list.SetRange(index, c);
+                _version = _list._version;
+            }
+
+            public override void Sort(int index, int count, IComparer comparer)
+            {
+                _list.Sort(index, count, comparer);
+                _version = _list._version;
+            }
+
+            public override object[] ToArray()
+            {
+                return _list.ToArray();
+            }
+
+            public override Array ToArray(Type type)
+            {
+                return _list.ToArray(type);
+            }
+
+            public override void TrimToSize()
+            {
+                throw new NotSupportedException("Collection was of a fixed size.");
+            }
+        }
+
+        private sealed class FixedSizeList : IList
+        {
+            private readonly IList _list;
+
+            internal FixedSizeList(IList l)
+            {
+                _list = l;
+            }
+
+            public int Count => _list.Count;
+
+            public bool IsFixedSize => true;
+
+            public bool IsReadOnly => _list.IsReadOnly;
+
+            public bool IsSynchronized => _list.IsSynchronized;
+
+            public object SyncRoot => _list.SyncRoot;
+
+            public object this[int index]
+            {
+                get => _list[index];
+                set => _list[index] = value;
+            }
+
+            public int Add(object value)
+            {
+                throw new NotSupportedException("Collection was of a fixed size.");
+            }
+
+            public void Clear()
+            {
+                throw new NotSupportedException("Collection was of a fixed size.");
+            }
+
+            public bool Contains(object value)
+            {
+                return _list.Contains(value);
+            }
+
+            public void CopyTo(Array array, int index)
+            {
+                _list.CopyTo(array, index);
+            }
+
+            public IEnumerator GetEnumerator()
+            {
+                return _list.GetEnumerator();
+            }
+
+            public int IndexOf(object value)
+            {
+                return _list.IndexOf(value);
+            }
+
+            public void Insert(int index, object value)
+            {
+                throw new NotSupportedException("Collection was of a fixed size.");
+            }
+
+            public void Remove(object value)
+            {
+                throw new NotSupportedException("Collection was of a fixed size.");
+            }
+
+            public void RemoveAt(int index)
+            {
+                throw new NotSupportedException("Collection was of a fixed size.");
+            }
+        }
+
         // This class wraps an IList, exposing it as a ArrayList
         // Note this requires reimplementing half of ArrayList...
         private class ListWrapper : ArrayList
@@ -939,11 +1368,13 @@ namespace System.Collections
 
             public override int Count => _list.Count;
 
-            public override bool IsReadOnly => _list.IsReadOnly;
-
             public override bool IsFixedSize => _list.IsFixedSize;
 
+            public override bool IsReadOnly => _list.IsReadOnly;
+
             public override bool IsSynchronized => _list.IsSynchronized;
+
+            public override object SyncRoot => _list.SyncRoot;
 
             public override object this[int index]
             {
@@ -954,8 +1385,6 @@ namespace System.Collections
                     _version++;
                 }
             }
-
-            public override object SyncRoot => _list.SyncRoot;
 
             public override int Add(object value)
             {
@@ -1098,6 +1527,21 @@ namespace System.Collections
                 }
 
                 return new ListWrapperEnumWrapper(this, index, count);
+            }
+
+            public override ArrayList GetRange(int index, int count)
+            {
+                if (index < 0 || count < 0)
+                {
+                    throw new ArgumentOutOfRangeException(index < 0 ? nameof(index) : nameof(count), "Non-negative number required.");
+                }
+
+                if (_list.Count - index < count)
+                {
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                }
+
+                return new Range(this, index, count);
             }
 
             public override int IndexOf(object value)
@@ -1323,21 +1767,6 @@ namespace System.Collections
                 }
             }
 
-            public override ArrayList GetRange(int index, int count)
-            {
-                if (index < 0 || count < 0)
-                {
-                    throw new ArgumentOutOfRangeException(index < 0 ? nameof(index) : nameof(count), "Non-negative number required.");
-                }
-
-                if (_list.Count - index < count)
-                {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
-                }
-
-                return new Range(this, index, count);
-            }
-
             public override void Sort(int index, int count, IComparer comparer)
             {
                 if (index < 0 || count < 0)
@@ -1395,10 +1824,10 @@ namespace System.Collections
             private sealed class ListWrapperEnumWrapper : IEnumerator, ICloneable
             {
                 private IEnumerator _en;
-                private int _remaining;
-                private int _initialStartIndex; // for reset
-                private int _initialCount;      // for reset
                 private bool _firstCall;        // firstCall to MoveNext
+                private int _initialCount;      // for reset
+                private int _initialStartIndex; // for reset
+                private int _remaining;
 
                 internal ListWrapperEnumWrapper(ListWrapper listWrapper, int startIndex, int count)
                 {
@@ -1415,6 +1844,24 @@ namespace System.Collections
                 }
 
                 private ListWrapperEnumWrapper() { }
+
+                public object Current
+                {
+                    get
+                    {
+                        if (_firstCall)
+                        {
+                            throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
+                        }
+
+                        if (_remaining < 0)
+                        {
+                            throw new InvalidOperationException("Enumeration already finished.");
+                        }
+
+                        return _en.Current;
+                    }
+                }
 
                 public object Clone()
                 {
@@ -1445,24 +1892,6 @@ namespace System.Collections
                     return r && _remaining-- > 0;
                 }
 
-                public object Current
-                {
-                    get
-                    {
-                        if (_firstCall)
-                        {
-                            throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
-                        }
-
-                        if (_remaining < 0)
-                        {
-                            throw new InvalidOperationException("Enumeration already finished.");
-                        }
-
-                        return _en.Current;
-                    }
-                }
-
                 public void Reset()
                 {
                     _en.Reset();
@@ -1478,1048 +1907,12 @@ namespace System.Collections
             }
         }
 
-        private class SyncArrayList : ArrayList
-        {
-            private readonly ArrayList _list;
-            private readonly object _root;
-
-            internal SyncArrayList(ArrayList list)
-                : base(false)
-            {
-                _list = list;
-                _root = list.SyncRoot;
-                IsReadOnly = _list.IsReadOnly;
-                IsFixedSize = _list.IsFixedSize;
-            }
-
-            public override int Capacity
-            {
-                get
-                {
-                    lock (_root)
-                    {
-                        return _list.Capacity;
-                    }
-                }
-                set
-                {
-                    lock (_root)
-                    {
-                        _list.Capacity = value;
-                    }
-                }
-            }
-
-            public override int Count
-            {
-                get
-                {
-                    lock (_root)
-                    {
-                        return _list.Count;
-                    }
-                }
-            }
-
-            public override bool IsReadOnly { get; }
-
-            public override bool IsFixedSize { get; }
-
-            public override bool IsSynchronized => true;
-
-            public override object this[int index]
-            {
-                get
-                {
-                    lock (_root)
-                    {
-                        return _list[index];
-                    }
-                }
-                set
-                {
-                    lock (_root)
-                    {
-                        _list[index] = value;
-                    }
-                }
-            }
-
-            public override object SyncRoot => _root;
-
-            public override int Add(object value)
-            {
-                lock (_root)
-                {
-                    return _list.Add(value);
-                }
-            }
-
-            public override void AddRange(ICollection c)
-            {
-                lock (_root)
-                {
-                    _list.AddRange(c);
-                }
-            }
-
-            public override int BinarySearch(object value)
-            {
-                lock (_root)
-                {
-                    return _list.BinarySearch(value);
-                }
-            }
-
-            public override int BinarySearch(object value, IComparer comparer)
-            {
-                lock (_root)
-                {
-                    return _list.BinarySearch(value, comparer);
-                }
-            }
-
-            public override int BinarySearch(int index, int count, object value, IComparer comparer)
-            {
-                lock (_root)
-                {
-                    return _list.BinarySearch(index, count, value, comparer);
-                }
-            }
-
-            public override void Clear()
-            {
-                lock (_root)
-                {
-                    _list.Clear();
-                }
-            }
-
-            public override object Clone()
-            {
-                lock (_root)
-                {
-                    return new SyncArrayList((ArrayList)_list.Clone());
-                }
-            }
-
-            public override bool Contains(object value)
-            {
-                lock (_root)
-                {
-                    return _list.Contains(value);
-                }
-            }
-
-            public override void CopyTo(Array array)
-            {
-                lock (_root)
-                {
-                    _list.CopyTo(array);
-                }
-            }
-
-            public override void CopyTo(Array array, int arrayIndex)
-            {
-                lock (_root)
-                {
-                    _list.CopyTo(array, arrayIndex);
-                }
-            }
-
-            public override void CopyTo(int index, Array array, int arrayIndex, int count)
-            {
-                lock (_root)
-                {
-                    _list.CopyTo(index, array, arrayIndex, count);
-                }
-            }
-
-            public override IEnumerator GetEnumerator()
-            {
-                lock (_root)
-                {
-                    return _list.GetEnumerator();
-                }
-            }
-
-            public override IEnumerator GetEnumerator(int index, int count)
-            {
-                lock (_root)
-                {
-                    return _list.GetEnumerator(index, count);
-                }
-            }
-
-            public override int IndexOf(object value)
-            {
-                lock (_root)
-                {
-                    return _list.IndexOf(value);
-                }
-            }
-
-            public override int IndexOf(object value, int startIndex)
-            {
-                lock (_root)
-                {
-                    return _list.IndexOf(value, startIndex);
-                }
-            }
-
-            public override int IndexOf(object value, int startIndex, int count)
-            {
-                lock (_root)
-                {
-                    return _list.IndexOf(value, startIndex, count);
-                }
-            }
-
-            public override void Insert(int index, object value)
-            {
-                lock (_root)
-                {
-                    _list.Insert(index, value);
-                }
-            }
-
-            public override void InsertRange(int index, ICollection c)
-            {
-                lock (_root)
-                {
-                    _list.InsertRange(index, c);
-                }
-            }
-
-            public override int LastIndexOf(object value)
-            {
-                lock (_root)
-                {
-                    return _list.LastIndexOf(value);
-                }
-            }
-
-            public override int LastIndexOf(object value, int startIndex)
-            {
-                lock (_root)
-                {
-                    return _list.LastIndexOf(value, startIndex);
-                }
-            }
-
-            public override int LastIndexOf(object value, int startIndex, int count)
-            {
-                lock (_root)
-                {
-                    return _list.LastIndexOf(value, startIndex, count);
-                }
-            }
-
-            public override void Remove(object value)
-            {
-                lock (_root)
-                {
-                    _list.Remove(value);
-                }
-            }
-
-            public override void RemoveAt(int index)
-            {
-                lock (_root)
-                {
-                    _list.RemoveAt(index);
-                }
-            }
-
-            public override void RemoveRange(int index, int count)
-            {
-                lock (_root)
-                {
-                    _list.RemoveRange(index, count);
-                }
-            }
-
-            public override void Reverse(int index, int count)
-            {
-                lock (_root)
-                {
-                    _list.Reverse(index, count);
-                }
-            }
-
-            public override void SetRange(int index, ICollection c)
-            {
-                lock (_root)
-                {
-                    _list.SetRange(index, c);
-                }
-            }
-
-            public override ArrayList GetRange(int index, int count)
-            {
-                lock (_root)
-                {
-                    return _list.GetRange(index, count);
-                }
-            }
-
-            public override void Sort()
-            {
-                lock (_root)
-                {
-                    _list.Sort();
-                }
-            }
-
-            public override void Sort(IComparer comparer)
-            {
-                lock (_root)
-                {
-                    _list.Sort(comparer);
-                }
-            }
-
-            public override void Sort(int index, int count, IComparer comparer)
-            {
-                lock (_root)
-                {
-                    _list.Sort(index, count, comparer);
-                }
-            }
-
-            public override object[] ToArray()
-            {
-                lock (_root)
-                {
-                    return _list.ToArray();
-                }
-            }
-
-            public override Array ToArray(Type type)
-            {
-                lock (_root)
-                {
-                    return _list.ToArray(type);
-                }
-            }
-
-            public override void TrimToSize()
-            {
-                lock (_root)
-                {
-                    _list.TrimToSize();
-                }
-            }
-        }
-
-        private sealed class SyncIList : IList
-        {
-            private readonly IList _list;
-
-            internal SyncIList(IList list)
-            {
-                _list = list;
-                SyncRoot = list.SyncRoot;
-                IsReadOnly = _list.IsReadOnly;
-                IsFixedSize = _list.IsFixedSize;
-            }
-
-            public int Count
-            {
-                get { lock (SyncRoot) { return _list.Count; } }
-            }
-
-            public bool IsReadOnly { get; }
-
-            public bool IsFixedSize { get; }
-
-            public bool IsSynchronized => true;
-
-            public object this[int index]
-            {
-                get
-                {
-                    lock (SyncRoot)
-                    {
-                        return _list[index];
-                    }
-                }
-                set
-                {
-                    lock (SyncRoot)
-                    {
-                        _list[index] = value;
-                    }
-                }
-            }
-
-            public object SyncRoot { get; }
-
-            public int Add(object value)
-            {
-                lock (SyncRoot)
-                {
-                    return _list.Add(value);
-                }
-            }
-
-            public void Clear()
-            {
-                lock (SyncRoot)
-                {
-                    _list.Clear();
-                }
-            }
-
-            public bool Contains(object value)
-            {
-                lock (SyncRoot)
-                {
-                    return _list.Contains(value);
-                }
-            }
-
-            public void CopyTo(Array array, int index)
-            {
-                lock (SyncRoot)
-                {
-                    _list.CopyTo(array, index);
-                }
-            }
-
-            public IEnumerator GetEnumerator()
-            {
-                lock (SyncRoot)
-                {
-                    return _list.GetEnumerator();
-                }
-            }
-
-            public int IndexOf(object value)
-            {
-                lock (SyncRoot)
-                {
-                    return _list.IndexOf(value);
-                }
-            }
-
-            public void Insert(int index, object value)
-            {
-                lock (SyncRoot)
-                {
-                    _list.Insert(index, value);
-                }
-            }
-
-            public void Remove(object value)
-            {
-                lock (SyncRoot)
-                {
-                    _list.Remove(value);
-                }
-            }
-
-            public void RemoveAt(int index)
-            {
-                lock (SyncRoot)
-                {
-                    _list.RemoveAt(index);
-                }
-            }
-        }
-
-        private sealed class FixedSizeList : IList
-        {
-            private readonly IList _list;
-
-            internal FixedSizeList(IList l)
-            {
-                _list = l;
-            }
-
-            public int Count => _list.Count;
-
-            public bool IsReadOnly => _list.IsReadOnly;
-
-            public bool IsFixedSize => true;
-
-            public bool IsSynchronized => _list.IsSynchronized;
-
-            public object this[int index]
-            {
-                get => _list[index];
-                set => _list[index] = value;
-            }
-
-            public object SyncRoot => _list.SyncRoot;
-
-            public int Add(object value)
-            {
-                throw new NotSupportedException("Collection was of a fixed size.");
-            }
-
-            public void Clear()
-            {
-                throw new NotSupportedException("Collection was of a fixed size.");
-            }
-
-            public bool Contains(object value)
-            {
-                return _list.Contains(value);
-            }
-
-            public void CopyTo(Array array, int index)
-            {
-                _list.CopyTo(array, index);
-            }
-
-            public IEnumerator GetEnumerator()
-            {
-                return _list.GetEnumerator();
-            }
-
-            public int IndexOf(object value)
-            {
-                return _list.IndexOf(value);
-            }
-
-            public void Insert(int index, object value)
-            {
-                throw new NotSupportedException("Collection was of a fixed size.");
-            }
-
-            public void Remove(object value)
-            {
-                throw new NotSupportedException("Collection was of a fixed size.");
-            }
-
-            public void RemoveAt(int index)
-            {
-                throw new NotSupportedException("Collection was of a fixed size.");
-            }
-        }
-
-        private class FixedSizeArrayList : ArrayList
-        {
-            private ArrayList _list;
-
-            internal FixedSizeArrayList(ArrayList l)
-            {
-                _list = l;
-                _version = _list._version;
-            }
-
-            public override int Count => _list.Count;
-
-            public override bool IsReadOnly => _list.IsReadOnly;
-
-            public override bool IsFixedSize => true;
-
-            public override bool IsSynchronized => _list.IsSynchronized;
-
-            public override object this[int index]
-            {
-                get => _list[index];
-                set
-                {
-                    _list[index] = value;
-                    _version = _list._version;
-                }
-            }
-
-            public override object SyncRoot => _list.SyncRoot;
-
-            public override int Add(object value)
-            {
-                throw new NotSupportedException("Collection was of a fixed size.");
-            }
-
-            public override void AddRange(ICollection c)
-            {
-                throw new NotSupportedException("Collection was of a fixed size.");
-            }
-
-            public override int BinarySearch(int index, int count, object value, IComparer comparer)
-            {
-                return _list.BinarySearch(index, count, value, comparer);
-            }
-
-            public override int Capacity
-            {
-                get => _list.Capacity;
-                set => throw new NotSupportedException("Collection was of a fixed size.");
-            }
-
-            public override void Clear()
-            {
-                throw new NotSupportedException("Collection was of a fixed size.");
-            }
-
-            public override object Clone()
-            {
-                var arrayList = new FixedSizeArrayList(_list) { _list = (ArrayList)_list.Clone() };
-                return arrayList;
-            }
-
-            public override bool Contains(object value)
-            {
-                return _list.Contains(value);
-            }
-
-            public override void CopyTo(Array array, int arrayIndex)
-            {
-                _list.CopyTo(array, arrayIndex);
-            }
-
-            public override void CopyTo(int index, Array array, int arrayIndex, int count)
-            {
-                _list.CopyTo(index, array, arrayIndex, count);
-            }
-
-            public override IEnumerator GetEnumerator()
-            {
-                return _list.GetEnumerator();
-            }
-
-            public override IEnumerator GetEnumerator(int index, int count)
-            {
-                return _list.GetEnumerator(index, count);
-            }
-
-            public override int IndexOf(object value)
-            {
-                return _list.IndexOf(value);
-            }
-
-            public override int IndexOf(object value, int startIndex)
-            {
-                return _list.IndexOf(value, startIndex);
-            }
-
-            public override int IndexOf(object value, int startIndex, int count)
-            {
-                return _list.IndexOf(value, startIndex, count);
-            }
-
-            public override void Insert(int index, object value)
-            {
-                throw new NotSupportedException("Collection was of a fixed size.");
-            }
-
-            public override void InsertRange(int index, ICollection c)
-            {
-                throw new NotSupportedException("Collection was of a fixed size.");
-            }
-
-            public override int LastIndexOf(object value)
-            {
-                return _list.LastIndexOf(value);
-            }
-
-            public override int LastIndexOf(object value, int startIndex)
-            {
-                return _list.LastIndexOf(value, startIndex);
-            }
-
-            public override int LastIndexOf(object value, int startIndex, int count)
-            {
-                return _list.LastIndexOf(value, startIndex, count);
-            }
-
-            public override void Remove(object value)
-            {
-                throw new NotSupportedException("Collection was of a fixed size.");
-            }
-
-            public override void RemoveAt(int index)
-            {
-                throw new NotSupportedException("Collection was of a fixed size.");
-            }
-
-            public override void RemoveRange(int index, int count)
-            {
-                throw new NotSupportedException("Collection was of a fixed size.");
-            }
-
-            public override void SetRange(int index, ICollection c)
-            {
-                _list.SetRange(index, c);
-                _version = _list._version;
-            }
-
-            public override ArrayList GetRange(int index, int count)
-            {
-                if (index < 0 || count < 0)
-                {
-                    throw new ArgumentOutOfRangeException(index < 0 ? nameof(index) : nameof(count), "Non-negative number required.");
-                }
-
-                if (Count - index < count)
-                {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
-                }
-
-                return new Range(this, index, count);
-            }
-
-            public override void Reverse(int index, int count)
-            {
-                _list.Reverse(index, count);
-                _version = _list._version;
-            }
-
-            public override void Sort(int index, int count, IComparer comparer)
-            {
-                _list.Sort(index, count, comparer);
-                _version = _list._version;
-            }
-
-            public override object[] ToArray()
-            {
-                return _list.ToArray();
-            }
-
-            public override Array ToArray(Type type)
-            {
-                return _list.ToArray(type);
-            }
-
-            public override void TrimToSize()
-            {
-                throw new NotSupportedException("Collection was of a fixed size.");
-            }
-        }
-
-        private sealed class ReadOnlyList : IList
-        {
-            private readonly IList _list;
-
-            internal ReadOnlyList(IList l)
-            {
-                _list = l;
-            }
-
-            public int Count => _list.Count;
-
-            public bool IsReadOnly => true;
-
-            public bool IsFixedSize => true;
-
-            public bool IsSynchronized => _list.IsSynchronized;
-
-            public object this[int index]
-            {
-                get => _list[index];
-                set => throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public object SyncRoot => _list.SyncRoot;
-
-            public int Add(object value)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public void Clear()
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public bool Contains(object value)
-            {
-                return _list.Contains(value);
-            }
-
-            public void CopyTo(Array array, int index)
-            {
-                _list.CopyTo(array, index);
-            }
-
-            public IEnumerator GetEnumerator()
-            {
-                return _list.GetEnumerator();
-            }
-
-            public int IndexOf(object value)
-            {
-                return _list.IndexOf(value);
-            }
-
-            public void Insert(int index, object value)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public void Remove(object value)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public void RemoveAt(int index)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-        }
-
-        private class ReadOnlyArrayList : ArrayList
-        {
-            private ArrayList _list;
-
-            internal ReadOnlyArrayList(ArrayList l)
-            {
-                _list = l;
-            }
-
-            public override int Count => _list.Count;
-
-            public override bool IsReadOnly => true;
-
-            public override bool IsFixedSize => true;
-
-            public override bool IsSynchronized => _list.IsSynchronized;
-
-            public override object this[int index]
-            {
-                get => _list[index];
-                set => throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public override object SyncRoot => _list.SyncRoot;
-
-            public override int Add(object value)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public override void AddRange(ICollection c)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public override int BinarySearch(int index, int count, object value, IComparer comparer)
-            {
-                return _list.BinarySearch(index, count, value, comparer);
-            }
-
-            public override int Capacity
-            {
-                get => _list.Capacity;
-                set => throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public override void Clear()
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public override object Clone()
-            {
-                var arrayList = new ReadOnlyArrayList(_list) { _list = (ArrayList)_list.Clone() };
-                return arrayList;
-            }
-
-            public override bool Contains(object value)
-            {
-                return _list.Contains(value);
-            }
-
-            public override void CopyTo(Array array, int arrayIndex)
-            {
-                _list.CopyTo(array, arrayIndex);
-            }
-
-            public override void CopyTo(int index, Array array, int arrayIndex, int count)
-            {
-                _list.CopyTo(index, array, arrayIndex, count);
-            }
-
-            public override IEnumerator GetEnumerator()
-            {
-                return _list.GetEnumerator();
-            }
-
-            public override IEnumerator GetEnumerator(int index, int count)
-            {
-                return _list.GetEnumerator(index, count);
-            }
-
-            public override int IndexOf(object value)
-            {
-                return _list.IndexOf(value);
-            }
-
-            public override int IndexOf(object value, int startIndex)
-            {
-                return _list.IndexOf(value, startIndex);
-            }
-
-            public override int IndexOf(object value, int startIndex, int count)
-            {
-                return _list.IndexOf(value, startIndex, count);
-            }
-
-            public override void Insert(int index, object value)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public override void InsertRange(int index, ICollection c)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public override int LastIndexOf(object value)
-            {
-                return _list.LastIndexOf(value);
-            }
-
-            public override int LastIndexOf(object value, int startIndex)
-            {
-                return _list.LastIndexOf(value, startIndex);
-            }
-
-            public override int LastIndexOf(object value, int startIndex, int count)
-            {
-                return _list.LastIndexOf(value, startIndex, count);
-            }
-
-            public override void Remove(object value)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public override void RemoveAt(int index)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public override void RemoveRange(int index, int count)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public override void SetRange(int index, ICollection c)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public override ArrayList GetRange(int index, int count)
-            {
-                if (index < 0 || count < 0)
-                {
-                    throw new ArgumentOutOfRangeException(index < 0 ? nameof(index) : nameof(count), "Non-negative number required.");
-                }
-
-                if (Count - index < count)
-                {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
-                }
-
-                return new Range(this, index, count);
-            }
-
-            public override void Reverse(int index, int count)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public override void Sort(int index, int count, IComparer comparer)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
-            public override object[] ToArray()
-            {
-                return _list.ToArray();
-            }
-
-            public override Array ToArray(Type type)
-            {
-                return _list.ToArray(type);
-            }
-
-            public override void TrimToSize()
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-        }
-
-        // Implements an enumerator for a ArrayList. The enumerator uses the
-        // internal version number of the list to ensure that no modifications are
-        // made to the list while an enumeration is in progress.
-        private sealed class ArrayListEnumerator : IEnumerator, ICloneable
-        {
-            private readonly ArrayList _list;
-            private int _index;
-            private readonly int _endIndex;       // Where to stop.
-            private readonly int _version;
-            private object _currentElement;
-            private readonly int _startIndex;     // Save this for Reset.
-
-            internal ArrayListEnumerator(ArrayList list, int index, int count)
-            {
-                _list = list;
-                _startIndex = index;
-                _index = index - 1;
-                _endIndex = _index + count;  // last valid index
-                _version = list._version;
-                _currentElement = null;
-            }
-
-            public object Clone() => MemberwiseClone();
-
-            public bool MoveNext()
-            {
-                if (_version != _list._version)
-                {
-                    throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
-                }
-
-                if (_index < _endIndex)
-                {
-                    _currentElement = _list[++_index];
-                    return true;
-                }
-
-                _index = _endIndex + 1;
-
-                return false;
-            }
-
-            public object Current
-            {
-                get
-                {
-                    if (_index < _startIndex)
-                    {
-                        throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
-                    }
-
-                    if (_index > _endIndex)
-                    {
-                        throw new InvalidOperationException("Enumeration already finished.");
-                    }
-                    return _currentElement;
-                }
-            }
-
-            public void Reset()
-            {
-                if (_version != _list._version)
-                {
-                    throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
-                }
-
-                _index = _startIndex - 1;
-            }
-        }
-
         // Implementation of a generic list subrange. An instance of this class
         // is returned by the default implementation of List.GetRange.
         private class Range : ArrayList
         {
-            private ArrayList _baseList;
             private readonly int _baseIndex;
+            private ArrayList _baseList;
             private int _baseSize;
             private int _baseVersion;
 
@@ -2533,18 +1926,59 @@ namespace System.Collections
                 _version = list._version;
             }
 
-            private void InternalUpdateRange()
+            public override int Capacity
             {
-                if (_baseVersion != _baseList._version)
+                get => _baseList.Capacity;
+
+                set
                 {
-                    throw new InvalidOperationException("This range in the underlying list is invalid. A possible cause is that elements were removed.");
+                    if (value < Count)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(value), "capacity was less than the current size.");
+                    }
                 }
             }
 
-            private void InternalUpdateVersion()
+            public override int Count
             {
-                _baseVersion++;
-                _version++;
+                get
+                {
+                    InternalUpdateRange();
+                    return _baseSize;
+                }
+            }
+
+            public override bool IsFixedSize => _baseList.IsFixedSize;
+
+            public override bool IsReadOnly => _baseList.IsReadOnly;
+
+            public override bool IsSynchronized => _baseList.IsSynchronized;
+
+            public override object SyncRoot => _baseList.SyncRoot;
+
+            public override object this[int index]
+            {
+                get
+                {
+                    InternalUpdateRange();
+                    if (index < 0 || index >= _baseSize)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
+                    }
+
+                    return _baseList[_baseIndex + index];
+                }
+                set
+                {
+                    InternalUpdateRange();
+                    if (index < 0 || index >= _baseSize)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
+                    }
+
+                    _baseList[_baseIndex + index] = value;
+                    InternalUpdateVersion();
+                }
             }
 
             public override int Add(object value)
@@ -2593,19 +2027,6 @@ namespace System.Collections
                 }
 
                 return i + _baseIndex;
-            }
-
-            public override int Capacity
-            {
-                get => _baseList.Capacity;
-
-                set
-                {
-                    if (value < Count)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(value), "capacity was less than the current size.");
-                    }
-                }
             }
 
             public override void Clear()
@@ -2710,21 +2131,6 @@ namespace System.Collections
                 _baseList.CopyTo(_baseIndex + index, array, arrayIndex, count);
             }
 
-            public override int Count
-            {
-                get
-                {
-                    InternalUpdateRange();
-                    return _baseSize;
-                }
-            }
-
-            public override bool IsReadOnly => _baseList.IsReadOnly;
-
-            public override bool IsFixedSize => _baseList.IsFixedSize;
-
-            public override bool IsSynchronized => _baseList.IsSynchronized;
-
             public override IEnumerator GetEnumerator()
             {
                 return GetEnumerator(0, _baseSize);
@@ -2761,8 +2167,6 @@ namespace System.Collections
                 InternalUpdateRange();
                 return new Range(this, index, count);
             }
-
-            public override object SyncRoot => _baseList.SyncRoot;
 
             public override int IndexOf(object value)
             {
@@ -2986,31 +2390,6 @@ namespace System.Collections
                 InternalUpdateVersion();
             }
 
-            public override object this[int index]
-            {
-                get
-                {
-                    InternalUpdateRange();
-                    if (index < 0 || index >= _baseSize)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
-                    }
-
-                    return _baseList[_baseIndex + index];
-                }
-                set
-                {
-                    InternalUpdateRange();
-                    if (index < 0 || index >= _baseSize)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
-                    }
-
-                    _baseList[_baseIndex + index] = value;
-                    InternalUpdateVersion();
-                }
-            }
-
             public override object[] ToArray()
             {
                 InternalUpdateRange();
@@ -3041,103 +2420,724 @@ namespace System.Collections
             {
                 throw new NotSupportedException("The specified operation is not supported on Ranges.");
             }
+
+            private void InternalUpdateRange()
+            {
+                if (_baseVersion != _baseList._version)
+                {
+                    throw new InvalidOperationException("This range in the underlying list is invalid. A possible cause is that elements were removed.");
+                }
+            }
+
+            private void InternalUpdateVersion()
+            {
+                _baseVersion++;
+                _version++;
+            }
         }
 
-        private sealed class ArrayListEnumeratorSimple : IEnumerator, ICloneable
+        private class ReadOnlyArrayList : ArrayList
+        {
+            private ArrayList _list;
+
+            internal ReadOnlyArrayList(ArrayList l)
+            {
+                _list = l;
+            }
+
+            public override int Capacity
+            {
+                get => _list.Capacity;
+                set => throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public override int Count => _list.Count;
+
+            public override bool IsFixedSize => true;
+
+            public override bool IsReadOnly => true;
+
+            public override bool IsSynchronized => _list.IsSynchronized;
+
+            public override object SyncRoot => _list.SyncRoot;
+
+            public override object this[int index]
+            {
+                get => _list[index];
+                set => throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public override int Add(object value)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public override void AddRange(ICollection c)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public override int BinarySearch(int index, int count, object value, IComparer comparer)
+            {
+                return _list.BinarySearch(index, count, value, comparer);
+            }
+
+            public override void Clear()
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public override object Clone()
+            {
+                var arrayList = new ReadOnlyArrayList(_list) { _list = (ArrayList)_list.Clone() };
+                return arrayList;
+            }
+
+            public override bool Contains(object value)
+            {
+                return _list.Contains(value);
+            }
+
+            public override void CopyTo(Array array, int arrayIndex)
+            {
+                _list.CopyTo(array, arrayIndex);
+            }
+
+            public override void CopyTo(int index, Array array, int arrayIndex, int count)
+            {
+                _list.CopyTo(index, array, arrayIndex, count);
+            }
+
+            public override IEnumerator GetEnumerator()
+            {
+                return _list.GetEnumerator();
+            }
+
+            public override IEnumerator GetEnumerator(int index, int count)
+            {
+                return _list.GetEnumerator(index, count);
+            }
+
+            public override ArrayList GetRange(int index, int count)
+            {
+                if (index < 0 || count < 0)
+                {
+                    throw new ArgumentOutOfRangeException(index < 0 ? nameof(index) : nameof(count), "Non-negative number required.");
+                }
+
+                if (Count - index < count)
+                {
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                }
+
+                return new Range(this, index, count);
+            }
+
+            public override int IndexOf(object value)
+            {
+                return _list.IndexOf(value);
+            }
+
+            public override int IndexOf(object value, int startIndex)
+            {
+                return _list.IndexOf(value, startIndex);
+            }
+
+            public override int IndexOf(object value, int startIndex, int count)
+            {
+                return _list.IndexOf(value, startIndex, count);
+            }
+
+            public override void Insert(int index, object value)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public override void InsertRange(int index, ICollection c)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public override int LastIndexOf(object value)
+            {
+                return _list.LastIndexOf(value);
+            }
+
+            public override int LastIndexOf(object value, int startIndex)
+            {
+                return _list.LastIndexOf(value, startIndex);
+            }
+
+            public override int LastIndexOf(object value, int startIndex, int count)
+            {
+                return _list.LastIndexOf(value, startIndex, count);
+            }
+
+            public override void Remove(object value)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public override void RemoveAt(int index)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public override void RemoveRange(int index, int count)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public override void Reverse(int index, int count)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public override void SetRange(int index, ICollection c)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public override void Sort(int index, int count, IComparer comparer)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public override object[] ToArray()
+            {
+                return _list.ToArray();
+            }
+
+            public override Array ToArray(Type type)
+            {
+                return _list.ToArray(type);
+            }
+
+            public override void TrimToSize()
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+        }
+
+        private sealed class ReadOnlyList : IList
+        {
+            private readonly IList _list;
+
+            internal ReadOnlyList(IList l)
+            {
+                _list = l;
+            }
+
+            public int Count => _list.Count;
+
+            public bool IsFixedSize => true;
+
+            public bool IsReadOnly => true;
+
+            public bool IsSynchronized => _list.IsSynchronized;
+
+            public object SyncRoot => _list.SyncRoot;
+
+            public object this[int index]
+            {
+                get => _list[index];
+                set => throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public int Add(object value)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public void Clear()
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public bool Contains(object value)
+            {
+                return _list.Contains(value);
+            }
+
+            public void CopyTo(Array array, int index)
+            {
+                _list.CopyTo(array, index);
+            }
+
+            public IEnumerator GetEnumerator()
+            {
+                return _list.GetEnumerator();
+            }
+
+            public int IndexOf(object value)
+            {
+                return _list.IndexOf(value);
+            }
+
+            public void Insert(int index, object value)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public void Remove(object value)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            public void RemoveAt(int index)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+        }
+
+        private class SyncArrayList : ArrayList
         {
             private readonly ArrayList _list;
-            private int _index;
-            private readonly int _version;
-            private object _currentElement;
-            private readonly bool _isArrayList;
-            // this object is used to indicate enumeration has not started or has terminated
-            private static readonly object _dummyObject = new object();
+            private readonly object _root;
 
-            internal ArrayListEnumeratorSimple(ArrayList list)
+            internal SyncArrayList(ArrayList list)
+                : base(false)
             {
                 _list = list;
-                _index = -1;
-                _version = list._version;
-                _isArrayList = list.GetType() == typeof(ArrayList);
-                _currentElement = _dummyObject;
+                _root = list.SyncRoot;
+                IsReadOnly = _list.IsReadOnly;
+                IsFixedSize = _list.IsFixedSize;
             }
 
-            public object Clone() => MemberwiseClone();
-
-            public bool MoveNext()
-            {
-                if (_version != _list._version)
-                {
-                    throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
-                }
-
-                if (_isArrayList)
-                {  // avoid calling virtual methods if we are operating on ArrayList to improve performance
-                    if (_index < _list._size - 1)
-                    {
-                        _currentElement = _list._items[++_index];
-                        return true;
-                    }
-
-                    _currentElement = _dummyObject;
-                    _index = _list._size;
-                    return false;
-                }
-
-                if (_index < _list.Count - 1)
-                {
-                    _currentElement = _list[++_index];
-                    return true;
-                }
-
-                _index = _list.Count;
-                _currentElement = _dummyObject;
-                return false;
-            }
-
-            public object Current
+            public override int Capacity
             {
                 get
                 {
-                    var temp = _currentElement;
-                    if (_dummyObject == temp)
+                    lock (_root)
                     {
-                        // check if enumeration has not started or has terminated
-                        if (_index == -1)
-                        {
-                            throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
-                        }
-
-                        throw new InvalidOperationException("Enumeration already finished.");
+                        return _list.Capacity;
                     }
-
-                    return temp;
+                }
+                set
+                {
+                    lock (_root)
+                    {
+                        _list.Capacity = value;
+                    }
                 }
             }
 
-            public void Reset()
+            public override int Count
             {
-                if (_version != _list._version)
+                get
                 {
-                    throw new InvalidOperationException("Collection was modified after the enumerator was instantiated.");
+                    lock (_root)
+                    {
+                        return _list.Count;
+                    }
                 }
+            }
 
-                _currentElement = _dummyObject;
-                _index = -1;
+            public override bool IsFixedSize { get; }
+
+            public override bool IsReadOnly { get; }
+
+            public override bool IsSynchronized => true;
+
+            public override object SyncRoot => _root;
+
+            public override object this[int index]
+            {
+                get
+                {
+                    lock (_root)
+                    {
+                        return _list[index];
+                    }
+                }
+                set
+                {
+                    lock (_root)
+                    {
+                        _list[index] = value;
+                    }
+                }
+            }
+
+            public override int Add(object value)
+            {
+                lock (_root)
+                {
+                    return _list.Add(value);
+                }
+            }
+
+            public override void AddRange(ICollection c)
+            {
+                lock (_root)
+                {
+                    _list.AddRange(c);
+                }
+            }
+
+            public override int BinarySearch(object value)
+            {
+                lock (_root)
+                {
+                    return _list.BinarySearch(value);
+                }
+            }
+
+            public override int BinarySearch(object value, IComparer comparer)
+            {
+                lock (_root)
+                {
+                    return _list.BinarySearch(value, comparer);
+                }
+            }
+
+            public override int BinarySearch(int index, int count, object value, IComparer comparer)
+            {
+                lock (_root)
+                {
+                    return _list.BinarySearch(index, count, value, comparer);
+                }
+            }
+
+            public override void Clear()
+            {
+                lock (_root)
+                {
+                    _list.Clear();
+                }
+            }
+
+            public override object Clone()
+            {
+                lock (_root)
+                {
+                    return new SyncArrayList((ArrayList)_list.Clone());
+                }
+            }
+
+            public override bool Contains(object value)
+            {
+                lock (_root)
+                {
+                    return _list.Contains(value);
+                }
+            }
+
+            public override void CopyTo(Array array)
+            {
+                lock (_root)
+                {
+                    _list.CopyTo(array);
+                }
+            }
+
+            public override void CopyTo(Array array, int arrayIndex)
+            {
+                lock (_root)
+                {
+                    _list.CopyTo(array, arrayIndex);
+                }
+            }
+
+            public override void CopyTo(int index, Array array, int arrayIndex, int count)
+            {
+                lock (_root)
+                {
+                    _list.CopyTo(index, array, arrayIndex, count);
+                }
+            }
+
+            public override IEnumerator GetEnumerator()
+            {
+                lock (_root)
+                {
+                    return _list.GetEnumerator();
+                }
+            }
+
+            public override IEnumerator GetEnumerator(int index, int count)
+            {
+                lock (_root)
+                {
+                    return _list.GetEnumerator(index, count);
+                }
+            }
+
+            public override ArrayList GetRange(int index, int count)
+            {
+                lock (_root)
+                {
+                    return _list.GetRange(index, count);
+                }
+            }
+
+            public override int IndexOf(object value)
+            {
+                lock (_root)
+                {
+                    return _list.IndexOf(value);
+                }
+            }
+
+            public override int IndexOf(object value, int startIndex)
+            {
+                lock (_root)
+                {
+                    return _list.IndexOf(value, startIndex);
+                }
+            }
+
+            public override int IndexOf(object value, int startIndex, int count)
+            {
+                lock (_root)
+                {
+                    return _list.IndexOf(value, startIndex, count);
+                }
+            }
+
+            public override void Insert(int index, object value)
+            {
+                lock (_root)
+                {
+                    _list.Insert(index, value);
+                }
+            }
+
+            public override void InsertRange(int index, ICollection c)
+            {
+                lock (_root)
+                {
+                    _list.InsertRange(index, c);
+                }
+            }
+
+            public override int LastIndexOf(object value)
+            {
+                lock (_root)
+                {
+                    return _list.LastIndexOf(value);
+                }
+            }
+
+            public override int LastIndexOf(object value, int startIndex)
+            {
+                lock (_root)
+                {
+                    return _list.LastIndexOf(value, startIndex);
+                }
+            }
+
+            public override int LastIndexOf(object value, int startIndex, int count)
+            {
+                lock (_root)
+                {
+                    return _list.LastIndexOf(value, startIndex, count);
+                }
+            }
+
+            public override void Remove(object value)
+            {
+                lock (_root)
+                {
+                    _list.Remove(value);
+                }
+            }
+
+            public override void RemoveAt(int index)
+            {
+                lock (_root)
+                {
+                    _list.RemoveAt(index);
+                }
+            }
+
+            public override void RemoveRange(int index, int count)
+            {
+                lock (_root)
+                {
+                    _list.RemoveRange(index, count);
+                }
+            }
+
+            public override void Reverse(int index, int count)
+            {
+                lock (_root)
+                {
+                    _list.Reverse(index, count);
+                }
+            }
+
+            public override void SetRange(int index, ICollection c)
+            {
+                lock (_root)
+                {
+                    _list.SetRange(index, c);
+                }
+            }
+
+            public override void Sort()
+            {
+                lock (_root)
+                {
+                    _list.Sort();
+                }
+            }
+
+            public override void Sort(IComparer comparer)
+            {
+                lock (_root)
+                {
+                    _list.Sort(comparer);
+                }
+            }
+
+            public override void Sort(int index, int count, IComparer comparer)
+            {
+                lock (_root)
+                {
+                    _list.Sort(index, count, comparer);
+                }
+            }
+
+            public override object[] ToArray()
+            {
+                lock (_root)
+                {
+                    return _list.ToArray();
+                }
+            }
+
+            public override Array ToArray(Type type)
+            {
+                lock (_root)
+                {
+                    return _list.ToArray(type);
+                }
+            }
+
+            public override void TrimToSize()
+            {
+                lock (_root)
+                {
+                    _list.TrimToSize();
+                }
             }
         }
 
-        internal class ArrayListDebugView
+        private sealed class SyncIList : IList
         {
-            private readonly ArrayList _arrayList;
+            private readonly IList _list;
 
-            public ArrayListDebugView(ArrayList arrayList)
+            internal SyncIList(IList list)
             {
-                _arrayList = arrayList ?? throw new ArgumentNullException(nameof(arrayList));
+                _list = list;
+                SyncRoot = list.SyncRoot;
+                IsReadOnly = _list.IsReadOnly;
+                IsFixedSize = _list.IsFixedSize;
             }
 
-            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public object[] Items => _arrayList.ToArray();
+            public int Count
+            {
+                get { lock (SyncRoot) { return _list.Count; } }
+            }
+
+            public bool IsFixedSize { get; }
+
+            public bool IsReadOnly { get; }
+
+            public bool IsSynchronized => true;
+
+            public object SyncRoot { get; }
+
+            public object this[int index]
+            {
+                get
+                {
+                    lock (SyncRoot)
+                    {
+                        return _list[index];
+                    }
+                }
+                set
+                {
+                    lock (SyncRoot)
+                    {
+                        _list[index] = value;
+                    }
+                }
+            }
+
+            public int Add(object value)
+            {
+                lock (SyncRoot)
+                {
+                    return _list.Add(value);
+                }
+            }
+
+            public void Clear()
+            {
+                lock (SyncRoot)
+                {
+                    _list.Clear();
+                }
+            }
+
+            public bool Contains(object value)
+            {
+                lock (SyncRoot)
+                {
+                    return _list.Contains(value);
+                }
+            }
+
+            public void CopyTo(Array array, int index)
+            {
+                lock (SyncRoot)
+                {
+                    _list.CopyTo(array, index);
+                }
+            }
+
+            public IEnumerator GetEnumerator()
+            {
+                lock (SyncRoot)
+                {
+                    return _list.GetEnumerator();
+                }
+            }
+
+            public int IndexOf(object value)
+            {
+                lock (SyncRoot)
+                {
+                    return _list.IndexOf(value);
+                }
+            }
+
+            public void Insert(int index, object value)
+            {
+                lock (SyncRoot)
+                {
+                    _list.Insert(index, value);
+                }
+            }
+
+            public void Remove(object value)
+            {
+                lock (SyncRoot)
+                {
+                    _list.Remove(value);
+                }
+            }
+
+            public void RemoveAt(int index)
+            {
+                lock (SyncRoot)
+                {
+                    _list.RemoveAt(index);
+                }
+            }
         }
     }
 }

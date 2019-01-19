@@ -17,11 +17,11 @@ namespace System.Runtime.CompilerServices
     [StructLayout(LayoutKind.Auto)]
     public struct ConfiguredValueTaskAwaitable<TResult>
     {
-        /// <summary>The wrapped <see cref="ValueTask{TResult}"/>.</summary>
-        private readonly ValueTask<TResult> _value;
 
         /// <summary>true to attempt to marshal the continuation back to the original context captured; otherwise, false.</summary>
         private readonly bool _continueOnCapturedContext;
+        /// <summary>The wrapped <see cref="ValueTask{TResult}"/>.</summary>
+        private readonly ValueTask<TResult> _value;
 
         /// <summary>Initializes the awaitable.</summary>
         /// <param name="value">The wrapped <see cref="ValueTask{TResult}"/>.</param>
@@ -44,11 +44,11 @@ namespace System.Runtime.CompilerServices
         [StructLayout(LayoutKind.Auto)]
         public struct ConfiguredValueTaskAwaiter : ICriticalNotifyCompletion
         {
-            /// <summary>The value being awaited.</summary>
-            private readonly ValueTask<TResult> _value;
 
             /// <summary>The value to pass to ConfigureAwait.</summary>
             private readonly bool _continueOnCapturedContext;
+            /// <summary>The value being awaited.</summary>
+            private readonly ValueTask<TResult> _value;
 
             /// <summary>Initializes the awaiter.</summary>
             /// <param name="value">The value to be awaited.</param>

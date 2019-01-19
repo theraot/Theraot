@@ -242,11 +242,6 @@ namespace Theraot.Collections
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public IDisposable Subscribe(IObserver<T> observer)
         {
             var proxy = Volatile.Read(ref _proxy);
@@ -321,6 +316,11 @@ namespace Theraot.Collections
                     }
                 }
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 

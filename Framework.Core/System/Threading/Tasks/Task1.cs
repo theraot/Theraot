@@ -10,11 +10,6 @@ namespace System.Threading.Tasks
     {
         internal TResult InternalResult;
 
-        static Task()
-        {
-            ContinuationConversion = done => (Task<TResult>)done.Result;
-        }
-
         public Task(Func<TResult> function)
             : base(function, null, null, default, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
         {
@@ -55,6 +50,11 @@ namespace System.Threading.Tasks
             : base(function, state, parent, cancellationToken, creationOptions, internalOptions, scheduler)
         {
             // Empty
+        }
+
+        static Task()
+        {
+            ContinuationConversion = done => (Task<TResult>)done.Result;
         }
 
         public TResult Result

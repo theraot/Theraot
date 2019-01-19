@@ -10,11 +10,11 @@ namespace System.Threading
     [DebuggerDisplay("Current Count = {CurrentCount}")]
     public class SemaphoreSlim : IDisposable
     {
-        private readonly int? _maxCount;
         private SafeQueue<TaskCompletionSource<bool>> _asyncWaiters;
         private ManualResetEventSlim _canEnter;
         private int _count;
         private bool _disposed;
+        private readonly int? _maxCount;
         private int _syncRoot;
 
         public SemaphoreSlim(int initialCount)

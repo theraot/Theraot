@@ -19,20 +19,20 @@ namespace System.Runtime.Serialization
             Value = entryValue;
             ObjectType = entryType;
         }
-
-        public object Value { get; }
         public string Name { get; }
         public Type ObjectType { get; }
+
+        public object Value { get; }
     }
 
     public sealed class SerializationInfoEnumerator : IEnumerator
     {
-        private readonly string[] _members;
-        private readonly object[] _data;
-        private readonly Type[] _types;
-        private readonly int _numItems;
-        private int _currentItem;
         private bool _current;
+        private int _currentItem;
+        private readonly object[] _data;
+        private readonly string[] _members;
+        private readonly int _numItems;
+        private readonly Type[] _types;
 
         internal SerializationInfoEnumerator(string[] members, object[] info, Type[] types, int numItems)
         {
@@ -55,23 +55,6 @@ namespace System.Runtime.Serialization
             _current = false;
         }
 
-        public bool MoveNext()
-        {
-            if (_currentItem < _numItems)
-            {
-                _currentItem++;
-                _current = true;
-            }
-            else
-            {
-                _current = false;
-            }
-
-            return _current;
-        }
-
-        object IEnumerator.Current => Current;
-
         public SerializationEntry Current
         {
             get
@@ -84,12 +67,6 @@ namespace System.Runtime.Serialization
             }
         }
 
-        public void Reset()
-        {
-            _currentItem = -1;
-            _current = false;
-        }
-
         public string Name
         {
             get
@@ -99,6 +76,18 @@ namespace System.Runtime.Serialization
                     throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                 }
                 return _members[_currentItem];
+            }
+        }
+
+        public Type ObjectType
+        {
+            get
+            {
+                if (!_current)
+                {
+                    throw new InvalidOperationException("Enumeration has either not started or has already finished.");
+                }
+                return _types[_currentItem];
             }
         }
 
@@ -114,16 +103,27 @@ namespace System.Runtime.Serialization
             }
         }
 
-        public Type ObjectType
+        object IEnumerator.Current => Current;
+
+        public bool MoveNext()
         {
-            get
+            if (_currentItem < _numItems)
             {
-                if (!_current)
-                {
-                    throw new InvalidOperationException("Enumeration has either not started or has already finished.");
-                }
-                return _types[_currentItem];
+                _currentItem++;
+                _current = true;
             }
+            else
+            {
+                _current = false;
+            }
+
+            return _current;
+        }
+
+        public void Reset()
+        {
+            _currentItem = -1;
+            _current = false;
         }
     }
 }

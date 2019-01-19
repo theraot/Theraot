@@ -17,146 +17,6 @@ namespace System.Linq.Expressions.Compiler
 {
     internal partial class LambdaCompiler
     {
-        private static bool HasVariables(object node)
-        {
-            if (node is BlockExpression block)
-            {
-                return block.Variables.Count > 0;
-            }
-            return ((CatchBlock)node).Variable != null;
-        }
-
-        private void CheckRethrow()
-        {
-            // Rethrow is only valid inside a catch.
-            for (var j = _labelBlock; j != null; j = j.Parent)
-            {
-                if (j.Kind == LabelScopeKind.Catch)
-                {
-                    return;
-                }
-
-                if (j.Kind == LabelScopeKind.Finally)
-                {
-                    // Rethrow from inside finally is not verifiable
-                    break;
-                }
-            }
-            throw new InvalidOperationException("Rethrow statement is valid only inside a Catch block.");
-        }
-
-        private void Emit(BlockExpression node, CompilationFlags flags)
-        {
-            var count = node.ExpressionCount;
-
-            if (count == 0)
-            {
-                return;
-            }
-
-            EnterScope(node);
-
-            var emitAs = flags & CompilationFlags.EmitAsTypeMask;
-
-            var tailCall = flags & CompilationFlags.EmitAsTailCallMask;
-            for (var index = 0; index < count - 1; index++)
-            {
-                var e = node.GetExpression(index);
-                var next = node.GetExpression(index + 1);
-
-                var tailCallFlag = tailCall != CompilationFlags.EmitAsNoTail
-                    ? next is GotoExpression g && (g.Value == null || !Significant(g.Value)) && ReferenceLabel(g.Target).CanReturn
-                        ? CompilationFlags.EmitAsTail
-                        : CompilationFlags.EmitAsMiddle
-                    : CompilationFlags.EmitAsNoTail;
-
-                flags = UpdateEmitAsTailCallFlag(flags, tailCallFlag);
-                EmitExpressionAsVoid(e, flags);
-            }
-
-            // if the type of Block it means this is not a Comma
-            // so we will force the last expression to emit as void.
-            // We don't need EmitAsType flag anymore, should only pass
-            // the EmitTailCall field in flags to emitting the last expression.
-            if (emitAs == CompilationFlags.EmitAsVoidType || node.Type == typeof(void))
-            {
-                EmitExpressionAsVoid(node.GetExpression(count - 1), tailCall);
-            }
-            else
-            {
-                EmitExpressionAsType(node.GetExpression(count - 1), node.Type, tailCall);
-            }
-
-            ExitScope(node);
-        }
-
-        private void EmitBlockExpression(Expression expr, CompilationFlags flags)
-        {
-            // emit body
-            Emit((BlockExpression)expr, UpdateEmitAsTypeFlag(flags, CompilationFlags.EmitAsDefaultType));
-        }
-
-        private void EmitDefaultExpression(Expression expr)
-        {
-            var node = (DefaultExpression)expr;
-            if (node.Type != typeof(void))
-            {
-                // emit default(T)
-                IL.EmitDefault(node.Type, this);
-            }
-        }
-
-        private void EmitLoopExpression(Expression expr)
-        {
-            var node = (LoopExpression)expr;
-
-            PushLabelBlock(LabelScopeKind.Statement);
-            var breakTarget = DefineLabel(node.BreakLabel);
-            var continueTarget = DefineLabel(node.ContinueLabel);
-
-            continueTarget.MarkWithEmptyStack();
-
-            EmitExpressionAsVoid(node.Body);
-
-            IL.Emit(OpCodes.Br, continueTarget.Label);
-
-            PopLabelBlock(LabelScopeKind.Statement);
-
-            breakTarget.MarkWithEmptyStack();
-        }
-
-        private void EnterScope(object node)
-        {
-            if (HasVariables(node) && (_scope.MergedScopes?.Contains(node as BlockExpression) != true))
-            {
-                if (!_tree.Scopes.TryGetValue(node, out var scope))
-                {
-                    //
-                    // Very often, we want to compile nodes as reductions
-                    // rather than as IL, but usually they need to allocate
-                    // some IL locals. To support this, we allow emitting a
-                    // BlockExpression that was not bound by VariableBinder.
-                    // This works as long as the variables are only used
-                    // locally -- i.e. not closed over.
-                    //
-                    // User-created blocks will never hit this case; only our
-                    // internally reduced nodes will.
-                    //
-                    scope = new CompilerScope(node, false) { NeedsClosure = _scope.NeedsClosure };
-                }
-
-                _scope = scope.Enter(this, _scope);
-                Debug.Assert(_scope.Node == node);
-            }
-        }
-
-        private void ExitScope(object node)
-        {
-            if (_scope.Node == node)
-            {
-                _scope = _scope.Exit();
-            }
-        }
 
         // Add key to a new or existing bucket
         private static void AddToBuckets(List<List<SwitchLabel>> buckets, SwitchLabel key)
@@ -236,6 +96,14 @@ namespace System.Linq.Expressions.Compiler
             }
             return result;
         }
+        private static bool HasVariables(object node)
+        {
+            if (node is BlockExpression block)
+            {
+                return block.Variables.Count > 0;
+            }
+            return ((CatchBlock)node).Variable != null;
+        }
 
         private static void MergeBuckets(List<List<SwitchLabel>> buckets)
         {
@@ -252,6 +120,37 @@ namespace System.Linq.Expressions.Compiler
                 // Merge them
                 first.AddRange(second);
                 buckets.RemoveAt(buckets.Count - 1);
+            }
+        }
+
+        private void CheckRethrow()
+        {
+            // Rethrow is only valid inside a catch.
+            for (var j = _labelBlock; j != null; j = j.Parent)
+            {
+                if (j.Kind == LabelScopeKind.Catch)
+                {
+                    return;
+                }
+
+                if (j.Kind == LabelScopeKind.Finally)
+                {
+                    // Rethrow from inside finally is not verifiable
+                    break;
+                }
+            }
+            throw new InvalidOperationException("Rethrow statement is valid only inside a Catch block.");
+        }
+
+        private void CheckTry()
+        {
+            // Try inside a filter is not verifiable
+            for (var j = _labelBlock; j != null; j = j.Parent)
+            {
+                if (j.Kind == LabelScopeKind.Filter)
+                {
+                    throw new InvalidOperationException("Try expression is not allowed inside a filter body.");
+                }
             }
         }
 
@@ -277,6 +176,138 @@ namespace System.Linq.Expressions.Compiler
             // otherwise, just define a new label
             label = IL.DefineLabel();
             isGoto = false;
+        }
+
+        private void Emit(BlockExpression node, CompilationFlags flags)
+        {
+            var count = node.ExpressionCount;
+
+            if (count == 0)
+            {
+                return;
+            }
+
+            EnterScope(node);
+
+            var emitAs = flags & CompilationFlags.EmitAsTypeMask;
+
+            var tailCall = flags & CompilationFlags.EmitAsTailCallMask;
+            for (var index = 0; index < count - 1; index++)
+            {
+                var e = node.GetExpression(index);
+                var next = node.GetExpression(index + 1);
+
+                var tailCallFlag = tailCall != CompilationFlags.EmitAsNoTail
+                    ? next is GotoExpression g && (g.Value == null || !Significant(g.Value)) && ReferenceLabel(g.Target).CanReturn
+                        ? CompilationFlags.EmitAsTail
+                        : CompilationFlags.EmitAsMiddle
+                    : CompilationFlags.EmitAsNoTail;
+
+                flags = UpdateEmitAsTailCallFlag(flags, tailCallFlag);
+                EmitExpressionAsVoid(e, flags);
+            }
+
+            // if the type of Block it means this is not a Comma
+            // so we will force the last expression to emit as void.
+            // We don't need EmitAsType flag anymore, should only pass
+            // the EmitTailCall field in flags to emitting the last expression.
+            if (emitAs == CompilationFlags.EmitAsVoidType || node.Type == typeof(void))
+            {
+                EmitExpressionAsVoid(node.GetExpression(count - 1), tailCall);
+            }
+            else
+            {
+                EmitExpressionAsType(node.GetExpression(count - 1), node.Type, tailCall);
+            }
+
+            ExitScope(node);
+        }
+
+        private void EmitBlockExpression(Expression expr, CompilationFlags flags)
+        {
+            // emit body
+            Emit((BlockExpression)expr, UpdateEmitAsTypeFlag(flags, CompilationFlags.EmitAsDefaultType));
+        }
+
+        private void EmitCatchStart(CatchBlock cb)
+        {
+            if (cb.Filter == null)
+            {
+                EmitSaveExceptionOrPop(cb);
+                return;
+            }
+
+            // emit filter block. Filter blocks are untyped so we need to do
+            // the type check ourselves.
+            var endFilter = IL.DefineLabel();
+            var rightType = IL.DefineLabel();
+
+            // skip if it's not our exception type, but save
+            // the exception if it is so it's available to the
+            // filter
+            IL.Emit(OpCodes.Isinst, cb.Test);
+            IL.Emit(OpCodes.Dup);
+            IL.Emit(OpCodes.Brtrue, rightType);
+            IL.Emit(OpCodes.Pop);
+            IL.Emit(OpCodes.Ldc_I4_0);
+            IL.Emit(OpCodes.Br, endFilter);
+
+            // it's our type, save it and emit the filter.
+            IL.MarkLabel(rightType);
+            EmitSaveExceptionOrPop(cb);
+            PushLabelBlock(LabelScopeKind.Filter);
+            EmitExpression(cb.Filter);
+            PopLabelBlock(LabelScopeKind.Filter);
+
+            // begin the catch, clear the exception, we've
+            // already saved it
+            IL.MarkLabel(endFilter);
+            IL.BeginCatchBlock(exceptionType: null);
+            IL.Emit(OpCodes.Pop);
+        }
+
+        private void EmitDefaultExpression(Expression expr)
+        {
+            var node = (DefaultExpression)expr;
+            if (node.Type != typeof(void))
+            {
+                // emit default(T)
+                IL.EmitDefault(node.Type, this);
+            }
+        }
+
+        private void EmitLoopExpression(Expression expr)
+        {
+            var node = (LoopExpression)expr;
+
+            PushLabelBlock(LabelScopeKind.Statement);
+            var breakTarget = DefineLabel(node.BreakLabel);
+            var continueTarget = DefineLabel(node.ContinueLabel);
+
+            continueTarget.MarkWithEmptyStack();
+
+            EmitExpressionAsVoid(node.Body);
+
+            IL.Emit(OpCodes.Br, continueTarget.Label);
+
+            PopLabelBlock(LabelScopeKind.Statement);
+
+            breakTarget.MarkWithEmptyStack();
+        }
+
+        private void EmitSaveExceptionOrPop(CatchBlock cb)
+        {
+            if (cb.Variable != null)
+            {
+                // If the variable is present, store the exception
+                // in the variable.
+                _scope.EmitSet(cb.Variable);
+            }
+            else
+            {
+                // Otherwise, pop it off the stack.
+                IL.Emit(OpCodes.Pop);
+            }
         }
 
         private void EmitSwitchBucket(SwitchInfo info, List<SwitchLabel> bucket)
@@ -504,6 +535,141 @@ namespace System.Linq.Expressions.Compiler
             EmitSwitchCases(node, labels, isGoto, @default, end, flags);
         }
 
+        private void EmitTryExpression(Expression expr)
+        {
+            var node = (TryExpression)expr;
+
+            CheckTry();
+
+            //******************************************************************
+            // 1. ENTERING TRY
+            //******************************************************************
+
+            PushLabelBlock(LabelScopeKind.Try);
+            IL.BeginExceptionBlock();
+
+            //******************************************************************
+            // 2. Emit the try statement body
+            //******************************************************************
+
+            EmitExpression(node.Body);
+
+            var tryType = node.Type;
+            LocalBuilder value = null;
+            if (tryType != typeof(void))
+            {
+                //store the value of the try body
+                value = GetLocal(tryType);
+                IL.Emit(OpCodes.Stloc, value);
+            }
+            //******************************************************************
+            // 3. Emit the catch blocks
+            //******************************************************************
+
+            foreach (var cb in node.Handlers)
+            {
+                PushLabelBlock(LabelScopeKind.Catch);
+
+                // Begin the strongly typed exception block
+                if (cb.Filter == null)
+                {
+                    IL.BeginCatchBlock(cb.Test);
+                }
+                else
+                {
+                    IL.BeginExceptFilterBlock();
+                }
+
+                EnterScope(cb);
+
+                EmitCatchStart(cb);
+
+                //
+                // Emit the catch block body
+                //
+                EmitExpression(cb.Body);
+                if (tryType != typeof(void))
+                {
+                    //store the value of the catch block body
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    IL.Emit(OpCodes.Stloc, value);
+                }
+
+                ExitScope(cb);
+
+                PopLabelBlock(LabelScopeKind.Catch);
+            }
+
+            //******************************************************************
+            // 4. Emit the finally block
+            //******************************************************************
+
+            if (node.Finally != null || node.Fault != null)
+            {
+                PushLabelBlock(LabelScopeKind.Finally);
+
+                if (node.Finally != null)
+                {
+                    IL.BeginFinallyBlock();
+                }
+                else
+                {
+                    IL.BeginFaultBlock();
+                }
+
+                // Emit the body
+                EmitExpressionAsVoid(node.Finally ?? node.Fault);
+
+                IL.EndExceptionBlock();
+                PopLabelBlock(LabelScopeKind.Finally);
+            }
+            else
+            {
+                IL.EndExceptionBlock();
+            }
+
+            if (tryType != typeof(void))
+            {
+                // ReSharper disable once AssignNullToNotNullAttribute
+                IL.Emit(OpCodes.Ldloc, value);
+                FreeLocal(value);
+            }
+            PopLabelBlock(LabelScopeKind.Try);
+        }
+
+        private void EnterScope(object node)
+        {
+            if (HasVariables(node) && (_scope.MergedScopes?.Contains(node as BlockExpression) != true))
+            {
+                if (!_tree.Scopes.TryGetValue(node, out var scope))
+                {
+                    //
+                    // Very often, we want to compile nodes as reductions
+                    // rather than as IL, but usually they need to allocate
+                    // some IL locals. To support this, we allow emitting a
+                    // BlockExpression that was not bound by VariableBinder.
+                    // This works as long as the variables are only used
+                    // locally -- i.e. not closed over.
+                    //
+                    // User-created blocks will never hit this case; only our
+                    // internally reduced nodes will.
+                    //
+                    scope = new CompilerScope(node, false) { NeedsClosure = _scope.NeedsClosure };
+                }
+
+                _scope = scope.Enter(this, _scope);
+                Debug.Assert(_scope.Node == node);
+            }
+        }
+
+        private void ExitScope(object node)
+        {
+            if (_scope.Node == node)
+            {
+                _scope = _scope.Exit();
+            }
+        }
+
         private bool TryEmitHashtableSwitch(SwitchExpression node, CompilationFlags flags)
         {
             // If we have a comparison other than string equality, bail
@@ -544,7 +710,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 foreach (var expression in node.Cases[i].TestValues)
                 {
-                    var t = (ConstantExpression) expression;
+                    var t = (ConstantExpression)expression;
                     if (t.Value != null)
                     {
                         initializers.Add(Expression.ElementInit(add, ArrayReadOnlyCollection.Create<Expression>(t, Utils.Constant(i))));
@@ -664,7 +830,7 @@ namespace System.Linq.Expressions.Compiler
 
                 foreach (var expression in node.Cases[i].TestValues)
                 {
-                    var test = (ConstantExpression) expression;
+                    var test = (ConstantExpression)expression;
                     // Guaranteed to work thanks to CanOptimizeSwitchType.
                     //
                     // Use decimal because it can hold Int64 or UInt64 without
@@ -740,172 +906,6 @@ namespace System.Linq.Expressions.Compiler
                 Constant = constant;
                 Label = label;
             }
-        }
-
-        private void CheckTry()
-        {
-            // Try inside a filter is not verifiable
-            for (var j = _labelBlock; j != null; j = j.Parent)
-            {
-                if (j.Kind == LabelScopeKind.Filter)
-                {
-                    throw new InvalidOperationException("Try expression is not allowed inside a filter body.");
-                }
-            }
-        }
-
-        private void EmitCatchStart(CatchBlock cb)
-        {
-            if (cb.Filter == null)
-            {
-                EmitSaveExceptionOrPop(cb);
-                return;
-            }
-
-            // emit filter block. Filter blocks are untyped so we need to do
-            // the type check ourselves.
-            var endFilter = IL.DefineLabel();
-            var rightType = IL.DefineLabel();
-
-            // skip if it's not our exception type, but save
-            // the exception if it is so it's available to the
-            // filter
-            IL.Emit(OpCodes.Isinst, cb.Test);
-            IL.Emit(OpCodes.Dup);
-            IL.Emit(OpCodes.Brtrue, rightType);
-            IL.Emit(OpCodes.Pop);
-            IL.Emit(OpCodes.Ldc_I4_0);
-            IL.Emit(OpCodes.Br, endFilter);
-
-            // it's our type, save it and emit the filter.
-            IL.MarkLabel(rightType);
-            EmitSaveExceptionOrPop(cb);
-            PushLabelBlock(LabelScopeKind.Filter);
-            EmitExpression(cb.Filter);
-            PopLabelBlock(LabelScopeKind.Filter);
-
-            // begin the catch, clear the exception, we've
-            // already saved it
-            IL.MarkLabel(endFilter);
-            IL.BeginCatchBlock(exceptionType: null);
-            IL.Emit(OpCodes.Pop);
-        }
-
-        private void EmitSaveExceptionOrPop(CatchBlock cb)
-        {
-            if (cb.Variable != null)
-            {
-                // If the variable is present, store the exception
-                // in the variable.
-                _scope.EmitSet(cb.Variable);
-            }
-            else
-            {
-                // Otherwise, pop it off the stack.
-                IL.Emit(OpCodes.Pop);
-            }
-        }
-
-        private void EmitTryExpression(Expression expr)
-        {
-            var node = (TryExpression)expr;
-
-            CheckTry();
-
-            //******************************************************************
-            // 1. ENTERING TRY
-            //******************************************************************
-
-            PushLabelBlock(LabelScopeKind.Try);
-            IL.BeginExceptionBlock();
-
-            //******************************************************************
-            // 2. Emit the try statement body
-            //******************************************************************
-
-            EmitExpression(node.Body);
-
-            var tryType = node.Type;
-            LocalBuilder value = null;
-            if (tryType != typeof(void))
-            {
-                //store the value of the try body
-                value = GetLocal(tryType);
-                IL.Emit(OpCodes.Stloc, value);
-            }
-            //******************************************************************
-            // 3. Emit the catch blocks
-            //******************************************************************
-
-            foreach (var cb in node.Handlers)
-            {
-                PushLabelBlock(LabelScopeKind.Catch);
-
-                // Begin the strongly typed exception block
-                if (cb.Filter == null)
-                {
-                    IL.BeginCatchBlock(cb.Test);
-                }
-                else
-                {
-                    IL.BeginExceptFilterBlock();
-                }
-
-                EnterScope(cb);
-
-                EmitCatchStart(cb);
-
-                //
-                // Emit the catch block body
-                //
-                EmitExpression(cb.Body);
-                if (tryType != typeof(void))
-                {
-                    //store the value of the catch block body
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    IL.Emit(OpCodes.Stloc, value);
-                }
-
-                ExitScope(cb);
-
-                PopLabelBlock(LabelScopeKind.Catch);
-            }
-
-            //******************************************************************
-            // 4. Emit the finally block
-            //******************************************************************
-
-            if (node.Finally != null || node.Fault != null)
-            {
-                PushLabelBlock(LabelScopeKind.Finally);
-
-                if (node.Finally != null)
-                {
-                    IL.BeginFinallyBlock();
-                }
-                else
-                {
-                    IL.BeginFaultBlock();
-                }
-
-                // Emit the body
-                EmitExpressionAsVoid(node.Finally ?? node.Fault);
-
-                IL.EndExceptionBlock();
-                PopLabelBlock(LabelScopeKind.Finally);
-            }
-            else
-            {
-                IL.EndExceptionBlock();
-            }
-
-            if (tryType != typeof(void))
-            {
-                // ReSharper disable once AssignNullToNotNullAttribute
-                IL.Emit(OpCodes.Ldloc, value);
-                FreeLocal(value);
-            }
-            PopLabelBlock(LabelScopeKind.Try);
         }
     }
 }

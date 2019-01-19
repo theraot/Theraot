@@ -408,16 +408,6 @@ namespace System.Collections
             return _values[index];
         }
 
-        // Returns an IEnumerator for this sorted list.  If modifications
-        // made to the sorted list while an enumeration is in progress,
-        // the MoveNext and Remove methods
-        // of the enumerator will throw an exception.
-        //
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return new SortedListEnumerator(this, 0, _size, SortedListEnumerator.DictEntry);
-        }
-
         // Returns an IDictionaryEnumerator for this sorted list.  If modifications
         // made to the sorted list while an enumeration is in progress,
         // the MoveNext and Remove methods
@@ -599,6 +589,16 @@ namespace System.Collections
             Capacity = newCapacity;
         }
 
+        // Returns an IEnumerator for this sorted list.  If modifications
+        // made to the sorted list while an enumeration is in progress,
+        // the MoveNext and Remove methods
+        // of the enumerator will throw an exception.
+        //
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return new SortedListEnumerator(this, 0, _size, SortedListEnumerator.DictEntry);
+        }
+
         private void Init()
         {
             _keys = ArrayReservoir<object>.EmptyArray;
@@ -624,20 +624,6 @@ namespace System.Collections
             _values[index] = value;
             _size++;
             _version++;
-        }
-
-        // internal debug view class for sorted list
-        internal class SortedListDebugView
-        {
-            private readonly SortedList _sortedList;
-
-            public SortedListDebugView(SortedList sortedList)
-            {
-                _sortedList = sortedList ?? throw new ArgumentNullException(nameof(sortedList));
-            }
-
-            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public KeyValuePairs[] Items => _sortedList.ToKeyValuePairsArray();
         }
 
         [Serializable]
@@ -728,23 +714,37 @@ namespace System.Collections
             }
         }
 
+        // internal debug view class for sorted list
+        internal class SortedListDebugView
+        {
+            private readonly SortedList _sortedList;
+
+            public SortedListDebugView(SortedList sortedList)
+            {
+                _sortedList = sortedList ?? throw new ArgumentNullException(nameof(sortedList));
+            }
+
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public KeyValuePairs[] Items => _sortedList.ToKeyValuePairsArray();
+        }
+
         private sealed class SortedListEnumerator : IDictionaryEnumerator, ICloneable
         {
             internal const int DictEntry = 3;
             internal const int Keys = 1;
             internal const int Values = 2;
+
+            private bool _current;
             private readonly int _endIndex;
             private readonly int _getObjectRetType;
+            private int _index;
+            private object _key;
             private readonly SortedList _sortedList;
             private readonly int _startIndex;
+            private object _value;
 
             // Store for Reset.
             private readonly int _version;
-
-            private bool _current;
-            private int _index;
-            private object _key;
-            private object _value;
 
             // Is the current element valid?
             // What should GetObject return?

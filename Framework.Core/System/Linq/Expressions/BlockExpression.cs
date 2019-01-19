@@ -155,9 +155,9 @@ namespace System.Linq.Expressions
 
     internal sealed class Block2 : BlockExpression
     {
-        private readonly Expression _arg1;
         private object _arg0;                   // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-                                                // storage for the 2nd argument.
+        private readonly Expression _arg1;
+        // storage for the 2nd argument.
 
         internal Block2(Expression arg0, Expression arg1)
         {
@@ -218,9 +218,9 @@ namespace System.Linq.Expressions
 
     internal sealed class Block3 : BlockExpression
     {
-        private readonly Expression _arg1, _arg2;
         private object _arg0;                       // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-                                                    // storage for the 2nd and 3rd arguments.
+        private readonly Expression _arg1, _arg2;
+        // storage for the 2nd and 3rd arguments.
 
         internal Block3(Expression arg0, Expression arg1, Expression arg2)
         {
@@ -287,9 +287,9 @@ namespace System.Linq.Expressions
 
     internal sealed class Block4 : BlockExpression
     {
-        private readonly Expression _arg1, _arg2, _arg3;
         private object _arg0;                               // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-                                                            // storage for the 2nd, 3rd, and 4th arguments.
+        private readonly Expression _arg1, _arg2, _arg3;
+        // storage for the 2nd, 3rd, and 4th arguments.
 
         internal Block4(Expression arg0, Expression arg1, Expression arg2, Expression arg3)
         {
@@ -362,9 +362,9 @@ namespace System.Linq.Expressions
 
     internal sealed class Block5 : BlockExpression
     {
-        private readonly Expression _arg1, _arg2, _arg3, _arg4;
         private object _arg0;                                       // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-                                                                    // storage for the 2nd - 5th args.
+        private readonly Expression _arg1, _arg2, _arg3, _arg4;
+        // storage for the 2nd - 5th args.
 
         internal Block5(Expression arg0, Expression arg1, Expression arg2, Expression arg3, Expression arg4)
         {
@@ -671,6 +671,10 @@ namespace System.Linq.Expressions
             _arg0 = arg0;
         }
 
+        public int Count => _block.ExpressionCount;
+
+        public bool IsReadOnly => throw ContractUtils.Unreachable;
+
         public Expression this[int index]
         {
             get
@@ -684,38 +688,6 @@ namespace System.Linq.Expressions
             }
             set => throw ContractUtils.Unreachable;
         }
-
-        public int IndexOf(Expression item)
-        {
-            if (_arg0 == item)
-            {
-                return 0;
-            }
-
-            for (var i = 1; i < _block.ExpressionCount; i++)
-            {
-                if (_block.GetExpression(i) == item)
-                {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
-
-        public void Insert(int index, Expression item)
-        {
-            throw ContractUtils.Unreachable;
-        }
-
-        public void RemoveAt(int index)
-        {
-            throw ContractUtils.Unreachable;
-        }
-
-        public int Count => _block.ExpressionCount;
-
-        public bool IsReadOnly => throw ContractUtils.Unreachable;
 
         public void Add(Expression item)
         {
@@ -754,11 +726,6 @@ namespace System.Linq.Expressions
             }
         }
 
-        public bool Remove(Expression item)
-        {
-            throw ContractUtils.Unreachable;
-        }
-
         public IEnumerator<Expression> GetEnumerator()
         {
             yield return _arg0;
@@ -767,6 +734,39 @@ namespace System.Linq.Expressions
             {
                 yield return _block.GetExpression(i);
             }
+        }
+
+        public int IndexOf(Expression item)
+        {
+            if (_arg0 == item)
+            {
+                return 0;
+            }
+
+            for (var i = 1; i < _block.ExpressionCount; i++)
+            {
+                if (_block.GetExpression(i) == item)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        public void Insert(int index, Expression item)
+        {
+            throw ContractUtils.Unreachable;
+        }
+
+        public bool Remove(Expression item)
+        {
+            throw ContractUtils.Unreachable;
+        }
+
+        public void RemoveAt(int index)
+        {
+            throw ContractUtils.Unreachable;
         }
 
         IEnumerator IEnumerable.GetEnumerator()

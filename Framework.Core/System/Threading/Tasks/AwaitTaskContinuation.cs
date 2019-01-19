@@ -65,26 +65,6 @@ namespace System.Threading.Tasks
             }
         }
 
-        [SecurityCritical]
-        void IThreadPoolWorkItem.ExecuteWorkItem()
-        {
-            // inline the fast path
-            if (_capturedContext == null)
-            {
-                Action.Invoke();
-            }
-            else
-            {
-                ExecuteWorkItemHelper();
-            }
-        }
-
-        [SecurityCritical]
-        void IThreadPoolWorkItem.MarkAborted(ThreadAbortException exception)
-        {
-            /* nop */
-        }
-
         /// <summary>Invokes or schedules the action to be executed.</summary>
         /// <param name="action">The action to invoke or queue.</param>
         /// <param name="allowInlining">
@@ -272,6 +252,20 @@ namespace System.Threading.Tasks
             ((Action)state)();
         }
 
+        [SecurityCritical]
+        void IThreadPoolWorkItem.ExecuteWorkItem()
+        {
+            // inline the fast path
+            if (_capturedContext == null)
+            {
+                Action.Invoke();
+            }
+            else
+            {
+                ExecuteWorkItemHelper();
+            }
+        }
+
         /// <summary>IThreadPoolWorkItem override, which is the entry function for this when the ThreadPool scheduler decides to run it.</summary>
         [SecurityCritical]
         private void ExecuteWorkItemHelper()
@@ -296,6 +290,12 @@ namespace System.Threading.Tasks
                     _capturedContext = null;
                 }
             }
+        }
+
+        [SecurityCritical]
+        void IThreadPoolWorkItem.MarkAborted(ThreadAbortException exception)
+        {
+            /* nop */
         }
     }
 }

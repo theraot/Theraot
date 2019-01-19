@@ -132,12 +132,12 @@ namespace TestRunner
 
         private sealed class Test : IDisposable
         {
+            private Delegate _delegate;
+            private object _instance;
             private readonly bool _isolatedThread;
             private readonly ParameterInfo[] _parameterInfos;
             private readonly Type[] _preferredGenerators;
             private readonly int _repeat;
-            private Delegate _delegate;
-            private object _instance;
 
             public Test(TestMethod testMethod)
             {
@@ -239,6 +239,25 @@ namespace TestRunner
             }
         }
 
+        private sealed class TestFixture
+        {
+            public TestFixture(Type type)
+            {
+                Type = type;
+                var testFixtureAttributes = type.GetAttributes<TestFixtureAttribute>(true);
+                if (testFixtureAttributes == null || testFixtureAttributes.Length <= 0)
+                {
+                    return;
+                }
+                TestFixtureAttribute = testFixtureAttributes[0];
+                Categories = type.GetAttributes<CategoryAttribute>(false).Select(category => category.Name);
+            }
+
+            public IEnumerable<string> Categories { get; }
+            public Type Type { get; }
+            public TestFixtureAttribute TestFixtureAttribute { get; }
+        }
+
         private sealed class TestMethod
         {
             public TestMethod(MethodInfo method)
@@ -258,25 +277,6 @@ namespace TestRunner
             public MethodInfo Method { get; }
             public Type[] PreferredGenerators { get; }
             public TestAttribute TestAttribute { get; }
-        }
-
-        private sealed class TestFixture
-        {
-            public TestFixture(Type type)
-            {
-                Type = type;
-                var testFixtureAttributes = type.GetAttributes<TestFixtureAttribute>(true);
-                if (testFixtureAttributes == null || testFixtureAttributes.Length <= 0)
-                {
-                    return;
-                }
-                TestFixtureAttribute = testFixtureAttributes[0];
-                Categories = type.GetAttributes<CategoryAttribute>(false).Select(category => category.Name);
-            }
-
-            public IEnumerable<string> Categories { get; }
-            public Type Type { get; }
-            public TestFixtureAttribute TestFixtureAttribute { get; }
         }
     }
 

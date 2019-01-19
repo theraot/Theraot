@@ -41,10 +41,12 @@ namespace System.Dynamic.Utils
     internal abstract class ListProvider<T> : IList<T>
         where T : class
     {
+
+        public int Count => ElementCount;
+
+        public bool IsReadOnly => true;
         protected abstract int ElementCount { get; }
         protected abstract T First { get; }
-
-        protected abstract T GetElement(int index);
 
         public T this[int index]
         {
@@ -59,38 +61,6 @@ namespace System.Dynamic.Utils
             }
             set => throw ContractUtils.Unreachable;
         }
-
-        public int IndexOf(T item)
-        {
-            if (First == item)
-            {
-                return 0;
-            }
-
-            for (int i = 1, n = ElementCount; i < n; i++)
-            {
-                if (GetElement(i) == item)
-                {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
-
-        public void Insert(int index, T item)
-        {
-            throw ContractUtils.Unreachable;
-        }
-
-        public void RemoveAt(int index)
-        {
-            throw ContractUtils.Unreachable;
-        }
-
-        public int Count => ElementCount;
-
-        public bool IsReadOnly => true;
 
         public void Add(T item)
         {
@@ -126,11 +96,6 @@ namespace System.Dynamic.Utils
             }
         }
 
-        public bool Remove(T item)
-        {
-            throw ContractUtils.Unreachable;
-        }
-
         public IEnumerator<T> GetEnumerator()
         {
             yield return First;
@@ -140,6 +105,41 @@ namespace System.Dynamic.Utils
                 yield return GetElement(i);
             }
         }
+
+        public int IndexOf(T item)
+        {
+            if (First == item)
+            {
+                return 0;
+            }
+
+            for (int i = 1, n = ElementCount; i < n; i++)
+            {
+                if (GetElement(i) == item)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        public void Insert(int index, T item)
+        {
+            throw ContractUtils.Unreachable;
+        }
+
+        public bool Remove(T item)
+        {
+            throw ContractUtils.Unreachable;
+        }
+
+        public void RemoveAt(int index)
+        {
+            throw ContractUtils.Unreachable;
+        }
+
+        protected abstract T GetElement(int index);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }

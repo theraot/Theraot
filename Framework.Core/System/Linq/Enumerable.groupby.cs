@@ -117,17 +117,17 @@ namespace System.Linq
                 return Enumerator(groupings);
             }
 
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-
             private IEnumerator<TResult> Enumerator(IDictionary<TKey, Tuple<Grouping<TKey, TElement>, List<TElement>>> groupings)
             {
                 foreach (var grouping in groupings.Values)
                 {
                     yield return _resultSelector(grouping.Item1.Key, grouping.Item1);
                 }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
             }
         }
 
@@ -163,17 +163,17 @@ namespace System.Linq
                 return Enumerator(groupings);
             }
 
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-
             private static IEnumerator<IGrouping<TKey, TElement>> Enumerator(IDictionary<TKey, Tuple<Grouping<TKey, TElement>, List<TElement>>> groupings)
             {
                 foreach (var grouping in groupings.Values)
                 {
                     yield return grouping.Item1;
                 }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
             }
         }
     }

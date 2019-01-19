@@ -23,6 +23,17 @@ namespace Theraot.Collections.Specialized
 
         object ICollection.SyncRoot => ((ICollection)_wrapped).SyncRoot;
 
+        public void CopyTo(TKey[] array, int arrayIndex)
+        {
+            Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
+            Extensions.CopyTo(_wrapped.ConvertProgressive(pair => pair.Key), array, arrayIndex);
+        }
+
+        public IEnumerator<TKey> GetEnumerator()
+        {
+            return _wrapped.ConvertProgressive(pair => pair.Key).GetEnumerator();
+        }
+
         void ICollection<TKey>.Add(TKey item)
         {
             throw new NotSupportedException();
@@ -38,20 +49,9 @@ namespace Theraot.Collections.Specialized
             return _wrapped.ContainsKey(item);
         }
 
-        public void CopyTo(TKey[] array, int arrayIndex)
-        {
-            Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
-            Extensions.CopyTo(_wrapped.ConvertProgressive(pair => pair.Key), array, arrayIndex);
-        }
-
         void ICollection.CopyTo(Array array, int index)
         {
             ((ICollection)_wrapped).CopyTo(array, index);
-        }
-
-        public IEnumerator<TKey> GetEnumerator()
-        {
-            return _wrapped.ConvertProgressive(pair => pair.Key).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

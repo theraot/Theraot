@@ -57,11 +57,11 @@ namespace System.Threading.Tasks
     [StructLayout(LayoutKind.Auto)]
     public struct ValueTask<TResult> : IEquatable<ValueTask<TResult>>
     {
-        /// <summary>The task to be used if the operation completed asynchronously or if it completed synchronously but non-successfully.</summary>
-        internal readonly Task<TResult> _task;
 
         /// <summary>The result to be used if the operation completed successfully synchronously.</summary>
         internal readonly TResult _result;
+        /// <summary>The task to be used if the operation completed asynchronously or if it completed synchronously but non-successfully.</summary>
+        internal readonly Task<TResult> _task;
 
         /// <summary>Initialize the <see cref="ValueTask{TResult}"/> with the result of the successful operation.</summary>
         /// <param name="result">The result.</param>
@@ -81,27 +81,25 @@ namespace System.Threading.Tasks
             _result = default;
         }
 
-        /// <summary>Returns the hash code for this instance.</summary>
-        public override int GetHashCode()
-        {
-            return
-                _task != null
-                    ? _task.GetHashCode()
-                    : _result != null
-                        ? _result.GetHashCode()
-                        : 0;
-        }
+        /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> represents a canceled operation.</summary>
+        public bool IsCanceled => _task?.IsCanceled == true;
 
-        public override bool Equals(object obj)
-        {
-            return obj is ValueTask<TResult> task && Equals(task);
-        }
+        /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> represents a completed operation.</summary>
+        public bool IsCompleted => _task?.IsCompleted != false;
 
-        public bool Equals(ValueTask<TResult> other)
+        /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> represents a successfully completed operation.</summary>
+        public bool IsCompletedSuccessfully => _task == null || _task.Status == TaskStatus.RanToCompletion;
+
+        /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> represents a failed operation.</summary>
+        public bool IsFaulted => _task?.IsFaulted == true;
+
+        /// <summary>Gets the result.</summary>
+        public TResult Result => _task == null ? _result : _task.GetAwaiter().GetResult();
+
+        /// <summary>Returns a value indicating whether two <see cref="ValueTask{TResult}"/> values are not equal.</summary>
+        public static bool operator !=(ValueTask<TResult> left, ValueTask<TResult> right)
         {
-            return _task != null || other._task != null ?
-                _task == other._task :
-                EqualityComparer<TResult>.Default.Equals(_result, other._result);
+            return !left.Equals(right);
         }
 
         /// <summary>Returns a value indicating whether two <see cref="ValueTask{TResult}"/> values are equal.</summary>
@@ -110,10 +108,14 @@ namespace System.Threading.Tasks
             return left.Equals(right);
         }
 
-        /// <summary>Returns a value indicating whether two <see cref="ValueTask{TResult}"/> values are not equal.</summary>
-        public static bool operator !=(ValueTask<TResult> left, ValueTask<TResult> right)
+        // TODO: Remove CreateAsyncMethodBuilder once the C# compiler relies on the AsyncBuilder attribute.
+
+        /// <summary>Creates a method builder for use with an async method.</summary>
+        /// <returns>The created builder.</returns>
+        [EditorBrowsable(EditorBrowsableState.Never)] // intended only for compiler consumption
+        public static AsyncValueTaskMethodBuilder<TResult> CreateAsyncMethodBuilder()
         {
-            return !left.Equals(right);
+            return AsyncValueTaskMethodBuilder<TResult>.Create();
         }
 
         /// <summary>
@@ -129,27 +131,6 @@ namespace System.Threading.Tasks
             return _task ?? TaskEx.FromResult(_result);
         }
 
-        /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> represents a completed operation.</summary>
-        public bool IsCompleted => _task?.IsCompleted != false;
-
-        /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> represents a successfully completed operation.</summary>
-        public bool IsCompletedSuccessfully => _task == null || _task.Status == TaskStatus.RanToCompletion;
-
-        /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> represents a failed operation.</summary>
-        public bool IsFaulted => _task?.IsFaulted == true;
-
-        /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> represents a canceled operation.</summary>
-        public bool IsCanceled => _task?.IsCanceled == true;
-
-        /// <summary>Gets the result.</summary>
-        public TResult Result => _task == null ? _result : _task.GetAwaiter().GetResult();
-
-        /// <summary>Gets an awaiter for this value.</summary>
-        public ValueTaskAwaiter<TResult> GetAwaiter()
-        {
-            return new ValueTaskAwaiter<TResult>(this);
-        }
-
         /// <summary>Configures an awaiter for this value.</summary>
         /// <param name="continueOnCapturedContext">
         /// true to attempt to marshal the continuation back to the captured context; otherwise, false.
@@ -157,6 +138,35 @@ namespace System.Threading.Tasks
         public ConfiguredValueTaskAwaitable<TResult> ConfigureAwait(bool continueOnCapturedContext)
         {
             return new ConfiguredValueTaskAwaitable<TResult>(this, continueOnCapturedContext: continueOnCapturedContext);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is ValueTask<TResult> task && Equals(task);
+        }
+
+        public bool Equals(ValueTask<TResult> other)
+        {
+            return _task != null || other._task != null ?
+                _task == other._task :
+                EqualityComparer<TResult>.Default.Equals(_result, other._result);
+        }
+
+        /// <summary>Gets an awaiter for this value.</summary>
+        public ValueTaskAwaiter<TResult> GetAwaiter()
+        {
+            return new ValueTaskAwaiter<TResult>(this);
+        }
+
+        /// <summary>Returns the hash code for this instance.</summary>
+        public override int GetHashCode()
+        {
+            return
+                _task != null
+                    ? _task.GetHashCode()
+                    : _result != null
+                        ? _result.GetHashCode()
+                        : 0;
         }
 
         /// <summary>Gets a string-representation of this <see cref="ValueTask{TResult}"/>.</summary>
@@ -171,16 +181,6 @@ namespace System.Threading.Tasks
             return _result != null ?
                 _result.ToString() :
                 string.Empty;
-        }
-
-        // TODO: Remove CreateAsyncMethodBuilder once the C# compiler relies on the AsyncBuilder attribute.
-
-        /// <summary>Creates a method builder for use with an async method.</summary>
-        /// <returns>The created builder.</returns>
-        [EditorBrowsable(EditorBrowsableState.Never)] // intended only for compiler consumption
-        public static AsyncValueTaskMethodBuilder<TResult> CreateAsyncMethodBuilder()
-        {
-            return AsyncValueTaskMethodBuilder<TResult>.Create();
         }
     }
 }

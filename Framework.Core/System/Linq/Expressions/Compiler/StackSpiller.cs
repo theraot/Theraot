@@ -20,17 +20,17 @@ namespace System.Linq.Expressions.Compiler
     /// </summary>
     internal sealed partial class StackSpiller
     {
-        /// <summary>
-        /// Initial stack state. Normally empty, but when inlining the lambda
-        /// we might have a non-empty starting stack state.
-        /// </summary>
-        private readonly Stack _startingStack;
 
         /// <summary>
         /// Lambda rewrite result. We need this for inlined lambdas to figure
         /// out whether we need to guarantee it an empty stack.
         /// </summary>
         private RewriteAction _lambdaRewrite;
+        /// <summary>
+        /// Initial stack state. Normally empty, but when inlining the lambda
+        /// we might have a non-empty starting stack state.
+        /// </summary>
+        private readonly Stack _startingStack;
 
         private StackSpiller(Stack stack)
         {
@@ -79,6 +79,19 @@ namespace System.Linq.Expressions.Compiler
             return lambda;
         }
 
+        private static T[] Clone<T>(T[] original, int max)
+        {
+            Debug.Assert(original != null);
+            Debug.Assert(max < original.Length);
+
+            var clone = new T[original.Length];
+            for (var j = 0; j < max; j++)
+            {
+                clone[j] = original[j];
+            }
+            return clone;
+        }
+
         private static bool IsRefInstance(Expression instance)
         {
             // Primitive value types are okay because they are all read-only,
@@ -100,21 +113,6 @@ namespace System.Linq.Expressions.Compiler
             if (IsRefInstance(instance))
             {
                 throw new NotSupportedException($"TryExpression is not supported as a child expression when accessing a member on type '{instance.Type}' because it is a value type. Construct the tree so the TryExpression is not nested inside of this expression.");
-            }
-        }
-
-        /// <summary>
-        /// Result of a rewrite operation. Always contains an action and a node.
-        /// </summary>
-        private /*readonly*/ struct Result
-        {
-            internal readonly RewriteAction Action;
-            internal readonly Expression Node;
-
-            internal Result(RewriteAction action, Expression node)
-            {
-                Action = action;
-                Node = node;
             }
         }
 
@@ -209,6 +207,42 @@ namespace System.Linq.Expressions.Compiler
                                     expr);
         }
 
+        private Result RewriteBlockExpression(Expression expr, Stack stack)
+        {
+            var node = (BlockExpression)expr;
+
+            var count = node.ExpressionCount;
+            var action = RewriteAction.None;
+            Expression[] clone = null;
+            for (var i = 0; i < count; i++)
+            {
+                var expression = node.GetExpression(i);
+
+                // All statements within the block execute at the
+                // same stack state.
+                var rewritten = RewriteExpression(expression, stack);
+                action |= rewritten.Action;
+
+                if (clone == null && rewritten.Action != RewriteAction.None)
+                {
+                    clone = Clone(Theraot.Collections.Extensions.AsArray(node.Expressions), i);
+                }
+
+                if (clone != null)
+                {
+                    clone[i] = rewritten.Node;
+                }
+            }
+
+            if (action != RewriteAction.None)
+            {
+                // Okay to wrap since we know no one can mutate the clone array.
+                expr = node.Rewrite(null, clone);
+            }
+
+            return new Result(action, expr);
+        }
+
         private Result RewriteConditionalExpression(Expression expr, Stack stack)
         {
             var node = (ConditionalExpression)expr;
@@ -262,6 +296,41 @@ namespace System.Linq.Expressions.Compiler
 
             // it's at least Copy because we reduced the node
             return new Result(result.Action | RewriteAction.Copy, result.Node);
+        }
+
+        private Result RewriteExtensionExpression(Expression expr, Stack stack)
+        {
+            var result = RewriteExpression(expr.ReduceExtensions(), stack);
+            // it's at least Copy because we reduced the node
+            return new Result(result.Action | RewriteAction.Copy, result.Node);
+        }
+
+        // Note: goto does not necessarily need an empty stack. We could always
+        // emit it as a "leave" which would clear the stack for us. That would
+        // prevent us from doing certain optimizations we might want to do,
+        // however, like the switch-case-goto pattern. For now, be conservative.
+        private Result RewriteGotoExpression(Expression expr, Stack stack)
+        {
+            var node = (GotoExpression)expr;
+
+            // Goto requires empty stack to execute so the expression is
+            // going to execute on an empty stack.
+            var value = RewriteExpressionFreeTemps(node.Value, Stack.Empty);
+
+            // However, the statement itself needs an empty stack for itself
+            // so if stack is not empty, rewrite to empty the stack.
+            var action = value.Action;
+            if (stack != Stack.Empty)
+            {
+                action = RewriteAction.SpillStack;
+            }
+
+            if (action != RewriteAction.None)
+            {
+                expr = Expression.MakeGoto(node.Kind, node.Target, value.Node, node.Type);
+            }
+
+            return new Result(action, expr);
         }
 
         private Result RewriteIndexAssignment(BinaryExpression node, Stack stack)
@@ -368,6 +437,19 @@ namespace System.Linq.Expressions.Compiler
             }
 
             return cr.Finish(cr.Rewrite ? new InvocationExpressionN(cr[0], cr[1, -1], node.Type) : expr);
+        }
+
+        private Result RewriteLabelExpression(Expression expr, Stack stack)
+        {
+            var node = (LabelExpression)expr;
+
+            var expression = RewriteExpression(node.DefaultValue, stack);
+            if (expression.Action != RewriteAction.None)
+            {
+                expr = new LabelExpression(node.Target, expression.Node);
+            }
+
+            return new Result(expression.Action, expr);
         }
 
         private Result RewriteListInitExpression(Expression expr, Stack stack)
@@ -479,6 +561,31 @@ namespace System.Linq.Expressions.Compiler
                     node.Method,
                     (LambdaExpression)conversion.Node
                 );
+            }
+
+            return new Result(action, expr);
+        }
+
+        private Result RewriteLoopExpression(Expression expr, Stack stack)
+        {
+            var node = (LoopExpression)expr;
+
+            // The loop statement requires empty stack for itself, so it
+            // can guarantee it to the child nodes.
+            var body = RewriteExpression(node.Body, Stack.Empty);
+
+            var action = body.Action;
+
+            // However, the loop itself requires that it executes on an empty stack
+            // so we need to rewrite if the stack is not empty.
+            if (stack != Stack.Empty)
+            {
+                action = RewriteAction.SpillStack;
+            }
+
+            if (action != RewriteAction.None)
+            {
+                expr = new LoopExpression(body.Node, node.BreakLabel, node.ContinueLabel);
             }
 
             return new Result(action, expr);
@@ -629,7 +736,7 @@ namespace System.Linq.Expressions.Compiler
             if (cr.Rewrite)
             {
                 expr = node.Object != null
-                    ? (Expression) new InstanceMethodCallExpressionN(node.Method, cr[0], cr[1, -1])
+                    ? (Expression)new InstanceMethodCallExpressionN(node.Method, cr[0], cr[1, -1])
                     : new MethodCallExpressionN(node.Method, cr[1, -1]);
             }
 
@@ -682,192 +789,6 @@ namespace System.Linq.Expressions.Compiler
 
             // It's at least Copy because we reduced the node.
             return new Result(result.Action | RewriteAction.Copy, result.Node);
-        }
-
-        private Result RewriteThrowUnaryExpression(Expression expr, Stack stack)
-        {
-            var node = (UnaryExpression)expr;
-
-            // Throw statement itself does not care about the stack
-            // but it will empty the stack and it may cause stack imbalance
-            // it so we need to restore stack after unconditional throw to make JIT happy
-            // this has an effect of executing Throw on an empty stack.
-
-            var value = RewriteExpressionFreeTemps(node.Operand, Stack.Empty);
-
-            var action = value.Action;
-
-            if (stack != Stack.Empty)
-            {
-                action = RewriteAction.SpillStack;
-            }
-
-            if (action != RewriteAction.None)
-            {
-                expr = new UnaryExpression(ExpressionType.Throw, value.Node, node.Type, null);
-            }
-
-            return new Result(action, expr);
-        }
-
-        private Result RewriteTypeBinaryExpression(Expression expr, Stack stack)
-        {
-            var node = (TypeBinaryExpression)expr;
-
-            // The expression is emitted on top of current stack.
-            var expression = RewriteExpression(node.Expression, stack);
-
-            if (expression.Action != RewriteAction.None)
-            {
-                expr = new TypeBinaryExpression(expression.Node, node.TypeOperand, node.NodeType);
-            }
-
-            return new Result(expression.Action, expr);
-        }
-
-        private Result RewriteUnaryExpression(Expression expr, Stack stack)
-        {
-            var node = (UnaryExpression)expr;
-
-            Debug.Assert(node.NodeType != ExpressionType.Quote, "unexpected Quote");
-            Debug.Assert(node.NodeType != ExpressionType.Throw, "unexpected Throw");
-
-            // Operand is emitted on top of the stack as-is.
-            var expression = RewriteExpression(node.Operand, stack);
-
-            if (expression.Action == RewriteAction.SpillStack)
-            {
-                RequireNoRefArgs(node.Method);
-            }
-
-            if (expression.Action != RewriteAction.None)
-            {
-                expr = new UnaryExpression(node.NodeType, expression.Node, node.Type, node.Method);
-            }
-
-            return new Result(expression.Action, expr);
-        }
-
-        private Result RewriteVariableAssignment(BinaryExpression node, Stack stack)
-        {
-            // Expression is evaluated on a stack in current state.
-            var right = RewriteExpression(node.Right, stack);
-
-            if (right.Action != RewriteAction.None)
-            {
-                node = new AssignBinaryExpression(node.Left, right.Node);
-            }
-
-            return new Result(right.Action, node);
-        }
-
-        private Result RewriteBlockExpression(Expression expr, Stack stack)
-        {
-            var node = (BlockExpression)expr;
-
-            var count = node.ExpressionCount;
-            var action = RewriteAction.None;
-            Expression[] clone = null;
-            for (var i = 0; i < count; i++)
-            {
-                var expression = node.GetExpression(i);
-
-                // All statements within the block execute at the
-                // same stack state.
-                var rewritten = RewriteExpression(expression, stack);
-                action |= rewritten.Action;
-
-                if (clone == null && rewritten.Action != RewriteAction.None)
-                {
-                    clone = Clone(Theraot.Collections.Extensions.AsArray(node.Expressions), i);
-                }
-
-                if (clone != null)
-                {
-                    clone[i] = rewritten.Node;
-                }
-            }
-
-            if (action != RewriteAction.None)
-            {
-                // Okay to wrap since we know no one can mutate the clone array.
-                expr = node.Rewrite(null, clone);
-            }
-
-            return new Result(action, expr);
-        }
-
-        private Result RewriteExtensionExpression(Expression expr, Stack stack)
-        {
-            var result = RewriteExpression(expr.ReduceExtensions(), stack);
-            // it's at least Copy because we reduced the node
-            return new Result(result.Action | RewriteAction.Copy, result.Node);
-        }
-
-        // Note: goto does not necessarily need an empty stack. We could always
-        // emit it as a "leave" which would clear the stack for us. That would
-        // prevent us from doing certain optimizations we might want to do,
-        // however, like the switch-case-goto pattern. For now, be conservative.
-        private Result RewriteGotoExpression(Expression expr, Stack stack)
-        {
-            var node = (GotoExpression)expr;
-
-            // Goto requires empty stack to execute so the expression is
-            // going to execute on an empty stack.
-            var value = RewriteExpressionFreeTemps(node.Value, Stack.Empty);
-
-            // However, the statement itself needs an empty stack for itself
-            // so if stack is not empty, rewrite to empty the stack.
-            var action = value.Action;
-            if (stack != Stack.Empty)
-            {
-                action = RewriteAction.SpillStack;
-            }
-
-            if (action != RewriteAction.None)
-            {
-                expr = Expression.MakeGoto(node.Kind, node.Target, value.Node, node.Type);
-            }
-
-            return new Result(action, expr);
-        }
-
-        private Result RewriteLabelExpression(Expression expr, Stack stack)
-        {
-            var node = (LabelExpression)expr;
-
-            var expression = RewriteExpression(node.DefaultValue, stack);
-            if (expression.Action != RewriteAction.None)
-            {
-                expr = new LabelExpression(node.Target, expression.Node);
-            }
-
-            return new Result(expression.Action, expr);
-        }
-
-        private Result RewriteLoopExpression(Expression expr, Stack stack)
-        {
-            var node = (LoopExpression)expr;
-
-            // The loop statement requires empty stack for itself, so it
-            // can guarantee it to the child nodes.
-            var body = RewriteExpression(node.Body, Stack.Empty);
-
-            var action = body.Action;
-
-            // However, the loop itself requires that it executes on an empty stack
-            // so we need to rewrite if the stack is not empty.
-            if (stack != Stack.Empty)
-            {
-                action = RewriteAction.SpillStack;
-            }
-
-            if (action != RewriteAction.None)
-            {
-                expr = new LoopExpression(body.Node, node.BreakLabel, node.ContinueLabel);
-            }
-
-            return new Result(action, expr);
         }
 
         private Result RewriteSwitchExpression(Expression expr, Stack stack)
@@ -942,6 +863,32 @@ namespace System.Linq.Expressions.Compiler
                 }
 
                 expr = new SwitchExpression(node.Type, switchValue.Node, defaultBody.Node, node.Comparison, cases);
+            }
+
+            return new Result(action, expr);
+        }
+
+        private Result RewriteThrowUnaryExpression(Expression expr, Stack stack)
+        {
+            var node = (UnaryExpression)expr;
+
+            // Throw statement itself does not care about the stack
+            // but it will empty the stack and it may cause stack imbalance
+            // it so we need to restore stack after unconditional throw to make JIT happy
+            // this has an effect of executing Throw on an empty stack.
+
+            var value = RewriteExpressionFreeTemps(node.Operand, Stack.Empty);
+
+            var action = value.Action;
+
+            if (stack != Stack.Empty)
+            {
+                action = RewriteAction.SpillStack;
+            }
+
+            if (action != RewriteAction.None)
+            {
+                expr = new UnaryExpression(ExpressionType.Throw, value.Node, node.Type, null);
             }
 
             return new Result(action, expr);
@@ -1023,17 +970,70 @@ namespace System.Linq.Expressions.Compiler
             return new Result(action, expr);
         }
 
-        private static T[] Clone<T>(T[] original, int max)
+        private Result RewriteTypeBinaryExpression(Expression expr, Stack stack)
         {
-            Debug.Assert(original != null);
-            Debug.Assert(max < original.Length);
+            var node = (TypeBinaryExpression)expr;
 
-            var clone = new T[original.Length];
-            for (var j = 0; j < max; j++)
+            // The expression is emitted on top of current stack.
+            var expression = RewriteExpression(node.Expression, stack);
+
+            if (expression.Action != RewriteAction.None)
             {
-                clone[j] = original[j];
+                expr = new TypeBinaryExpression(expression.Node, node.TypeOperand, node.NodeType);
             }
-            return clone;
+
+            return new Result(expression.Action, expr);
+        }
+
+        private Result RewriteUnaryExpression(Expression expr, Stack stack)
+        {
+            var node = (UnaryExpression)expr;
+
+            Debug.Assert(node.NodeType != ExpressionType.Quote, "unexpected Quote");
+            Debug.Assert(node.NodeType != ExpressionType.Throw, "unexpected Throw");
+
+            // Operand is emitted on top of the stack as-is.
+            var expression = RewriteExpression(node.Operand, stack);
+
+            if (expression.Action == RewriteAction.SpillStack)
+            {
+                RequireNoRefArgs(node.Method);
+            }
+
+            if (expression.Action != RewriteAction.None)
+            {
+                expr = new UnaryExpression(node.NodeType, expression.Node, node.Type, node.Method);
+            }
+
+            return new Result(expression.Action, expr);
+        }
+
+        private Result RewriteVariableAssignment(BinaryExpression node, Stack stack)
+        {
+            // Expression is evaluated on a stack in current state.
+            var right = RewriteExpression(node.Right, stack);
+
+            if (right.Action != RewriteAction.None)
+            {
+                node = new AssignBinaryExpression(node.Left, right.Node);
+            }
+
+            return new Result(right.Action, node);
+        }
+
+        /// <summary>
+        /// Result of a rewrite operation. Always contains an action and a node.
+        /// </summary>
+        private /*readonly*/ struct Result
+        {
+            internal readonly RewriteAction Action;
+            internal readonly Expression Node;
+
+            internal Result(RewriteAction action, Expression node)
+            {
+                Action = action;
+                Node = node;
+            }
         }
     }
 }

@@ -9,11 +9,11 @@ namespace Theraot.Collections.Specialized
     internal class GroupBuilder<TKey, TSource, TElement>
     {
         private readonly CancellationTokenSource _cancellationTokenSource;
+        private IEnumerator<TSource> _enumerator;
         private readonly Func<TSource, TKey> _keySelector;
         private readonly SafeDictionary<TKey, ProxyObservable<TElement>> _proxies;
         private readonly SafeQueue<Grouping<TKey, TElement>> _results;
         private readonly Func<TSource, TElement> _resultSelector;
-        private IEnumerator<TSource> _enumerator;
 
         private GroupBuilder(IEnumerable<TSource> source, IEqualityComparer<TKey> comparer, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector)
         {

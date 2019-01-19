@@ -16,11 +16,11 @@ namespace System.Linq.Expressions
 {
     internal sealed class ExpressionStringBuilder : ExpressionVisitor
     {
-        private readonly StringBuilder _out;
 
         // Associate every unique label or anonymous parameter in the tree with an integer.
         // Labels are displayed as UnnamedLabel_#; parameters are displayed as Param_#.
         private Dictionary<object, int> _ids;
+        private readonly StringBuilder _out;
 
         private ExpressionStringBuilder()
         {
@@ -30,36 +30,6 @@ namespace System.Linq.Expressions
         public override string ToString()
         {
             return _out.ToString();
-        }
-
-        private int GetId(object o)
-        {
-            if (_ids == null)
-            {
-                _ids = new Dictionary<object, int>();
-            }
-
-            if (!_ids.TryGetValue(o, out var id))
-            {
-                id = _ids.Count;
-                _ids.Add(o, id);
-            }
-
-            return id;
-        }
-
-        private int GetLabelId(LabelTarget label) => GetId(label);
-
-        private int GetParamId(ParameterExpression p) => GetId(p);
-
-        private void Out(string s)
-        {
-            _out.Append(s);
-        }
-
-        private void Out(char c)
-        {
-            _out.Append(c);
         }
 
         internal static string CatchBlockToString(CatchBlock node)
@@ -809,6 +779,36 @@ namespace System.Linq.Expressions
                 var labelId = GetLabelId(target);
                 Out("UnnamedLabel_" + labelId);
             }
+        }
+
+        private int GetId(object o)
+        {
+            if (_ids == null)
+            {
+                _ids = new Dictionary<object, int>();
+            }
+
+            if (!_ids.TryGetValue(o, out var id))
+            {
+                id = _ids.Count;
+                _ids.Add(o, id);
+            }
+
+            return id;
+        }
+
+        private int GetLabelId(LabelTarget label) => GetId(label);
+
+        private int GetParamId(ParameterExpression p) => GetId(p);
+
+        private void Out(string s)
+        {
+            _out.Append(s);
+        }
+
+        private void Out(char c)
+        {
+            _out.Append(c);
         }
 
         // Prints ".instanceField" or "declaringType.staticField"

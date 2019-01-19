@@ -72,17 +72,6 @@ namespace System.Collections.Concurrent
             }
         }
 
-        bool ICollection.IsSynchronized
-        {
-            get
-            {
-                GC.KeepAlive(Data);
-                return false;
-            }
-        }
-
-        object ICollection.SyncRoot => throw new NotSupportedException();
-
         private PrivateData Data
         {
             get
@@ -95,6 +84,17 @@ namespace System.Collections.Concurrent
                 return data;
             }
         }
+
+        bool ICollection.IsSynchronized
+        {
+            get
+            {
+                GC.KeepAlive(Data);
+                return false;
+            }
+        }
+
+        object ICollection.SyncRoot => throw new NotSupportedException();
 
         public static int AddToAny(BlockingCollection<T>[] collections, T item)
         {
@@ -402,11 +402,6 @@ namespace System.Collections.Concurrent
             ((ICollection)this).CopyTo(array, index);
         }
 
-        void ICollection.CopyTo(Array array, int index)
-        {
-            Data.CopyTo(array, index);
-        }
-
         public void Dispose()
         {
             Dispose(true);
@@ -430,16 +425,6 @@ namespace System.Collections.Concurrent
                     yield return item;
                 }
             }
-        }
-
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        {
-            return Data.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable<T>)this).GetEnumerator();
         }
 
         public T Take()
@@ -507,14 +492,29 @@ namespace System.Collections.Concurrent
             }
         }
 
+        void ICollection.CopyTo(Array array, int index)
+        {
+            Data.CopyTo(array, index);
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return Data.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<T>)this).GetEnumerator();
+        }
+
         private sealed class PrivateData : IDisposable, IReadOnlyCollection<T>
         {
             public readonly int Capacity;
             private readonly SemaphoreSlim _addSemaphore;
-            private readonly IProducerConsumerCollection<T> _collection;
-            private readonly SemaphoreSlim _takeSemaphore;
             private int _addWaiters;
             private int _canAdd;
+            private readonly IProducerConsumerCollection<T> _collection;
+            private readonly SemaphoreSlim _takeSemaphore;
 
             public PrivateData(IProducerConsumerCollection<T> collection, int capacity)
             {
@@ -547,11 +547,6 @@ namespace System.Collections.Concurrent
             public IEnumerator<T> GetEnumerator()
             {
                 return _collection.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
             }
 
             public T[] ToArray()
@@ -612,6 +607,11 @@ namespace System.Collections.Concurrent
                 }
                 _addSemaphore.Release();
                 return true;
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
             }
         }
     }

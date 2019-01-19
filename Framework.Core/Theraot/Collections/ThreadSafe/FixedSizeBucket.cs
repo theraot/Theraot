@@ -172,11 +172,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         /// <summary>
         /// Inserts the item at the specified index.
         /// </summary>
@@ -534,6 +529,11 @@ namespace Theraot.Collections.ThreadSafe
             }
             isEmpty = found == null || compare == null;
             return result;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

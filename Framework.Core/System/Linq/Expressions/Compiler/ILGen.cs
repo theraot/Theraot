@@ -15,6 +15,20 @@ namespace System.Linq.Expressions.Compiler
 {
     internal static class ILGen
     {
+
+        // matches TryEmitConstant
+        internal static bool CanEmitConstant(object value, Type type)
+        {
+            if (value == null || CanEmitILConstant(type))
+            {
+                return true;
+            }
+            if (value is Type t)
+            {
+                return ShouldLdtoken(t);
+            }
+            return value is MethodBase mb && ShouldLdtoken(mb);
+        }
         internal static void Emit(this ILGenerator il, OpCode opcode, MethodBase methodBase)
         {
             Debug.Assert(methodBase is MethodInfo || methodBase is ConstructorInfo);
@@ -27,6 +41,211 @@ namespace System.Linq.Expressions.Compiler
             {
                 il.Emit(opcode, (MethodInfo)methodBase);
             }
+        }
+
+        internal static void EmitArray<T>(this ILGenerator il, T[] items, ILocalCache locals)
+        {
+            Debug.Assert(items != null);
+
+            il.EmitPrimitive(items.Length);
+            il.Emit(OpCodes.Newarr, typeof(T));
+            for (var i = 0; i < items.Length; i++)
+            {
+                il.Emit(OpCodes.Dup);
+                il.EmitPrimitive(i);
+                il.TryEmitConstant(items[i], typeof(T), locals);
+                il.EmitStoreElement(typeof(T));
+            }
+        }
+
+        internal static void EmitArray(this ILGenerator il, Type elementType, int count)
+        {
+            Debug.Assert(elementType != null);
+            Debug.Assert(count >= 0);
+
+            il.EmitPrimitive(count);
+            il.Emit(OpCodes.Newarr, elementType);
+        }
+
+        internal static void EmitArray(this ILGenerator il, Type arrayType)
+        {
+            Debug.Assert(arrayType != null);
+            Debug.Assert(arrayType.IsArray);
+
+            if (arrayType.IsSafeArray())
+            {
+                il.Emit(OpCodes.Newarr, arrayType.GetElementType());
+            }
+            else
+            {
+                var types = new Type[arrayType.GetArrayRank()];
+                for (var i = 0; i < types.Length; i++)
+                {
+                    types[i] = typeof(int);
+                }
+                var ci = arrayType.GetConstructor(types);
+                Debug.Assert(ci != null);
+                il.EmitNew(ci);
+            }
+        }
+
+        internal static void EmitConvertToType(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked, ILocalCache locals)
+        {
+            if (TypeUtils.AreEquivalent(typeFrom, typeTo))
+            {
+                return;
+            }
+
+            Debug.Assert(typeFrom != typeof(void) && typeTo != typeof(void));
+
+            var isTypeFromNullable = typeFrom.IsNullable();
+            var isTypeToNullable = typeTo.IsNullable();
+
+            var nnExprType = typeFrom.GetNonNullable();
+            var nnType = typeTo.GetNonNullable();
+
+            if
+            (
+               typeFrom.IsInterface // interface cast
+               || typeTo.IsInterface
+               || typeFrom == typeof(object) // boxing cast
+               || typeTo == typeof(object)
+               || typeFrom == typeof(Enum)
+               || typeFrom == typeof(ValueType)
+               || TypeUtils.IsLegalExplicitVariantDelegateConversion(typeFrom, typeTo)
+            )
+            {
+                il.EmitCastToType(typeFrom, typeTo);
+            }
+            else if (isTypeFromNullable || isTypeToNullable)
+            {
+                il.EmitNullableConversion(typeFrom, typeTo, isChecked, locals);
+            }
+            else if (!(typeFrom.IsConvertible() && typeTo.IsConvertible()) // primitive runtime conversion
+                     &&
+                     (nnExprType.IsAssignableFrom(nnType) || // down cast
+                     nnType.IsAssignableFrom(nnExprType))) // up cast
+            {
+                il.EmitCastToType(typeFrom, typeTo);
+            }
+            else if (typeFrom.IsArray && typeTo.IsArray) // reference conversion from one array type to another via castclass
+            {
+                il.EmitCastToType(typeFrom, typeTo);
+            }
+            else
+            {
+                il.EmitNumericConversion(typeFrom, typeTo, isChecked);
+            }
+        }
+
+        internal static void EmitDefault(this ILGenerator il, Type type, ILocalCache locals)
+        {
+            switch (type.GetTypeCode())
+            {
+                case TypeCode.DateTime:
+                    il.Emit(OpCodes.Ldsfld, DateTimeMinValue);
+                    break;
+
+                case TypeCode.Object:
+                    if (type.IsValueType)
+                    {
+                        // Type.GetTypeCode on an enum returns the underlying
+                        // integer TypeCode, so we won't get here.
+                        Debug.Assert(!type.IsEnum);
+
+                        // This is the IL for default(T) if T is a generic type
+                        // parameter, so it should work for any type. It's also
+                        // the standard pattern for structs.
+                        var lb = locals.GetLocal(type);
+                        il.Emit(OpCodes.Ldloca, lb);
+                        il.Emit(OpCodes.Initobj, type);
+                        il.Emit(OpCodes.Ldloc, lb);
+                        locals.FreeLocal(lb);
+                        break;
+                    }
+
+                    goto case TypeCode.Empty;
+
+                case TypeCode.Empty:
+                case TypeCode.String:
+                case TypeCode.DBNull:
+                    il.Emit(OpCodes.Ldnull);
+                    break;
+
+                case TypeCode.Boolean:
+                case TypeCode.Char:
+                case TypeCode.SByte:
+                case TypeCode.Byte:
+                case TypeCode.Int16:
+                case TypeCode.UInt16:
+                case TypeCode.Int32:
+                case TypeCode.UInt32:
+                    il.Emit(OpCodes.Ldc_I4_0);
+                    break;
+
+                case TypeCode.Int64:
+                case TypeCode.UInt64:
+                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Conv_I8);
+                    break;
+
+                case TypeCode.Single:
+                    il.Emit(OpCodes.Ldc_R4, default(float));
+                    break;
+
+                case TypeCode.Double:
+                    il.Emit(OpCodes.Ldc_R8, default(double));
+                    break;
+
+                case TypeCode.Decimal:
+                    il.Emit(OpCodes.Ldsfld, DecimalZero);
+                    break;
+
+                default:
+                    throw ContractUtils.Unreachable;
+            }
+        }
+
+        internal static void EmitFieldAddress(this ILGenerator il, FieldInfo fi)
+        {
+            Debug.Assert(fi != null);
+
+            il.Emit(fi.IsStatic ? OpCodes.Ldsflda : OpCodes.Ldflda, fi);
+        }
+
+        internal static void EmitFieldGet(this ILGenerator il, FieldInfo fi)
+        {
+            Debug.Assert(fi != null);
+
+            il.Emit(fi.IsStatic ? OpCodes.Ldsfld : OpCodes.Ldfld, fi);
+        }
+
+        internal static void EmitFieldSet(this ILGenerator il, FieldInfo fi)
+        {
+            Debug.Assert(fi != null);
+
+            il.Emit(fi.IsStatic ? OpCodes.Stsfld : OpCodes.Stfld, fi);
+        }
+
+        internal static void EmitGetValue(this ILGenerator il, Type nullable)
+        {
+            var mi = nullable.GetMethod("get_Value", BindingFlags.Instance | BindingFlags.Public);
+            Debug.Assert(nullable.IsValueType);
+            il.Emit(OpCodes.Call, mi);
+        }
+
+        internal static void EmitGetValueOrDefault(this ILGenerator il, Type nullable)
+        {
+            var mi = nullable.GetMethod("GetValueOrDefault", Type.EmptyTypes);
+            Debug.Assert(nullable.IsValueType);
+            il.Emit(OpCodes.Call, mi);
+        }
+
+        internal static void EmitHasValue(this ILGenerator il, Type nullable)
+        {
+            var mi = nullable.GetMethod("get_HasValue", BindingFlags.Instance | BindingFlags.Public);
+            Debug.Assert(nullable.IsValueType);
+            il.Emit(OpCodes.Call, mi);
         }
 
         internal static void EmitLoadArg(this ILGenerator il, int index)
@@ -198,6 +417,84 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
+        internal static void EmitNew(this ILGenerator il, ConstructorInfo ci)
+        {
+            Debug.Assert(ci != null);
+            Debug.Assert(ci.DeclaringType != null);
+            Debug.Assert(!ci.DeclaringType.ContainsGenericParameters);
+
+            il.Emit(OpCodes.Newobj, ci);
+        }
+
+        internal static void EmitNull(this ILGenerator il)
+        {
+            il.Emit(OpCodes.Ldnull);
+        }
+
+        internal static void EmitPrimitive(this ILGenerator il, bool value)
+        {
+            il.Emit(value ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0);
+        }
+
+        internal static void EmitPrimitive(this ILGenerator il, int value)
+        {
+            OpCode c;
+            switch (value)
+            {
+                case -1:
+                    c = OpCodes.Ldc_I4_M1;
+                    break;
+
+                case 0:
+                    c = OpCodes.Ldc_I4_0;
+                    break;
+
+                case 1:
+                    c = OpCodes.Ldc_I4_1;
+                    break;
+
+                case 2:
+                    c = OpCodes.Ldc_I4_2;
+                    break;
+
+                case 3:
+                    c = OpCodes.Ldc_I4_3;
+                    break;
+
+                case 4:
+                    c = OpCodes.Ldc_I4_4;
+                    break;
+
+                case 5:
+                    c = OpCodes.Ldc_I4_5;
+                    break;
+
+                case 6:
+                    c = OpCodes.Ldc_I4_6;
+                    break;
+
+                case 7:
+                    c = OpCodes.Ldc_I4_7;
+                    break;
+
+                case 8:
+                    c = OpCodes.Ldc_I4_8;
+                    break;
+
+                default:
+                    if (value >= sbyte.MinValue && value <= sbyte.MaxValue)
+                    {
+                        il.Emit(OpCodes.Ldc_I4_S, (sbyte)value);
+                    }
+                    else
+                    {
+                        il.Emit(OpCodes.Ldc_I4, value);
+                    }
+                    return;
+            }
+            il.Emit(c);
+        }
+
         internal static void EmitStoreArg(this ILGenerator il, int index)
         {
             Debug.Assert(index >= 0);
@@ -312,132 +609,19 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
+        internal static void EmitString(this ILGenerator il, string value)
+        {
+            Debug.Assert(value != null);
+
+            il.Emit(OpCodes.Ldstr, value);
+        }
+
         internal static void EmitType(this ILGenerator il, Type type)
         {
             Debug.Assert(type != null);
 
             il.Emit(OpCodes.Ldtoken, type);
             il.Emit(OpCodes.Call, TypeGetTypeFromHandle);
-        }
-
-        internal static void EmitFieldAddress(this ILGenerator il, FieldInfo fi)
-        {
-            Debug.Assert(fi != null);
-
-            il.Emit(fi.IsStatic ? OpCodes.Ldsflda : OpCodes.Ldflda, fi);
-        }
-
-        internal static void EmitFieldGet(this ILGenerator il, FieldInfo fi)
-        {
-            Debug.Assert(fi != null);
-
-            il.Emit(fi.IsStatic ? OpCodes.Ldsfld : OpCodes.Ldfld, fi);
-        }
-
-        internal static void EmitFieldSet(this ILGenerator il, FieldInfo fi)
-        {
-            Debug.Assert(fi != null);
-
-            il.Emit(fi.IsStatic ? OpCodes.Stsfld : OpCodes.Stfld, fi);
-        }
-
-        internal static void EmitNew(this ILGenerator il, ConstructorInfo ci)
-        {
-            Debug.Assert(ci != null);
-            Debug.Assert(ci.DeclaringType != null);
-            Debug.Assert(!ci.DeclaringType.ContainsGenericParameters);
-
-            il.Emit(OpCodes.Newobj, ci);
-        }
-
-        // matches TryEmitConstant
-        internal static bool CanEmitConstant(object value, Type type)
-        {
-            if (value == null || CanEmitILConstant(type))
-            {
-                return true;
-            }
-            if (value is Type t)
-            {
-                return ShouldLdtoken(t);
-            }
-            return value is MethodBase mb && ShouldLdtoken(mb);
-        }
-
-        internal static void EmitNull(this ILGenerator il)
-        {
-            il.Emit(OpCodes.Ldnull);
-        }
-
-        internal static void EmitPrimitive(this ILGenerator il, bool value)
-        {
-            il.Emit(value ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0);
-        }
-
-        internal static void EmitPrimitive(this ILGenerator il, int value)
-        {
-            OpCode c;
-            switch (value)
-            {
-                case -1:
-                    c = OpCodes.Ldc_I4_M1;
-                    break;
-
-                case 0:
-                    c = OpCodes.Ldc_I4_0;
-                    break;
-
-                case 1:
-                    c = OpCodes.Ldc_I4_1;
-                    break;
-
-                case 2:
-                    c = OpCodes.Ldc_I4_2;
-                    break;
-
-                case 3:
-                    c = OpCodes.Ldc_I4_3;
-                    break;
-
-                case 4:
-                    c = OpCodes.Ldc_I4_4;
-                    break;
-
-                case 5:
-                    c = OpCodes.Ldc_I4_5;
-                    break;
-
-                case 6:
-                    c = OpCodes.Ldc_I4_6;
-                    break;
-
-                case 7:
-                    c = OpCodes.Ldc_I4_7;
-                    break;
-
-                case 8:
-                    c = OpCodes.Ldc_I4_8;
-                    break;
-
-                default:
-                    if (value >= sbyte.MinValue && value <= sbyte.MaxValue)
-                    {
-                        il.Emit(OpCodes.Ldc_I4_S, (sbyte)value);
-                    }
-                    else
-                    {
-                        il.Emit(OpCodes.Ldc_I4, value);
-                    }
-                    return;
-            }
-            il.Emit(c);
-        }
-
-        internal static void EmitString(this ILGenerator il, string value)
-        {
-            Debug.Assert(value != null);
-
-            il.Emit(OpCodes.Ldstr, value);
         }
 
         internal static bool ShouldLdtoken(MethodBase mb)
@@ -535,196 +719,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private static void EmitPrimitive(this ILGenerator il, uint value)
-        {
-            il.EmitPrimitive(unchecked((int)value));
-        }
-
-        private static void EmitPrimitive(this ILGenerator il, long value)
-        {
-            if (int.MinValue <= value && value <= uint.MaxValue)
-            {
-                il.EmitPrimitive(unchecked((int)value));
-                // While often not of consequence depending on what follows, there are cases where this
-                // casting matters. Values [0, int.MaxValue] can use either safely, but negative values
-                // must use conv.i8 and those (int.MaxValue, uint.MaxValue] must use conv.u8, or else
-                // the higher bits will be wrong.
-                il.Emit(value > 0 ? OpCodes.Conv_U8 : OpCodes.Conv_I8);
-            }
-            else
-            {
-                il.Emit(OpCodes.Ldc_I8, value);
-            }
-        }
-
-        private static void EmitPrimitive(this ILGenerator il, ulong value)
-        {
-            il.EmitPrimitive(unchecked((long)value));
-        }
-
-        private static void EmitPrimitive(this ILGenerator il, double value)
-        {
-            il.Emit(OpCodes.Ldc_R8, value);
-        }
-
-        private static void EmitPrimitive(this ILGenerator il, float value)
-        {
-            il.Emit(OpCodes.Ldc_R4, value);
-        }
-
-        private static bool ShouldLdtoken(Type t)
-        {
-            // If CompileToMethod is re-enabled, t is TypeBuilder should also return
-            // true when not compiling to a DynamicMethod
-            return t.IsGenericParameter || t.IsVisible;
-        }
-
-        private static bool TryEmitILConstant(this ILGenerator il, object value, Type type)
-        {
-            Debug.Assert(value != null);
-            if (type.IsNullable())
-            {
-                var nonNullType = type.GetNonNullable();
-                if (TryEmitILConstant(il, value, nonNullType))
-                {
-                    il.Emit(OpCodes.Newobj, type.GetConstructor(new[] { nonNullType }));
-                    return true;
-                }
-                return false;
-            }
-            switch (type.GetTypeCode())
-            {
-                case TypeCode.Boolean:
-                    il.EmitPrimitive((bool)value);
-                    return true;
-
-                case TypeCode.SByte:
-                    il.EmitPrimitive((sbyte)value);
-                    return true;
-
-                case TypeCode.Int16:
-                    il.EmitPrimitive((short)value);
-                    return true;
-
-                case TypeCode.Int32:
-                    il.EmitPrimitive((int)value);
-                    return true;
-
-                case TypeCode.Int64:
-                    il.EmitPrimitive((long)value);
-                    return true;
-
-                case TypeCode.Single:
-                    il.EmitPrimitive((float)value);
-                    return true;
-
-                case TypeCode.Double:
-                    il.EmitPrimitive((double)value);
-                    return true;
-
-                case TypeCode.Char:
-                    il.EmitPrimitive((char)value);
-                    return true;
-
-                case TypeCode.Byte:
-                    il.EmitPrimitive((byte)value);
-                    return true;
-
-                case TypeCode.UInt16:
-                    il.EmitPrimitive((ushort)value);
-                    return true;
-
-                case TypeCode.UInt32:
-                    il.EmitPrimitive((uint)value);
-                    return true;
-
-                case TypeCode.UInt64:
-                    il.EmitPrimitive((ulong)value);
-                    return true;
-
-                case TypeCode.Decimal:
-                    il.EmitDecimal((decimal)value);
-                    return true;
-
-                case TypeCode.String:
-                    il.EmitString((string)value);
-                    return true;
-
-                default:
-                    return false;
-            }
-        }
-
-        internal static void EmitConvertToType(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked, ILocalCache locals)
-        {
-            if (TypeUtils.AreEquivalent(typeFrom, typeTo))
-            {
-                return;
-            }
-
-            Debug.Assert(typeFrom != typeof(void) && typeTo != typeof(void));
-
-            var isTypeFromNullable = typeFrom.IsNullable();
-            var isTypeToNullable = typeTo.IsNullable();
-
-            var nnExprType = typeFrom.GetNonNullable();
-            var nnType = typeTo.GetNonNullable();
-
-            if
-            (
-               typeFrom.IsInterface // interface cast
-               || typeTo.IsInterface
-               || typeFrom == typeof(object) // boxing cast
-               || typeTo == typeof(object)
-               || typeFrom == typeof(Enum)
-               || typeFrom == typeof(ValueType)
-               || TypeUtils.IsLegalExplicitVariantDelegateConversion(typeFrom, typeTo)
-            )
-            {
-                il.EmitCastToType(typeFrom, typeTo);
-            }
-            else if (isTypeFromNullable || isTypeToNullable)
-            {
-                il.EmitNullableConversion(typeFrom, typeTo, isChecked, locals);
-            }
-            else if (!(typeFrom.IsConvertible() && typeTo.IsConvertible()) // primitive runtime conversion
-                     &&
-                     (nnExprType.IsAssignableFrom(nnType) || // down cast
-                     nnType.IsAssignableFrom(nnExprType))) // up cast
-            {
-                il.EmitCastToType(typeFrom, typeTo);
-            }
-            else if (typeFrom.IsArray && typeTo.IsArray) // reference conversion from one array type to another via castclass
-            {
-                il.EmitCastToType(typeFrom, typeTo);
-            }
-            else
-            {
-                il.EmitNumericConversion(typeFrom, typeTo, isChecked);
-            }
-        }
-
-        internal static void EmitGetValue(this ILGenerator il, Type nullable)
-        {
-            var mi = nullable.GetMethod("get_Value", BindingFlags.Instance | BindingFlags.Public);
-            Debug.Assert(nullable.IsValueType);
-            il.Emit(OpCodes.Call, mi);
-        }
-
-        internal static void EmitGetValueOrDefault(this ILGenerator il, Type nullable)
-        {
-            var mi = nullable.GetMethod("GetValueOrDefault", Type.EmptyTypes);
-            Debug.Assert(nullable.IsValueType);
-            il.Emit(OpCodes.Call, mi);
-        }
-
-        internal static void EmitHasValue(this ILGenerator il, Type nullable)
-        {
-            var mi = nullable.GetMethod("get_HasValue", BindingFlags.Instance | BindingFlags.Public);
-            Debug.Assert(nullable.IsValueType);
-            il.Emit(OpCodes.Call, mi);
-        }
-
         private static void EmitCastToType(this ILGenerator il, Type typeFrom, Type typeTo)
         {
             if (typeFrom.IsValueType)
@@ -740,6 +734,83 @@ namespace System.Linq.Expressions.Compiler
             {
                 il.Emit(typeTo.IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass, typeTo);
             }
+        }
+
+        private static void EmitDecimal(this ILGenerator il, decimal value)
+        {
+            var bits = decimal.GetBits(value);
+            var scale = (bits[3] & int.MaxValue) >> 16;
+            if (scale == 0)
+            {
+                if (int.MinValue <= value)
+                {
+                    if (value <= int.MaxValue)
+                    {
+                        var intValue = decimal.ToInt32(value);
+                        switch (intValue)
+                        {
+                            case -1:
+                                il.Emit(OpCodes.Ldsfld, DecimalMinusOne);
+                                return;
+
+                            case 0:
+                                il.EmitDefault(typeof(decimal), locals: null); // locals won't be used.
+                                return;
+
+                            case 1:
+                                il.Emit(OpCodes.Ldsfld, DecimalOne);
+                                return;
+
+                            default:
+                                il.EmitPrimitive(intValue);
+                                il.EmitNew(DecimalCtorInt32);
+                                return;
+                        }
+                    }
+
+                    if (value <= uint.MaxValue)
+                    {
+                        il.EmitPrimitive(decimal.ToUInt32(value));
+                        il.EmitNew(DecimalCtorUInt32);
+                        return;
+                    }
+                }
+
+                if (long.MinValue <= value)
+                {
+                    if (value <= long.MaxValue)
+                    {
+                        il.EmitPrimitive(decimal.ToInt64(value));
+                        il.EmitNew(DecimalCtorInt64);
+                        return;
+                    }
+
+                    if (value <= ulong.MaxValue)
+                    {
+                        il.EmitPrimitive(decimal.ToUInt64(value));
+                        il.EmitNew(DecimalCtorUInt64);
+                        return;
+                    }
+
+                    if (value == decimal.MaxValue)
+                    {
+                        il.Emit(OpCodes.Ldsfld, DecimalMaxValue);
+                        return;
+                    }
+                }
+                else if (value == decimal.MinValue)
+                {
+                    il.Emit(OpCodes.Ldsfld, DecimalMinValue);
+                    return;
+                }
+            }
+
+            il.EmitPrimitive(bits[0]);
+            il.EmitPrimitive(bits[1]);
+            il.EmitPrimitive(bits[2]);
+            il.EmitPrimitive((bits[3] & 0x80000000) != 0);
+            il.EmitPrimitive(unchecked((byte)scale));
+            il.EmitNew(DecimalCtorInt32Int32Int32BoolByte);
         }
 
         private static void EmitNonNullableToNullableConversion(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked, ILocalCache locals)
@@ -1068,195 +1139,124 @@ namespace System.Linq.Expressions.Compiler
             il.Emit(convCode);
         }
 
-        internal static void EmitArray<T>(this ILGenerator il, T[] items, ILocalCache locals)
+        private static void EmitPrimitive(this ILGenerator il, uint value)
         {
-            Debug.Assert(items != null);
-
-            il.EmitPrimitive(items.Length);
-            il.Emit(OpCodes.Newarr, typeof(T));
-            for (var i = 0; i < items.Length; i++)
-            {
-                il.Emit(OpCodes.Dup);
-                il.EmitPrimitive(i);
-                il.TryEmitConstant(items[i], typeof(T), locals);
-                il.EmitStoreElement(typeof(T));
-            }
+            il.EmitPrimitive(unchecked((int)value));
         }
 
-        internal static void EmitArray(this ILGenerator il, Type elementType, int count)
+        private static void EmitPrimitive(this ILGenerator il, long value)
         {
-            Debug.Assert(elementType != null);
-            Debug.Assert(count >= 0);
-
-            il.EmitPrimitive(count);
-            il.Emit(OpCodes.Newarr, elementType);
-        }
-
-        internal static void EmitArray(this ILGenerator il, Type arrayType)
-        {
-            Debug.Assert(arrayType != null);
-            Debug.Assert(arrayType.IsArray);
-
-            if (arrayType.IsSafeArray())
+            if (int.MinValue <= value && value <= uint.MaxValue)
             {
-                il.Emit(OpCodes.Newarr, arrayType.GetElementType());
+                il.EmitPrimitive(unchecked((int)value));
+                // While often not of consequence depending on what follows, there are cases where this
+                // casting matters. Values [0, int.MaxValue] can use either safely, but negative values
+                // must use conv.i8 and those (int.MaxValue, uint.MaxValue] must use conv.u8, or else
+                // the higher bits will be wrong.
+                il.Emit(value > 0 ? OpCodes.Conv_U8 : OpCodes.Conv_I8);
             }
             else
             {
-                var types = new Type[arrayType.GetArrayRank()];
-                for (var i = 0; i < types.Length; i++)
-                {
-                    types[i] = typeof(int);
-                }
-                var ci = arrayType.GetConstructor(types);
-                Debug.Assert(ci != null);
-                il.EmitNew(ci);
+                il.Emit(OpCodes.Ldc_I8, value);
             }
         }
 
-        internal static void EmitDefault(this ILGenerator il, Type type, ILocalCache locals)
+        private static void EmitPrimitive(this ILGenerator il, ulong value)
         {
+            il.EmitPrimitive(unchecked((long)value));
+        }
+
+        private static void EmitPrimitive(this ILGenerator il, double value)
+        {
+            il.Emit(OpCodes.Ldc_R8, value);
+        }
+
+        private static void EmitPrimitive(this ILGenerator il, float value)
+        {
+            il.Emit(OpCodes.Ldc_R4, value);
+        }
+
+        private static bool ShouldLdtoken(Type t)
+        {
+            // If CompileToMethod is re-enabled, t is TypeBuilder should also return
+            // true when not compiling to a DynamicMethod
+            return t.IsGenericParameter || t.IsVisible;
+        }
+
+        private static bool TryEmitILConstant(this ILGenerator il, object value, Type type)
+        {
+            Debug.Assert(value != null);
+            if (type.IsNullable())
+            {
+                var nonNullType = type.GetNonNullable();
+                if (TryEmitILConstant(il, value, nonNullType))
+                {
+                    il.Emit(OpCodes.Newobj, type.GetConstructor(new[] { nonNullType }));
+                    return true;
+                }
+                return false;
+            }
             switch (type.GetTypeCode())
             {
-                case TypeCode.DateTime:
-                    il.Emit(OpCodes.Ldsfld, DateTimeMinValue);
-                    break;
-
-                case TypeCode.Object:
-                    if (type.IsValueType)
-                    {
-                        // Type.GetTypeCode on an enum returns the underlying
-                        // integer TypeCode, so we won't get here.
-                        Debug.Assert(!type.IsEnum);
-
-                        // This is the IL for default(T) if T is a generic type
-                        // parameter, so it should work for any type. It's also
-                        // the standard pattern for structs.
-                        var lb = locals.GetLocal(type);
-                        il.Emit(OpCodes.Ldloca, lb);
-                        il.Emit(OpCodes.Initobj, type);
-                        il.Emit(OpCodes.Ldloc, lb);
-                        locals.FreeLocal(lb);
-                        break;
-                    }
-
-                    goto case TypeCode.Empty;
-
-                case TypeCode.Empty:
-                case TypeCode.String:
-                case TypeCode.DBNull:
-                    il.Emit(OpCodes.Ldnull);
-                    break;
-
                 case TypeCode.Boolean:
-                case TypeCode.Char:
+                    il.EmitPrimitive((bool)value);
+                    return true;
+
                 case TypeCode.SByte:
-                case TypeCode.Byte:
+                    il.EmitPrimitive((sbyte)value);
+                    return true;
+
                 case TypeCode.Int16:
-                case TypeCode.UInt16:
+                    il.EmitPrimitive((short)value);
+                    return true;
+
                 case TypeCode.Int32:
-                case TypeCode.UInt32:
-                    il.Emit(OpCodes.Ldc_I4_0);
-                    break;
+                    il.EmitPrimitive((int)value);
+                    return true;
 
                 case TypeCode.Int64:
-                case TypeCode.UInt64:
-                    il.Emit(OpCodes.Ldc_I4_0);
-                    il.Emit(OpCodes.Conv_I8);
-                    break;
+                    il.EmitPrimitive((long)value);
+                    return true;
 
                 case TypeCode.Single:
-                    il.Emit(OpCodes.Ldc_R4, default(float));
-                    break;
+                    il.EmitPrimitive((float)value);
+                    return true;
 
                 case TypeCode.Double:
-                    il.Emit(OpCodes.Ldc_R8, default(double));
-                    break;
+                    il.EmitPrimitive((double)value);
+                    return true;
+
+                case TypeCode.Char:
+                    il.EmitPrimitive((char)value);
+                    return true;
+
+                case TypeCode.Byte:
+                    il.EmitPrimitive((byte)value);
+                    return true;
+
+                case TypeCode.UInt16:
+                    il.EmitPrimitive((ushort)value);
+                    return true;
+
+                case TypeCode.UInt32:
+                    il.EmitPrimitive((uint)value);
+                    return true;
+
+                case TypeCode.UInt64:
+                    il.EmitPrimitive((ulong)value);
+                    return true;
 
                 case TypeCode.Decimal:
-                    il.Emit(OpCodes.Ldsfld, DecimalZero);
-                    break;
+                    il.EmitDecimal((decimal)value);
+                    return true;
+
+                case TypeCode.String:
+                    il.EmitString((string)value);
+                    return true;
 
                 default:
-                    throw ContractUtils.Unreachable;
+                    return false;
             }
-        }
-
-        private static void EmitDecimal(this ILGenerator il, decimal value)
-        {
-            var bits = decimal.GetBits(value);
-            var scale = (bits[3] & int.MaxValue) >> 16;
-            if (scale == 0)
-            {
-                if (int.MinValue <= value)
-                {
-                    if (value <= int.MaxValue)
-                    {
-                        var intValue = decimal.ToInt32(value);
-                        switch (intValue)
-                        {
-                            case -1:
-                                il.Emit(OpCodes.Ldsfld, DecimalMinusOne);
-                                return;
-
-                            case 0:
-                                il.EmitDefault(typeof(decimal), locals: null); // locals won't be used.
-                                return;
-
-                            case 1:
-                                il.Emit(OpCodes.Ldsfld, DecimalOne);
-                                return;
-
-                            default:
-                                il.EmitPrimitive(intValue);
-                                il.EmitNew(DecimalCtorInt32);
-                                return;
-                        }
-                    }
-
-                    if (value <= uint.MaxValue)
-                    {
-                        il.EmitPrimitive(decimal.ToUInt32(value));
-                        il.EmitNew(DecimalCtorUInt32);
-                        return;
-                    }
-                }
-
-                if (long.MinValue <= value)
-                {
-                    if (value <= long.MaxValue)
-                    {
-                        il.EmitPrimitive(decimal.ToInt64(value));
-                        il.EmitNew(DecimalCtorInt64);
-                        return;
-                    }
-
-                    if (value <= ulong.MaxValue)
-                    {
-                        il.EmitPrimitive(decimal.ToUInt64(value));
-                        il.EmitNew(DecimalCtorUInt64);
-                        return;
-                    }
-
-                    if (value == decimal.MaxValue)
-                    {
-                        il.Emit(OpCodes.Ldsfld, DecimalMaxValue);
-                        return;
-                    }
-                }
-                else if (value == decimal.MinValue)
-                {
-                    il.Emit(OpCodes.Ldsfld, DecimalMinValue);
-                    return;
-                }
-            }
-
-            il.EmitPrimitive(bits[0]);
-            il.EmitPrimitive(bits[1]);
-            il.EmitPrimitive(bits[2]);
-            il.EmitPrimitive((bits[3] & 0x80000000) != 0);
-            il.EmitPrimitive(unchecked((byte)scale));
-            il.EmitNew(DecimalCtorInt32Int32Int32BoolByte);
         }
     }
 }

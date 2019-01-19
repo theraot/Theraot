@@ -105,11 +105,6 @@ namespace System.Linq
             return Execute<IEnumerable<TElement>>(Expression).GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public override string ToString()
         {
             if (_enumerable != null)
@@ -126,6 +121,11 @@ namespace System.Linq
         private static Expression TransformQueryable(Expression expression)
         {
             return new QueryableTransformer().Transform(expression);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

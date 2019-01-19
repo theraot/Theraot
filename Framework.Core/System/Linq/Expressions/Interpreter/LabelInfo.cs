@@ -40,11 +40,6 @@ namespace System.Linq.Expressions.Interpreter
     /// </summary>
     internal sealed class LabelInfo
     {
-        // The tree node representing this label
-        private readonly LabelTarget _node;
-
-        // Blocks that jump to this block
-        private readonly List<LabelScopeInfo> _references = new List<LabelScopeInfo>();
 
         // True if at least one jump is across blocks
         // If we have any jump across blocks to this label, then the
@@ -59,6 +54,11 @@ namespace System.Linq.Expressions.Interpreter
 
         // The BranchLabel label, will be mutated if Node is redefined
         private BranchLabel _label;
+        // The tree node representing this label
+        private readonly LabelTarget _node;
+
+        // Blocks that jump to this block
+        private readonly List<LabelScopeInfo> _references = new List<LabelScopeInfo>();
 
         internal LabelInfo(LabelTarget node)
         {
@@ -304,6 +304,7 @@ namespace System.Linq.Expressions.Interpreter
                     case LabelScopeKind.Switch:
                     case LabelScopeKind.Lambda:
                         return true;
+
                     default:
                         return false;
                 }

@@ -78,12 +78,6 @@ namespace Theraot.Collections.ThreadSafe
             Extensions.DeprecatedCopyTo(this, array, index);
         }
 
-        void ICollection.CopyTo(Array array, int index)
-        {
-            Extensions.CanCopyTo(Count, array, index);
-            Extensions.DeprecatedCopyTo(this, array, index);
-        }
-
         /// <summary>
         /// Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>
@@ -103,20 +97,9 @@ namespace Theraot.Collections.ThreadSafe
             } while (root != null);
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public T[] ToArray()
         {
             return Extensions.ToArray(this, Count);
-        }
-
-        bool IProducerConsumerCollection<T>.TryAdd(T item)
-        {
-            Add(item);
-            return true;
         }
 
         /// <summary>
@@ -178,6 +161,23 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 spinWait.SpinOnce();
             }
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            Extensions.CanCopyTo(Count, array, index);
+            Extensions.DeprecatedCopyTo(this, array, index);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        bool IProducerConsumerCollection<T>.TryAdd(T item)
+        {
+            Add(item);
+            return true;
         }
     }
 }

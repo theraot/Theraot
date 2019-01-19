@@ -31,6 +31,11 @@ namespace System.Linq
 
         IQueryProvider IQueryable.Provider => _queryable;
 
+        public override string ToString()
+        {
+            return _queryable.ToString();
+        }
+
         IQueryable IQueryProvider.CreateQuery(Expression expression)
         {
             return _queryable.CreateQuery(expression);
@@ -59,11 +64,6 @@ namespace System.Linq
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             return _queryable.GetEnumerator();
-        }
-
-        public override string ToString()
-        {
-            return _queryable.ToString();
         }
     }
 }

@@ -26,17 +26,14 @@ namespace System.Threading.Tasks
     /// </summary>
     internal class TaskExceptionHolder
     {
-        /// <summary>Whether we should propagate exceptions on the finalizer.</summary>
-        private static readonly bool _failFastOnUnobservedException = ShouldFailFastOnUnobservedException();
 
         /// <summary>An event handler used to notify of domain unload.</summary>
         private static EventHandler _adUnloadEventHandler;
 
         /// <summary>Whether the AppDomain has started to unload.</summary>
         private static volatile bool _domainUnloadStarted;
-
-        /// <summary>The task with which this holder is associated.</summary>
-        private readonly Task _task;
+        /// <summary>Whether we should propagate exceptions on the finalizer.</summary>
+        private static readonly bool _failFastOnUnobservedException = ShouldFailFastOnUnobservedException();
 
         /// <summary>An exception that triggered the task to cancel.</summary>
         private ExceptionDispatchInfo _cancellationException;
@@ -49,6 +46,9 @@ namespace System.Threading.Tasks
 
         /// <summary>Whether the holder was "observed" and thus doesn't cause finalization behavior.</summary>
         private volatile bool _isHandled;
+
+        /// <summary>The task with which this holder is associated.</summary>
+        private readonly Task _task;
 
         /// <summary>
         /// Creates a new holder; it will be registered for finalization.

@@ -11,6 +11,205 @@ namespace System.Numerics
     [Serializable]
     public partial struct BigInteger : IFormattable, IComparable, IComparable<BigInteger>, IEquatable<BigInteger>
     {
+
+        public static explicit operator BigInteger(float value)
+
+        {
+            return new BigInteger(value);
+        }
+
+        public static explicit operator BigInteger(double value)
+        {
+            return new BigInteger(value);
+        }
+
+        public static explicit operator BigInteger(decimal value)
+        {
+            return new BigInteger(value);
+        }
+
+        public static explicit operator byte(BigInteger value)
+        {
+            return checked((byte)(int)value);
+        }
+
+        public static explicit operator decimal(BigInteger value)
+        {
+            if (value.InternalBits == null)
+            {
+                return value.InternalSign;
+            }
+            var length = Length(value.InternalBits);
+            if (length > 3)
+            {
+                throw new OverflowException("Value was either too large or too small for a Decimal.");
+            }
+            var lo = 0;
+            var mi = 0;
+            var hi = 0;
+            if (length > 2)
+            {
+                hi = (int)value.InternalBits[2];
+            }
+            if (length > 1)
+            {
+                mi = (int)value.InternalBits[1];
+            }
+            if (length > 0)
+            {
+                lo = (int)value.InternalBits[0];
+            }
+            return new decimal(lo, mi, hi, value.InternalSign < 0, 0);
+        }
+
+        public static explicit operator double(BigInteger value)
+        {
+            if (value.InternalBits == null)
+            {
+                return value.InternalSign;
+            }
+            var sign = 1;
+            var bigIntegerBuilder = new BigIntegerBuilder(value, ref sign);
+            bigIntegerBuilder.GetApproxParts(out var exp, out var man);
+            return NumericHelper.BuildDouble(sign, man, exp);
+        }
+
+        public static explicit operator float(BigInteger value)
+        {
+            return (float)(double)value;
+        }
+
+        public static explicit operator int(BigInteger value)
+        {
+            if (value.InternalBits == null)
+            {
+                return value.InternalSign;
+            }
+            if (Length(value.InternalBits) > 1)
+            {
+                throw new OverflowException("Value was either too large or too small for an Int32.");
+            }
+            if (value.InternalSign > 0)
+            {
+                return checked((int)value.InternalBits[0]);
+            }
+            if (value.InternalBits[0] > unchecked((uint)int.MinValue))
+            {
+                throw new OverflowException("Value was either too large or too small for an Int32.");
+            }
+            return (int)-value.InternalBits[0];
+        }
+
+        public static explicit operator long(BigInteger value)
+        {
+            if (value.InternalBits == null)
+            {
+                return value.InternalSign;
+            }
+            var length = Length(value.InternalBits);
+            if (length > 2)
+            {
+                throw new OverflowException("Value was either too large or too small for an Int64.");
+            }
+
+            var target = ULong(length, value.InternalBits);
+            var result = value.InternalSign <= 0 ? -(long)target : (long)target;
+            if ((result <= 0 || value.InternalSign <= 0) && (result >= 0 || value.InternalSign >= 0))
+            {
+                throw new OverflowException("Value was either too large or too small for an Int64.");
+            }
+            return result;
+        }
+
+        [CLSCompliant(false)]
+        public static explicit operator sbyte(BigInteger value)
+        {
+            return checked((sbyte)(int)value);
+        }
+
+        public static explicit operator short(BigInteger value)
+        {
+            return checked((short)(int)value);
+        }
+
+        [CLSCompliant(false)]
+        public static explicit operator uint(BigInteger value)
+        {
+            if (value.InternalBits == null)
+            {
+                return checked((uint)value.InternalSign);
+            }
+            if (Length(value.InternalBits) > 1 || value.InternalSign < 0)
+            {
+                throw new OverflowException("Value was either too large or too small for a UInt32.");
+            }
+            return value.InternalBits[0];
+        }
+
+        [CLSCompliant(false)]
+        public static explicit operator ulong(BigInteger value)
+        {
+            if (value.InternalBits == null)
+            {
+                return checked((ulong)value.InternalSign);
+            }
+            var length = Length(value.InternalBits);
+            if (length > 2 || value.InternalSign < 0)
+            {
+                throw new OverflowException("Value was either too large or too small for a UInt64.");
+            }
+            return ULong(length, value.InternalBits);
+        }
+
+        [CLSCompliant(false)]
+        public static explicit operator ushort(BigInteger value)
+        {
+            return checked((ushort)(int)value);
+        }
+
+        public static implicit operator BigInteger(byte value)
+        {
+            return new BigInteger(value);
+        }
+
+        [CLSCompliant(false)]
+        public static implicit operator BigInteger(sbyte value)
+        {
+            return new BigInteger(value);
+        }
+
+        public static implicit operator BigInteger(short value)
+        {
+            return new BigInteger(value);
+        }
+
+        [CLSCompliant(false)]
+        public static implicit operator BigInteger(ushort value)
+        {
+            return new BigInteger(value);
+        }
+
+        public static implicit operator BigInteger(int value)
+        {
+            return new BigInteger(value);
+        }
+
+        [CLSCompliant(false)]
+        public static implicit operator BigInteger(uint value)
+        {
+            return new BigInteger(value);
+        }
+
+        public static implicit operator BigInteger(long value)
+        {
+            return new BigInteger(value);
+        }
+
+        [CLSCompliant(false)]
+        public static implicit operator BigInteger(ulong value)
+        {
+            return new BigInteger(value);
+        }
         internal readonly uint[] InternalBits;
         internal readonly int InternalSign;
         private static readonly BigInteger _bigIntegerMinInt = new BigInteger(-1, new[] { unchecked((uint)int.MinValue) });
@@ -477,428 +676,6 @@ namespace System.Numerics
         /// <summary>Gets a number that indicates the sign (negative, positive, or zero) of the current <see cref="T:System.Numerics.BigInteger" /> object.</summary>
         /// <returns>A number that indicates the sign of the <see cref="T:System.Numerics.BigInteger" /> object, as shown in the following table.NumberDescription-1The value of this object is negative.0The value of this object is 0 (zero).1The value of this object is positive.</returns>
         public int Sign => (InternalSign >> 31) - (-InternalSign >> 31);
-
-        /// <summary>Gets the absolute value of a <see cref="T:System.Numerics.BigInteger" /> object.</summary>
-        /// <returns>The absolute value of <paramref name="value" />.</returns>
-        /// <param name="value">A number.</param>
-        public static BigInteger Abs(BigInteger value)
-        {
-            return value < Zero ? -value : value;
-        }
-
-        /// <summary>Adds two <see cref="T:System.Numerics.BigInteger" /> values and returns the result.</summary>
-        /// <returns>The sum of <paramref name="left" /> and <paramref name="right" />.</returns>
-        /// <param name="left">The first value to add.</param>
-        /// <param name="right">The second value to add.</param>
-        public static BigInteger Add(BigInteger left, BigInteger right)
-        {
-            return left + right;
-        }
-
-        /// <summary>Compares two <see cref="T:System.Numerics.BigInteger" /> values and returns an integer that indicates whether the first value is less than, equal to, or greater than the second value.</summary>
-        /// <returns>A signed integer that indicates the relative values of <paramref name="left" /> and <paramref name="right" />, as shown in the following table.ValueConditionLess than zero<paramref name="left" /> is less than <paramref name="right" />.Zero<paramref name="left" /> equals <paramref name="right" />.Greater than zero<paramref name="left" /> is greater than <paramref name="right" />.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        public static int Compare(BigInteger left, BigInteger right)
-        {
-            return left.CompareTo(right);
-        }
-
-        /// <summary>Divides one <see cref="T:System.Numerics.BigInteger" /> value by another and returns the result.</summary>
-        /// <returns>The quotient of the division.</returns>
-        /// <param name="dividend">The value to be divided.</param>
-        /// <param name="divisor">The value to divide by.</param>
-        /// <exception cref="T:System.DivideByZeroException">
-        ///   <paramref name="divisor" /> is 0 (zero).</exception>
-        public static BigInteger Divide(BigInteger dividend, BigInteger divisor)
-        {
-            return dividend / divisor;
-        }
-
-        /// <summary>Divides one <see cref="T:System.Numerics.BigInteger" /> value by another, returns the result, and returns the remainder in an output parameter.</summary>
-        /// <returns>The quotient of the division.</returns>
-        /// <param name="dividend">The value to be divided.</param>
-        /// <param name="divisor">The value to divide by.</param>
-        /// <param name="remainder">When this method returns, contains a <see cref="T:System.Numerics.BigInteger" /> value that represents the remainder from the division. This parameter is passed uninitialized.</param>
-        /// <exception cref="T:System.DivideByZeroException">
-        ///   <paramref name="divisor" /> is 0 (zero).</exception>
-        public static BigInteger DivRem(BigInteger dividend, BigInteger divisor, out BigInteger remainder)
-        {
-            var signNum = 1;
-            var signDen = 1;
-            var regNum = new BigIntegerBuilder(dividend, ref signNum);
-            var regDen = new BigIntegerBuilder(divisor, ref signDen);
-            var regQuo = new BigIntegerBuilder();
-            regNum.ModDiv(ref regDen, ref regQuo);
-            remainder = regNum.GetInteger(signNum);
-            return regQuo.GetInteger(signNum * signDen);
-        }
-
-        public static explicit operator BigInteger(float value)
-
-        {
-            return new BigInteger(value);
-        }
-
-        public static explicit operator BigInteger(double value)
-        {
-            return new BigInteger(value);
-        }
-
-        public static explicit operator BigInteger(decimal value)
-        {
-            return new BigInteger(value);
-        }
-
-        public static explicit operator byte(BigInteger value)
-        {
-            return checked((byte)(int)value);
-        }
-
-        public static explicit operator decimal(BigInteger value)
-        {
-            if (value.InternalBits == null)
-            {
-                return value.InternalSign;
-            }
-            var length = Length(value.InternalBits);
-            if (length > 3)
-            {
-                throw new OverflowException("Value was either too large or too small for a Decimal.");
-            }
-            var lo = 0;
-            var mi = 0;
-            var hi = 0;
-            if (length > 2)
-            {
-                hi = (int)value.InternalBits[2];
-            }
-            if (length > 1)
-            {
-                mi = (int)value.InternalBits[1];
-            }
-            if (length > 0)
-            {
-                lo = (int)value.InternalBits[0];
-            }
-            return new decimal(lo, mi, hi, value.InternalSign < 0, 0);
-        }
-
-        public static explicit operator double(BigInteger value)
-        {
-            if (value.InternalBits == null)
-            {
-                return value.InternalSign;
-            }
-            var sign = 1;
-            var bigIntegerBuilder = new BigIntegerBuilder(value, ref sign);
-            bigIntegerBuilder.GetApproxParts(out var exp, out var man);
-            return NumericHelper.BuildDouble(sign, man, exp);
-        }
-
-        public static explicit operator float(BigInteger value)
-        {
-            return (float)(double)value;
-        }
-
-        public static explicit operator int(BigInteger value)
-        {
-            if (value.InternalBits == null)
-            {
-                return value.InternalSign;
-            }
-            if (Length(value.InternalBits) > 1)
-            {
-                throw new OverflowException("Value was either too large or too small for an Int32.");
-            }
-            if (value.InternalSign > 0)
-            {
-                return checked((int)value.InternalBits[0]);
-            }
-            if (value.InternalBits[0] > unchecked((uint)int.MinValue))
-            {
-                throw new OverflowException("Value was either too large or too small for an Int32.");
-            }
-            return (int)-value.InternalBits[0];
-        }
-
-        public static explicit operator long(BigInteger value)
-        {
-            if (value.InternalBits == null)
-            {
-                return value.InternalSign;
-            }
-            var length = Length(value.InternalBits);
-            if (length > 2)
-            {
-                throw new OverflowException("Value was either too large or too small for an Int64.");
-            }
-
-            var target = ULong(length, value.InternalBits);
-            var result = value.InternalSign <= 0 ? -(long)target : (long)target;
-            if ((result <= 0 || value.InternalSign <= 0) && (result >= 0 || value.InternalSign >= 0))
-            {
-                throw new OverflowException("Value was either too large or too small for an Int64.");
-            }
-            return result;
-        }
-
-        [CLSCompliant(false)]
-        public static explicit operator sbyte(BigInteger value)
-        {
-            return checked((sbyte)(int)value);
-        }
-
-        public static explicit operator short(BigInteger value)
-        {
-            return checked((short)(int)value);
-        }
-
-        [CLSCompliant(false)]
-        public static explicit operator uint(BigInteger value)
-        {
-            if (value.InternalBits == null)
-            {
-                return checked((uint)value.InternalSign);
-            }
-            if (Length(value.InternalBits) > 1 || value.InternalSign < 0)
-            {
-                throw new OverflowException("Value was either too large or too small for a UInt32.");
-            }
-            return value.InternalBits[0];
-        }
-
-        [CLSCompliant(false)]
-        public static explicit operator ulong(BigInteger value)
-        {
-            if (value.InternalBits == null)
-            {
-                return checked((ulong)value.InternalSign);
-            }
-            var length = Length(value.InternalBits);
-            if (length > 2 || value.InternalSign < 0)
-            {
-                throw new OverflowException("Value was either too large or too small for a UInt64.");
-            }
-            return ULong(length, value.InternalBits);
-        }
-
-        [CLSCompliant(false)]
-        public static explicit operator ushort(BigInteger value)
-        {
-            return checked((ushort)(int)value);
-        }
-
-        /// <summary>Finds the greatest common divisor of two <see cref="T:System.Numerics.BigInteger" /> values.</summary>
-        /// <returns>The greatest common divisor of <paramref name="left" /> and <paramref name="right" />.</returns>
-        /// <param name="left">The first value.</param>
-        /// <param name="right">The second value.</param>
-        public static BigInteger GreatestCommonDivisor(BigInteger left, BigInteger right)
-        {
-            if (left.InternalSign == 0)
-            {
-                return Abs(right);
-            }
-            if (right.InternalSign == 0)
-            {
-                return Abs(left);
-            }
-            var bigIntegerBuilder = new BigIntegerBuilder(left);
-            var bigIntegerBuilder1 = new BigIntegerBuilder(right);
-            BigIntegerBuilder.Gcd(ref bigIntegerBuilder, ref bigIntegerBuilder1);
-            return bigIntegerBuilder.GetInteger(1);
-        }
-
-        public static implicit operator BigInteger(byte value)
-        {
-            return new BigInteger(value);
-        }
-
-        [CLSCompliant(false)]
-        public static implicit operator BigInteger(sbyte value)
-        {
-            return new BigInteger(value);
-        }
-
-        public static implicit operator BigInteger(short value)
-        {
-            return new BigInteger(value);
-        }
-
-        [CLSCompliant(false)]
-        public static implicit operator BigInteger(ushort value)
-        {
-            return new BigInteger(value);
-        }
-
-        public static implicit operator BigInteger(int value)
-        {
-            return new BigInteger(value);
-        }
-
-        [CLSCompliant(false)]
-        public static implicit operator BigInteger(uint value)
-        {
-            return new BigInteger(value);
-        }
-
-        public static implicit operator BigInteger(long value)
-        {
-            return new BigInteger(value);
-        }
-
-        [CLSCompliant(false)]
-        public static implicit operator BigInteger(ulong value)
-        {
-            return new BigInteger(value);
-        }
-
-        /// <summary>Returns the natural (base e) logarithm of a specified number.</summary>
-        /// <returns>The natural (base e) logarithm of <paramref name="value" />, as shown in the table in the Remarks section.</returns>
-        /// <param name="value">The number whose logarithm is to be found.</param>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">The natural log of <paramref name="value" /> is out of range of the <see cref="T:System.Double" /> data type.</exception>
-        public static double Log(BigInteger value)
-        {
-            return Log(value, Math.E);
-        }
-
-        /// <summary>Returns the logarithm of a specified number in a specified base.</summary>
-        /// <returns>The base <paramref name="baseValue" /> logarithm of <paramref name="value" />, as shown in the table in the Remarks section.</returns>
-        /// <param name="value">A number whose logarithm is to be found.</param>
-        /// <param name="baseValue">The base of the logarithm.</param>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">The log of <paramref name="value" /> is out of range of the <see cref="T:System.Double" /> data type.</exception>
-        public static double Log(BigInteger value, double baseValue)
-        {
-            if (value.InternalSign < 0 || NumericHelper.IsOne(baseValue))
-            {
-                return double.NaN;
-            }
-            if (double.IsPositiveInfinity(baseValue))
-            {
-                return !value.IsOne ? double.NaN : 0;
-            }
-            if (NumericHelper.IsZero(baseValue) && !value.IsOne)
-            {
-                return double.NaN;
-            }
-            if (value.InternalBits == null)
-            {
-                return Math.Log(value.InternalSign, baseValue);
-            }
-            double c = 0;
-            var d = 0.5;
-            var length = Length(value.InternalBits);
-            var topBits = BitLengthOfUInt(value.InternalBits[length - 1]);
-            var bitlen = ((length - 1) * 32) + topBits;
-            var currentBitMask = (uint)(1 << (topBits - 1 & 31));
-            for (var index = length - 1; index >= 0; index--)
-            {
-                while (currentBitMask != 0)
-                {
-                    if ((value.InternalBits[index] & currentBitMask) != 0)
-                    {
-                        c += d;
-                    }
-                    d *= 0.5;
-                    currentBitMask >>= 1;
-                }
-                currentBitMask = unchecked((uint)int.MinValue);
-            }
-            return (Math.Log(c) + (0.69314718055994529D * bitlen)) / Math.Log(baseValue);
-        }
-
-        /// <summary>Returns the base 10 logarithm of a specified number.</summary>
-        /// <returns>The base 10 logarithm of <paramref name="value" />, as shown in the table in the Remarks section.</returns>
-        /// <param name="value">A number whose logarithm is to be found.</param>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">The base 10 log of <paramref name="value" /> is out of range of the <see cref="T:System.Double" /> data type.</exception>
-        public static double Log10(BigInteger value)
-        {
-            return Log(value, 10);
-        }
-
-        /// <summary>Returns the larger of two <see cref="T:System.Numerics.BigInteger" /> values.</summary>
-        /// <returns>The <paramref name="left" /> or <paramref name="right" /> parameter, whichever is larger.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        public static BigInteger Max(BigInteger left, BigInteger right)
-        {
-            if (left.CompareTo(right) < 0)
-            {
-                return right;
-            }
-            return left;
-        }
-
-        /// <summary>Returns the smaller of two <see cref="T:System.Numerics.BigInteger" /> values.</summary>
-        /// <returns>The <paramref name="left" /> or <paramref name="right" /> parameter, whichever is smaller.</returns>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        public static BigInteger Min(BigInteger left, BigInteger right)
-        {
-            if (left.CompareTo(right) <= 0)
-            {
-                return left;
-            }
-            return right;
-        }
-
-        /// <summary>Performs modulus division on a number raised to the power of another number.</summary>
-        /// <returns>The remainder after dividing <paramref name="value" />exponent by <paramref name="modulus" />.</returns>
-        /// <param name="value">The number to raise to the <paramref name="exponent" /> power.</param>
-        /// <param name="exponent">The exponent to raise <paramref name="value" /> by.</param>
-        /// <param name="modulus">The number by which to divide <paramref name="value" /> raised to the <paramref name="exponent" /> power.</param>
-        /// <exception cref="T:System.DivideByZeroException">
-        ///   <paramref name="modulus" /> is zero.</exception>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
-        ///   <paramref name="exponent" /> is negative.</exception>
-        public static BigInteger ModPow(BigInteger value, BigInteger exponent, BigInteger modulus)
-        {
-            if (exponent.Sign < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(exponent), "The number must be greater than or equal to zero.");
-            }
-            var signRes = 1;
-            var signVal = 1;
-            var signMod = 1;
-            var isEven = exponent.IsEven;
-            var regRes = new BigIntegerBuilder(One, ref signRes);
-            var regVal = new BigIntegerBuilder(value, ref signVal);
-            var regMod = new BigIntegerBuilder(modulus, ref signMod);
-            var regTmp = new BigIntegerBuilder(regVal.Size);
-            regRes.Mod(ref regMod);
-            if (exponent.InternalBits != null)
-            {
-                var length = Length(exponent.InternalBits);
-                for (var index = 0; index < length - 1; index++)
-                {
-                    var num5 = exponent.InternalBits[index];
-                    ModPowInner32(num5, ref regRes, ref regVal, ref regMod, ref regTmp);
-                }
-                ModPowInner(exponent.InternalBits[length - 1], ref regRes, ref regVal, ref regMod, ref regTmp);
-            }
-            else
-            {
-                ModPowInner((uint)exponent.InternalSign, ref regRes, ref regVal, ref regMod, ref regTmp);
-            }
-            return regRes.GetInteger(value.InternalSign <= 0 ? !isEven ? -1 : 1 : 1);
-        }
-
-        /// <summary>Returns the product of two <see cref="T:System.Numerics.BigInteger" /> values.</summary>
-        /// <returns>The product of the <paramref name="left" /> and <paramref name="right" /> parameters.</returns>
-        /// <param name="left">The first number to multiply.</param>
-        /// <param name="right">The second number to multiply.</param>
-        public static BigInteger Multiply(BigInteger left, BigInteger right)
-        {
-            return left * right;
-        }
-
-        /// <summary>Negates a specified <see cref="T:System.Numerics.BigInteger" /> value.</summary>
-        /// <returns>The result of the <paramref name="value" /> parameter multiplied by negative one (-1).</returns>
-        /// <param name="value">The value to negate.</param>
-        public static BigInteger Negate(BigInteger value)
-        {
-            return -value;
-        }
 
         /// <summary>Subtracts a <see cref="T:System.Numerics.BigInteger" /> value from another <see cref="T:System.Numerics.BigInteger" /> value.</summary>
         /// <returns>The result of subtracting <paramref name="right" /> from <paramref name="left" />.</returns>
@@ -1506,6 +1283,229 @@ namespace System.Numerics
                 NumericsHelpers.DangerousMakeTwosComplement(zd);
             }
             return new BigInteger(zd, negative);
+        }
+
+        /// <summary>Gets the absolute value of a <see cref="T:System.Numerics.BigInteger" /> object.</summary>
+        /// <returns>The absolute value of <paramref name="value" />.</returns>
+        /// <param name="value">A number.</param>
+        public static BigInteger Abs(BigInteger value)
+        {
+            return value < Zero ? -value : value;
+        }
+
+        /// <summary>Adds two <see cref="T:System.Numerics.BigInteger" /> values and returns the result.</summary>
+        /// <returns>The sum of <paramref name="left" /> and <paramref name="right" />.</returns>
+        /// <param name="left">The first value to add.</param>
+        /// <param name="right">The second value to add.</param>
+        public static BigInteger Add(BigInteger left, BigInteger right)
+        {
+            return left + right;
+        }
+
+        /// <summary>Compares two <see cref="T:System.Numerics.BigInteger" /> values and returns an integer that indicates whether the first value is less than, equal to, or greater than the second value.</summary>
+        /// <returns>A signed integer that indicates the relative values of <paramref name="left" /> and <paramref name="right" />, as shown in the following table.ValueConditionLess than zero<paramref name="left" /> is less than <paramref name="right" />.Zero<paramref name="left" /> equals <paramref name="right" />.Greater than zero<paramref name="left" /> is greater than <paramref name="right" />.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        public static int Compare(BigInteger left, BigInteger right)
+        {
+            return left.CompareTo(right);
+        }
+
+        /// <summary>Divides one <see cref="T:System.Numerics.BigInteger" /> value by another and returns the result.</summary>
+        /// <returns>The quotient of the division.</returns>
+        /// <param name="dividend">The value to be divided.</param>
+        /// <param name="divisor">The value to divide by.</param>
+        /// <exception cref="T:System.DivideByZeroException">
+        ///   <paramref name="divisor" /> is 0 (zero).</exception>
+        public static BigInteger Divide(BigInteger dividend, BigInteger divisor)
+        {
+            return dividend / divisor;
+        }
+
+        /// <summary>Divides one <see cref="T:System.Numerics.BigInteger" /> value by another, returns the result, and returns the remainder in an output parameter.</summary>
+        /// <returns>The quotient of the division.</returns>
+        /// <param name="dividend">The value to be divided.</param>
+        /// <param name="divisor">The value to divide by.</param>
+        /// <param name="remainder">When this method returns, contains a <see cref="T:System.Numerics.BigInteger" /> value that represents the remainder from the division. This parameter is passed uninitialized.</param>
+        /// <exception cref="T:System.DivideByZeroException">
+        ///   <paramref name="divisor" /> is 0 (zero).</exception>
+        public static BigInteger DivRem(BigInteger dividend, BigInteger divisor, out BigInteger remainder)
+        {
+            var signNum = 1;
+            var signDen = 1;
+            var regNum = new BigIntegerBuilder(dividend, ref signNum);
+            var regDen = new BigIntegerBuilder(divisor, ref signDen);
+            var regQuo = new BigIntegerBuilder();
+            regNum.ModDiv(ref regDen, ref regQuo);
+            remainder = regNum.GetInteger(signNum);
+            return regQuo.GetInteger(signNum * signDen);
+        }
+
+        /// <summary>Finds the greatest common divisor of two <see cref="T:System.Numerics.BigInteger" /> values.</summary>
+        /// <returns>The greatest common divisor of <paramref name="left" /> and <paramref name="right" />.</returns>
+        /// <param name="left">The first value.</param>
+        /// <param name="right">The second value.</param>
+        public static BigInteger GreatestCommonDivisor(BigInteger left, BigInteger right)
+        {
+            if (left.InternalSign == 0)
+            {
+                return Abs(right);
+            }
+            if (right.InternalSign == 0)
+            {
+                return Abs(left);
+            }
+            var bigIntegerBuilder = new BigIntegerBuilder(left);
+            var bigIntegerBuilder1 = new BigIntegerBuilder(right);
+            BigIntegerBuilder.Gcd(ref bigIntegerBuilder, ref bigIntegerBuilder1);
+            return bigIntegerBuilder.GetInteger(1);
+        }
+
+        /// <summary>Returns the natural (base e) logarithm of a specified number.</summary>
+        /// <returns>The natural (base e) logarithm of <paramref name="value" />, as shown in the table in the Remarks section.</returns>
+        /// <param name="value">The number whose logarithm is to be found.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The natural log of <paramref name="value" /> is out of range of the <see cref="T:System.Double" /> data type.</exception>
+        public static double Log(BigInteger value)
+        {
+            return Log(value, Math.E);
+        }
+
+        /// <summary>Returns the logarithm of a specified number in a specified base.</summary>
+        /// <returns>The base <paramref name="baseValue" /> logarithm of <paramref name="value" />, as shown in the table in the Remarks section.</returns>
+        /// <param name="value">A number whose logarithm is to be found.</param>
+        /// <param name="baseValue">The base of the logarithm.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The log of <paramref name="value" /> is out of range of the <see cref="T:System.Double" /> data type.</exception>
+        public static double Log(BigInteger value, double baseValue)
+        {
+            if (value.InternalSign < 0 || NumericHelper.IsOne(baseValue))
+            {
+                return double.NaN;
+            }
+            if (double.IsPositiveInfinity(baseValue))
+            {
+                return !value.IsOne ? double.NaN : 0;
+            }
+            if (NumericHelper.IsZero(baseValue) && !value.IsOne)
+            {
+                return double.NaN;
+            }
+            if (value.InternalBits == null)
+            {
+                return Math.Log(value.InternalSign, baseValue);
+            }
+            double c = 0;
+            var d = 0.5;
+            var length = Length(value.InternalBits);
+            var topBits = BitLengthOfUInt(value.InternalBits[length - 1]);
+            var bitlen = ((length - 1) * 32) + topBits;
+            var currentBitMask = (uint)(1 << (topBits - 1 & 31));
+            for (var index = length - 1; index >= 0; index--)
+            {
+                while (currentBitMask != 0)
+                {
+                    if ((value.InternalBits[index] & currentBitMask) != 0)
+                    {
+                        c += d;
+                    }
+                    d *= 0.5;
+                    currentBitMask >>= 1;
+                }
+                currentBitMask = unchecked((uint)int.MinValue);
+            }
+            return (Math.Log(c) + (0.69314718055994529D * bitlen)) / Math.Log(baseValue);
+        }
+
+        /// <summary>Returns the base 10 logarithm of a specified number.</summary>
+        /// <returns>The base 10 logarithm of <paramref name="value" />, as shown in the table in the Remarks section.</returns>
+        /// <param name="value">A number whose logarithm is to be found.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The base 10 log of <paramref name="value" /> is out of range of the <see cref="T:System.Double" /> data type.</exception>
+        public static double Log10(BigInteger value)
+        {
+            return Log(value, 10);
+        }
+
+        /// <summary>Returns the larger of two <see cref="T:System.Numerics.BigInteger" /> values.</summary>
+        /// <returns>The <paramref name="left" /> or <paramref name="right" /> parameter, whichever is larger.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        public static BigInteger Max(BigInteger left, BigInteger right)
+        {
+            if (left.CompareTo(right) < 0)
+            {
+                return right;
+            }
+            return left;
+        }
+
+        /// <summary>Returns the smaller of two <see cref="T:System.Numerics.BigInteger" /> values.</summary>
+        /// <returns>The <paramref name="left" /> or <paramref name="right" /> parameter, whichever is smaller.</returns>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        public static BigInteger Min(BigInteger left, BigInteger right)
+        {
+            if (left.CompareTo(right) <= 0)
+            {
+                return left;
+            }
+            return right;
+        }
+
+        /// <summary>Performs modulus division on a number raised to the power of another number.</summary>
+        /// <returns>The remainder after dividing <paramref name="value" />exponent by <paramref name="modulus" />.</returns>
+        /// <param name="value">The number to raise to the <paramref name="exponent" /> power.</param>
+        /// <param name="exponent">The exponent to raise <paramref name="value" /> by.</param>
+        /// <param name="modulus">The number by which to divide <paramref name="value" /> raised to the <paramref name="exponent" /> power.</param>
+        /// <exception cref="T:System.DivideByZeroException">
+        ///   <paramref name="modulus" /> is zero.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        ///   <paramref name="exponent" /> is negative.</exception>
+        public static BigInteger ModPow(BigInteger value, BigInteger exponent, BigInteger modulus)
+        {
+            if (exponent.Sign < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(exponent), "The number must be greater than or equal to zero.");
+            }
+            var signRes = 1;
+            var signVal = 1;
+            var signMod = 1;
+            var isEven = exponent.IsEven;
+            var regRes = new BigIntegerBuilder(One, ref signRes);
+            var regVal = new BigIntegerBuilder(value, ref signVal);
+            var regMod = new BigIntegerBuilder(modulus, ref signMod);
+            var regTmp = new BigIntegerBuilder(regVal.Size);
+            regRes.Mod(ref regMod);
+            if (exponent.InternalBits != null)
+            {
+                var length = Length(exponent.InternalBits);
+                for (var index = 0; index < length - 1; index++)
+                {
+                    var num5 = exponent.InternalBits[index];
+                    ModPowInner32(num5, ref regRes, ref regVal, ref regMod, ref regTmp);
+                }
+                ModPowInner(exponent.InternalBits[length - 1], ref regRes, ref regVal, ref regMod, ref regTmp);
+            }
+            else
+            {
+                ModPowInner((uint)exponent.InternalSign, ref regRes, ref regVal, ref regMod, ref regTmp);
+            }
+            return regRes.GetInteger(value.InternalSign <= 0 ? !isEven ? -1 : 1 : 1);
+        }
+
+        /// <summary>Returns the product of two <see cref="T:System.Numerics.BigInteger" /> values.</summary>
+        /// <returns>The product of the <paramref name="left" /> and <paramref name="right" /> parameters.</returns>
+        /// <param name="left">The first number to multiply.</param>
+        /// <param name="right">The second number to multiply.</param>
+        public static BigInteger Multiply(BigInteger left, BigInteger right)
+        {
+            return left * right;
+        }
+
+        /// <summary>Negates a specified <see cref="T:System.Numerics.BigInteger" /> value.</summary>
+        /// <returns>The result of the <paramref name="value" /> parameter multiplied by negative one (-1).</returns>
+        /// <param name="value">The value to negate.</param>
+        public static BigInteger Negate(BigInteger value)
+        {
+            return -value;
         }
 
         /// <summary>Converts the string representation of a number to its <see cref="T:System.Numerics.BigInteger" /> equivalent.</summary>

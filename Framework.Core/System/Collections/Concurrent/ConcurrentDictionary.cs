@@ -13,10 +13,10 @@ namespace System.Collections.Concurrent
     [Serializable]
     public class ConcurrentDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary
     {
-        private readonly SafeDictionary<TKey, TValue> _wrapped;
 
         [NonSerialized]
         private ValueCollection<TKey, TValue> _valueCollection;
+        private readonly SafeDictionary<TKey, TValue> _wrapped;
 
         public ConcurrentDictionary()
             : this(4, 31, EqualityComparer<TKey>.Default)
@@ -70,23 +70,16 @@ namespace System.Collections.Concurrent
         public int Count => _wrapped.Count;
 
         public bool IsEmpty => Count == 0;
-
-        bool IDictionary.IsFixedSize => false;
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
-
-        bool IDictionary.IsReadOnly => false;
-
-        bool ICollection.IsSynchronized => false;
-
         public ICollection<TKey> Keys => _wrapped.Keys;
-
-        ICollection IDictionary.Keys => (ICollection)_wrapped.Keys;
-
-        object ICollection.SyncRoot => this;
-
         public ICollection<TValue> Values => GetValues();
 
+        bool IDictionary.IsFixedSize => false;
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
+        bool IDictionary.IsReadOnly => false;
+        bool ICollection.IsSynchronized => false;
+
+        ICollection IDictionary.Keys => (ICollection)_wrapped.Keys;
+        object ICollection.SyncRoot => this;
         ICollection IDictionary.Values => GetValues();
 
         public TValue this[TKey key]
@@ -147,46 +140,6 @@ namespace System.Collections.Concurrent
             }
         }
 
-        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
-        {
-            // key could be null
-            if (key == null)
-            {
-                // ConcurrentDictionary hates null
-                throw new ArgumentNullException(nameof(key));
-            }
-            _wrapped.AddNew(key, value);
-        }
-
-        void IDictionary.Add(object key, object value)
-        {
-            // key could be null
-            if (key == null)
-            {
-                // ConcurrentDictionary hates null
-                throw new ArgumentNullException(nameof(key));
-            }
-            // keep the is operator
-            if (key is TKey keyAsTKey && value is TValue valueAsTValue)
-            {
-                _wrapped.AddNew(keyAsTKey, valueAsTValue);
-            }
-            throw new ArgumentException(string.Empty, nameof(value));
-        }
-
-        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
-        {
-            // key could be null
-            if (item.Key == null)
-            {
-                // ConcurrentDictionary hates null
-                // While technically item is not null and item.Key is not an argument...
-                // This is what happens when you do the call on Microsoft's implementation
-                throw CreateArgumentNullExceptionKey(item.Key);
-            }
-            _wrapped.AddNew(item.Key, item.Value);
-        }
-
         public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
         {
             // key could be null
@@ -229,40 +182,6 @@ namespace System.Collections.Concurrent
             _wrapped.Clear();
         }
 
-        bool IDictionary.Contains(object key)
-        {
-            // key could be null
-            if (key == null)
-            {
-                // ConcurrentDictionary hates null
-                throw new ArgumentNullException(nameof(key));
-            }
-            // keep the is operator
-            if (key is TKey keyAsTKey)
-            {
-                return ContainsKey(keyAsTKey);
-            }
-            return false;
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
-        {
-            // key could be null
-            if (item.Key == null)
-            {
-                // ConcurrentDictionary hates null
-                // While technically item is not null and item.Key is not an argument...
-                // This is what happens when you do the call on Microsoft's implementation
-                throw CreateArgumentNullExceptionKey(item.Key);
-            }
-            if (_wrapped.TryGetValue(item.Key, out var found) && EqualityComparer<TValue>.Default.Equals(found, item.Value))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
         public bool ContainsKey(TKey key)
         {
             // key could be null
@@ -275,78 +194,9 @@ namespace System.Collections.Concurrent
             return _wrapped.ContainsKey(key);
         }
 
-        void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
-        {
-            // This should be an snapshot operation
-            Extensions.CanCopyTo(Count, array, arrayIndex);
-            this.CopyTo(array, arrayIndex);
-        }
-
-        void ICollection.CopyTo(Array array, int index)
-        {
-            // WORST API EVER - I shouldn't be supporting this
-            // I'm checking size before checking type - I have no plans to fix that
-            Extensions.CanCopyTo(_wrapped.Count, array, index);
-            try
-            {
-                switch (array)
-                {
-                    case KeyValuePair<TKey, TValue>[] pairs:
-                    {
-                        // most decent alternative
-                        var keyValuePairs = pairs;
-                        foreach (var pair in _wrapped)
-                        {
-                            keyValuePairs[index] = pair;
-                            index++;
-                        }
-                        return;
-                    }
-                    case DictionaryEntry[] entries:
-                    {
-                        // that thing exists, I was totally unaware, I may as well use it.
-                        var dictionaryEntries = entries;
-                        foreach (var pair in _wrapped)
-                        {
-                            dictionaryEntries[index] = new DictionaryEntry(pair.Key, pair.Value);
-                            index++;
-                        }
-                        return;
-                    }
-                    case object[] objects:
-                    {
-                        var valuePairs = objects;
-                        foreach (var pair in _wrapped)
-                        {
-                            valuePairs[index] = pair;
-                            index++;
-                        }
-                        return;
-                    }
-                    default:
-                        // A.K.A ScrewYouException
-                        throw new ArgumentException("Not supported array type");
-                }
-            }
-            catch (IndexOutOfRangeException exception)
-            {
-                throw new ArgumentException(exception.Message, nameof(array));
-            }
-        }
-
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             return _wrapped.GetEnumerator();
-        }
-
-        IDictionaryEnumerator IDictionary.GetEnumerator()
-        {
-            return new DictionaryEnumerator(this);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
@@ -370,39 +220,6 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(key));
             }
             return _wrapped.GetOrAdd(key, value);
-        }
-
-        void IDictionary.Remove(object key)
-        {
-            // key could be null
-            if (key == null)
-            {
-                // ConcurrentDictionary hates null
-                throw new ArgumentNullException(nameof(key));
-            }
-            // keep the is operator
-            if (key is TKey keyAsTKey)
-            {
-                _wrapped.Remove(keyAsTKey);
-            }
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
-        {
-            // key could be null
-            if (item.Key == null)
-            {
-                // ConcurrentDictionary hates null
-                // While technically item is not null and item.Key is not an argument...
-                // This is what happens when you do the call on Microsoft's implementation
-                throw CreateArgumentNullExceptionKey(item.Key);
-            }
-            return _wrapped.Remove(item.Key, input => EqualityComparer<TValue>.Default.Equals(input, item.Value), out _);
-        }
-
-        bool IDictionary<TKey, TValue>.Remove(TKey key)
-        {
-            return TryRemove(key, out _);
         }
 
         public KeyValuePair<TKey, TValue>[] ToArray()
@@ -466,6 +283,46 @@ namespace System.Collections.Concurrent
             return new ArgumentNullException(nameof(key));
         }
 
+        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
+        {
+            // key could be null
+            if (key == null)
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException(nameof(key));
+            }
+            _wrapped.AddNew(key, value);
+        }
+
+        void IDictionary.Add(object key, object value)
+        {
+            // key could be null
+            if (key == null)
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException(nameof(key));
+            }
+            // keep the is operator
+            if (key is TKey keyAsTKey && value is TValue valueAsTValue)
+            {
+                _wrapped.AddNew(keyAsTKey, valueAsTValue);
+            }
+            throw new ArgumentException(string.Empty, nameof(value));
+        }
+
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
+        {
+            // key could be null
+            if (item.Key == null)
+            {
+                // ConcurrentDictionary hates null
+                // While technically item is not null and item.Key is not an argument...
+                // This is what happens when you do the call on Microsoft's implementation
+                throw CreateArgumentNullExceptionKey(item.Key);
+            }
+            _wrapped.AddNew(item.Key, item.Value);
+        }
+
         private void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> collection)
         {
             foreach (var pair in collection)
@@ -477,9 +334,145 @@ namespace System.Collections.Concurrent
             }
         }
 
+        bool IDictionary.Contains(object key)
+        {
+            // key could be null
+            if (key == null)
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException(nameof(key));
+            }
+            // keep the is operator
+            if (key is TKey keyAsTKey)
+            {
+                return ContainsKey(keyAsTKey);
+            }
+            return false;
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
+        {
+            // key could be null
+            if (item.Key == null)
+            {
+                // ConcurrentDictionary hates null
+                // While technically item is not null and item.Key is not an argument...
+                // This is what happens when you do the call on Microsoft's implementation
+                throw CreateArgumentNullExceptionKey(item.Key);
+            }
+            if (_wrapped.TryGetValue(item.Key, out var found) && EqualityComparer<TValue>.Default.Equals(found, item.Value))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        {
+            // This should be an snapshot operation
+            Extensions.CanCopyTo(Count, array, arrayIndex);
+            this.CopyTo(array, arrayIndex);
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            // WORST API EVER - I shouldn't be supporting this
+            // I'm checking size before checking type - I have no plans to fix that
+            Extensions.CanCopyTo(_wrapped.Count, array, index);
+            try
+            {
+                switch (array)
+                {
+                    case KeyValuePair<TKey, TValue>[] pairs:
+                        {
+                            // most decent alternative
+                            var keyValuePairs = pairs;
+                            foreach (var pair in _wrapped)
+                            {
+                                keyValuePairs[index] = pair;
+                                index++;
+                            }
+                            return;
+                        }
+                    case DictionaryEntry[] entries:
+                        {
+                            // that thing exists, I was totally unaware, I may as well use it.
+                            var dictionaryEntries = entries;
+                            foreach (var pair in _wrapped)
+                            {
+                                dictionaryEntries[index] = new DictionaryEntry(pair.Key, pair.Value);
+                                index++;
+                            }
+                            return;
+                        }
+                    case object[] objects:
+                        {
+                            var valuePairs = objects;
+                            foreach (var pair in _wrapped)
+                            {
+                                valuePairs[index] = pair;
+                                index++;
+                            }
+                            return;
+                        }
+                    default:
+                        // A.K.A ScrewYouException
+                        throw new ArgumentException("Not supported array type");
+                }
+            }
+            catch (IndexOutOfRangeException exception)
+            {
+                throw new ArgumentException(exception.Message, nameof(array));
+            }
+        }
+
+        IDictionaryEnumerator IDictionary.GetEnumerator()
+        {
+            return new DictionaryEnumerator(this);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         private ValueCollection<TKey, TValue> GetValues()
         {
             return TypeHelper.LazyCreate(ref _valueCollection, () => new ValueCollection<TKey, TValue>(this), _wrapped);
+        }
+
+        void IDictionary.Remove(object key)
+        {
+            // key could be null
+            if (key == null)
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException(nameof(key));
+            }
+            // keep the is operator
+            if (key is TKey keyAsTKey)
+            {
+                _wrapped.Remove(keyAsTKey);
+            }
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
+        {
+            // key could be null
+            if (item.Key == null)
+            {
+                // ConcurrentDictionary hates null
+                // While technically item is not null and item.Key is not an argument...
+                // This is what happens when you do the call on Microsoft's implementation
+                throw CreateArgumentNullExceptionKey(item.Key);
+            }
+            return _wrapped.Remove(item.Key, input => EqualityComparer<TValue>.Default.Equals(input, item.Value), out _);
+        }
+
+        bool IDictionary<TKey, TValue>.Remove(TKey key)
+        {
+            return TryRemove(key, out _);
         }
 
         private sealed class DictionaryEnumerator : IDictionaryEnumerator

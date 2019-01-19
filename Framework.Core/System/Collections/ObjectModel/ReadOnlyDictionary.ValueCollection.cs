@@ -28,6 +28,16 @@ namespace System.Collections.ObjectModel
 
             object ICollection.SyncRoot => ((ICollection)_wrapped).SyncRoot;
 
+            public void CopyTo(TValue[] array, int arrayIndex)
+            {
+                _wrapped.CopyTo(array, arrayIndex);
+            }
+
+            public IEnumerator<TValue> GetEnumerator()
+            {
+                return _wrapped.GetEnumerator();
+            }
+
             void ICollection<TValue>.Add(TValue item)
             {
                 throw new NotSupportedException();
@@ -43,19 +53,9 @@ namespace System.Collections.ObjectModel
                 return _wrapped.Contains(item);
             }
 
-            public void CopyTo(TValue[] array, int arrayIndex)
-            {
-                _wrapped.CopyTo(array, arrayIndex);
-            }
-
             void ICollection.CopyTo(Array array, int index)
             {
                 ((ICollection)_wrapped).CopyTo(array, index);
-            }
-
-            public IEnumerator<TValue> GetEnumerator()
-            {
-                return _wrapped.GetEnumerator();
             }
 
             IEnumerator IEnumerable.GetEnumerator()

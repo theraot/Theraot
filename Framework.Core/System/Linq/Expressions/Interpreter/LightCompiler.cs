@@ -262,10 +262,10 @@ namespace System.Linq.Expressions.Interpreter
         private readonly List<DebugInfo> _debugInfos = new List<DebugInfo>();
         private readonly Stack<ParameterExpression> _exceptionForRethrowStack = new Stack<ParameterExpression>();
         private readonly StackGuard _guard = new StackGuard();
+        private LabelScopeInfo _labelBlock = new LabelScopeInfo(null, LabelScopeKind.Lambda);
         private readonly LocalVariables _locals = new LocalVariables();
         private readonly LightCompiler _parent;
         private readonly HybridReferenceDictionary<LabelTarget, LabelInfo> _treeLabels = new HybridReferenceDictionary<LabelTarget, LabelInfo>();
-        private LabelScopeInfo _labelBlock = new LabelScopeInfo(null, LabelScopeKind.Lambda);
 
         public LightCompiler()
         {
@@ -334,6 +334,11 @@ namespace System.Linq.Expressions.Interpreter
             return e is ConstantExpression c && c.Value == null;
         }
 
+        private static bool MaybeMutableValueType(Type type)
+        {
+            return type.IsValueType && !type.IsEnum && !type.IsPrimitive;
+        }
+
 #endif
 
         private static bool ShouldWritebackNode(Expression node)
@@ -352,6 +357,7 @@ namespace System.Linq.Expressions.Interpreter
 
                     case ExpressionType.MemberAccess:
                         return ((MemberExpression)node).Member is FieldInfo;
+
                     default:
                         break;
                         // ExpressionType.Unbox does have the behaviour writeback is used to simulate, but
@@ -507,6 +513,7 @@ namespace System.Linq.Expressions.Interpreter
                             );
                         }
                         break;
+
                     default:
                         break;
                 }
@@ -1388,7 +1395,7 @@ namespace System.Linq.Expressions.Interpreter
                 var caseOffset = Instructions.Count - switchIndex;
                 foreach (var expression in switchCase.TestValues)
                 {
-                    var testValue = (ConstantExpression) expression;
+                    var testValue = (ConstantExpression)expression;
                     var key = (T)testValue.Value;
                     caseDict.TryAdd(key, caseOffset);
                 }
@@ -1817,6 +1824,7 @@ namespace System.Linq.Expressions.Interpreter
                         CompileMemberInit(memberMember.Bindings);
                         Instructions.EmitPop();
                         break;
+
                     default:
                         // Should not happen
                         Debug.Fail(string.Empty);
@@ -2245,7 +2253,7 @@ namespace System.Linq.Expressions.Interpreter
                 var caseOffset = Instructions.Count - switchIndex;
                 foreach (var expression in switchCase.TestValues)
                 {
-                    var testValue = (ConstantExpression) expression;
+                    var testValue = (ConstantExpression)expression;
                     var key = (string)testValue.Value;
                     if (key == null)
                     {
@@ -2323,6 +2331,7 @@ namespace System.Linq.Expressions.Interpreter
                         case TypeCode.Int64:
                             CompileIntSwitchExpression<object>(node);
                             return;
+
                         default:
                             break;
                     }
@@ -2908,11 +2917,6 @@ namespace System.Linq.Expressions.Interpreter
                 kvp.Value.ValidateFinish();
             }
             return new Interpreter(lambdaName, _locals, Instructions.ToArray(), debugInfos);
-        }
-
-        private static bool MaybeMutableValueType(Type type)
-        {
-            return type.IsValueType && !type.IsEnum && !type.IsPrimitive;
         }
 
         private void PopLabelBlock(LabelScopeKind kind)

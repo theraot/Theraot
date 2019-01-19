@@ -108,11 +108,6 @@ namespace Theraot.Collections.ThreadSafe
             return _wrapped.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         /// <summary>
         /// Removes the specified value.
         /// </summary>
@@ -169,6 +164,11 @@ namespace Theraot.Collections.ThreadSafe
         public IEnumerable<T> Where(Predicate<T> check)
         {
             return _wrapped.Where(check);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

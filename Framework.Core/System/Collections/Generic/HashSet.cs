@@ -82,11 +82,6 @@ namespace System.Collections.Generic
             return true;
         }
 
-        void ICollection<T>.Add(T item)
-        {
-            Add(item);
-        }
-
         public void Clear()
         {
             _wrapped.Clear();
@@ -177,11 +172,6 @@ namespace System.Collections.Generic
         public IEnumerator<T> GetEnumerator()
         {
             return new Enumerator(this);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.SerializationFormatter)]
@@ -309,6 +299,16 @@ namespace System.Collections.Generic
                     _wrapped[item] = null;
                 }
             }
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            Add(item);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         private bool IsSubsetOf(IEnumerable<T> other, bool proper)

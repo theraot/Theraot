@@ -16,8 +16,8 @@ namespace Theraot.Threading
         private const int _created = 0;
         private const int _executed = 2;
         private const int _executing = 1;
-        private static readonly Bucket<RootedTimeout> _root = new Bucket<RootedTimeout>();
         private static int _lastRootIndex = -1;
+        private static readonly Bucket<RootedTimeout> _root = new Bucket<RootedTimeout>();
         private readonly int _hashcode;
         private int _rootIndex = -1;
         private long _startTime;
@@ -35,11 +35,11 @@ namespace Theraot.Threading
             Close();
         }
 
-        Exception IPromise.Exception => null;
-
         public bool IsCanceled => Volatile.Read(ref _status) == _canceled;
 
         public bool IsCompleted => Volatile.Read(ref _status) == _executed;
+
+        Exception IPromise.Exception => null;
 
         bool IPromise.IsFaulted => false;
 
