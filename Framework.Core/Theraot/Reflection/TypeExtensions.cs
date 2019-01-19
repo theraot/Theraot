@@ -362,7 +362,7 @@ namespace Theraot.Reflection
             // bool-backed enums.
             return IsConvertible(source) && IsConvertible(target)
                                          && (target.GetNonNullable() != typeof(bool)
-                                         || source.GetTypeInfo().IsEnum && source.GetUnderlyingSystemType() == typeof(bool));
+                                         || (source.GetTypeInfo().IsEnum && source.GetUnderlyingSystemType() == typeof(bool)));
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -625,7 +625,7 @@ namespace Theraot.Reflection
             // Don't use BindingFlags.Static
             foreach (var method in type.GetTypeInfo().GetMethods())
             {
-                if (method.Name == name && method.IsStatic)
+                if (string.Equals(method.Name, name, StringComparison.Ordinal) && method.IsStatic)
                 {
                     return method;
                 }
@@ -952,7 +952,7 @@ namespace Theraot.Reflection
             {
                 if (member is MethodInfo methodInfo)
                 {
-                    if (member.Name != name)
+                    if (!string.Equals(member.Name, name, StringComparison.Ordinal))
                     {
                         continue;
                     }
@@ -989,7 +989,7 @@ namespace Theraot.Reflection
             {
                 if (member is MethodInfo methodInfo)
                 {
-                    if (member.Name != name)
+                    if (!string.Equals(member.Name, name, StringComparison.Ordinal))
                     {
                         continue;
                     }
@@ -1026,7 +1026,7 @@ namespace Theraot.Reflection
             {
                 if (member is PropertyInfo propertyInfo)
                 {
-                    if (member.Name != name)
+                    if (!string.Equals(member.Name, name, StringComparison.Ordinal))
                     {
                         continue;
                     }
@@ -1063,7 +1063,7 @@ namespace Theraot.Reflection
             {
                 if (member is PropertyInfo propertyInfo)
                 {
-                    if (member.Name != name)
+                    if (!string.Equals(member.Name, name, StringComparison.Ordinal))
                     {
                         continue;
                     }
