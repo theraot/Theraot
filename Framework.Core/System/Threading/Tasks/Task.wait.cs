@@ -1,5 +1,7 @@
 #if LESSTHAN_NET40
 
+#pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
+
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
@@ -111,11 +113,11 @@ namespace System.Threading.Tasks
         /// true if all of the <see cref="Task"/> instances completed execution within the allotted time;
         /// otherwise, false.
         /// </returns>
+        /// <param name="tasks">An array of <see cref="Task"/> instances on which to wait.
+        /// </param>
         /// <param name="millisecondsTimeout">
         /// The number of milliseconds to wait, or <see cref="Timeout.Infinite"/> (-1) to
         /// wait indefinitely.</param>
-        /// <param name="tasks">An array of <see cref="Task"/> instances on which to wait.
-        /// </param>
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="tasks"/> argument is null.
         /// </exception>
@@ -245,11 +247,7 @@ namespace System.Threading.Tasks
                 }
                 if (!taskIsCompleted)
                 {
-                    if (waitedOnTaskList == null)
-                    {
-                        waitedOnTaskList = new List<Task>(tasks.Length);
-                    }
-                    waitedOnTaskList.Add(task);
+                    (waitedOnTaskList ?? (waitedOnTaskList = new List<Task>(tasks.Length))).Add(task);
                 }
             }
             if (waitedOnTaskList != null)
@@ -271,11 +269,7 @@ namespace System.Threading.Tasks
                             // it's possible that WaitAll was called by the parent of an attached child,
                             // this will make sure it won't throw again in the implicit wait
                             task.UpdateExceptionObservedStatus();
-                            if (exceptions == null)
-                            {
-                                exceptions = new List<Exception>(exception.InnerExceptions.Count);
-                            }
-                            exceptions.AddRange(exception.InnerExceptions);
+                            (exceptions ?? (exceptions = new List<Exception>(exception.InnerExceptions.Count))).AddRange(exception.InnerExceptions);
                         }
                     }
                     if (task.IsFaulted)
@@ -290,7 +284,6 @@ namespace System.Threading.Tasks
                     {
                         break;
                     }
-
                 }
                 if (cancellationSeen && !exceptionSeen)
                 {
@@ -575,14 +568,7 @@ namespace System.Threading.Tasks
             {
                 manualResetEventSlim = new ManualResetEventSlim(false);
                 core = new WhenAllCore(tasks, manualResetEventSlim.Set);
-                if (core.IsDone)
-                {
-                    waitCompleted = true;
-                }
-                else
-                {
-                    waitCompleted = manualResetEventSlim.Wait(millisecondsTimeout, cancellationToken);
-                }
+                waitCompleted = core.IsDone || manualResetEventSlim.Wait(millisecondsTimeout, cancellationToken);
             }
             finally
             {

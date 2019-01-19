@@ -1,5 +1,7 @@
 #if LESSTHAN_NET40
 
+#pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
+
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
@@ -92,7 +94,7 @@ namespace System.Threading.Tasks
             while (true)
             {
                 var lastValue = Volatile.Read(ref _status);
-                if (preventDoubleExecution && lastValue >= 3 || lastValue == 6)
+                if ((preventDoubleExecution && lastValue >= 3) || lastValue == 6)
                 {
                     return false;
                 }

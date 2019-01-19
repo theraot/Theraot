@@ -1,5 +1,8 @@
 #if LESSTHAN_NET40
 
+#pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
+#pragma warning disable CA1068 // CancellationToken parameters must come last
+
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using Theraot.Threading;
@@ -95,6 +98,7 @@ namespace System.Threading.Tasks
         /// <param name="scheduler">A task scheduler under which the task will run.</param>
         internal Task(Delegate action, object state, Task parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
         {
+#pragma warning disable IDE0016 // Usar expresión "throw"
             if (action == null)
             {
                 throw new ArgumentNullException(nameof(action));
@@ -103,6 +107,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(scheduler));
             }
+#pragma warning restore IDE0016 // Usar expresión "throw"
             Contract.EndContractBlock();
             // This is readonly, and so must be set in the constructor
             // Keep a link to your parent if: (A) You are attached, or (B) you are self-replicating.
@@ -273,14 +278,8 @@ namespace System.Threading.Tasks
         [DebuggerNonUserCode]
         public void Dispose()
         {
-            try
-            {
-                Dispose(true);
-            }
-            finally
-            {
-                GC.SuppressFinalize(this);
-            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         void IThreadPoolWorkItem.ExecuteWorkItem()
@@ -767,7 +766,7 @@ namespace System.Threading.Tasks
             while (true)
             {
                 var lastValue = Volatile.Read(ref _status);
-                if (preventDoubleExecution && lastValue >= 3 || lastValue == 6)
+                if ((preventDoubleExecution && lastValue >= 3) || lastValue == 6)
                 {
                     return false;
                 }

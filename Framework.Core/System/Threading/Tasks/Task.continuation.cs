@@ -1,5 +1,8 @@
 #if LESSTHAN_NET40
 
+#pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
+#pragma warning disable CA1068 // CancellationToken parameters must come last
+
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
@@ -125,12 +128,12 @@ namespace System.Threading.Tasks
         /// An action to run when the <see cref="Task"/> completes. When run, the delegate will be
         /// passed the completed task as an argument.
         /// </param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new continuation task.</param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
         /// as <see cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
         /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new continuation task.</param>
         /// <param name="scheduler">
         /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its
         /// execution.
@@ -272,12 +275,12 @@ namespace System.Threading.Tasks
         /// passed the completed task and the caller-supplied state object as arguments.
         /// </param>
         /// <param name="state">An object representing data to be used by the continuation action.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new continuation task.</param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
         /// as <see  cref="TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
         /// well as execution options, such as <see cref="TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new continuation task.</param>
         /// <param name="scheduler">
         /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its
         /// execution.
@@ -1088,7 +1091,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction)
         {
-            return ContinueWith(continuationAction, TaskScheduler.Current, default, TaskContinuationOptions.None);
+            return ContinueWithInternal(continuationAction, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1114,7 +1117,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction, CancellationToken cancellationToken)
         {
-            return ContinueWith(continuationAction, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
+            return ContinueWithInternal(continuationAction, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1142,7 +1145,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationAction, scheduler, default, TaskContinuationOptions.None);
+            return ContinueWithInternal(continuationAction, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1172,7 +1175,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationAction, TaskScheduler.Current, default, continuationOptions);
+            return ContinueWithInternal(continuationAction, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -1213,7 +1216,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationAction, scheduler, cancellationToken, continuationOptions);
+            return ContinueWithInternal(continuationAction, scheduler, cancellationToken, continuationOptions);
         }
 
         /// <summary>
@@ -1236,7 +1239,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state)
         {
-            return ContinueWith(continuationAction, state, TaskScheduler.Current, default, TaskContinuationOptions.None);
+            return ContinueWithInternal(continuationAction, state, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1263,7 +1266,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, CancellationToken cancellationToken)
         {
-            return ContinueWith(continuationAction, state, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
+            return ContinueWithInternal(continuationAction, state, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1292,7 +1295,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationAction, state, scheduler, default, TaskContinuationOptions.None);
+            return ContinueWithInternal(continuationAction, state, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1323,7 +1326,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationAction, state, TaskScheduler.Current, default, continuationOptions);
+            return ContinueWithInternal(continuationAction, state, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -1365,7 +1368,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationAction, state, scheduler, cancellationToken, continuationOptions);
+            return ContinueWithInternal(continuationAction, state, scheduler, cancellationToken, continuationOptions);
         }
 
         /// <summary>
@@ -1390,7 +1393,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction)
         {
-            return ContinueWith(continuationFunction, TaskScheduler.Current, default, TaskContinuationOptions.None);
+            return ContinueWithInternal(continuationFunction, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1419,7 +1422,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, CancellationToken cancellationToken)
         {
-            return ContinueWith(continuationFunction, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
+            return ContinueWithInternal(continuationFunction, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1450,7 +1453,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationFunction, scheduler, default, TaskContinuationOptions.None);
+            return ContinueWithInternal(continuationFunction, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1489,7 +1492,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationFunction, TaskScheduler.Current, default, continuationOptions);
+            return ContinueWithInternal(continuationFunction, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -1540,7 +1543,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationFunction, scheduler, cancellationToken, continuationOptions);
+            return ContinueWithInternal(continuationFunction, scheduler, cancellationToken, continuationOptions);
         }
 
         /// <summary>
@@ -1566,7 +1569,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state)
         {
-            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default, TaskContinuationOptions.None);
+            return ContinueWithInternal(continuationFunction, state, TaskScheduler.Current, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1596,7 +1599,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, CancellationToken cancellationToken)
         {
-            return ContinueWith(continuationFunction, state, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
+            return ContinueWithInternal(continuationFunction, state, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1628,7 +1631,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationFunction, state, scheduler, default, TaskContinuationOptions.None);
+            return ContinueWithInternal(continuationFunction, state, scheduler, default, TaskContinuationOptions.None);
         }
 
         /// <summary>
@@ -1668,7 +1671,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, TaskContinuationOptions continuationOptions)
         {
-            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default, continuationOptions);
+            return ContinueWithInternal(continuationFunction, state, TaskScheduler.Current, default, continuationOptions);
         }
 
         /// <summary>
@@ -1720,11 +1723,11 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
-            return ContinueWith(continuationFunction, state, scheduler, cancellationToken, continuationOptions);
+            return ContinueWithInternal(continuationFunction, state, scheduler, cancellationToken, continuationOptions);
         }
 
         // Same as the above overload, only with a stack mark.
-        internal Task ContinueWith(Action<Task<TResult>> continuationAction, TaskScheduler scheduler, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions)
+        internal Task ContinueWithInternal(Action<Task<TResult>> continuationAction, TaskScheduler scheduler, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions)
         {
             if (continuationAction == null)
             {
@@ -1755,7 +1758,7 @@ namespace System.Threading.Tasks
         }
 
         // Same as the above overload, only with a stack mark.
-        internal Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskScheduler scheduler, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions)
+        internal Task ContinueWithInternal(Action<Task<TResult>, object> continuationAction, object state, TaskScheduler scheduler, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions)
         {
             if (continuationAction == null)
             {
@@ -1787,7 +1790,7 @@ namespace System.Threading.Tasks
         }
 
         // Same as the above overload, just with a stack mark.
-        internal Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, TaskScheduler scheduler, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions)
+        internal Task<TNewResult> ContinueWithInternal<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, TaskScheduler scheduler, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions)
         {
             if (continuationFunction == null)
             {
@@ -1816,7 +1819,7 @@ namespace System.Threading.Tasks
         }
 
         // Same as the above overload, just with a stack mark.
-        internal Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, TaskScheduler scheduler, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions)
+        internal Task<TNewResult> ContinueWithInternal<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, TaskScheduler scheduler, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions)
         {
             if (continuationFunction == null)
             {

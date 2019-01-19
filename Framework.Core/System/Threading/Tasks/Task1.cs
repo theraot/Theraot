@@ -1,5 +1,7 @@
 #if LESSTHAN_NET40
 
+#pragma warning disable CA1068 // CancellationToken parameters must come last
+
 using System.Diagnostics.Contracts;
 
 namespace System.Threading.Tasks

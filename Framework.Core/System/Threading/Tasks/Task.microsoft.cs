@@ -1,5 +1,7 @@
 #if LESSTHAN_NET40
 
+#pragma warning disable CA1068 // CancellationToken parameters must come last
+
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
@@ -138,7 +140,7 @@ namespace System.Threading.Tasks
                 // Reaching this sub clause means there may be remaining active children,
                 // and we could be racing with one of them to call FinishStageTwo().
                 // So whoever does the final Interlocked.Dec is responsible to finish.
-                if (_completionCountdown == 1 && !IsSelfReplicatingRoot || Interlocked.Decrement(ref _completionCountdown) == 0)
+                if ((_completionCountdown == 1 && !IsSelfReplicatingRoot) || Interlocked.Decrement(ref _completionCountdown) == 0)
                 {
                     FinishStageTwo();
                 }
@@ -193,26 +195,7 @@ namespace System.Threading.Tasks
 
             // At this point, the task is done executing and waiting for its children,
             // we can transition our task to a completion state.
-            TaskStatus completionState;
-            if (ExceptionRecorded)
-            {
-                completionState = TaskStatus.Faulted;
-            }
-            else if (IsCancellationRequested && IsCancellationAcknowledged)
-            {
-                // We transition into the TASK_STATE_CANCELED final state if the task's CT was signalled for cancellation,
-                // and the user delegate acknowledged the cancellation request by throwing an OCE,
-                // and the task hasn't otherwise transitioned into faulted state. (TASK_STATE_FAULTED trumps TASK_STATE_CANCELED)
-                //
-                // If the task threw an OCE without cancellation being requested (while the CT not being in signaled state),
-                // then we regard it as a regular exception
-
-                completionState = TaskStatus.Canceled;
-            }
-            else
-            {
-                completionState = TaskStatus.RanToCompletion;
-            }
+            var completionState = ExceptionRecorded ? TaskStatus.Faulted : IsCancellationRequested && IsCancellationAcknowledged ? TaskStatus.Canceled : TaskStatus.RanToCompletion;
 
             // Use Interlocked.Exchange() to effect a memory fence, preventing
             // any SetCompleted() (or later) instructions from sneak back before it.
@@ -416,19 +399,7 @@ namespace System.Threading.Tasks
                     else
                     {
                         // Regular path for an uncanceled cancellationToken
-                        CancellationTokenRegistration registration;
-                        if (antecedent == null)
-                        {
-                            // if no antecedent was specified, use this task's reference as the cancellation state object
-                            registration = cancellationToken.Register(_taskCancelCallback, this);
-                        }
-                        else
-                        {
-                            // If an antecedent was specified, pack this task, its antecedent and the TaskContinuation together as a tuple
-                            // and use it as the cancellation state object. This will be unpacked in the cancellation callback so that
-                            // antecedent.RemoveCancellation(continuation) can be invoked.
-                            registration = cancellationToken.Register(_taskCancelCallback, new Tuple<Task, Task, TaskContinuation>(this, antecedent, continuation));
-                        }
+                        var registration = cancellationToken.Register(_taskCancelCallback, antecedent == null ? (object)this : new Tuple<Task, Task, TaskContinuation>(this, antecedent, continuation));
                         _cancellationRegistration = new StrongBox<CancellationTokenRegistration>(registration);
                     }
                 }
