@@ -6,41 +6,43 @@ using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Threading
 {
+#if LESSTHAN_NETSTANDARD20
+
     public static partial class GCMonitor
     {
-        private static class Internal
+        private static partial class Internal
         {
-#if NETSTANDARD1_5 || NETSTANDARD1_6 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
-
-            private static readonly Action _work;
-
-            static Internal()
-            {
-                _work = RaiseCollected;
-                CollectedEventHandlers = new WeakDelegateCollection(false, false);
-            }
+            private static readonly Action _work = RaiseCollected;
 
             public static void Invoke()
             {
                 System.Threading.Tasks.Task.Run(_work);
             }
-#else
-            private static readonly WaitCallback _work;
+        }
+    }
 
-            static Internal()
-            {
-                _work = _ => RaiseCollected();
-                CollectedEventHandlers = new WeakDelegateCollection(false, false);
-            }
+#else
+
+    public static partial class GCMonitor
+    {
+        private static partial class Internal
+        {
+            private static readonly WaitCallback _work = _ => RaiseCollected();
 
             public static void Invoke()
             {
                 ThreadPool.QueueUserWorkItem(_work);
             }
+        }
+    }
 
 #endif
 
-            public static WeakDelegateCollection CollectedEventHandlers { get; }
+    public static partial class GCMonitor
+    {
+        private static partial class Internal
+        {
+            public static WeakDelegateCollection CollectedEventHandlers { get; } = new WeakDelegateCollection(false, false);
 
             private static void RaiseCollected()
             {
@@ -50,7 +52,7 @@ namespace Theraot.Threading
                     try
                     {
                         CollectedEventHandlers.RemoveDeadItems();
-                        CollectedEventHandlers.Invoke(null, new EventArgs());
+                        CollectedEventHandlers.Invoke(null, EventArgs.Empty);
                     }
                     catch (Exception exception)
                     {
