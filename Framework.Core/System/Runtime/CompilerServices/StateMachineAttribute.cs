@@ -1,5 +1,9 @@
 #if LESSTHAN_NET45
 
+#pragma warning disable CA1813 // Avoid unsealed attributes
+#pragma warning disable CA2235 // Mark all non-serializable fields
+#pragma warning disable CC0023 // Unsealed Attribute
+
 namespace System.Runtime.CompilerServices
 {
     /// <summary>

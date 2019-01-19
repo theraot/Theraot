@@ -1,5 +1,10 @@
 #if LESSTHAN_NET35
 
+#pragma warning disable CA1051 // Do not declare visible instance fields
+#pragma warning disable CA1822 // Mark members as static
+#pragma warning disable CC0091 // Use static method
+#pragma warning disable RCS1225 // Make class sealed.
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.

@@ -6,6 +6,7 @@
 
 using System.ComponentModel;
 using System.Diagnostics;
+using Theraot.Collections;
 
 namespace System.Runtime.CompilerServices
 {
@@ -105,7 +106,7 @@ namespace System.Runtime.CompilerServices
         {
             if (rules.Length < _insertPosition)
             {
-                return Theraot.Collections.Extensions.AddLast(rules, item);
+                return rules.AddLast(item);
             }
 
             T[] newRules;

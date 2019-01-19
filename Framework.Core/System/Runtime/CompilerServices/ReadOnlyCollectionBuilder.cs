@@ -1,5 +1,7 @@
 #if LESSTHAN_NET40
 
+#pragma warning disable RECS0017 // Possible compare of value type with 'null'
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -70,12 +72,9 @@ namespace System.Runtime.CompilerServices
                 Count = 0;
                 _items = new T[_defaultCapacity];
 
-                using (var en = collection.GetEnumerator())
+                foreach (var item in collection)
                 {
-                    while (en.MoveNext())
-                    {
-                        Add(en.Current);
-                    }
+                    Add(item);
                 }
             }
         }
@@ -407,7 +406,7 @@ namespace System.Runtime.CompilerServices
 
             if (array.Rank != 1)
             {
-                throw new ArgumentException(nameof(array));
+                throw new ArgumentException(string.Empty, nameof(array));
             }
 
             Array.Copy(_items, 0, array, index, Count);
@@ -464,15 +463,7 @@ namespace System.Runtime.CompilerServices
         public ReadOnlyCollection<T> ToReadOnlyCollection()
         {
             // Can we use the stored array?
-            T[] items;
-            if (Count == _items.Length)
-            {
-                items = _items;
-            }
-            else
-            {
-                items = ToArray();
-            }
+            var items = Count == _items.Length ? _items : ToArray();
             _items = ArrayReservoir<T>.EmptyArray;
             Count = 0;
             _version++;
@@ -482,7 +473,7 @@ namespace System.Runtime.CompilerServices
 
         private static bool IsCompatibleObject(object value)
         {
-            return value is T || value == null && default(T) == null;
+            return value is T || (value == null && default(T) == null);
         }
 
         private static void ValidateNullValue(object value, string argument)

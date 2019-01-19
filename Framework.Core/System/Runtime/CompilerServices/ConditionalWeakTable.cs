@@ -72,7 +72,7 @@ namespace System.Runtime.CompilerServices
             {
                 throw new ArgumentNullException(nameof(key));
             }
-            return PrivateGetValue(key, k => Activator.CreateInstance<TValue>());
+            return PrivateGetValue(key, _ => Activator.CreateInstance<TValue>());
         }
 
         /// <summary>

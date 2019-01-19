@@ -45,8 +45,10 @@ namespace System.Runtime.CompilerServices
 
             object IRuntimeVariables.this[int index]
             {
+#pragma warning disable CA2201 // Do not raise reserved exception types
                 get => throw new IndexOutOfRangeException();
                 set => throw new IndexOutOfRangeException();
+#pragma warning restore CA2201 // Do not raise reserved exception types
             }
         }
 

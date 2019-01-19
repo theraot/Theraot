@@ -13,6 +13,7 @@ namespace System.Runtime.CompilerServices
     /// </summary>
     public static class CallSiteHelpers
     {
+        // ReSharper disable once PossibleNullReferenceException
         private static readonly Type _knownNonDynamicMethodType = typeof(object).GetMethod(nameof(ToString)).GetType();
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace System.Runtime.CompilerServices
             // non-static method. If it does, it is a dynamic method.
             // This could be improved if the CLR provides a way to attach some information
             // to the dynamic method we create, like CustomAttributes.
-            return mb.Name == CallSite.CallSiteTargetMethodName && mb.GetType() != _knownNonDynamicMethodType;
+            return string.Equals(mb.Name, CallSite.CallSiteTargetMethodName, StringComparison.Ordinal) && mb.GetType() != _knownNonDynamicMethodType;
         }
     }
 }

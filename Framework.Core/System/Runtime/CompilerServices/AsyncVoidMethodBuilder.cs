@@ -1,5 +1,9 @@
 #if LESSTHAN_NET45
 
+#pragma warning disable CA1822 // Mark members as static
+#pragma warning disable CA1815 // Override equals and operator equals on value types
+#pragma warning disable CC0091 // Use static method
+
 using System.Diagnostics;
 using System.Security;
 using System.Threading;

@@ -6,7 +6,7 @@
 
 namespace System.Runtime.CompilerServices
 {
-    public partial class RuntimeOps
+    public static partial class RuntimeOps
     {
         internal sealed class RuntimeVariables : IRuntimeVariables
         {

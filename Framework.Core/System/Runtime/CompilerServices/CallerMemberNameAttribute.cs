@@ -28,13 +28,7 @@ namespace System.Runtime.CompilerServices
     [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class CallerMemberNameAttribute : Attribute
     {
-        [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-        public CallerMemberNameAttribute()
-        {
-            // Empty
-            // This constructor is not redundant
-            // You cannot put attributes on the default constructor
-        }
+        // Empty
     }
 }
 

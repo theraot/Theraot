@@ -14,7 +14,7 @@ using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Runtime.CompilerServices
 {
-    public partial class RuntimeOps
+    public static partial class RuntimeOps
     {
         /// <summary>
         /// Combines two runtime variable lists and returns a new list.

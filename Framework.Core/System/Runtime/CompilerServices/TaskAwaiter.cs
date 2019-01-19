@@ -1,5 +1,7 @@
 #if LESSTHAN_NET45
 
+#pragma warning disable CA1815 // Override equals and operator equals on value types
+
 using System.Reflection;
 using System.Security;
 using System.Threading;
@@ -133,17 +135,23 @@ namespace System.Runtime.CompilerServices
             var syncContext = continueOnCapturedContext ? SynchronizationContext.Current : null;
             if (syncContext != null && syncContext.GetType() != typeof(SynchronizationContext))
             {
-                task.ContinueWith(result =>
-                {
-                    try
+                task.ContinueWith
+                (
+                    _ =>
                     {
-                        syncContext.Post(state => ((Action)state)(), continuation);
-                    }
-                    catch (Exception ex)
-                    {
-                        AsyncMethodBuilderCore.ThrowOnContext(ex, null);
-                    }
-                }, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+                        try
+                        {
+                            syncContext.Post(state => ((Action)state)(), continuation);
+                        }
+                        catch (Exception ex)
+                        {
+                            AsyncMethodBuilderCore.ThrowOnContext(ex, null);
+                        }
+                    },
+                    CancellationToken.None,
+                    TaskContinuationOptions.ExecuteSynchronously,
+                    TaskScheduler.Default
+                );
             }
             else
             {
@@ -160,19 +168,25 @@ namespace System.Runtime.CompilerServices
                 }
                 else
                 {
-                    task.ContinueWith(result =>
-                    {
-                        if (IsValidLocationForInlining)
+                    task.ContinueWith
+                    (
+                        _ =>
                         {
-                            RunNoException(continuation);
-                        }
-                        else
-                        {
-                            Task.Factory.StartNew(state => RunNoException((Action)state), continuation,
-                                                  CancellationToken.None, TaskCreationOptions.None,
-                                                  TaskScheduler.Default);
-                        }
-                    }, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+                            if (IsValidLocationForInlining)
+                            {
+                                RunNoException(continuation);
+                            }
+                            else
+                            {
+                                Task.Factory.StartNew(state => RunNoException((Action)state), continuation,
+                                                      CancellationToken.None, TaskCreationOptions.None,
+                                                      TaskScheduler.Default);
+                            }
+                        },
+                        CancellationToken.None,
+                        TaskContinuationOptions.ExecuteSynchronously,
+                        TaskScheduler.Default
+                    );
                 }
             }
         }

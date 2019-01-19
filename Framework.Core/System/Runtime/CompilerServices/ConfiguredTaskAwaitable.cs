@@ -1,5 +1,8 @@
 #if LESSTHAN_NET45
 
+#pragma warning disable CA1034 // Nested types should not be visible
+#pragma warning disable CA1815 // Override equals and operator equals on value types
+
 using System.Security;
 using System.Threading.Tasks;
 
