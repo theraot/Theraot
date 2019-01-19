@@ -18,8 +18,6 @@ namespace System.Linq.Expressions
 {
     public partial class Expression
     {
-        #region Call
-
         /// <summary>Creates a <see cref="MethodCallExpression"/> that represents a call to a static method that takes one argument.</summary>
         /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Method"/> properties set to the specified values.</returns>
         /// <param name="method">A <see cref="MethodInfo"/> to set the <see cref="MethodCallExpression.Method"/> property equal to.</param>
@@ -577,10 +575,6 @@ namespace System.Linq.Expressions
             }
         }
 
-        #endregion Call
-
-        #region ArrayIndex
-
         /// <summary>Creates a <see cref="MethodCallExpression"/> that represents applying an array index operator to a multi-dimensional array.</summary>
         /// <returns>A <see cref="BinaryExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.ArrayIndex"/> and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         /// <param name="array">An array of <see cref="Expression"/> instances - indexes for the array index operation.</param>
@@ -629,8 +623,6 @@ namespace System.Linq.Expressions
             var mi = array.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance);
             return Call(array, mi, indexList);
         }
-
-        #endregion ArrayIndex
     }
 
     /// <summary>
@@ -731,8 +723,6 @@ namespace System.Linq.Expressions
             return visitor.VisitMethodCall(this);
         }
 
-        #region IArgumentProvider Members
-
         /// <summary>
         /// Gets the number of argument expressions of the node.
         /// </summary>
@@ -747,11 +737,7 @@ namespace System.Linq.Expressions
         {
             throw ContractUtils.Unreachable;
         }
-
-        #endregion IArgumentProvider Members
     }
-
-    #region Specialized Subclasses
 
     internal class InstanceMethodCallExpression : MethodCallExpression
     {
@@ -1441,8 +1427,6 @@ namespace System.Linq.Expressions
         internal override bool SameArguments(ICollection<Expression> arguments) =>
                     ExpressionUtils.SameElements(arguments, _arguments);
     }
-
-    #endregion Specialized Subclasses
 }
 
 #endif

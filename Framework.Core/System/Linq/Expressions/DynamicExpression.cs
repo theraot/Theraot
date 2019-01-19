@@ -191,18 +191,12 @@ namespace System.Linq.Expressions
             return base.Accept(visitor);
         }
 
-        #region IArgumentProvider Members
-
         int IArgumentProvider.ArgumentCount => throw ContractUtils.Unreachable;
 
         Expression IArgumentProvider.GetArgument(int index)
         {
             throw ContractUtils.Unreachable;
         }
-
-        #endregion IArgumentProvider Members
-
-        #region Members that forward to Expression
 
         /// <summary>
         /// Creates a <see cref="DynamicExpression" /> that represents a dynamic operation bound by the provided <see cref="CallSiteBinder" />.
@@ -449,11 +443,7 @@ namespace System.Linq.Expressions
         {
             return ExpressionExtension.MakeDynamic(delegateType, binder, arg0, arg1, arg2, arg3);
         }
-
-        #endregion Members that forward to Expression
     }
-
-    #region Specialized Subclasses
 
     internal class DynamicExpression1 : DynamicExpression, IArgumentProvider
     {
@@ -791,8 +781,6 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type { get; }
     }
-
-    #endregion Specialized Subclasses
 
     internal static class ExpressionExtension
     {

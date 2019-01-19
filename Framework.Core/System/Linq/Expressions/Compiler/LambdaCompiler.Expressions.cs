@@ -198,8 +198,6 @@ namespace System.Linq.Expressions.Compiler
             EmitExpressionEnd(startEmitted);
         }
 
-        #region label block tracking
-
         private void EmitExpressionEnd(CompilationFlags flags)
         {
             if ((flags & CompilationFlags.EmitExpressionStartMask) == CompilationFlags.EmitExpressionStart)
@@ -216,10 +214,6 @@ namespace System.Linq.Expressions.Compiler
             }
             return CompilationFlags.EmitNoExpressionStart;
         }
-
-        #endregion label block tracking
-
-        #region InvocationExpression
 
         private void EmitInlinedInvoke(InvocationExpression invoke, CompilationFlags flags)
         {
@@ -268,10 +262,6 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(!typeof(LambdaExpression).IsAssignableFrom(expr.Type));
             EmitMethodCall(expr, expr.Type.GetInvokeMethod(), node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitExpressionStart);
         }
-
-        #endregion InvocationExpression
-
-        #region IndexExpression
 
         private void EmitGetArrayElement(Type arrayType)
         {
@@ -394,10 +384,6 @@ namespace System.Linq.Expressions.Compiler
                 EmitSetArrayElement(objectType);
             }
         }
-
-        #endregion IndexExpression
-
-        #region MethodCallExpression
 
         private static bool MethodHasByRefParameter(MethodInfo mi)
         {
@@ -571,8 +557,6 @@ namespace System.Linq.Expressions.Compiler
                 }
             }
         }
-
-        #endregion MethodCallExpression
 
         private void EmitInstance(Expression instance, out Type type)
         {
@@ -858,8 +842,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        #region ListInit, MemberInit
-
         private static Type GetMemberType(MemberInfo member)
         {
             if (member is FieldInfo memberFieldInfo)
@@ -1052,10 +1034,6 @@ namespace System.Linq.Expressions.Compiler
             EmitMemberInit(binding.Bindings, false, type);
         }
 
-        #endregion ListInit, MemberInit
-
-        #region Expression helpers
-
         private void EmitLift(ExpressionType nodeType, Type resultType, MethodCallExpression mc, ParameterExpression[] paramList, Expression[] argList)
         {
             Debug.Assert(TypeUtils.AreEquivalent(resultType.GetNonNullable(), mc.Type.GetNonNullable()));
@@ -1225,8 +1203,6 @@ namespace System.Linq.Expressions.Compiler
                     }
             }
         }
-
-        #endregion Expression helpers
     }
 }
 

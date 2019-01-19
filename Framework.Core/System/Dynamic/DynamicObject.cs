@@ -45,8 +45,6 @@ namespace System.Dynamic
         {
         }
 
-#region Public Virtual APIs
-
         /// <summary>
         /// Returns the enumeration of all dynamic member names.
         /// </summary>
@@ -242,10 +240,6 @@ namespace System.Dynamic
             result = null;
             return false;
         }
-
-#endregion Public Virtual APIs
-
-#region MetaDynamic
 
         private sealed class MetaDynamic : DynamicMetaObject
         {
@@ -850,10 +844,6 @@ namespace System.Dynamic
             }
         }
 
-#endregion MetaDynamic
-
-#region IDynamicMetaObjectProvider Members
-
         /// <summary>
         /// Returns the <see cref="DynamicMetaObject" /> responsible for binding operations performed on this object,
         /// using the virtual methods provided by this class.
@@ -864,8 +854,6 @@ namespace System.Dynamic
         /// <see cref="DynamicMetaObject"/> to provide custom behavior for individual actions.
         /// </returns>
         public virtual DynamicMetaObject GetMetaObject(Expression parameter) => new MetaDynamic(parameter, this);
-
-#endregion IDynamicMetaObjectProvider Members
     }
 }
 

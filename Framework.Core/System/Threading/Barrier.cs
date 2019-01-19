@@ -86,8 +86,6 @@ namespace System.Threading
         // In case the post phase action throws an exception, wraps it in BarrierPostPhaseException
         private Exception _exception;
 
-        #region Properties
-
         /// <summary>
         /// Gets the number of the barrier's current phase.
         /// </summary>
@@ -122,8 +120,6 @@ namespace System.Threading
                 return total - current;
             }
         }
-
-        #endregion Properties
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Barrier"/> class.

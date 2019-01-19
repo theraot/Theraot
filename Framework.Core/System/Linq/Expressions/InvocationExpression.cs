@@ -470,8 +470,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    #region Specialized Subclasses
-
     internal sealed class InvocationExpression0 : InvocationExpression
     {
         public InvocationExpression0(Expression lambda, Type returnType)
@@ -773,8 +771,6 @@ namespace System.Linq.Expressions
             return Invoke(lambda, arguments ?? _arguments);
         }
     }
-
-    #endregion Specialized Subclasses
 }
 
 #endif

@@ -46,8 +46,6 @@ namespace System.Dynamic.Utils
 
         protected abstract T GetElement(int index);
 
-#region IList<T> Members
-
         public T this[int index]
         {
             get
@@ -89,10 +87,6 @@ namespace System.Dynamic.Utils
         {
             throw ContractUtils.Unreachable;
         }
-
-#endregion IList<T> Members
-
-#region ICollection<T> Members
 
         public int Count => ElementCount;
 
@@ -137,10 +131,6 @@ namespace System.Dynamic.Utils
             throw ContractUtils.Unreachable;
         }
 
-#endregion ICollection<T> Members
-
-#region IEnumerable<T> Members
-
         public IEnumerator<T> GetEnumerator()
         {
             yield return First;
@@ -151,13 +141,7 @@ namespace System.Dynamic.Utils
             }
         }
 
-#endregion IEnumerable<T> Members
-
-#region IEnumerable Members
-
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-#endregion IEnumerable Members
     }
 }
 

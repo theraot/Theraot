@@ -22,16 +22,10 @@ namespace System.ComponentModel.DataAnnotations
     /// </summary>
     internal class LocalizableString
     {
-#region Member fields
-
         private readonly string _propertyName;
         private Func<string> _cachedResult;
         private string _propertyValue;
         private Type _resourceType;
-
-#endregion Member fields
-
-#region All Constructors
 
         /// <summary>
         ///     Constructs a localizable string, specifying the property name associated
@@ -46,10 +40,6 @@ namespace System.ComponentModel.DataAnnotations
         {
             _propertyName = propertyName;
         }
-
-#endregion All Constructors
-
-#region Properties
 
         /// <summary>
         ///     Gets or sets the resource type to be used for localization.
@@ -84,10 +74,6 @@ namespace System.ComponentModel.DataAnnotations
                 }
             }
         }
-
-#endregion Properties
-
-#region Methods
 
         /// <summary>
         ///     Gets the potentially localized value.
@@ -171,8 +157,6 @@ namespace System.ComponentModel.DataAnnotations
         {
             _cachedResult = null;
         }
-
-#endregion Methods
     }
 }
 

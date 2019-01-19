@@ -200,8 +200,6 @@ namespace System.Linq.Expressions.Compiler
             return parent;
         }
 
-        #region RuntimeVariablesExpression support
-
         internal void EmitVariableAccess(LambdaCompiler lc, ReadOnlyCollection<ParameterExpression> vars)
         {
             if (NearestHoistedLocals != null && vars.Count > 0)
@@ -238,10 +236,6 @@ namespace System.Linq.Expressions.Compiler
                 lc.IL.Emit(OpCodes.Call, RuntimeOpsCreateRuntimeVariables);
             }
         }
-
-        #endregion RuntimeVariablesExpression support
-
-        #region Variable access
 
         internal void AddLocal(LambdaCompiler gen, ParameterExpression variable)
         {
@@ -306,8 +300,6 @@ namespace System.Linq.Expressions.Compiler
             //
             throw new InvalidOperationException($"variable '{variable.Name}' of type '{variable.Type}' referenced from scope '{CurrentLambdaName}', but it is not defined");
         }
-
-        #endregion Variable access
 
         private static ParameterExpression[] GetVariables(object scope)
         {

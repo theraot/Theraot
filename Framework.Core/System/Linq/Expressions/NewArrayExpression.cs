@@ -16,8 +16,6 @@ namespace System.Linq.Expressions
 {
     public partial class Expression
     {
-        #region NewArrayInit
-
         /// <summary>
         /// Creates a <see cref="NewArrayExpression"/> of the specified type from the provided initializers.
         /// </summary>
@@ -81,10 +79,6 @@ namespace System.Linq.Expressions
             return NewArrayExpression.Make(ExpressionType.NewArrayInit, type.MakeArrayType(), initializerList);
         }
 
-        #endregion NewArrayInit
-
-        #region NewArrayBounds
-
         /// <summary>
         /// Creates a <see cref="NewArrayExpression"/> that represents creating an array that has a specified rank.
         /// </summary>
@@ -136,8 +130,6 @@ namespace System.Linq.Expressions
 
             return NewArrayExpression.Make(ExpressionType.NewArrayBounds, arrayType, boundsList);
         }
-
-        #endregion NewArrayBounds
     }
 
     /// <summary>

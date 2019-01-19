@@ -216,8 +216,6 @@ namespace System.Linq.Expressions.Compiler
             _boundConstants.EmitCacheConstants(this);
         }
 
-        #region Compiler entry points
-
         /// <summary>
         /// Compiler entry point
         /// </summary>
@@ -251,8 +249,6 @@ namespace System.Linq.Expressions.Compiler
             // 3. Emit
             c.EmitLambdaBody();
         }
-
-        #endregion Compiler entry points
     }
 }
 

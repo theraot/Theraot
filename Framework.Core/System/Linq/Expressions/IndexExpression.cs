@@ -34,8 +34,6 @@ namespace System.Linq.Expressions
             return ArrayAccess(instance, arguments);
         }
 
-        #region ArrayAccess
-
         /// <summary>
         /// Creates an <see cref="IndexExpression"/> to access an array.
         /// </summary>
@@ -85,10 +83,6 @@ namespace System.Linq.Expressions
             return new IndexExpression(array, null, indexList);
         }
 
-        #endregion ArrayAccess
-
-        #region Property
-
         /// <summary>
         /// Creates an <see cref="IndexExpression"/> representing the access to an indexed property.
         /// </summary>
@@ -103,8 +97,6 @@ namespace System.Linq.Expressions
             var pi = FindInstanceProperty(instance.Type, propertyName, arguments);
             return MakeIndexProperty(instance, pi, nameof(propertyName), arguments);
         }
-
-        #region methods for finding a PropertyInfo by its name
 
         private static PropertyInfo FindInstanceProperty(Type type, string propertyName, Expression[] arguments)
         {
@@ -211,8 +203,6 @@ namespace System.Linq.Expressions
             }
             return true;
         }
-
-        #endregion methods for finding a PropertyInfo by its name
 
         /// <summary>
         /// Creates an <see cref="IndexExpression"/> representing the access to an indexed property.
@@ -413,8 +403,6 @@ namespace System.Linq.Expressions
                 throw new ArgumentException($"The property '{indexer}' has no 'get' or 'set' accessors", paramName);
             }
         }
-
-        #endregion Property
     }
 
     /// <summary>

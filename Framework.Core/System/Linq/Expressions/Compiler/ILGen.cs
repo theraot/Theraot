@@ -29,8 +29,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        #region Instruction helpers
-
         internal static void EmitLoadArg(this ILGenerator il, int index)
         {
             Debug.Assert(index >= 0);
@@ -322,10 +320,6 @@ namespace System.Linq.Expressions.Compiler
             il.Emit(OpCodes.Call, TypeGetTypeFromHandle);
         }
 
-        #endregion Instruction helpers
-
-        #region Fields, properties and methods
-
         internal static void EmitFieldAddress(this ILGenerator il, FieldInfo fi)
         {
             Debug.Assert(fi != null);
@@ -355,10 +349,6 @@ namespace System.Linq.Expressions.Compiler
 
             il.Emit(OpCodes.Newobj, ci);
         }
-
-        #endregion Fields, properties and methods
-
-        #region Constants
 
         // matches TryEmitConstant
         internal static bool CanEmitConstant(object value, Type type)
@@ -664,10 +654,6 @@ namespace System.Linq.Expressions.Compiler
                     return false;
             }
         }
-
-        #endregion Constants
-
-        #region Linq Conversions
 
         internal static void EmitConvertToType(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked, ILocalCache locals)
         {
@@ -1082,10 +1068,6 @@ namespace System.Linq.Expressions.Compiler
             il.Emit(convCode);
         }
 
-        #endregion Linq Conversions
-
-        #region Arrays
-
         internal static void EmitArray<T>(this ILGenerator il, T[] items, ILocalCache locals)
         {
             Debug.Assert(items != null);
@@ -1131,10 +1113,6 @@ namespace System.Linq.Expressions.Compiler
                 il.EmitNew(ci);
             }
         }
-
-        #endregion Arrays
-
-        #region Support for emitting constants
 
         internal static void EmitDefault(this ILGenerator il, Type type, ILocalCache locals)
         {
@@ -1280,8 +1258,6 @@ namespace System.Linq.Expressions.Compiler
             il.EmitPrimitive(unchecked((byte)scale));
             il.EmitNew(DecimalCtorInt32Int32Int32BoolByte);
         }
-
-        #endregion Support for emitting constants
     }
 }
 

@@ -13,8 +13,6 @@ namespace System.Linq.Expressions.Compiler
 {
     internal partial class LambdaCompiler
     {
-        #region Conditional
-
         private static bool NotEmpty(Expression node)
         {
             return !(node is DefaultExpression empty) || empty.Type != typeof(void);
@@ -66,10 +64,6 @@ namespace System.Linq.Expressions.Compiler
                 IL.MarkLabel(labFalse);
             }
         }
-
-        #endregion Conditional
-
-        #region Coalesce
 
         private void EmitCoalesceBinaryExpression(Expression expr)
         {
@@ -213,10 +207,6 @@ namespace System.Linq.Expressions.Compiler
             IL.MarkLabel(labEnd);
         }
 
-        #endregion Coalesce
-
-        #region AndAlso
-
         private void EmitAndAlsoBinaryExpression(Expression expr, CompilationFlags flags)
         {
             var b = (BinaryExpression)expr;
@@ -316,10 +306,6 @@ namespace System.Linq.Expressions.Compiler
             IL.MarkLabel(end);
         }
 
-        #endregion AndAlso
-
-        #region OrElse
-
         private void EmitLiftedOrElse(BinaryExpression b)
         {
             var type = typeof(bool?);
@@ -409,10 +395,6 @@ namespace System.Linq.Expressions.Compiler
             EmitExpression(b.Right);
             IL.MarkLabel(end);
         }
-
-        #endregion OrElse
-
-        #region Optimized branching
 
         // For optimized Equal/NotEqual, we can eliminate reference
         // conversions. IL allows comparing managed pointers regardless of
@@ -640,8 +622,6 @@ namespace System.Linq.Expressions.Compiler
 
             EmitExpressionEnd(startEmitted);
         }
-
-        #endregion Optimized branching
     }
 }
 

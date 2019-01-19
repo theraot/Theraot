@@ -14,8 +14,6 @@ namespace System.Reflection
     /// </summary>
     public static class CustomAttributeExtensions
     {
-        #region APIs that return a single attribute
-
         /// <summary>
         /// Retrieves a custom attribute of a specified type that is applied to a specified assembly.
         /// </summary>
@@ -152,10 +150,6 @@ namespace System.Reflection
         public static T GetCustomAttribute<T>(this ParameterInfo element, bool inherit) where T : Attribute =>
             (T)GetCustomAttribute(element, typeof(T), inherit);
 
-        #endregion APIs that return a single attribute
-
-        #region APIs that return all attributes
-
         /// <summary>
         /// Retrieves a collection of custom attributes that are applied to a specified member, and optionally inspects the
         /// ancestors of that member.
@@ -229,10 +223,6 @@ namespace System.Reflection
         /// </returns>
         public static IEnumerable<Attribute> GetCustomAttributes(this ParameterInfo element, bool inherit) =>
             Attribute.GetCustomAttributes(element, inherit);
-
-        #endregion APIs that return all attributes
-
-        #region APIs that return all attributes of a particular type
 
         /// <summary>
         /// Retrieves a collection of custom attributes that are applied to a specified member, and optionally inspects the
@@ -400,10 +390,6 @@ namespace System.Reflection
         public static IEnumerable<T> GetCustomAttributes<T>(this ParameterInfo element, bool inherit) where T : Attribute =>
             (IEnumerable<T>)GetCustomAttributes(element, typeof(T), inherit);
 
-        #endregion APIs that return all attributes of a particular type
-
-        #region IsDefined
-
         /// <summary>
         /// Indicates whether custom attributes of a specified type are applied to a specified member, and, optionally,
         /// applied to its ancestors.
@@ -464,8 +450,6 @@ namespace System.Reflection
         /// <returns>true if an attribute of the specified type is applied to element; otherwise, false.</returns>
         public static bool IsDefined(this ParameterInfo element, Type attributeType, bool inherit) =>
             Attribute.IsDefined(element, attributeType, inherit);
-
-        #endregion IsDefined
     }
 }
 

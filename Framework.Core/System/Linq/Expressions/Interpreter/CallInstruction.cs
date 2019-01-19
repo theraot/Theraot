@@ -104,8 +104,6 @@ namespace System.Linq.Expressions.Interpreter
         /// </summary>
         public abstract int ArgumentCount { get; }
 
-        #region Construction
-
         public override string InstructionName => "Call";
 
 #if FEATURE_DLG_INVOKE
@@ -333,13 +331,7 @@ namespace System.Linq.Expressions.Interpreter
         }
 #endif
 
-        #endregion Construction
-
-        #region Instruction
-
         public override int ConsumedStack => ArgumentCount;
-
-        #endregion Instruction
 
         protected static bool TryGetLightLambdaTarget(object instance, out LightLambda lightLambda)
         {

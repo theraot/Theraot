@@ -13,8 +13,6 @@ namespace System
     /// </summary>
     public static class TupleExtensions
     {
-        #region Deconstruct
-
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Deconstruct<T1>(
             this Tuple<T1> value,
@@ -393,10 +391,6 @@ namespace System
             item21 = value.Rest.Rest.Item7;
         }
 
-        #endregion Deconstruct
-
-        #region ToValueTuple
-
         public static ValueTuple<T1>
             ToValueTuple<T1>(
                 this Tuple<T1> value)
@@ -565,10 +559,6 @@ namespace System
                             ValueTuple.Create(value.Rest.Rest.Item1, value.Rest.Rest.Item2, value.Rest.Rest.Item3, value.Rest.Rest.Item4, value.Rest.Rest.Item5, value.Rest.Rest.Item6, value.Rest.Rest.Item7)));
         }
 
-        #endregion ToValueTuple
-
-        #region ToTuple
-
         public static Tuple<T1>
             ToTuple<T1>(
                 this ValueTuple<T1> value)
@@ -736,8 +726,6 @@ namespace System
                         CreateLongRef(value.Rest.Item1, value.Rest.Item2, value.Rest.Item3, value.Rest.Item4, value.Rest.Item5, value.Rest.Item6, value.Rest.Item7,
                             Tuple.Create(value.Rest.Rest.Item1, value.Rest.Rest.Item2, value.Rest.Rest.Item3, value.Rest.Rest.Item4, value.Rest.Rest.Item5, value.Rest.Rest.Item6, value.Rest.Rest.Item7)));
         }
-
-        #endregion ToTuple
 
         private static ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> CreateLong<T1, T2, T3, T4, T5, T6, T7, TRest>(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6, T7 item7, TRest rest)
             where TRest : struct

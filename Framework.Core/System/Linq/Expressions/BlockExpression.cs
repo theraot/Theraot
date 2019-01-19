@@ -153,8 +153,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    #region Specialized Subclasses
-
     internal sealed class Block2 : BlockExpression
     {
         private readonly Expression _arg1;
@@ -652,10 +650,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    #endregion Specialized Subclasses
-
-    #region Block List Classes
-
     /// <summary>
     /// Provides a wrapper around an IArgumentProvider which exposes the argument providers
     /// members out as an IList of Expression.  This is used to avoid allocating an array
@@ -676,8 +670,6 @@ namespace System.Linq.Expressions
             _block = provider;
             _arg0 = arg0;
         }
-
-        #region IList<Expression> Members
 
         public Expression this[int index]
         {
@@ -720,10 +712,6 @@ namespace System.Linq.Expressions
         {
             throw ContractUtils.Unreachable;
         }
-
-        #endregion IList<Expression> Members
-
-        #region ICollection<Expression> Members
 
         public int Count => _block.ExpressionCount;
 
@@ -771,10 +759,6 @@ namespace System.Linq.Expressions
             throw ContractUtils.Unreachable;
         }
 
-        #endregion ICollection<Expression> Members
-
-        #region IEnumerable<Expression> Members
-
         public IEnumerator<Expression> GetEnumerator()
         {
             yield return _arg0;
@@ -785,19 +769,11 @@ namespace System.Linq.Expressions
             }
         }
 
-        #endregion IEnumerable<Expression> Members
-
-        #region IEnumerable Members
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
-
-        #endregion IEnumerable Members
     }
-
-    #endregion Block List Classes
 
     public partial class Expression
     {

@@ -158,8 +158,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        #region SwitchExpression
-
         // Add key to a new or existing bucket
         private static void AddToBuckets(List<List<SwitchLabel>> buckets, SwitchLabel key)
         {
@@ -744,10 +742,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        #endregion SwitchExpression
-
-        #region TryStatement
-
         private void CheckTry()
         {
             // Try inside a filter is not verifiable
@@ -913,8 +907,6 @@ namespace System.Linq.Expressions.Compiler
             }
             PopLabelBlock(LabelScopeKind.Try);
         }
-
-        #endregion TryStatement
     }
 }
 

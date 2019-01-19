@@ -34,8 +34,6 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    #region Load
-
     internal sealed class LoadLocalBoxedInstruction : LocalAccessInstruction
     {
         internal LoadLocalBoxedInstruction(int index)
@@ -111,10 +109,6 @@ namespace System.Linq.Expressions.Interpreter
             return 1;
         }
     }
-
-    #endregion Load
-
-    #region Store, Assign
 
     internal sealed class AssignLocalBoxedInstruction : LocalAccessInstruction
     {
@@ -232,10 +226,6 @@ namespace System.Linq.Expressions.Interpreter
             return 1;
         }
     }
-
-    #endregion Store, Assign
-
-    #region Initialize
 
     internal abstract class InitializeLocalInstruction : LocalAccessInstruction
     {
@@ -435,10 +425,6 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    #endregion Initialize
-
-    #region RuntimeVariables
-
     internal sealed class RuntimeVariablesInstruction : Instruction
     {
         public RuntimeVariablesInstruction(int count)
@@ -461,8 +447,6 @@ namespace System.Linq.Expressions.Interpreter
             return 1;
         }
     }
-
-    #endregion RuntimeVariables
 }
 
 #endif

@@ -148,8 +148,6 @@ namespace System.Linq.Expressions
             }
         }
 
-        #region The printing code
-
         private Flow CheckBreak(Flow flow)
         {
             if ((flow & Flow.Break) != 0)
@@ -218,10 +216,6 @@ namespace System.Linq.Expressions
             _out.WriteLine();
             _column = 0;
         }
-
-        #endregion The printing code
-
-        #region The AST Output
 
         protected internal override Expression VisitBinary(BinaryExpression node)
         {
@@ -1274,8 +1268,6 @@ namespace System.Linq.Expressions
             Out(Flow.NewLine, "}");
             Debug.Assert(_stack.Count == 0);
         }
-
-        #endregion The AST Output
     }
 }
 

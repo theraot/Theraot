@@ -65,8 +65,6 @@ namespace System.Linq.Expressions.Interpreter
             return DebugInfo.GetMatchingDebugInfo(Interpreter.DebugInfos, instructionIndex);
         }
 
-        #region Data Stack Operations
-
         public void Dup()
         {
             var i = StackIndex;
@@ -123,10 +121,6 @@ namespace System.Linq.Expressions.Interpreter
         {
             StackIndex = Interpreter.LocalCount + depth;
         }
-
-        #endregion Data Stack Operations
-
-        #region Stack Trace
 
         public InterpretedFrame Parent { get; internal set; }
 
@@ -185,10 +179,6 @@ namespace System.Linq.Expressions.Interpreter
                 exception.Data[typeof(InterpretedFrameInfo)] = new List<InterpretedFrameInfo>(GetStackTraceDebugInfo()).ToArray();
             }
         }
-
-        #endregion Stack Trace
-
-        #region Continuations
 
         public int Goto(int labelIndex, object value, bool gotoExceptionHandler)
         {
@@ -277,8 +267,6 @@ namespace System.Linq.Expressions.Interpreter
             _pendingContinuation = -1;
             _pendingValue = Interpreter.NoValue;
         }
-
-        #endregion Continuations
     }
 }
 

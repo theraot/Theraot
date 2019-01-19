@@ -72,8 +72,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    #region Specialized subclasses
-
     internal sealed class ClearDebugInfoExpression : DebugInfoExpression
     {
         internal ClearDebugInfoExpression(SymbolDocumentInfo document)
@@ -114,8 +112,6 @@ namespace System.Linq.Expressions
             return visitor.VisitDebugInfo(this);
         }
     }
-
-    #endregion Specialized subclasses
 
     public partial class Expression
     {

@@ -116,8 +116,6 @@ namespace System.Runtime.CompilerServices
         /// </summary>
         public int Count { get; private set; }
 
-        #region IList<T> Members
-
         /// <summary>
         ///  Gets or sets the element at the specified index.
         /// </summary>
@@ -200,10 +198,6 @@ namespace System.Runtime.CompilerServices
             _items[Count] = default;
             _version++;
         }
-
-        #endregion IList<T> Members
-
-        #region ICollection<T> Members
 
         bool ICollection<T>.IsReadOnly => false;
 
@@ -294,25 +288,13 @@ namespace System.Runtime.CompilerServices
             return false;
         }
 
-        #endregion ICollection<T> Members
-
-        #region IEnumerable<T> Members
-
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>A <see cref="IEnumerator{T}"/> that can be used to iterate through the collection.</returns>
         public IEnumerator<T> GetEnumerator() => new Enumerator(this);
 
-        #endregion IEnumerable<T> Members
-
-        #region IEnumerable Members
-
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        #endregion IEnumerable Members
-
-        #region IList Members
 
         bool IList.IsFixedSize => false;
         bool IList.IsReadOnly => false;
@@ -389,10 +371,6 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        #endregion IList Members
-
-        #region ICollection Members
-
         bool ICollection.IsSynchronized => false;
 
         object ICollection.SyncRoot => this;
@@ -411,8 +389,6 @@ namespace System.Runtime.CompilerServices
 
             Array.Copy(_items, 0, array, index, Count);
         }
-
-        #endregion ICollection Members
 
         /// <summary>
         /// Reverses the order of the elements in the entire <see cref="ReadOnlyCollectionBuilder{T}"/>.
@@ -515,21 +491,11 @@ namespace System.Runtime.CompilerServices
                 Current = default;
             }
 
-            #region IEnumerator<T> Members
-
             public T Current { get; private set; }
-
-            #endregion IEnumerator<T> Members
-
-            #region IDisposable Members
 
             public void Dispose()
             {
             }
-
-            #endregion IDisposable Members
-
-            #region IEnumerator Members
 
             object IEnumerator.Current
             {
@@ -561,10 +527,6 @@ namespace System.Runtime.CompilerServices
                 throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
             }
 
-            #endregion IEnumerator Members
-
-            #region IEnumerator Members
-
             void IEnumerator.Reset()
             {
                 if (_version != _builder._version)
@@ -574,8 +536,6 @@ namespace System.Runtime.CompilerServices
                 _index = 0;
                 Current = default;
             }
-
-            #endregion IEnumerator Members
         }
     }
 }

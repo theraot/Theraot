@@ -462,8 +462,6 @@ namespace System.Linq.Expressions
 
     public partial class Expression
     {
-        #region Assign
-
         /// <summary>
         /// Creates a <see cref="BinaryExpression"/> that represents an assignment operation.
         /// </summary>
@@ -484,8 +482,6 @@ namespace System.Linq.Expressions
             }
             return new AssignBinaryExpression(left, right);
         }
-
-        #endregion Assign
 
         /// <summary>
         /// Creates a <see cref="BinaryExpression" />, given the left and right operands, by calling an appropriate factory method.
@@ -924,8 +920,6 @@ namespace System.Linq.Expressions
             }
         }
 
-        #region Equality Operators
-
         /// <summary>
         /// Creates a <see cref="BinaryExpression"/> that represents an equality comparison.
         /// </summary>
@@ -1069,10 +1063,6 @@ namespace System.Linq.Expressions
             }
             throw new InvalidOperationException($"The binary operator {binaryType} is not defined for the types '{left.Type}' and '{right.Type}'.");
         }
-
-        #endregion Equality Operators
-
-        #region Comparison Expressions
 
         /// <summary>
         /// Creates a <see cref="BinaryExpression"/> that represents a "greater than" numeric comparison.
@@ -1221,10 +1211,6 @@ namespace System.Linq.Expressions
             return GetUserDefinedBinaryOperatorOrThrow(binaryType, opName, left, right, liftToNull);
         }
 
-        #endregion Comparison Expressions
-
-        #region Boolean Expressions
-
         /// <summary>
         /// Creates a <see cref="BinaryExpression"/> that represents a conditional AND operation that evaluates the second operand only if it has to.
         /// </summary>
@@ -1333,10 +1319,6 @@ namespace System.Linq.Expressions
             return new MethodBinaryExpression(ExpressionType.OrElse, left, right, returnType, method);
         }
 
-        #endregion Boolean Expressions
-
-        #region Coalescing Expressions
-
         /// <summary>
         /// Creates a <see cref="BinaryExpression" /> that represents a coalescing operation.
         /// </summary>
@@ -1429,10 +1411,6 @@ namespace System.Linq.Expressions
 
             throw new ArgumentException("Argument types do not match");
         }
-
-        #endregion Coalescing Expressions
-
-        #region Arithmetic Expressions
 
         /// <summary>
         /// Creates a <see cref="BinaryExpression"/> that represents an arithmetic addition operation that does not have overflow checking.
@@ -2813,10 +2791,6 @@ namespace System.Linq.Expressions
             }
         }
 
-        #endregion Arithmetic Expressions
-
-        #region ArrayIndex Expression
-
         /// <summary>
         /// Creates a <see cref="BinaryExpression"/> that represents applying an array index operator to an array of rank one.
         /// </summary>
@@ -2845,8 +2819,6 @@ namespace System.Linq.Expressions
 
             return new SimpleBinaryExpression(ExpressionType.ArrayIndex, array, index, arrayType.GetElementType());
         }
-
-        #endregion ArrayIndex Expression
     }
 
     // Optimized assignment node, only holds onto children

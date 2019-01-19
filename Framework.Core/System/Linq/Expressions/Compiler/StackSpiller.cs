@@ -118,8 +118,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        #region Expressions
-
         private static Result RewriteLambdaExpression(Expression expr)
         {
             var node = (LambdaExpression)expr;
@@ -763,10 +761,6 @@ namespace System.Linq.Expressions.Compiler
             return new Result(right.Action, node);
         }
 
-        #endregion Expressions
-
-        #region Statements
-
         private Result RewriteBlockExpression(Expression expr, Stack stack)
         {
             var node = (BlockExpression)expr;
@@ -1029,10 +1023,6 @@ namespace System.Linq.Expressions.Compiler
             return new Result(action, expr);
         }
 
-        #endregion Statements
-
-        #region Cloning
-
         private static T[] Clone<T>(T[] original, int max)
         {
             Debug.Assert(original != null);
@@ -1045,8 +1035,6 @@ namespace System.Linq.Expressions.Compiler
             }
             return clone;
         }
-
-        #endregion Cloning
     }
 }
 

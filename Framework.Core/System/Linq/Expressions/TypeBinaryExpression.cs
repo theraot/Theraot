@@ -87,8 +87,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public Type TypeOperand { get; }
 
-        #region Reduce TypeEqual
-
         internal Expression ReduceTypeEqual()
         {
             var cType = Expression.Type;
@@ -179,8 +177,6 @@ namespace System.Linq.Expressions
                 ? Utils.Constant(value: false)
                 : Utils.Constant(TypeOperand.GetNonNullable() == ce.Value.GetType());
         }
-
-        #endregion Reduce TypeEqual
 
         /// <summary>
         /// Creates a new expression that is like this one, but using the

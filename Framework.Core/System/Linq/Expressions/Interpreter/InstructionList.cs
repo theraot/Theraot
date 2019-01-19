@@ -39,8 +39,6 @@ namespace System.Linq.Expressions.Interpreter
             Labels = labels;
         }
 
-        #region Debug View
-
         internal sealed class DebugView
         {
             private readonly InstructionArray _array;
@@ -64,8 +62,6 @@ namespace System.Linq.Expressions.Interpreter
                 );
             }
         }
-
-        #endregion Debug View
     }
 
     [DebuggerTypeProxy(typeof(DebugView))]
@@ -81,8 +77,6 @@ namespace System.Linq.Expressions.Interpreter
         private int _maxContinuationDepth;
         private List<object> _objects;
         private int _runtimeLabelCount;
-
-        #region Debug View
 
         internal sealed class DebugView
         {
@@ -186,10 +180,6 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
         }
-
-        #endregion Debug View
-
-        #region Core Emit Ops
 
         public int Count => _instructions.Count;
 
@@ -318,10 +308,6 @@ namespace System.Linq.Expressions.Interpreter
         }
 #endif
 
-        #endregion Core Emit Ops
-
-        #region Stack Operations
-
         private const int _cachedObjectCount = 256;
         private const int _pushIntMaxCachedValue = 100;
         private const int _pushIntMinCachedValue = -100;
@@ -406,10 +392,6 @@ namespace System.Linq.Expressions.Interpreter
         {
             Emit(PopInstruction.Instance);
         }
-
-        #endregion Stack Operations
-
-        #region Locals
 
         private const int _localInstrCacheSize = 64;
 
@@ -658,10 +640,6 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        #endregion Locals
-
-        #region Array Operations
-
         public void EmitGetArrayItem()
         {
             Emit(GetArrayItemInstruction.Instance);
@@ -687,10 +665,6 @@ namespace System.Linq.Expressions.Interpreter
             Emit(SetArrayItemInstruction.Instance);
         }
 
-        #endregion Array Operations
-
-        #region Arithmetic Operations
-
         public void EmitAdd(Type type, bool @checked)
         {
             Emit(@checked ? AddOvfInstruction.Create(type) : AddInstruction.Create(type));
@@ -715,10 +689,6 @@ namespace System.Linq.Expressions.Interpreter
         {
             Emit(@checked ? SubOvfInstruction.Create(type) : SubInstruction.Create(type));
         }
-
-        #endregion Arithmetic Operations
-
-        #region Comparisons
 
         public void EmitAnd(Type type)
         {
@@ -775,10 +745,6 @@ namespace System.Linq.Expressions.Interpreter
             Emit(RightShiftInstruction.Create(type));
         }
 
-        #endregion Comparisons
-
-        #region Conversions
-
         public void EmitCast(Type toType)
         {
             Emit(CastInstruction.Create(toType));
@@ -810,18 +776,10 @@ namespace System.Linq.Expressions.Interpreter
             Emit(new NumericConvertInstruction.Unchecked(from, to, isLiftedToNull));
         }
 
-        #endregion Conversions
-
-        #region Boolean Operators
-
         public void EmitNot(Type type)
         {
             Emit(NotInstruction.Create(type));
         }
-
-        #endregion Boolean Operators
-
-        #region Types
 
         public void EmitArrayLength()
         {
@@ -883,10 +841,6 @@ namespace System.Linq.Expressions.Interpreter
             Emit(new CreateDelegateInstruction(creator));
         }
 
-        #endregion Types
-
-        #region Fields and Methods
-
         private static readonly Dictionary<FieldInfo, Instruction> _loadFields = new Dictionary<FieldInfo, Instruction>();
 
         public void EmitByRefCall(MethodInfo method, ParameterInfo[] parameters, ByRefUpdater[] byrefArgs)
@@ -938,10 +892,6 @@ namespace System.Linq.Expressions.Interpreter
                 return instruction;
             }
         }
-
-        #endregion Fields and Methods
-
-        #region Control Flow
 
         private static readonly RuntimeLabel[] _emptyRuntimeLabels = { new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0) };
 
@@ -1133,8 +1083,6 @@ namespace System.Linq.Expressions.Interpreter
             _runtimeLabelCount++;
             return label.LabelIndex;
         }
-
-        #endregion Control Flow
     }
 }
 

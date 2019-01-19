@@ -66,8 +66,6 @@ namespace System.Dynamic
             LockObject = new object();
         }
 
-#region Get/Set/Delete Helpers
-
         /// <summary>
         /// Exposes the ExpandoClass which we've associated with this
         /// Expando object.  Used for type checks in rules.
@@ -269,18 +267,10 @@ namespace System.Dynamic
             }
         }
 
-#endregion Get/Set/Delete Helpers
-
-#region IDynamicMetaObjectProvider Members
-
         DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
         {
             return new MetaExpando(parameter, this);
         }
-
-#endregion IDynamicMetaObjectProvider Members
-
-#region Helper methods
 
         private bool ExpandoContainsKey(string key)
         {
@@ -331,8 +321,6 @@ namespace System.Dynamic
                     throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
                 }
             }
-
-#region ICollection<string> Members
 
             public int Count
             {
@@ -387,10 +375,6 @@ namespace System.Dynamic
                 throw new NotSupportedException("Collection is read-only.");
             }
 
-#endregion ICollection<string> Members
-
-#region IEnumerable<string> Members
-
             public IEnumerator<string> GetEnumerator()
             {
                 for (int i = 0, n = _expandoData.Class.Keys.Length; i < n; i++)
@@ -403,16 +387,10 @@ namespace System.Dynamic
                 }
             }
 
-#endregion IEnumerable<string> Members
-
-#region IEnumerable Members
-
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
             }
-
-#endregion IEnumerable Members
         }
 
         // We create a non-generic type for the debug view for each different collection type
@@ -471,8 +449,6 @@ namespace System.Dynamic
                     throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
                 }
             }
-
-#region ICollection<string> Members
 
             public int Count
             {
@@ -538,10 +514,6 @@ namespace System.Dynamic
                 throw new NotSupportedException("Collection is read-only.");
             }
 
-#endregion ICollection<string> Members
-
-#region IEnumerable<string> Members
-
             public IEnumerator<object> GetEnumerator()
             {
                 var data = _expando._data;
@@ -558,16 +530,10 @@ namespace System.Dynamic
                 }
             }
 
-#endregion IEnumerable<string> Members
-
-#region IEnumerable Members
-
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
             }
-
-#endregion IEnumerable Members
         }
 
         // We create a non-generic type for the debug view for each different collection type
@@ -597,10 +563,6 @@ namespace System.Dynamic
                 }
             }
         }
-
-#endregion Helper methods
-
-#region IDictionary<string, object> Members
 
         ICollection<string> IDictionary<string, object>.Keys => new KeyCollection(this);
 
@@ -649,10 +611,6 @@ namespace System.Dynamic
         {
             return TryGetValueForKey(key, out value);
         }
-
-#endregion IDictionary<string, object> Members
-
-#region ICollection<KeyValuePair<string, object>> Members
 
         int ICollection<KeyValuePair<string, object>>.Count => _count;
 
@@ -714,10 +672,6 @@ namespace System.Dynamic
             return TryDeleteValue(null, -1, item.Key, ignoreCase: false, deleteValue: item.Value);
         }
 
-#endregion ICollection<KeyValuePair<string, object>> Members
-
-#region IEnumerable<KeyValuePair<string, object>> Member
-
         IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
         {
             var data = _data;
@@ -752,10 +706,6 @@ namespace System.Dynamic
                 }
             }
         }
-
-#endregion IEnumerable<KeyValuePair<string, object>> Member
-
-#region MetaExpando
 
         private class MetaExpando : DynamicMetaObject
         {
@@ -985,10 +935,6 @@ namespace System.Dynamic
             }
         }
 
-#endregion MetaExpando
-
-#region ExpandoData
-
         /// <summary>
         /// Stores the class and the data associated with the class as one atomic
         /// pair.  This enables us to do a class check in a thread safe manner w/o
@@ -1077,17 +1023,11 @@ namespace System.Dynamic
             }
         }
 
-#endregion ExpandoData
-
-#region INotifyPropertyChanged
-
         event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
         {
             add => _propertyChanged.Add(value.Method, value.Target);
             remove => _propertyChanged.Remove(value.Method, value.Target);
         }
-
-#endregion INotifyPropertyChanged
     }
 }
 

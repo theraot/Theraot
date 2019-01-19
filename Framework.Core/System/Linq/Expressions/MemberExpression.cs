@@ -12,8 +12,6 @@ namespace System.Linq.Expressions
 {
     public partial class Expression
     {
-        #region Field
-
         /// <summary>
         /// Creates a <see cref="MemberExpression"/> accessing a field.
         /// </summary>
@@ -89,10 +87,6 @@ namespace System.Linq.Expressions
             }
             return Field(expression, fi);
         }
-
-        #endregion Field
-
-        #region Property
 
         /// <summary>
         /// Creates a <see cref="MemberExpression"/> accessing a property.
@@ -241,8 +235,6 @@ namespace System.Linq.Expressions
 
             throw new ArgumentException($"The method '{mi.DeclaringType}.{mi.Name}' is not a property accessor", index >= 0 ? $"{paramName}[{index}]" : paramName);
         }
-
-        #endregion Property
 
         /// <summary>
         /// Creates a <see cref="MemberExpression"/> accessing a property or field.

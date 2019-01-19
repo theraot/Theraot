@@ -16,8 +16,6 @@ namespace System.ComponentModel.DataAnnotations
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Method)]
     public sealed class DisplayAttribute : Attribute
     {
-        #region Member Fields
-
         private readonly LocalizableString _description = new LocalizableString(nameof(Description));
         private readonly LocalizableString _groupName = new LocalizableString(nameof(GroupName));
         private readonly LocalizableString _name = new LocalizableString(nameof(Name));
@@ -27,10 +25,6 @@ namespace System.ComponentModel.DataAnnotations
         private bool? _autoGenerateFilter;
         private int? _order;
         private Type _resourceType;
-
-        #endregion Member Fields
-
-        #region Properties
 
         /// <summary>
         ///     Gets or sets whether UI should be generated automatically to display this field. If this property is not
@@ -293,10 +287,6 @@ namespace System.ComponentModel.DataAnnotations
             }
         }
 
-        #endregion Properties
-
-        #region Methods
-
         /// <summary>
         ///     Gets the value of <see cref="AutoGenerateField" /> if it has been set, or <c>null</c>.
         /// </summary>
@@ -480,8 +470,6 @@ namespace System.ComponentModel.DataAnnotations
         {
             return _shortName.GetLocalizableValue() ?? GetName();
         }
-
-        #endregion Methods
     }
 }
 
