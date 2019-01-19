@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA2217 // Do not mark enums with FlagsAttribute
+
 namespace System.Threading.Tasks
 {
     [Flags]

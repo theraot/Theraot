@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 

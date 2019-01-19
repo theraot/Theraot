@@ -1,5 +1,8 @@
 #if LESSTHAN_NET40
 
+#pragma warning disable RCS1079 // Throwing of new NotImplementedException.
+#pragma warning disable RECS0083 // Shows NotImplementedException throws in the quick task bar
+
 using System.Collections.Generic;
 using Theraot.Core;
 

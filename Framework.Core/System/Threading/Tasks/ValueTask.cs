@@ -1,5 +1,8 @@
 #if LESSTHAN_NET45
 
+#pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
+#pragma warning disable RECS0017 // Possible compare of value type with 'null'
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -82,16 +85,16 @@ namespace System.Threading.Tasks
         public override int GetHashCode()
         {
             return
-                _task != null ? _task.GetHashCode() :
-                _result != null ? _result.GetHashCode() :
-                0;
+                _task != null
+                    ? _task.GetHashCode()
+                    : _result != null
+                        ? _result.GetHashCode()
+                        : 0;
         }
 
         public override bool Equals(object obj)
         {
-            return
-                obj is ValueTask<TResult> task &&
-                Equals(task);
+            return obj is ValueTask<TResult> task && Equals(task);
         }
 
         public bool Equals(ValueTask<TResult> other)
@@ -127,16 +130,16 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> represents a completed operation.</summary>
-        public bool IsCompleted => _task == null || _task.IsCompleted;
+        public bool IsCompleted => _task?.IsCompleted != false;
 
         /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> represents a successfully completed operation.</summary>
         public bool IsCompletedSuccessfully => _task == null || _task.Status == TaskStatus.RanToCompletion;
 
         /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> represents a failed operation.</summary>
-        public bool IsFaulted => _task != null && _task.IsFaulted;
+        public bool IsFaulted => _task?.IsFaulted == true;
 
         /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> represents a canceled operation.</summary>
-        public bool IsCanceled => _task != null && _task.IsCanceled;
+        public bool IsCanceled => _task?.IsCanceled == true;
 
         /// <summary>Gets the result.</summary>
         public TResult Result => _task == null ? _result : _task.GetAwaiter().GetResult();

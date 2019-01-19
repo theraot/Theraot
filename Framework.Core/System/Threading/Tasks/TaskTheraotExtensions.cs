@@ -35,7 +35,7 @@ namespace System.Threading.Tasks
         {
             if (task == null)
             {
-                throw new ArgumentNullException("task");
+                throw new ArgumentNullException(nameof(task));
             }
 
             return new ConfiguredTaskAwaitable<TResult>(task, continueOnCapturedContext);
@@ -54,7 +54,7 @@ namespace System.Threading.Tasks
         {
             if (task == null)
             {
-                throw new ArgumentNullException("task");
+                throw new ArgumentNullException(nameof(task));
             }
 
             return new ConfiguredTaskAwaitable(task, continueOnCapturedContext);
@@ -71,7 +71,7 @@ namespace System.Threading.Tasks
         {
             if (task == null)
             {
-                throw new ArgumentNullException("task");
+                throw new ArgumentNullException(nameof(task));
             }
 
             return new TaskAwaiter(task);
@@ -89,7 +89,7 @@ namespace System.Threading.Tasks
         {
             if (task == null)
             {
-                throw new ArgumentNullException("task");
+                throw new ArgumentNullException(nameof(task));
             }
 
             return new TaskAwaiter<TResult>(task);

@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable RCS1194 // Implement exception constructors.
+
 using System.Runtime.Serialization;
 
 // Licensed to the .NET Foundation under one or more agreements.

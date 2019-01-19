@@ -21,6 +21,7 @@ namespace System.Threading.Tasks
         public TaskSchedulerException()
             : base(nameof(TaskSchedulerException))
         {
+            // Empty
         }
 
         /// <summary>
@@ -31,6 +32,7 @@ namespace System.Threading.Tasks
         public TaskSchedulerException(string message)
             : base(message)
         {
+            // Empty
         }
 
         /// <summary>
@@ -42,6 +44,7 @@ namespace System.Threading.Tasks
         public TaskSchedulerException(Exception innerException)
             : base(nameof(TaskSchedulerException), innerException)
         {
+            // Empty
         }
 
         /// <summary>
@@ -54,6 +57,7 @@ namespace System.Threading.Tasks
         public TaskSchedulerException(string message, Exception innerException)
             : base(message, innerException)
         {
+            // Empty
         }
 
         /// <summary>
@@ -67,6 +71,7 @@ namespace System.Threading.Tasks
         protected TaskSchedulerException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
+            // Empty
         }
     }
 }

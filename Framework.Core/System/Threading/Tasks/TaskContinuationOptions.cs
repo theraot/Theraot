@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable RCS1191 // Declare enum value as combination of names.
+
 namespace System.Threading.Tasks
 {
     /// <summary>Specifies the behavior for a task that is created by using the <see cref="T:System.Threading.Tasks.Task.ContinueWith" /> or <see cref="T:System.Threading.Tasks.Task`1.ContinueWith" /> method.</summary>

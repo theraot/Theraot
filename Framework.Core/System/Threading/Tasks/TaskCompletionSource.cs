@@ -82,10 +82,10 @@ namespace System.Threading.Tasks
         /// Creates a <see cref="TaskCompletionSource{TResult}"/> with
         /// the specified state and options.
         /// </summary>
-        /// <param name="creationOptions">The options to use when creating the underlying
-        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
         /// <param name="state">The state to use as the underlying
         /// <see cref="T:System.Threading.Tasks.Task{TResult}"/>'s AsyncState.</param>
+        /// <param name="creationOptions">The options to use when creating the underlying
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
         /// <exception cref="T:System.ArgumentOutOfRangeException">
         /// The <paramref name="creationOptions"/> represent options invalid for use
         /// with a <see cref="TaskCompletionSource{TResult}"/>.

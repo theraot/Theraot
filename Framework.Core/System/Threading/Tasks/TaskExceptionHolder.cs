@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -68,8 +70,7 @@ namespace System.Threading.Tasks
             // We need to do this filtering because all TaskExceptionHolders will be finalized during shutdown or unload
             // regardless of reachability of the task (i.e. even if the user code was about to observe the task's exception),
             // which can otherwise lead to spurious crashes during shutdown.
-            if (_faultExceptions != null && !_isHandled &&
-                !Environment.HasShutdownStarted && !GCMonitor.FinalizingForUnload && !_domainUnloadStarted)
+            if (_faultExceptions != null && !_isHandled && !Environment.HasShutdownStarted && !GCMonitor.FinalizingForUnload && !_domainUnloadStarted)
             {
                 // We don't want to crash the finalizer thread if any ThreadAbortExceptions
                 // occur in the list or in any nested AggregateExceptions.
@@ -114,13 +115,13 @@ namespace System.Threading.Tasks
         /// Add an exception to the holder.  This will ensure the holder is
         /// in the proper state (handled/unhandled) depending on the list's contents.
         /// </summary>
-        /// <param name="representsCancellation">
-        /// Whether the exception represents a cancellation request (true) or a fault (false).
-        /// </param>
         /// <param name="exceptionObject">
         /// An exception object (either an Exception, an ExceptionDispatchInfo,
         /// an IEnumerable{Exception}, or an IEnumerable{ExceptionDispatchInfo})
         /// to add to the list.
+        /// </param>
+        /// <param name="representsCancellation">
+        /// Whether the exception represents a cancellation request (true) or a fault (false).
         /// </param>
         /// <remarks>
         /// Must be called under lock.
@@ -128,11 +129,14 @@ namespace System.Threading.Tasks
         internal void Add(object exceptionObject, bool representsCancellation)
         {
             Contract.Requires(exceptionObject != null, "TaskExceptionHolder.Add(): Expected a non-null exceptionObject");
-            Contract.Requires(
-                exceptionObject is Exception || exceptionObject is IEnumerable<Exception> ||
-                exceptionObject is ExceptionDispatchInfo || exceptionObject is IEnumerable<ExceptionDispatchInfo>,
-                "TaskExceptionHolder.Add(): Expected Exception, IEnumerable<Exception>, ExceptionDispatchInfo, or IEnumerable<ExceptionDispatchInfo>");
-
+            Contract.Requires
+            (
+                exceptionObject is Exception
+                || exceptionObject is IEnumerable<Exception>
+                || exceptionObject is ExceptionDispatchInfo
+                || exceptionObject is IEnumerable<ExceptionDispatchInfo>,
+                "TaskExceptionHolder.Add(): Expected Exception, IEnumerable<Exception>, ExceptionDispatchInfo, or IEnumerable<ExceptionDispatchInfo>"
+            );
             if (representsCancellation)
             {
                 SetCancellationException(exceptionObject);
@@ -220,7 +224,6 @@ namespace System.Threading.Tasks
                 {
                     GC.SuppressFinalize(this);
                 }
-
                 _isHandled = true;
             }
         }

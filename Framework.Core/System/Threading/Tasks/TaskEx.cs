@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
+#pragma warning disable CA1068 // CancellationToken parameters must come last
+#pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
+#pragma warning disable RCS1231 // Make parameter ref read-only.
+
 #if NET40
 
 using System.Linq;
@@ -55,7 +59,7 @@ namespace System.Threading.Tasks
             // Microsoft says Task.FromCancellation throws ArgumentOutOfRangeException when cancellation has not been requested for cancellationToken
             if (!cancellationToken.IsCancellationRequested)
             {
-                throw new ArgumentOutOfRangeException("cancellationToken");
+                throw new ArgumentOutOfRangeException(nameof(cancellationToken));
             }
             var task = new Task<TResult>();
             var value = task.TrySetCanceled(cancellationToken);
@@ -72,7 +76,7 @@ namespace System.Threading.Tasks
             // Microsoft says Task.FromCancellation throws ArgumentOutOfRangeException when cancellation has not been requested for cancellationToken
             if (!cancellationToken.IsCancellationRequested)
             {
-                throw new ArgumentOutOfRangeException("cancellationToken");
+                throw new ArgumentOutOfRangeException(nameof(cancellationToken));
             }
             var taskCompleteSource = new TaskCompletionSource<TResult>();
             taskCompleteSource.TrySetCanceled();
@@ -129,7 +133,7 @@ namespace System.Threading.Tasks
 #if LESSTHAN_NET40
             if (exception == null)
             {
-                throw new ArgumentNullException("exception");
+                throw new ArgumentNullException(nameof(exception));
             }
             var task = new Task<TResult>();
             var value = task.TrySetException(exception);
@@ -145,7 +149,7 @@ namespace System.Threading.Tasks
 #elif LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
             if (exception == null)
             {
-                throw new ArgumentNullException("exception");
+                throw new ArgumentNullException(nameof(exception));
             }
             var taskCompleteSource = new TaskCompletionSource<TResult>();
             taskCompleteSource.TrySetException(exception);
@@ -351,7 +355,7 @@ namespace System.Threading.Tasks
         public static Task WhenAll(IEnumerable<Task> tasks)
         {
 #if NET40
-            return WhenAllCore(tasks, (Action<Task[], TaskCompletionSource<object>>)((completedTasks, tcs) => tcs.TrySetResult(null)));
+            return WhenAllCore(tasks, (Action<Task[], TaskCompletionSource<object>>)((_, tcs) => tcs.TrySetResult(null)));
 #else
             // Missing in .NET 4.0
             return Task.WhenAll(tasks);
@@ -560,7 +564,7 @@ namespace System.Threading.Tasks
 #if DEBUG
             if (setResultAction == null)
             {
-                throw new ArgumentException("setResultAction");
+                throw new ArgumentNullException(nameof(setResultAction));
             }
 #endif
             if (tasks == null)
@@ -586,12 +590,12 @@ namespace System.Threading.Tasks
                         {
                             AddPotentiallyUnwrappedExceptions(ref exceptions, task.Exception);
                         }
-                        else if (task.IsCanceled)
+                        else
                         {
-                            canceled = true;
+                            canceled |= task.IsCanceled;
                         }
                     }
-                    if (exceptions != null && exceptions.Count > 0)
+                    if (exceptions?.Count > 0)
                     {
                         tcs.TrySetException(exceptions);
                     }
