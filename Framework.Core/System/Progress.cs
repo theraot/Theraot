@@ -1,7 +1,8 @@
 ﻿#if LESSTHAN_NET45
 
+#pragma warning disable CA1003 // Use generic event handler instances
+
 using System.Threading;
-using Theraot.Core;
 
 namespace System
 {
@@ -13,19 +14,15 @@ namespace System
         public Progress()
         {
             var context = SynchronizationContext.Current;
-            if (context == null)
+            switch (context)
             {
-                _post = value =>
-                {
-                    ThreadPool.QueueUserWorkItem(Callback, value);
-                };
-            }
-            else
-            {
-                _post = value =>
-                {
-                    context.Post(Callback, value);
-                };
+                case null:
+                    _post = value => ThreadPool.QueueUserWorkItem(Callback, value);
+                    break;
+
+                default:
+                    _post = value => context.Post(Callback, value);
+                    break;
             }
         }
 
@@ -36,10 +33,10 @@ namespace System
             {
                 throw new ArgumentNullException(nameof(handler));
             }
-            ProgressChanged += (sender, args) => handler(args);
+            ProgressChanged += (_, args) => handler(args);
         }
 
-        public event NewEventHandler<T> ProgressChanged;
+        public event EventHandlerEx<T> ProgressChanged;
 
         public void Report(T value)
         {

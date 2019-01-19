@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA2235 // Mark all non-serializable fields
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;

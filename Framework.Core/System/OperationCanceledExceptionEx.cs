@@ -1,5 +1,7 @@
 ﻿// Needed for NET35 (TASK)
 
+#pragma warning disable RCS1231 // Make parameter ref read-only.
+
 using System.Runtime.Serialization;
 using System.Threading;
 
@@ -62,17 +64,7 @@ namespace System
             _token = token;
         }
 
-        public CancellationToken CancellationToken
-        {
-            get
-            {
-                if (_token == null)
-                {
-                    return CancellationToken.None;
-                }
-                return _token.Value;
-            }
-        }
+        public CancellationToken CancellationToken => _token ?? CancellationToken.None;
 
 #else
 
