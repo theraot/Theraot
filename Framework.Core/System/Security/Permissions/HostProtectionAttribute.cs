@@ -20,7 +20,7 @@ namespace System.Security.Permissions
         public HostProtectionAttribute(SecurityAction action)
             : base(default)
         {
-            // Empty
+            Theraot.No.Op(action);
         }
 
         public bool ExternalProcessMgmt { get; set; }

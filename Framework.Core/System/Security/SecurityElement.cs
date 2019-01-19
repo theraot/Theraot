@@ -1,5 +1,8 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
 
+#pragma warning disable CC0031 // Check for null before calling a delegate
+#pragma warning disable CA2227 // Collection properties should be read only
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -21,13 +24,12 @@ namespace System.Security
         private const int _attributesTypical = 4 * 2;  // 4 attributes, times 2 strings per attribute
         private const int _childrenTypical = 1;
 
-        private static readonly char[] _tagIllegalCharacters = new char[] { ' ', '<', '>' };
-        private static readonly char[] _textIllegalCharacters = new char[] { '<', '>' };
-        private static readonly char[] _valueIllegalCharacters = new char[] { '<', '>', '\"' };
-        private static readonly char[] _escapeChars = new char[] { '<', '>', '\"', '\'', '&' };
+        private static readonly char[] _tagIllegalCharacters = { ' ', '<', '>' };
+        private static readonly char[] _textIllegalCharacters = { '<', '>' };
+        private static readonly char[] _valueIllegalCharacters = { '<', '>', '\"' };
+        private static readonly char[] _escapeChars = { '<', '>', '\"', '\'', '&' };
 
-        private static readonly string[] _escapeStringPairs = new string[]
-        {
+        private static readonly string[] _escapeStringPairs = {
             // these must be all once character escape sequences or a new escaping algorithm is needed
             "<", "&lt;",
             ">", "&gt;",
@@ -90,7 +92,7 @@ namespace System.Security
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException(nameof(Tag));
+                    throw new ArgumentNullException(nameof(value));
                 }
 
                 if (!IsValidTag(value))
@@ -110,20 +112,18 @@ namespace System.Security
                 {
                     return null;
                 }
-                else
+
+                var hashtable = new Hashtable(_attributes.Count / 2);
+
+                var iMax = _attributes.Count;
+                Debug.Assert(iMax % 2 == 0, "Odd number of strings means the attr/value pairs were not added correctly");
+
+                for (var i = 0; i < iMax; i += 2)
                 {
-                    var hashtable = new Hashtable(_attributes.Count / 2);
-
-                    var iMax = _attributes.Count;
-                    Debug.Assert(iMax % 2 == 0, "Odd number of strings means the attr/value pairs were not added correctly");
-
-                    for (var i = 0; i < iMax; i += 2)
-                    {
-                        hashtable.Add(_attributes[i], _attributes[i + 1]);
-                    }
-
-                    return hashtable;
+                    hashtable.Add(_attributes[i], _attributes[i + 1]);
                 }
+
+                return hashtable;
             }
 
             set
@@ -193,7 +193,7 @@ namespace System.Security
 
             set
             {
-                if (value != null && value.Contains(null))
+                if (value?.Contains(null) == true)
                 {
                     throw new ArgumentException("Cannot have a null child.");
                 }
@@ -234,7 +234,7 @@ namespace System.Security
                 {
                     var strAttrName = (string)_attributes[i];
 
-                    if (string.Equals(strAttrName, name))
+                    if (string.Equals(strAttrName, name, StringComparison.Ordinal))
                     {
                         throw new ArgumentException("Attribute names must be unique.");
                     }
@@ -277,12 +277,7 @@ namespace System.Security
                 throw new ArgumentNullException(nameof(child));
             }
 
-            if (_children == null)
-            {
-                _children = new ArrayList(_childrenTypical);
-            }
-
-            _children.Add(child);
+            (_children ?? (_children = new ArrayList(_childrenTypical))).Add(child);
         }
 
         public bool Equal(SecurityElement other)
@@ -293,13 +288,13 @@ namespace System.Security
             }
 
             // Check if the tags are the same
-            if (!string.Equals(_tag, other._tag))
+            if (!string.Equals(_tag, other._tag, StringComparison.Ordinal))
             {
                 return false;
             }
 
             // Check if the text is the same
-            if (!string.Equals(_text, other._text))
+            if (!string.Equals(_text, other._text, StringComparison.Ordinal))
             {
                 return false;
             }
@@ -329,7 +324,7 @@ namespace System.Security
                     var lhs = (string)_attributes[i];
                     var rhs = (string)other._attributes[i];
 
-                    if (!string.Equals(lhs, rhs))
+                    if (!string.Equals(lhs, rhs, StringComparison.Ordinal))
                     {
                         return false;
                     }
@@ -364,7 +359,7 @@ namespace System.Security
                     rhs.MoveNext();
                     var e1 = (SecurityElement)lhs.Current;
                     var e2 = (SecurityElement)rhs.Current;
-                    if (e1 == null || !e1.Equal(e2))
+                    if (e1?.Equal(e2) != true)
                     {
                         return false;
                     }
@@ -435,7 +430,7 @@ namespace System.Security
                 }
             }
 
-            Debug.Assert(false, "Unable to find escape sequence for this character");
+            DebugEx.Fail("Unable to find escape sequence for this character");
             return c.ToString();
         }
 
@@ -449,12 +444,11 @@ namespace System.Security
             StringBuilder sb = null;
 
             var strLen = str.Length;
-            int index; // Pointer into the string that indicates the location of the current '&' character
             var newIndex = 0; // Pointer into the string that indicates the start index of the "remaining" string (that still needs to be processed).
 
             while (true)
             {
-                index = str.IndexOfAny(_escapeChars, newIndex);
+                var index = str.IndexOfAny(_escapeChars, newIndex); // Pointer into the string that indicates the location of the current '&' character
 
                 if (index == -1)
                 {
@@ -462,24 +456,15 @@ namespace System.Security
                     {
                         return str;
                     }
-                    else
-                    {
-                        sb.Append(str, newIndex, strLen - newIndex);
-                        return sb.ToString();
-                    }
-                }
-                else
-                {
-                    if (sb == null)
-                    {
-                        sb = new StringBuilder();
-                    }
 
-                    sb.Append(str, newIndex, index - newIndex);
-                    sb.Append(GetEscapeSequence(str[index]));
-
-                    newIndex = index + 1;
+                    sb.Append(str, newIndex, strLen - newIndex);
+                    return sb.ToString();
                 }
+
+                (sb ?? (sb = new StringBuilder())).Append(str, newIndex, index - newIndex);
+                sb.Append(GetEscapeSequence(str[index]));
+
+                newIndex = index + 1;
             }
 
             // no normal exit is possible
@@ -520,12 +505,11 @@ namespace System.Security
             StringBuilder sb = null;
 
             var strLen = str.Length;
-            int index; // Pointer into the string that indicates the location of the current '&' character
-            var newIndex = 0; // Pointer into the string that indicates the start index of the "remainging" string (that still needs to be processed).
+            var newIndex = 0; // Pointer into the string that indicates the start index of the remaining string (that still needs to be processed).
 
-            do
+            while (true)
             {
-                index = str.IndexOf('&', newIndex);
+                var index = str.IndexOf('&', newIndex); // Pointer into the string that indicates the location of the current '&' character
 
                 if (index == -1)
                 {
@@ -533,24 +517,14 @@ namespace System.Security
                     {
                         return str;
                     }
-                    else
-                    {
-                        sb.Append(str, newIndex, strLen - newIndex);
-                        return sb.ToString();
-                    }
-                }
-                else
-                {
-                    if (sb == null)
-                    {
-                        sb = new StringBuilder();
-                    }
 
-                    sb.Append(str, newIndex, index - newIndex);
-                    sb.Append(GetUnescapeSequence(str, index, out newIndex)); // updates the newIndex too
+                    sb.Append(str, newIndex, strLen - newIndex);
+                    return sb.ToString();
                 }
+
+                (sb ?? (sb = new StringBuilder())).Append(str, newIndex, index - newIndex);
+                sb.Append(GetUnescapeSequence(str, index, out newIndex)); // updates the newIndex too
             }
-            while (true);
         }
 
         public override string ToString()
@@ -568,7 +542,7 @@ namespace System.Security
             write(obj, _tag);
 
             // If there are any attributes, plop those in.
-            if (_attributes != null && _attributes.Count > 0)
+            if (_attributes?.Count > 0)
             {
                 write(obj, " ");
 
@@ -613,9 +587,9 @@ namespace System.Security
 
                     write(obj, Environment.NewLine);
 
-                    for (var i = 0; i < _children.Count; ++i)
+                    foreach (var child in _children)
                     {
-                        ((SecurityElement)_children[i]).ToString(obj, write);
+                        ((SecurityElement)child).ToString(obj, write);
                     }
                 }
 
@@ -650,7 +624,7 @@ namespace System.Security
             {
                 var strAttrName = (string)_attributes[i];
 
-                if (string.Equals(strAttrName, name))
+                if (string.Equals(strAttrName, name, StringComparison.Ordinal))
                 {
                     var strAttrValue = (string)_attributes[i + 1];
 
@@ -681,7 +655,7 @@ namespace System.Security
 
             foreach (SecurityElement current in _children)
             {
-                if (current != null && string.Equals(current.Tag, tag))
+                if (current != null && string.Equals(current.Tag, tag, StringComparison.Ordinal))
                 {
                     return current;
                 }
@@ -700,7 +674,7 @@ namespace System.Security
 
             // Note: we don't check for a valid tag here because
             // an invalid tag simply won't be found.
-            if (string.Equals(_tag, tag))
+            if (string.Equals(_tag, tag, StringComparison.Ordinal))
             {
                 return Unescape(_text);
             }

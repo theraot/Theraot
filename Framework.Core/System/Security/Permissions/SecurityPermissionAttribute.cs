@@ -40,6 +40,7 @@ namespace System.Security.Permissions
         public SecurityPermissionAttribute(SecurityAction action)
             : base(action)
         {
+            // Empty
         }
 
         public SecurityPermissionFlag Flags { get; set; } = SecurityPermissionFlag.NoFlags;
@@ -131,14 +132,7 @@ namespace System.Security.Permissions
 
         public override IPermission CreatePermission()
         {
-            if (Unrestricted)
-            {
-                return new SecurityPermission(PermissionState.Unrestricted);
-            }
-            else
-            {
-                return new SecurityPermission(Flags);
-            }
+            return Unrestricted ? new SecurityPermission(PermissionState.Unrestricted) : new SecurityPermission(Flags);
         }
     }
 
@@ -156,7 +150,7 @@ namespace System.Security.Permissions
 
         public SecurityPermissionFlag Flags { get; set; }
         public override IPermission Copy() { return this; }
-        public override void FromXml(SecurityElement esd) { }
+        public override void FromXml(SecurityElement securityElement) { }
         public override IPermission Intersect(IPermission target) { return default; }
         public override bool IsSubsetOf(IPermission target) { return false; }
         public bool IsUnrestricted() { return false; }

@@ -1,5 +1,9 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
 
+#pragma warning disable CA1714 // Flags enums should have plural names
+#pragma warning disable RCS1154 // Sort enum members.
+#pragma warning disable RCS1191 // Declare enum value as combination of names.
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.

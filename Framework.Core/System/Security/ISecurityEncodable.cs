@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
 
+#pragma warning disable CA1041 // Provide ObsoleteAttribute message
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -14,7 +16,7 @@ namespace System.Security
         void FromXml(SecurityElement e);
     }
 
-    public abstract class CodeAccessPermission : IPermission, ISecurityEncodable, IStackWalk
+    public abstract class CodeAccessPermission : IPermission, IStackWalk
     {
         public void Assert()
         {
@@ -31,7 +33,7 @@ namespace System.Security
         [Obsolete]
         public void Deny() => throw new PlatformNotSupportedException();
 
-        public abstract void FromXml(SecurityElement elem);
+        public abstract void FromXml(SecurityElement securityElement);
 
         public abstract IPermission Intersect(IPermission target);
 
@@ -65,7 +67,7 @@ namespace System.Security
 
         public abstract SecurityElement ToXml();
 
-        public virtual IPermission Union(IPermission other)
+        public virtual IPermission Union(IPermission target)
         {
             return null;
         }
