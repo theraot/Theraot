@@ -5,9 +5,6 @@ using Theraot.Core;
 
 namespace System.Threading
 {
-    [Runtime.InteropServices.ComVisible(true)]
-    public delegate void WaitCallback(object state);
-
     public static class ThreadPool
     {
         private class ThreadPoolThread
@@ -55,6 +52,10 @@ namespace System.Threading
 
         public static bool QueueUserWorkItem(WaitCallback callBack)
         {
+            if (callBack == null)
+            {
+                throw new ArgumentNullException(nameof(callBack));
+            }
             _work.Add(() => callBack(null));
             if (Volatile.Read(ref _threadCount) < EnvironmentHelper.ProcessorCount)
             {

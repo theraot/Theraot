@@ -38,14 +38,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(valueFactory));
             }
-            if (trackAllValues)
-            {
-                _wrapped = new TrackingThreadLocal<T>(valueFactory);
-            }
-            else
-            {
-                _wrapped = new NoTrackingThreadLocal<T>(valueFactory);
-            }
+            _wrapped = trackAllValues ? (IThreadLocal<T>)new TrackingThreadLocal<T>(valueFactory) : new NoTrackingThreadLocal<T>(valueFactory);
         }
 
         [DebuggerNonUserCode]

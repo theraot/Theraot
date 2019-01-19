@@ -64,7 +64,9 @@ namespace System.Threading
                 {
                     return target;
                 }
+#pragma warning disable CC0031 // Check for null before calling a delegate
                 target = valueFactory();
+#pragma warning restore CC0031 // Check for null before calling a delegate
                 Volatile.Write(ref initialized, true);
             }
             return target;

@@ -1,5 +1,10 @@
 ﻿#if TARGETS_NETSTANDARD
 
+#pragma warning disable CA1008 // Enums should have zero value
+#pragma warning disable CA1714 // Flags enums should have plural names
+#pragma warning disable CA1822 // Mark members as static
+#pragma warning disable CC0091 // Use static method
+
 using System.Threading.Tasks;
 using Theraot;
 using Theraot.Threading;
@@ -10,14 +15,17 @@ namespace System
     {
         public SystemException()
         {
+            // Empty
         }
 
         public SystemException(string message) : base(message)
         {
+            // Empty
         }
 
         public SystemException(string message, Exception inner) : base(message, inner)
         {
+            // Empty
         }
     }
 }
@@ -63,31 +71,35 @@ namespace System.Threading
 
         public Thread(ParameterizedThreadStart start)
         {
-            _start = start == null
-                ? throw new ArgumentNullException(nameof(start))
-                : new ParameterizedThreadStart
-                (
-                    state =>
-                    {
-                        _currentThread = this;
-                        start(state);
-                    }
-                );
+            if (start == null)
+            {
+                throw new ArgumentNullException(nameof(start));
+            }
+            _start = new ParameterizedThreadStart
+            (
+                state =>
+                {
+                    _currentThread = this;
+                    start(state);
+                }
+            );
             ManagedThreadId = Interlocked.Increment(ref _lastId);
         }
 
         public Thread(ThreadStart start)
         {
-            _start = start == null
-                ? throw new ArgumentNullException(nameof(start))
-                : new ParameterizedThreadStart
-                (
-                    _ =>
-                    {
-                        _currentThread = this;
-                        start();
-                    }
-                );
+            if (start == null)
+            {
+                throw new ArgumentNullException(nameof(start));
+            }
+            _start = new ParameterizedThreadStart
+            (
+                _ =>
+                {
+                    _currentThread = this;
+                    start();
+                }
+            );
             ManagedThreadId = Interlocked.Increment(ref _lastId);
         }
 
@@ -111,7 +123,7 @@ namespace System.Threading
                 try
                 {
                     var task = Volatile.Read(ref _task);
-                    if (task != null && !task.IsCompleted)
+                    if (task?.IsCompleted == false)
                     {
                         GC.ReRegisterForFinalize(this);
                     }
@@ -126,7 +138,7 @@ namespace System.Threading
 
         public static Thread CurrentThread => _currentThread ?? (_currentThread = new Thread());
 
-        public bool IsAlive => _start == null && _probe.TryGetTarget(out _) || _task != null && !_task.IsCompleted;
+        public bool IsAlive => (_start == null && _probe.TryGetTarget(out _)) || (_task?.IsCompleted == false);
 
         public bool IsBackground
         {

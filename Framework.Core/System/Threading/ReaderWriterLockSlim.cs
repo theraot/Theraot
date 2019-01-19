@@ -25,13 +25,13 @@ namespace System.Threading
         private const int _rwWrite = 4;
 
         // This Stopwatch instance is used for all threads since .Elapsed is thread-safe
-        private static readonly Stopwatch _stopwatch;
+        private static readonly Stopwatch _stopwatch = Stopwatch.StartNew();
 
         [ThreadStatic]
         private static Dictionary<int, ThreadLockState> _currentThreadState;
 
         // Incremented when a new object is created, should not be readonly
-        private static int _idPool;
+        private static int _idPool = int.MinValue;
 
         private readonly ThreadLockState[] _fastStateCache;
         private readonly int _id;
@@ -54,30 +54,10 @@ namespace System.Threading
         private bool _disposed;
         private int _rwLock;
 
-        /* For performance sake, these numbers are manipulated via classic increment and
-        * decrement operations and thus are (as hinted by MSDN) not meant to be precise
-        */
-        /* This dictionary is instantiated per thread for all existing ReaderWriterLockSlim instance.
-        * Each instance is defined by an internal integer id value used as a key in the dictionary.
-        * to avoid keeping unneeded reference to the instance and getting in the way of the GC.
-        * Since there is no LockCookie type here, all the useful per-thread infos concerning each
-        * instance are kept here.
-        */
-        /* ReaderWriterLockSlim tries to use this array as much as possible to quickly retrieve the thread-local
-        * informations so that it ends up being only an array lookup. When the number of thread
-        * using the instance goes past the length of the array, the code fallback to the normal
-        * dictionary
-        */
-
-        static ReaderWriterLockSlim()
-        {
-            _stopwatch = Stopwatch.StartNew();
-            _idPool = int.MinValue;
-        }
-
         public ReaderWriterLockSlim()
             : this(LockRecursionPolicy.NoRecursion)
         {
+            // Empty
         }
 
         public ReaderWriterLockSlim(LockRecursionPolicy recursionPolicy)
@@ -95,11 +75,11 @@ namespace System.Threading
 
         public int CurrentReadCount => (_rwLock >> _rwReadBit) - (_upgradableTaken.Value ? 1 : 0);
 
-        public bool IsReadLockHeld => _rwLock >= _rwRead && CurrentThreadState.LockState.Has(LockState.Read);
+        public bool IsReadLockHeld => _rwLock >= _rwRead && (CurrentThreadState.LockState & LockState.Read) > 0;
 
-        public bool IsUpgradeableReadLockHeld => _upgradableTaken.Value && CurrentThreadState.LockState.Has(LockState.Upgradable);
+        public bool IsUpgradeableReadLockHeld => _upgradableTaken.Value && (CurrentThreadState.LockState & LockState.Upgradable) > 0;
 
-        public bool IsWriteLockHeld => (_rwLock & _rwWrite) > 0 && CurrentThreadState.LockState.Has(LockState.Write);
+        public bool IsWriteLockHeld => (_rwLock & _rwWrite) > 0 && (CurrentThreadState.LockState & LockState.Write) > 0;
 
         public LockRecursionPolicy RecursionPolicy { get; }
 
@@ -128,14 +108,8 @@ namespace System.Threading
         [DebuggerNonUserCode]
         public void Dispose()
         {
-            try
-            {
-                Dispose(true);
-            }
-            finally
-            {
-                GC.SuppressFinalize(this);
-            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public void EnterReadLock()
@@ -156,19 +130,19 @@ namespace System.Threading
         public void ExitReadLock()
         {
             RuntimeHelpers.PrepareConstrainedRegions();
+            SynchronizationLockException exception = null;
             try
             {
+                // Empty
             }
             finally
             {
                 var currentThreadState = CurrentThreadState;
-
-                if (!currentThreadState.LockState.Has(LockState.Read))
+                if (!((currentThreadState.LockState & LockState.Read) > 0))
                 {
-                    throw new SynchronizationLockException("The current thread has not entered the lock in read mode");
+                    exception = new SynchronizationLockException("The current thread has not entered the lock in read mode");
                 }
-
-                if (--currentThreadState.ReaderRecursiveCount == 0)
+                else if (--currentThreadState.ReaderRecursiveCount == 0)
                 {
                     currentThreadState.LockState ^= LockState.Read;
                     if (Interlocked.Add(ref _rwLock, -_rwRead) >> _rwReadBit == 0)
@@ -177,24 +151,28 @@ namespace System.Threading
                     }
                 }
             }
+            if (exception != null)
+            {
+                throw exception;
+            }
         }
 
         public void ExitUpgradeableReadLock()
         {
             RuntimeHelpers.PrepareConstrainedRegions();
+            SynchronizationLockException exception = null;
             try
             {
+                // Empty
             }
             finally
             {
                 var currentThreadState = CurrentThreadState;
-
-                if (!currentThreadState.LockState.Has(LockState.Upgradable | LockState.Read))
+                if (!((currentThreadState.LockState & (LockState.Upgradable | LockState.Read)) > 0))
                 {
-                    throw new SynchronizationLockException("The current thread has not entered the lock in upgradable mode");
+                    exception = new SynchronizationLockException("The current thread has not entered the lock in upgradable mode");
                 }
-
-                if (--currentThreadState.UpgradeableRecursiveCount == 0)
+                else if (--currentThreadState.UpgradeableRecursiveCount == 0)
                 {
                     _upgradableTaken.Value = false;
                     _upgradableEvent.Set();
@@ -206,26 +184,30 @@ namespace System.Threading
                     }
                 }
             }
+            if (exception != null)
+            {
+                throw exception;
+            }
         }
 
         public void ExitWriteLock()
         {
             RuntimeHelpers.PrepareConstrainedRegions();
+            SynchronizationLockException exception = null;
             try
             {
+                // Empty
             }
             finally
             {
                 var currentThreadState = CurrentThreadState;
-
-                if (!currentThreadState.LockState.Has(LockState.Write))
+                if (!((currentThreadState.LockState & LockState.Write) > 0))
                 {
-                    throw new SynchronizationLockException("The current thread has not entered the lock in write mode");
+                    exception = new SynchronizationLockException("The current thread has not entered the lock in write mode");
                 }
-
-                if (--currentThreadState.WriterRecursiveCount == 0)
+                else if (--currentThreadState.WriterRecursiveCount == 0)
                 {
-                    var isUpgradable = currentThreadState.LockState.Has(LockState.Upgradable);
+                    var isUpgradable = (currentThreadState.LockState & LockState.Upgradable) > 0;
                     currentThreadState.LockState ^= LockState.Write;
 
                     var value = Interlocked.Add(ref _rwLock, isUpgradable ? _rwRead - _rwWrite : -_rwWrite);
@@ -235,6 +217,10 @@ namespace System.Threading
                         _readerDoneEvent.Reset();
                     }
                 }
+            }
+            if (exception != null)
+            {
+                throw exception;
             }
         }
 
@@ -263,7 +249,7 @@ namespace System.Threading
                 return true;
             }
 
-            if (currentThreadState.LockState.Has(LockState.Read))
+            if ((currentThreadState.LockState & LockState.Read) > 0)
             {
                 throw new LockRecursionException("The current thread has already entered read mode");
             }
@@ -276,7 +262,7 @@ namespace System.Threading
             // We first try to obtain the upgradeable right
             try
             {
-                while (!_upgradableEvent.IsSet() || !taken)
+                while (!_upgradableEvent.IsSet || !taken)
                 {
                     try
                     {
@@ -351,7 +337,7 @@ namespace System.Threading
             }
 
             ++WaitingWriteCount;
-            var isUpgradable = currentThreadState.LockState.Has(LockState.Upgradable);
+            var isUpgradable = (currentThreadState.LockState & LockState.Upgradable) > 0;
             var registered = false;
             var success = false;
 
@@ -503,7 +489,7 @@ namespace System.Threading
             // Detect and prevent recursion
             var stateLockState = state.LockState;
 
-            if (stateLockState != LockState.None && _noRecursion && (!stateLockState.Has(LockState.Upgradable) || validState == LockState.Upgradable))
+            if (stateLockState != LockState.None && _noRecursion && (!((stateLockState & LockState.Upgradable) > 0) || validState == LockState.Upgradable))
             {
                 throw new LockRecursionException("The current thread has already a lock and recursion isn't supported");
             }
@@ -514,7 +500,7 @@ namespace System.Threading
             }
 
             // If we already had right lock state, just return
-            if (stateLockState.Has(validState))
+            if ((stateLockState & validState) > 0)
             {
                 return true;
             }
@@ -528,7 +514,7 @@ namespace System.Threading
             return false;
         }
 
-        private void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             if (_disposed)
             {
@@ -577,8 +563,7 @@ namespace System.Threading
             // after user calls ExitUpgradeableReadLock.
             // Same idea when recursion is allowed and a write thread wants to
             // go for a Read too.
-            if (currentThreadState.LockState.Has(LockState.Upgradable)
-                || !_noRecursion && currentThreadState.LockState.Has(LockState.Write))
+            if ((currentThreadState.LockState & LockState.Upgradable) > 0 || (!_noRecursion && (currentThreadState.LockState & LockState.Write) > 0))
             {
                 RuntimeHelpers.PrepareConstrainedRegions();
                 try

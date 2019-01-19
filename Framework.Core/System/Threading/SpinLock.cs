@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA1815 // Override equals and operator equals on value types
+
 using System.Diagnostics;
 using System.Runtime.ConstrainedExecution;
 using Theraot.Threading;
@@ -40,7 +42,7 @@ namespace System.Threading
             if (lockTaken)
             {
                 lockTaken = false;
-                throw new ArgumentException();
+                throw new ArgumentException(string.Empty);
             }
             if (IsThreadOwnerTrackingEnabled)
             {
@@ -105,7 +107,7 @@ namespace System.Threading
             if (lockTaken)
             {
                 lockTaken = false;
-                throw new ArgumentException();
+                throw new ArgumentException(string.Empty);
             }
             TryEnter(0, ref lockTaken);
         }

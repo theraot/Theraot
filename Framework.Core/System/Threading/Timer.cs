@@ -4,9 +4,6 @@ using System.Threading.Tasks;
 
 namespace System.Threading
 {
-    [Runtime.InteropServices.ComVisible(true)]
-    public delegate void TimerCallback(object state);
-
     public sealed class Timer : IDisposable
     {
         private TimerCallback _callback;
@@ -88,7 +85,7 @@ namespace System.Threading
             }
             async Task Function()
             {
-                await Task.Delay(dueTime, _changeSource.Token);
+                await Task.Delay(dueTime, _changeSource.Token).ConfigureAwait(false);
                 if (_changeSource.IsCancellationRequested)
                 {
                     return;
@@ -104,7 +101,7 @@ namespace System.Threading
                 {
                     while (true)
                     {
-                        await Task.Delay(period, _changeSource.Token);
+                        await Task.Delay(period, _changeSource.Token).ConfigureAwait(false);
                         if (_changeSource.IsCancellationRequested)
                         {
                             return;

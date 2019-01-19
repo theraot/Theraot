@@ -91,14 +91,8 @@ namespace System.Threading
         [DebuggerNonUserCode]
         public void Dispose()
         {
-            try
-            {
-                Dispose(true);
-            }
-            finally
-            {
-                GC.SuppressFinalize(this);
-            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public void Reset()
@@ -369,7 +363,6 @@ namespace System.Threading
                 // Close it
                 handle?.Close();
             }
-
         }
 
         private ManualResetEvent GetOrCreateWaitHandle()

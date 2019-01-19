@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable RCS1154 // Sort enum members.
+
 namespace System.Threading
 {
     [Flags]
@@ -11,19 +13,6 @@ namespace System.Threading
         Write = 4,
         UpgradedRead = Upgradable | Read,
         UpgradedWrite = Upgradable | Write
-    }
-
-    internal static class ReaderWriterLockSlimExtensions
-    {
-        internal static bool Has(this LockState state, LockState value)
-        {
-            return (state & value) > 0;
-        }
-
-        internal static bool IsSet(this ManualResetEventSlim self)
-        {
-            return self.IsSet;
-        }
     }
 
     internal class ThreadLockState

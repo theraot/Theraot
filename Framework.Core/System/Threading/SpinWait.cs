@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA1815 // Override equals and operator equals on value types
+
 // SpinWait.cs
 //
 // Copyright (c) 2008 Jérémie "Garuma" Laval, Alfonso J. Ramos

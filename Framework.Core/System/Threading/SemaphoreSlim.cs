@@ -59,14 +59,8 @@ namespace System.Threading
         [DebuggerNonUserCode]
         public void Dispose()
         {
-            try
-            {
-                Dispose(true);
-            }
-            finally
-            {
-                GC.SuppressFinalize(this);
-            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public int Release()
@@ -148,12 +142,8 @@ namespace System.Threading
             }
             var start = ThreadingHelper.TicksNow();
             var remaining = millisecondsTimeout;
-            while (true)
+            while (_canEnter.Wait(remaining, cancellationToken))
             {
-                if (!_canEnter.Wait(remaining, cancellationToken))
-                {
-                    break;
-                }
                 // The thread is not allowed here unless there is room in the semaphore
                 if (TryOffset(-1, out _))
                 {

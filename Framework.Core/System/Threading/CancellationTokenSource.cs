@@ -1,5 +1,8 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA1068 // CancellationToken parameters must come last
+#pragma warning disable CC0031 // Check for null before calling a delegate
+
 // CancellationTokenSource.cs
 //
 // Authors:
@@ -37,9 +40,9 @@ namespace System.Threading
 {
     public class CancellationTokenSource : IDisposable
     {
-        internal static readonly CancellationTokenSource CanceledSource = new CancellationTokenSource(); // Leaked
+        internal static readonly CancellationTokenSource CanceledSource = new CancellationTokenSource{_cancelRequested = 1}; // Leaked
         internal static readonly CancellationTokenSource NoneSource = new CancellationTokenSource(); // Leaked
-        private static readonly Action<CancellationTokenSource> _timerCallback;
+        private static readonly Action<CancellationTokenSource> _timerCallback = TimerCallback;
         private readonly ManualResetEvent _handle;
         private Bucket<Action> _callbacks;
         private int _cancelRequested;
@@ -47,19 +50,6 @@ namespace System.Threading
         private int _disposeRequested;
         private CancellationTokenRegistration[] _linkedTokens;
         private RootedTimeout _timeout;
-
-        static CancellationTokenSource()
-        {
-            CanceledSource._cancelRequested = 1;
-            _timerCallback = cancellationTokenSource =>
-            {
-                var callbacks = cancellationTokenSource._callbacks;
-                if (callbacks != null)
-                {
-                    cancellationTokenSource.CancelExtracted(false, callbacks, true);
-                }
-            };
-        }
 
         public CancellationTokenSource()
         {
@@ -170,20 +160,13 @@ namespace System.Threading
                 }
                 _timeout.Change(millisecondsDelay);
             }
-
         }
 
         [DebuggerNonUserCode]
         public void Dispose()
         {
-            try
-            {
-                Dispose(true);
-            }
-            finally
-            {
-                GC.SuppressFinalize(this);
-            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         internal void CheckDisposed()
@@ -293,12 +276,17 @@ namespace System.Threading
                 }
                 catch (Exception exception)
                 {
-                    if (exceptions == null)
-                    {
-                        exceptions = new List<Exception>();
-                    }
-                    exceptions.Add(exception);
+                    (exceptions ?? (exceptions = new List<Exception>())).Add(exception);
                 }
+            }
+        }
+
+        private static void TimerCallback(CancellationTokenSource cancellationTokenSource)
+        {
+            var callbacks = cancellationTokenSource._callbacks;
+            if (callbacks != null)
+            {
+                cancellationTokenSource.CancelExtracted(false, callbacks, true);
             }
         }
 
