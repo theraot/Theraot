@@ -7,6 +7,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using Theraot;
 using Theraot.Reflection;
 
 namespace System.Runtime.Serialization
@@ -47,6 +48,7 @@ namespace System.Runtime.Serialization
             : this(type, converter)
         {
             // requireSameTokenInPartialTrust is a vacuous parameter in a platform that does not support partial trust.
+            No.Op(requireSameTokenInPartialTrust);
         }
 
         public string FullTypeName
@@ -108,7 +110,6 @@ namespace System.Runtime.Serialization
                 newSize = int.MaxValue;
             }
 
-
             // Allocate more space and copy the data
             var newMembers = new string[newSize];
             var newData = new object[newSize];
@@ -126,7 +127,7 @@ namespace System.Runtime.Serialization
 
         public void AddValue(string name, object value, Type type)
         {
-            if (null == name)
+            if (name == null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -141,7 +142,7 @@ namespace System.Runtime.Serialization
 
         public void AddValue(string name, object value)
         {
-            if (null == value)
+            if (value == null)
             {
                 AddValue(name, null, typeof(object));
             }
@@ -247,28 +248,33 @@ namespace System.Runtime.Serialization
         }
 
         /// <summary>
+        /// <para>
         /// Finds the value if it exists in the current data. If it does, we replace
         /// the values, if not, we append it to the end. This is useful to the
         /// ObjectManager when it's performing fixups.
-        ///
+        /// </para>
+        /// <para>
         /// All error checking is done with asserts. Although public in coreclr,
         /// it's not exposed in a contract and is only meant to be used by corefx.
-        ///
+        /// </para>
+        /// <para>
         /// This isn't a public API, but it gets invoked dynamically by
         /// BinaryFormatter
-        ///
+        /// </para>
+        /// <para>
         /// This should not be used by clients: exposing out this functionality would allow children
         /// to overwrite their parent's values. It is public in order to give corefx access to it for
         /// its ObjectManager implementation, but it should not be exposed out of a contract.
+        /// </para>
         /// </summary>
         /// <param name="name"> The name of the data to be updated.</param>
         /// <param name="value"> The new value.</param>
         /// <param name="type"> The type of the data being added.</param>
         internal void UpdateValue(string name, object value, Type type)
         {
-            Debug.Assert(null != name, "[SerializationInfo.UpdateValue]name!=null");
-            Debug.Assert(null != value, "[SerializationInfo.UpdateValue]value!=null");
-            Debug.Assert(null != type, "[SerializationInfo.UpdateValue]type!=null");
+            Debug.Assert(name != null, "[SerializationInfo.UpdateValue]name!=null");
+            Debug.Assert(value != null , "[SerializationInfo.UpdateValue]value!=null");
+            Debug.Assert(type != null , "[SerializationInfo.UpdateValue]type!=null");
 
             var index = FindElement(name);
             if (index < 0)
@@ -284,7 +290,7 @@ namespace System.Runtime.Serialization
 
         private int FindElement(string name)
         {
-            if (null == name)
+            if (name == null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -345,7 +351,7 @@ namespace System.Runtime.Serialization
 
             if (type.GetUnderlyingSystemType() != type)
             {
-                throw new ArgumentException();
+                throw new ArgumentException(string.Empty, nameof(type));
             }
 
             var value = GetElement(name, out var foundType);

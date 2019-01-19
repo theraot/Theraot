@@ -9,7 +9,7 @@ namespace System.Runtime.Serialization
     [Serializable]
     public class SerializationException : SystemException
     {
-        private static readonly string _nullMessage = "Serialization error";
+        private const string _nullMessage = "Serialization error";
 
         // Creates a new SerializationException with its message
         // string set to a default message.

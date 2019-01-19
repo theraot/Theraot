@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NETSTANDARD13
 
+#pragma warning disable CA1815 // Override equals and operator equals on value types
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -74,7 +76,7 @@ namespace System.Runtime.Serialization
         {
             get
             {
-                if (_current == false)
+                if (!_current)
                 {
                     throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                 }
@@ -92,7 +94,7 @@ namespace System.Runtime.Serialization
         {
             get
             {
-                if (_current == false)
+                if (!_current)
                 {
                     throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                 }
@@ -104,7 +106,7 @@ namespace System.Runtime.Serialization
         {
             get
             {
-                if (_current == false)
+                if (!_current)
                 {
                     throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                 }
@@ -116,7 +118,7 @@ namespace System.Runtime.Serialization
         {
             get
             {
-                if (_current == false)
+                if (!_current)
                 {
                     throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                 }
