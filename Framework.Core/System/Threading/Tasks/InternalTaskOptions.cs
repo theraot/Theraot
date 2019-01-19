@@ -1,5 +1,8 @@
 #if LESSTHAN_NET40
 
+#pragma warning disable RCS1154 // Sort enum members.
+#pragma warning disable RCS1157 // Composite enum value contains undefined flag.
+
 namespace System.Threading.Tasks
 {
     /// <summary>

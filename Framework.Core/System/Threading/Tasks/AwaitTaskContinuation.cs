@@ -1,5 +1,8 @@
 #if LESSTHAN_NET40
 
+#pragma warning disable CC0031 // Check for null before calling a delegate
+#pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
+
 using System.Diagnostics.Contracts;
 using System.Runtime.ExceptionServices;
 using System.Security;

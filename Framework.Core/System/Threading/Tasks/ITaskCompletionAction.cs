@@ -41,7 +41,7 @@ namespace System.Threading.Tasks
                     foreach (var task in _tasks)
                     {
                         // if an element was erroneously nulled out concurrently, just skip it; worst case is we don't remove a continuation
-                        if (task == null || task.IsCompleted)
+                        if (task?.IsCompleted != false)
                         {
                             continue;
                         }
@@ -93,7 +93,7 @@ namespace System.Threading.Tasks
                 var complete = true;
                 foreach (var task in tasks)
                 {
-                    if (task == null || task.IsCompleted)
+                    if (task?.IsCompleted != false)
                     {
                         continue;
                     }
@@ -304,11 +304,7 @@ namespace System.Threading.Tasks
                     }
                     if (task.IsFaulted)
                     {
-                        if (observedExceptions == null)
-                        {
-                            observedExceptions = new List<ExceptionDispatchInfo>();
-                        }
-                        observedExceptions.AddRange(task._exceptionsHolder.GetExceptionDispatchInfos());
+                        (observedExceptions ?? (observedExceptions = new List<ExceptionDispatchInfo>())).AddRange(task._exceptionsHolder.GetExceptionDispatchInfos());
                     }
                     else if (task.IsCanceled && canceledTask == null)
                     {
@@ -442,11 +438,7 @@ namespace System.Threading.Tasks
                     }
                     if (task.IsFaulted)
                     {
-                        if (observedExceptions == null)
-                        {
-                            observedExceptions = new List<ExceptionDispatchInfo>();
-                        }
-                        observedExceptions.AddRange(task._exceptionsHolder.GetExceptionDispatchInfos());
+                        (observedExceptions ?? (observedExceptions = new List<ExceptionDispatchInfo>())).AddRange(task._exceptionsHolder.GetExceptionDispatchInfos());
                     }
                     else if (task.IsCanceled)
                     {
