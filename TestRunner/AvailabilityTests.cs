@@ -100,6 +100,53 @@ namespace TestRunner
         //public static readonly global::System.Type Stack = typeof(global::System.Collections.Stack);
         public static readonly global::System.Type StructuralComparisons = typeof(global::System.Collections.StructuralComparisons);
 
+        // System
+
+        public static readonly global::System.Type Action = typeof(global::System.Action);
+        public static readonly global::System.Type Action1 = typeof(global::System.Action<int>);
+        public static readonly global::System.Type Action2 = typeof(global::System.Action<int, int>);
+        public static readonly global::System.Type Action3 = typeof(global::System.Action<int, int, int>);
+        public static readonly global::System.Type Action4 = typeof(global::System.Action<int, int, int, int>);
+        public static readonly global::System.Type Action5 = typeof(global::System.Action<int, int, int, int, int>);
+        public static readonly global::System.Type Action6 = typeof(global::System.Action<int, int, int, int, int, int>);
+        public static readonly global::System.Type Action7 = typeof(global::System.Action<int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Action8 = typeof(global::System.Action<int, int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Action9 = typeof(global::System.Action<int, int, int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Action10 = typeof(global::System.Action<int, int, int, int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Action11 = typeof(global::System.Action<int, int, int, int, int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Action12 = typeof(global::System.Action<int, int, int, int, int, int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Action13 = typeof(global::System.Action<int, int, int, int, int, int, int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Action14 = typeof(global::System.Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Action15 = typeof(global::System.Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Action16 = typeof(global::System.Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int>);
+
+        public static readonly global::System.Type Func1 = typeof(global::System.Func<int>);
+        public static readonly global::System.Type Func2 = typeof(global::System.Func<int, int>);
+        public static readonly global::System.Type Func3 = typeof(global::System.Func<int, int, int>);
+        public static readonly global::System.Type Func4 = typeof(global::System.Func<int, int, int, int>);
+        public static readonly global::System.Type Func5 = typeof(global::System.Func<int, int, int, int, int>);
+        public static readonly global::System.Type Func6 = typeof(global::System.Func<int, int, int, int, int, int>);
+        public static readonly global::System.Type Func7 = typeof(global::System.Func<int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Func8 = typeof(global::System.Func<int, int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Func9 = typeof(global::System.Func<int, int, int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Func10 = typeof(global::System.Func<int, int, int, int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Func11 = typeof(global::System.Func<int, int, int, int, int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Func12 = typeof(global::System.Func<int, int, int, int, int, int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Func13 = typeof(global::System.Func<int, int, int, int, int, int, int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Func14 = typeof(global::System.Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Func15 = typeof(global::System.Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Func16 = typeof(global::System.Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int>);
+
+        public static readonly global::System.Type Tuple = typeof(global::System.Tuple);
+        public static readonly global::System.Type Tuple1 = typeof(global::System.Tuple<int>);
+        public static readonly global::System.Type Tuple2 = typeof(global::System.Tuple<int, int>);
+        public static readonly global::System.Type Tuple3 = typeof(global::System.Tuple<int, int, int>);
+        public static readonly global::System.Type Tuple4 = typeof(global::System.Tuple<int, int, int, int>);
+        public static readonly global::System.Type Tuple5 = typeof(global::System.Tuple<int, int, int, int, int>);
+        public static readonly global::System.Type Tuple6 = typeof(global::System.Tuple<int, int, int, int, int, int>);
+        public static readonly global::System.Type Tuple7 = typeof(global::System.Tuple<int, int, int, int, int, int, int>);
+        public static readonly global::System.Type Tuple8 = typeof(global::System.Tuple<int, int, int, int, int, int, int, int>);
+
         // ---
 
         public static readonly global::System.Type CallInfo = typeof(global::System.Dynamic.CallInfo);
@@ -126,7 +173,6 @@ namespace TestRunner
         public static readonly global::System.Type SerializationInfo = typeof(global::System.Runtime.Serialization.SerializationInfo);
         public static readonly global::System.Type StreamingContext = typeof(global::System.Runtime.Serialization.StreamingContext);
         public static readonly global::System.Type Task = typeof(global::System.Threading.Tasks.Task);
-        public static readonly global::System.Type Tuple = typeof(global::System.Tuple);
         public static readonly global::System.Type TupleElementNamesAttribute = typeof(global::System.Runtime.CompilerServices.TupleElementNamesAttribute);
         public static readonly global::System.Type TupleExtensions = typeof(global::System.TupleExtensions);
         public static readonly global::System.Type ValueTask = typeof(global::System.Threading.Tasks.ValueTask<int>);
