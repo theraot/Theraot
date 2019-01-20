@@ -98,22 +98,14 @@ namespace TestRunner
                     }
                     _instances[declaringType] = instance;
                 }
-                if (instance == null)
-                {
-                    @delegate = null;
-                }
-                else
-                {
-                    @delegate = TypeHelper.BuildDelegate(methodInfo, instance);
-                }
+                @delegate = instance == null ? null : TypeHelper.BuildDelegate(methodInfo, instance);
             }
             return (methodInfo.GetReturnType(), methodInfo.DeclaringType, @delegate);
         }
 
         private static bool IsGeneratorMethod(MethodInfo methodInfo)
         {
-            return methodInfo.HasAttribute<DataGeneratorAttribute>() && methodInfo.DeclaringType != null &&
-                   methodInfo.GetParameters().Length == 0;
+            return methodInfo.HasAttribute<DataGeneratorAttribute>() && methodInfo.DeclaringType != null && methodInfo.GetParameters().Length == 0;
         }
     }
 
