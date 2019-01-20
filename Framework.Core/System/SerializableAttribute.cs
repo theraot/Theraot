@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
+﻿#if LESSTHAN_NETSTANDARD13
 
 // Note: Providing this attribute does not mean that serialization will work. However, it means that you could add it without the need of conditional compilation.
 
