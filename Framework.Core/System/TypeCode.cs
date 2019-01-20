@@ -1,7 +1,11 @@
 ﻿#if LESSTHAN_NETSTANDARD13
 
+#pragma warning disable CA1027 // Mark enums with FlagsAttribute
+
 namespace System
 {
+    [System.Runtime.InteropServices.ComVisible(true)]
+    [System.Serializable]
     public enum TypeCode
     {
         Empty = 0,
