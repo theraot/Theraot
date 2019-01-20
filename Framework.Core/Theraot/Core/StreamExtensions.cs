@@ -75,7 +75,7 @@ namespace Theraot.Core
                 BeginRead,
                 stream.EndRead,
                 Tuple.Create(stream, buffer, offset, count)
-            );
+            ).ConfigureAwait(false);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -86,7 +86,7 @@ namespace Theraot.Core
                 BeginRead,
                 stream.EndRead,
                 Tuple.Create(stream, buffer, offset, count)
-            );
+            ).ConfigureAwait(false);
         }
 
         private static IAsyncResult BeginRead(AsyncCallback callback, object state)
@@ -104,7 +104,7 @@ namespace Theraot.Core
                 BeginWrite,
                 stream.EndWrite,
                 Tuple.Create(stream, buffer, offset, count)
-            );
+            ).ConfigureAwait(false);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -115,7 +115,7 @@ namespace Theraot.Core
                 BeginWrite,
                 stream.EndWrite,
                 Tuple.Create(stream, buffer, offset, count)
-            );
+            ).ConfigureAwait(false);
         }
 
         private static IAsyncResult BeginWrite(AsyncCallback callback, object state)
