@@ -33,7 +33,7 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(item));
             }
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NET46 ||NET47
+#if TARGETS_NET
             return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute), true);
 #else
             return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute));
@@ -59,7 +59,7 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(item));
             }
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NET46 ||NET47
+#if TARGETS_NET
             return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute), true);
 #else
             return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute));
@@ -169,91 +169,6 @@ namespace Theraot.Reflection
             }
             return type.GetStaticMethodsInternal();
         }
-
-#if NET20 || NET30 || NET35
-
-        public static TypeCode GetTypeCode(this Type type)
-        {
-            if (type == null)
-            {
-                return TypeCode.Empty;
-            }
-            while (true)
-            {
-                var info = type.GetTypeInfo();
-                if (info.IsEnum)
-                {
-                    type = Enum.GetUnderlyingType(type);
-                }
-                else
-                {
-                    break;
-                }
-            }
-            if (type == typeof(bool))
-            {
-                return TypeCode.Boolean;
-            }
-            if (type == typeof(char))
-            {
-                return TypeCode.Char;
-            }
-            if (type == typeof(sbyte))
-            {
-                return TypeCode.SByte;
-            }
-            if (type == typeof(byte))
-            {
-                return TypeCode.Byte;
-            }
-            if (type == typeof(short))
-            {
-                return TypeCode.Int16;
-            }
-            if (type == typeof(ushort))
-            {
-                return TypeCode.UInt16;
-            }
-            if (type == typeof(int))
-            {
-                return TypeCode.Int32;
-            }
-            if (type == typeof(uint))
-            {
-                return TypeCode.UInt32;
-            }
-            if (type == typeof(long))
-            {
-                return TypeCode.Int64;
-            }
-            if (type == typeof(ulong))
-            {
-                return TypeCode.UInt64;
-            }
-            if (type == typeof(float))
-            {
-                return TypeCode.Single;
-            }
-            if (type == typeof(double))
-            {
-                return TypeCode.Double;
-            }
-            if (type == typeof(decimal))
-            {
-                return TypeCode.Decimal;
-            }
-            if (type == typeof(DateTime))
-            {
-                return TypeCode.DateTime;
-            }
-            if (type == typeof(string))
-            {
-                return TypeCode.String;
-            }
-            return TypeCode.Object;
-        }
-
-#endif
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static object GetValue(this PropertyInfo info, object obj)
@@ -537,8 +452,8 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
-#if NETCOREAPP2_0 || NETCOREAPP2_1
-                    return type.IsSZArray;
+#if GREATERTHAN_NETCOREAPP11
+            return type.IsSZArray;
 #else
             return type.IsArray && type.GetElementType()?.MakeArrayType() == type;
 #endif
@@ -573,7 +488,7 @@ namespace Theraot.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool IsSubclassOfInternal(this Type type, Type baseType)
         {
-#if NETCOREAPP1_0 || NETCOREAPP1_1
+#if LESSTHAN_NETCOREAPP20
             while (type != null)
             {
                 var info = type.GetTypeInfo();
@@ -808,9 +723,98 @@ namespace Theraot.Reflection
         }
     }
 
+#if LESSTHAN_NET40
+
     public static partial class TypeExtensions
     {
-#if NET45 || NET46 || NET47 || NETCOREAPP2_0 || NETCOREAPP2_1
+        public static TypeCode GetTypeCode(this Type type)
+        {
+            if (type == null)
+            {
+                return TypeCode.Empty;
+            }
+            while (true)
+            {
+                var info = type.GetTypeInfo();
+                if (info.IsEnum)
+                {
+                    type = Enum.GetUnderlyingType(type);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            if (type == typeof(bool))
+            {
+                return TypeCode.Boolean;
+            }
+            if (type == typeof(char))
+            {
+                return TypeCode.Char;
+            }
+            if (type == typeof(sbyte))
+            {
+                return TypeCode.SByte;
+            }
+            if (type == typeof(byte))
+            {
+                return TypeCode.Byte;
+            }
+            if (type == typeof(short))
+            {
+                return TypeCode.Int16;
+            }
+            if (type == typeof(ushort))
+            {
+                return TypeCode.UInt16;
+            }
+            if (type == typeof(int))
+            {
+                return TypeCode.Int32;
+            }
+            if (type == typeof(uint))
+            {
+                return TypeCode.UInt32;
+            }
+            if (type == typeof(long))
+            {
+                return TypeCode.Int64;
+            }
+            if (type == typeof(ulong))
+            {
+                return TypeCode.UInt64;
+            }
+            if (type == typeof(float))
+            {
+                return TypeCode.Single;
+            }
+            if (type == typeof(double))
+            {
+                return TypeCode.Double;
+            }
+            if (type == typeof(decimal))
+            {
+                return TypeCode.Decimal;
+            }
+            if (type == typeof(DateTime))
+            {
+                return TypeCode.DateTime;
+            }
+            if (type == typeof(string))
+            {
+                return TypeCode.String;
+            }
+            return TypeCode.Object;
+        }
+    }
+
+#endif
+
+#if GREATERTHAN_NET40 || GREATERTHAN_NETCOREAPP11
+
+    public static partial class TypeExtensions
+    {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static ConstructorInfo[] GetConstructors(this TypeInfo typeInfo)
         {
@@ -864,8 +868,12 @@ namespace Theraot.Reflection
         {
             return typeInfo.AsType().GetProperty(name);
         }
+    }
 
-#elif NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
+#elif LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD15
+
+    public static partial class TypeExtensions
+    {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static ConstructorInfo[] GetConstructors(this TypeInfo typeInfo)
         {
@@ -1076,9 +1084,12 @@ namespace Theraot.Reflection
             }
             return found;
         }
+    }
 
 #endif
 
+    public static partial class TypeExtensions
+    {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static System.Runtime.InteropServices.StructLayoutAttribute GetStructLayoutAttribute(this Type type)
         {
@@ -1105,7 +1116,7 @@ namespace Theraot.Reflection
         }
     }
 
-#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
+#if LESSTHAN_NETSTANDARD15
     public static partial class TypeExtensions
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
