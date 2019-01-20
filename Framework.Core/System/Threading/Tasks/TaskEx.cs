@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-
-#pragma warning disable CA1068 // CancellationToken parameters must come last
+﻿#pragma warning disable CA1068 // CancellationToken parameters must come last
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 #pragma warning disable RCS1231 // Make parameter ref read-only.
+
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 #if NET40
 
@@ -22,13 +22,6 @@ namespace System.Threading.Tasks
     /// </remarks>
     public static partial class TaskEx
     {
-#if LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
-
-        /// <summary>A task that's already been completed successfully.</summary>
-        private static Task _completedTask;
-
-#endif
-
         /// <summary>Gets a task that's already been completed successfully.</summary>
         /// <remarks>May not always return the same instance.</remarks>
         public static Task CompletedTask
@@ -48,11 +41,13 @@ namespace System.Threading.Tasks
             }
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task FromCanceled(CancellationToken cancellationToken)
         {
             return FromCanceled<Theraot.VoidStruct>(cancellationToken);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<TResult> FromCanceled<TResult>(CancellationToken cancellationToken)
         {
 #if LESSTHAN_NET40
@@ -86,11 +81,13 @@ namespace System.Threading.Tasks
 #endif
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task FromCancellation(CancellationToken token)
         {
             return FromCancellation<Theraot.VoidStruct>(token);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<TResult> FromCancellation<TResult>(CancellationToken token)
         {
 #if LESSTHAN_NET40
@@ -123,11 +120,13 @@ namespace System.Threading.Tasks
 #endif
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task FromException(Exception exception)
         {
             return FromException<Theraot.VoidStruct>(exception);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<TResult> FromException<TResult>(Exception exception)
         {
 #if LESSTHAN_NET40
@@ -167,7 +166,6 @@ namespace System.Threading.Tasks
         /// The completed task.
         /// </returns>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-
         public static Task<TResult> FromResult<TResult>(TResult result)
         {
 #if NET40
@@ -189,7 +187,6 @@ namespace System.Threading.Tasks
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="action"/> argument is null.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-
         public static Task Run(Action action)
         {
             return Run(action, CancellationToken.None);
@@ -204,7 +201,6 @@ namespace System.Threading.Tasks
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="action"/> argument is null.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-
         public static Task Run(Action action, CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(action, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
@@ -507,25 +503,13 @@ namespace System.Threading.Tasks
         {
             return new YieldAwaitable();
         }
+    }
 
 #if LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
 
-        private static Task CreateCompletedTask()
-        {
-#if LESSTHAN_NET40
-            return new Task(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose)
-            {
-                CancellationToken = default
-            };
-#else
-            return FromResult(default(Theraot.VoidStruct));
-#endif
-        }
-
-#endif
-
 #if NET40
-
+    public static partial class TaskEx
+    {
         private const string _argumentOutOfRangeTimeoutNonNegativeOrMinusOne = "The timeout must be non-negative or -1, and it must be less than or equal to Int32.MaxValue.";
 
         /// <summary>
@@ -612,8 +596,27 @@ namespace System.Threading.Tasks
 
             return tcs.Task;
         }
-#endif
     }
+#endif
+
+    public static partial class TaskEx
+    {
+        /// <summary>A task that's already been completed successfully.</summary>
+        private static Task _completedTask;
+
+        private static Task CreateCompletedTask()
+        {
+#if LESSTHAN_NET40
+            return new Task(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose)
+            {
+                CancellationToken = default
+            };
+#else
+            return FromResult(default(Theraot.VoidStruct));
+#endif
+        }
+    }
+#endif
 
     public static partial class TaskEx
     {
@@ -740,10 +743,10 @@ namespace System.Threading.Tasks
         }
     }
 
-    public static partial class TaskEx
-    {
 #if TARGETS_NETSTANDARD
 
+    public static partial class TaskEx
+    {
         private class WaitHandleCancellableTaskCompletionSourceManager
         {
             private readonly TaskCompletionSource<bool> _taskCompletionSource;
@@ -826,9 +829,12 @@ namespace System.Threading.Tasks
                 _taskCompletionSource.SetResult(_handle.WaitOne((int)state));
             }
         }
+    }
 
 #else
 
+    public static partial class TaskEx
+    {
         private class WaitHandleCancellableTaskCompletionSourceManager
         {
             private readonly CancellationToken _cancellationToken;
@@ -934,9 +940,12 @@ namespace System.Threading.Tasks
                 Volatile.Read(ref _registeredWaitHandle[0]).Unregister(null);
             }
         }
+    }
 
 #endif
 
+    public static partial class TaskEx
+    {
         public static Task FromWaitHandle(WaitHandle waitHandle)
         {
             if (waitHandle == null)
