@@ -1,5 +1,8 @@
 ﻿// Needed for NET30
 
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
+// ReSharper disable PossibleMultipleEnumeration
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
