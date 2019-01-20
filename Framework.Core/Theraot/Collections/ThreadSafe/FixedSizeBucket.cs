@@ -1,5 +1,7 @@
 ﻿// Needed for NET40
 
+#pragma warning disable CA2235 // Mark all non-serializable fields
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -490,14 +492,7 @@ namespace Theraot.Collections.ThreadSafe
                 value = default;
                 return false;
             }
-            if (found == BucketHelper.Null)
-            {
-                value = default;
-            }
-            else
-            {
-                value = (T)found;
-            }
+            value = found == BucketHelper.Null ? default : (T) found;
             return true;
         }
 
