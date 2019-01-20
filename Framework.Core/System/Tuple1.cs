@@ -1,5 +1,7 @@
 #if LESSTHAN_NET40
 
+#pragma warning disable CA1036 // Override methods on comparable types
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -49,7 +51,7 @@ namespace System
             }
             if (!(other is Tuple<T1> tuple))
             {
-                throw new ArgumentException(nameof(other));
+                throw new ArgumentException(string.Empty, nameof(other));
             }
             return comparer.Compare(Item1, tuple.Item1);
         }

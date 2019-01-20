@@ -1,5 +1,8 @@
 #if LESSTHAN_NET40
 
+#pragma warning disable CA1036 // Override methods on comparable types
+#pragma warning disable RCS1212 // Remove redundant assignment.
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -64,7 +67,7 @@ namespace System
             }
             if (!(other is Tuple<T1, T2, T3, T4, T5, T6> tuple))
             {
-                throw new ArgumentException(nameof(other));
+                throw new ArgumentException(string.Empty, nameof(other));
             }
             var result = comparer.Compare(Item1, tuple.Item1);
             if (result == 0)
@@ -96,13 +99,12 @@ namespace System
             {
                 return false;
             }
-            return
-                comparer.Equals(Item1, tuple.Item1) &&
-                comparer.Equals(Item2, tuple.Item2) &&
-                comparer.Equals(Item3, tuple.Item3) &&
-                comparer.Equals(Item4, tuple.Item4) &&
-                comparer.Equals(Item5, tuple.Item5) &&
-                comparer.Equals(Item6, tuple.Item6);
+            return comparer.Equals(Item1, tuple.Item1)
+                   && comparer.Equals(Item2, tuple.Item2)
+                   && comparer.Equals(Item3, tuple.Item3)
+                   && comparer.Equals(Item4, tuple.Item4)
+                   && comparer.Equals(Item5, tuple.Item5)
+                   && comparer.Equals(Item6, tuple.Item6);
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)

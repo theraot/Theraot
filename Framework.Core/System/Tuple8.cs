@@ -1,5 +1,9 @@
 #if LESSTHAN_NET40
 
+#pragma warning disable CA1036 // Override methods on comparable types
+#pragma warning disable RCS1212 // Remove redundant assignment.
+#pragma warning disable RECS0017 // Possible compare of value type with 'null'
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -60,16 +64,16 @@ namespace System
             {
                 var type = typeof(TRest).GetGenericTypeDefinition();
                 if
-                    (
-                    type == typeof(Tuple<>) ||
-                    type == typeof(Tuple<,>) ||
-                    type == typeof(Tuple<,,>) ||
-                    type == typeof(Tuple<,,,>) ||
-                    type == typeof(Tuple<,,,,>) ||
-                    type == typeof(Tuple<,,,,,>) ||
-                    type == typeof(Tuple<,,,,,,>) ||
-                    type == typeof(Tuple<,,,,,,,>)
-                    )
+                (
+                    type == typeof(Tuple<>)
+                    || type == typeof(Tuple<,>)
+                    || type == typeof(Tuple<,,>)
+                    || type == typeof(Tuple<,,,>)
+                    || type == typeof(Tuple<,,,,>)
+                    || type == typeof(Tuple<,,,,,>)
+                    || type == typeof(Tuple<,,,,,,>)
+                    || type == typeof(Tuple<,,,,,,,>)
+                )
                 {
                     return;
                 }
@@ -96,7 +100,7 @@ namespace System
             }
             if (!(other is Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> tuple))
             {
-                throw new ArgumentException(nameof(other));
+                throw new ArgumentException(string.Empty, nameof(other));
             }
             var result = comparer.Compare(Item1, tuple.Item1);
             if (result == 0)
@@ -136,15 +140,14 @@ namespace System
             {
                 return false;
             }
-            return
-                comparer.Equals(Item1, tuple.Item1) &&
-                comparer.Equals(Item2, tuple.Item2) &&
-                comparer.Equals(Item3, tuple.Item3) &&
-                comparer.Equals(Item4, tuple.Item4) &&
-                comparer.Equals(Item5, tuple.Item5) &&
-                comparer.Equals(Item6, tuple.Item6) &&
-                comparer.Equals(Item7, tuple.Item7) &&
-                comparer.Equals(Rest, tuple.Rest);
+            return comparer.Equals(Item1, tuple.Item1)
+                   && comparer.Equals(Item2, tuple.Item2)
+                   && comparer.Equals(Item3, tuple.Item3)
+                   && comparer.Equals(Item4, tuple.Item4)
+                   && comparer.Equals(Item5, tuple.Item5)
+                   && comparer.Equals(Item6, tuple.Item6)
+                   && comparer.Equals(Item7, tuple.Item7)
+                   && comparer.Equals(Rest, tuple.Rest);
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
