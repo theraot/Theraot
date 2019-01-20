@@ -1,5 +1,7 @@
 // Needed for NET40
 
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -156,6 +158,8 @@ namespace Theraot.Collections
                     if (Interlocked.CompareExchange(ref tryTake[0], TakeReplacement, tryTake[0]) == tryTake[0])
                     {
                         Interlocked.Exchange(ref subscription, null)?.Dispose();
+                        semaphore.Dispose();
+                        source.Dispose();
                     }
                 }
                 else
@@ -250,7 +254,7 @@ namespace Theraot.Collections
                 return proxy.Subscribe(observer);
             }
             observer.OnCompleted();
-            return Disposable.Create(ActionHelper.GetNoopAction());
+            return NoOpDisposable.Instance;
         }
 
         public bool TryTake(out T item)

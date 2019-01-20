@@ -1,6 +1,7 @@
-﻿// Needed for Workaround
+// Needed for Workaround
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading.Needles;
@@ -8,51 +9,36 @@ using Theraot.Threading.Needles;
 namespace Theraot.Threading
 {
     /// <summary>
-    /// Represents a context to execute operation without reentry.
+    ///     Represents a context to execute operation without reentry.
     /// </summary>
     [DebuggerNonUserCode]
     public sealed class ReentryGuard
     {
-        private readonly UniqueId _id;
+        [ThreadStatic]
+        private static HashSet<UniqueId> _guard;
+
         private readonly SafeQueue<Action> _workQueue;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReentryGuard" /> class.
+        ///     Initializes a new instance of the <see cref="ReentryGuard" /> class.
         /// </summary>
         public ReentryGuard()
         {
             _workQueue = new SafeQueue<Action>();
-            _id = RuntimeUniqueIdProvider.GetNextId();
+            Id = RuntimeUniqueIdProvider.GetNextId();
         }
 
-        /// <summary>
-        /// Gets a value indicating whether or not the current thread did enter.
-        /// </summary>
-        public bool IsTaken => ReentryGuardHelper.IsTaken(_id);
+        internal UniqueId Id { get; }
 
         /// <summary>
-        /// Executes an operation-
+        ///     Gets a value indicating whether or not the current thread did enter.
         /// </summary>
-        /// <param name="operation">The operation to execute.</param>
-        /// <returns>Returns a promise to finish the execution.</returns>
-        public IPromise Execute(Action operation)
-        {
-            var result = AddExecution(operation, _workQueue);
-            ExecutePending(_workQueue, _id);
-            return result;
-        }
+        public bool IsTaken => _guard?.Contains(Id) == true;
 
-        /// <summary>
-        /// Executes an operation-
-        /// </summary>
-        /// <typeparam name="T">The return value of the operation.</typeparam>
-        /// <param name="operation">The operation to execute.</param>
-        /// <returns>Returns a promise to finish the execution.</returns>
-        public IPromise<T> Execute<T>(Func<T> operation)
+        public IDisposable TryEnter(out bool didEnter)
         {
-            var result = AddExecution(operation, _workQueue);
-            ExecutePending(_workQueue, _id);
-            return result;
+            didEnter = Enter(Id);
+            return didEnter ? DisposableAkin.Create(() => Leave(Id)) : NoOpDisposable.Instance;
         }
 
         private static IPromise AddExecution(Action action, SafeQueue<Action> queue)
@@ -103,12 +89,12 @@ namespace Theraot.Threading
             var didEnter = false;
             try
             {
-                didEnter = ReentryGuardHelper.Enter(id);
+                didEnter = Enter(id);
                 if (!didEnter)
                 {
-                    // called from inside this method - skip
                     return;
                 }
+
                 while (queue.TryTake(out var action))
                 {
                     action.Invoke();
@@ -118,9 +104,65 @@ namespace Theraot.Threading
             {
                 if (didEnter)
                 {
-                    ReentryGuardHelper.Leave(id);
+                    Leave(id);
                 }
             }
+        }
+
+        /// <summary>
+        ///     Executes an operation-
+        /// </summary>
+        /// <typeparam name="T">The return value of the operation.</typeparam>
+        /// <param name="operation">The operation to execute.</param>
+        /// <returns>Returns a promise to finish the execution.</returns>
+        public IPromise<T> Execute<T>(Func<T> operation)
+        {
+            var result = AddExecution(operation, _workQueue);
+            ExecutePending(_workQueue, Id);
+            return result;
+        }
+
+        /// <summary>
+        ///     Executes an operation-
+        /// </summary>
+        /// <param name="operation">The operation to execute.</param>
+        /// <returns>Returns a promise to finish the execution.</returns>
+        public IPromise Execute(Action operation)
+        {
+            var result = AddExecution(operation, _workQueue);
+            ExecutePending(_workQueue, Id);
+            return result;
+        }
+
+        internal static bool Enter(UniqueId id)
+        {
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            if (GCMonitor.FinalizingForUnload)
+            {
+                return false;
+            }
+
+            var guard = _guard;
+            if (guard == null)
+            {
+                _guard = new HashSet<UniqueId> {id};
+                return true;
+            }
+
+            if (!guard.Contains(id))
+            {
+                guard.Add(id);
+                return true;
+            }
+
+            return false;
+        }
+
+        internal static void Leave(UniqueId id)
+        {
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            var guard = _guard;
+            guard?.Remove(id);
         }
     }
 }

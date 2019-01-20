@@ -1,4 +1,4 @@
-﻿// Needed for NET40
+// Needed for NET40
 
 using System;
 using Theraot.Threading;
@@ -9,12 +9,12 @@ namespace Theraot.Collections.ThreadSafe
         where T : class
     {
         private readonly FixedSizeQueue<T> _entries;
-        private readonly UniqueId _id;
         private readonly Action<T> _recycler;
+        private readonly ReentryGuard _reentryGuard;
 
         public Pool(int capacity, Action<T> recycler)
         {
-            _id = RuntimeUniqueIdProvider.GetNextId();
+            _reentryGuard = new ReentryGuard();
             _entries = new FixedSizeQueue<T>(capacity);
             _recycler = recycler;
         }
@@ -22,18 +22,20 @@ namespace Theraot.Collections.ThreadSafe
         internal bool Donate(T entry)
         {
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
-            if (entry != null && ReentryGuardHelper.Enter(_id))
+            var reentryGuard = _reentryGuard;
+            if (entry != null && reentryGuard != null && ReentryGuard.Enter(reentryGuard.Id))
             {
                 try
                 {
                     var entries = _entries;
                     var recycler = _recycler;
-                    if (entries != null && recycler != null)
+                    if (entries == null || recycler == null)
                     {
-                        recycler.Invoke(entry);
-                        return entries.TryAdd(entry);
+                        return false;
                     }
-                    return true;
+
+                    recycler.Invoke(entry);
+                    return entries.TryAdd(entry);
                 }
                 catch (ObjectDisposedException exception)
                 {
@@ -49,12 +51,12 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 finally
                 {
-                    ReentryGuardHelper.Leave(_id);
+                    ReentryGuard.Leave(reentryGuard.Id);
                 }
-                if (entry is IDisposable disposable)
-                {
-                    disposable.Dispose();
-                }
+            }
+            if (entry is IDisposable disposable)
+            {
+                disposable.Dispose();
             }
             return false;
         }

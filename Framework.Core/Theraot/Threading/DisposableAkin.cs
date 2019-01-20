@@ -1,15 +1,11 @@
-#if FAT
-
 using System;
 using System.Threading;
-
-using Theraot.Core;
 
 namespace Theraot.Threading
 {
     [System.Diagnostics.DebuggerNonUserCode]
     public sealed class DisposableAkin :
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11
         System.Runtime.ConstrainedExecution.CriticalFinalizerObject,
 #endif
         IDisposable
@@ -38,7 +34,7 @@ namespace Theraot.Threading
                 catch (Exception exception)
                 {
                     // Catch them all - fields may be partially collected.
-                    Theraot.No.Op(exception);
+                    No.Op(exception);
                 }
             }
         }
@@ -48,11 +44,6 @@ namespace Theraot.Threading
         public static DisposableAkin Create(Action release)
         {
             return new DisposableAkin(release, Thread.CurrentThread);
-        }
-
-        public static DisposableAkin Create()
-        {
-            return new DisposableAkin(ActionHelper.GetNoopAction(), Thread.CurrentThread);
         }
 
         public bool Dispose(Func<bool> condition)
@@ -113,5 +104,3 @@ namespace Theraot.Threading
         }
     }
 }
-
-#endif
