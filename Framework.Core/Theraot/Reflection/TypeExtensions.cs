@@ -815,6 +815,12 @@ namespace Theraot.Reflection
 
     public static partial class TypeExtensions
     {
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static ConstructorInfo GetConstructor(this TypeInfo typeInfo, Type[] typeArguments)
+        {
+            return typeInfo.AsType().GetConstructor(typeArguments);
+        }
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static ConstructorInfo[] GetConstructors(this TypeInfo typeInfo)
         {
@@ -828,18 +834,6 @@ namespace Theraot.Reflection
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static ConstructorInfo GetConstructor(this TypeInfo typeInfo, Type[] typeArguments)
-        {
-            return typeInfo.AsType().GetConstructor(typeArguments);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static MethodInfo[] GetMethods(this TypeInfo typeInfo)
-        {
-            return typeInfo.AsType().GetMethods();
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MethodInfo GetMethod(this TypeInfo typeInfo, string name, Type[] typeArguments)
         {
             return typeInfo.AsType().GetMethod(name, typeArguments);
@@ -849,6 +843,12 @@ namespace Theraot.Reflection
         public static MethodInfo GetMethod(this TypeInfo typeInfo, string name)
         {
             return typeInfo.AsType().GetMethod(name);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static MethodInfo[] GetMethods(this TypeInfo typeInfo)
+        {
+            return typeInfo.AsType().GetMethods();
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -874,35 +874,6 @@ namespace Theraot.Reflection
 
     public static partial class TypeExtensions
     {
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static ConstructorInfo[] GetConstructors(this TypeInfo typeInfo)
-        {
-            var members = typeInfo.DeclaredMembers;
-            var result = new List<ConstructorInfo>();
-            foreach (var member in members)
-            {
-                if (member is ConstructorInfo constructorInfo)
-                {
-                    result.Add(constructorInfo);
-                }
-            }
-            return result.ToArray();
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static FieldInfo[] GetFields(this TypeInfo typeInfo)
-        {
-            var members = typeInfo.DeclaredMembers;
-            var result = new List<FieldInfo>();
-            foreach (var member in members)
-            {
-                if (member is FieldInfo fieldInfo)
-                {
-                    result.Add(fieldInfo);
-                }
-            }
-            return result.ToArray();
-        }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static ConstructorInfo GetConstructor(this TypeInfo typeInfo, Type[] typeArguments)
@@ -936,17 +907,31 @@ namespace Theraot.Reflection
             }
             return null;
         }
-
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static MethodInfo[] GetMethods(this TypeInfo typeInfo)
+        public static ConstructorInfo[] GetConstructors(this TypeInfo typeInfo)
         {
             var members = typeInfo.DeclaredMembers;
-            var result = new List<MethodInfo>();
+            var result = new List<ConstructorInfo>();
             foreach (var member in members)
             {
-                if (member is MethodInfo methodInfo)
+                if (member is ConstructorInfo constructorInfo)
                 {
-                    result.Add(methodInfo);
+                    result.Add(constructorInfo);
+                }
+            }
+            return result.ToArray();
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static FieldInfo[] GetFields(this TypeInfo typeInfo)
+        {
+            var members = typeInfo.DeclaredMembers;
+            var result = new List<FieldInfo>();
+            foreach (var member in members)
+            {
+                if (member is FieldInfo fieldInfo)
+                {
+                    result.Add(fieldInfo);
                 }
             }
             return result.ToArray();
@@ -1009,6 +994,21 @@ namespace Theraot.Reflection
                 }
             }
             return found;
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static MethodInfo[] GetMethods(this TypeInfo typeInfo)
+        {
+            var members = typeInfo.DeclaredMembers;
+            var result = new List<MethodInfo>();
+            foreach (var member in members)
+            {
+                if (member is MethodInfo methodInfo)
+                {
+                    result.Add(methodInfo);
+                }
+            }
+            return result.ToArray();
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

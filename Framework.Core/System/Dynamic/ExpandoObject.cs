@@ -550,15 +550,6 @@ namespace System.Dynamic
                 }
             }
 
-            private void CheckVersion()
-            {
-                if (_expando._data.Version != _expandoVersion || _expandoData != _expando._data)
-                {
-                    //the underlying expando object has changed
-                    throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
-                }
-            }
-
             public int Count
             {
                 get
@@ -607,11 +598,6 @@ namespace System.Dynamic
                 }
             }
 
-            public bool Remove(string item)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
             public IEnumerator<string> GetEnumerator()
             {
                 for (int i = 0, n = _expandoData.Class.Keys.Length; i < n; i++)
@@ -621,6 +607,20 @@ namespace System.Dynamic
                     {
                         yield return _expandoData.Class.Keys[i];
                     }
+                }
+            }
+
+            public bool Remove(string item)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            private void CheckVersion()
+            {
+                if (_expando._data.Version != _expandoVersion || _expandoData != _expando._data)
+                {
+                    //the underlying expando object has changed
+                    throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
                 }
             }
 
@@ -906,15 +906,6 @@ namespace System.Dynamic
                 }
             }
 
-            private void CheckVersion()
-            {
-                if (_expando._data.Version != _expandoVersion || _expandoData != _expando._data)
-                {
-                    //the underlying expando object has changed
-                    throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
-                }
-            }
-
             public int Count
             {
                 get
@@ -974,11 +965,6 @@ namespace System.Dynamic
                 }
             }
 
-            public bool Remove(object item)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
             public IEnumerator<object> GetEnumerator()
             {
                 var data = _expando._data;
@@ -992,6 +978,20 @@ namespace System.Dynamic
                     {
                         yield return temp;
                     }
+                }
+            }
+
+            public bool Remove(object item)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+
+            private void CheckVersion()
+            {
+                if (_expando._data.Version != _expandoVersion || _expandoData != _expando._data)
+                {
+                    //the underlying expando object has changed
+                    throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
                 }
             }
 

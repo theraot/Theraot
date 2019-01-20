@@ -749,8 +749,8 @@ namespace System.Threading.Tasks
     {
         private class WaitHandleCancellableTaskCompletionSourceManager
         {
-            private readonly TaskCompletionSource<bool> _taskCompletionSource;
             private readonly WaitHandle[] _handles;
+            private readonly TaskCompletionSource<bool> _taskCompletionSource;
 
             private WaitHandleCancellableTaskCompletionSourceManager(WaitHandle waitHandle, CancellationToken cancellationToken, TaskCompletionSource<bool> taskCompletionSource)
             {
@@ -795,8 +795,8 @@ namespace System.Threading.Tasks
 
         private class WaitHandleTaskCompletionSourceManager
         {
-            private readonly TaskCompletionSource<bool> _taskCompletionSource;
             private readonly WaitHandle _handle;
+            private readonly TaskCompletionSource<bool> _taskCompletionSource;
 
             private WaitHandleTaskCompletionSourceManager(WaitHandle waitHandle, TaskCompletionSource<bool> taskCompletionSource)
             {

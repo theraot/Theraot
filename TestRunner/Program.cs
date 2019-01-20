@@ -254,8 +254,8 @@ namespace TestRunner
             }
 
             public IEnumerable<string> Categories { get; }
-            public Type Type { get; }
             public TestFixtureAttribute TestFixtureAttribute { get; }
+            public Type Type { get; }
         }
 
         private sealed class TestMethod
