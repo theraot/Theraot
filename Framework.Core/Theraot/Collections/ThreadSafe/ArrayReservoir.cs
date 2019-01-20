@@ -1,5 +1,9 @@
 ﻿// Needed for NET40
 
+#pragma warning disable CA1819 // Properties should not return arrays
+#pragma warning disable CA1825 // Avoid zero-length array allocations.
+#pragma warning disable RECS0108 // Warns about static fields in generic types
+
 using System;
 using Theraot.Core;
 
@@ -17,39 +21,14 @@ namespace Theraot.Collections.ThreadSafe
         private const int _minCapacity = 1 << _minCapacityLog2;
         private const int _minCapacityLog2 = 3;
         private const int _poolSize = 16;
-        private static readonly Pool<T[]>[] _pools;
-
-        static ArrayReservoir()
-        {
-#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
-            EmptyArray = new T[0];
-#else
-            if (typeof(T) == typeof(Type))
-            {
-                EmptyArray = (T[])(object)Type.EmptyTypes;
-            }
-            else
-            {
-                EmptyArray = new T[0];
-            }
-#endif
-            _pools = new Pool<T[]>[_capacityCount];
-            for (var index = 0; index < _capacityCount; index++)
-            {
-                var currentIndex = index;
-                _pools[index] = new Pool<T[]>
-                    (
-                        _poolSize,
-                        item =>
-                        {
-                            var currentCapacity = _minCapacity << currentIndex;
-                            Array.Clear(item, 0, currentCapacity);
-                        }
-                    );
-            }
-        }
+        private static readonly Pool<T[]>[] _pools = CreatePools();
 
         public static T[] EmptyArray { get; }
+#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
+            = new T[0];
+#else
+            = typeof(T) == typeof(Type) ? (T[])(object)Type.EmptyTypes : new T[0];
+#endif
 
         internal static void DonateArray(T[] donation)
         {
@@ -95,6 +74,25 @@ namespace Theraot.Collections.ThreadSafe
                 }
             }
             return new T[capacity];
+        }
+
+        private static Pool<T[]>[] CreatePools()
+        {
+            var pools = new Pool<T[]>[_capacityCount];
+            for (var index = 0; index < _capacityCount; index++)
+            {
+                var currentIndex = index;
+                _pools[index] = new Pool<T[]>
+                    (
+                        _poolSize,
+                        item =>
+                        {
+                            var currentCapacity = _minCapacity << currentIndex;
+                            Array.Clear(item, 0, currentCapacity);
+                        }
+                    );
+            }
+            return pools;
         }
     }
 }
