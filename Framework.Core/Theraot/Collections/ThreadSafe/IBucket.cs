@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable CA1716 // Identifiers should not match keywords
+
+using System;
 using System.Collections.Generic;
 
 namespace Theraot.Collections.ThreadSafe
