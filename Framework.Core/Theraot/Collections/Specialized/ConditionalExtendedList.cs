@@ -21,8 +21,8 @@ namespace Theraot.Collections.Specialized
         {
             _target = target == null ? ArrayReservoir<T>.EmptyArray : Extensions.WrapAsIList(target);
             _append = append == null ? ArrayReservoir<T>.EmptyArray : Extensions.WrapAsIList(append);
-            _enumerateTarget = enumerateTarget ?? (null == target ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc());
-            _enumerateAppend = enumerateAppend ?? (null == append ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc());
+            _enumerateTarget = enumerateTarget ?? (target == null ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc());
+            _enumerateAppend = enumerateAppend ?? (append == null ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc());
         }
 
         public int Count => _target.Count + _append.Count;
@@ -97,7 +97,7 @@ namespace Theraot.Collections.Specialized
                 {
                     var appendCount = _append.Count;
                     Extensions.CanCopyTo(appendCount, array, arrayIndex);
-                    Extensions.CopyTo(_append, array);
+                    _append.CopyTo(array);
                 }
             }
         }
