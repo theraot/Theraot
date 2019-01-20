@@ -10,7 +10,9 @@ namespace System
     public sealed class WeakReference<T> : ISerializable
        where T : class
     {
+        [NonSerialized]
         private GCHandle _handle;
+
         private readonly bool _trackResurrection;
 
         public WeakReference(T target)
@@ -25,7 +27,7 @@ namespace System
             SetTarget(target);
         }
 
-        internal WeakReference(SerializationInfo info, StreamingContext context)
+        private WeakReference(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
             {
