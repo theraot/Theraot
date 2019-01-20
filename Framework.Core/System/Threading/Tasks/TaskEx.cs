@@ -512,7 +512,7 @@ namespace System.Threading.Tasks
 
         private static Task CreateCompletedTask()
         {
-#if LESSTHAN_NET24
+#if LESSTHAN_NET40
             return new Task(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose)
             {
                 CancellationToken = default
