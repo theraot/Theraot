@@ -93,7 +93,7 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(switchValue, nameof(switchValue));
             if (switchValue.Type == typeof(void))
             {
-                throw new ArgumentException(SR.ArgumentCannotBeOfTypeVoid, nameof(switchValue));
+                throw new ArgumentException("Argument type cannot be System.Void.", nameof(switchValue));
             }
 
             var caseArray = Theraot.Collections.Extensions.AsArray(cases);

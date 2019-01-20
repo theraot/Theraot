@@ -16,7 +16,6 @@ namespace System.Linq.Expressions
 {
     public partial class Expression
     {
-
         /// <summary>
         /// Creates a <see cref="NewArrayExpression"/> that represents creating an array that has a specified rank.
         /// </summary>
@@ -41,7 +40,7 @@ namespace System.Linq.Expressions
 
             if (type == typeof(void))
             {
-                throw new ArgumentException(SR.ArgumentCannotBeOfTypeVoid, nameof(type));
+                throw new ArgumentException("Argument type cannot be System.Void.", nameof(type));
             }
 
             TypeUtils.ValidateType(type, nameof(type));
@@ -68,6 +67,7 @@ namespace System.Linq.Expressions
 
             return NewArrayExpression.Make(ExpressionType.NewArrayBounds, arrayType, boundsList);
         }
+
         /// <summary>
         /// Creates a <see cref="NewArrayExpression"/> of the specified type from the provided initializers.
         /// </summary>
@@ -91,7 +91,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(initializers, nameof(initializers));
             if (type == typeof(void))
             {
-                throw new ArgumentException(SR.ArgumentCannotBeOfTypeVoid, nameof(type));
+                throw new ArgumentException("Argument type cannot be System.Void.", nameof(type));
             }
 
             TypeUtils.ValidateType(type, nameof(type));

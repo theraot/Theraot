@@ -97,7 +97,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(type, nameof(type));
             if (type == typeof(void))
             {
-                throw new ArgumentException(SR.ArgumentCannotBeOfTypeVoid, nameof(type));
+                throw new ArgumentException("Argument type cannot be System.Void.", nameof(type));
             }
             TypeUtils.ValidateType(type, nameof(type));
 
