@@ -135,7 +135,7 @@ namespace Theraot.Collections.Specialized
             {
                 if (_hasNull)
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("An element for the null key already exists.", nameof(key));
                 }
                 SetForNull(value);
             }
