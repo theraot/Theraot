@@ -1,19 +1,17 @@
 ﻿// Needed for NET40
 
+#pragma warning disable CA2235 // Mark all non-serializable fields
+#pragma warning disable RECS0108 // Warns about static fields in generic types
+
 namespace Theraot.Collections.ThreadSafe
 {
     [System.Serializable]
-    internal class Node<T>
+    internal sealed class Node<T>
     {
         public Node<T> Link;
         public T Value;
 
-        private static readonly Pool<Node<T>> _pool;
-
-        static Node()
-        {
-            _pool = new Pool<Node<T>>(64, Recycle);
-        }
+        private static readonly Pool<Node<T>> _pool = new Pool<Node<T>>(64, Recycle);
 
         private Node()
         {
