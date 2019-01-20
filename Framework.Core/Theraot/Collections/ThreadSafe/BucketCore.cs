@@ -1,3 +1,5 @@
+#pragma warning disable CA2235 // Mark all non-serializable fields
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,7 +15,7 @@ namespace Theraot.Collections.ThreadSafe
         private const int _capacity = 1 << _capacityLog2;
         private const int _capacityLog2 = 8;
         private const int _mask = _capacity - 1;
-        private const int _maxLevel = 1 + 31 / _capacityLog2;
+        private const int _maxLevel = 1 + (31 / _capacityLog2);
         private object[] _arrayFirst;
         private object[] _arraySecond;
         private int[] _arrayUse;
@@ -287,7 +289,6 @@ namespace Theraot.Collections.ThreadSafe
                         Interlocked.CompareExchange(ref second, result, null);
                     }
                 }
-
             }
             finally
             {
