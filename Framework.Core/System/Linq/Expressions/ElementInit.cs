@@ -19,12 +19,12 @@ namespace System.Linq.Expressions
     /// </summary>
     public sealed class ElementInit : IArgumentProvider
     {
-        private readonly ArrayReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
+        private readonly HashableReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
 
         internal ElementInit(MethodInfo addMethod, Expression[] arguments)
         {
             AddMethod = addMethod;
-            _argumentsAsReadOnlyCollection = ArrayReadOnlyCollection.Create(arguments);
+            _argumentsAsReadOnlyCollection = HashableReadOnlyCollection.Create(arguments);
         }
 
         /// <summary>

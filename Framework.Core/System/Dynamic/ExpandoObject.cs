@@ -820,8 +820,8 @@ namespace System.Dynamic
 
                 result = new DynamicMetaObject(
                     Expression.Block(
-                        ArrayReadOnlyCollection.Create(value),
-                        ArrayReadOnlyCollection.Create<Expression>(
+                        HashableReadOnlyCollection.Create(value),
+                        HashableReadOnlyCollection.Create<Expression>(
                             Expression.Condition(
                                 tryGetValue,
                                 result.Expression,

@@ -126,7 +126,7 @@ namespace System.Linq.Expressions
     public sealed class MemberMemberBinding : MemberBinding
     {
         private readonly MemberBinding[] _bindings;
-        private readonly ArrayReadOnlyCollection<MemberBinding> _bindingsAsReadOnlyCollection;
+        private readonly HashableReadOnlyCollection<MemberBinding> _bindingsAsReadOnlyCollection;
 
         internal MemberMemberBinding(MemberInfo member, MemberBinding[] bindings)
 #pragma warning disable CS0618 // El tipo o el miembro están obsoletos
@@ -134,7 +134,7 @@ namespace System.Linq.Expressions
 #pragma warning restore CS0618 // El tipo o el miembro están obsoletos
         {
             _bindings = bindings;
-            _bindingsAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_bindings);
+            _bindingsAsReadOnlyCollection = HashableReadOnlyCollection.Create(_bindings);
         }
 
         /// <summary>

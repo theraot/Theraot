@@ -21,7 +21,7 @@ namespace Theraot.Collections
                 case T[] array:
                     return array;
 #if LESSTHAN_NET40
-                case ArrayReadOnlyCollection<T> ArrayReadOnlyCollection:
+                case HashableReadOnlyCollection<T> ArrayReadOnlyCollection:
                     return ArrayReadOnlyCollection.Wrapped;
 #endif
                 case ICollection<T> collection when collection.Count == 0:
@@ -156,18 +156,18 @@ namespace Theraot.Collections
             yield return source;
         }
 
-        public static ArrayReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> enumerable)
+        public static HashableReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> enumerable)
         {
             if (enumerable == null)
             {
                 return EmptyCollection<T>.Instance;
             }
-            if (enumerable is ArrayReadOnlyCollection<T> arrayReadOnlyCollection)
+            if (enumerable is HashableReadOnlyCollection<T> arrayReadOnlyCollection)
             {
                 return arrayReadOnlyCollection;
             }
             var array = Extensions.AsArray(enumerable);
-            return array.Length == 0 ? EmptyCollection<T>.Instance : ArrayReadOnlyCollection.Create(array);
+            return array.Length == 0 ? EmptyCollection<T>.Instance : HashableReadOnlyCollection.Create(array);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

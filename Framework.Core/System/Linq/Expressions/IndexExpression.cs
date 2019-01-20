@@ -412,7 +412,7 @@ namespace System.Linq.Expressions
     public sealed class IndexExpression : Expression, IArgumentProvider
     {
         private readonly Expression[] _arguments;
-        private readonly ArrayReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
+        private readonly HashableReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
 
         internal IndexExpression(
             Expression instance,
@@ -428,7 +428,7 @@ namespace System.Linq.Expressions
             Object = instance;
             Indexer = indexer;
             _arguments = arguments;
-            _argumentsAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_arguments);
+            _argumentsAsReadOnlyCollection = HashableReadOnlyCollection.Create(_arguments);
         }
 
         /// <summary>

@@ -745,13 +745,13 @@ namespace System.Linq.Expressions
     internal sealed class InvocationExpressionN : InvocationExpression
     {
         private readonly Expression[] _arguments;
-        private readonly ArrayReadOnlyCollection<Expression> _argumentsAsReadOnly;
+        private readonly HashableReadOnlyCollection<Expression> _argumentsAsReadOnly;
 
         public InvocationExpressionN(Expression lambda, Expression[] arguments, Type returnType)
             : base(lambda, returnType)
         {
             _arguments = arguments;
-            _argumentsAsReadOnly = ArrayReadOnlyCollection.Create(_arguments);
+            _argumentsAsReadOnly = HashableReadOnlyCollection.Create(_arguments);
         }
 
         public override int ArgumentCount => _arguments.Length;

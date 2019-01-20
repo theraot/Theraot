@@ -53,12 +53,12 @@ namespace System.Linq.Expressions
     public sealed class RuntimeVariablesExpression : Expression
     {
         private readonly ParameterExpression[] _variables;
-        private readonly ArrayReadOnlyCollection<ParameterExpression> _variablesAsReadOnlyCollection;
+        private readonly HashableReadOnlyCollection<ParameterExpression> _variablesAsReadOnlyCollection;
 
         internal RuntimeVariablesExpression(ParameterExpression[] variables)
         {
             _variables = variables;
-            _variablesAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_variables);
+            _variablesAsReadOnlyCollection = HashableReadOnlyCollection.Create(_variables);
         }
 
         /// <summary>

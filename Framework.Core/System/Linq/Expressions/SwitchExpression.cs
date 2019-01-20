@@ -225,7 +225,7 @@ namespace System.Linq.Expressions
     public sealed class SwitchExpression : Expression
     {
         private readonly SwitchCase[] _cases;
-        private readonly ArrayReadOnlyCollection<SwitchCase> _casesAsReadOnlyCollection;
+        private readonly HashableReadOnlyCollection<SwitchCase> _casesAsReadOnlyCollection;
 
         internal SwitchExpression(Type type, Expression switchValue, Expression defaultBody, MethodInfo comparison, SwitchCase[] cases)
         {
@@ -234,7 +234,7 @@ namespace System.Linq.Expressions
             DefaultBody = defaultBody;
             Comparison = comparison;
             _cases = cases;
-            _casesAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_cases);
+            _casesAsReadOnlyCollection = HashableReadOnlyCollection.Create(_cases);
         }
 
         /// <summary>

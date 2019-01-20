@@ -161,7 +161,7 @@ namespace System.Linq.Expressions
     public sealed class TryExpression : Expression
     {
         private readonly CatchBlock[] _handlers;
-        private readonly ArrayReadOnlyCollection<CatchBlock> _handlersAsReadOnlyCollection;
+        private readonly HashableReadOnlyCollection<CatchBlock> _handlersAsReadOnlyCollection;
 
         internal TryExpression(Type type, Expression body, Expression @finally, Expression fault, CatchBlock[] handlers)
         {
@@ -170,7 +170,7 @@ namespace System.Linq.Expressions
             _handlers = handlers;
             Finally = @finally;
             Fault = fault;
-            _handlersAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_handlers);
+            _handlersAsReadOnlyCollection = HashableReadOnlyCollection.Create(_handlers);
         }
 
         /// <summary>

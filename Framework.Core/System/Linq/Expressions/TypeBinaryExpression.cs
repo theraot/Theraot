@@ -149,8 +149,8 @@ namespace System.Linq.Expressions
             parameter = Parameter(typeof(object));
 
             return Block(
-                ArrayReadOnlyCollection.Create(parameter),
-                ArrayReadOnlyCollection.Create(
+                HashableReadOnlyCollection.Create(parameter),
+                HashableReadOnlyCollection.Create(
                     Assign(parameter, Expression),
                     ByValParameterTypeEqual(parameter)
                 )
@@ -176,8 +176,8 @@ namespace System.Linq.Expressions
             {
                 var temp = Parameter(typeof(Type));
                 getType = Block(
-                    ArrayReadOnlyCollection.Create(temp),
-                    ArrayReadOnlyCollection.Create<Expression>(
+                    HashableReadOnlyCollection.Create(temp),
+                    HashableReadOnlyCollection.Create<Expression>(
                         Assign(temp, getType),
                         temp
                     )

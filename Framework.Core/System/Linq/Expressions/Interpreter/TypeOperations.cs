@@ -542,7 +542,7 @@ namespace System.Linq.Expressions.Interpreter
                 // Otherwise, we need to return an object that merges them.
                 return Expression.Invoke(
                     Expression.Constant(new Func<IRuntimeVariables, IRuntimeVariables, int[], IRuntimeVariables>(MergeRuntimeVariables)),
-                    Expression.RuntimeVariables(ArrayReadOnlyCollection.Create(vars.ToArray())),
+                    Expression.RuntimeVariables(HashableReadOnlyCollection.Create(vars.ToArray())),
                     boxesConst,
                     Expression.Constant(indexes)
                 );

@@ -373,7 +373,7 @@ namespace System.Runtime.CompilerServices
             Count = 0;
             _version++;
 
-            return ArrayReadOnlyCollection.Create(items);
+            return HashableReadOnlyCollection.Create(items);
         }
 
         private static bool IsCompatibleObject(object value)

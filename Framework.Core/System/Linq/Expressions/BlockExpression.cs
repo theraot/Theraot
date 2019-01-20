@@ -444,14 +444,14 @@ namespace System.Linq.Expressions
     internal class BlockN : BlockExpression
     {
         private readonly Expression[] _expressions;
-        private readonly ArrayReadOnlyCollection<Expression> _expressionsAsReadOnlyCollection;
+        private readonly HashableReadOnlyCollection<Expression> _expressionsAsReadOnlyCollection;
 
         internal BlockN(Expression[] expressions)
         {
             Debug.Assert(expressions.Length != 0);
 
             _expressions = expressions;
-            _expressionsAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_expressions);
+            _expressionsAsReadOnlyCollection = HashableReadOnlyCollection.Create(_expressions);
         }
 
         internal override int ExpressionCount => _expressions.Length;
@@ -550,12 +550,12 @@ namespace System.Linq.Expressions
     internal class ScopeExpression : BlockExpression
     {
         private readonly ParameterExpression[] _variables;      // list of variables or ReadOnlyCollection if the user has accessed the read-only collection
-        private readonly ArrayReadOnlyCollection<ParameterExpression> _variablesAsReadOnlyCollection;
+        private readonly HashableReadOnlyCollection<ParameterExpression> _variablesAsReadOnlyCollection;
 
         internal ScopeExpression(ParameterExpression[] variables)
         {
             _variables = variables;
-            _variablesAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_variables);
+            _variablesAsReadOnlyCollection = HashableReadOnlyCollection.Create(_variables);
         }
 
         protected IReadOnlyList<ParameterExpression> VariablesList => _variablesAsReadOnlyCollection;
@@ -585,13 +585,13 @@ namespace System.Linq.Expressions
     internal class ScopeN : ScopeExpression
     {
         private readonly Expression[] _body;
-        private readonly ArrayReadOnlyCollection<Expression> _bodyAsReadOnlyCollection;
+        private readonly HashableReadOnlyCollection<Expression> _bodyAsReadOnlyCollection;
 
         internal ScopeN(ParameterExpression[] variables, Expression[] body)
             : base(variables)
         {
             _body = body;
-            _bodyAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_body);
+            _bodyAsReadOnlyCollection = HashableReadOnlyCollection.Create(_body);
         }
 
         internal override int ExpressionCount => _body.Length;

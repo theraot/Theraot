@@ -125,7 +125,7 @@ namespace System.Linq.Expressions
             }
             if (newList != null)
             {
-                initializerList = ArrayReadOnlyCollection.Create(newList);
+                initializerList = HashableReadOnlyCollection.Create(newList);
             }
 
             return NewArrayExpression.Make(ExpressionType.NewArrayInit, type.MakeArrayType(), initializerList);
@@ -139,13 +139,13 @@ namespace System.Linq.Expressions
     public class NewArrayExpression : Expression
     {
         private readonly Expression[] _expressions;
-        private readonly ArrayReadOnlyCollection<Expression> _expressionsAsReadOnlyCollection;
+        private readonly HashableReadOnlyCollection<Expression> _expressionsAsReadOnlyCollection;
 
         internal NewArrayExpression(Type type, Expression[] expressions)
         {
             _expressions = expressions;
             Type = type;
-            _expressionsAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_expressions);
+            _expressionsAsReadOnlyCollection = HashableReadOnlyCollection.Create(_expressions);
         }
 
         /// <summary>

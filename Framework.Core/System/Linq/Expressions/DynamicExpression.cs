@@ -697,13 +697,13 @@ namespace System.Linq.Expressions
     internal class DynamicExpressionN : DynamicExpression, IArgumentProvider
     {
         private readonly Expression[] _arguments;
-        private readonly ArrayReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
+        private readonly HashableReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
 
         internal DynamicExpressionN(Type delegateType, CallSiteBinder binder, Expression[] arguments)
             : base(delegateType, binder)
         {
             _arguments = arguments;
-            _argumentsAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_arguments);
+            _argumentsAsReadOnlyCollection = HashableReadOnlyCollection.Create(_arguments);
         }
 
         int IArgumentProvider.ArgumentCount => _arguments.Length;

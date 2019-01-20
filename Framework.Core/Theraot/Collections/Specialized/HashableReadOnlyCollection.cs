@@ -3,17 +3,17 @@ using System.Collections.ObjectModel;
 
 namespace Theraot.Collections.Specialized
 {
-    public static class ArrayReadOnlyCollection
+    public static class HashableReadOnlyCollection
     {
-        public static ArrayReadOnlyCollection<T> Create<T>(params T[] list)
+        public static HashableReadOnlyCollection<T> Create<T>(params T[] list)
         {
-            return new ArrayReadOnlyCollection<T>(list);
+            return new HashableReadOnlyCollection<T>(list);
         }
     }
 
-    public class ArrayReadOnlyCollection<T> : ReadOnlyCollectionEx<T>
+    public class HashableReadOnlyCollection<T> : ReadOnlyCollectionEx<T>
     {
-        protected internal ArrayReadOnlyCollection(params T[] list)
+        protected internal HashableReadOnlyCollection(params T[] list)
             : base(list)
         {
             Wrapped = list;

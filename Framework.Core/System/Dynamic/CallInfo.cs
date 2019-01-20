@@ -36,7 +36,7 @@ namespace System.Dynamic
     /// </example>
     public sealed class CallInfo
     {
-        private readonly ArrayReadOnlyCollection<string> _argumentNames;
+        private readonly HashableReadOnlyCollection<string> _argumentNames;
 
         /// <summary>
         /// Creates a new <see cref="CallInfo"/> that represents arguments in the dynamic binding process.

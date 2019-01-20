@@ -69,7 +69,7 @@ namespace System.Linq.Expressions.Compiler
                 var newBody = body.Node;
                 if (_tm.Temps.Count > 0)
                 {
-                    newBody = Expression.Block(_tm.Temps, ArrayReadOnlyCollection.Create(newBody));
+                    newBody = Expression.Block(_tm.Temps, HashableReadOnlyCollection.Create(newBody));
                 }
 
                 // Clone the lambda, replacing the body & variables.
@@ -497,7 +497,7 @@ namespace System.Linq.Expressions.Compiler
                             newInitializer[i] = new ElementInit(initializers[i].AddMethod, cr[0, -1]);
                         }
                     }
-                    expr = new ListInitExpression((NewExpression)rewrittenNew, ArrayReadOnlyCollection.Create(newInitializer));
+                    expr = new ListInitExpression((NewExpression)rewrittenNew, HashableReadOnlyCollection.Create(newInitializer));
                     break;
 
                 case RewriteAction.SpillStack:
@@ -760,7 +760,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (cr.Rewrite)
             {
-                expr = NewArrayExpression.Make(node.NodeType, node.Type, ArrayReadOnlyCollection.Create(cr[0, -1]));
+                expr = NewArrayExpression.Make(node.NodeType, node.Type, HashableReadOnlyCollection.Create(cr[0, -1]));
             }
 
             return cr.Finish(expr);

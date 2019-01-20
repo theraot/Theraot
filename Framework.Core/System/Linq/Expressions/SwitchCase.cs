@@ -50,13 +50,13 @@ namespace System.Linq.Expressions
     public sealed class SwitchCase
     {
         private readonly Expression[] _testValues;
-        private readonly ArrayReadOnlyCollection<Expression> _textValuesAsReadOnlyCollection;
+        private readonly HashableReadOnlyCollection<Expression> _textValuesAsReadOnlyCollection;
 
         internal SwitchCase(Expression body, Expression[] testValues)
         {
             Body = body;
             _testValues = testValues;
-            _textValuesAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_testValues);
+            _textValuesAsReadOnlyCollection = HashableReadOnlyCollection.Create(_testValues);
         }
 
         /// <summary>

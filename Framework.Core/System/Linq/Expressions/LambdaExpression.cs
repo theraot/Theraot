@@ -1018,13 +1018,13 @@ namespace System.Linq.Expressions
     internal class ExpressionN<TDelegate> : Expression<TDelegate>
     {
         private readonly ParameterExpression[] _parameters;
-        private readonly ArrayReadOnlyCollection<ParameterExpression> _parametersAsReadOnlyCollection;
+        private readonly HashableReadOnlyCollection<ParameterExpression> _parametersAsReadOnlyCollection;
 
         public ExpressionN(Expression body, ParameterExpression[] parameters)
             : base(body)
         {
             _parameters = parameters;
-            _parametersAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_parameters);
+            _parametersAsReadOnlyCollection = HashableReadOnlyCollection.Create(_parameters);
         }
 
         internal override int ParameterCount => _parameters.Length;

@@ -979,13 +979,13 @@ namespace System.Linq.Expressions
     internal sealed class InstanceMethodCallExpressionN : InstanceMethodCallExpression, IArgumentProvider
     {
         private readonly Expression[] _arguments;
-        private readonly ArrayReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
+        private readonly HashableReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
 
         public InstanceMethodCallExpressionN(MethodInfo method, Expression instance, Expression[] args)
             : base(method, instance)
         {
             _arguments = args;
-            _argumentsAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_arguments);
+            _argumentsAsReadOnlyCollection = HashableReadOnlyCollection.Create(_arguments);
         }
 
         public override int ArgumentCount => _arguments.Length;
@@ -1398,13 +1398,13 @@ namespace System.Linq.Expressions
     internal sealed class MethodCallExpressionN : MethodCallExpression, IArgumentProvider
     {
         private readonly Expression[] _arguments;
-        private readonly ArrayReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
+        private readonly HashableReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
 
         public MethodCallExpressionN(MethodInfo method, Expression[] args)
             : base(method)
         {
             _arguments = args;
-            _argumentsAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_arguments);
+            _argumentsAsReadOnlyCollection = HashableReadOnlyCollection.Create(_arguments);
         }
 
         public override int ArgumentCount => _arguments.Length;

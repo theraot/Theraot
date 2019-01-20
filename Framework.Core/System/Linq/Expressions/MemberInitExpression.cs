@@ -50,13 +50,13 @@ namespace System.Linq.Expressions
     public sealed class MemberInitExpression : Expression
     {
         private readonly MemberBinding[] _bindings;
-        private readonly ArrayReadOnlyCollection<MemberBinding> _bindingsAsReadOnlyCollection;
+        private readonly HashableReadOnlyCollection<MemberBinding> _bindingsAsReadOnlyCollection;
 
         internal MemberInitExpression(NewExpression newExpression, MemberBinding[] bindings)
         {
             NewExpression = newExpression;
             _bindings = bindings;
-            _bindingsAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_bindings);
+            _bindingsAsReadOnlyCollection = HashableReadOnlyCollection.Create(_bindings);
         }
 
         /// <summary>Gets the bindings that describe how to initialize the members of the newly created object.</summary>

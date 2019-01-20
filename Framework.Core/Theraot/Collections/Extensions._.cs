@@ -35,7 +35,7 @@ namespace Theraot.Collections
             return res;
         }
 
-        public static ArrayReadOnlyCollection<T> AddFirst<T>(this ReadOnlyCollection<T> list, T item)
+        public static HashableReadOnlyCollection<T> AddFirst<T>(this ReadOnlyCollection<T> list, T item)
         {
             if (list == null)
             {
@@ -46,7 +46,7 @@ namespace Theraot.Collections
             var res = new T[list.Count + 1];
             res[0] = item;
             list.CopyTo(res, 1);
-            return ArrayReadOnlyCollection.Create(res);
+            return HashableReadOnlyCollection.Create(res);
         }
 
         public static T[] AddLast<T>(this T[] array, T item)
@@ -63,7 +63,7 @@ namespace Theraot.Collections
             return res;
         }
 
-        public static ArrayReadOnlyCollection<T> AddLast<T>(this ReadOnlyCollection<T> list, T item)
+        public static HashableReadOnlyCollection<T> AddLast<T>(this ReadOnlyCollection<T> list, T item)
         {
             if (list == null)
             {
@@ -72,7 +72,7 @@ namespace Theraot.Collections
             var res = new T[list.Count + 1];
             list.CopyTo(res, 0);
             res[list.Count] = item;
-            return ArrayReadOnlyCollection.Create(res);
+            return HashableReadOnlyCollection.Create(res);
         }
 
 

@@ -162,7 +162,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        private static void ValidateNewArgs(ConstructorInfo constructor, ref Expression[] arguments, ref ArrayReadOnlyCollection<MemberInfo> members)
+        private static void ValidateNewArgs(ConstructorInfo constructor, ref Expression[] arguments, ref HashableReadOnlyCollection<MemberInfo> members)
         {
             ParameterInfo[] pis;
             if ((pis = constructor.GetParameters()).Length > 0)
@@ -237,7 +237,7 @@ namespace System.Linq.Expressions
                 }
                 if (newMembers != null)
                 {
-                    members = ArrayReadOnlyCollection.Create(newMembers);
+                    members = HashableReadOnlyCollection.Create(newMembers);
                 }
             }
             else if (arguments?.Length > 0)
@@ -258,14 +258,14 @@ namespace System.Linq.Expressions
     public class NewExpression : Expression, IArgumentProvider
     {
         private readonly Expression[] _arguments;
-        private readonly ArrayReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
+        private readonly HashableReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
 
         internal NewExpression(ConstructorInfo constructor, Expression[] arguments, ReadOnlyCollection<MemberInfo> members)
         {
             Constructor = constructor;
             _arguments = arguments;
             Members = members;
-            _argumentsAsReadOnlyCollection = ArrayReadOnlyCollection.Create(_arguments);
+            _argumentsAsReadOnlyCollection = HashableReadOnlyCollection.Create(_arguments);
         }
 
         /// <summary>
