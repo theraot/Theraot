@@ -19,7 +19,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Creates a dictionary-like object used for caches.
         /// </summary>
-        /// <param name="size">The maximum number of elements to store will be this number aligned to next ^2.</param>
+        /// <param name="capacity">The maximum number of elements to store will be this number aligned to next ^2.</param>
         public CacheDict(int capacity)
         {
             capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
@@ -42,10 +42,6 @@ namespace Theraot.Collections.ThreadSafe
             set => Add(key, value);
         }
 
-        /// <summary>
-        /// Adds a new element to the cache, possibly replacing some
-        /// element that is already present.
-        /// </summary>
         public void Add(TKey key, TValue value)
         {
             var hash = key.GetHashCode();
@@ -57,10 +53,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        /// <summary>
-        /// Tries to get the value associated with 'key', returning true if it's found and
-        /// false if it's not present.
-        /// </summary>
         public bool TryGetValue(TKey key, out TValue value)
         {
             var hash = key.GetHashCode();
