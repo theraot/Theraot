@@ -6,7 +6,7 @@ using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections.Specialized
 {
-    internal class GroupBuilder<TKey, TSource, TElement>
+    internal sealed class GroupBuilder<TKey, TSource, TElement>
     {
         private readonly CancellationTokenSource _cancellationTokenSource;
         private IEnumerator<TSource> _enumerator;
