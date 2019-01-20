@@ -26,7 +26,7 @@ namespace Theraot.Collections.Specialized
         public void CopyTo(TKey[] array, int arrayIndex)
         {
             Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
-            Extensions.CopyTo(_wrapped.ConvertProgressive(pair => pair.Key), array, arrayIndex);
+            _wrapped.ConvertProgressive(pair => pair.Key).CopyTo(array, arrayIndex);
         }
 
         public IEnumerator<TKey> GetEnumerator()
@@ -46,6 +46,7 @@ namespace Theraot.Collections.Specialized
 
         bool ICollection<TKey>.Contains(TKey item)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             return _wrapped.ContainsKey(item);
         }
 
