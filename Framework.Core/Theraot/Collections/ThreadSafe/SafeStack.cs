@@ -112,7 +112,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public T[] ToArray()
         {
-            return Extensions.ToArray(this, Count);
+            return this.ToArray(Count);
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace Theraot.Collections.ThreadSafe
         void ICollection.CopyTo(Array array, int index)
         {
             Extensions.CanCopyTo(Count, array, index);
-            Extensions.DeprecatedCopyTo(this, array, index);
+            this.DeprecatedCopyTo(array, index);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

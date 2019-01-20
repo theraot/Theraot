@@ -75,7 +75,7 @@ namespace Theraot.Collections.ThreadSafe
         public void CopyTo(T[] array, int index)
         {
             Extensions.CanCopyTo(Count, array, index);
-            Extensions.DeprecatedCopyTo(this, array, index);
+            this.DeprecatedCopyTo(array, index);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public T[] ToArray()
         {
-            return Extensions.ToArray(this, Count);
+            return this.ToArray(Count);
         }
 
         /// <summary>

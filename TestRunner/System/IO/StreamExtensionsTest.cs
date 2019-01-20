@@ -1,13 +1,7 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-
-#if LESSTHAN_NET45
-
-using Theraot.Core;
-
-#endif
 
 namespace TestRunner.System.IO
 {
