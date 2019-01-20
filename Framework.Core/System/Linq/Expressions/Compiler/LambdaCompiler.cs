@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -15,13 +15,6 @@ using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Compiler
 {
-    internal interface ILocalCache
-    {
-        void FreeLocal(LocalBuilder local);
-
-        LocalBuilder GetLocal(Type type);
-    }
-
     /// <summary>
     /// LambdaCompiler is responsible for compiling individual lambda (LambdaExpression). The complete tree may
     /// contain multiple lambdas, the Compiler class is responsible for compiling the whole tree, individual
