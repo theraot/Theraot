@@ -1,4 +1,6 @@
-﻿namespace TestRunner
+﻿#pragma warning disable CC0037 // Remove commented code.
+
+namespace TestRunner
 {
     public static class AvailabilityTests
     {
@@ -74,7 +76,6 @@
 
         public static readonly global::System.Type ArrayList = typeof(global::System.Collections.ArrayList);
         public static readonly global::System.Type BitArray = typeof(global::System.Collections.BitArray);
-
         //public static readonly global::System.Type CaseInsensitiveComparer = typeof(global::System.Collections.CaseInsensitiveComparer);
         //public static readonly global::System.Type CaseInsensitiveHashCodeProvider = typeof(global::System.Collections.CaseInsensitiveHashCodeProvider);
         //public static readonly global::System.Type CollectionBase = typeof(global::System.Collections.CollectionBase);
@@ -98,6 +99,8 @@
         public static readonly global::System.Type SortedList = typeof(global::System.Collections.SortedList);
         //public static readonly global::System.Type Stack = typeof(global::System.Collections.Stack);
         public static readonly global::System.Type StructuralComparisons = typeof(global::System.Collections.StructuralComparisons);
+
+        // ---
 
         public static readonly global::System.Type CallInfo = typeof(global::System.Dynamic.CallInfo);
 
