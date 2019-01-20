@@ -1,5 +1,15 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA1036 // Override methods on comparable types
+#pragma warning disable CA1051 // Do not declare visible instance fields
+#pragma warning disable CA1815 // Override equals and operator equals on value types
+#pragma warning disable CA2231 // Overload operator equals on overriding value type Equals
+#pragma warning disable RECS0017 // Possible compare of value type with 'null'
+#pragma warning disable RECS0025 // Non-readonly field referenced in 'GetHashCode()'
+// ReSharper disable MergeSequentialChecks
+// ReSharper disable NonReadonlyMemberInGetHashCode
+// ReSharper disable SuspiciousTypeConversion.Global
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -357,7 +367,7 @@ namespace System
         /// </remarks>
         public override bool Equals(object obj)
         {
-            return obj is ValueTuple<T1> && Equals((ValueTuple<T1>)obj);
+            return obj is ValueTuple<T1> valueTuple && Equals(valueTuple);
         }
 
         /// <summary>
@@ -527,7 +537,7 @@ namespace System
         /// </remarks>
         public override bool Equals(object obj)
         {
-            return obj is ValueTuple<T1, T2> && Equals((ValueTuple<T1, T2>)obj);
+            return obj is ValueTuple<T1, T2> valueTuple && Equals(valueTuple);
         }
 
         /// <summary>
@@ -619,15 +629,18 @@ namespace System
         /// <returns><see langword="true"/> if the current instance is equal to the specified object; otherwise, <see langword="false"/>.</returns>
         ///
         /// <remarks>
+        /// <para>
         /// This member is an explicit interface member implementation. It can be used only when the
         ///  <see cref="ValueTuple{T1, T2}"/> instance is cast to an <see cref="IStructuralEquatable"/> interface.
-        ///
+        /// </para>
+        /// <para>
         /// The <see cref="IEqualityComparer.Equals(object,object)"/> implementation is called only if <c>other</c> is not <see langword="null"/>,
         ///  and if it can be successfully cast (in C#) or converted (in Visual Basic) to a <see cref="ValueTuple{T1, T2}"/>
         ///  whose components are of the same types as those of the current instance. The IStructuralEquatable.Equals(Object, IEqualityComparer) method
         ///  first passes the <see cref="Item1"/> values of the <see cref="ValueTuple{T1, T2}"/> objects to be compared to the
         ///  <see cref="IEqualityComparer.Equals(object,object)"/> implementation. If this method call returns <see langword="true"/>, the method is
         ///  called again and passed the <see cref="Item2"/> values of the two <see cref="ValueTuple{T1, T2}"/> instances.
+        /// </para>
         /// </remarks>
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
@@ -744,7 +757,7 @@ namespace System
         /// </remarks>
         public override bool Equals(object obj)
         {
-            return obj is ValueTuple<T1, T2, T3> && Equals((ValueTuple<T1, T2, T3>)obj);
+            return obj is ValueTuple<T1, T2, T3> valueTuple && Equals(valueTuple);
         }
 
         /// <summary>
@@ -966,7 +979,7 @@ namespace System
         /// </remarks>
         public override bool Equals(object obj)
         {
-            return obj is ValueTuple<T1, T2, T3, T4> && Equals((ValueTuple<T1, T2, T3, T4>)obj);
+            return obj is ValueTuple<T1, T2, T3, T4> valueTuple && Equals(valueTuple);
         }
 
         /// <summary>
@@ -1212,7 +1225,7 @@ namespace System
         /// </remarks>
         public override bool Equals(object obj)
         {
-            return obj is ValueTuple<T1, T2, T3, T4, T5> && Equals((ValueTuple<T1, T2, T3, T4, T5>)obj);
+            return obj is ValueTuple<T1, T2, T3, T4, T5> valueTuple && Equals(valueTuple);
         }
 
         /// <summary>
@@ -1482,7 +1495,7 @@ namespace System
         /// </remarks>
         public override bool Equals(object obj)
         {
-            return obj is ValueTuple<T1, T2, T3, T4, T5, T6> && Equals((ValueTuple<T1, T2, T3, T4, T5, T6>)obj);
+            return obj is ValueTuple<T1, T2, T3, T4, T5, T6> valueTuple && Equals(valueTuple);
         }
 
         /// <summary>
@@ -1776,7 +1789,7 @@ namespace System
         /// </remarks>
         public override bool Equals(object obj)
         {
-            return obj is ValueTuple<T1, T2, T3, T4, T5, T6, T7> && Equals((ValueTuple<T1, T2, T3, T4, T5, T6, T7>)obj);
+            return obj is ValueTuple<T1, T2, T3, T4, T5, T6, T7> valueTuple && Equals(valueTuple);
         }
 
         /// <summary>
@@ -2228,7 +2241,7 @@ namespace System
                     );
 
                 default:
-                    Debug.Assert(false, "Missed all cases for computing ValueTuple hash code");
+                    DebugEx.Fail("Missed all cases for computing ValueTuple hash code");
                     return -1;
             }
         }
@@ -2399,7 +2412,7 @@ namespace System
                                                        comparer.GetHashCode(Item7), rest.GetHashCode(comparer));
 
                 default:
-                    Debug.Assert(false, "Missed all cases for computing ValueTuple hash code");
+                    DebugEx.Fail("Missed all cases for computing ValueTuple hash code");
                     return -1;
             }
         }
