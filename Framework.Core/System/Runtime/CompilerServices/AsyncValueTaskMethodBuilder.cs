@@ -1,4 +1,4 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 
@@ -12,15 +12,15 @@ using System.Threading.Tasks;
 
 namespace System.Runtime.CompilerServices
 {
-    /// <summary>Represents a builder for asynchronous methods that returns a <see cref="ValueTask{TResult}"/>.</summary>
+    /// <summary>Represents a builder for asynchronous methods that returns a <see cref="ValueTask{TResult}" />.</summary>
     /// <typeparam name="TResult">The type of the result.</typeparam>
     [StructLayout(LayoutKind.Auto)]
     public struct AsyncValueTaskMethodBuilder<TResult>
     {
-
-        /// <summary>true if <see cref="_result"/> contains the synchronous result for the async method; otherwise, false.</summary>
+        /// <summary>true if <see cref="_result" /> contains the synchronous result for the async method; otherwise, false.</summary>
         private bool _haveResult;
-        /// <summary>The <see cref="AsyncTaskMethodBuilder{TResult}"/> to which most operations are delegated.</summary>
+
+        /// <summary>The <see cref="AsyncTaskMethodBuilder{TResult}" /> to which most operations are delegated.</summary>
         private AsyncTaskMethodBuilder<TResult> _methodBuilder;
 
         /// <summary>The result for this builder, if it's completed before any awaits occur.</summary>
@@ -38,16 +38,17 @@ namespace System.Runtime.CompilerServices
                 {
                     return new ValueTask<TResult>(_result);
                 }
+
                 _useBuilder = true;
                 return new ValueTask<TResult>(_methodBuilder.Task);
             }
         }
 
-        /// <summary>Creates an instance of the <see cref="AsyncValueTaskMethodBuilder{TResult}"/> struct.</summary>
+        /// <summary>Creates an instance of the <see cref="AsyncValueTaskMethodBuilder{TResult}" /> struct.</summary>
         /// <returns>The initialized instance.</returns>
         public static AsyncValueTaskMethodBuilder<TResult> Create()
         {
-            return new AsyncValueTaskMethodBuilder<TResult> { _methodBuilder = AsyncTaskMethodBuilder<TResult>.Create() };
+            return new AsyncValueTaskMethodBuilder<TResult> {_methodBuilder = AsyncTaskMethodBuilder<TResult>.Create()};
         }
 
         /// <summary>Schedules the state machine to proceed to the next action when the specified awaiter completes.</summary>
