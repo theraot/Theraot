@@ -1,5 +1,8 @@
 ﻿// Needed for NET35 (TASK)
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
+#pragma warning disable RCS1231 // Make parameter ref read-only.
+
 using System;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
@@ -9,7 +12,6 @@ namespace Theraot.Threading
 {
     public class RootedTimeout : IPromise
     {
-        protected Action Callback;
         private const int _canceled = 4;
         private const int _canceling = 3;
         private const int _changing = 6;
@@ -24,15 +26,11 @@ namespace Theraot.Threading
         private int _status;
         private long _targetTime;
         private Timer _wrapped;
+        protected Action Callback;
 
         protected RootedTimeout()
         {
             _hashcode = unchecked((int)DateTime.Now.Ticks);
-        }
-
-        ~RootedTimeout()
-        {
-            Close();
         }
 
         public bool IsCanceled => Volatile.Read(ref _status) == _canceled;
@@ -43,16 +41,23 @@ namespace Theraot.Threading
 
         bool IPromise.IsFaulted => false;
 
+        ~RootedTimeout()
+        {
+            Close();
+        }
+
         public static RootedTimeout Launch(Action callback, long dueTime)
         {
             if (callback == null)
             {
                 throw new ArgumentNullException(nameof(callback));
             }
+
             if (dueTime < -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
+
             var timeout = new RootedTimeout();
             timeout.Callback = () =>
             {
@@ -76,16 +81,19 @@ namespace Theraot.Threading
             {
                 throw new ArgumentNullException(nameof(callback));
             }
+
             if (dueTime < -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
+
             var timeout = new RootedTimeout();
             if (token.IsCancellationRequested)
             {
                 timeout._status = _canceled;
                 return timeout;
             }
+
             timeout.Callback = () =>
             {
                 try
@@ -128,6 +136,7 @@ namespace Theraot.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
+
             if (Interlocked.CompareExchange(ref _status, _changing, _created) == _created)
             {
                 _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
@@ -136,6 +145,7 @@ namespace Theraot.Threading
                 {
                     return false;
                 }
+
                 if (dueTime == -1)
                 {
                     _targetTime = -1;
@@ -145,9 +155,11 @@ namespace Theraot.Threading
                     _targetTime = _startTime + dueTime;
                     wrapped.Change(Finish, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
                 }
+
                 Volatile.Write(ref _status, _created);
                 return true;
             }
+
             return false;
         }
 
@@ -162,12 +174,14 @@ namespace Theraot.Threading
             {
                 return -1;
             }
+
             var remaining = _targetTime - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
             if (remaining <= 0)
             {
                 Finish();
                 return 0;
             }
+
             return remaining;
         }
 
@@ -177,6 +191,7 @@ namespace Theraot.Threading
             {
                 return this == obj;
             }
+
             return false;
         }
 
@@ -206,8 +221,9 @@ namespace Theraot.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
+
             _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
-            _targetTime = dueTime == -1 ? (long)-1 : _startTime + dueTime;
+            _targetTime = dueTime == -1 ? -1 : _startTime + dueTime;
             _wrapped = Timer.GetTimer(Finish, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
         }
 
