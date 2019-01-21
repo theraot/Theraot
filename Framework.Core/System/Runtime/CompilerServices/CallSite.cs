@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 #pragma warning disable CA1051 // Do not declare visible instance fields
 #pragma warning disable CA1822 // Mark members as static
@@ -11,9 +11,9 @@
 
 using System.Diagnostics;
 using System.Dynamic.Utils;
+using System.Reflection;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
-using Theraot.Reflection;
 
 namespace System.Runtime.CompilerServices
 {

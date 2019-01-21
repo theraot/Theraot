@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Reflection;
 
-#if NET20 || NET30 || NET35 || NET40
-
-using Theraot.Reflection;
-
-#endif
-
 namespace Theraot.Collections.ThreadSafe
 {
     [System.Diagnostics.DebuggerNonUserCode]

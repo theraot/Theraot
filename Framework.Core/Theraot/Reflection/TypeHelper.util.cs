@@ -45,40 +45,4 @@ namespace Theraot.Reflection
                 ?? FindConversionOperator(targetStaticMethods, nonNullableSource, nonNullableTarget, implicitOnly);
         }
     }
-
-    public static partial class TypeHelper
-    {
-#if NET20 || NET30 || NET35 || NET40 || NET45
-
-        /// <summary>
-        /// Creates a closed delegate for the given (dynamic)method.
-        /// </summary>
-        /// <param name="methodInfo">The MethodInfo for the target method.</param>
-        /// <param name="delegateType">Delegate type with a matching signature.</param>
-        internal static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType)
-        {
-            if (methodInfo is System.Reflection.Emit.DynamicMethod dynamicMethod)
-            {
-                return dynamicMethod.CreateDelegate(delegateType);
-            }
-            return Delegate.CreateDelegate(delegateType, methodInfo);
-        }
-
-        /// <summary>
-        /// Creates a closed delegate for the given (dynamic)method.
-        /// </summary>
-        /// <param name="methodInfo">The MethodInfo for the target method.</param>
-        /// <param name="delegateType">Delegate type with a matching signature.</param>
-        /// <param name="target">The object to which the delegate is bound, or null to treat method as static.</param>
-        internal static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
-        {
-            if (methodInfo is System.Reflection.Emit.DynamicMethod dynamicMethod)
-            {
-                return dynamicMethod.CreateDelegate(delegateType, target);
-            }
-            return Delegate.CreateDelegate(delegateType, target, methodInfo);
-        }
-
-#endif
-    }
 }
