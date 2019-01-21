@@ -1009,11 +1009,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (items == null)
             {
-                throw new ArgumentNullException("items");
+                throw new ArgumentNullException(nameof(items));
             }
             var localComparer = EqualityComparer<T>.Default;
             var localCollection = AsICollection(source);
@@ -1031,11 +1031,11 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (items == null)
             {
-                throw new ArgumentNullException("items");
+                throw new ArgumentNullException(nameof(items));
             }
             var localComparer = comparer ?? EqualityComparer<T>.Default;
             var localCollection = AsICollection(source);
