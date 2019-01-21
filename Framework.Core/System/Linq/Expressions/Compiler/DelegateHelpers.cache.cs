@@ -13,9 +13,9 @@ namespace System.Linq.Expressions.Compiler
 {
     internal static partial class DelegateHelpers
     {
-        private const int MaximumArity = 17;
+        private const int _maximumArity = 17;
 
-        private static TypeInfo _delegateCache = new TypeInfo();
+        private static readonly TypeInfo _delegateCache = new TypeInfo();
 
         internal static TypeInfo GetNextTypeInfo(Type initialArg, TypeInfo curTypeInfo)
         {
@@ -25,47 +25,33 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        /// Finds a delegate type using the types in the array.
-        /// We use the cache to avoid copying the array, and to cache the
-        /// created delegate type
-        /// </summary>
         internal static Type MakeDelegateType(Type[] types)
         {
             lock (_delegateCache)
             {
-                TypeInfo curTypeInfo = _delegateCache;
+                var curTypeInfo = _delegateCache;
 
                 // arguments & return type
-                for (int i = 0; i < types.Length; i++)
+                foreach (var type in types)
                 {
-                    curTypeInfo = NextTypeInfo(types[i], curTypeInfo);
+                    curTypeInfo = NextTypeInfo(type, curTypeInfo);
                 }
 
                 // see if we have the delegate already
-                if (curTypeInfo.DelegateType == null)
-                {
-                    // clone because MakeCustomDelegate can hold onto the array.
-                    curTypeInfo.DelegateType = MakeNewDelegate((Type[])types.Clone());
-                }
-
-                return curTypeInfo.DelegateType;
+                // clone because MakeCustomDelegate can hold onto the array.
+                return curTypeInfo.DelegateType ?? (curTypeInfo.DelegateType = MakeNewDelegate((Type[])types.Clone()));
             }
         }
 
-        /// <summary>
-        /// Creates a new delegate, or uses a func/action
-        /// Note: this method does not cache
-        /// </summary>
         internal static Type MakeNewDelegate(Type[] types)
         {
-            Debug.Assert(types != null && types.Length > 0);
+            Debug.Assert(types?.Length > 0);
 
             // Can only used predefined delegates if we have no byref types and
             // the arity is small enough to fit in Func<...> or Action<...>
             bool needCustom;
 
-            if (types.Length > MaximumArity)
+            if (types.Length > _maximumArity)
             {
                 needCustom = true;
             }
@@ -73,9 +59,8 @@ namespace System.Linq.Expressions.Compiler
             {
                 needCustom = false;
 
-                for (int i = 0; i < types.Length; i++)
+                foreach (var type in types)
                 {
-                    Type type = types[i];
                     if (type.IsByRef || /*type.IsByRefLike ||*/ type.IsPointer)
                     {
                         needCustom = true;
@@ -89,15 +74,7 @@ namespace System.Linq.Expressions.Compiler
                 return MakeNewCustomDelegate(types);
             }
 
-            Type result;
-            if (types[types.Length - 1] == typeof(void))
-            {
-                result = DelegateBuilder.GetActionType(types.RemoveLast());
-            }
-            else
-            {
-                result = DelegateBuilder.GetFuncType(types);
-            }
+            var result = types[types.Length - 1] == typeof(void) ? DelegateBuilder.GetActionType(types.RemoveLast()) : DelegateBuilder.GetFuncType(types);
 
             Debug.Assert(result != null);
             return result;
@@ -113,14 +90,13 @@ namespace System.Linq.Expressions.Compiler
 
         private static TypeInfo NextTypeInfo(Type initialArg, TypeInfo curTypeInfo)
         {
-            Type lookingUp = initialArg;
-            TypeInfo nextTypeInfo;
+            var lookingUp = initialArg;
             if (curTypeInfo.TypeChain == null)
             {
                 curTypeInfo.TypeChain = new Dictionary<Type, TypeInfo>();
             }
 
-            if (!curTypeInfo.TypeChain.TryGetValue(lookingUp, out nextTypeInfo))
+            if (!curTypeInfo.TypeChain.TryGetValue(lookingUp, out var nextTypeInfo))
             {
                 nextTypeInfo = new TypeInfo();
                 /*if (!lookingUp.IsCollectible)
