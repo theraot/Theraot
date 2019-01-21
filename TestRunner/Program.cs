@@ -148,7 +148,7 @@ namespace TestRunner
                     throw new ArgumentException();
                 }
                 _instance = method.IsStatic ? null : Activator.CreateInstance(type);
-                _delegate = TypeHelper.BuildDelegate(method, _instance);
+                _delegate = DelegateBuilder.BuildDelegate(method, _instance);
                 _parameterInfos = method.GetParameters();
                 _isolatedThread = testMethod.TestAttribute.IsolatedThread;
                 _preferredGenerators = testMethod.PreferredGenerators;

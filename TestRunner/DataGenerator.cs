@@ -77,7 +77,7 @@ namespace TestRunner
             Delegate @delegate;
             if (methodInfo.IsStatic)
             {
-                @delegate = TypeHelper.BuildDelegate(methodInfo, null);
+                @delegate = DelegateBuilder.BuildDelegate(methodInfo, null);
             }
             else
             {
@@ -98,7 +98,7 @@ namespace TestRunner
                     }
                     _instances[declaringType] = instance;
                 }
-                @delegate = instance == null ? null : TypeHelper.BuildDelegate(methodInfo, instance);
+                @delegate = instance == null ? null : DelegateBuilder.BuildDelegate(methodInfo, instance);
             }
             return (methodInfo.GetReturnType(), methodInfo.DeclaringType, @delegate);
         }
