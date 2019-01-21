@@ -18,7 +18,7 @@ namespace System.Linq.Expressions.Compiler
 
         private const MethodAttributes _invokeAttributes = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual;
 
-        private static readonly Type[] _delegateCtorSignature = { typeof(object), typeof(IntPtr) };
+        private static readonly Type[] _delegateCtorSignature = {typeof(object), typeof(IntPtr)};
 
         internal static Type MakeCallSiteDelegate(Expression[] types, Type returnType)
         {
@@ -65,6 +65,7 @@ namespace System.Linq.Expressions.Compiler
                     {
                         paramType = paramType.MakeByRefType();
                     }
+
                     curTypeInfo = NextTypeInfo(paramType, curTypeInfo);
                 }
 
@@ -87,6 +88,7 @@ namespace System.Linq.Expressions.Compiler
                         {
                             paramType = paramType.MakeByRefType();
                         }
+
                         paramTypes[i + 1] = paramType;
                     }
 
