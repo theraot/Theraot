@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic.Utils;
 using System.Reflection;
-using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions
 {
@@ -126,7 +125,7 @@ namespace System.Linq.Expressions
     public sealed class MemberMemberBinding : MemberBinding
     {
         private readonly MemberBinding[] _bindings;
-        private readonly HashableReadOnlyCollection<MemberBinding> _bindingsAsReadOnlyCollection;
+        private readonly ReadOnlyCollectionEx<MemberBinding> _bindingsAsReadOnlyCollection;
 
         internal MemberMemberBinding(MemberInfo member, MemberBinding[] bindings)
 #pragma warning disable CS0618 // El tipo o el miembro están obsoletos
@@ -134,7 +133,7 @@ namespace System.Linq.Expressions
 #pragma warning restore CS0618 // El tipo o el miembro están obsoletos
         {
             _bindings = bindings;
-            _bindingsAsReadOnlyCollection = HashableReadOnlyCollection.Create(_bindings);
+            _bindingsAsReadOnlyCollection = ReadOnlyCollectionEx.Create(_bindings);
         }
 
         /// <summary>

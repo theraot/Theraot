@@ -11,7 +11,6 @@ using System.Dynamic.Utils;
 using System.Reflection;
 using System.Text;
 using Theraot.Collections;
-using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions
 {
@@ -412,7 +411,7 @@ namespace System.Linq.Expressions
     public sealed class IndexExpression : Expression, IArgumentProvider
     {
         private readonly Expression[] _arguments;
-        private readonly HashableReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
+        private readonly ReadOnlyCollectionEx<Expression> _argumentsAsReadOnlyCollection;
 
         internal IndexExpression(
             Expression instance,
@@ -428,7 +427,7 @@ namespace System.Linq.Expressions
             Object = instance;
             Indexer = indexer;
             _arguments = arguments;
-            _argumentsAsReadOnlyCollection = HashableReadOnlyCollection.Create(_arguments);
+            _argumentsAsReadOnlyCollection = ReadOnlyCollectionEx.Create(_arguments);
         }
 
         /// <summary>

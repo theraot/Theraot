@@ -4,10 +4,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
-using Theraot.Collections.Specialized;
 using Theraot.Reflection;
 
 namespace System.Linq.Expressions
@@ -1032,7 +1032,7 @@ namespace System.Linq.Expressions
                 block[i] = Assign(temps[i], arg);
                 i++;
             }
-            index = MakeIndex(temps[0], index.Indexer, HashableReadOnlyCollection.Create(args));
+            index = MakeIndex(temps[0], index.Indexer, ReadOnlyCollectionEx.Create(args));
             if (!prefix)
             {
                 var lastTemp = temps[i] = Parameter(index.Type, name: null);
@@ -1048,7 +1048,7 @@ namespace System.Linq.Expressions
                 block[i/*++*/] = Assign(index, FunctionalOp(index));
             }
             Debug.Assert(i == block.Length);
-            return Block(HashableReadOnlyCollection.Create(temps), HashableReadOnlyCollection.Create(block));
+            return Block(ReadOnlyCollectionEx.Create(temps), ReadOnlyCollectionEx.Create(block));
         }
 
         private Expression ReduceMember()
@@ -1071,8 +1071,8 @@ namespace System.Linq.Expressions
                 // temp1 = value
                 // temp1.member = op(temp1.member)
                 return Block(
-                    HashableReadOnlyCollection.Create(temp1),
-                    HashableReadOnlyCollection.Create<Expression>(
+                    ReadOnlyCollectionEx.Create(temp1),
+                    ReadOnlyCollectionEx.Create<Expression>(
                         initTemp1,
                         Assign(member, FunctionalOp(member))
                     )
@@ -1087,8 +1087,8 @@ namespace System.Linq.Expressions
             // temp2
             var temp2 = Parameter(member.Type, name: null);
             return Block(
-                HashableReadOnlyCollection.Create(temp1, temp2),
-                HashableReadOnlyCollection.Create<Expression>(
+                ReadOnlyCollectionEx.Create(temp1, temp2),
+                ReadOnlyCollectionEx.Create<Expression>(
                     initTemp1,
                     Assign(temp2, member),
                     Assign(member, FunctionalOp(temp2)),
@@ -1113,8 +1113,8 @@ namespace System.Linq.Expressions
             // temp
             var temp = Parameter(Operand.Type, name: null);
             return Block(
-                HashableReadOnlyCollection.Create(temp),
-                HashableReadOnlyCollection.Create<Expression>(Assign(temp, Operand), Assign(Operand, FunctionalOp(temp)), temp)
+                ReadOnlyCollectionEx.Create(temp),
+                ReadOnlyCollectionEx.Create<Expression>(Assign(temp, Operand), Assign(Operand, FunctionalOp(temp)), temp)
             );
         }
     }

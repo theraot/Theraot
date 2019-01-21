@@ -6,6 +6,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Dynamic;
@@ -13,7 +14,6 @@ using System.Dynamic.Utils;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 using AstUtils = System.Linq.Expressions.Utils;
 
@@ -840,8 +840,8 @@ namespace System.Dynamic
                 (
                     Expression.Block
                     (
-                        HashableReadOnlyCollection.Create(value),
-                        HashableReadOnlyCollection.Create<Expression>
+                        ReadOnlyCollectionEx.Create(value),
+                        ReadOnlyCollectionEx.Create<Expression>
                         (
                             Expression.Condition
                             (

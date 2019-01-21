@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using Theraot.Collections;
-using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 
 namespace System.Linq.Expressions
@@ -162,7 +161,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        private static void ValidateNewArgs(ConstructorInfo constructor, ref Expression[] arguments, ref HashableReadOnlyCollection<MemberInfo> members)
+        private static void ValidateNewArgs(ConstructorInfo constructor, ref Expression[] arguments, ref ReadOnlyCollectionEx<MemberInfo> members)
         {
             ParameterInfo[] pis;
             if ((pis = constructor.GetParameters()).Length > 0)
@@ -237,7 +236,7 @@ namespace System.Linq.Expressions
                 }
                 if (newMembers != null)
                 {
-                    members = HashableReadOnlyCollection.Create(newMembers);
+                    members = ReadOnlyCollectionEx.Create(newMembers);
                 }
             }
             else if (arguments?.Length > 0)
@@ -258,14 +257,14 @@ namespace System.Linq.Expressions
     public class NewExpression : Expression, IArgumentProvider
     {
         private readonly Expression[] _arguments;
-        private readonly HashableReadOnlyCollection<Expression> _argumentsAsReadOnlyCollection;
+        private readonly ReadOnlyCollectionEx<Expression> _argumentsAsReadOnlyCollection;
 
         internal NewExpression(ConstructorInfo constructor, Expression[] arguments, ReadOnlyCollection<MemberInfo> members)
         {
             Constructor = constructor;
             _arguments = arguments;
             Members = members;
-            _argumentsAsReadOnlyCollection = HashableReadOnlyCollection.Create(_arguments);
+            _argumentsAsReadOnlyCollection = ReadOnlyCollectionEx.Create(_arguments);
         }
 
         /// <summary>

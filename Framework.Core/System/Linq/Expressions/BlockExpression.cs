@@ -11,7 +11,6 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Threading;
 using Theraot.Collections;
-using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 
 namespace System.Linq.Expressions
@@ -444,14 +443,14 @@ namespace System.Linq.Expressions
     internal class BlockN : BlockExpression
     {
         private readonly Expression[] _expressions;
-        private readonly HashableReadOnlyCollection<Expression> _expressionsAsReadOnlyCollection;
+        private readonly ReadOnlyCollectionEx<Expression> _expressionsAsReadOnlyCollection;
 
         internal BlockN(Expression[] expressions)
         {
             Debug.Assert(expressions.Length != 0);
 
             _expressions = expressions;
-            _expressionsAsReadOnlyCollection = HashableReadOnlyCollection.Create(_expressions);
+            _expressionsAsReadOnlyCollection = ReadOnlyCollectionEx.Create(_expressions);
         }
 
         internal override int ExpressionCount => _expressions.Length;
@@ -550,12 +549,12 @@ namespace System.Linq.Expressions
     internal class ScopeExpression : BlockExpression
     {
         private readonly ParameterExpression[] _variables;      // list of variables or ReadOnlyCollection if the user has accessed the read-only collection
-        private readonly HashableReadOnlyCollection<ParameterExpression> _variablesAsReadOnlyCollection;
+        private readonly ReadOnlyCollectionEx<ParameterExpression> _variablesAsReadOnlyCollection;
 
         internal ScopeExpression(ParameterExpression[] variables)
         {
             _variables = variables;
-            _variablesAsReadOnlyCollection = HashableReadOnlyCollection.Create(_variables);
+            _variablesAsReadOnlyCollection = ReadOnlyCollectionEx.Create(_variables);
         }
 
         protected IReadOnlyList<ParameterExpression> VariablesList => _variablesAsReadOnlyCollection;
@@ -585,13 +584,13 @@ namespace System.Linq.Expressions
     internal class ScopeN : ScopeExpression
     {
         private readonly Expression[] _body;
-        private readonly HashableReadOnlyCollection<Expression> _bodyAsReadOnlyCollection;
+        private readonly ReadOnlyCollectionEx<Expression> _bodyAsReadOnlyCollection;
 
         internal ScopeN(ParameterExpression[] variables, Expression[] body)
             : base(variables)
         {
             _body = body;
-            _bodyAsReadOnlyCollection = HashableReadOnlyCollection.Create(_body);
+            _bodyAsReadOnlyCollection = ReadOnlyCollectionEx.Create(_body);
         }
 
         internal override int ExpressionCount => _body.Length;

@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
-using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions
 {
@@ -50,13 +49,13 @@ namespace System.Linq.Expressions
     public sealed class MemberInitExpression : Expression
     {
         private readonly MemberBinding[] _bindings;
-        private readonly HashableReadOnlyCollection<MemberBinding> _bindingsAsReadOnlyCollection;
+        private readonly ReadOnlyCollectionEx<MemberBinding> _bindingsAsReadOnlyCollection;
 
         internal MemberInitExpression(NewExpression newExpression, MemberBinding[] bindings)
         {
             NewExpression = newExpression;
             _bindings = bindings;
-            _bindingsAsReadOnlyCollection = HashableReadOnlyCollection.Create(_bindings);
+            _bindingsAsReadOnlyCollection = ReadOnlyCollectionEx.Create(_bindings);
         }
 
         /// <summary>Gets the bindings that describe how to initialize the members of the newly created object.</summary>

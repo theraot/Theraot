@@ -4,9 +4,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
-using Theraot.Collections.Specialized;
 using Theraot.Reflection;
 using static System.Linq.Expressions.CachedReflectionInfo;
 
@@ -149,8 +149,8 @@ namespace System.Linq.Expressions
             parameter = Parameter(typeof(object));
 
             return Block(
-                HashableReadOnlyCollection.Create(parameter),
-                HashableReadOnlyCollection.Create(
+                ReadOnlyCollectionEx.Create(parameter),
+                ReadOnlyCollectionEx.Create(
                     Assign(parameter, Expression),
                     ByValParameterTypeEqual(parameter)
                 )
@@ -176,8 +176,8 @@ namespace System.Linq.Expressions
             {
                 var temp = Parameter(typeof(Type));
                 getType = Block(
-                    HashableReadOnlyCollection.Create(temp),
-                    HashableReadOnlyCollection.Create<Expression>(
+                    ReadOnlyCollectionEx.Create(temp),
+                    ReadOnlyCollectionEx.Create<Expression>(
                         Assign(temp, getType),
                         temp
                     )

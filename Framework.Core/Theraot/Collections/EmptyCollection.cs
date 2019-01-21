@@ -1,13 +1,13 @@
-// Needed for NET30
+﻿// Needed for NET30
 
+using System.Collections.ObjectModel;
 using System.Diagnostics;
-using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections
 {
     [DebuggerNonUserCode]
-    public sealed class EmptyCollection<T> : HashableReadOnlyCollection<T>
+    public sealed class EmptyCollection<T> : ReadOnlyCollectionEx<T>
     {
         private EmptyCollection()
             : base(ArrayReservoir<T>.EmptyArray)

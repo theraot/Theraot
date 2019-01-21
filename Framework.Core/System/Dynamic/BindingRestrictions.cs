@@ -5,11 +5,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
-using Theraot.Collections.Specialized;
 using AstUtils = System.Linq.Expressions.Utils;
 
 namespace System.Dynamic
@@ -232,8 +232,8 @@ namespace System.Dynamic
                 var temp = Expression.Parameter(typeof(object), null);
                 return Expression.Block
                 (
-                    HashableReadOnlyCollection.Create(temp),
-                    HashableReadOnlyCollection.Create<Expression>
+                    ReadOnlyCollectionEx.Create(temp),
+                    ReadOnlyCollectionEx.Create<Expression>
                     (
 #if ENABLEDYNAMICPROGRAMMING
                         Expression.Assign(

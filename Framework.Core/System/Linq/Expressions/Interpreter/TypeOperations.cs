@@ -7,11 +7,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Theraot.Collections.Specialized;
 using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Interpreter
@@ -542,7 +542,7 @@ namespace System.Linq.Expressions.Interpreter
                 // Otherwise, we need to return an object that merges them.
                 return Expression.Invoke(
                     Expression.Constant(new Func<IRuntimeVariables, IRuntimeVariables, int[], IRuntimeVariables>(MergeRuntimeVariables)),
-                    Expression.RuntimeVariables(HashableReadOnlyCollection.Create(vars.ToArray())),
+                    Expression.RuntimeVariables(ReadOnlyCollectionEx.Create(vars.ToArray())),
                     boxesConst,
                     Expression.Constant(indexes)
                 );

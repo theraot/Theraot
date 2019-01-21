@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -6,6 +6,14 @@ using Theraot.Collections;
 
 namespace System.Collections.ObjectModel
 {
+    public static class ReadOnlyCollectionEx
+    {
+        public static ReadOnlyCollectionEx<T> Create<T>(params T[] list)
+        {
+            return new ReadOnlyCollectionEx<T>(list);
+        }
+    }
+
     [Serializable]
     [ComVisible(false)]
     [DebuggerNonUserCode]
@@ -15,18 +23,18 @@ namespace System.Collections.ObjectModel
         , IReadOnlyList<T>
 #endif
     {
-        private readonly IList<T> _wrapped;
+        internal IList<T> Wrapped { get; }
 
         public ReadOnlyCollectionEx(IList<T> wrapped)
             : base(wrapped)
         {
-            _wrapped = wrapped;
+            Wrapped = wrapped;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public void CopyTo(T[] array)
         {
-            _wrapped.CopyTo(array, 0);
+            Wrapped.CopyTo(array, 0);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -46,9 +54,22 @@ namespace System.Collections.ObjectModel
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public T[] ToArray()
         {
-            var array = new T[_wrapped.Count];
+            var array = new T[Wrapped.Count];
             CopyTo(array);
             return array;
+        }
+
+        public override int GetHashCode()
+        {
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+            var cmp = EqualityComparer<T>.Default;
+            var h = 6551;
+            foreach (var t in this)
+            {
+                h ^= (h << 5) ^ cmp.GetHashCode(t);
+            }
+            return h;
         }
     }
 }

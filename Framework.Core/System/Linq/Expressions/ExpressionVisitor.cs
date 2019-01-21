@@ -6,7 +6,6 @@
 
 using System.Collections.ObjectModel;
 using System.Dynamic.Utils;
-using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions
 {
@@ -58,7 +57,7 @@ namespace System.Linq.Expressions
             {
                 return nodes;
             }
-            return HashableReadOnlyCollection.Create(newNodes);
+            return ReadOnlyCollectionEx.Create(newNodes);
         }
 
         /// <summary>
@@ -101,7 +100,7 @@ namespace System.Linq.Expressions
             {
                 return nodes;
             }
-            return HashableReadOnlyCollection.Create(newNodes);
+            return ReadOnlyCollectionEx.Create(newNodes);
         }
 
         /// <summary>
@@ -165,7 +164,7 @@ namespace System.Linq.Expressions
             {
                 return nodes;
             }
-            return HashableReadOnlyCollection.Create(newNodes);
+            return ReadOnlyCollectionEx.Create(newNodes);
         }
 
         /// <summary>

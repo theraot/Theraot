@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
@@ -47,8 +48,8 @@ namespace Theraot.Collections
                 case T[] array:
                     return array;
 
-                case HashableReadOnlyCollection<T> hashableReadOnlyCollection:
-                    return hashableReadOnlyCollection.Wrapped;
+                case ReadOnlyCollectionEx<T> readOnlyCollectionEx when readOnlyCollectionEx.Wrapped is T[] array:
+                    return array;
 
                 case ICollection<T> collection when collection.Count == 0:
                     return ArrayReservoir<T>.EmptyArray;
@@ -182,18 +183,18 @@ namespace Theraot.Collections
             yield return source;
         }
 
-        public static HashableReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> enumerable)
+        public static ReadOnlyCollectionEx<T> ToReadOnlyCollection<T>(this IEnumerable<T> enumerable)
         {
             if (enumerable == null)
             {
                 return EmptyCollection<T>.Instance;
             }
-            if (enumerable is HashableReadOnlyCollection<T> arrayReadOnlyCollection)
+            if (enumerable is ReadOnlyCollectionEx<T> arrayReadOnlyCollection)
             {
                 return arrayReadOnlyCollection;
             }
             var array = AsArrayInternal(enumerable);
-            return array.Length == 0 ? EmptyCollection<T>.Instance : HashableReadOnlyCollection.Create(array);
+            return array.Length == 0 ? EmptyCollection<T>.Instance : ReadOnlyCollectionEx.Create(array);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

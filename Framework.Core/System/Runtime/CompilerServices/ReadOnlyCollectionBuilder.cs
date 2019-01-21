@@ -9,7 +9,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 
 namespace System.Runtime.CompilerServices
@@ -373,7 +372,7 @@ namespace System.Runtime.CompilerServices
             Count = 0;
             _version++;
 
-            return HashableReadOnlyCollection.Create(items);
+            return ReadOnlyCollectionEx.Create(items);
         }
 
         private static bool IsCompatibleObject(object value)

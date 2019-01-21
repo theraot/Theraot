@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic.Utils;
 using Theraot.Collections;
-using Theraot.Collections.Specialized;
 
 namespace System.Dynamic
 {
@@ -36,7 +35,7 @@ namespace System.Dynamic
     /// </example>
     public sealed class CallInfo
     {
-        private readonly HashableReadOnlyCollection<string> _argumentNames;
+        private readonly ReadOnlyCollectionEx<string> _argumentNames;
 
         /// <summary>
         ///     Creates a new <see cref="CallInfo" /> that represents arguments in the dynamic binding process.

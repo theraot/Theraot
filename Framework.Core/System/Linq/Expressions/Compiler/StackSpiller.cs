@@ -5,10 +5,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
-using Theraot.Collections.Specialized;
 using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Compiler
@@ -69,7 +69,7 @@ namespace System.Linq.Expressions.Compiler
                 var newBody = body.Node;
                 if (_tm.Temps.Count > 0)
                 {
-                    newBody = Expression.Block(_tm.Temps, HashableReadOnlyCollection.Create(newBody));
+                    newBody = Expression.Block(_tm.Temps, ReadOnlyCollectionEx.Create(newBody));
                 }
 
                 // Clone the lambda, replacing the body & variables.
@@ -497,7 +497,7 @@ namespace System.Linq.Expressions.Compiler
                             newInitializer[i] = new ElementInit(initializers[i].AddMethod, cr[0, -1]);
                         }
                     }
-                    expr = new ListInitExpression((NewExpression)rewrittenNew, HashableReadOnlyCollection.Create(newInitializer));
+                    expr = new ListInitExpression((NewExpression)rewrittenNew, ReadOnlyCollectionEx.Create(newInitializer));
                     break;
 
                 case RewriteAction.SpillStack:
@@ -760,7 +760,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (cr.Rewrite)
             {
-                expr = NewArrayExpression.Make(node.NodeType, node.Type, HashableReadOnlyCollection.Create(cr[0, -1]));
+                expr = NewArrayExpression.Make(node.NodeType, node.Type, ReadOnlyCollectionEx.Create(cr[0, -1]));
             }
 
             return cr.Finish(expr);

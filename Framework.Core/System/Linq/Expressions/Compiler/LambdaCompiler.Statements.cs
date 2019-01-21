@@ -5,11 +5,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Globalization;
 using System.Reflection.Emit;
-using Theraot.Collections.Specialized;
 using Theraot.Reflection;
 using static System.Linq.Expressions.CachedReflectionInfo;
 
@@ -713,14 +713,14 @@ namespace System.Linq.Expressions.Compiler
                     var t = (ConstantExpression)expression;
                     if (t.Value != null)
                     {
-                        initializers.Add(Expression.ElementInit(add, HashableReadOnlyCollection.Create<Expression>(t, Utils.Constant(i))));
+                        initializers.Add(Expression.ElementInit(add, ReadOnlyCollectionEx.Create<Expression>(t, Utils.Constant(i))));
                     }
                     else
                     {
                         nullCase = i;
                     }
                 }
-                cases.UncheckedAdd(Expression.SwitchCase(node.Cases[i].Body, HashableReadOnlyCollection.Create<Expression>(Utils.Constant(i))));
+                cases.UncheckedAdd(Expression.SwitchCase(node.Cases[i].Body, ReadOnlyCollectionEx.Create<Expression>(Utils.Constant(i))));
             }
 
             // Create the field to hold the lazily initialized dictionary
@@ -736,7 +736,7 @@ namespace System.Linq.Expressions.Compiler
                     Expression.ListInit(
                         Expression.New(
                             DictionaryOfStringInt32CtorInt32,
-                            HashableReadOnlyCollection.Create<Expression>(
+                            ReadOnlyCollectionEx.Create<Expression>(
                                 Utils.Constant(initializers.Count)
                             )
                         ),
@@ -770,8 +770,8 @@ namespace System.Linq.Expressions.Compiler
             var switchValue = Expression.Variable(typeof(string), "switchValue");
             var switchIndex = Expression.Variable(typeof(int), "switchIndex");
             var reduced = Expression.Block(
-                HashableReadOnlyCollection.Create(switchIndex, switchValue),
-                HashableReadOnlyCollection.Create<Expression>(
+                ReadOnlyCollectionEx.Create(switchIndex, switchValue),
+                ReadOnlyCollectionEx.Create<Expression>(
                     Expression.Assign(switchValue, node.SwitchValue),
                     Expression.IfThenElse(
                         Expression.Equal(switchValue, Expression.Constant(null, typeof(string))),

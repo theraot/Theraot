@@ -5,10 +5,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
-using Theraot.Collections.Specialized;
 using Theraot.Reflection;
 using static System.Linq.Expressions.CachedReflectionInfo;
 
@@ -228,8 +228,8 @@ namespace System.Linq.Expressions
             Debug.Assert(opTrueFalse != null);
 
             return Block(
-                HashableReadOnlyCollection.Create(left),
-                HashableReadOnlyCollection.Create<Expression>(
+                ReadOnlyCollectionEx.Create(left),
+                ReadOnlyCollectionEx.Create<Expression>(
                     Assign(left, Left),
                     Condition(
                         Property(left, "HasValue"),
@@ -237,8 +237,8 @@ namespace System.Linq.Expressions
                             Call(opTrueFalse, Call(left, "GetValueOrDefault", null)),
                             left,
                             Block(
-                                HashableReadOnlyCollection.Create(right),
-                                HashableReadOnlyCollection.Create<Expression>(
+                                ReadOnlyCollectionEx.Create(right),
+                                ReadOnlyCollectionEx.Create<Expression>(
                                     Assign(right, Right),
                                     Condition(
                                         Property(right, "HasValue"),
@@ -439,8 +439,8 @@ namespace System.Linq.Expressions
             Expression e4 = temp2;
 
             return Block(
-                HashableReadOnlyCollection.Create(temp1, temp2),
-                HashableReadOnlyCollection.Create(e1, e2, e3, e4)
+                ReadOnlyCollectionEx.Create(temp1, temp2),
+                ReadOnlyCollectionEx.Create(e1, e2, e3, e4)
             );
         }
 

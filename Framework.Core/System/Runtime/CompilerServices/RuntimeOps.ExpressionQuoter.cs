@@ -1,15 +1,15 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Linq.Expressions;
 using System.Linq.Expressions.Compiler;
-using Theraot.Collections.Specialized;
 using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Runtime.CompilerServices
@@ -156,7 +156,7 @@ namespace System.Runtime.CompilerServices
                 // Otherwise, we need to return an object that merges them
                 return Expression.Call(
                     RuntimeOpsMergeRuntimeVariables,
-                    Expression.RuntimeVariables(HashableReadOnlyCollection.Create(vars.ToArray())),
+                    Expression.RuntimeVariables(ReadOnlyCollectionEx.Create(vars.ToArray())),
                     boxesConst,
                     Expression.Constant(indexes)
                 );

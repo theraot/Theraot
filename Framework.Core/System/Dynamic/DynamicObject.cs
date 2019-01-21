@@ -14,7 +14,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Theraot;
-using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 using AstUtils = System.Linq.Expressions.Utils;
 using static System.Linq.Expressions.CachedReflectionInfo;
@@ -531,7 +530,7 @@ namespace System.Dynamic
                     paramArgs[i] = Expression.Convert(args[i], typeof(object));
                 }
 
-                return HashableReadOnlyCollection.Create(paramArgs);
+                return ReadOnlyCollectionEx.Create(paramArgs);
             }
 
             private static Expression ReferenceArgAssign(Expression callArgs, Expression[] args)
@@ -626,7 +625,7 @@ namespace System.Dynamic
                             Expression.New
                             (
                                 InvalidCastExceptionCtorString,
-                                HashableReadOnlyCollection.Create<Expression>
+                                ReadOnlyCollectionEx.Create<Expression>
                                 (
                                     Expression.Call
                                     (
@@ -635,7 +634,7 @@ namespace System.Dynamic
                                         Expression.NewArrayInit
                                         (
                                             typeof(object),
-                                            HashableReadOnlyCollection.Create<Expression>
+                                            ReadOnlyCollectionEx.Create<Expression>
                                             (
                                                 Expression.Condition
                                                 (
@@ -670,8 +669,8 @@ namespace System.Dynamic
                 (
                     Expression.Block
                     (
-                        HashableReadOnlyCollection.Create(result, callArgs),
-                        HashableReadOnlyCollection.Create<Expression>
+                        ReadOnlyCollectionEx.Create(result, callArgs),
+                        ReadOnlyCollectionEx.Create<Expression>
                         (
                             method != DynamicObjectTryBinaryOperation ? Expression.Assign(callArgs, Expression.NewArrayInit(typeof(object), callArgsValue)) : Expression.Assign(callArgs, callArgsValue[0]),
                             Expression.Condition
@@ -722,8 +721,8 @@ namespace System.Dynamic
                 (
                     Expression.Block
                     (
-                        HashableReadOnlyCollection.Create(callArgs),
-                        HashableReadOnlyCollection.Create<Expression>
+                        ReadOnlyCollectionEx.Create(callArgs),
+                        ReadOnlyCollectionEx.Create<Expression>
                         (
                             Expression.Assign(callArgs, Expression.NewArrayInit(typeof(object), callArgsValue)),
                             Expression.Condition
@@ -789,8 +788,8 @@ namespace System.Dynamic
                 (
                     Expression.Block
                     (
-                        HashableReadOnlyCollection.Create(result, callArgs),
-                        HashableReadOnlyCollection.Create<Expression>
+                        ReadOnlyCollectionEx.Create(result, callArgs),
+                        ReadOnlyCollectionEx.Create<Expression>
                         (
                             Expression.Assign(callArgs, Expression.NewArrayInit(typeof(object), callArgsValue)),
                             Expression.Condition

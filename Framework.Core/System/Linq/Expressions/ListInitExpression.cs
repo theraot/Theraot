@@ -12,7 +12,6 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using Theraot.Collections;
-using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions
 {
@@ -84,7 +83,7 @@ namespace System.Linq.Expressions
             {
                 initList[i] = ElementInit(addMethod, initializerList[i]);
             }
-            return ListInit(newExpression, HashableReadOnlyCollection.Create(initList));
+            return ListInit(newExpression, ReadOnlyCollectionEx.Create(initList));
         }
 
         /// <summary>

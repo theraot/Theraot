@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Theraot.Collections.Specialized;
 
 #if FAT
 
@@ -35,7 +34,7 @@ namespace Theraot.Collections
             return res;
         }
 
-        public static HashableReadOnlyCollection<T> AddFirst<T>(this ReadOnlyCollection<T> list, T item)
+        public static ReadOnlyCollectionEx<T> AddFirst<T>(this ReadOnlyCollection<T> list, T item)
         {
             if (list == null)
             {
@@ -46,7 +45,7 @@ namespace Theraot.Collections
             var res = new T[list.Count + 1];
             res[0] = item;
             list.CopyTo(res, 1);
-            return HashableReadOnlyCollection.Create(res);
+            return ReadOnlyCollectionEx.Create(res);
         }
 
         public static T[] AddLast<T>(this T[] array, T item)
@@ -63,7 +62,7 @@ namespace Theraot.Collections
             return res;
         }
 
-        public static HashableReadOnlyCollection<T> AddLast<T>(this ReadOnlyCollection<T> list, T item)
+        public static ReadOnlyCollectionEx<T> AddLast<T>(this ReadOnlyCollection<T> list, T item)
         {
             if (list == null)
             {
@@ -72,7 +71,7 @@ namespace Theraot.Collections
             var res = new T[list.Count + 1];
             list.CopyTo(res, 0);
             res[list.Count] = item;
-            return HashableReadOnlyCollection.Create(res);
+            return ReadOnlyCollectionEx.Create(res);
         }
 
 

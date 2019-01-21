@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using Theraot.Collections;
-using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions
 {
@@ -745,13 +744,13 @@ namespace System.Linq.Expressions
     internal sealed class InvocationExpressionN : InvocationExpression
     {
         private readonly Expression[] _arguments;
-        private readonly HashableReadOnlyCollection<Expression> _argumentsAsReadOnly;
+        private readonly ReadOnlyCollectionEx<Expression> _argumentsAsReadOnly;
 
         public InvocationExpressionN(Expression lambda, Expression[] arguments, Type returnType)
             : base(lambda, returnType)
         {
             _arguments = arguments;
-            _argumentsAsReadOnly = HashableReadOnlyCollection.Create(_arguments);
+            _argumentsAsReadOnly = ReadOnlyCollectionEx.Create(_arguments);
         }
 
         public override int ArgumentCount => _arguments.Length;

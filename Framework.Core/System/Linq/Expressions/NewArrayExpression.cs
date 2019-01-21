@@ -9,7 +9,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using Theraot.Collections;
-using Theraot.Collections.Specialized;
 using Theraot.Reflection;
 
 namespace System.Linq.Expressions
@@ -125,7 +124,7 @@ namespace System.Linq.Expressions
             }
             if (newList != null)
             {
-                initializerList = HashableReadOnlyCollection.Create(newList);
+                initializerList = ReadOnlyCollectionEx.Create(newList);
             }
 
             return NewArrayExpression.Make(ExpressionType.NewArrayInit, type.MakeArrayType(), initializerList);
@@ -139,13 +138,13 @@ namespace System.Linq.Expressions
     public class NewArrayExpression : Expression
     {
         private readonly Expression[] _expressions;
-        private readonly HashableReadOnlyCollection<Expression> _expressionsAsReadOnlyCollection;
+        private readonly ReadOnlyCollectionEx<Expression> _expressionsAsReadOnlyCollection;
 
         internal NewArrayExpression(Type type, Expression[] expressions)
         {
             _expressions = expressions;
             Type = type;
-            _expressionsAsReadOnlyCollection = HashableReadOnlyCollection.Create(_expressions);
+            _expressionsAsReadOnlyCollection = ReadOnlyCollectionEx.Create(_expressions);
         }
 
         /// <summary>

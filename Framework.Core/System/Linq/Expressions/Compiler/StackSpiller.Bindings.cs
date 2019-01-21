@@ -7,7 +7,6 @@
 using System.Collections.ObjectModel;
 using System.Dynamic.Utils;
 using System.Reflection;
-using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -107,7 +106,7 @@ namespace System.Linq.Expressions.Compiler
                                 newInitializer[i] = new ElementInit(_initializers[i].AddMethod, cr[0, -1]);
                             }
                         }
-                        return new MemberListBinding(Binding.Member, HashableReadOnlyCollection.Create(newInitializer));
+                        return new MemberListBinding(Binding.Member, ReadOnlyCollectionEx.Create(newInitializer));
                     default:
                         break;
                 }
