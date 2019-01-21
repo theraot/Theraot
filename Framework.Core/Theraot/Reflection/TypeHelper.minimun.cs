@@ -1,11 +1,10 @@
-﻿// Needed for NET40
+// Needed for NET40
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using Theraot.Core;
 
 namespace Theraot.Reflection
 {
@@ -278,11 +277,6 @@ namespace Theraot.Reflection
             }
         }
 
-        public static TReturn Default<TReturn>()
-        {
-            return FuncHelper.GetDefaultFunc<TReturn>().Invoke();
-        }
-
         public static MethodInfo FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly)
         {
             foreach (var method in methods)
@@ -303,11 +297,6 @@ namespace Theraot.Reflection
                 return method;
             }
             return null;
-        }
-
-        public static Func<TReturn> GetDefault<TReturn>()
-        {
-            return FuncHelper.GetDefaultFunc<TReturn>();
         }
 
         public static bool IsImplicitBoxingConversion(Type source, Type target)

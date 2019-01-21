@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using Theraot.Reflection;
+using Theraot.Core;
 using Theraot.Threading;
 
 namespace System.Threading
@@ -15,13 +15,13 @@ namespace System.Threading
         private IThreadLocal<T> _wrapped;
 
         public ThreadLocal()
-            : this(TypeHelper.GetDefault<T>(), false)
+            : this(FuncHelper.GetDefaultFunc<T>(), false)
         {
             //Empty
         }
 
         public ThreadLocal(bool trackAllValues)
-            : this(TypeHelper.GetDefault<T>(), trackAllValues)
+            : this(FuncHelper.GetDefaultFunc<T>(), trackAllValues)
         {
             //Empty
         }
