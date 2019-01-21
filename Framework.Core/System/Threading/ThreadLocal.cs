@@ -38,20 +38,8 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(valueFactory));
             }
-            _wrapped = trackAllValues ? (IThreadLocal<T>)new TrackingThreadLocal<T>(valueFactory) : new NoTrackingThreadLocal<T>(valueFactory);
-        }
 
-        [DebuggerNonUserCode]
-        ~ThreadLocal()
-        {
-            try
-            {
-                //Empty
-            }
-            finally
-            {
-                Dispose(false);
-            }
+            _wrapped = trackAllValues ? (IThreadLocal<T>)new TrackingThreadLocal<T>(valueFactory) : new NoTrackingThreadLocal<T>(valueFactory);
         }
 
         public bool IsValueCreated
@@ -62,6 +50,7 @@ namespace System.Threading
                 {
                     throw new ObjectDisposedException(nameof(ThreadLocal<T>));
                 }
+
                 return _wrapped.IsValueCreated;
             }
         }
@@ -74,6 +63,7 @@ namespace System.Threading
                 {
                     throw new ObjectDisposedException(nameof(ThreadLocal<T>));
                 }
+
                 return _wrapped.Value;
             }
             set
@@ -82,9 +72,11 @@ namespace System.Threading
                 {
                     throw new ObjectDisposedException(nameof(ThreadLocal<T>));
                 }
+
                 _wrapped.Value = value;
             }
         }
+
         public IList<T> Values => _wrapped.Values;
 
         internal T ValueForDebugDisplay => _wrapped.ValueForDebugDisplay;
@@ -99,6 +91,19 @@ namespace System.Threading
             finally
             {
                 GC.SuppressFinalize(this);
+            }
+        }
+
+        [DebuggerNonUserCode]
+        ~ThreadLocal()
+        {
+            try
+            {
+                //Empty
+            }
+            finally
+            {
+                Dispose(false);
             }
         }
 
