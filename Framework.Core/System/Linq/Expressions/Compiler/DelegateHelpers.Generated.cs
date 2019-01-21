@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -7,6 +7,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Theraot.Collections;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -15,126 +16,6 @@ namespace System.Linq.Expressions.Compiler
         private const int MaximumArity = 17;
 
         private static TypeInfo _delegateCache = new TypeInfo();
-
-        internal static Type GetActionType(Type[] types)
-        {
-            switch (types.Length)
-            {
-                case 0:
-                    return typeof(Action);
-
-                case 1:
-                    return typeof(Action<>).MakeGenericType(types);
-
-                case 2:
-                    return typeof(Action<,>).MakeGenericType(types);
-
-                case 3:
-                    return typeof(Action<,,>).MakeGenericType(types);
-
-                case 4:
-                    return typeof(Action<,,,>).MakeGenericType(types);
-
-                case 5:
-                    return typeof(Action<,,,,>).MakeGenericType(types);
-
-                case 6:
-                    return typeof(Action<,,,,,>).MakeGenericType(types);
-
-                case 7:
-                    return typeof(Action<,,,,,,>).MakeGenericType(types);
-
-                case 8:
-                    return typeof(Action<,,,,,,,>).MakeGenericType(types);
-
-                case 9:
-                    return typeof(Action<,,,,,,,,>).MakeGenericType(types);
-
-                case 10:
-                    return typeof(Action<,,,,,,,,,>).MakeGenericType(types);
-
-                case 11:
-                    return typeof(Action<,,,,,,,,,,>).MakeGenericType(types);
-
-                case 12:
-                    return typeof(Action<,,,,,,,,,,,>).MakeGenericType(types);
-
-                case 13:
-                    return typeof(Action<,,,,,,,,,,,,>).MakeGenericType(types);
-
-                case 14:
-                    return typeof(Action<,,,,,,,,,,,,,>).MakeGenericType(types);
-
-                case 15:
-                    return typeof(Action<,,,,,,,,,,,,,,>).MakeGenericType(types);
-
-                case 16:
-                    return typeof(Action<,,,,,,,,,,,,,,,>).MakeGenericType(types);
-
-                default:
-                    return null;
-            }
-        }
-
-        internal static Type GetFuncType(Type[] types)
-        {
-            switch (types.Length)
-            {
-                case 1:
-                    return typeof(Func<>).MakeGenericType(types);
-
-                case 2:
-                    return typeof(Func<,>).MakeGenericType(types);
-
-                case 3:
-                    return typeof(Func<,,>).MakeGenericType(types);
-
-                case 4:
-                    return typeof(Func<,,,>).MakeGenericType(types);
-
-                case 5:
-                    return typeof(Func<,,,,>).MakeGenericType(types);
-
-                case 6:
-                    return typeof(Func<,,,,,>).MakeGenericType(types);
-
-                case 7:
-                    return typeof(Func<,,,,,,>).MakeGenericType(types);
-
-                case 8:
-                    return typeof(Func<,,,,,,,>).MakeGenericType(types);
-
-                case 9:
-                    return typeof(Func<,,,,,,,,>).MakeGenericType(types);
-
-                case 10:
-                    return typeof(Func<,,,,,,,,,>).MakeGenericType(types);
-
-                case 11:
-                    return typeof(Func<,,,,,,,,,,>).MakeGenericType(types);
-
-                case 12:
-                    return typeof(Func<,,,,,,,,,,,>).MakeGenericType(types);
-
-                case 13:
-                    return typeof(Func<,,,,,,,,,,,,>).MakeGenericType(types);
-
-                case 14:
-                    return typeof(Func<,,,,,,,,,,,,,>).MakeGenericType(types);
-
-                case 15:
-                    return typeof(Func<,,,,,,,,,,,,,,>).MakeGenericType(types);
-
-                case 16:
-                    return typeof(Func<,,,,,,,,,,,,,,,>).MakeGenericType(types);
-
-                case 17:
-                    return typeof(Func<,,,,,,,,,,,,,,,,>).MakeGenericType(types);
-
-                default:
-                    return null;
-            }
-        }
 
         internal static TypeInfo GetNextTypeInfo(Type initialArg, TypeInfo curTypeInfo)
         {
@@ -211,11 +92,11 @@ namespace System.Linq.Expressions.Compiler
             Type result;
             if (types[types.Length - 1] == typeof(void))
             {
-                result = GetActionType(types.RemoveLast());
+                result = DelegateBuilder.GetActionType(types.RemoveLast());
             }
             else
             {
-                result = GetFuncType(types);
+                result = DelegateBuilder.GetFuncType(types);
             }
 
             Debug.Assert(result != null);

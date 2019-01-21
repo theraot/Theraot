@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
+using Theraot.Reflection;
 using DelegateHelpers = System.Linq.Expressions.Compiler.DelegateHelpers;
 
 namespace System.Linq.Expressions
@@ -174,7 +175,7 @@ namespace System.Linq.Expressions
 
                     // This includes pointers or void. We allow the exception that comes
                     // from trying to use them as generic arguments to pass through.
-                    var result = DelegateHelpers.GetActionType(typeArgs);
+                    var result = DelegateBuilder.GetActionType(typeArgs);
                     if (result == null)
                     {
                         throw new ArgumentException("An incorrect number of type args were specified for the declaration of an Action type.", nameof(typeArgs));
@@ -219,7 +220,7 @@ namespace System.Linq.Expressions
 
                     // This includes pointers or void. We allow the exception that comes
                     // from trying to use them as generic arguments to pass through.
-                    var result = DelegateHelpers.GetFuncType(typeArgs);
+                    var result = DelegateBuilder.GetFuncType(typeArgs);
                     if (result == null)
                     {
                         throw new ArgumentException("An incorrect number of type args were specified for the declaration of a Func type.", nameof(typeArgs));
@@ -496,7 +497,7 @@ namespace System.Linq.Expressions
         {
             if (ValidateTryGetFuncActionArgs(typeArgs) == TryGetFuncActionArgsResult.Valid)
             {
-                return (actionType = DelegateHelpers.GetActionType(typeArgs)) != null;
+                return (actionType = DelegateBuilder.GetActionType(typeArgs)) != null;
             }
 
             actionType = null;
@@ -514,7 +515,7 @@ namespace System.Linq.Expressions
         {
             if (ValidateTryGetFuncActionArgs(typeArgs) == TryGetFuncActionArgsResult.Valid)
             {
-                return (funcType = DelegateHelpers.GetFuncType(typeArgs)) != null;
+                return (funcType = DelegateBuilder.GetFuncType(typeArgs)) != null;
             }
 
             funcType = null;
