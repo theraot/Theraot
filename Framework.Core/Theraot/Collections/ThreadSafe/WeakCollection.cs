@@ -1,22 +1,26 @@
 ﻿// Needed for Workaround
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
+
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Theraot.Threading;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    [System.Diagnostics.DebuggerNonUserCode]
-    [System.Diagnostics.DebuggerDisplay("Count={Count}")]
+    [DebuggerNonUserCode]
+    [DebuggerDisplay("Count={Count}")]
     public class WeakCollection<T, TNeedle> : ICollection<T>
         where T : class
         where TNeedle : WeakNeedle<T>, new()
     {
         private readonly IEqualityComparer<T> _comparer;
         private readonly SafeCollection<TNeedle> _wrapped;
-        private StructNeedle<WeakNeedle<EventHandler>> _eventHandler;
+        private WeakNeedle<EventHandler> _eventHandler;
 
         public WeakCollection()
             : this(null, true)
@@ -50,17 +54,17 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        ~WeakCollection()
-        {
-            UnRegisterForAutoRemoveDeadItemsExtracted();
-        }
-
         public bool AutoRemoveDeadItems
         {
             get => _eventHandler.IsAlive;
 
             set
             {
+                if (value == _eventHandler.IsAlive)
+                {
+                    return;
+                }
+
                 if (value)
                 {
                     RegisterForAutoRemoveDeadItems();
@@ -100,16 +104,6 @@ namespace Theraot.Collections.ThreadSafe
             return _wrapped.Where(check).Any();
         }
 
-        public bool Contains(Predicate<T> itemCheck)
-        {
-            if (itemCheck == null)
-            {
-                throw new ArgumentNullException(nameof(itemCheck));
-            }
-            var check = Check(itemCheck);
-            return _wrapped.Where(check).Any();
-        }
-
         public void CopyTo(T[] array, int arrayIndex)
         {
             Extensions.CanCopyTo(Count, array, arrayIndex);
@@ -127,7 +121,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
@@ -140,7 +134,24 @@ namespace Theraot.Collections.ThreadSafe
                 removed.Free();
                 return true;
             }
+
             return false;
+        }
+
+        ~WeakCollection()
+        {
+            UnRegisterForAutoRemoveDeadItemsExtracted();
+        }
+
+        public bool Contains(Predicate<T> itemCheck)
+        {
+            if (itemCheck == null)
+            {
+                throw new ArgumentNullException(nameof(itemCheck));
+            }
+
+            var check = Check(itemCheck);
+            return _wrapped.Where(check).Any();
         }
 
         public int RemoveDeadItems()
@@ -163,6 +174,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     yield return value;
                 }
+
                 removed.Free();
             }
         }
@@ -190,6 +202,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     yield return value;
                 }
+
                 removed.Free();
             }
         }
@@ -202,6 +215,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return itemCheck(value);
                 }
+
                 return false;
             };
         }
@@ -214,6 +228,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return _comparer.Equals(item, value);
                 }
+
                 return false;
             };
         }
@@ -234,23 +249,14 @@ namespace Theraot.Collections.ThreadSafe
         private bool RegisterForAutoRemoveDeadItemsExtracted()
         {
             var result = false;
-            EventHandler eventHandler;
-            if (_eventHandler.Value == null)
+            var eventHandler = _eventHandler.Value;
+            if (eventHandler == null)
             {
                 eventHandler = GarbageCollected;
                 _eventHandler = new WeakNeedle<EventHandler>(eventHandler);
                 result = true;
             }
-            else
-            {
-                eventHandler = _eventHandler.Value.Value;
-                if (!_eventHandler.IsAlive)
-                {
-                    eventHandler = GarbageCollected;
-                    _eventHandler.Value = eventHandler;
-                    result = true;
-                }
-            }
+
             GCMonitor.Collected += eventHandler;
             return result;
         }
@@ -265,12 +271,13 @@ namespace Theraot.Collections.ThreadSafe
 
         private bool UnRegisterForAutoRemoveDeadItemsExtracted()
         {
-            if (_eventHandler.Value.Retrieve(out var eventHandler))
+            if (_eventHandler.Retrieve(out var eventHandler))
             {
                 GCMonitor.Collected -= eventHandler;
                 _eventHandler.Value = null;
                 return true;
             }
+
             _eventHandler.Value = null;
             return false;
         }

@@ -207,14 +207,7 @@ namespace Theraot.Threading
                 throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
             _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
-            if (dueTime == -1)
-            {
-                _targetTime = -1;
-            }
-            else
-            {
-                _targetTime = _startTime + dueTime;
-            }
+            _targetTime = dueTime == -1 ? (long)-1 : _startTime + dueTime;
             _wrapped = Timer.GetTimer(Finish, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
         }
 
