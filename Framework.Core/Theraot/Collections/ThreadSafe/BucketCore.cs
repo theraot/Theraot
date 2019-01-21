@@ -1,4 +1,4 @@
-#pragma warning disable CA2235 // Mark all non-serializable fields
+﻿#pragma warning disable CA2235 // Mark all non-serializable fields
 
 using System;
 using System.Collections;

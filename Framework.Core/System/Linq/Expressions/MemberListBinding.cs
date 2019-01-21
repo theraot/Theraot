@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+Ôªø#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -95,9 +95,9 @@ namespace System.Linq.Expressions
     public sealed class MemberListBinding : MemberBinding
     {
         internal MemberListBinding(MemberInfo member, ReadOnlyCollection<ElementInit> initializers)
-#pragma warning disable CS0618 // El tipo o el miembro est·n obsoletos
+#pragma warning disable CS0618 // El tipo o el miembro est√°n obsoletos
             : base(MemberBindingType.ListBinding, member)
-#pragma warning restore CS0618 // El tipo o el miembro est·n obsoletos
+#pragma warning restore CS0618 // El tipo o el miembro est√°n obsoletos
         {
             Initializers = initializers;
         }

@@ -1,6 +1,7 @@
 ﻿#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
 
 using System.Runtime.CompilerServices;
+using Theraot;
 
 namespace System.Collections.Generic
 {
@@ -13,6 +14,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException(nameof(dictionary));
             }
+
             return dictionary.TryGetValue(key, out var value) ? value : default;
         }
 
@@ -23,6 +25,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException(nameof(dictionary));
             }
+
             return dictionary.TryGetValue(key, out var value) ? value : defaultValue;
         }
 
@@ -33,10 +36,12 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException(nameof(dictionary));
             }
+
             if (dictionary.TryGetValue(key, out value) && dictionary.Remove(key))
             {
                 return true;
             }
+
             value = default;
             return false;
         }
@@ -48,6 +53,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException(nameof(dictionary));
             }
+
             try
             {
                 dictionary.Add(key, value);
@@ -55,7 +61,7 @@ namespace System.Collections.Generic
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
                 return false;
             }
         }

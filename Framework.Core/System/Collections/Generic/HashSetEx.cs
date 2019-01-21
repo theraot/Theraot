@@ -2,9 +2,9 @@
 
 using System.Diagnostics;
 using System.Runtime.Serialization;
+using Theraot;
 
 #if NET35
-
 using System.Runtime.CompilerServices;
 
 #endif
@@ -53,12 +53,11 @@ namespace System.Collections.Generic
         protected HashSetEx(SerializationInfo info, StreamingContext context)
 #endif
         {
-            Theraot.No.Op(info);
-            Theraot.No.Op(context);
+            No.Op(info);
+            No.Op(context);
         }
 
 #if NET35
-
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         bool ISet<T>.Add(T item)
         {

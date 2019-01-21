@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+Ôªø#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -129,9 +129,9 @@ namespace System.Linq.Expressions
         private readonly HashableReadOnlyCollection<MemberBinding> _bindingsAsReadOnlyCollection;
 
         internal MemberMemberBinding(MemberInfo member, MemberBinding[] bindings)
-#pragma warning disable CS0618 // El tipo o el miembro est·n obsoletos
+#pragma warning disable CS0618 // El tipo o el miembro est√°n obsoletos
             : base(MemberBindingType.MemberBinding, member)
-#pragma warning restore CS0618 // El tipo o el miembro est·n obsoletos
+#pragma warning restore CS0618 // El tipo o el miembro est√°n obsoletos
         {
             _bindings = bindings;
             _bindingsAsReadOnlyCollection = HashableReadOnlyCollection.Create(_bindings);

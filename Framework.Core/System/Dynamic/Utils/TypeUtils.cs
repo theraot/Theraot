@@ -1,4 +1,4 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -14,11 +14,14 @@ namespace System.Dynamic.Utils
     internal static class TypeUtils
     {
         private static readonly Type[] _arrayAssignableInterfaces = typeof(int[]).GetInterfaces()
-         .Where(i => i.IsGenericType)
-         .Select(i => i.GetGenericTypeDefinition())
-         .ToArray();
+            .Where(i => i.IsGenericType)
+            .Select(i => i.GetGenericTypeDefinition())
+            .ToArray();
 
-        internal static bool AreEquivalent(Type t1, Type t2) => t1 != null && t1 == t2;
+        internal static bool AreEquivalent(Type t1, Type t2)
+        {
+            return t1 != null && t1 == t2;
+        }
 
         internal static Type FindGenericType(Type definition, Type type)
         {
@@ -28,6 +31,7 @@ namespace System.Dynamic.Utils
                 {
                     return type;
                 }
+
                 if (definition.IsInterface)
                 {
                     foreach (var interfaceType in type.GetInterfaces())
@@ -39,8 +43,10 @@ namespace System.Dynamic.Utils
                         }
                     }
                 }
+
                 type = type.BaseType;
             }
+
             return null;
         }
 
@@ -48,13 +54,15 @@ namespace System.Dynamic.Utils
         {
             do
             {
-                var result = type.GetStaticMethodInternal(name, new[] { type });
+                var result = type.GetStaticMethodInternal(name, new[] {type});
                 if (result?.IsSpecialName == true && !result.ContainsGenericParameters)
                 {
                     return result;
                 }
+
                 type = type.BaseType;
             } while (type != null);
+
             return null;
         }
 
@@ -64,10 +72,12 @@ namespace System.Dynamic.Utils
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             if (types == null)
             {
                 throw new ArgumentNullException(nameof(types));
             }
+
             // Don't use BindingFlags.Static
             foreach (var method in type.GetMethods())
             {
@@ -76,6 +86,7 @@ namespace System.Dynamic.Utils
                     return method;
                 }
             }
+
             return null;
         }
 
@@ -89,6 +100,7 @@ namespace System.Dynamic.Utils
                     return method;
                 }
             }
+
             return null;
         }
 
@@ -98,10 +110,12 @@ namespace System.Dynamic.Utils
             {
                 return true;
             }
+
             if (right.IsInterface && !left.IsValueType)
             {
                 return true;
             }
+
             if (!left.IsValueType && !right.IsValueType && (left.IsReferenceAssignableFromInternal(right) || right.IsReferenceAssignableFromInternal(left)))
             {
                 return true;
@@ -111,6 +125,7 @@ namespace System.Dynamic.Utils
             {
                 return false;
             }
+
             var notNullable = left.GetNonNullable();
             return notNullable == typeof(bool) || notNullable.IsNumeric() || notNullable.IsEnum;
         }
@@ -121,10 +136,12 @@ namespace System.Dynamic.Utils
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (target == null)
             {
                 throw new ArgumentNullException(nameof(target));
             }
+
             // void -> void conversion is handled elsewhere
             // (it's an identity conversion)
             // All other void conversions are disallowed.
@@ -132,6 +149,7 @@ namespace System.Dynamic.Utils
             {
                 return false;
             }
+
             var nonNullableSource = source.GetNonNullable();
             var nonNullableTarget = target.GetNonNullable();
             // Down conversion
@@ -139,21 +157,25 @@ namespace System.Dynamic.Utils
             {
                 return true;
             }
+
             // Up conversion
             if (nonNullableTarget.IsAssignableFrom(nonNullableSource))
             {
                 return true;
             }
+
             // Interface conversion
             if (source.IsInterface || target.IsInterface)
             {
                 return true;
             }
+
             // Variant delegate conversion
             if (IsLegalExplicitVariantDelegateConversion(source, target))
             {
                 return true;
             }
+
             // Object conversion handled by assignable above.
             return (source.IsArray || target.IsArray) && StrictHasReferenceConversionTo(source, target, true);
         }
@@ -167,6 +189,7 @@ namespace System.Dynamic.Utils
             {
                 return false;
             }
+
             var nonNullableSource = source.GetNonNullable();
             var nonNullableTarget = target.GetNonNullable();
             // Down conversion
@@ -174,21 +197,25 @@ namespace System.Dynamic.Utils
             {
                 return true;
             }
+
             // Up conversion
             if (nonNullableTarget.IsAssignableFrom(nonNullableSource))
             {
                 return true;
             }
+
             // Interface conversion
             if (source.IsInterface || target.IsInterface)
             {
                 return true;
             }
+
             // Variant delegate conversion
             if (IsLegalExplicitVariantDelegateConversion(source, target))
             {
                 return true;
             }
+
             // Object conversion handled by assignable above.
             return (source.IsArray || target.IsArray) && StrictHasReferenceConversionToInternal(source, target, true);
         }
@@ -199,6 +226,7 @@ namespace System.Dynamic.Utils
             {
                 return false;
             }
+
             // If we have an interface and a reference type then we can do
             // reference equality.
             // If we have two reference types and one is assignable to the
@@ -215,10 +243,12 @@ namespace System.Dynamic.Utils
             {
                 return false;
             }
+
             if (type.GetArrayRank() != target.GetArrayRank())
             {
                 return false;
             }
+
             return type.GetElementType().IsAssignableToInternal(target.GetElementType());
         }
 
@@ -228,6 +258,7 @@ namespace System.Dynamic.Utils
             {
                 return false;
             }
+
             return
                 (
                     target.IsGenericInstanceOf(typeof(IList<>))
@@ -248,10 +279,12 @@ namespace System.Dynamic.Utils
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             if (target == null)
             {
                 throw new ArgumentNullException(nameof(target));
             }
+
             return type.IsAssignableToInternal(target);
         }
 
@@ -281,6 +314,7 @@ namespace System.Dynamic.Utils
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             foreach (var currentInterface in type.GetInterfaces())
             {
                 if (currentInterface.IsGenericInstanceOf(interfaceGenericTypeDefinition))
@@ -288,6 +322,7 @@ namespace System.Dynamic.Utils
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -297,6 +332,7 @@ namespace System.Dynamic.Utils
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             foreach (var currentInterface in type.GetInterfaces())
             {
                 if (currentInterface.IsGenericTypeDefinition)
@@ -308,6 +344,7 @@ namespace System.Dynamic.Utils
                     }
                 }
             }
+
             return false;
         }
 
@@ -317,6 +354,7 @@ namespace System.Dynamic.Utils
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             foreach (var currentInterface in type.GetInterfaces())
             {
                 if (currentInterface.IsGenericInstanceOf(interfaceGenericTypeDefinition))
@@ -325,6 +363,7 @@ namespace System.Dynamic.Utils
                     return true;
                 }
             }
+
             interfaceType = null;
             return false;
         }
@@ -335,6 +374,7 @@ namespace System.Dynamic.Utils
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             var implementedInterfaces = type.GetInterfaces();
             foreach (var currentInterface in interfaceGenericTypeDefinitions)
             {
@@ -345,6 +385,7 @@ namespace System.Dynamic.Utils
                     return true;
                 }
             }
+
             interfaceType = null;
             return false;
         }
@@ -355,6 +396,7 @@ namespace System.Dynamic.Utils
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             foreach (var currentInterface in type.GetInterfaces())
             {
                 if (currentInterface == interfaceType)
@@ -362,6 +404,7 @@ namespace System.Dynamic.Utils
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -371,6 +414,7 @@ namespace System.Dynamic.Utils
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             foreach (var currentInterface in type.GetInterfaces())
             {
                 if (Array.Exists(interfaceTypes, item => currentInterface == item))
@@ -378,6 +422,7 @@ namespace System.Dynamic.Utils
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -387,6 +432,7 @@ namespace System.Dynamic.Utils
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             var implementedInterfaces = type.GetInterfaces();
             foreach (var currentInterface in interfaceTypes)
             {
@@ -397,6 +443,7 @@ namespace System.Dynamic.Utils
                     return true;
                 }
             }
+
             interfaceType = null;
             return false;
         }
@@ -416,6 +463,7 @@ namespace System.Dynamic.Utils
             {
                 return source.GetNonNullable().IsImplicitlyConvertibleToInternal(target.GetNonNullable());
             }
+
             return false;
         }
 
@@ -430,10 +478,12 @@ namespace System.Dynamic.Utils
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (target == null)
             {
                 throw new ArgumentNullException(nameof(target));
             }
+
             // There *might* be a legal conversion from a generic delegate type S to generic delegate type  T,
             // provided all of the follow are true:
             //   o Both types are constructed generic types of the same generic delegate type, D<X1,... Xk>.
@@ -447,11 +497,13 @@ namespace System.Dynamic.Utils
             {
                 return false;
             }
+
             var genericDelegate = source.GetGenericTypeDefinition();
             if (target.GetGenericTypeDefinition() != genericDelegate)
             {
                 return false;
             }
+
             var genericParameters = genericDelegate.GetGenericArguments();
             var sourceArguments = source.GetGenericArguments();
             var destArguments = target.GetGenericArguments();
@@ -463,11 +515,13 @@ namespace System.Dynamic.Utils
                 {
                     continue;
                 }
+
                 var genericParameter = genericParameters[index];
                 if (PrivateIsInvariant(genericParameter))
                 {
                     return false;
                 }
+
                 if (PrivateIsCovariant(genericParameter))
                 {
                     if (!sourceArgument.HasReferenceConversionToInternal(destArgument))
@@ -480,6 +534,7 @@ namespace System.Dynamic.Utils
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -489,10 +544,12 @@ namespace System.Dynamic.Utils
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return type.IsReferenceAssignableFromInternal(source);
         }
 
@@ -503,6 +560,7 @@ namespace System.Dynamic.Utils
             {
                 return true;
             }
+
             return !type.IsValueType
                    && !source.IsValueType
                    && type.IsAssignableFrom(source);
@@ -532,24 +590,29 @@ namespace System.Dynamic.Utils
                 // Can this happen?
                 return false;
             }
+
             if (targetType.IsReferenceAssignableFromInternal(instanceType))
             {
                 return true;
             }
+
             if (instanceType.IsValueType)
             {
                 if (targetType.IsReferenceAssignableFromInternal(typeof(object)))
                 {
                     return true;
                 }
+
                 if (targetType.IsReferenceAssignableFromInternal(typeof(ValueType)))
                 {
                     return true;
                 }
+
                 if (instanceType.IsEnum && targetType.IsReferenceAssignableFromInternal(typeof(Enum)))
                 {
                     return true;
                 }
+
                 // A call to an interface implemented by a struct is legal whether the struct has
                 // been boxed or not.
                 if (targetType.IsInterface)
@@ -563,6 +626,7 @@ namespace System.Dynamic.Utils
                     }
                 }
             }
+
             return false;
         }
 
@@ -572,11 +636,13 @@ namespace System.Dynamic.Utils
             {
                 return false;
             }
+
             var parameters = method.GetParameters();
             if (parameters.Length != argTypes.Length)
             {
                 return false;
             }
+
             for (var index = 0; index < parameters.Length; index++)
             {
                 if (!IsReferenceAssignableFromInternal(parameters[index].ParameterType, argTypes[index]))
@@ -584,10 +650,14 @@ namespace System.Dynamic.Utils
                     return false;
                 }
             }
+
             return true;
         }
 
-        internal static void ValidateType(Type type, string paramName) => ValidateType(type, paramName, false, false);
+        internal static void ValidateType(Type type, string paramName)
+        {
+            ValidateType(type, paramName, false, false);
+        }
 
         internal static void ValidateType(Type type, string paramName, bool allowByRef, bool allowPointer)
         {
@@ -628,11 +698,13 @@ namespace System.Dynamic.Utils
             {
                 return false;
             }
+
             var targetParams = target.GetGenericArguments();
             if (targetParams.Length != 1)
             {
                 return false;
             }
+
             var targetGen = target.GetGenericTypeDefinition();
             foreach (var currentInterface in _arrayAssignableInterfaces)
             {
@@ -641,6 +713,7 @@ namespace System.Dynamic.Utils
                     return StrictHasReferenceConversionToInternal(source.GetElementType(), targetParams[0], false);
                 }
             }
+
             return false;
         }
 
@@ -650,11 +723,13 @@ namespace System.Dynamic.Utils
             {
                 return false;
             }
+
             var sourceParams = source.GetGenericArguments();
             if (sourceParams.Length != 1)
             {
                 return false;
             }
+
             var sourceGen = source.GetGenericTypeDefinition();
             foreach (var currentInterface in _arrayAssignableInterfaces)
             {
@@ -663,6 +738,7 @@ namespace System.Dynamic.Utils
                     return StrictHasReferenceConversionToInternal(sourceParams[0], target.GetElementType(), false);
                 }
             }
+
             return false;
         }
 
@@ -692,10 +768,12 @@ namespace System.Dynamic.Utils
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (target == null)
             {
                 throw new ArgumentNullException(nameof(target));
             }
+
             return source.StrictHasReferenceConversionToInternal(target, skipNonArray);
         }
 
@@ -705,10 +783,12 @@ namespace System.Dynamic.Utils
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (target == null)
             {
                 throw new ArgumentNullException(nameof(target));
             }
+
             // HasReferenceConversionTo was both too strict and too lax. It was too strict in prohibiting
             // some valid conversions involving arrays, and too lax in allowing casts between interfaces
             // and sealed classes that don't implement them. Unfortunately fixing the lax cases would be
@@ -725,11 +805,13 @@ namespace System.Dynamic.Utils
                     {
                         return false;
                     }
+
                     // ReSharper disable once PossibleNullReferenceException
                     if (target.IsValueType)
                     {
                         return false;
                     }
+
                     // Includes to case of either being typeof(object)
                     if
                     (
@@ -739,9 +821,10 @@ namespace System.Dynamic.Utils
                     {
                         return true;
                     }
+
                     if (source.IsInterface)
                     {
-                        if (target.IsInterface || (target.IsClass && !target.IsSealed))
+                        if (target.IsInterface || target.IsClass && !target.IsSealed)
                         {
                             return true;
                         }
@@ -751,6 +834,7 @@ namespace System.Dynamic.Utils
                         return true;
                     }
                 }
+
                 if (source.IsArray)
                 {
                     if (target.IsArray)
@@ -759,6 +843,7 @@ namespace System.Dynamic.Utils
                         {
                             return false;
                         }
+
                         source = source.GetElementType();
                         target = target.GetElementType();
                         skipNonArray = false;
@@ -774,6 +859,7 @@ namespace System.Dynamic.Utils
                     {
                         return true;
                     }
+
                     return IsImplicitReferenceConversion(typeof(Array), source);
                 }
                 else

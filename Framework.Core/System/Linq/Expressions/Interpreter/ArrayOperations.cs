@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 #pragma warning disable CA1305 // Specify IFormatProvider
 

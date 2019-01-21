@@ -3,6 +3,7 @@
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using Theraot;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
 
@@ -11,10 +12,10 @@ namespace System.Collections.Generic
     [Serializable]
     public class SortedSet<T> : ISet<T>, ICollection, ISerializable, IDeserializationCallback
     {
+        private readonly AVLTree<T, T> _wrapped;
 
         [NonSerialized]
         private SerializationInfo _serializationInfo;
-        private readonly AVLTree<T, T> _wrapped;
 
         public SortedSet()
         {
@@ -56,19 +57,36 @@ namespace System.Collections.Generic
 
         protected SortedSet(SerializationInfo info, StreamingContext context)
         {
-            Theraot.No.Op(context);
+            No.Op(context);
             _serializationInfo = info;
         }
 
         public IComparer<T> Comparer { get; private set; }
-
-        public int Count => GetCount();
         public T Max => GetMax();
         public T Min => GetMin();
-
-        bool ICollection<T>.IsReadOnly => false;
         bool ICollection.IsSynchronized => false;
         object ICollection.SyncRoot => this;
+
+        public void CopyTo(Array array, int index)
+        {
+            Extensions.CanCopyTo(Count, array, index);
+            this.DeprecatedCopyTo(array, index);
+        }
+
+        void IDeserializationCallback.OnDeserialization(object sender)
+        {
+            OnDeserialization(sender);
+        }
+
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            GetObjectData(info, context);
+        }
+
+        public int Count => GetCount();
+
+        bool ICollection<T>.IsReadOnly => false;
 
         public bool Add(T item)
         {
@@ -85,28 +103,10 @@ namespace System.Collections.Generic
             return _wrapped.Get(item) != null;
         }
 
-        public void CopyTo(T[] array)
-        {
-            Extensions.CanCopyTo(Count, array);
-            Extensions.CopyTo(this, array);
-        }
-
         public void CopyTo(T[] array, int index)
         {
             Extensions.CanCopyTo(Count, array, index);
             Extensions.CopyTo(this, array, index);
-        }
-
-        public void CopyTo(T[] array, int index, int count)
-        {
-            Extensions.CanCopyTo(array, index, count);
-            Extensions.CopyTo(this, array, index, count);
-        }
-
-        public void CopyTo(Array array, int index)
-        {
-            Extensions.CanCopyTo(Count, array, index);
-            this.DeprecatedCopyTo(array, index);
         }
 
         public void ExceptWith(IEnumerable<T> other)
@@ -117,15 +117,6 @@ namespace System.Collections.Generic
         public IEnumerator<T> GetEnumerator()
         {
             return GetEnumeratorExtracted();
-        }
-
-        public virtual SortedSet<T> GetViewBetween(T lowerValue, T upperValue)
-        {
-            if (Comparer.Compare(lowerValue, upperValue) <= 0)
-            {
-                return new SortedSubSet(this, lowerValue, upperValue);
-            }
-            throw new ArgumentException("lowerBound is greater than upperBound.");
         }
 
         public virtual void IntersectWith(IEnumerable<T> other)
@@ -163,16 +154,6 @@ namespace System.Collections.Generic
             return RemoveExtracted(item);
         }
 
-        public int RemoveWhere(Predicate<T> match)
-        {
-            return Extensions.RemoveWhere(this, match);
-        }
-
-        public IEnumerable<T> Reverse()
-        {
-            return Enumerable.Reverse(this);
-        }
-
         public bool SetEquals(IEnumerable<T> other)
         {
             return Extensions.SetEquals(this, other);
@@ -186,6 +167,48 @@ namespace System.Collections.Generic
         public void UnionWith(IEnumerable<T> other)
         {
             Extensions.UnionWith(this, other);
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            AddExtracted(item);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public void CopyTo(T[] array)
+        {
+            Extensions.CanCopyTo(Count, array);
+            Extensions.CopyTo(this, array);
+        }
+
+        public void CopyTo(T[] array, int index, int count)
+        {
+            Extensions.CanCopyTo(array, index, count);
+            Extensions.CopyTo(this, array, index, count);
+        }
+
+        public virtual SortedSet<T> GetViewBetween(T lowerValue, T upperValue)
+        {
+            if (Comparer.Compare(lowerValue, upperValue) <= 0)
+            {
+                return new SortedSubSet(this, lowerValue, upperValue);
+            }
+
+            throw new ArgumentException("lowerBound is greater than upperBound.");
+        }
+
+        public int RemoveWhere(Predicate<T> match)
+        {
+            return Extensions.RemoveWhere(this, match);
+        }
+
+        public IEnumerable<T> Reverse()
+        {
+            return Enumerable.Reverse(this);
         }
 
         protected virtual bool AddExtracted(T item)
@@ -210,10 +233,12 @@ namespace System.Collections.Generic
             {
                 return default;
             }
+
             while (node.Right != null)
             {
                 node = node.Right;
             }
+
             return node.Key;
         }
 
@@ -224,38 +249,43 @@ namespace System.Collections.Generic
             {
                 return default;
             }
+
             while (node.Left != null)
             {
                 node = node.Left;
             }
+
             return node.Key;
         }
 
         protected virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            Theraot.No.Op(context);
+            No.Op(context);
             if (info == null)
             {
                 throw new ArgumentNullException(nameof(info));
             }
+
             info.AddValue(nameof(Comparer), Comparer, typeof(IComparer<T>));
             info.AddValue(nameof(Count), Count);
             if (Count > 0)
             {
                 info.AddValue("Items", this.ToArray(), typeof(T[]));
             }
+
             info.AddValue("Version", 0);
         }
 
         protected virtual void OnDeserialization(object sender)
         {
-            Theraot.No.Op(sender);
+            No.Op(sender);
             if (Comparer == null)
             {
                 if (_serializationInfo == null)
                 {
                     throw new SerializationException();
                 }
+
                 Comparer = (IComparer<T>)_serializationInfo.GetValue(nameof(Comparer), typeof(IComparer<T>));
                 var count = _serializationInfo.GetInt32(nameof(Count));
                 if (count != 0)
@@ -265,16 +295,19 @@ namespace System.Collections.Generic
                     {
                         throw new SerializationException();
                     }
+
                     foreach (var item in value)
                     {
                         Add(item);
                     }
                 }
+
                 _serializationInfo.GetInt32("Version");
                 if (Count != count)
                 {
                     throw new SerializationException();
                 }
+
                 _serializationInfo = null;
             }
         }
@@ -282,27 +315,6 @@ namespace System.Collections.Generic
         protected virtual bool RemoveExtracted(T item)
         {
             return _wrapped.Remove(item);
-        }
-
-        void ICollection<T>.Add(T item)
-        {
-            AddExtracted(item);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            GetObjectData(info, context);
-        }
-
-        void IDeserializationCallback.OnDeserialization(object sender)
-        {
-            OnDeserialization(sender);
         }
 
         [Serializable]
@@ -331,6 +343,7 @@ namespace System.Collections.Generic
                 {
                     return false;
                 }
+
                 return _wrapped.Contains(item);
             }
 
@@ -340,14 +353,17 @@ namespace System.Collections.Generic
                 {
                     throw new ArgumentException("The lowerValue is bigger than upperValue");
                 }
+
                 if (!InRange(lowerValue))
                 {
                     throw new ArgumentOutOfRangeException(nameof(lowerValue));
                 }
+
                 if (!InRange(upperValue))
                 {
                     throw new ArgumentOutOfRangeException(nameof(upperValue));
                 }
+
                 return new SortedSubSet(_wrapped, lowerValue, upperValue);
             }
 
@@ -357,6 +373,7 @@ namespace System.Collections.Generic
                 {
                     throw new ArgumentNullException(nameof(other));
                 }
+
                 var slice = new SortedSet<T>(this);
                 slice.IntersectWith(other);
                 Clear();
@@ -369,6 +386,7 @@ namespace System.Collections.Generic
                 {
                     throw new ArgumentOutOfRangeException(nameof(item));
                 }
+
                 return _wrapped.AddExtracted(item);
             }
 
@@ -389,6 +407,7 @@ namespace System.Collections.Generic
                 {
                     return default;
                 }
+
                 return bound.Key;
             }
 
@@ -399,6 +418,7 @@ namespace System.Collections.Generic
                 {
                     return default;
                 }
+
                 return bound.Key;
             }
 
@@ -408,6 +428,7 @@ namespace System.Collections.Generic
                 {
                     throw new ArgumentNullException(nameof(info));
                 }
+
                 info.AddValue(nameof(Max), _lower, typeof(T));
                 info.AddValue(nameof(Min), _upper, typeof(T));
                 info.AddValue("lBoundActive", true);
@@ -421,6 +442,7 @@ namespace System.Collections.Generic
                 {
                     return false;
                 }
+
                 return _wrapped.RemoveExtracted(item);
             }
 

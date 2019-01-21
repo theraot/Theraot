@@ -25,6 +25,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException(nameof(collection));
             }
+
             _wrapped = new NullAwareDictionary<T, object>();
             foreach (var item in collection)
             {
@@ -43,6 +44,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException(nameof(collection));
             }
+
             _wrapped = new NullAwareDictionary<T, object>(comparer);
             foreach (var item in collection)
             {
@@ -58,19 +60,27 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException(nameof(info));
             }
+
             _wrapped = new NullAwareDictionary<T, object>(info.GetValue("dictionary", typeof(KeyValuePair<T, object>[])) as KeyValuePair<T, object>[]);
         }
 
         public IEqualityComparer<T> Comparer => _wrapped.Comparer;
 
+        [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+            {
+                throw new ArgumentNullException(nameof(info));
+            }
+
+            _wrapped.Deconstruct(out var dictionary);
+            info.AddValue(nameof(dictionary), dictionary);
+        }
+
         public int Count => _wrapped.Count;
 
         public bool IsReadOnly => false;
-
-        public static IEqualityComparer<HashSet<T>> CreateSetComparer()
-        {
-            return HashSetEqualityComparer.Instance;
-        }
 
         public bool Add(T item)
         {
@@ -78,6 +88,7 @@ namespace System.Collections.Generic
             {
                 return false;
             }
+
             _wrapped[item] = null;
             return true;
         }
@@ -94,67 +105,24 @@ namespace System.Collections.Generic
             return _wrapped.ContainsKey(item);
         }
 
-        public void CopyTo(T[] array)
-        {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-            if (Count > array.Length)
-            {
-                throw new ArgumentException("the Count property is larger than the size of the destination array.");
-            }
-            _wrapped.Keys.CopyTo(array, 0);
-        }
-
         public void CopyTo(T[] array, int arrayIndex)
         {
             if (array == null)
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             if (arrayIndex < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex), "arrayIndex < 0");
             }
+
             if (Count > array.Length - arrayIndex)
             {
                 throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
+
             _wrapped.Keys.CopyTo(array, arrayIndex);
-        }
-
-        public void CopyTo(T[] array, int arrayIndex, int count)
-        {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-            if (arrayIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
-            }
-            if (count < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(count), "Non-negative number is required.");
-            }
-            if (count > array.Length - arrayIndex)
-            {
-                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
-            }
-
-            var copiedCount = 0;
-            var currentIndex = arrayIndex;
-            foreach (var item in this)
-            {
-                array[currentIndex] = item;
-                currentIndex++;
-                copiedCount++;
-                if (copiedCount >= count)
-                {
-                    break;
-                }
-            }
         }
 
         public void ExceptWith(IEnumerable<T> other)
@@ -163,6 +131,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             foreach (var item in other)
             {
                 _wrapped.Remove(item);
@@ -174,23 +143,13 @@ namespace System.Collections.Generic
             return new Enumerator(this);
         }
 
-        [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            if (info == null)
-            {
-                throw new ArgumentNullException(nameof(info));
-            }
-            _wrapped.Deconstruct(out var dictionary);
-            info.AddValue(nameof(dictionary), dictionary);
-        }
-
         public void IntersectWith(IEnumerable<T> other)
         {
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             this.IntersectWith(other, _wrapped.Comparer);
         }
 
@@ -220,6 +179,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             foreach (var item in other)
             {
                 if (_wrapped.ContainsKey(item))
@@ -227,6 +187,7 @@ namespace System.Collections.Generic
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -237,17 +198,13 @@ namespace System.Collections.Generic
             return _wrapped.Remove(item);
         }
 
-        public int RemoveWhere(Predicate<T> match)
-        {
-            return Extensions.RemoveWhere(this, match);
-        }
-
         public bool SetEquals(IEnumerable<T> other)
         {
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             var containsCount = 0;
             foreach (var item in ToHashSet(other))
             {
@@ -255,8 +212,10 @@ namespace System.Collections.Generic
                 {
                     return false;
                 }
+
                 containsCount++;
             }
+
             return containsCount == _wrapped.Count;
         }
 
@@ -266,6 +225,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             var tmpSet = new HashSet<T>(other);
             foreach (var item in tmpSet)
             {
@@ -280,18 +240,13 @@ namespace System.Collections.Generic
             }
         }
 
-        public void TrimExcess()
-        {
-            // Should not be static
-            // Empty
-        }
-
         public void UnionWith(IEnumerable<T> other)
         {
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             foreach (var item in other)
             {
                 if (!_wrapped.ContainsKey(item))
@@ -311,12 +266,80 @@ namespace System.Collections.Generic
             return GetEnumerator();
         }
 
+        public static IEqualityComparer<HashSet<T>> CreateSetComparer()
+        {
+            return HashSetEqualityComparer.Instance;
+        }
+
+        public void CopyTo(T[] array)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (Count > array.Length)
+            {
+                throw new ArgumentException("the Count property is larger than the size of the destination array.");
+            }
+
+            _wrapped.Keys.CopyTo(array, 0);
+        }
+
+        public void CopyTo(T[] array, int arrayIndex, int count)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
+            }
+
+            if (count < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count), "Non-negative number is required.");
+            }
+
+            if (count > array.Length - arrayIndex)
+            {
+                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
+            }
+
+            var copiedCount = 0;
+            var currentIndex = arrayIndex;
+            foreach (var item in this)
+            {
+                array[currentIndex] = item;
+                currentIndex++;
+                copiedCount++;
+                if (copiedCount >= count)
+                {
+                    break;
+                }
+            }
+        }
+
+        public int RemoveWhere(Predicate<T> match)
+        {
+            return Extensions.RemoveWhere(this, match);
+        }
+
+        public void TrimExcess()
+        {
+            // Should not be static
+            // Empty
+        }
+
         private bool IsSubsetOf(IEnumerable<T> other, bool proper)
         {
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             var elementCount = 0;
             var matchCount = 0;
             foreach (var item in other)
@@ -327,10 +350,12 @@ namespace System.Collections.Generic
                     matchCount++;
                 }
             }
+
             if (proper)
             {
                 return matchCount == _wrapped.Count && elementCount > _wrapped.Count;
             }
+
             return matchCount == _wrapped.Count;
         }
 
@@ -340,6 +365,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             var elementCount = 0;
             foreach (var item in other)
             {
@@ -349,10 +375,12 @@ namespace System.Collections.Generic
                     return false;
                 }
             }
+
             if (proper)
             {
                 return elementCount < _wrapped.Count;
             }
+
             return true;
         }
 
@@ -363,6 +391,7 @@ namespace System.Collections.Generic
             {
                 return test;
             }
+
             return new HashSet<T>(other, comparer);
         }
 
@@ -388,6 +417,7 @@ namespace System.Collections.Generic
                     {
                         return Current;
                     }
+
                     throw new InvalidOperationException("Call MoveNext first or use IEnumerator<T>");
                 }
             }
@@ -407,6 +437,7 @@ namespace System.Collections.Generic
                     Current = _enumerator.Current.Key;
                     return _valid;
                 }
+
                 return false;
             }
 
@@ -432,10 +463,12 @@ namespace System.Collections.Generic
                 {
                     return true;
                 }
+
                 if (x == null || y == null || x.Count != y.Count)
                 {
                     return false;
                 }
+
                 foreach (var item in x)
                 {
                     if (!y.Contains(item))
@@ -443,6 +476,7 @@ namespace System.Collections.Generic
                         return false;
                     }
                 }
+
                 return true;
             }
 
@@ -456,6 +490,7 @@ namespace System.Collections.Generic
                     {
                         hash ^= comparer.GetHashCode(item);
                     }
+
                     return hash;
                 }
                 catch (NullReferenceException)

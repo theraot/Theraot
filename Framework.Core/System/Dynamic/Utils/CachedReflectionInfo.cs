@@ -27,60 +27,60 @@ namespace System.Linq.Expressions
         private static MethodInfo _stringFormatStringObjectArray;
 
         public static MethodInfo DynamicObjectTryBinaryOperation =>
-                                  _dynamicObjectTryBinaryOperation ??
-                                 (_dynamicObjectTryBinaryOperation = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryBinaryOperation)));
+            _dynamicObjectTryBinaryOperation ??
+            (_dynamicObjectTryBinaryOperation = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryBinaryOperation)));
 
         public static MethodInfo DynamicObjectTryConvert =>
-                                  _dynamicObjectTryConvert ??
-                                 (_dynamicObjectTryConvert = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryConvert)));
+            _dynamicObjectTryConvert ??
+            (_dynamicObjectTryConvert = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryConvert)));
 
         public static MethodInfo DynamicObjectTryCreateInstance =>
-                                  _dynamicObjectTryCreateInstance ??
-                                 (_dynamicObjectTryCreateInstance = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryCreateInstance)));
+            _dynamicObjectTryCreateInstance ??
+            (_dynamicObjectTryCreateInstance = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryCreateInstance)));
 
         public static MethodInfo DynamicObjectTryDeleteIndex =>
-                                  _dynamicObjectTryDeleteIndex ??
-                                 (_dynamicObjectTryDeleteIndex = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryDeleteIndex)));
+            _dynamicObjectTryDeleteIndex ??
+            (_dynamicObjectTryDeleteIndex = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryDeleteIndex)));
 
         public static MethodInfo DynamicObjectTryDeleteMember =>
-                                  _dynamicObjectTryDeleteMember ??
-                                 (_dynamicObjectTryDeleteMember = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryDeleteMember)));
+            _dynamicObjectTryDeleteMember ??
+            (_dynamicObjectTryDeleteMember = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryDeleteMember)));
 
         public static MethodInfo DynamicObjectTryGetIndex =>
-                                  _dynamicObjectTryGetIndex ??
-                                 (_dynamicObjectTryGetIndex = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryGetIndex)));
+            _dynamicObjectTryGetIndex ??
+            (_dynamicObjectTryGetIndex = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryGetIndex)));
 
         public static MethodInfo DynamicObjectTryGetMember =>
-                                  _dynamicObjectTryGetMember ??
-                                 (_dynamicObjectTryGetMember = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryGetMember)));
+            _dynamicObjectTryGetMember ??
+            (_dynamicObjectTryGetMember = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryGetMember)));
 
         public static MethodInfo DynamicObjectTryInvoke =>
-                                  _dynamicObjectTryInvoke ??
-                                 (_dynamicObjectTryInvoke = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryInvoke)));
+            _dynamicObjectTryInvoke ??
+            (_dynamicObjectTryInvoke = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryInvoke)));
 
         public static MethodInfo DynamicObjectTryInvokeMember =>
-                                  _dynamicObjectTryInvokeMember ??
-                                 (_dynamicObjectTryInvokeMember = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryInvokeMember)));
+            _dynamicObjectTryInvokeMember ??
+            (_dynamicObjectTryInvokeMember = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryInvokeMember)));
 
         public static MethodInfo DynamicObjectTrySetIndex =>
-                                  _dynamicObjectTrySetIndex ??
-                                 (_dynamicObjectTrySetIndex = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TrySetIndex)));
+            _dynamicObjectTrySetIndex ??
+            (_dynamicObjectTrySetIndex = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TrySetIndex)));
 
         public static MethodInfo DynamicObjectTrySetMember =>
-                                  _dynamicObjectTrySetMember ??
-                                 (_dynamicObjectTrySetMember = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TrySetMember)));
+            _dynamicObjectTrySetMember ??
+            (_dynamicObjectTrySetMember = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TrySetMember)));
 
         public static MethodInfo DynamicObjectTryUnaryOperation =>
-                                  _dynamicObjectTryUnaryOperation ??
-                                 (_dynamicObjectTryUnaryOperation = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryUnaryOperation)));
+            _dynamicObjectTryUnaryOperation ??
+            (_dynamicObjectTryUnaryOperation = typeof(DynamicObject).GetMethod(nameof(DynamicObject.TryUnaryOperation)));
 
         public static ConstructorInfo InvalidCastExceptionCtorString =>
-                                       _invalidCastExceptionCtorString ??
-                                      (_invalidCastExceptionCtorString = typeof(InvalidCastException).GetConstructor(new[] { typeof(string) }));
+            _invalidCastExceptionCtorString ??
+            (_invalidCastExceptionCtorString = typeof(InvalidCastException).GetConstructor(new[] {typeof(string)}));
 
         public static MethodInfo StringFormatStringObjectArray =>
-                                                                                                                                                                                                                                  _stringFormatStringObjectArray ??
-                                 (_stringFormatStringObjectArray = typeof(string).GetMethod(nameof(string.Format), new[] { typeof(string), typeof(object[]) }));
+            _stringFormatStringObjectArray ??
+            (_stringFormatStringObjectArray = typeof(string).GetMethod(nameof(string.Format), new[] {typeof(string), typeof(object[])}));
     }
 }
 

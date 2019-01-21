@@ -28,6 +28,7 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentOutOfRangeException(nameof(boundedCapacity));
             }
+
             _data = new PrivateData(new FixedSizeQueue<T>(boundedCapacity), boundedCapacity);
         }
 
@@ -37,14 +38,17 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentNullException(nameof(collection));
             }
+
             if (boundedCapacity < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(boundedCapacity));
             }
+
             if (boundedCapacity < collection.Count)
             {
                 throw new ArgumentException("The collection argument contains more items than are allowed by the boundedCapacity.");
             }
+
             _data = new PrivateData(collection, boundedCapacity);
         }
 
@@ -54,12 +58,11 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentNullException(nameof(collection));
             }
+
             _data = new PrivateData(collection, int.MaxValue);
         }
 
         public int BoundedCapacity => Data.Capacity;
-
-        public int Count => Data.Count;
 
         public bool IsAddingCompleted => !Data.CanAdd;
 
@@ -81,9 +84,12 @@ namespace System.Collections.Concurrent
                 {
                     throw new ObjectDisposedException(nameof(BlockingCollection<T>));
                 }
+
                 return data;
             }
         }
+
+        public int Count => Data.Count;
 
         bool ICollection.IsSynchronized
         {
@@ -96,6 +102,27 @@ namespace System.Collections.Concurrent
 
         object ICollection.SyncRoot => throw new NotSupportedException();
 
+        void ICollection.CopyTo(Array array, int index)
+        {
+            Data.CopyTo(array, index);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<T>)this).GetEnumerator();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return Data.GetEnumerator();
+        }
+
         public static int AddToAny(BlockingCollection<T>[] collections, T item)
         {
             return AddToAny(collections, item, CancellationToken.None);
@@ -107,10 +134,12 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentNullException(nameof(collections));
             }
+
             if (collections.Length == 0)
             {
                 throw new ArgumentException("The collections argument is a 0-length array", nameof(collections));
             }
+
             var waitHandles = new WaitHandle[collections.Length + 1];
             for (var index = 0; index < collections.Length; index++)
             {
@@ -119,16 +148,19 @@ namespace System.Collections.Concurrent
                 {
                     throw new ArgumentException("The collections argument contains a null element", nameof(collections));
                 }
+
                 waitHandles[index] = collection.Data.WaitHandle;
                 if (collection.IsAddingCompleted)
                 {
                     throw new ArgumentException("At least one of collections has been marked as complete for adding.", nameof(collections));
                 }
+
                 if (collection.TryAdd(item, 0, cancellationToken))
                 {
                     return index;
                 }
             }
+
             waitHandles[collections.Length] = cancellationToken.WaitHandle;
             while (true)
             {
@@ -141,6 +173,7 @@ namespace System.Collections.Concurrent
                     {
                         throw new ArgumentException("At least one of collections has been marked as complete for adding.", nameof(collections));
                     }
+
                     if (collection.TryAdd(item, 0, cancellationToken))
                     {
                         return index;
@@ -160,10 +193,12 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentNullException(nameof(collections));
             }
+
             if (collections.Length == 0)
             {
                 throw new ArgumentException("The collections argument is a 0-length array", nameof(collections));
             }
+
             var waitHandles = new WaitHandle[collections.Length + 1];
             for (var index = 0; index < collections.Length; index++)
             {
@@ -172,16 +207,19 @@ namespace System.Collections.Concurrent
                 {
                     throw new ArgumentException("The collections argument contains a null element", nameof(collections));
                 }
+
                 waitHandles[index] = collection.Data.WaitHandle;
                 if (collection.IsAddingCompleted)
                 {
                     throw new ArgumentException("At least one of collections has been marked as complete for adding.", nameof(collections));
                 }
+
                 if (collection.TryTake(out item, 0, cancellationToken))
                 {
                     return index;
                 }
             }
+
             waitHandles[collections.Length] = cancellationToken.WaitHandle;
             while (true)
             {
@@ -194,6 +232,7 @@ namespace System.Collections.Concurrent
                     {
                         throw new ArgumentException("At least one of collections has been marked as complete for adding.", nameof(collections));
                     }
+
                     if (collection.TryTake(out item, 0, cancellationToken))
                     {
                         return index;
@@ -223,10 +262,12 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentNullException(nameof(collections));
             }
+
             if (collections.Length == 0)
             {
                 throw new ArgumentException("The collections argument is a 0-length array", nameof(collections));
             }
+
             var waitHandles = new WaitHandle[collections.Length + 1];
             for (var index = 0; index < collections.Length; index++)
             {
@@ -235,16 +276,19 @@ namespace System.Collections.Concurrent
                 {
                     throw new ArgumentException("The collections argument contains a null element", nameof(collections));
                 }
+
                 waitHandles[index] = collection.Data.WaitHandle;
                 if (collection.IsAddingCompleted)
                 {
                     throw new ArgumentException("At least one of collections has been marked as complete for adding.", nameof(collections));
                 }
+
                 if (collection.TryAdd(item, 0, cancellationToken))
                 {
                     return index;
                 }
             }
+
             waitHandles[collections.Length] = cancellationToken.WaitHandle;
             if (millisecondsTimeout == -1)
             {
@@ -259,6 +303,7 @@ namespace System.Collections.Concurrent
                         {
                             throw new ArgumentException("At least one of collections has been marked as complete for adding.", nameof(collections));
                         }
+
                         if (collection.TryAdd(item, 0, cancellationToken))
                         {
                             return index;
@@ -266,6 +311,7 @@ namespace System.Collections.Concurrent
                     }
                 }
             }
+
             var start = ThreadingHelper.TicksNow();
             var remaining = millisecondsTimeout;
             while (true)
@@ -279,10 +325,12 @@ namespace System.Collections.Concurrent
                     {
                         throw new ArgumentException("At least one of collections has been marked as complete for adding.", nameof(collections));
                     }
+
                     if (collection.TryAdd(item, 0, cancellationToken))
                     {
                         return index;
                     }
+
                     remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
                     if (remaining <= 0)
                     {
@@ -313,10 +361,12 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentNullException(nameof(collections));
             }
+
             if (collections.Length == 0)
             {
                 throw new ArgumentException("The collections argument is a 0-length array", nameof(collections));
             }
+
             var waitHandles = new WaitHandle[collections.Length + 1];
             for (var index = 0; index < collections.Length; index++)
             {
@@ -325,16 +375,19 @@ namespace System.Collections.Concurrent
                 {
                     throw new ArgumentException("The collections argument contains a null element", nameof(collections));
                 }
+
                 waitHandles[index] = collection.Data.WaitHandle;
                 if (collection.IsAddingCompleted)
                 {
                     throw new ArgumentException("At least one of collections has been marked as complete for adding.", nameof(collections));
                 }
+
                 if (collection.TryTake(out item, 0, cancellationToken))
                 {
                     return index;
                 }
             }
+
             waitHandles[collections.Length] = cancellationToken.WaitHandle;
             if (millisecondsTimeout == -1)
             {
@@ -349,6 +402,7 @@ namespace System.Collections.Concurrent
                         {
                             throw new ArgumentException("At least one of collections has been marked as complete for adding.", nameof(collections));
                         }
+
                         if (collection.TryTake(out item, 0, cancellationToken))
                         {
                             return index;
@@ -356,6 +410,7 @@ namespace System.Collections.Concurrent
                     }
                 }
             }
+
             var start = ThreadingHelper.TicksNow();
             var remaining = millisecondsTimeout;
             while (true)
@@ -369,10 +424,12 @@ namespace System.Collections.Concurrent
                     {
                         throw new ArgumentException("At least one of collections has been marked as complete for adding.", nameof(collections));
                     }
+
                     if (collection.TryTake(out item, 0, cancellationToken))
                     {
                         return index;
                     }
+
                     remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
                     if (remaining <= 0)
                     {
@@ -400,12 +457,6 @@ namespace System.Collections.Concurrent
         public void CopyTo(T[] array, int index)
         {
             ((ICollection)this).CopyTo(array, index);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         public IEnumerable<T> GetConsumingEnumerable()
@@ -492,29 +543,14 @@ namespace System.Collections.Concurrent
             }
         }
 
-        void ICollection.CopyTo(Array array, int index)
-        {
-            Data.CopyTo(array, index);
-        }
-
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        {
-            return Data.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable<T>)this).GetEnumerator();
-        }
-
         private sealed class PrivateData : IDisposable, IReadOnlyCollection<T>
         {
-            public readonly int Capacity;
             private readonly SemaphoreSlim _addSemaphore;
-            private int _addWaiters;
-            private int _canAdd;
             private readonly IProducerConsumerCollection<T> _collection;
             private readonly SemaphoreSlim _takeSemaphore;
+            public readonly int Capacity;
+            private int _addWaiters;
+            private int _canAdd;
 
             public PrivateData(IProducerConsumerCollection<T> collection, int capacity)
             {
@@ -530,13 +566,7 @@ namespace System.Collections.Concurrent
                 set => Volatile.Write(ref _canAdd, value ? 1 : 0);
             }
 
-            public int Count => _collection.Count;
             public WaitHandle WaitHandle => _addSemaphore.AvailableWaitHandle;
-
-            public void CopyTo(Array array, int index)
-            {
-                _collection.CopyTo(array, index);
-            }
 
             public void Dispose()
             {
@@ -544,9 +574,21 @@ namespace System.Collections.Concurrent
                 _takeSemaphore?.Dispose();
             }
 
+            public int Count => _collection.Count;
+
             public IEnumerator<T> GetEnumerator()
             {
                 return _collection.GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public void CopyTo(Array array, int index)
+            {
+                _collection.CopyTo(array, index);
             }
 
             public T[] ToArray()
@@ -560,6 +602,7 @@ namespace System.Collections.Concurrent
                 {
                     throw new InvalidOperationException("The BlockingCollection<T> has been marked as complete with regards to additions.");
                 }
+
                 cancellationToken.ThrowIfCancellationRequested();
                 Interlocked.Increment(ref _addWaiters);
                 try
@@ -568,11 +611,13 @@ namespace System.Collections.Concurrent
                     {
                         return false;
                     }
+
                     cancellationToken.ThrowIfCancellationRequested();
                     if (!_collection.TryAdd(item))
                     {
                         throw new InvalidOperationException("The underlying collection didn't accept the item.");
                     }
+
                     _takeSemaphore.Release();
                     return true;
                 }
@@ -589,6 +634,7 @@ namespace System.Collections.Concurrent
                 {
                     return false;
                 }
+
                 return TryTake(out item, -1, CancellationToken.None);
             }
 
@@ -600,18 +646,15 @@ namespace System.Collections.Concurrent
                 {
                     return false;
                 }
+
                 cancellationToken.ThrowIfCancellationRequested();
                 if (!_collection.TryTake(out item))
                 {
                     throw new InvalidOperationException("The underlying collection was modified outside this BlockingCollection<T> instance.");
                 }
+
                 _addSemaphore.Release();
                 return true;
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
             }
         }
     }

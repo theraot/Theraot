@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-
 #if LESSTHAN_NET45 || NETSTANDARD1_0
-
 using Theraot.Collections;
 using Theraot.Core;
 
@@ -20,6 +18,7 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if ((partitionerOptions & ~EnumerablePartitionerOptions.NoBuffering) != 0)
             {
                 // We could support NoBuffering, no problem.
@@ -30,6 +29,7 @@ namespace System.Collections.Concurrent
                 // Which also means there are no examples for a dynamic no buffering partition.
                 throw new ArgumentOutOfRangeException(nameof(partitionerOptions));
             }
+
             return new DynamicOrderablePartitioner<TSource>(source);
 #else
             return Partitioner.Create(source, partitionerOptions);
@@ -75,7 +75,9 @@ namespace System.Collections.Concurrent
             {
                 list.Add(Enumerator(index));
             }
+
             return list.AsReadOnly();
+
             IEnumerator<KeyValuePair<long, T>> Enumerator(int index)
             {
                 var subIndex = 0;
@@ -95,7 +97,9 @@ namespace System.Collections.Concurrent
             {
                 list.Add(Enumerator());
             }
+
             return list.AsReadOnly();
+
             IEnumerator<T> Enumerator()
             {
                 foreach (var item in source)

@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CC0091 // Use static method

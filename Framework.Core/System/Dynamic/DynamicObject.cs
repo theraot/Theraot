@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 #pragma warning disable CC0031 // Check for null before calling a delegate
 
@@ -13,59 +13,66 @@ using System.Dynamic.Utils;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
-using static System.Linq.Expressions.CachedReflectionInfo;
 using AstUtils = System.Linq.Expressions.Utils;
+using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Dynamic
 {
     /// <summary>
-    /// <para>
-    /// Provides a simple class that can be inherited from to create an object with dynamic behavior
-    /// at runtime.  Subclasses can override the various binder methods (<see cref="TryGetMember"/>,
-    /// <see cref="TrySetMember"/>, <see cref="TryInvokeMember"/>, etc.) to provide custom behavior
-    /// that will be invoked at runtime.
-    /// </para>
-    /// <para>
-    /// If a method is not overridden then the <see cref="DynamicObject"/> does not directly support
-    /// that behavior and the call site will determine how the binding should be performed.
-    /// </para>
+    ///     <para>
+    ///         Provides a simple class that can be inherited from to create an object with dynamic behavior
+    ///         at runtime.  Subclasses can override the various binder methods (<see cref="TryGetMember" />,
+    ///         <see cref="TrySetMember" />, <see cref="TryInvokeMember" />, etc.) to provide custom behavior
+    ///         that will be invoked at runtime.
+    ///     </para>
+    ///     <para>
+    ///         If a method is not overridden then the <see cref="DynamicObject" /> does not directly support
+    ///         that behavior and the call site will determine how the binding should be performed.
+    ///     </para>
     /// </summary>
     public class DynamicObject : IDynamicMetaObjectProvider
     {
         /// <summary>
-        /// Enables derived types to create a new instance of <see cref="DynamicObject"/>.
+        ///     Enables derived types to create a new instance of <see cref="DynamicObject" />.
         /// </summary>
         /// <remarks>
-        /// <see cref="DynamicObject"/> instances cannot be directly instantiated because they have no
-        /// implementation of dynamic behavior.
+        ///     <see cref="DynamicObject" /> instances cannot be directly instantiated because they have no
+        ///     implementation of dynamic behavior.
         /// </remarks>
         protected DynamicObject()
         {
         }
 
         /// <summary>
-        /// Returns the enumeration of all dynamic member names.
-        /// </summary>
-        /// <returns>The list of dynamic member names.</returns>
-        public virtual IEnumerable<string> GetDynamicMemberNames() => ArrayReservoir<string>.EmptyArray;
-
-        /// <summary>
-        /// Returns the <see cref="DynamicMetaObject" /> responsible for binding operations performed on this object,
-        /// using the virtual methods provided by this class.
+        ///     Returns the <see cref="DynamicMetaObject" /> responsible for binding operations performed on this object,
+        ///     using the virtual methods provided by this class.
         /// </summary>
         /// <param name="parameter">The expression tree representation of the runtime value.</param>
         /// <returns>
-        /// The <see cref="DynamicMetaObject" /> to bind this object.  The object can be encapsulated inside of another
-        /// <see cref="DynamicMetaObject"/> to provide custom behavior for individual actions.
+        ///     The <see cref="DynamicMetaObject" /> to bind this object.  The object can be encapsulated inside of another
+        ///     <see cref="DynamicMetaObject" /> to provide custom behavior for individual actions.
         /// </returns>
-        public virtual DynamicMetaObject GetMetaObject(Expression parameter) => new MetaDynamic(parameter, this);
+        public virtual DynamicMetaObject GetMetaObject(Expression parameter)
+        {
+            return new MetaDynamic(parameter, this);
+        }
 
         /// <summary>
-        /// Provides the implementation of performing a binary operation.  Derived classes can
-        /// override this method to customize behavior.  When not overridden the call site requesting
-        /// the binder determines the behavior.
+        ///     Returns the enumeration of all dynamic member names.
+        /// </summary>
+        /// <returns>The list of dynamic member names.</returns>
+        public virtual IEnumerable<string> GetDynamicMemberNames()
+        {
+            return ArrayReservoir<string>.EmptyArray;
+        }
+
+        /// <summary>
+        ///     Provides the implementation of performing a binary operation.  Derived classes can
+        ///     override this method to customize behavior.  When not overridden the call site requesting
+        ///     the binder determines the behavior.
         /// </summary>
         /// <param name="binder">The binder provided by the call site.</param>
         /// <param name="arg">The right operand for the operation.</param>
@@ -73,31 +80,31 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryBinaryOperation(BinaryOperationBinder binder, object arg, out object result)
         {
-            Theraot.No.Op(binder);
-            Theraot.No.Op(arg);
+            No.Op(binder);
+            No.Op(arg);
             result = null;
             return false;
         }
 
         /// <summary>
-        /// Provides the implementation of converting the <see cref="DynamicObject"/> to another type.
-        /// Derived classes can override this method to customize behavior.  When not overridden the
-        /// call site requesting the binder determines the behavior.
+        ///     Provides the implementation of converting the <see cref="DynamicObject" /> to another type.
+        ///     Derived classes can override this method to customize behavior.  When not overridden the
+        ///     call site requesting the binder determines the behavior.
         /// </summary>
         /// <param name="binder">The binder provided by the call site.</param>
         /// <param name="result">The result of the conversion.</param>
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryConvert(ConvertBinder binder, out object result)
         {
-            Theraot.No.Op(binder);
+            No.Op(binder);
             result = null;
             return false;
         }
 
         /// <summary>
-        /// Provides the implementation of creating an instance of the <see cref="DynamicObject"/>.
-        /// Derived classes can override this method to customize behavior.  When not overridden the
-        /// call site requesting the binder determines the behavior.
+        ///     Provides the implementation of creating an instance of the <see cref="DynamicObject" />.
+        ///     Derived classes can override this method to customize behavior.  When not overridden the
+        ///     call site requesting the binder determines the behavior.
         /// </summary>
         /// <param name="binder">The binder provided by the call site.</param>
         /// <param name="args">The arguments used for creation.</param>
@@ -105,44 +112,44 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryCreateInstance(CreateInstanceBinder binder, object[] args, out object result)
         {
-            Theraot.No.Op(binder);
-            Theraot.No.Op(args);
+            No.Op(binder);
+            No.Op(args);
             result = null;
             return false;
         }
 
         /// <summary>
-        /// Provides the implementation of performing a delete index operation.  Derived classes
-        /// can override this method to customize behavior.  When not overridden the call site
-        /// requesting the binder determines the behavior.
+        ///     Provides the implementation of performing a delete index operation.  Derived classes
+        ///     can override this method to customize behavior.  When not overridden the call site
+        ///     requesting the binder determines the behavior.
         /// </summary>
         /// <param name="binder">The binder provided by the call site.</param>
         /// <param name="indexes">The indexes to be deleted.</param>
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryDeleteIndex(DeleteIndexBinder binder, object[] indexes)
         {
-            Theraot.No.Op(binder);
-            Theraot.No.Op(indexes);
+            No.Op(binder);
+            No.Op(indexes);
             return false;
         }
 
         /// <summary>
-        /// Provides the implementation of deleting a member.  Derived classes can override
-        /// this method to customize behavior.  When not overridden the call site requesting the
-        /// binder determines the behavior.
+        ///     Provides the implementation of deleting a member.  Derived classes can override
+        ///     this method to customize behavior.  When not overridden the call site requesting the
+        ///     binder determines the behavior.
         /// </summary>
         /// <param name="binder">The binder provided by the call site.</param>
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryDeleteMember(DeleteMemberBinder binder)
         {
-            Theraot.No.Op(binder);
+            No.Op(binder);
             return false;
         }
 
         /// <summary>
-        /// Provides the implementation of performing a get index operation.  Derived classes can
-        /// override this method to customize behavior.  When not overridden the call site requesting
-        /// the binder determines the behavior.
+        ///     Provides the implementation of performing a get index operation.  Derived classes can
+        ///     override this method to customize behavior.  When not overridden the call site requesting
+        ///     the binder determines the behavior.
         /// </summary>
         /// <param name="binder">The binder provided by the call site.</param>
         /// <param name="indexes">The indexes to be used.</param>
@@ -150,31 +157,31 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
         {
-            Theraot.No.Op(binder);
-            Theraot.No.Op(indexes);
+            No.Op(binder);
+            No.Op(indexes);
             result = null;
             return false;
         }
 
         /// <summary>
-        /// Provides the implementation of getting a member.  Derived classes can override
-        /// this method to customize behavior.  When not overridden the call site requesting the
-        /// binder determines the behavior.
+        ///     Provides the implementation of getting a member.  Derived classes can override
+        ///     this method to customize behavior.  When not overridden the call site requesting the
+        ///     binder determines the behavior.
         /// </summary>
         /// <param name="binder">The binder provided by the call site.</param>
         /// <param name="result">The result of the get operation.</param>
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            Theraot.No.Op(binder);
+            No.Op(binder);
             result = null;
             return false;
         }
 
         /// <summary>
-        /// Provides the implementation of invoking the <see cref="DynamicObject"/>.  Derived classes can
-        /// override this method to customize behavior.  When not overridden the call site requesting
-        /// the binder determines the behavior.
+        ///     Provides the implementation of invoking the <see cref="DynamicObject" />.  Derived classes can
+        ///     override this method to customize behavior.  When not overridden the call site requesting
+        ///     the binder determines the behavior.
         /// </summary>
         /// <param name="binder">The binder provided by the call site.</param>
         /// <param name="args">The arguments to be used for the invocation.</param>
@@ -182,16 +189,16 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryInvoke(InvokeBinder binder, object[] args, out object result)
         {
-            Theraot.No.Op(binder);
-            Theraot.No.Op(args);
+            No.Op(binder);
+            No.Op(args);
             result = null;
             return false;
         }
 
         /// <summary>
-        /// Provides the implementation of calling a member.  Derived classes can override
-        /// this method to customize behavior.  When not overridden the call site requesting the
-        /// binder determines the behavior.
+        ///     Provides the implementation of calling a member.  Derived classes can override
+        ///     this method to customize behavior.  When not overridden the call site requesting the
+        ///     binder determines the behavior.
         /// </summary>
         /// <param name="binder">The binder provided by the call site.</param>
         /// <param name="args">The arguments to be used for the invocation.</param>
@@ -199,16 +206,16 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
-            Theraot.No.Op(binder);
-            Theraot.No.Op(args);
+            No.Op(binder);
+            No.Op(args);
             result = null;
             return false;
         }
 
         /// <summary>
-        /// Provides the implementation of performing a set index operation.  Derived classes can
-        /// override this method to customize behavior.  When not overridden the call site requesting
-        /// the binder determines the behavior.
+        ///     Provides the implementation of performing a set index operation.  Derived classes can
+        ///     override this method to customize behavior.  When not overridden the call site requesting
+        ///     the binder determines the behavior.
         /// </summary>
         /// <param name="binder">The binder provided by the call site.</param>
         /// <param name="indexes">The indexes to be used.</param>
@@ -216,38 +223,38 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
         {
-            Theraot.No.Op(binder);
-            Theraot.No.Op(indexes);
-            Theraot.No.Op(value);
+            No.Op(binder);
+            No.Op(indexes);
+            No.Op(value);
             return false;
         }
 
         /// <summary>
-        /// Provides the implementation of setting a member.  Derived classes can override
-        /// this method to customize behavior.  When not overridden the call site requesting the
-        /// binder determines the behavior.
+        ///     Provides the implementation of setting a member.  Derived classes can override
+        ///     this method to customize behavior.  When not overridden the call site requesting the
+        ///     binder determines the behavior.
         /// </summary>
         /// <param name="binder">The binder provided by the call site.</param>
         /// <param name="value">The value to set.</param>
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TrySetMember(SetMemberBinder binder, object value)
         {
-            Theraot.No.Op(binder);
-            Theraot.No.Op(value);
+            No.Op(binder);
+            No.Op(value);
             return false;
         }
 
         /// <summary>
-        /// Provides the implementation of performing a unary operation.  Derived classes can
-        /// override this method to customize behavior.  When not overridden the call site requesting
-        /// the binder determines the behavior.
+        ///     Provides the implementation of performing a unary operation.  Derived classes can
+        ///     override this method to customize behavior.  When not overridden the call site requesting
+        ///     the binder determines the behavior.
         /// </summary>
         /// <param name="binder">The binder provided by the call site.</param>
         /// <param name="result">The result of the operation.</param>
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryUnaryOperation(UnaryOperationBinder binder, out object result)
         {
-            Theraot.No.Op(binder);
+            No.Op(binder);
             result = null;
             return false;
         }
@@ -257,11 +264,9 @@ namespace System.Dynamic
             private static readonly Expression[] _noArgs = new Expression[0];
 
             internal MetaDynamic(Expression expression, DynamicObject value)
-                            : base(expression, BindingRestrictions.Empty, value)
+                : base(expression, BindingRestrictions.Empty, value)
             {
             }
-
-            private delegate DynamicMetaObject Fallback<in TBinder>(MetaDynamic @this, TBinder binder, DynamicMetaObject errorSuggestion);
 
             private new DynamicObject Value => (DynamicObject)base.Value;
 
@@ -271,10 +276,11 @@ namespace System.Dynamic
                 {
                     var localArg = arg;
 
-                    return CallMethodWithResult(
+                    return CallMethodWithResult
+                    (
                         DynamicObjectTryBinaryOperation,
                         binder,
-                        new[] { arg.Expression },
+                        new[] {arg.Expression},
                         (@this, b, e) => b.FallbackBinaryOperation(@this, localArg, e)
                     );
                 }
@@ -286,7 +292,8 @@ namespace System.Dynamic
             {
                 if (IsOverridden(DynamicObjectTryConvert))
                 {
-                    return CallMethodWithResult(
+                    return CallMethodWithResult
+                    (
                         DynamicObjectTryConvert,
                         binder,
                         _noArgs,
@@ -303,7 +310,8 @@ namespace System.Dynamic
                 {
                     var localArgs = args;
 
-                    return CallMethodWithResult(
+                    return CallMethodWithResult
+                    (
                         DynamicObjectTryCreateInstance,
                         binder,
                         GetExpressions(args),
@@ -320,7 +328,8 @@ namespace System.Dynamic
                 {
                     var localIndexes = indexes;
 
-                    return CallMethodNoResult(
+                    return CallMethodNoResult
+                    (
                         DynamicObjectTryDeleteIndex,
                         binder,
                         GetExpressions(indexes),
@@ -335,7 +344,8 @@ namespace System.Dynamic
             {
                 if (IsOverridden(DynamicObjectTryDeleteMember))
                 {
-                    return CallMethodNoResult(
+                    return CallMethodNoResult
+                    (
                         DynamicObjectTryDeleteMember,
                         binder,
                         _noArgs,
@@ -352,7 +362,8 @@ namespace System.Dynamic
                 {
                     var localIndexes = indexes;
 
-                    return CallMethodWithResult(
+                    return CallMethodWithResult
+                    (
                         DynamicObjectTryGetIndex,
                         binder,
                         GetExpressions(indexes),
@@ -367,7 +378,8 @@ namespace System.Dynamic
             {
                 if (IsOverridden(DynamicObjectTryGetMember))
                 {
-                    return CallMethodWithResult(
+                    return CallMethodWithResult
+                    (
                         DynamicObjectTryGetMember,
                         binder,
                         _noArgs,
@@ -384,7 +396,8 @@ namespace System.Dynamic
                 {
                     var localArgs = args;
 
-                    return CallMethodWithResult(
+                    return CallMethodWithResult
+                    (
                         DynamicObjectTryInvoke,
                         binder,
                         GetExpressions(args),
@@ -412,11 +425,13 @@ namespace System.Dynamic
                 // "error", giving the language the option of using this
                 // tree or doing .NET binding.
                 //
-                var call = BuildCallMethodWithResult(
+                var call = BuildCallMethodWithResult
+                (
                     DynamicObjectTryInvokeMember,
                     binder,
                     GetExpressions(args),
-                    BuildCallMethodWithResult(
+                    BuildCallMethodWithResult
+                    (
                         DynamicObjectTryGetMember,
                         new GetBinderAdapter(binder),
                         _noArgs,
@@ -436,7 +451,8 @@ namespace System.Dynamic
                     var localIndexes = indexes;
                     var localValue = value;
 
-                    return CallMethodReturnLast(
+                    return CallMethodReturnLast
+                    (
                         DynamicObjectTrySetIndex,
                         binder,
                         GetExpressions(indexes),
@@ -454,7 +470,8 @@ namespace System.Dynamic
                 {
                     var localValue = value;
 
-                    return CallMethodReturnLast(
+                    return CallMethodReturnLast
+                    (
                         DynamicObjectTrySetMember,
                         binder,
                         _noArgs,
@@ -470,7 +487,8 @@ namespace System.Dynamic
             {
                 if (IsOverridden(DynamicObjectTryUnaryOperation))
                 {
-                    return CallMethodWithResult(
+                    return CallMethodWithResult
+                    (
                         DynamicObjectTryUnaryOperation,
                         binder,
                         _noArgs,
@@ -481,7 +499,10 @@ namespace System.Dynamic
                 return base.BindUnaryOperation(binder);
             }
 
-            public override IEnumerable<string> GetDynamicMemberNames() => Value.GetDynamicMemberNames();
+            public override IEnumerable<string> GetDynamicMemberNames()
+            {
+                return Value.GetDynamicMemberNames();
+            }
 
             // used in reference comparison, requires unique object identity
 
@@ -490,9 +511,10 @@ namespace System.Dynamic
             {
                 if (parameters != _noArgs)
                 {
-                    return arg1 != null ? new[] { Constant(binder), arg0, arg1 } : new[] { Constant(binder), arg0 };
+                    return arg1 != null ? new[] {Constant(binder), arg0, arg1} : new[] {Constant(binder), arg0};
                 }
-                return arg1 != null ? new[] { Constant(binder), arg1 } : new Expression[] { Constant(binder) };
+
+                return arg1 != null ? new[] {Constant(binder), arg1} : new Expression[] {Constant(binder)};
             }
 
             private static ConstantExpression Constant<TBinder>(TBinder binder)
@@ -523,13 +545,18 @@ namespace System.Dynamic
                     {
                         throw new ArgumentException("Invalid argument value", nameof(args));
                     }
+
                     if (variable.IsByRef)
                     {
-                        (block ?? (block = new ReadOnlyCollectionBuilder<Expression>())).Add(
-                            Expression.Assign(
+                        (block ?? (block = new ReadOnlyCollectionBuilder<Expression>())).Add
+                        (
+                            Expression.Assign
+                            (
                                 variable,
-                                Expression.Convert(
-                                    Expression.ArrayIndex(
+                                Expression.Convert
+                                (
+                                    Expression.ArrayIndex
+                                    (
                                         callArgs,
                                         AstUtils.Constant(i)
                                     ),
@@ -582,31 +609,40 @@ namespace System.Dynamic
                     var convertFailed = $"The result type '{{0}}' of the dynamic binding produced by the object with type '{Value.GetType()}' for the binder '{binder.GetType()}' is not compatible with the result type '{binder.ReturnType}' expected by the call site.";
 
                     // If the return type can not be assigned null then just check for type assignability otherwise allow null.
-                    var condition = binder.ReturnType.IsValueType && Nullable.GetUnderlyingType(binder.ReturnType) == null ?
-                        (Expression)Expression.TypeIs(resultMetaObject.Expression, binder.ReturnType) :
-                        Expression.OrElse
+                    var condition = binder.ReturnType.IsValueType && Nullable.GetUnderlyingType(binder.ReturnType) == null
+                        ? (Expression)Expression.TypeIs(resultMetaObject.Expression, binder.ReturnType)
+                        : Expression.OrElse
                         (
                             Expression.Equal(resultMetaObject.Expression, AstUtils.Null),
                             Expression.TypeIs(resultMetaObject.Expression, binder.ReturnType)
                         );
 
-                    Expression checkedConvert = Expression.Condition(
+                    Expression checkedConvert = Expression.Condition
+                    (
                         condition,
                         convert,
-                        Expression.Throw(
-                            Expression.New(
+                        Expression.Throw
+                        (
+                            Expression.New
+                            (
                                 InvalidCastExceptionCtorString,
-                                HashableReadOnlyCollection.Create<Expression>(
-                                    Expression.Call(
+                                HashableReadOnlyCollection.Create<Expression>
+                                (
+                                    Expression.Call
+                                    (
                                         StringFormatStringObjectArray,
                                         Expression.Constant(convertFailed),
-                                        Expression.NewArrayInit(
+                                        Expression.NewArrayInit
+                                        (
                                             typeof(object),
-                                            HashableReadOnlyCollection.Create<Expression>(
-                                                Expression.Condition(
+                                            HashableReadOnlyCollection.Create<Expression>
+                                            (
+                                                Expression.Condition
+                                                (
                                                     Expression.Equal(resultMetaObject.Expression, AstUtils.Null),
                                                     Expression.Constant("null"),
-                                                    Expression.Call(
+                                                    Expression.Call
+                                                    (
                                                         resultMetaObject.Expression,
                                                         ObjectGetType
                                                     ),
@@ -630,23 +666,30 @@ namespace System.Dynamic
                     resultMetaObject = fallbackInvoke(this, binder, resultMetaObject);
                 }
 
-                var callDynamic = new DynamicMetaObject(
-                    Expression.Block(
+                var callDynamic = new DynamicMetaObject
+                (
+                    Expression.Block
+                    (
                         HashableReadOnlyCollection.Create(result, callArgs),
-                        HashableReadOnlyCollection.Create<Expression>(
+                        HashableReadOnlyCollection.Create<Expression>
+                        (
                             method != DynamicObjectTryBinaryOperation ? Expression.Assign(callArgs, Expression.NewArrayInit(typeof(object), callArgsValue)) : Expression.Assign(callArgs, callArgsValue[0]),
-                            Expression.Condition(
-                                Expression.Call(
+                            Expression.Condition
+                            (
+                                Expression.Call
+                                (
                                     GetLimitedSelf(),
                                     method,
-                                    BuildCallArgs(
+                                    BuildCallArgs
+                                    (
                                         binder,
                                         args,
                                         callArgs,
                                         result
                                     )
                                 ),
-                                Expression.Block(
+                                Expression.Block
+                                (
                                     method != DynamicObjectTryBinaryOperation ? ReferenceArgAssign(callArgs, args) : AstUtils.Empty,
                                     resultMetaObject.Expression
                                 ),
@@ -675,23 +718,30 @@ namespace System.Dynamic
                 // Build a new expression like:
                 //   if (TryDeleteMember(payload)) { } else { fallbackResult }
                 //
-                var callDynamic = new DynamicMetaObject(
-                    Expression.Block(
+                var callDynamic = new DynamicMetaObject
+                (
+                    Expression.Block
+                    (
                         HashableReadOnlyCollection.Create(callArgs),
-                        HashableReadOnlyCollection.Create<Expression>(
+                        HashableReadOnlyCollection.Create<Expression>
+                        (
                             Expression.Assign(callArgs, Expression.NewArrayInit(typeof(object), callArgsValue)),
-                            Expression.Condition(
-                                Expression.Call(
+                            Expression.Condition
+                            (
+                                Expression.Call
+                                (
                                     GetLimitedSelf(),
                                     method,
-                                    BuildCallArgs(
+                                    BuildCallArgs
+                                    (
                                         binder,
                                         args,
                                         callArgs,
                                         null
                                     )
                                 ),
-                                Expression.Block(
+                                Expression.Block
+                                (
                                     ReferenceArgAssign(callArgs, args),
                                     AstUtils.Empty
                                 ),
@@ -735,23 +785,30 @@ namespace System.Dynamic
                 var callArgs = Expression.Parameter(typeof(object[]), null);
                 var callArgsValue = GetConvertedArgs(args);
 
-                var callDynamic = new DynamicMetaObject(
-                    Expression.Block(
+                var callDynamic = new DynamicMetaObject
+                (
+                    Expression.Block
+                    (
                         HashableReadOnlyCollection.Create(result, callArgs),
-                        HashableReadOnlyCollection.Create<Expression>(
+                        HashableReadOnlyCollection.Create<Expression>
+                        (
                             Expression.Assign(callArgs, Expression.NewArrayInit(typeof(object), callArgsValue)),
-                            Expression.Condition(
-                                Expression.Call(
+                            Expression.Condition
+                            (
+                                Expression.Call
+                                (
                                     GetLimitedSelf(),
                                     method,
-                                    BuildCallArgs(
+                                    BuildCallArgs
+                                    (
                                         binder,
                                         args,
                                         callArgs,
                                         Expression.Assign(result, Expression.Convert(value, typeof(object)))
                                     )
                                 ),
-                                Expression.Block(
+                                Expression.Block
+                                (
                                     ReferenceArgAssign(callArgs, args),
                                     result
                                 ),
@@ -797,7 +854,7 @@ namespace System.Dynamic
             }
 
             /// <summary>
-            /// Returns our Expression converted to DynamicObject
+            ///     Returns our Expression converted to DynamicObject
             /// </summary>
             private Expression GetLimitedSelf()
             {
@@ -807,12 +864,13 @@ namespace System.Dynamic
                 {
                     return Expression;
                 }
+
                 return Expression.Convert(Expression, typeof(DynamicObject));
             }
 
             /// <summary>
-            /// Returns a Restrictions object which includes our current restrictions merged
-            /// with a restriction limiting our type
+            ///     Returns a Restrictions object which includes our current restrictions merged
+            ///     with a restriction limiting our type
             /// </summary>
             private BindingRestrictions GetRestrictions()
             {
@@ -836,6 +894,8 @@ namespace System.Dynamic
 
                 return false;
             }
+
+            private delegate DynamicMetaObject Fallback<in TBinder>(MetaDynamic @this, TBinder binder, DynamicMetaObject errorSuggestion);
 
             // It is okay to throw NotSupported from this binder. This object
             // is only used by DynamicObject.GetMember--it is not expected to

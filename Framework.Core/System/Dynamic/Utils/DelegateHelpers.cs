@@ -1,4 +1,4 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -7,9 +7,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using Theraot.Collections.ThreadSafe;
-
 #if !FEATURE_DYNAMIC_DELEGATE
-
 using System.Reflection.Emit;
 
 #endif
@@ -86,6 +84,7 @@ namespace System.Dynamic.Utils
                     ilGenerator.Emit(OpCodes.Ldc_I4, parameters.Length);
                     ilGenerator.Emit(OpCodes.Newarr, typeof(object));
                 }
+
                 ilGenerator.Emit(OpCodes.Stloc, argArray);
 
                 // populate object array
@@ -110,6 +109,7 @@ namespace System.Dynamic.Utils
                         // ReSharper disable once AssignNullToNotNullAttribute
                         ilGenerator.Emit(OpCodes.Ldobj, paramType);
                     }
+
                     var boxType = ConvertToBoxableType(paramType);
                     ilGenerator.Emit(OpCodes.Box, boxType);
                     ilGenerator.Emit(OpCodes.Stelem_Ref);
@@ -150,6 +150,7 @@ namespace System.Dynamic.Utils
                             ilGenerator.Emit(OpCodes.Stobj, byrefToType);
                         }
                     }
+
                     ilGenerator.EndExceptionBlock();
                 }
 

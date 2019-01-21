@@ -42,7 +42,9 @@ namespace System.Collections.Concurrent
             {
                 partitions[i] = Enumerator(orderablePartitions[i]);
             }
+
             return partitions;
+
             IEnumerator<TSource> Enumerator(IEnumerator<KeyValuePair<long, TSource>> enumerator)
             {
                 try

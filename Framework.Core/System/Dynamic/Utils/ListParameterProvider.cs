@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 namespace System.Dynamic.Utils
 {
     /// <summary>
-    /// See <see cref="ListArgumentProvider"/> for design considerations.
+    ///     See <see cref="ListArgumentProvider" /> for design considerations.
     /// </summary>
     internal sealed class ListParameterProvider : ListProvider<ParameterExpression>
     {
@@ -24,7 +24,10 @@ namespace System.Dynamic.Utils
         protected override int ElementCount => _provider.ParameterCount;
         protected override ParameterExpression First { get; }
 
-        protected override ParameterExpression GetElement(int index) => _provider.GetParameter(index);
+        protected override ParameterExpression GetElement(int index)
+        {
+            return _provider.GetParameter(index);
+        }
     }
 }
 

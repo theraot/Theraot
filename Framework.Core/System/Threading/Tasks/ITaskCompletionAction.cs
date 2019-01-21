@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;

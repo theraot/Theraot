@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NETSTANDARD13
-
 using System.Collections.ObjectModel;
 
 #endif

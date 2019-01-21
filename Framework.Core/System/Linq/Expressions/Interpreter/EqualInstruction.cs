@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 #pragma warning disable RECS0018 // Comparison of floating point numbers with equality operator
 #pragma warning disable RECS0088 // Comparing equal expression for equality is usually useless

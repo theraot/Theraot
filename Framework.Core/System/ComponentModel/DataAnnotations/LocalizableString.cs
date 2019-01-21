@@ -9,7 +9,6 @@
 using System.Reflection;
 
 #if NETSTANDARD1_0
-
 using Theraot.Reflection;
 
 #endif
@@ -22,8 +21,8 @@ namespace System.ComponentModel.DataAnnotations
     /// </summary>
     internal class LocalizableString
     {
-        private Func<string> _cachedResult;
         private readonly string _propertyName;
+        private Func<string> _cachedResult;
         private string _propertyValue;
         private Type _resourceType;
 
@@ -144,6 +143,7 @@ namespace System.ComponentModel.DataAnnotations
                     }
                 }
             }
+
             // Return the cached result
             _cachedResult = cachedResult;
             return cachedResult();

@@ -29,9 +29,11 @@ namespace System.Dynamic.Utils
                     {
                         newNodes[j] = nodes.GetArgument(j);
                     }
+
                     newNodes[i] = node;
                 }
             }
+
             return newNodes;
         }
 
@@ -54,9 +56,11 @@ namespace System.Dynamic.Utils
                     {
                         newNodes[j] = block.GetExpression(j);
                     }
+
                     newNodes[i] = node;
                 }
             }
+
             return newNodes;
         }
 
@@ -79,9 +83,11 @@ namespace System.Dynamic.Utils
                     {
                         newNodes[j] = nodes.GetParameter(j);
                     }
+
                     newNodes[i] = node;
                 }
             }
+
             return newNodes;
         }
     }

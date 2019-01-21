@@ -26,30 +26,21 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentNullException(nameof(collection));
             }
+
             _wrapped = new SafeQueue<T>(collection);
         }
 
-        public int Count => _wrapped.Count;
-
         public bool IsEmpty => _wrapped.Count == 0;
+
+        public int Count => _wrapped.Count;
 
         bool ICollection.IsSynchronized => false;
 
         object ICollection.SyncRoot => throw new NotSupportedException();
 
-        public void Clear()
-        {
-            _wrapped = new SafeQueue<T>();
-        }
-
         public void CopyTo(T[] array, int index)
         {
             _wrapped.CopyTo(array, index);
-        }
-
-        public void Enqueue(T item)
-        {
-            _wrapped.Add(item);
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -60,16 +51,6 @@ namespace System.Collections.Concurrent
         public T[] ToArray()
         {
             return _wrapped.ToArray();
-        }
-
-        public bool TryDequeue(out T result)
-        {
-            return _wrapped.TryTake(out result);
-        }
-
-        public bool TryPeek(out T result)
-        {
-            return _wrapped.TryPeek(out result);
         }
 
         void ICollection.CopyTo(Array array, int index)
@@ -92,6 +73,26 @@ namespace System.Collections.Concurrent
         bool IProducerConsumerCollection<T>.TryTake(out T item)
         {
             return TryDequeue(out item);
+        }
+
+        public void Clear()
+        {
+            _wrapped = new SafeQueue<T>();
+        }
+
+        public void Enqueue(T item)
+        {
+            _wrapped.Add(item);
+        }
+
+        public bool TryDequeue(out T result)
+        {
+            return _wrapped.TryTake(out result);
+        }
+
+        public bool TryPeek(out T result)
+        {
+            return _wrapped.TryPeek(out result);
         }
     }
 }

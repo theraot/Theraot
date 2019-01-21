@@ -26,18 +26,13 @@ namespace System.Collections.Concurrent
             _wrapped = new SafeStack<T>(collection);
         }
 
-        public int Count => _wrapped.Count;
-
         public bool IsEmpty => _wrapped.Count == 0;
+
+        public int Count => _wrapped.Count;
 
         bool ICollection.IsSynchronized => false;
 
         object ICollection.SyncRoot => throw new NotSupportedException();
-
-        public void Clear()
-        {
-            Volatile.Write(ref _wrapped, new SafeStack<T>());
-        }
 
         public void CopyTo(T[] array, int index)
         {
@@ -50,106 +45,9 @@ namespace System.Collections.Concurrent
             return _wrapped.GetEnumerator();
         }
 
-        public void Push(T item)
-        {
-            _wrapped.Add(item);
-        }
-
-        public void PushRange(T[] items)
-        {
-            if (items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
-            foreach (var item in items)
-            {
-                _wrapped.Add(item);
-            }
-        }
-
-        public void PushRange(T[] items, int startIndex, int count)
-        {
-            if (items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
-            if (count < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(count));
-            }
-            if (startIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
-            }
-            if (startIndex + count > items.Length)
-            {
-                throw new ArgumentException("The sum of the startIndex and count arguments must be less than or equal to the collection's Count.");
-            }
-            for (var index = 0; index < count; index++)
-            {
-                _wrapped.Add(items[index + startIndex]);
-            }
-        }
-
         public T[] ToArray()
         {
             return _wrapped.ToArray();
-        }
-
-        public bool TryPeek(out T result)
-        {
-            return _wrapped.TryPeek(out result);
-        }
-
-        public bool TryPop(out T result)
-        {
-            return _wrapped.TryTake(out result);
-        }
-
-        public int TryPopRange(T[] items)
-        {
-            if (items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
-            var index = 0;
-            for (; index < items.Length; index++)
-            {
-                if (!TryPop(out items[index]))
-                {
-                    break;
-                }
-            }
-            return index;
-        }
-
-        public int TryPopRange(T[] items, int startIndex, int count)
-        {
-            if (items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
-            if (count < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(count));
-            }
-            if (startIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
-            }
-            if (startIndex + count > items.Length)
-            {
-                throw new ArgumentException("The sum of the startIndex and count arguments must be less than or equal to the collection's Count.");
-            }
-            var index = 0;
-            for (; index < count; index++)
-            {
-                if (!TryPop(out items[index + startIndex]))
-                {
-                    break;
-                }
-            }
-            return index;
         }
 
         void ICollection.CopyTo(Array array, int index)
@@ -172,6 +70,120 @@ namespace System.Collections.Concurrent
         bool IProducerConsumerCollection<T>.TryTake(out T item)
         {
             return TryPop(out item);
+        }
+
+        public void Clear()
+        {
+            Volatile.Write(ref _wrapped, new SafeStack<T>());
+        }
+
+        public void Push(T item)
+        {
+            _wrapped.Add(item);
+        }
+
+        public void PushRange(T[] items)
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            foreach (var item in items)
+            {
+                _wrapped.Add(item);
+            }
+        }
+
+        public void PushRange(T[] items, int startIndex, int count)
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            if (count < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count));
+            }
+
+            if (startIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            }
+
+            if (startIndex + count > items.Length)
+            {
+                throw new ArgumentException("The sum of the startIndex and count arguments must be less than or equal to the collection's Count.");
+            }
+
+            for (var index = 0; index < count; index++)
+            {
+                _wrapped.Add(items[index + startIndex]);
+            }
+        }
+
+        public bool TryPeek(out T result)
+        {
+            return _wrapped.TryPeek(out result);
+        }
+
+        public bool TryPop(out T result)
+        {
+            return _wrapped.TryTake(out result);
+        }
+
+        public int TryPopRange(T[] items)
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            var index = 0;
+            for (; index < items.Length; index++)
+            {
+                if (!TryPop(out items[index]))
+                {
+                    break;
+                }
+            }
+
+            return index;
+        }
+
+        public int TryPopRange(T[] items, int startIndex, int count)
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            if (count < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count));
+            }
+
+            if (startIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            }
+
+            if (startIndex + count > items.Length)
+            {
+                throw new ArgumentException("The sum of the startIndex and count arguments must be less than or equal to the collection's Count.");
+            }
+
+            var index = 0;
+            for (; index < count; index++)
+            {
+                if (!TryPop(out items[index + startIndex]))
+                {
+                    break;
+                }
+            }
+
+            return index;
         }
     }
 }

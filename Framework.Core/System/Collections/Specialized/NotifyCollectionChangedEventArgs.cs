@@ -40,10 +40,12 @@ namespace System.Collections.Specialized
                 {
                     throw new ArgumentNullException(nameof(changedItems));
                 }
+
                 if (startingIndex < -1)
                 {
                     throw new ArgumentException("The value of startingIndex must be -1 or greater.", nameof(startingIndex));
                 }
+
                 if (action == NotifyCollectionChangedAction.Add)
                 {
                     InitializeAdd(changedItems, startingIndex);
@@ -59,6 +61,7 @@ namespace System.Collections.Specialized
                 {
                     throw new ArgumentException("This constructor can only be used with the Reset action if changedItems is null", nameof(changedItems));
                 }
+
                 if (startingIndex != -1)
                 {
                     throw new ArgumentException("This constructor can only be used with the Reset action if startingIndex is -1", nameof(startingIndex));
@@ -72,7 +75,7 @@ namespace System.Collections.Specialized
 
         public NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction action, object changedItem, int index)
         {
-            IList changedItems = new[] { changedItem };
+            IList changedItems = new[] {changedItem};
             Action = action;
             switch (action)
             {
@@ -89,6 +92,7 @@ namespace System.Collections.Specialized
                     {
                         throw new ArgumentException("This constructor can only be used with the Reset action if changedItem is null", nameof(changedItem));
                     }
+
                     if (index != -1)
                     {
                         throw new ArgumentException("This constructor can only be used with the Reset action if index is -1", nameof(index));
@@ -114,6 +118,7 @@ namespace System.Collections.Specialized
             {
                 throw new ArgumentException("This constructor can only be used with the Replace action.", nameof(action));
             }
+
             OldItems = oldItems ?? throw new ArgumentNullException(nameof(oldItems));
             NewItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
             OldStartingIndex = startingIndex;
@@ -127,15 +132,17 @@ namespace System.Collections.Specialized
             {
                 throw new ArgumentException("This constructor can only be used with the Move action.", nameof(action));
             }
+
             if (index < -1)
             {
                 throw new ArgumentException("The value of index must be -1 or greater.", nameof(index));
             }
+
             InitializeMove(changedItems, index, oldIndex);
         }
 
         public NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction action, object changedItem, int index, int oldIndex)
-            : this(action, new[] { changedItem }, index, oldIndex)
+            : this(action, new[] {changedItem}, index, oldIndex)
         {
             //Empty
         }
@@ -147,7 +154,8 @@ namespace System.Collections.Specialized
             {
                 throw new ArgumentException("This constructor can only be used with the Replace action.", nameof(action));
             }
-            InitializeReplace(new[] { newItem }, new[] { oldItem }, index);
+
+            InitializeReplace(new[] {newItem}, new[] {oldItem}, index);
         }
 
         public NotifyCollectionChangedAction Action { get; }

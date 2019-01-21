@@ -1,4 +1,4 @@
-// Needed for NET30
+﻿// Needed for NET30
 
 using System;
 using System.Collections;

@@ -7,7 +7,7 @@
 namespace System.Diagnostics.Contracts
 {
     /// <summary>
-    /// Types marked with this attribute specify that a separate type contains the contracts for this type.
+    ///     Types marked with this attribute specify that a separate type contains the contracts for this type.
     /// </summary>
     [Conditional("CONTRACTS_FULL")]
     [Conditional("DEBUG")]

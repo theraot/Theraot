@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -7,8 +7,8 @@
 namespace System.Diagnostics.Contracts
 {
     /// <summary>
-    /// Allows a field f to be used in the method contracts for a method m when f has less visibility than m.
-    /// For instance, if the method is public, but the field is private.
+    ///     Allows a field f to be used in the method contracts for a method m when f has less visibility than m.
+    ///     For instance, if the method is public, but the field is private.
     /// </summary>
     [Conditional("CONTRACTS_FULL")]
     [AttributeUsage(AttributeTargets.Field)]

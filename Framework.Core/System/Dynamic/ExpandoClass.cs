@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -10,25 +10,25 @@ using Theraot.Collections.ThreadSafe;
 namespace System.Dynamic
 {
     /// <summary>
-    /// Represents a dynamically assigned class.  Expando objects which share the same
-    /// members will share the same class.  Classes are dynamically assigned as the
-    /// expando object gains members.
+    ///     Represents a dynamically assigned class.  Expando objects which share the same
+    ///     members will share the same class.  Classes are dynamically assigned as the
+    ///     expando object gains members.
     /// </summary>
     internal class ExpandoClass
     {
-        internal static readonly ExpandoClass Empty = new ExpandoClass();
-        internal readonly string[] Keys;                            // list of names associated with each element in the data array, sorted
         private const int _emptyHashCode = 6551;
-        private readonly int _hashCode;                             // pre-calculated hash code of all the keys the class contains
-        private Dictionary<int, List<WeakReference>> _transitions;  // cached transitions
+        internal static readonly ExpandoClass Empty = new ExpandoClass();
+        private readonly int _hashCode; // pre-calculated hash code of all the keys the class contains
+        internal readonly string[] Keys; // list of names associated with each element in the data array, sorted
+        private Dictionary<int, List<WeakReference>> _transitions; // cached transitions
 
         // hash code of the empty ExpandoClass.
 
         // The empty Expando class - all Expando objects start off w/ this class.
 
         /// <summary>
-        /// Constructs the empty ExpandoClass.  This is the class used when an
-        /// empty Expando object is initially constructed.
+        ///     Constructs the empty ExpandoClass.  This is the class used when an
+        ///     empty Expando object is initially constructed.
         /// </summary>
         internal ExpandoClass()
         {
@@ -37,9 +37,9 @@ namespace System.Dynamic
         }
 
         /// <summary>
-        /// Constructs a new ExpandoClass that can hold onto the specified keys.  The
-        /// keys must be sorted ordinally.  The hash code must be pre-calculated for
-        /// the keys.
+        ///     Constructs a new ExpandoClass that can hold onto the specified keys.  The
+        ///     keys must be sorted ordinally.  The hash code must be pre-calculated for
+        ///     the keys.
         /// </summary>
         internal ExpandoClass(string[] keys, int hashCode)
         {
@@ -101,10 +101,12 @@ namespace System.Dynamic
                 var keys = Keys;
                 for (var i = 0; i < keys.Length; i++)
                 {
-                    if (string.Equals(
+                    if (string.Equals
+                    (
                         keys[i],
                         name,
-                        StringComparison.Ordinal))
+                        StringComparison.Ordinal
+                    ))
                     {
                         return i;
                     }
@@ -120,6 +122,7 @@ namespace System.Dynamic
             {
                 _transitions = new Dictionary<int, List<WeakReference>>();
             }
+
             if (!_transitions.TryGetValue(hashCode, out var infos))
             {
                 _transitions[hashCode] = infos = new List<WeakReference>();
@@ -129,16 +132,18 @@ namespace System.Dynamic
         }
 
         /// <summary>
-        /// Gets the index at which the value should be stored for the specified name,
-        /// the method is only used in the case-insensitive case.
+        ///     Gets the index at which the value should be stored for the specified name,
+        ///     the method is only used in the case-insensitive case.
         /// </summary>
         /// <param name="name">the name of the member</param>
-        /// <param name="obj">The ExpandoObject associated with the class
-        /// that is used to check if a member has been deleted.</param>
+        /// <param name="obj">
+        ///     The ExpandoObject associated with the class
+        ///     that is used to check if a member has been deleted.
+        /// </param>
         /// <returns>
-        /// the exact match if there is one
-        /// if there is exactly one member with case insensitive match, return it
-        /// otherwise we throw AmbiguousMatchException.
+        ///     the exact match if there is one
+        ///     if there is exactly one member with case insensitive match, return it
+        ///     otherwise we throw AmbiguousMatchException.
         /// </returns>
         private int GetValueIndexCaseInsensitive(string name, ExpandoObject obj)
         {
@@ -149,10 +154,12 @@ namespace System.Dynamic
                 for (var i = keys.Length - 1; i >= 0; i--)
                 {
                     //if the matching member is deleted, continue searching
-                    if (string.Equals(
-                    keys[i],
-                    name,
-                    StringComparison.OrdinalIgnoreCase) && !obj.IsDeletedMember(i))
+                    if (string.Equals
+                        (
+                            keys[i],
+                            name,
+                            StringComparison.OrdinalIgnoreCase
+                        ) && !obj.IsDeletedMember(i))
                     {
                         if (caseInsensitiveMatch == ExpandoObject.NoMatch)
                         {
@@ -166,6 +173,7 @@ namespace System.Dynamic
                     }
                 }
             }
+
             //There is exactly one member with case insensitive match.
             return caseInsensitiveMatch;
         }

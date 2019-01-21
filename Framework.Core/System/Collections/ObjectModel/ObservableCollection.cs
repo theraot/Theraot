@@ -114,6 +114,7 @@ namespace System.Collections.ObjectModel
             {
                 return;
             }
+
             try
             {
                 _entryCheck.Value++;
@@ -129,7 +130,10 @@ namespace System.Collections.ObjectModel
         {
             var propertyChanged = PropertyChanged;
             if (propertyChanged == null)
-            {return;}
+            {
+                return;
+            }
+
             try
             {
                 _entryCheck.Value++;

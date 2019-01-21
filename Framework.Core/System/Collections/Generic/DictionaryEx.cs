@@ -1,11 +1,10 @@
-#pragma warning disable RCS1231 // Make parameter ref read-only.
+﻿#pragma warning disable RCS1231 // Make parameter ref read-only.
 
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-
+using Theraot;
 #if LESSTHAN_NET45
-
 using System.Runtime.CompilerServices;
 
 #endif
@@ -64,8 +63,8 @@ namespace System.Collections.Generic
         protected DictionaryEx(SerializationInfo info, StreamingContext context)
 #endif
         {
-            Theraot.No.Op(info);
-            Theraot.No.Op(context);
+            No.Op(info);
+            No.Op(context);
         }
 
 #if LESSTHAN_NET45

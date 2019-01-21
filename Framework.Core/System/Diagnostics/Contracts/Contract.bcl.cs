@@ -27,13 +27,13 @@ namespace System.Diagnostics.Contracts
         private static bool _assertingMustUseRewriter;
 
         /// <summary>
-        /// Allows a managed application environment such as an interactive interpreter (IronPython)
-        /// to be notified of contract failures and
-        /// potentially "handle" them, either by throwing a particular exception type, etc.  If any of the
-        /// event handlers sets the Cancel flag in the ContractFailedEventArgs, then the Contract class will
-        /// not pop up an assert dialog box or trigger escalation policy.  Hooking this event requires
-        /// full trust, because it will inform you of bugs in the appdomain and because the event handler
-        /// could allow you to continue execution.
+        ///     Allows a managed application environment such as an interactive interpreter (IronPython)
+        ///     to be notified of contract failures and
+        ///     potentially "handle" them, either by throwing a particular exception type, etc.  If any of the
+        ///     event handlers sets the Cancel flag in the ContractFailedEventArgs, then the Contract class will
+        ///     not pop up an assert dialog box or trigger escalation policy.  Hooking this event requires
+        ///     full trust, because it will inform you of bugs in the appdomain and because the event handler
+        ///     could allow you to continue execution.
         /// </summary>
         public static event EventHandler<ContractFailedEventArgs> ContractFailed
         {
@@ -53,11 +53,12 @@ namespace System.Diagnostics.Contracts
             {
                 ContractHelperEx.Fail("Asserting that we must use the rewriter went reentrant."); // Didn't rewrite this mscorlib?
             }
+
             _assertingMustUseRewriter = true;
 
             // For better diagnostics, report which assembly is at fault.  Walk up stack and
             // find the first non-mscorlib assembly.
-            var thisAssembly = typeof(Contract).Assembly;  // In case we refactor mscorlib, use Contract class instead of Object.
+            var thisAssembly = typeof(Contract).Assembly; // In case we refactor mscorlib, use Contract class instead of Object.
             var stack = new StackTrace();
             Assembly probablyNotRewritten = null;
             for (var i = 0; i < stack.FrameCount; i++)
@@ -68,11 +69,13 @@ namespace System.Diagnostics.Contracts
                     // Not standard method info - ignoring
                     continue;
                 }
+
                 var caller = declaringType.Assembly;
                 if (thisAssembly.Equals(caller))
                 {
                     continue;
                 }
+
                 probablyNotRewritten = caller;
                 break;
             }
@@ -81,6 +84,7 @@ namespace System.Diagnostics.Contracts
             {
                 probablyNotRewritten = thisAssembly;
             }
+
             var simpleName = probablyNotRewritten.GetName().Name;
             ContractHelper.TriggerFailure(kind, $"The code has not been rewritten. ContractKind: {contractKind} - Source: {simpleName}", null, null, null);
 

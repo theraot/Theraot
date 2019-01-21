@@ -15,39 +15,13 @@ namespace System.Collections
 
         private sealed class InternalComparer : IComparer, IEqualityComparer
         {
-
-            private static void CheckRank(object x, object y, Type typeX, Type typeY)
-            {
-                var xRankInfo = typeX.GetProperty("Rank");
-                var yRankInfo = typeY.GetProperty("Rank");
-                if (xRankInfo == null || yRankInfo == null)
-                {
-                    // should never happen
-                    throw new ArgumentException("Valid arrays required");
-                }
-                if ((int)xRankInfo.GetValue(x, ArrayReservoir<object>.EmptyArray) != 1)
-                {
-                    throw new ArgumentException("Only one-dimensional arrays are supported", nameof(x));
-                }
-                if ((int)yRankInfo.GetValue(y, ArrayReservoir<object>.EmptyArray) != 1)
-                {
-                    throw new ArgumentException("Only one-dimensional arrays are supported", nameof(y));
-                }
-            }
-
-            private static bool NullComparison(object x, object y, out bool result)
-            {
-                var xNull = x == null;
-                var yNull = y == null;
-                result = xNull == yNull;
-                return xNull || yNull;
-            }
             int IComparer.Compare(object x, object y)
             {
                 if (x is IStructuralComparable comparable)
                 {
                     return comparable.CompareTo(y, this);
                 }
+
                 return Comparer.Default.Compare(x, y);
             }
 
@@ -57,10 +31,12 @@ namespace System.Collections
                 {
                     return result;
                 }
+
                 if (x is IStructuralEquatable comparable)
                 {
                     return comparable.Equals(y, this);
                 }
+
                 var typeX = x.GetType();
                 var typeY = y.GetType();
                 if (typeX.IsArray && typeY.IsArray)
@@ -75,10 +51,12 @@ namespace System.Collections
                             // should never happen
                             throw new ArgumentException("Valid arrays required");
                         }
+
                         if ((int)xLengthInfo.GetValue(x, ArrayReservoir<object>.EmptyArray) != (int)yLengthInfo.GetValue(y, ArrayReservoir<object>.EmptyArray))
                         {
                             return false;
                         }
+
                         var xEnumeratorInfo = typeX.GetMethod("GetEnumerator");
                         var yEnumeratorInfo = typeX.GetMethod("GetEnumerator");
                         IEnumerator firstEnumerator = null;
@@ -97,11 +75,13 @@ namespace System.Collections
                                 {
                                     return false;
                                 }
+
                                 if (!comparer.Equals(firstEnumerator.Current, secondEnumerator.Current))
                                 {
                                     return false;
                                 }
                             }
+
                             return !secondEnumerator.MoveNext();
                         }
                         finally
@@ -110,14 +90,17 @@ namespace System.Collections
                             {
                                 disposableX.Dispose();
                             }
+
                             if (secondEnumerator is IDisposable disposableY)
                             {
                                 disposableY.Dispose();
                             }
                         }
                     }
+
                     return false;
                 }
+
                 return EqualityComparer<object>.Default.Equals(x, y);
             }
 
@@ -127,7 +110,37 @@ namespace System.Collections
                 {
                     return comparer.GetHashCode(this);
                 }
+
                 return EqualityComparer<object>.Default.GetHashCode(obj);
+            }
+
+            private static void CheckRank(object x, object y, Type typeX, Type typeY)
+            {
+                var xRankInfo = typeX.GetProperty("Rank");
+                var yRankInfo = typeY.GetProperty("Rank");
+                if (xRankInfo == null || yRankInfo == null)
+                {
+                    // should never happen
+                    throw new ArgumentException("Valid arrays required");
+                }
+
+                if ((int)xRankInfo.GetValue(x, ArrayReservoir<object>.EmptyArray) != 1)
+                {
+                    throw new ArgumentException("Only one-dimensional arrays are supported", nameof(x));
+                }
+
+                if ((int)yRankInfo.GetValue(y, ArrayReservoir<object>.EmptyArray) != 1)
+                {
+                    throw new ArgumentException("Only one-dimensional arrays are supported", nameof(y));
+                }
+            }
+
+            private static bool NullComparison(object x, object y, out bool result)
+            {
+                var xNull = x == null;
+                var yNull = y == null;
+                result = xNull == yNull;
+                return xNull || yNull;
             }
         }
     }

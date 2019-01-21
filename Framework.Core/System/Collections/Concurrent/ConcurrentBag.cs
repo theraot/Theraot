@@ -26,26 +26,17 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentNullException(nameof(collection));
             }
+
             _wrapped = new SafeQueue<T>(collection);
         }
 
-        public int Count => _wrapped.Count;
-
         public bool IsEmpty => Count == 0;
+
+        public int Count => _wrapped.Count;
 
         bool ICollection.IsSynchronized => false;
 
         object ICollection.SyncRoot => throw new NotSupportedException();
-
-        public void Add(T item)
-        {
-            _wrapped.Add(item);
-        }
-
-        public void Clear()
-        {
-            _wrapped = new SafeQueue<T>();
-        }
 
         public void CopyTo(T[] array, int index)
         {
@@ -60,11 +51,6 @@ namespace System.Collections.Concurrent
         public T[] ToArray()
         {
             return _wrapped.ToArray();
-        }
-
-        public bool TryPeek(out T result)
-        {
-            return _wrapped.TryPeek(out result);
         }
 
         public bool TryTake(out T item)
@@ -87,6 +73,21 @@ namespace System.Collections.Concurrent
         {
             Add(item);
             return true;
+        }
+
+        public void Add(T item)
+        {
+            _wrapped.Add(item);
+        }
+
+        public void Clear()
+        {
+            _wrapped = new SafeQueue<T>();
+        }
+
+        public bool TryPeek(out T result)
+        {
+            return _wrapped.TryPeek(out result);
         }
     }
 }

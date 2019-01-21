@@ -35,6 +35,7 @@ namespace System.Dynamic.Utils
                     {
                         throw new ArgumentException("Expression must be readable", idx >= 0 ? $"{paramName}[{idx}]" : paramName);
                     }
+
                     break;
 
                 case ExpressionType.MemberAccess:
@@ -65,7 +66,8 @@ namespace System.Dynamic.Utils
             if (collection is ParameterExpression tObj)
             {
                 // otherwise make sure only one read-only collection ever gets exposed
-                Interlocked.CompareExchange(
+                Interlocked.CompareExchange
+                (
                     ref collection,
                     new ReadOnlyCollection<ParameterExpression>(new ListParameterProvider(provider, tObj)),
                     tObj
@@ -98,7 +100,8 @@ namespace System.Dynamic.Utils
             if (collection is Expression tObj)
             {
                 // otherwise make sure only one read-only collection ever gets exposed
-                Interlocked.CompareExchange(
+                Interlocked.CompareExchange
+                (
                     ref collection,
                     new ReadOnlyCollection<Expression>(new ListArgumentProvider(provider, tObj)),
                     tObj
@@ -177,11 +180,13 @@ namespace System.Dynamic.Utils
                         newArgs[j] = arguments[j];
                     }
                 }
+
                 if (newArgs != null)
                 {
                     newArgs[i] = arg;
                 }
             }
+
             if (newArgs != null)
             {
                 arguments = newArgs;
@@ -196,7 +201,8 @@ namespace System.Dynamic.Utils
             {
                 pType = pType.GetElementType();
             }
-            TypeUtils.ValidateType(pType, methodParamName, allowByRef: true, allowPointer: true);
+
+            TypeUtils.ValidateType(pType, methodParamName, true, true);
             if (!pType.IsReferenceAssignableFromInternal(arguments.Type) && !TryQuote(pType, ref arguments))
             {
                 // Throw the right error for the node we were given
@@ -225,6 +231,7 @@ namespace System.Dynamic.Utils
             {
                 pis = pis.RemoveFirst(); // ignore CallSite argument
             }
+
             return pis;
         }
 

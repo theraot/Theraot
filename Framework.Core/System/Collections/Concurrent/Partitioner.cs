@@ -22,10 +22,12 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentNullException(nameof(list));
             }
+
             if (loadBalance)
             {
                 return new DynamicOrderablePartitioner<TSource>(list);
             }
+
             return new StaticOrderablePartitioner<TSource>(list);
         }
 
@@ -35,10 +37,12 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             if (loadBalance)
             {
                 return new DynamicOrderablePartitioner<TSource>(array);
             }
+
             return new StaticOrderablePartitioner<TSource>(array);
         }
 
@@ -59,6 +63,7 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentOutOfRangeException(nameof(toExclusive));
             }
+
             var rangeCount = EnvironmentHelper.ProcessorCount * _coreOversubscriptionRate;
             var size = toExclusive - fromInclusive;
             var rangeSize = size / rangeCount;
@@ -66,6 +71,7 @@ namespace System.Collections.Concurrent
             {
                 rangeSize++;
             }
+
             return new StaticOrderablePartitioner<Tuple<long, long>>(Range(fromInclusive, toExclusive, rangeSize));
         }
 
@@ -75,10 +81,12 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentOutOfRangeException(nameof(toExclusive));
             }
+
             if (rangeSize <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(rangeSize));
             }
+
             return new StaticOrderablePartitioner<Tuple<long, long>>(Range(fromInclusive, toExclusive, rangeSize));
         }
 
@@ -88,6 +96,7 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentOutOfRangeException(nameof(toExclusive));
             }
+
             var rangeCount = EnvironmentHelper.ProcessorCount * _coreOversubscriptionRate;
             var size = toExclusive - fromInclusive;
             var rangeSize = size / rangeCount;
@@ -95,6 +104,7 @@ namespace System.Collections.Concurrent
             {
                 rangeSize++;
             }
+
             return new StaticOrderablePartitioner<Tuple<int, int>>(Range(fromInclusive, toExclusive, rangeSize));
         }
 
@@ -104,10 +114,12 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentOutOfRangeException(nameof(toExclusive));
             }
+
             if (rangeSize <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(rangeSize));
             }
+
             return new StaticOrderablePartitioner<Tuple<int, int>>(Range(fromInclusive, toExclusive, rangeSize));
         }
 
@@ -120,6 +132,7 @@ namespace System.Collections.Concurrent
                 {
                     top = toExclusive;
                 }
+
                 top++;
                 yield return new Tuple<long, long>(index, top);
             }
@@ -134,6 +147,7 @@ namespace System.Collections.Concurrent
                 {
                     top = toExclusive;
                 }
+
                 top++;
                 yield return new Tuple<int, int>(index, top);
             }
@@ -180,7 +194,9 @@ namespace System.Collections.Concurrent
             {
                 list.Add(Enumerator(index));
             }
+
             return list.AsReadOnly();
+
             IEnumerator<KeyValuePair<long, T>> Enumerator(int index)
             {
                 var subIndex = 0;

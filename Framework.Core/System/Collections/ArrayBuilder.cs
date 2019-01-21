@@ -1,4 +1,4 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -10,7 +10,7 @@ using Theraot.Collections.ThreadSafe;
 namespace System.Collections.Generic
 {
     /// <summary>
-    /// Helper type for avoiding allocations while building arrays.
+    ///     Helper type for avoiding allocations while building arrays.
     /// </summary>
     /// <typeparam name="T">The element type.</typeparam>
     internal struct ArrayBuilder<T>
@@ -19,7 +19,7 @@ namespace System.Collections.Generic
         private const int _maxCoreClrArrayLength = 0x7fefffff; // For byte arrays the limit is slightly larger
 
         /// <summary>
-        /// Initializes the <see cref="ArrayBuilder{T}"/> with a specified capacity.
+        ///     Initializes the <see cref="ArrayBuilder{T}" /> with a specified capacity.
         /// </summary>
         /// <param name="capacity">The capacity of the array to allocate.</param>
         public ArrayBuilder(int capacity) : this()
@@ -35,18 +35,18 @@ namespace System.Collections.Generic
         public T[] Buffer { get; private set; }
 
         /// <summary>
-        /// Gets the number of items this instance can store without re-allocating,
-        /// or 0 if the backing array is <c>null</c>.
+        ///     Gets the number of items this instance can store without re-allocating,
+        ///     or 0 if the backing array is <c>null</c>.
         /// </summary>
         public int Capacity => Buffer?.Length ?? 0;
 
         /// <summary>
-        /// Gets the number of items in the array currently in use.
+        ///     Gets the number of items in the array currently in use.
         /// </summary>
         public int Count { get; private set; }
 
         /// <summary>
-        /// Gets or sets the item at a certain index in the array.
+        ///     Gets or sets the item at a certain index in the array.
         /// </summary>
         /// <param name="index">The index into the array.</param>
         public T this[int index]
@@ -59,7 +59,7 @@ namespace System.Collections.Generic
         }
 
         /// <summary>
-        /// Adds an item to the backing array, resizing it if necessary.
+        ///     Adds an item to the backing array, resizing it if necessary.
         /// </summary>
         /// <param name="item">The item to add.</param>
         public void Add(T item)
@@ -73,7 +73,7 @@ namespace System.Collections.Generic
         }
 
         /// <summary>
-        /// Gets the first item in this builder.
+        ///     Gets the first item in this builder.
         /// </summary>
         public T First()
         {
@@ -82,7 +82,7 @@ namespace System.Collections.Generic
         }
 
         /// <summary>
-        /// Gets the last item in this builder.
+        ///     Gets the last item in this builder.
         /// </summary>
         public T Last()
         {
@@ -91,10 +91,10 @@ namespace System.Collections.Generic
         }
 
         /// <summary>
-        /// Creates an array from the contents of this builder.
+        ///     Creates an array from the contents of this builder.
         /// </summary>
         /// <remarks>
-        /// Do not call this method twice on the same builder.
+        ///     Do not call this method twice on the same builder.
         /// </remarks>
         public T[] ToArray()
         {
@@ -124,12 +124,12 @@ namespace System.Collections.Generic
         }
 
         /// <summary>
-        /// Adds an item to the backing array, without checking if there is room.
+        ///     Adds an item to the backing array, without checking if there is room.
         /// </summary>
         /// <param name="item">The item to add.</param>
         /// <remarks>
-        /// Use this method if you know there is enough space in the <see cref="ArrayBuilder{T}"/>
-        /// for another item, and you are writing performance-sensitive code.
+        ///     Use this method if you know there is enough space in the <see cref="ArrayBuilder{T}" />
+        ///     for another item, and you are writing performance-sensitive code.
         /// </remarks>
         public void UncheckedAdd(T item)
         {
@@ -157,6 +157,7 @@ namespace System.Collections.Generic
             {
                 Array.Copy(Buffer, 0, next, 0, Count);
             }
+
             Buffer = next;
         }
     }

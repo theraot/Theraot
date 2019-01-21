@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NETSTANDARD13
-
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
 #pragma warning disable CA2235 // Mark all non-serializable fields
 #pragma warning disable CC0021 // Use nameof
