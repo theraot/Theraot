@@ -538,7 +538,7 @@ namespace Theraot.Collections
 
         public static bool ListEquals<T>(this IList<T> first, IList<T> second)
         {
-            if (first == second)
+            if (ReferenceEquals(first, second))
             {
                 return true;
             }
@@ -598,7 +598,7 @@ namespace Theraot.Collections
 
         public static bool ReadOnlyListEquals<T>(this IReadOnlyList<T> first, IReadOnlyList<T> second)
         {
-            if (first == second)
+            if (ReferenceEquals(first, second))
             {
                 return true;
             }

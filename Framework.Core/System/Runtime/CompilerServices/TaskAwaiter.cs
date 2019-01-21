@@ -1,4 +1,4 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 
@@ -290,6 +290,7 @@ namespace System.Runtime.CompilerServices
                 case TaskStatus.Canceled:
                     throw new TaskCanceledException(task);
                 case TaskStatus.Faulted:
+                    // ReSharper disable once PossibleNullReferenceException
                     throw PrepareExceptionForRethrow(task.Exception.InnerException);
                 default:
                     throw new InvalidOperationException("The task has not yet completed.");

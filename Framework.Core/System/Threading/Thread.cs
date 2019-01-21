@@ -1,7 +1,5 @@
 ﻿#if TARGETS_NETSTANDARD
 
-#pragma warning disable CA1008 // Enums should have zero value
-#pragma warning disable CA1714 // Flags enums should have plural names
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CC0091 // Use static method
 
@@ -9,51 +7,8 @@ using System.Threading.Tasks;
 using Theraot;
 using Theraot.Threading;
 
-namespace System
-{
-    public class SystemException : Exception
-    {
-        public SystemException()
-        {
-            // Empty
-        }
-
-        public SystemException(string message) : base(message)
-        {
-            // Empty
-        }
-
-        public SystemException(string message, Exception inner) : base(message, inner)
-        {
-            // Empty
-        }
-    }
-}
-
 namespace System.Threading
 {
-    [Runtime.InteropServices.ComVisible(false)]
-    public delegate void ParameterizedThreadStart(object obj);
-
-    [Runtime.InteropServices.ComVisible(true)]
-    public delegate void ThreadStart();
-
-    [Flags]
-    [Runtime.InteropServices.ComVisible(true)]
-    public enum ThreadState
-    {
-        Running = 0,
-        StopRequested = 1,
-        SuspendRequested = 2,
-        Background = 4,
-        Unstarted = 8,
-        Stopped = 16,
-        WaitSleepJoin = 32,
-        Suspended = 64,
-        AbortRequested = 128,
-        Aborted = 256
-    }
-
     public class Thread
     {
         [ThreadStatic]
@@ -62,6 +17,7 @@ namespace System.Threading
         private static int _lastId;
 
         [ThreadStatic]
+        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         private static object _threadProbe;
         private string _name;
 
@@ -75,14 +31,11 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(start));
             }
-            _start = new ParameterizedThreadStart
-            (
-                state =>
-                {
-                    _currentThread = this;
-                    start(state);
-                }
-            );
+            _start = state =>
+            {
+                _currentThread = this;
+                start(state);
+            };
             ManagedThreadId = Interlocked.Increment(ref _lastId);
         }
 
@@ -92,14 +45,11 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(start));
             }
-            _start = new ParameterizedThreadStart
-            (
-                _ =>
-                {
-                    _currentThread = this;
-                    start();
-                }
-            );
+            _start = _ =>
+            {
+                _currentThread = this;
+                start();
+            };
             ManagedThreadId = Interlocked.Increment(ref _lastId);
         }
 
@@ -291,22 +241,6 @@ namespace System.Threading
             var task = new Task(() => _start(parameter), TaskCreationOptions.LongRunning);
             task.Start();
             _task = task;
-        }
-    }
-
-    [Runtime.InteropServices.ComVisible(true)]
-    public class ThreadStateException : SystemException
-    {
-        public ThreadStateException()
-        {
-        }
-
-        public ThreadStateException(string message) : base(message)
-        {
-        }
-
-        public ThreadStateException(string message, Exception inner) : base(message, inner)
-        {
         }
     }
 }

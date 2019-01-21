@@ -1,4 +1,6 @@
-﻿using System;
+﻿// ReSharper disable PossibleInvalidOperationException
+
+using System;
 using System.Linq;
 
 namespace TestRunner.System.Linq
@@ -10,8 +12,8 @@ namespace TestRunner.System.Linq
         [Test]
         public static void MaxOfEmptyEnumerableThrows()
         {
-            Assert.Throws<InvalidOperationException>(() => new double[] { }.Max());
-            Assert.Throws<InvalidOperationException>(() => new float[] { }.Max());
+            Assert.Throws<InvalidOperationException, double>(() => new double[] { }.Max());
+            Assert.Throws<InvalidOperationException, float>(() => new float[] { }.Max());
         }
         [Test]
         public static void MaxOfEmptyNullableEnumerableIsNull()
@@ -74,8 +76,8 @@ namespace TestRunner.System.Linq
         [Test]
         public static void MinOfEmptyEnumerableThrows()
         {
-            Assert.Throws<InvalidOperationException>(() => new double[] { }.Min());
-            Assert.Throws<InvalidOperationException>(() => new float[] { }.Min());
+            Assert.Throws<InvalidOperationException, double>(() => new double[] { }.Min());
+            Assert.Throws<InvalidOperationException, float>(() => new float[] { }.Min());
         }
 
         [Test]

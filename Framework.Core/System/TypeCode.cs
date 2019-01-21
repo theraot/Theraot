@@ -4,8 +4,8 @@
 
 namespace System
 {
-    [System.Runtime.InteropServices.ComVisible(true)]
-    [System.Serializable]
+    [Runtime.InteropServices.ComVisible(true)]
+    [Serializable]
     public enum TypeCode
     {
         Empty = 0,

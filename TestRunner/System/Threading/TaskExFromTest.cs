@@ -10,10 +10,12 @@ namespace TestRunner.System.Threading
         [Test]
         public static void TaskExFromCanceledIsCanceled()
         {
-            var source = new CancellationTokenSource();
-            source.Cancel();
-            var task = TaskEx.FromCanceled(source.Token);
-            Assert.IsTrue(task.IsCanceled);
+            using (var source = new CancellationTokenSource())
+            {
+                source.Cancel();
+                var task = TaskEx.FromCanceled(source.Token);
+                Assert.IsTrue(task.IsCanceled);
+            }
         }
 
         [Test]
@@ -35,6 +37,7 @@ namespace TestRunner.System.Threading
         {
             var exception = new Exception();
             var task = TaskEx.FromException(exception);
+            // ReSharper disable once PossibleNullReferenceException
             Assert.AreEqual(exception, task.Exception.InnerException);
         }
 
@@ -57,10 +60,12 @@ namespace TestRunner.System.Threading
         [Test]
         public static void TaskExGenericFromCanceledIsCanceled()
         {
-            var source = new CancellationTokenSource();
-            source.Cancel();
-            var task = TaskEx.FromCanceled<bool>(source.Token);
-            Assert.IsTrue(task.IsCanceled);
+            using (var source = new CancellationTokenSource())
+            {
+                source.Cancel();
+                var task = TaskEx.FromCanceled<bool>(source.Token);
+                Assert.IsTrue(task.IsCanceled);
+            }
         }
 
         [Test]
@@ -82,6 +87,7 @@ namespace TestRunner.System.Threading
         {
             var exception = new Exception();
             var task = TaskEx.FromException<bool>(exception);
+            // ReSharper disable once PossibleNullReferenceException
             Assert.AreEqual(exception, task.Exception.InnerException);
         }
     }

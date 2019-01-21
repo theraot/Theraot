@@ -1,4 +1,6 @@
-// Needed for Workaround
+﻿// Needed for Workaround
+
+#pragma warning disable CC0031 // Check for null before calling a delegate
 
 using System;
 using System.Collections.Generic;

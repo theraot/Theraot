@@ -1,5 +1,7 @@
 ﻿// Needed for NET40
 
+#pragma warning disable CC0031 // Check for null before calling a delegate
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -20,10 +22,10 @@ namespace Theraot.Collections
 
                 case T[] array:
                     return array;
-#if LESSTHAN_NET40
-                case HashableReadOnlyCollection<T> ArrayReadOnlyCollection:
-                    return ArrayReadOnlyCollection.Wrapped;
-#endif
+
+                case HashableReadOnlyCollection<T> hashableReadOnlyCollection:
+                    return hashableReadOnlyCollection.Wrapped;
+
                 case ICollection<T> collection when collection.Count == 0:
                     return ArrayReservoir<T>.EmptyArray;
 
@@ -166,7 +168,7 @@ namespace Theraot.Collections
             {
                 return arrayReadOnlyCollection;
             }
-            var array = Extensions.AsArray(enumerable);
+            var array = AsArray(enumerable);
             return array.Length == 0 ? EmptyCollection<T>.Instance : HashableReadOnlyCollection.Create(array);
         }
 
