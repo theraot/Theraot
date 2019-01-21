@@ -35,6 +35,10 @@ namespace Theraot.Core
 
         public IOrderedEnumerable<TElement> CreateOrderedEnumerable<TNewKey>(Func<TElement, TNewKey> keySelector, IComparer<TNewKey> comparer, bool descending)
         {
+            if (keySelector == null)
+            {
+                throw new ArgumentNullException(nameof(keySelector));
+            }
             comparer = comparer ?? Comparer<TNewKey>.Default;
             if (descending)
             {
