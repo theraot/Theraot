@@ -20,18 +20,19 @@ namespace System.IO
             {
                 throw new ArgumentNullException(nameof(input));
             }
+
             if (output == null)
             {
                 throw new ArgumentNullException(nameof(output));
             }
+
             var buffer = new byte[_defaultBufferSize];
             int read;
             do
             {
                 read = input.Read(buffer, 0, _defaultBufferSize);
                 output.Write(buffer, 0, read);
-            }
-            while (read != 0);
+            } while (read != 0);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -42,18 +43,19 @@ namespace System.IO
             {
                 throw new ArgumentNullException(nameof(input));
             }
+
             if (output == null)
             {
                 throw new ArgumentNullException(nameof(output));
             }
+
             var buffer = new byte[bufferSize];
             int read;
             do
             {
                 read = input.Read(buffer, 0, bufferSize);
                 output.Write(buffer, 0, read);
-            }
-            while (read != 0);
+            } while (read != 0);
         }
     }
 
