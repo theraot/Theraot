@@ -63,39 +63,39 @@ namespace System.Linq.Expressions
         private static MethodInfo _typeGetTypeFromHandle;
 
         public static FieldInfo ClosureConstants =>
-                                 _closureConstants ??
-                                (_closureConstants = typeof(Closure).GetField(nameof(Closure.Constants)));
+            _closureConstants ??
+            (_closureConstants = typeof(Closure).GetField(nameof(Closure.Constants)));
 
         public static FieldInfo ClosureLocals =>
-                                 _closureLocals ??
-                                (_closureLocals = typeof(Closure).GetField(nameof(Closure.Locals)));
+            _closureLocals ??
+            (_closureLocals = typeof(Closure).GetField(nameof(Closure.Locals)));
 
         public static ConstructorInfo ClosureObjectArrayObjectArray =>
-                                       _closureObjectArrayObjectArray ??
-                                      (_closureObjectArrayObjectArray = typeof(Closure).GetConstructor(new[] { typeof(object[]), typeof(object[]) }));
+            _closureObjectArrayObjectArray ??
+            (_closureObjectArrayObjectArray = typeof(Closure).GetConstructor(new[] {typeof(object[]), typeof(object[])}));
 
         public static FieldInfo DateTimeMinValue
             => _dateTimeMinValue ?? (_dateTimeMinValue = typeof(DateTime).GetField(nameof(DateTime.MinValue)));
 
         public static ConstructorInfo DecimalCtorInt32 =>
-                                       _decimalCtorInt32 ??
-                                      (_decimalCtorInt32 = typeof(decimal).GetConstructor(new[] { typeof(int) }));
+            _decimalCtorInt32 ??
+            (_decimalCtorInt32 = typeof(decimal).GetConstructor(new[] {typeof(int)}));
 
         public static ConstructorInfo DecimalCtorInt32Int32Int32BoolByte =>
-                                       _decimalCtorInt32Int32Int32BoolByte ??
-                                      (_decimalCtorInt32Int32Int32BoolByte = typeof(decimal).GetConstructor(new[] { typeof(int), typeof(int), typeof(int), typeof(bool), typeof(byte) }));
+            _decimalCtorInt32Int32Int32BoolByte ??
+            (_decimalCtorInt32Int32Int32BoolByte = typeof(decimal).GetConstructor(new[] {typeof(int), typeof(int), typeof(int), typeof(bool), typeof(byte)}));
 
         public static ConstructorInfo DecimalCtorInt64 =>
-                                       _decimalCtorInt64 ??
-                                      (_decimalCtorInt64 = typeof(decimal).GetConstructor(new[] { typeof(long) }));
+            _decimalCtorInt64 ??
+            (_decimalCtorInt64 = typeof(decimal).GetConstructor(new[] {typeof(long)}));
 
         public static ConstructorInfo DecimalCtorUInt32 =>
-                                       _decimalCtorUInt32 ??
-                                      (_decimalCtorUInt32 = typeof(decimal).GetConstructor(new[] { typeof(uint) }));
+            _decimalCtorUInt32 ??
+            (_decimalCtorUInt32 = typeof(decimal).GetConstructor(new[] {typeof(uint)}));
 
         public static ConstructorInfo DecimalCtorUInt64 =>
-                                       _decimalCtorUInt64 ??
-                                      (_decimalCtorUInt64 = typeof(decimal).GetConstructor(new[] { typeof(ulong) }));
+            _decimalCtorUInt64 ??
+            (_decimalCtorUInt64 = typeof(decimal).GetConstructor(new[] {typeof(ulong)}));
 
         public static FieldInfo DecimalMaxValue
             => _decimalMaxValue ?? (_decimalMaxValue = typeof(decimal).GetField(nameof(decimal.MaxValue)));
@@ -110,99 +110,99 @@ namespace System.Linq.Expressions
             => _decimalOne ?? (_decimalOne = typeof(decimal).GetField(nameof(decimal.One)));
 
         public static MethodInfo DecimalOpImplicitByte =>
-                                  _decimalOpImplicitByte ??
-                                 (_decimalOpImplicitByte = typeof(decimal).GetMethod("op_Implicit", new[] { typeof(byte) }));
+            _decimalOpImplicitByte ??
+            (_decimalOpImplicitByte = typeof(decimal).GetMethod("op_Implicit", new[] {typeof(byte)}));
 
         public static MethodInfo DecimalOpImplicitChar =>
-                                  _decimalOpImplicitChar ??
-                                 (_decimalOpImplicitChar = typeof(decimal).GetMethod("op_Implicit", new[] { typeof(char) }));
+            _decimalOpImplicitChar ??
+            (_decimalOpImplicitChar = typeof(decimal).GetMethod("op_Implicit", new[] {typeof(char)}));
 
         public static MethodInfo DecimalOpImplicitInt16 =>
-                                  _decimalOpImplicitInt16 ??
-                                 (_decimalOpImplicitInt16 = typeof(decimal).GetMethod("op_Implicit", new[] { typeof(short) }));
+            _decimalOpImplicitInt16 ??
+            (_decimalOpImplicitInt16 = typeof(decimal).GetMethod("op_Implicit", new[] {typeof(short)}));
 
         public static MethodInfo DecimalOpImplicitInt32 =>
-                                  _decimalOpImplicitInt32 ??
-                                 (_decimalOpImplicitInt32 = typeof(decimal).GetMethod("op_Implicit", new[] { typeof(int) }));
+            _decimalOpImplicitInt32 ??
+            (_decimalOpImplicitInt32 = typeof(decimal).GetMethod("op_Implicit", new[] {typeof(int)}));
 
         public static MethodInfo DecimalOpImplicitInt64 =>
-                                  _decimalOpImplicitInt64 ??
-                                 (_decimalOpImplicitInt64 = typeof(decimal).GetMethod("op_Implicit", new[] { typeof(long) }));
+            _decimalOpImplicitInt64 ??
+            (_decimalOpImplicitInt64 = typeof(decimal).GetMethod("op_Implicit", new[] {typeof(long)}));
 
         public static MethodInfo DecimalOpImplicitSByte =>
-                                  _decimalOpImplicitSByte ??
-                                 (_decimalOpImplicitSByte = typeof(decimal).GetMethod("op_Implicit", new[] { typeof(sbyte) }));
+            _decimalOpImplicitSByte ??
+            (_decimalOpImplicitSByte = typeof(decimal).GetMethod("op_Implicit", new[] {typeof(sbyte)}));
 
         public static MethodInfo DecimalOpImplicitUInt16 =>
-                                  _decimalOpImplicitUInt16 ??
-                                 (_decimalOpImplicitUInt16 = typeof(decimal).GetMethod("op_Implicit", new[] { typeof(ushort) }));
+            _decimalOpImplicitUInt16 ??
+            (_decimalOpImplicitUInt16 = typeof(decimal).GetMethod("op_Implicit", new[] {typeof(ushort)}));
 
         public static MethodInfo DecimalOpImplicitUInt32 =>
-                                  _decimalOpImplicitUInt32 ??
-                                 (_decimalOpImplicitUInt32 = typeof(decimal).GetMethod("op_Implicit", new[] { typeof(uint) }));
+            _decimalOpImplicitUInt32 ??
+            (_decimalOpImplicitUInt32 = typeof(decimal).GetMethod("op_Implicit", new[] {typeof(uint)}));
 
         public static MethodInfo DecimalOpImplicitUInt64 =>
-                                  _decimalOpImplicitUInt64 ??
-                                 (_decimalOpImplicitUInt64 = typeof(decimal).GetMethod("op_Implicit", new[] { typeof(ulong) }));
+            _decimalOpImplicitUInt64 ??
+            (_decimalOpImplicitUInt64 = typeof(decimal).GetMethod("op_Implicit", new[] {typeof(ulong)}));
 
         public static FieldInfo DecimalZero
             => _decimalZero ?? (_decimalZero = typeof(decimal).GetField(nameof(decimal.Zero)));
 
         public static MethodInfo DictionaryOfStringInt32AddStringInt32 =>
-                                  _dictionaryOfStringInt32AddStringInt32 ??
-                                 (_dictionaryOfStringInt32AddStringInt32 = typeof(Dictionary<string, int>).GetMethod(nameof(Dictionary<string, int>.Add), new[] { typeof(string), typeof(int) }));
+            _dictionaryOfStringInt32AddStringInt32 ??
+            (_dictionaryOfStringInt32AddStringInt32 = typeof(Dictionary<string, int>).GetMethod(nameof(Dictionary<string, int>.Add), new[] {typeof(string), typeof(int)}));
 
         public static ConstructorInfo DictionaryOfStringInt32CtorInt32 =>
-                                       _dictionaryOfStringInt32CtorInt32 ??
-                                      (_dictionaryOfStringInt32CtorInt32 = typeof(Dictionary<string, int>).GetConstructor(new[] { typeof(int) }));
+            _dictionaryOfStringInt32CtorInt32 ??
+            (_dictionaryOfStringInt32CtorInt32 = typeof(Dictionary<string, int>).GetConstructor(new[] {typeof(int)}));
 
         public static MethodInfo MathPowDoubleDouble =>
-                                  _mathPowDoubleDouble ??
-                                 (_mathPowDoubleDouble = typeof(Math).GetMethod(nameof(Math.Pow), new[] { typeof(double), typeof(double) }));
+            _mathPowDoubleDouble ??
+            (_mathPowDoubleDouble = typeof(Math).GetMethod(nameof(Math.Pow), new[] {typeof(double), typeof(double)}));
 
         public static MethodInfo MethodBaseGetMethodFromHandleRuntimeMethodHandle =>
-                                  _methodBaseGetMethodFromHandleRuntimeMethodHandle ??
-                                 (_methodBaseGetMethodFromHandleRuntimeMethodHandle = typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle), new[] { typeof(RuntimeMethodHandle) }));
+            _methodBaseGetMethodFromHandleRuntimeMethodHandle ??
+            (_methodBaseGetMethodFromHandleRuntimeMethodHandle = typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle), new[] {typeof(RuntimeMethodHandle)}));
 
         public static MethodInfo MethodBaseGetMethodFromHandleRuntimeMethodHandleRuntimeTypeHandle =>
-                                  _methodBaseGetMethodFromHandleRuntimeMethodHandleRuntimeTypeHandle ??
-                                 (_methodBaseGetMethodFromHandleRuntimeMethodHandleRuntimeTypeHandle = typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle), new[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) }));
+            _methodBaseGetMethodFromHandleRuntimeMethodHandleRuntimeTypeHandle ??
+            (_methodBaseGetMethodFromHandleRuntimeMethodHandleRuntimeTypeHandle = typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle), new[] {typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle)}));
 
         public static ConstructorInfo NullableBooleanCtor =>
-                                  _nullableBooleanCtor ??
-                                 (_nullableBooleanCtor = typeof(bool?).GetConstructor(new[] { typeof(bool) }));
+            _nullableBooleanCtor ??
+            (_nullableBooleanCtor = typeof(bool?).GetConstructor(new[] {typeof(bool)}));
 
         public static MethodInfo ObjectGetType =>
-                                  _objectGetType ??
-                                 (_objectGetType = typeof(object).GetMethod(nameof(GetType)));
+            _objectGetType ??
+            (_objectGetType = typeof(object).GetMethod(nameof(GetType)));
 
         public static MethodInfo RuntimeOpsCreateRuntimeVariables =>
-                                  _runtimeOpsCreateRuntimeVariables ??
-                                 (_runtimeOpsCreateRuntimeVariables = typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.CreateRuntimeVariables), Type.EmptyTypes));
+            _runtimeOpsCreateRuntimeVariables ??
+            (_runtimeOpsCreateRuntimeVariables = typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.CreateRuntimeVariables), Type.EmptyTypes));
 
         public static MethodInfo RuntimeOpsCreateRuntimeVariablesObjectArrayInt64Array =>
-                                  _runtimeOpsCreateRuntimeVariablesObjectArrayInt64Array ??
-                                 (_runtimeOpsCreateRuntimeVariablesObjectArrayInt64Array = typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.CreateRuntimeVariables), new[] { typeof(object[]), typeof(long[]) }));
+            _runtimeOpsCreateRuntimeVariablesObjectArrayInt64Array ??
+            (_runtimeOpsCreateRuntimeVariablesObjectArrayInt64Array = typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.CreateRuntimeVariables), new[] {typeof(object[]), typeof(long[])}));
 
         public static MethodInfo RuntimeOpsMergeRuntimeVariables =>
-                                  _runtimeOpsMergeRuntimeVariables ??
-                                 (_runtimeOpsMergeRuntimeVariables = typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.MergeRuntimeVariables)));
+            _runtimeOpsMergeRuntimeVariables ??
+            (_runtimeOpsMergeRuntimeVariables = typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.MergeRuntimeVariables)));
 
         public static MethodInfo RuntimeOpsQuote =>
-                                  _runtimeOpsQuote ??
-                                 (_runtimeOpsQuote = typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.Quote)));
+            _runtimeOpsQuote ??
+            (_runtimeOpsQuote = typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.Quote)));
 
         public static MethodInfo StringEqualsStringString =>
-                                  _stringEqualsStringString ??
-                                 (_stringEqualsStringString = typeof(string).GetMethod("Equals", new[] { typeof(string), typeof(string) }));
+            _stringEqualsStringString ??
+            (_stringEqualsStringString = typeof(string).GetMethod("Equals", new[] {typeof(string), typeof(string)}));
 
         public static MethodInfo StringOpEqualityStringString =>
-                                                                                  _stringOpEqualityStringString ??
-                                 (_stringOpEqualityStringString = typeof(string).GetMethod("op_Equality", new[] { typeof(string), typeof(string) }));
+            _stringOpEqualityStringString ??
+            (_stringOpEqualityStringString = typeof(string).GetMethod("op_Equality", new[] {typeof(string), typeof(string)}));
 
         public static MethodInfo TypeGetTypeFromHandle =>
-                                  _typeGetTypeFromHandle ??
-                                 (_typeGetTypeFromHandle = typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle)));
+            _typeGetTypeFromHandle ??
+            (_typeGetTypeFromHandle = typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle)));
     }
 
     internal static partial class CachedReflectionInfo

@@ -13,7 +13,7 @@ namespace System.Linq.Expressions
         KnownFalse,
         KnownTrue,
         KnownAssignable, // need null check only
-        Unknown         // need full runtime check
+        Unknown // need full runtime check
     }
 
     internal static class ConstantCheck
