@@ -78,7 +78,7 @@ namespace Theraot.Reflection
         {
             foreach (var method in methods)
             {
-                if (method.Name != "op_Implicit" && (implicitOnly || method.Name != "op_Explicit"))
+                if (!string.Equals(method.Name, "op_Implicit", StringComparison.Ordinal) && (implicitOnly || !string.Equals(method.Name, "op_Explicit", StringComparison.Ordinal)))
                 {
                     continue;
                 }
@@ -287,17 +287,17 @@ namespace Theraot.Reflection
             {
                 return found;
             }
+            if (valueFactory == null)
+            {
+                throw new ArgumentNullException(nameof(valueFactory));
+            }
             var created = valueFactory();
             if (created == null)
             {
                 throw new InvalidOperationException("valueFactory returned null");
             }
             found = Interlocked.CompareExchange(ref target, created, null);
-            if (found == null)
-            {
-                return created;
-            }
-            return found;
+            return found ?? created;
         }
 
         public static T LazyCreate<T>(ref T target, Func<T> valueFactory, object syncRoot)
