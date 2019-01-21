@@ -462,7 +462,6 @@ namespace System.Linq.Expressions
 
     public partial class Expression
     {
-
         /// <summary>
         /// Creates a <see cref="BinaryExpression"/> that represents an arithmetic addition operation that does not have overflow checking.
         /// </summary>
@@ -830,6 +829,7 @@ namespace System.Linq.Expressions
 
             return new SimpleBinaryExpression(ExpressionType.ArrayIndex, array, index, arrayType.GetElementType());
         }
+
         /// <summary>
         /// Creates a <see cref="BinaryExpression"/> that represents an assignment operation.
         /// </summary>
