@@ -1,4 +1,6 @@
-﻿// AtomicBoolean.cs
+﻿#pragma warning disable CA2225 // Operator overloads have named alternates
+
+// AtomicBoolean.cs
 //
 // Copyright (c) 2008 Jérémie "Garuma" Laval
 //
@@ -29,16 +31,6 @@ namespace Theraot.Threading
 {
     public class AtomicBoolean
     {
-
-        public static implicit operator AtomicBoolean(bool value)
-        {
-            return new AtomicBoolean { Value = value };
-        }
-
-        public static implicit operator bool(AtomicBoolean atomicBoolean)
-        {
-            return atomicBoolean.Value;
-        }
         private const int _set = 1;
         private const int _unset = 0;
         private int _value;
@@ -50,16 +42,28 @@ namespace Theraot.Threading
             set => Exchange(value);
         }
 
+        public static implicit operator AtomicBoolean(bool value)
+        {
+            return new AtomicBoolean {Value = value};
+        }
+
+        public static implicit operator bool(AtomicBoolean atomicBoolean)
+        {
+            return atomicBoolean.Value;
+        }
+
         public static bool operator !=(AtomicBoolean left, AtomicBoolean right)
         {
             if (left is null)
             {
                 return !(right is null);
             }
+
             if (right is null)
             {
                 return true;
             }
+
             return left._value != right._value;
         }
 
@@ -69,10 +73,12 @@ namespace Theraot.Threading
             {
                 return right is null;
             }
+
             if (right is null)
             {
                 return false;
             }
+
             return left._value == right._value;
         }
 
@@ -90,6 +96,7 @@ namespace Theraot.Threading
             {
                 return false;
             }
+
             return _value == obj._value;
         }
 
@@ -111,7 +118,7 @@ namespace Theraot.Threading
 
         public override string ToString()
         {
-            return Value.ToString();
+            return Value ? "true" : "false";
         }
 
         public bool TrySet()
