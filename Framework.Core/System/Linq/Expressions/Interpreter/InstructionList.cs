@@ -34,7 +34,7 @@ namespace System.Linq.Expressions.Interpreter
             MaxStackDepth = maxStackDepth;
             MaxContinuationDepth = maxContinuationDepth;
             Instructions = instructions;
-            DebugCookies = Theraot.Collections.Extensions.AsArray(debugCookies);
+            DebugCookies = Theraot.Collections.Extensions.AsArrayInternal(debugCookies);
             Objects = objects;
             Labels = labels;
         }
@@ -793,8 +793,8 @@ namespace System.Linq.Expressions.Interpreter
             return new InstructionArray(
                 MaxStackDepth,
                 _maxContinuationDepth,
-                Theraot.Collections.Extensions.AsArray(_instructions),
-                _objects == null ? null : Theraot.Collections.Extensions.AsArray(_objects),
+                Theraot.Collections.Extensions.AsArrayInternal(_instructions),
+                _objects == null ? null : Theraot.Collections.Extensions.AsArrayInternal(_objects),
                 BuildRuntimeLabels(),
                 _debugCookies
             );
@@ -1043,7 +1043,7 @@ namespace System.Linq.Expressions.Interpreter
                         continuationsDepth += contDiff;
                     }
 
-                    return Theraot.Collections.Extensions.AsArray(result);
+                    return Theraot.Collections.Extensions.AsArrayInternal(result);
                 }
             }
 

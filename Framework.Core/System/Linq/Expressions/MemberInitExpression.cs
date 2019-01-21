@@ -37,7 +37,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(newExpression, nameof(newExpression));
             ContractUtils.RequiresNotNull(bindings, nameof(bindings));
-            var bindingsArray = Theraot.Collections.Extensions.AsArray(bindings);
+            var bindingsArray = Theraot.Collections.Extensions.AsArrayInternal(bindings);
             ValidateMemberInitArgs(newExpression.Type, bindingsArray);
             return new MemberInitExpression(newExpression, bindingsArray);
         }

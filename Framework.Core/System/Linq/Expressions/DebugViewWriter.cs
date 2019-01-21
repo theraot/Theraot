@@ -172,10 +172,10 @@ namespace System.Linq.Expressions
                 Out(string.Format(CultureInfo.CurrentCulture, "<{0}>", node.Type.ToString()));
             }
 
-            VisitDeclarations(Theraot.Collections.Extensions.AsArray(node.Variables));
+            VisitDeclarations(Theraot.Collections.Extensions.AsArrayInternal(node.Variables));
             Out(" ");
             // Use ; to separate expressions in the block
-            VisitExpressions('{', ';', Theraot.Collections.Extensions.AsArray(node.Expressions));
+            VisitExpressions('{', ';', Theraot.Collections.Extensions.AsArrayInternal(node.Expressions));
 
             return node;
         }
@@ -310,7 +310,7 @@ namespace System.Linq.Expressions
                 ParenthesizedVisit(node, node.Object);
             }
 
-            VisitExpressions('[', Theraot.Collections.Extensions.AsArray(node.Arguments));
+            VisitExpressions('[', Theraot.Collections.Extensions.AsArrayInternal(node.Arguments));
             return node;
         }
 
@@ -318,7 +318,7 @@ namespace System.Linq.Expressions
         {
             Out(".Invoke ");
             ParenthesizedVisit(node, node.Expression);
-            VisitExpressions('(', Theraot.Collections.Extensions.AsArray(node.Arguments));
+            VisitExpressions('(', Theraot.Collections.Extensions.AsArrayInternal(node.Arguments));
             return node;
         }
 
@@ -360,7 +360,7 @@ namespace System.Linq.Expressions
         protected internal override Expression VisitListInit(ListInitExpression node)
         {
             Visit(node.NewExpression);
-            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArray(node.Initializers), e => VisitElementInit(e));
+            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArrayInternal(node.Initializers), e => VisitElementInit(e));
             return node;
         }
 
@@ -393,7 +393,7 @@ namespace System.Linq.Expressions
         protected internal override Expression VisitMemberInit(MemberInitExpression node)
         {
             Visit(node.NewExpression);
-            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArray(node.Bindings), e => VisitMemberBinding(e));
+            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArrayInternal(node.Bindings), e => VisitMemberBinding(e));
             return node;
         }
 
@@ -414,14 +414,14 @@ namespace System.Linq.Expressions
             }
             Out(".");
             Out(node.Method.Name);
-            VisitExpressions('(', Theraot.Collections.Extensions.AsArray(node.Arguments));
+            VisitExpressions('(', Theraot.Collections.Extensions.AsArrayInternal(node.Arguments));
             return node;
         }
 
         protected internal override Expression VisitNew(NewExpression node)
         {
             Out(".New " + node.Type);
-            VisitExpressions('(', Theraot.Collections.Extensions.AsArray(node.Arguments));
+            VisitExpressions('(', Theraot.Collections.Extensions.AsArrayInternal(node.Arguments));
             return node;
         }
 
@@ -431,13 +431,13 @@ namespace System.Linq.Expressions
             {
                 // .NewArray MyType[expr1, expr2]
                 Out(".NewArray " + node.Type.GetElementType());
-                VisitExpressions('[', Theraot.Collections.Extensions.AsArray(node.Expressions));
+                VisitExpressions('[', Theraot.Collections.Extensions.AsArrayInternal(node.Expressions));
             }
             else
             {
                 // .NewArray MyType {expr1, expr2}
                 Out(".NewArray " + node.Type, Flow.Space);
-                VisitExpressions('{', Theraot.Collections.Extensions.AsArray(node.Expressions));
+                VisitExpressions('{', Theraot.Collections.Extensions.AsArrayInternal(node.Expressions));
             }
             return node;
         }
@@ -464,7 +464,7 @@ namespace System.Linq.Expressions
         protected internal override Expression VisitRuntimeVariables(RuntimeVariablesExpression node)
         {
             Out(".RuntimeVariables");
-            VisitExpressions('(', Theraot.Collections.Extensions.AsArray(node.Variables));
+            VisitExpressions('(', Theraot.Collections.Extensions.AsArrayInternal(node.Variables));
             return node;
         }
 
@@ -670,7 +670,7 @@ namespace System.Linq.Expressions
             }
             else
             {
-                VisitExpressions('{', Theraot.Collections.Extensions.AsArray(node.Arguments));
+                VisitExpressions('{', Theraot.Collections.Extensions.AsArrayInternal(node.Arguments));
             }
             return node;
         }
@@ -687,7 +687,7 @@ namespace System.Linq.Expressions
         {
             Out(node.Member.Name);
             Out(Flow.Space, "=", Flow.Space);
-            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArray(node.Initializers), e => VisitElementInit(e));
+            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArrayInternal(node.Initializers), e => VisitElementInit(e));
             return node;
         }
 
@@ -695,7 +695,7 @@ namespace System.Linq.Expressions
         {
             Out(node.Member.Name);
             Out(Flow.Space, "=", Flow.Space);
-            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArray(node.Bindings), e => VisitMemberBinding(e));
+            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArrayInternal(node.Bindings), e => VisitMemberBinding(e));
             return node;
         }
 
@@ -1229,7 +1229,7 @@ namespace System.Linq.Expressions
                     lambda.Type.ToString())
             );
 
-            VisitDeclarations(Theraot.Collections.Extensions.AsArray(lambda.Parameters));
+            VisitDeclarations(Theraot.Collections.Extensions.AsArrayInternal(lambda.Parameters));
 
             Out(Flow.Space, "{", Flow.NewLine);
             Indent();

@@ -225,7 +225,7 @@ namespace System.Linq.Expressions.Compiler
 
                 if (clone == null && rewritten.Action != RewriteAction.None)
                 {
-                    clone = Clone(Theraot.Collections.Extensions.AsArray(node.Expressions), i);
+                    clone = Clone(Theraot.Collections.Extensions.AsArrayInternal(node.Expressions), i);
                 }
 
                 if (clone != null)
@@ -799,14 +799,14 @@ namespace System.Linq.Expressions.Compiler
             var switchValue = RewriteExpressionFreeTemps(node.SwitchValue, stack);
 
             var action = switchValue.Action;
-            var cases = Theraot.Collections.Extensions.AsArray(node.Cases);
+            var cases = Theraot.Collections.Extensions.AsArrayInternal(node.Cases);
             SwitchCase[] clone = null;
             for (var i = 0; i < cases.Length; i++)
             {
                 var @case = cases[i];
 
                 Expression[] cloneTests = null;
-                var testValues = Theraot.Collections.Extensions.AsArray(@case.TestValues);
+                var testValues = Theraot.Collections.Extensions.AsArrayInternal(@case.TestValues);
                 for (var j = 0; j < testValues.Length; j++)
                 {
                     // All tests execute at the same stack state as the switch.
@@ -901,7 +901,7 @@ namespace System.Linq.Expressions.Compiler
             // Try statement definitely needs an empty stack so its
             // child nodes execute at empty stack.
             var body = RewriteExpression(node.Body, Stack.Empty);
-            var handlers = Theraot.Collections.Extensions.AsArray(node.Handlers);
+            var handlers = Theraot.Collections.Extensions.AsArrayInternal(node.Handlers);
             CatchBlock[] clone = null;
 
             var action = body.Action;

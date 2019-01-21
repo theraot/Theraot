@@ -27,7 +27,7 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(body, nameof(body));
 
-            var @catch = Theraot.Collections.Extensions.AsArray(handlers);
+            var @catch = Theraot.Collections.Extensions.AsArrayInternal(handlers);
             ContractUtils.RequiresNotNullItems(@catch, nameof(handlers));
             ValidateTryAndCatchHaveSameType(type, body, @catch);
 

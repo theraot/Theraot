@@ -305,7 +305,7 @@ namespace System.Linq.Expressions
         /// <returns>An <see cref="Expression{TDelegate}"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Lambda"/> and the <see cref="LambdaExpression.Body"/> and <see cref="LambdaExpression.Parameters"/> properties set to the specified values.</returns>
         public static Expression<TDelegate> Lambda<TDelegate>(Expression body, string name, bool tailCall, IEnumerable<ParameterExpression> parameters)
         {
-            var parameterList = Theraot.Collections.Extensions.AsArray(parameters);
+            var parameterList = Theraot.Collections.Extensions.AsArrayInternal(parameters);
             ValidateLambdaArgs(typeof(TDelegate), ref body, parameterList, nameof(TDelegate));
             return (Expression<TDelegate>)CreateLambda(typeof(TDelegate), body, name, tailCall, parameterList);
         }
@@ -430,7 +430,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(body, nameof(body));
 
-            var parameterList = Theraot.Collections.Extensions.AsArray(parameters);
+            var parameterList = Theraot.Collections.Extensions.AsArrayInternal(parameters);
 
             var paramCount = parameterList.Length;
             var typeArgs = new Type[paramCount + 1];
@@ -465,7 +465,7 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="LambdaExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Lambda"/> and the <see cref="LambdaExpression.Body"/> and <see cref="LambdaExpression.Parameters"/> properties set to the specified values.</returns>
         public static LambdaExpression Lambda(Type delegateType, Expression body, string name, IEnumerable<ParameterExpression> parameters)
         {
-            var paramList = Theraot.Collections.Extensions.AsArray(parameters);
+            var paramList = Theraot.Collections.Extensions.AsArrayInternal(parameters);
             ValidateLambdaArgs(delegateType, ref body, paramList, nameof(delegateType));
 
             return CreateLambda(delegateType, body, name, false, paramList);
@@ -482,7 +482,7 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="LambdaExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Lambda"/> and the <see cref="LambdaExpression.Body"/> and <see cref="LambdaExpression.Parameters"/> properties set to the specified values.</returns>
         public static LambdaExpression Lambda(Type delegateType, Expression body, string name, bool tailCall, IEnumerable<ParameterExpression> parameters)
         {
-            var paramList = Theraot.Collections.Extensions.AsArray(parameters);
+            var paramList = Theraot.Collections.Extensions.AsArrayInternal(parameters);
             ValidateLambdaArgs(delegateType, ref body, paramList, nameof(delegateType));
 
             return CreateLambda(delegateType, body, name, tailCall, paramList);

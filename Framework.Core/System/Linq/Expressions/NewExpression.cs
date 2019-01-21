@@ -50,7 +50,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(constructor.DeclaringType, nameof(constructor) + "." + nameof(constructor.DeclaringType));
             TypeUtils.ValidateType(constructor.DeclaringType, nameof(constructor), allowByRef: true, allowPointer: true);
             ValidateConstructor(constructor, nameof(constructor));
-            var argList = Theraot.Collections.Extensions.AsArray(arguments);
+            var argList = Theraot.Collections.Extensions.AsArrayInternal(arguments);
             ValidateArgumentTypes(constructor, ExpressionType.New, ref argList, nameof(constructor));
 
             return new NewExpression(constructor, argList, null);
@@ -70,7 +70,7 @@ namespace System.Linq.Expressions
             TypeUtils.ValidateType(constructor.DeclaringType, nameof(constructor), allowByRef: true, allowPointer: true);
             ValidateConstructor(constructor, nameof(constructor));
             var memberList = members.ToReadOnlyCollection();
-            var argList = Theraot.Collections.Extensions.AsArray(arguments);
+            var argList = Theraot.Collections.Extensions.AsArrayInternal(arguments);
             ValidateNewArgs(constructor, ref argList, ref memberList);
             return new NewExpression(constructor, argList, memberList);
         }

@@ -513,7 +513,7 @@ namespace System.Linq.Expressions
 
         internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
         {
-            var array = Theraot.Collections.Extensions.AsArray(variables);
+            var array = Theraot.Collections.Extensions.AsArrayInternal(variables);
             if (args == null)
             {
                 Debug.Assert(variables.Count == Variables.Count);
@@ -607,7 +607,7 @@ namespace System.Linq.Expressions
 
         internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
         {
-            var array = Theraot.Collections.Extensions.AsArray(variables);
+            var array = Theraot.Collections.Extensions.AsArrayInternal(variables);
             if (args == null)
             {
                 Debug.Assert(variables.Count == Variables.Count);
@@ -636,12 +636,12 @@ namespace System.Linq.Expressions
 
         internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
         {
-            var array = Theraot.Collections.Extensions.AsArray(variables);
+            var array = Theraot.Collections.Extensions.AsArrayInternal(variables);
             if (args == null)
             {
                 Debug.Assert(variables.Count == Variables.Count);
                 ValidateVariables(array, nameof(variables));
-                return new ScopeWithType(array, Theraot.Collections.Extensions.AsArray(Body), Type);
+                return new ScopeWithType(array, Theraot.Collections.Extensions.AsArrayInternal(Body), Type);
             }
             Debug.Assert(args.Length == ExpressionCount);
             Debug.Assert(variables == null || variables.Count == Variables.Count);
@@ -921,8 +921,8 @@ namespace System.Linq.Expressions
         public static BlockExpression Block(IEnumerable<ParameterExpression> variables, IEnumerable<Expression> expressions)
         {
             ContractUtils.RequiresNotNull(expressions, nameof(expressions));
-            var variableArray = Theraot.Collections.Extensions.AsArray(variables);
-            var expressionArray = Theraot.Collections.Extensions.AsArray(expressions);
+            var variableArray = Theraot.Collections.Extensions.AsArrayInternal(variables);
+            var expressionArray = Theraot.Collections.Extensions.AsArrayInternal(expressions);
             RequiresCanRead(expressionArray, nameof(expressions));
             if (variableArray.Length == 0)
             {
@@ -944,10 +944,10 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(type, nameof(type));
             ContractUtils.RequiresNotNull(expressions, nameof(expressions));
 
-            var expressionList = Theraot.Collections.Extensions.AsArray(expressions);
+            var expressionList = Theraot.Collections.Extensions.AsArrayInternal(expressions);
             RequiresCanRead(expressionList, nameof(expressions));
 
-            var variableList = Theraot.Collections.Extensions.AsArray(variables);
+            var variableList = Theraot.Collections.Extensions.AsArrayInternal(variables);
 
             if (variableList.Length == 0 && expressionList.Length != 0)
             {

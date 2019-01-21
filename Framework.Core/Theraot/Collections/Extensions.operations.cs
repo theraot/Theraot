@@ -23,6 +23,30 @@ namespace Theraot.Collections
                 case T[] array:
                     return array;
 
+                case ICollection<T> collection when collection.Count == 0:
+                    return ArrayReservoir<T>.EmptyArray;
+
+                case ICollection<T> collection:
+                    var result = new T[collection.Count];
+                    collection.CopyTo(result, 0);
+                    return result;
+
+                default:
+                    return new List<T>(source).ToArray();
+            }
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        internal static T[] AsArrayInternal<T>(IEnumerable<T> source)
+        {
+            switch (source)
+            {
+                case null:
+                    return ArrayReservoir<T>.EmptyArray;
+
+                case T[] array:
+                    return array;
+
                 case HashableReadOnlyCollection<T> hashableReadOnlyCollection:
                     return hashableReadOnlyCollection.Wrapped;
 
@@ -168,7 +192,7 @@ namespace Theraot.Collections
             {
                 return arrayReadOnlyCollection;
             }
-            var array = AsArray(enumerable);
+            var array = AsArrayInternal(enumerable);
             return array.Length == 0 ? EmptyCollection<T>.Instance : HashableReadOnlyCollection.Create(array);
         }
 

@@ -67,7 +67,7 @@ namespace System.Linq.Expressions
         /// <paramref name="arguments"/> does not contain the same number of elements as the list of parameters for the delegate represented by <paramref name="expression"/>.</exception>
         public static InvocationExpression Invoke(Expression expression, IEnumerable<Expression> arguments)
         {
-            var argumentList = Theraot.Collections.Extensions.AsArray(arguments);
+            var argumentList = Theraot.Collections.Extensions.AsArrayInternal(arguments);
 
             switch (argumentList.Length)
             {
@@ -446,7 +446,7 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public InvocationExpression Update(Expression expression, IEnumerable<Expression> arguments)
         {
-            if (expression == Expression && arguments != null && ExpressionUtils.SameElements(ref arguments, Theraot.Collections.Extensions.AsArray(Arguments)))
+            if (expression == Expression && arguments != null && ExpressionUtils.SameElements(ref arguments, Theraot.Collections.Extensions.AsArrayInternal(Arguments)))
             {
                 return this;
             }

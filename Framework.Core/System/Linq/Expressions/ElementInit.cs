@@ -99,7 +99,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(addMethod, nameof(addMethod));
             ContractUtils.RequiresNotNull(arguments, nameof(arguments));
 
-            var argumentsRo = Theraot.Collections.Extensions.AsArray(arguments);
+            var argumentsRo = Theraot.Collections.Extensions.AsArrayInternal(arguments);
 
             RequiresCanRead(argumentsRo, nameof(arguments));
             ValidateElementInitAddMethodInfo(addMethod, nameof(addMethod));

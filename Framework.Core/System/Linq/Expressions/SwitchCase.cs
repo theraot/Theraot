@@ -35,7 +35,7 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(body, nameof(body));
 
-            var values = Theraot.Collections.Extensions.AsArray(testValues);
+            var values = Theraot.Collections.Extensions.AsArrayInternal(testValues);
             ContractUtils.RequiresNotEmpty(values, nameof(testValues));
             RequiresCanRead(values, nameof(testValues));
 

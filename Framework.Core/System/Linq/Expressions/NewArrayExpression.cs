@@ -184,7 +184,7 @@ namespace System.Linq.Expressions
         internal static NewArrayExpression Make(ExpressionType nodeType, Type type, ReadOnlyCollection<Expression> expressions)
         {
             Debug.Assert(type.IsArray);
-            var expressionsArray = Theraot.Collections.Extensions.AsArray(expressions);
+            var expressionsArray = Theraot.Collections.Extensions.AsArrayInternal(expressions);
             if (nodeType == ExpressionType.NewArrayInit)
             {
                 return new NewArrayInitExpression(type, expressionsArray);

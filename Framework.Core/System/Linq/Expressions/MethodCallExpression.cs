@@ -376,7 +376,7 @@ namespace System.Linq.Expressions
         /// <paramref name="instance"/>.Type is not assignable to the declaring type of the method represented by <paramref name="method"/>.-or-The number of elements in <paramref name="arguments"/> does not equal the number of parameters for the method represented by <paramref name="method"/>.-or-One or more of the elements of <paramref name="arguments"/> is not assignable to the corresponding parameter for the method represented by <paramref name="method"/>.</exception>
         public static MethodCallExpression Call(Expression instance, MethodInfo method, IEnumerable<Expression> arguments)
         {
-            var argumentList = Theraot.Collections.Extensions.AsArray(arguments);
+            var argumentList = Theraot.Collections.Extensions.AsArrayInternal(arguments);
 
             var argCount = argumentList.Length;
 
@@ -1002,7 +1002,7 @@ namespace System.Linq.Expressions
             Debug.Assert(instance != null);
             Debug.Assert(args == null || args.Count == _arguments.Length);
 
-            return Call(instance, Method, args == null ? _arguments : Theraot.Collections.Extensions.AsArray(args));
+            return Call(instance, Method, args == null ? _arguments : Theraot.Collections.Extensions.AsArrayInternal(args));
         }
 
         internal override bool SameArguments(ICollection<Expression> arguments) =>
@@ -1421,7 +1421,7 @@ namespace System.Linq.Expressions
             Debug.Assert(instance == null);
             Debug.Assert(args == null || args.Count == _arguments.Length);
 
-            return Call(Method, args == null ? _arguments : Theraot.Collections.Extensions.AsArray(args));
+            return Call(Method, args == null ? _arguments : Theraot.Collections.Extensions.AsArrayInternal(args));
         }
 
         internal override bool SameArguments(ICollection<Expression> arguments) =>

@@ -261,11 +261,11 @@ namespace System.Linq.Expressions.Compiler
         {
             if (scope is LambdaExpression lambda)
             {
-                return Theraot.Collections.Extensions.AsArray(new ParameterList(lambda));
+                return Theraot.Collections.Extensions.AsArrayInternal(new ParameterList(lambda));
             }
             if (scope is BlockExpression block)
             {
-                return Theraot.Collections.Extensions.AsArray(block.Variables);
+                return Theraot.Collections.Extensions.AsArrayInternal(block.Variables);
             }
             return new[] { ((CatchBlock)scope).Variable };
         }

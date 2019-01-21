@@ -96,7 +96,7 @@ namespace System.Linq.Expressions
                 throw new ArgumentException("Argument type cannot be System.Void.", nameof(switchValue));
             }
 
-            var caseArray = Theraot.Collections.Extensions.AsArray(cases);
+            var caseArray = Theraot.Collections.Extensions.AsArrayInternal(cases);
             ContractUtils.RequiresNotNullItems(caseArray, nameof(cases));
 
             // Type of the result. Either provided, or it is type of the branches.
