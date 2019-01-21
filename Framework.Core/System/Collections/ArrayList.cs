@@ -1,4 +1,5 @@
 ﻿#if LESSTHAN_NETSTANDARD13
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes
 #pragma warning disable CA2235 // Mark all non-serializable fields
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
 // ReSharper disable VirtualMemberCallInConstructor
@@ -18,6 +19,7 @@
 ===========================================================*/
 
 using System.Diagnostics;
+using Theraot;
 using Theraot.Collections.ThreadSafe;
 
 namespace System.Collections
@@ -33,7 +35,6 @@ namespace System.Collections
     [Serializable]
     public class ArrayList : IList, ICloneable
     {
-
         // Copy of Array.MaxArrayLength
         internal const int MaxArrayLength = 0X7FEFFFFF;
 
@@ -91,7 +92,7 @@ namespace System.Collections
         // and is for use only with SyncArrayList.
         internal ArrayList(bool trash)
         {
-            Theraot.No.Op(trash);
+            No.Op(trash);
         }
 
         // Gets and sets the capacity of this list.  The capacity is the size of
@@ -119,6 +120,7 @@ namespace System.Collections
                         {
                             Array.Copy(_items, 0, newItems, 0, _size);
                         }
+
                         _items = newItems;
                     }
                     else
@@ -127,6 +129,16 @@ namespace System.Collections
                     }
                 }
             }
+        }
+
+        // Clones this ArrayList, doing a shallow copy.  (A copy is made of all
+        // Object references in the ArrayList, but the Objects pointed to
+        // are not cloned).
+        public virtual object Clone()
+        {
+            var la = new ArrayList(_size) {_size = _size, _version = _version};
+            Array.Copy(_items, 0, la._items, 0, _size);
+            return la;
         }
 
         // Read-only property describing how many elements are in the List.
@@ -166,6 +178,160 @@ namespace System.Collections
                 _items[index] = value;
                 _version++;
             }
+        }
+
+        // Adds the given object to the end of this list. The size of the list is
+        // increased by one. If required, the capacity of the list is doubled
+        // before adding the new element.
+        //
+        public virtual int Add(object value)
+        {
+            if (_size == _items.Length)
+            {
+                EnsureCapacity(_size + 1);
+            }
+
+            _items[_size] = value;
+            _version++;
+            return _size++;
+        }
+
+        // Clears the contents of ArrayList.
+        public virtual void Clear()
+        {
+            if (_size > 0)
+            {
+                Array.Clear(_items, 0, _size); // Don't need to doc this but we clear the elements so that the gc can reclaim the references.
+                _size = 0;
+            }
+
+            _version++;
+        }
+
+        // Contains returns true if the specified element is in the ArrayList.
+        // It does a linear, O(n) search.  Equality is determined by calling
+        // item.Equals().
+        //
+        public virtual bool Contains(object value)
+        {
+            if (value == null)
+            {
+                for (var i = 0; i < _size; i++)
+                {
+                    if (_items[i] == null)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            for (var i = 0; i < _size; i++)
+            {
+                if (_items[i]?.Equals(value) == true)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Copies this ArrayList into array, which must be of a
+        // compatible array type.
+        //
+        public virtual void CopyTo(Array array, int arrayIndex)
+        {
+            if (array != null && array.Rank != 1)
+            {
+                throw new ArgumentException("Only single dimensional arrays are supported for the requested action.", nameof(array));
+            }
+
+            // Delegate rest of error checking to Array.Copy.
+            Array.Copy(_items, 0, array, arrayIndex, _size);
+        }
+
+        // Returns an enumerator for this list with the given
+        // permission for removal of elements. If modifications made to the list
+        // while an enumeration is in progress, the MoveNext and
+        // GetObject methods of the enumerator will throw an exception.
+        //
+        public virtual IEnumerator GetEnumerator()
+        {
+            return new ArrayListEnumeratorSimple(this);
+        }
+
+        // Returns the index of the first occurrence of a given value in a range of
+        // this list. The list is searched forwards from beginning to end.
+        // The elements of the list are compared to the given value using the
+        // Object.Equals method.
+        //
+        // This method uses the Array.IndexOf method to perform the
+        // search.
+        //
+        public virtual int IndexOf(object value)
+        {
+            return Array.IndexOf((Array)_items, value, 0, _size);
+        }
+
+        // Inserts an element into this list at a given index. The size of the list
+        // is increased by one. If required, the capacity of the list is doubled
+        // before inserting the new element.
+        //
+        public virtual void Insert(int index, object value)
+        {
+            // Note that insertions at the end are legal.
+            if (index < 0 || index > _size)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), "Insertion index was out of range. Must be non-negative and less than or equal to size.");
+            }
+
+            if (_size == _items.Length)
+            {
+                EnsureCapacity(_size + 1);
+            }
+
+            if (index < _size)
+            {
+                Array.Copy(_items, index, _items, index + 1, _size - index);
+            }
+
+            _items[index] = value;
+            _size++;
+            _version++;
+        }
+
+        // Removes the element at the given index. The size of the list is
+        // decreased by one.
+        //
+        public virtual void Remove(object value)
+        {
+            var index = IndexOf(value);
+            if (index >= 0)
+            {
+                RemoveAt(index);
+            }
+        }
+
+        // Removes the element at the given index. The size of the list is
+        // decreased by one.
+        //
+        public virtual void RemoveAt(int index)
+        {
+            if (index < 0 || index >= _size)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
+            }
+
+            _size--;
+            if (index < _size)
+            {
+                Array.Copy(_items, index + 1, _items, index, _size - index);
+            }
+
+            _items[_size] = null;
+            _version++;
         }
 
         // Creates a ArrayList wrapper for a particular IList.  This does not
@@ -278,22 +444,6 @@ namespace System.Collections
             return new SyncArrayList(list);
         }
 
-        // Adds the given object to the end of this list. The size of the list is
-        // increased by one. If required, the capacity of the list is doubled
-        // before adding the new element.
-        //
-        public virtual int Add(object value)
-        {
-            if (_size == _items.Length)
-            {
-                EnsureCapacity(_size + 1);
-            }
-
-            _items[_size] = value;
-            _version++;
-            return _size++;
-        }
-
         // Adds the elements of the given collection to the end of this list. If
         // required, the capacity of the list is increased to twice the previous
         // capacity or the new size, whichever is larger.
@@ -353,77 +503,12 @@ namespace System.Collections
             return BinarySearch(0, Count, value, comparer);
         }
 
-        // Clears the contents of ArrayList.
-        public virtual void Clear()
-        {
-            if (_size > 0)
-            {
-                Array.Clear(_items, 0, _size); // Don't need to doc this but we clear the elements so that the gc can reclaim the references.
-                _size = 0;
-            }
-            _version++;
-        }
-
-        // Clones this ArrayList, doing a shallow copy.  (A copy is made of all
-        // Object references in the ArrayList, but the Objects pointed to
-        // are not cloned).
-        public virtual object Clone()
-        {
-            var la = new ArrayList(_size) { _size = _size, _version = _version };
-            Array.Copy(_items, 0, la._items, 0, _size);
-            return la;
-        }
-
-        // Contains returns true if the specified element is in the ArrayList.
-        // It does a linear, O(n) search.  Equality is determined by calling
-        // item.Equals().
-        //
-        public virtual bool Contains(object value)
-        {
-            if (value == null)
-            {
-                for (var i = 0; i < _size; i++)
-                {
-                    if (_items[i] == null)
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-            for (var i = 0; i < _size; i++)
-            {
-                if (_items[i]?.Equals(value) == true)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         // Copies this ArrayList into array, which must be of a
         // compatible array type.
         //
         public virtual void CopyTo(Array array)
         {
             CopyTo(array, 0);
-        }
-
-        // Copies this ArrayList into array, which must be of a
-        // compatible array type.
-        //
-        public virtual void CopyTo(Array array, int arrayIndex)
-        {
-            if (array != null && array.Rank != 1)
-            {
-                throw new ArgumentException("Only single dimensional arrays are supported for the requested action.", nameof(array));
-            }
-
-            // Delegate rest of error checking to Array.Copy.
-            Array.Copy(_items, 0, array, arrayIndex, _size);
         }
 
         // Copies a section of this list to the given array at the given index.
@@ -444,16 +529,6 @@ namespace System.Collections
 
             // Delegate rest of error checking to Array.Copy.
             Array.Copy(_items, index, array, arrayIndex, count);
-        }
-
-        // Returns an enumerator for this list with the given
-        // permission for removal of elements. If modifications made to the list
-        // while an enumeration is in progress, the MoveNext and
-        // GetObject methods of the enumerator will throw an exception.
-        //
-        public virtual IEnumerator GetEnumerator()
-        {
-            return new ArrayListEnumeratorSimple(this);
         }
 
         // Returns an enumerator for a section of this list with the given
@@ -497,19 +572,6 @@ namespace System.Collections
         }
 
         // Returns the index of the first occurrence of a given value in a range of
-        // this list. The list is searched forwards from beginning to end.
-        // The elements of the list are compared to the given value using the
-        // Object.Equals method.
-        //
-        // This method uses the Array.IndexOf method to perform the
-        // search.
-        //
-        public virtual int IndexOf(object value)
-        {
-            return Array.IndexOf((Array)_items, value, 0, _size);
-        }
-
-        // Returns the index of the first occurrence of a given value in a range of
         // this list. The list is searched forwards, starting at index
         // startIndex and ending at count number of elements. The
         // elements of the list are compared to the given value using the
@@ -550,32 +612,6 @@ namespace System.Collections
             }
 
             return Array.IndexOf((Array)_items, value, startIndex, count);
-        }
-
-        // Inserts an element into this list at a given index. The size of the list
-        // is increased by one. If required, the capacity of the list is doubled
-        // before inserting the new element.
-        //
-        public virtual void Insert(int index, object value)
-        {
-            // Note that insertions at the end are legal.
-            if (index < 0 || index > _size)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), "Insertion index was out of range. Must be non-negative and less than or equal to size.");
-            }
-
-            if (_size == _items.Length)
-            {
-                EnsureCapacity(_size + 1);
-            }
-
-            if (index < _size)
-            {
-                Array.Copy(_items, index, _items, index + 1, _size - index);
-            }
-            _items[index] = value;
-            _size++;
-            _version++;
         }
 
         // Inserts the elements of the given collection at a given index. If
@@ -661,7 +697,7 @@ namespace System.Collections
                 throw new ArgumentOutOfRangeException(startIndex < 0 ? nameof(startIndex) : nameof(count), "Non-negative number required.");
             }
 
-            if (_size == 0)  // Special case for an empty list
+            if (_size == 0) // Special case for an empty list
             {
                 return -1;
             }
@@ -672,37 +708,6 @@ namespace System.Collections
             }
 
             return Array.LastIndexOf((Array)_items, value, startIndex, count);
-        }
-
-        // Removes the element at the given index. The size of the list is
-        // decreased by one.
-        //
-        public virtual void Remove(object value)
-        {
-            var index = IndexOf(value);
-            if (index >= 0)
-            {
-                RemoveAt(index);
-            }
-        }
-
-        // Removes the element at the given index. The size of the list is
-        // decreased by one.
-        //
-        public virtual void RemoveAt(int index)
-        {
-            if (index < 0 || index >= _size)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
-            }
-
-            _size--;
-            if (index < _size)
-            {
-                Array.Copy(_items, index + 1, _items, index, _size - index);
-            }
-            _items[_size] = null;
-            _version++;
         }
 
         // Removes a range of elements from this list.
@@ -732,6 +737,7 @@ namespace System.Collections
                 {
                     Array.Copy(_items, index + count, _items, index, _size - index);
                 }
+
                 while (i > _size)
                 {
                     _items[--i] = null;
@@ -930,22 +936,24 @@ namespace System.Collections
         // made to the list while an enumeration is in progress.
         private sealed class ArrayListEnumerator : IEnumerator, ICloneable
         {
-            private object _currentElement;
-            private readonly int _endIndex;       // Where to stop.
-            private int _index;
+            private readonly int _endIndex; // Where to stop.
             private readonly ArrayList _list;
-            private readonly int _startIndex;     // Save this for Reset.
+            private readonly int _startIndex; // Save this for Reset.
             private readonly int _version;
+            private object _currentElement;
+            private int _index;
 
             internal ArrayListEnumerator(ArrayList list, int index, int count)
             {
                 _list = list;
                 _startIndex = index;
                 _index = index - 1;
-                _endIndex = _index + count;  // last valid index
+                _endIndex = _index + count; // last valid index
                 _version = list._version;
                 _currentElement = null;
             }
+
+            public object Clone() => MemberwiseClone();
 
             public object Current
             {
@@ -960,11 +968,10 @@ namespace System.Collections
                     {
                         throw new InvalidOperationException("Enumeration already finished.");
                     }
+
                     return _currentElement;
                 }
             }
-
-            public object Clone() => MemberwiseClone();
 
             public bool MoveNext()
             {
@@ -999,11 +1006,11 @@ namespace System.Collections
         {
             // this object is used to indicate enumeration has not started or has terminated
             private static readonly object _dummyObject = new object();
-            private object _currentElement;
-            private int _index;
             private readonly bool _isArrayList;
             private readonly ArrayList _list;
             private readonly int _version;
+            private object _currentElement;
+            private int _index;
 
             internal ArrayListEnumeratorSimple(ArrayList list)
             {
@@ -1013,6 +1020,8 @@ namespace System.Collections
                 _isArrayList = list.GetType() == typeof(ArrayList);
                 _currentElement = _dummyObject;
             }
+
+            public object Clone() => MemberwiseClone();
 
             public object Current
             {
@@ -1034,8 +1043,6 @@ namespace System.Collections
                 }
             }
 
-            public object Clone() => MemberwiseClone();
-
             public bool MoveNext()
             {
                 if (_version != _list._version)
@@ -1044,7 +1051,8 @@ namespace System.Collections
                 }
 
                 if (_isArrayList)
-                {  // avoid calling virtual methods if we are operating on ArrayList to improve performance
+                {
+                    // avoid calling virtual methods if we are operating on ArrayList to improve performance
                     if (_index < _list._size - 1)
                     {
                         _currentElement = _list._items[++_index];
@@ -1137,7 +1145,7 @@ namespace System.Collections
 
             public override object Clone()
             {
-                var arrayList = new FixedSizeArrayList(_list) { _list = (ArrayList)_list.Clone() };
+                var arrayList = new FixedSizeArrayList(_list) {_list = (ArrayList)_list.Clone()};
                 return arrayList;
             }
 
@@ -1435,6 +1443,7 @@ namespace System.Collections
                         lo = mid + 1;
                     }
                 }
+
                 // return bitwise complement of the first element greater than value.
                 // Since hi is less than lo now, ~lo is the correct item.
                 return ~lo;
@@ -1625,6 +1634,7 @@ namespace System.Collections
                             _list.Insert(index++, en.Current);
                         }
                     }
+
                     _version++;
                 }
             }
@@ -1708,7 +1718,7 @@ namespace System.Collections
                     throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
                 }
 
-                if (count > 0)    // be consistent with ArrayList
+                if (count > 0) // be consistent with ArrayList
                 {
                     _version++;
                 }
@@ -1740,6 +1750,7 @@ namespace System.Collections
                     _list[i++] = _list[j];
                     _list[j--] = tmp;
                 }
+
                 _version++;
             }
 
@@ -1762,6 +1773,7 @@ namespace System.Collections
                     {
                         _list[index++] = en.Current;
                     }
+
                     _version++;
                 }
             }
@@ -1823,8 +1835,8 @@ namespace System.Collections
             private sealed class ListWrapperEnumWrapper : IEnumerator, ICloneable
             {
                 private IEnumerator _en;
-                private bool _firstCall;        // firstCall to MoveNext
-                private int _initialCount;      // for reset
+                private bool _firstCall; // firstCall to MoveNext
+                private int _initialCount; // for reset
                 private int _initialStartIndex; // for reset
                 private int _remaining;
 
@@ -1842,7 +1854,22 @@ namespace System.Collections
                     _firstCall = true;
                 }
 
-                private ListWrapperEnumWrapper() { }
+                private ListWrapperEnumWrapper()
+                {
+                }
+
+                public object Clone()
+                {
+                    var clone = new ListWrapperEnumWrapper
+                    {
+                        _en = (IEnumerator)((ICloneable)_en).Clone(),
+                        _initialStartIndex = _initialStartIndex,
+                        _initialCount = _initialCount,
+                        _remaining = _remaining,
+                        _firstCall = _firstCall
+                    };
+                    return clone;
+                }
 
                 public object Current
                 {
@@ -1862,19 +1889,6 @@ namespace System.Collections
                     }
                 }
 
-                public object Clone()
-                {
-                    var clone = new ListWrapperEnumWrapper
-                    {
-                        _en = (IEnumerator)((ICloneable)_en).Clone(),
-                        _initialStartIndex = _initialStartIndex,
-                        _initialCount = _initialCount,
-                        _remaining = _remaining,
-                        _firstCall = _firstCall
-                    };
-                    return clone;
-                }
-
                 public bool MoveNext()
                 {
                     if (_firstCall)
@@ -1882,6 +1896,7 @@ namespace System.Collections
                         _firstCall = false;
                         return _remaining-- > 0 && _en.MoveNext();
                     }
+
                     if (_remaining < 0)
                     {
                         return false;
@@ -2042,7 +2057,7 @@ namespace System.Collections
             public override object Clone()
             {
                 InternalUpdateRange();
-                var arrayList = new Range(_baseList, _baseIndex, _baseSize) { _baseList = (ArrayList)_baseList.Clone() };
+                var arrayList = new Range(_baseList, _baseIndex, _baseSize) {_baseList = (ArrayList)_baseList.Clone()};
                 return arrayList;
             }
 
@@ -2488,7 +2503,7 @@ namespace System.Collections
 
             public override object Clone()
             {
-                var arrayList = new ReadOnlyArrayList(_list) { _list = (ArrayList)_list.Clone() };
+                var arrayList = new ReadOnlyArrayList(_list) {_list = (ArrayList)_list.Clone()};
                 return arrayList;
             }
 
@@ -3037,7 +3052,13 @@ namespace System.Collections
 
             public int Count
             {
-                get { lock (SyncRoot) { return _list.Count; } }
+                get
+                {
+                    lock (SyncRoot)
+                    {
+                        return _list.Count;
+                    }
+                }
             }
 
             public bool IsFixedSize { get; }
