@@ -271,7 +271,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private bool UnRegisterForAutoRemoveDeadItemsExtracted()
         {
-            if (_eventHandler.Retrieve(out var eventHandler))
+            if (NeedleHelper.TryGetValue(_eventHandler, out var eventHandler))
             {
                 GCMonitor.Collected -= eventHandler;
                 _eventHandler.Value = null;
