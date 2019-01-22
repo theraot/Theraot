@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
+// ReSharper disable AssignNullToNotNullAttribute
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -15,7 +17,6 @@ namespace System.Linq.Expressions.Compiler
 {
     internal static class ILGen
     {
-
         // matches TryEmitConstant
         internal static bool CanEmitConstant(object value, Type type)
         {
@@ -29,6 +30,7 @@ namespace System.Linq.Expressions.Compiler
             }
             return value is MethodBase mb && ShouldLdtoken(mb);
         }
+
         internal static void Emit(this ILGenerator il, OpCode opcode, MethodBase methodBase)
         {
             Debug.Assert(methodBase is MethodInfo || methodBase is ConstructorInfo);
