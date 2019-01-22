@@ -720,7 +720,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (valueFactory == null)
             {
-                throw new ArgumentException(nameof(valueFactory));
+                throw new ArgumentNullException(nameof(valueFactory));
             }
             var hashCode = GetHashCode(key);
             var attempts = 0;
