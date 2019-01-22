@@ -214,7 +214,7 @@ namespace Theraot.Core
             }
             if ((u & 0x80000000) == 0)
             {
-                cbit += 1;
+                cbit++;
             }
 
             return cbit;
@@ -258,7 +258,7 @@ namespace Theraot.Core
             }
             if ((u & 0x00000001) == 0)
             {
-                cbit += 1;
+                cbit++;
             }
             return cbit;
         }

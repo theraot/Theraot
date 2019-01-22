@@ -89,27 +89,27 @@ namespace TestRunner
 
         public static void Write(string format, object arg0)
         {
-            _stringBuilder.Append(string.Format(format, arg0));
+            _stringBuilder.AppendFormat(format, arg0);
         }
 
         public static void Write(string format, object arg0, object arg1)
         {
-            _stringBuilder.Append(string.Format(format, arg0, arg1));
+            _stringBuilder.AppendFormat(format, arg0, arg1);
         }
 
         public static void Write(string format, object arg0, object arg1, object arg2)
         {
-            _stringBuilder.Append(string.Format(format, arg0, arg1, arg2));
+            _stringBuilder.AppendFormat(format, arg0, arg1, arg2);
         }
 
         public static void Write(string format, object arg0, object arg1, object arg2, object arg3)
         {
-            _stringBuilder.Append(string.Format(format, arg0, arg1, arg2, arg3));
+            _stringBuilder.AppendFormat(format, arg0, arg1, arg2, arg3);
         }
 
         public static void Write(string format, params object[] arg)
         {
-            _stringBuilder.AppendLine(string.Format(format, arg));
+            _stringBuilder.AppendFormat(format, arg).AppendLine();
         }
 
         public static void WriteLine(string value)
@@ -186,27 +186,27 @@ namespace TestRunner
 
         public static void WriteLine(string format, object arg0)
         {
-            _stringBuilder.AppendLine(string.Format(format, arg0));
+            _stringBuilder.AppendFormat(format, arg0).AppendLine();
         }
 
         public static void WriteLine(string format, object arg0, object arg1)
         {
-            _stringBuilder.AppendLine(string.Format(format, arg0, arg1));
+            _stringBuilder.AppendFormat(format, arg0, arg1).AppendLine();
         }
 
         public static void WriteLine(string format, object arg0, object arg1, object arg2)
         {
-            _stringBuilder.AppendLine(string.Format(format, arg0, arg1, arg2));
+            _stringBuilder.AppendFormat(format, arg0, arg1, arg2).AppendLine();
         }
 
         public static void WriteLine(string format, object arg0, object arg1, object arg2, object arg3)
         {
-            _stringBuilder.AppendLine(string.Format(format, arg0, arg1, arg2, arg3));
+            _stringBuilder.AppendFormat(format, arg0, arg1, arg2, arg3).AppendLine();
         }
 
         public static void WriteLine(string format, params object[] arg)
         {
-            _stringBuilder.AppendLine(string.Format(format, arg));
+            _stringBuilder.AppendFormat(format, arg).AppendLine();
         }
     }
 }

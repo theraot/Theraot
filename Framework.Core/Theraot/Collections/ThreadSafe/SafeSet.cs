@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -138,7 +138,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return true;
                 }
-
             }
             return false;
         }
@@ -163,7 +162,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return true;
                 }
-
             }
             return false;
         }
@@ -449,7 +447,6 @@ namespace Theraot.Collections.ThreadSafe
                     value = found;
                     return true;
                 }
-
             }
             return false;
         }

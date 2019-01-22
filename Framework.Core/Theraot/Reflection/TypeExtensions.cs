@@ -815,12 +815,12 @@ namespace Theraot.Reflection
 
     public static partial class TypeExtensions
     {
-
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static ConstructorInfo GetConstructor(this TypeInfo typeInfo, Type[] typeArguments)
         {
             return typeInfo.AsType().GetConstructor(typeArguments);
         }
+
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static ConstructorInfo[] GetConstructors(this TypeInfo typeInfo)
         {

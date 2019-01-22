@@ -456,7 +456,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             var needle = PrivateGetNeedle(key);
             TValue result;
-            TValue Factory(WeakNeedle<TKey> pairKey, TValue foundValue) => result = valueFactory(PrivateTryGetValue(pairKey, out var foundKey) ? foundKey : key);
+            TValue Factory(WeakNeedle<TKey> pairKey, TValue _) => result = valueFactory(PrivateTryGetValue(pairKey, out var foundKey) ? foundKey : key);
             if (Wrapped.TryGetOrAdd(needle, () => valueFactory(key), Factory, out result))
             {
                 return result;
@@ -837,7 +837,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException(nameof(valueFactory));
             }
             var needle = PrivateGetNeedle(key);
-            TValue Factory(WeakNeedle<TKey> pairKey, TValue foundValue) => valueFactory(PrivateTryGetValue(pairKey, out var foundKey) ? foundKey : key);
+            TValue Factory(WeakNeedle<TKey> pairKey, TValue _) => valueFactory(PrivateTryGetValue(pairKey, out var foundKey) ? foundKey : key);
             if (Wrapped.TryGetOrAdd(needle, () => valueFactory(key), Factory, out stored))
             {
                 return true;

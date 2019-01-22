@@ -581,7 +581,6 @@ namespace System.Linq.Expressions
 
     internal sealed class InvocationExpression3 : InvocationExpression
     {
-
         private object _arg0;               // storage for the 1st argument or a read-only collection.  See IArgumentProvider
         private readonly Expression _arg1;
 
@@ -630,7 +629,6 @@ namespace System.Linq.Expressions
 
     internal sealed class InvocationExpression4 : InvocationExpression
     {
-
         private object _arg0;               // storage for the 1st argument or a read-only collection.  See IArgumentProvider
         private readonly Expression _arg1;
 
@@ -684,7 +682,6 @@ namespace System.Linq.Expressions
 
     internal sealed class InvocationExpression5 : InvocationExpression
     {
-
         private object _arg0;               // storage for the 1st argument or a read-only collection.  See IArgumentProvider
         private readonly Expression _arg1;
 

@@ -333,12 +333,7 @@ namespace System.Collections.Concurrent
                 throw CreateArgumentNullExceptionKey(item.Key);
             }
 
-            if (_wrapped.TryGetValue(item.Key, out var found) && EqualityComparer<TValue>.Default.Equals(found, item.Value))
-            {
-                return true;
-            }
-
-            return false;
+            return _wrapped.TryGetValue(item.Key, out var found) && EqualityComparer<TValue>.Default.Equals(found, item.Value);
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)

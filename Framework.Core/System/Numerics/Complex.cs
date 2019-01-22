@@ -34,7 +34,6 @@ namespace System.Numerics
 {
     public struct Complex : IEquatable<Complex>, IFormattable
     {
-
         public static explicit operator Complex(decimal value)
         {
             return new Complex((double)value, 0);
@@ -98,6 +97,7 @@ namespace System.Numerics
         {
             return new Complex(value, 0);
         }
+
         public static readonly Complex ImaginaryOne = new Complex(0, 1);
         public static readonly Complex One = new Complex(1, 0);
         public static readonly Complex Zero = new Complex(0, 0);

@@ -79,12 +79,8 @@ namespace Theraot.Core
             {
                 Swap(ref uu1, ref uu2);
             }
-            while (true)
+            while (uu1 > uint.MaxValue)
             {
-                if (uu1 <= uint.MaxValue)
-                {
-                    break;
-                }
                 if (uu2 == 0)
                 {
                     return uu1;

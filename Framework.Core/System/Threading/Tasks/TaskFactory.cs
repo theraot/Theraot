@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA1068 // CancellationToken parameters must come last
 #pragma warning disable CA1822 // Mark members as static
@@ -530,7 +530,6 @@ namespace System.Threading.Tasks
 
     public partial class TaskFactory
     {
-
         internal static async Task FromAsyncInternal(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state)
         {
             endMethod(await FromBeginMethod(beginMethod, state).ConfigureAwait(false));
@@ -545,6 +544,7 @@ namespace System.Threading.Tasks
         {
             return endMethod(await FromBeginMethod(beginMethod, state, creationOptions).ConfigureAwait(false));
         }
+
         internal async Task FromAsyncInternal(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             var task = new Task(() => endMethod(asyncResult), Task.InternalCurrentIfAttached(creationOptions), CancellationToken.None, creationOptions, InternalTaskOptions.None, scheduler);

@@ -1,4 +1,4 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
@@ -57,9 +57,9 @@ namespace System.Threading.Tasks
     [StructLayout(LayoutKind.Auto)]
     public struct ValueTask<TResult> : IEquatable<ValueTask<TResult>>
     {
-
         /// <summary>The result to be used if the operation completed successfully synchronously.</summary>
         internal readonly TResult _result;
+
         /// <summary>The task to be used if the operation completed asynchronously or if it completed synchronously but non-successfully.</summary>
         internal readonly Task<TResult> _task;
 

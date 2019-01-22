@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 using System.Diagnostics.Contracts;
 using System.Security;
@@ -8,10 +8,10 @@ namespace System.Threading.Tasks
     /// <summary>Task continuation for awaiting with a current synchronization context.</summary>
     internal sealed class SynchronizationContextAwaitTaskContinuation : AwaitTaskContinuation
     {
-
         /// <summary>Cached delegate for PostAction</summary>
         [SecurityCritical]
         private static ContextCallback _postActionCallback;
+
         /// <summary>SendOrPostCallback delegate to invoke the action.</summary>
         private static readonly SendOrPostCallback _postCallback = state => ((Action)state)(); // can't use InvokeAction as it's SecurityCritical
 

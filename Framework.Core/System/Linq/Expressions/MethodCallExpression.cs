@@ -17,7 +17,6 @@ namespace System.Linq.Expressions
 {
     public partial class Expression
     {
-
         /// <summary>Creates a <see cref="MethodCallExpression"/> that represents applying an array index operator to a multi-dimensional array.</summary>
         /// <returns>A <see cref="BinaryExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.ArrayIndex"/> and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         /// <param name="array">An array of <see cref="Expression"/> instances - indexes for the array index operation.</param>
@@ -66,6 +65,7 @@ namespace System.Linq.Expressions
             var mi = array.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance);
             return Call(array, mi, indexList);
         }
+
         /// <summary>Creates a <see cref="MethodCallExpression"/> that represents a call to a static method that takes one argument.</summary>
         /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Method"/> properties set to the specified values.</returns>
         /// <param name="method">A <see cref="MethodInfo"/> to set the <see cref="MethodCallExpression.Method"/> property equal to.</param>

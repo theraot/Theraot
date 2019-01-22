@@ -40,7 +40,6 @@ namespace System.Linq.Expressions.Interpreter
     /// </summary>
     internal sealed class LabelInfo
     {
-
         // True if at least one jump is across blocks
         // If we have any jump across blocks to this label, then the
         // LabelTarget can only be defined in one place

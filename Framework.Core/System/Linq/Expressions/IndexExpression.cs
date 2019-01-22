@@ -16,7 +16,6 @@ namespace System.Linq.Expressions
 {
     public partial class Expression
     {
-
         /// <summary>
         /// Creates an <see cref="IndexExpression"/> to access an array.
         /// </summary>
@@ -65,6 +64,7 @@ namespace System.Linq.Expressions
 
             return new IndexExpression(array, null, indexList);
         }
+
         /// <summary>
         /// Creates an <see cref="IndexExpression"/> that represents accessing an indexed property in an object.
         /// </summary>

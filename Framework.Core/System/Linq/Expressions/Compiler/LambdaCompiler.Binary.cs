@@ -469,7 +469,7 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(!leftType.IsNullable());
             Debug.Assert(!rightType.IsNullable());
-            Debug.Assert(leftType.IsPrimitive || (op == ExpressionType.Equal || op == ExpressionType.NotEqual) && (!leftType.IsValueType || leftType.IsEnum));
+            Debug.Assert(leftType.IsPrimitive || ((op == ExpressionType.Equal || op == ExpressionType.NotEqual) && (!leftType.IsValueType || leftType.IsEnum)));
 
             switch (op)
             {

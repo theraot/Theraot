@@ -1,4 +1,4 @@
-// Needed for NET40
+﻿// Needed for NET40
 
 using System;
 using System.Collections;
@@ -166,7 +166,7 @@ namespace Theraot.Collections.ThreadSafe
         void ICollection.CopyTo(Array array, int index)
         {
             Extensions.CanCopyTo(Count, array, index);
-            Extensions.DeprecatedCopyTo(this, array, index);
+            this.DeprecatedCopyTo(array, index);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

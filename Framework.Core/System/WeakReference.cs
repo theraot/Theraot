@@ -3,17 +3,18 @@
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using Theraot;
 
 namespace System
 {
     [Serializable]
     public sealed class WeakReference<T> : ISerializable
-       where T : class
+        where T : class
     {
+        private readonly bool _trackResurrection;
+
         [NonSerialized]
         private GCHandle _handle;
-
-        private readonly bool _trackResurrection;
 
         public WeakReference(T target)
             : this(target, false)
@@ -33,6 +34,8 @@ namespace System
             {
                 throw new ArgumentNullException(nameof(info));
             }
+
+            No.Op(context);
             var value = (T)info.GetValue("TrackedObject", typeof(T));
             _trackResurrection = info.GetBoolean("TrackResurrection");
             SetTarget(value);
@@ -45,6 +48,7 @@ namespace System
             {
                 throw new ArgumentNullException(nameof(info));
             }
+
             TryGetTarget(out var value);
             info.AddValue("TrackedObject", value, typeof(T));
             info.AddValue("TrackResurrection", _trackResurrection);
@@ -66,7 +70,7 @@ namespace System
                 {
                     // The handle was freed or never initialized.
                     // Nothing to do.
-                    Theraot.No.Op(exception);
+                    No.Op(exception);
                 }
             }
         }
@@ -79,6 +83,7 @@ namespace System
             {
                 return false;
             }
+
             try
             {
                 var obj = _handle.Target;
@@ -86,6 +91,7 @@ namespace System
                 {
                     return false;
                 }
+
                 target = obj as T;
                 return true;
             }

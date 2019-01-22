@@ -824,7 +824,7 @@ namespace System.Dynamic.Utils
 
                     if (source.IsInterface)
                     {
-                        if (target.IsInterface || target.IsClass && !target.IsSealed)
+                        if (target.IsInterface || (target.IsClass && !target.IsSealed))
                         {
                             return true;
                         }

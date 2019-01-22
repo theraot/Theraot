@@ -1,4 +1,4 @@
-// Needed for NET40
+﻿// Needed for NET40
 
 using System;
 using System.Collections;
@@ -26,10 +26,12 @@ namespace Theraot.Collections.ThreadSafe
 
         [NonSerialized]
         private KeyCollection<TKey, TValue> _keyCollection;
+
         private int _probing;
 
         [NonSerialized]
         private ValueCollection<TKey, TValue> _valueCollection;
+
         private readonly IEqualityComparer<TValue> _valueComparer;
 
         /// <summary>
@@ -157,7 +159,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return true;
                 }
-
             }
             return false;
         }
@@ -182,7 +183,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return true;
                 }
-
             }
             return false;
         }
@@ -212,7 +212,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return true;
                 }
-
             }
             return false;
         }
@@ -761,7 +760,6 @@ namespace Theraot.Collections.ThreadSafe
                     value = found.Value;
                     return true;
                 }
-
             }
             return false;
         }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Theraot.Collections.Specialized;
@@ -143,7 +143,7 @@ namespace Theraot.Collections
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
             Progressor.While(() => _cache.Count < countLimit).Consume();
-            Extensions.CopyTo(_cache, array, arrayIndex, countLimit);
+            _cache.CopyTo(array, arrayIndex, countLimit);
         }
 
         public void CopyTo(IGrouping<TKey, T>[] array, int arrayIndex)
@@ -162,7 +162,7 @@ namespace Theraot.Collections
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
             Progressor.While(() => _cache.Count < countLimit).Consume();
-            Extensions.CopyTo(_cache.Values, array, arrayIndex, countLimit);
+            _cache.Values.CopyTo(array, arrayIndex, countLimit);
         }
 
         public IEnumerator<IGrouping<TKey, T>> GetEnumerator()

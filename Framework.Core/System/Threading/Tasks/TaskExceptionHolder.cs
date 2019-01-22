@@ -26,12 +26,12 @@ namespace System.Threading.Tasks
     /// </summary>
     internal class TaskExceptionHolder
     {
-
         /// <summary>An event handler used to notify of domain unload.</summary>
         private static EventHandler _adUnloadEventHandler;
 
         /// <summary>Whether the AppDomain has started to unload.</summary>
         private static volatile bool _domainUnloadStarted;
+
         /// <summary>Whether we should propagate exceptions on the finalizer.</summary>
         private static readonly bool _failFastOnUnobservedException = ShouldFailFastOnUnobservedException();
 

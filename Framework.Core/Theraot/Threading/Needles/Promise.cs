@@ -1,4 +1,4 @@
-// Needed for Workaround
+﻿// Needed for Workaround
 
 using System;
 using System.Threading;
@@ -42,7 +42,7 @@ namespace Theraot.Threading.Needles
             get
             {
                 var waitHandle = _waitHandle.Value;
-                return waitHandle == null || waitHandle.IsSet;
+                return waitHandle?.IsSet != false;
             }
         }
 
@@ -71,7 +71,7 @@ namespace Theraot.Threading.Needles
                 throw new ArgumentNullException(nameof(beforeFree));
             }
             var waitHandle = _waitHandle.Value;
-            if (waitHandle == null || waitHandle.IsSet)
+            if (waitHandle?.IsSet != false)
             {
                 try
                 {

@@ -67,7 +67,6 @@ namespace System.Linq.Expressions.Interpreter
     [DebuggerTypeProxy(typeof(DebugView))]
     internal sealed class InstructionList
     {
-
 #if STATS
         private static Dictionary<string, int> _executedInstructions = new Dictionary<string, int>();
         private static Dictionary<string, Dictionary<object, bool>> _instances = new Dictionary<string, Dictionary<object, bool>>();
