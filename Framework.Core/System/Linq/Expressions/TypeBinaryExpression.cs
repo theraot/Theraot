@@ -8,18 +8,21 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using Theraot.Reflection;
-using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Linq.Expressions
 {
     public partial class Expression
     {
         /// <summary>
-        /// Creates a <see cref="TypeBinaryExpression"/> that compares run-time type identity.
+        ///     Creates a <see cref="TypeBinaryExpression" /> that compares run-time type identity.
         /// </summary>
-        /// <param name="expression">An <see cref="Expression"/> to set the <see cref="Expression"/> property equal to.</param>
-        /// <param name="type">A <see cref="Type"/> to set the <see cref="TypeBinaryExpression.TypeOperand"/> property equal to.</param>
-        /// <returns>A <see cref="TypeBinaryExpression"/> for which the <see cref="NodeType"/> property is equal to <see cref="ExpressionType.TypeEqual"/> and for which the <see cref="TypeBinaryExpression.Expression"/> and <see cref="TypeBinaryExpression.TypeOperand"/> properties are set to the specified values.</returns>
+        /// <param name="expression">An <see cref="Expression" /> to set the <see cref="Expression" /> property equal to.</param>
+        /// <param name="type">A <see cref="Type" /> to set the <see cref="TypeBinaryExpression.TypeOperand" /> property equal to.</param>
+        /// <returns>
+        ///     A <see cref="TypeBinaryExpression" /> for which the <see cref="NodeType" /> property is equal to
+        ///     <see cref="ExpressionType.TypeEqual" /> and for which the <see cref="TypeBinaryExpression.Expression" /> and
+        ///     <see cref="TypeBinaryExpression.TypeOperand" /> properties are set to the specified values.
+        /// </returns>
         public static TypeBinaryExpression TypeEqual(Expression expression, Type type)
         {
             ExpressionUtils.RequiresCanRead(expression, nameof(expression));
@@ -33,11 +36,15 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Creates a <see cref="TypeBinaryExpression"/>.
+        ///     Creates a <see cref="TypeBinaryExpression" />.
         /// </summary>
-        /// <param name="expression">An <see cref="Expression"/> to set the <see cref="Expression"/> property equal to.</param>
-        /// <param name="type">A <see cref="Type"/> to set the <see cref="TypeBinaryExpression.TypeOperand"/> property equal to.</param>
-        /// <returns>A <see cref="TypeBinaryExpression"/> for which the <see cref="NodeType"/> property is equal to <see cref="ExpressionType.TypeIs"/> and for which the <see cref="TypeBinaryExpression.Expression"/> and <see cref="TypeBinaryExpression.TypeOperand"/> properties are set to the specified values.</returns>
+        /// <param name="expression">An <see cref="Expression" /> to set the <see cref="Expression" /> property equal to.</param>
+        /// <param name="type">A <see cref="Type" /> to set the <see cref="TypeBinaryExpression.TypeOperand" /> property equal to.</param>
+        /// <returns>
+        ///     A <see cref="TypeBinaryExpression" /> for which the <see cref="NodeType" /> property is equal to
+        ///     <see cref="ExpressionType.TypeIs" /> and for which the <see cref="TypeBinaryExpression.Expression" /> and
+        ///     <see cref="TypeBinaryExpression.TypeOperand" /> properties are set to the specified values.
+        /// </returns>
         public static TypeBinaryExpression TypeIs(Expression expression, Type type)
         {
             ExpressionUtils.RequiresCanRead(expression, nameof(expression));
@@ -52,7 +59,7 @@ namespace System.Linq.Expressions
     }
 
     /// <summary>
-    /// Represents an operation between an expression and a type.
+    ///     Represents an operation between an expression and a type.
     /// </summary>
     [DebuggerTypeProxy(typeof(TypeBinaryExpressionProxy))]
     public sealed class TypeBinaryExpression : Expression
@@ -65,34 +72,34 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Gets the expression operand of a type test operation.
+        ///     Gets the expression operand of a type test operation.
         /// </summary>
         public Expression Expression { get; }
 
         /// <summary>
-        /// Returns the node type of this Expression. Extension nodes should return
-        /// ExpressionType.Extension when overriding this method.
+        ///     Returns the node type of this Expression. Extension nodes should return
+        ///     ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
+        /// <returns>The <see cref="ExpressionType" /> of the expression.</returns>
         public override ExpressionType NodeType { get; }
 
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents.
+        ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => typeof(bool);
 
         /// <summary>
-        /// Gets the type operand of a type test operation.
+        ///     Gets the type operand of a type test operation.
         /// </summary>
         public Type TypeOperand { get; }
 
         /// <summary>
-        /// Creates a new expression that is like this one, but using the
-        /// supplied children. If all of the children are the same, it will
-        /// return this expression.
+        ///     Creates a new expression that is like this one, but using the
+        ///     supplied children. If all of the children are the same, it will
+        ///     return this expression.
         /// </summary>
-        /// <param name="expression">The <see cref="Expression"/> property of the result.</param>
+        /// <param name="expression">The <see cref="Expression" /> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public TypeBinaryExpression Update(Expression expression)
         {
@@ -100,10 +107,12 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
+
             if (NodeType == ExpressionType.TypeIs)
             {
                 return TypeIs(expression, TypeOperand);
             }
+
             return TypeEqual(expression, TypeOperand);
         }
 
@@ -120,7 +129,7 @@ namespace System.Linq.Expressions
                     // either matches or is its type argument (T to its T?).
                     if (cType.GetNonNullable() != TypeOperand.GetNonNullable())
                     {
-                        return Block(Expression, Utils.Constant(value: false));
+                        return Block(Expression, Utils.Constant(false));
                     }
 
                     return NotEqual(Expression, Constant(null, Expression.Type));
@@ -148,9 +157,11 @@ namespace System.Linq.Expressions
             // Create a temp so we only evaluate the left side once
             parameter = Parameter(typeof(object));
 
-            return Block(
+            return Block
+            (
                 ReadOnlyCollectionEx.Create(parameter),
-                ReadOnlyCollectionEx.Create(
+                ReadOnlyCollectionEx.Create
+                (
                     Assign(parameter, Expression),
                     ByValParameterTypeEqual(parameter)
                 )
@@ -165,7 +176,7 @@ namespace System.Linq.Expressions
         // Helper that is used when re-eval of LHS is safe.
         private Expression ByValParameterTypeEqual(ParameterExpression value)
         {
-            Expression getType = Call(value, ObjectGetType);
+            Expression getType = Call(value, CachedReflectionInfo.ObjectGetType);
 
             // In remoting scenarios, obj.GetType() can return an interface.
             // But JIT32's optimized "obj.GetType() == typeof(ISomething)" codegen,
@@ -175,9 +186,11 @@ namespace System.Linq.Expressions
             if (TypeOperand.IsInterface)
             {
                 var temp = Parameter(typeof(Type));
-                getType = Block(
+                getType = Block
+                (
                     ReadOnlyCollectionEx.Create(temp),
-                    ReadOnlyCollectionEx.Create<Expression>(
+                    ReadOnlyCollectionEx.Create<Expression>
+                    (
                         Assign(temp, getType),
                         temp
                     )
@@ -187,9 +200,11 @@ namespace System.Linq.Expressions
             // We use reference equality when comparing to null for correctness
             // (don't invoke a user defined operator), and reference equality
             // on types for performance (so the JIT can optimize the IL).
-            return AndAlso(
+            return AndAlso
+            (
                 ReferenceNotEqual(value, Utils.Null),
-                ReferenceEqual(
+                ReferenceEqual
+                (
                     getType,
                     Constant(TypeOperand.GetNonNullable(), typeof(Type))
                 )
@@ -199,7 +214,7 @@ namespace System.Linq.Expressions
         private Expression ReduceConstantTypeEqual()
         {
             return !(Expression is ConstantExpression ce) || ce.Value == null
-                ? Utils.Constant(value: false)
+                ? Utils.Constant(false)
                 : Utils.Constant(TypeOperand.GetNonNullable() == ce.Value.GetType());
         }
     }

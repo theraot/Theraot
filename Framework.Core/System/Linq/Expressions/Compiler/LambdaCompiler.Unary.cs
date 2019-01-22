@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection.Emit;
 using Theraot.Reflection;
-using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -118,7 +117,7 @@ namespace System.Linq.Expressions.Compiler
                 // HoistedLocals is internal so emit as System.Object
                 EmitConstant(_scope.NearestHoistedLocals, typeof(object));
                 _scope.EmitGet(_scope.NearestHoistedLocals.SelfVariable);
-                IL.Emit(OpCodes.Call, RuntimeOpsQuote);
+                IL.Emit(OpCodes.Call, CachedReflectionInfo.RuntimeOpsQuote);
 
                 Debug.Assert(typeof(LambdaExpression).IsAssignableFrom(quote.Type));
                 IL.Emit(OpCodes.Castclass, quote.Type);

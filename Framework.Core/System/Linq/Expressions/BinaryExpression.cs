@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using Theraot.Reflection;
-using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Linq.Expressions
 {
@@ -2023,7 +2022,7 @@ namespace System.Linq.Expressions
             {
                 if (left.Type == right.Type && left.Type.IsArithmetic())
                 {
-                    method = MathPowDoubleDouble;
+                    method = CachedReflectionInfo.MathPowDoubleDouble;
                     Debug.Assert(method != null);
                 }
                 else
@@ -2096,7 +2095,7 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             if (method == null)
             {
-                method = MathPowDoubleDouble;
+                method = CachedReflectionInfo.MathPowDoubleDouble;
                 if (method == null)
                 {
                     throw new InvalidOperationException($"The binary operator {ExpressionType.PowerAssign} is not defined for the types '{left.Type}' and '{right.Type}'.");

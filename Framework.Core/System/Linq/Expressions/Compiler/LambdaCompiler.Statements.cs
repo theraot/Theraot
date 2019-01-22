@@ -11,7 +11,6 @@ using System.Dynamic.Utils;
 using System.Globalization;
 using System.Reflection.Emit;
 using Theraot.Reflection;
-using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -682,7 +681,7 @@ namespace System.Linq.Expressions.Compiler
         private bool TryEmitHashtableSwitch(SwitchExpression node, CompilationFlags flags)
         {
             // If we have a comparison other than string equality, bail
-            if (node.Comparison != StringOpEqualityStringString && node.Comparison != StringEqualsStringString)
+            if (node.Comparison != CachedReflectionInfo.StringOpEqualityStringString && node.Comparison != CachedReflectionInfo.StringEqualsStringString)
             {
                 return false;
             }
@@ -715,7 +714,7 @@ namespace System.Linq.Expressions.Compiler
             var cases = new ArrayBuilder<SwitchCase>(node.Cases.Count);
 
             var nullCase = -1;
-            var add = DictionaryOfStringInt32AddStringInt32;
+            var add = CachedReflectionInfo.DictionaryOfStringInt32AddStringInt32;
             for (int i = 0, n = node.Cases.Count; i < n; i++)
             {
                 foreach (var expression in node.Cases[i].TestValues)
@@ -750,7 +749,7 @@ namespace System.Linq.Expressions.Compiler
                     (
                         Expression.New
                         (
-                            DictionaryOfStringInt32CtorInt32,
+                            CachedReflectionInfo.DictionaryOfStringInt32CtorInt32,
                             ReadOnlyCollectionEx.Create<Expression>
                             (
                                 Utils.Constant(initializers.Count)

@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection.Emit;
 using Theraot.Reflection;
-using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -429,7 +428,7 @@ namespace System.Linq.Expressions.Compiler
             FreeLocal(locRight);
             var unnullable = type.GetNonNullable();
             EmitUnliftedBinaryOp(op, unnullable, unnullable);
-            IL.Emit(OpCodes.Newobj, NullableBooleanCtor);
+            IL.Emit(OpCodes.Newobj, CachedReflectionInfo.NullableBooleanCtor);
             IL.MarkLabel(end);
         }
 

@@ -10,14 +10,13 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Linq.Expressions;
 using System.Linq.Expressions.Compiler;
-using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Runtime.CompilerServices
 {
     public static partial class RuntimeOps
     {
         /// <summary>
-        /// Combines two runtime variable lists and returns a new list.
+        ///     Combines two runtime variable lists and returns a new list.
         /// </summary>
         /// <param name="first">The first list.</param>
         /// <param name="second">The second list.</param>
@@ -30,7 +29,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Quotes the provided expression tree.
+        ///     Quotes the provided expression tree.
         /// </summary>
         /// <param name="expression">The expression to quote.</param>
         /// <param name="hoistedLocals">The hoisted local state provided by the compiler.</param>
@@ -72,15 +71,18 @@ namespace System.Runtime.CompilerServices
                 {
                     _shadowedVars.Push(new HashSet<ParameterExpression>(node.Variables));
                 }
+
                 var b = ExpressionVisitorUtils.VisitBlockExpressions(this, node);
                 if (node.Variables.Count > 0)
                 {
                     _shadowedVars.Pop();
                 }
+
                 if (b == null)
                 {
                     return node;
                 }
+
                 return node.Rewrite(node.Variables, b);
             }
 
@@ -97,16 +99,19 @@ namespace System.Runtime.CompilerServices
 
                     _shadowedVars.Push(parameters);
                 }
+
                 var b = Visit(node.Body);
                 if (node.ParameterCount > 0)
                 {
                     _shadowedVars.Pop();
                 }
+
                 if (b == node.Body)
                 {
                     return node;
                 }
-                return node.Rewrite(b, parameters: null);
+
+                return node.Rewrite(b, null);
             }
 
             protected internal override Expression VisitParameter(ParameterExpression node)
@@ -116,6 +121,7 @@ namespace System.Runtime.CompilerServices
                 {
                     return node;
                 }
+
                 return Expression.Field(Expression.Constant(box), "Value");
             }
 
@@ -154,8 +160,9 @@ namespace System.Runtime.CompilerServices
                 }
 
                 // Otherwise, we need to return an object that merges them
-                return Expression.Call(
-                    RuntimeOpsMergeRuntimeVariables,
+                return Expression.Call
+                (
+                    CachedReflectionInfo.RuntimeOpsMergeRuntimeVariables,
                     Expression.RuntimeVariables(ReadOnlyCollectionEx.Create(vars.ToArray())),
                     boxesConst,
                     Expression.Constant(indexes)
@@ -166,18 +173,21 @@ namespace System.Runtime.CompilerServices
             {
                 if (node.Variable != null)
                 {
-                    _shadowedVars.Push(new HashSet<ParameterExpression> { node.Variable });
+                    _shadowedVars.Push(new HashSet<ParameterExpression> {node.Variable});
                 }
+
                 var b = Visit(node.Body);
                 var f = Visit(node.Filter);
                 if (node.Variable != null)
                 {
                     _shadowedVars.Pop();
                 }
+
                 if (b == node.Body && f == node.Filter)
                 {
                     return node;
                 }
+
                 return Expression.MakeCatchBlock(node.Test, node.Variable, b, f);
             }
 
@@ -200,11 +210,13 @@ namespace System.Runtime.CompilerServices
                     {
                         return (IStrongBox)locals[hoistIndex];
                     }
+
                     scope = scope.Parent;
                     if (scope == null)
                     {
                         break;
                     }
+
                     locals = HoistedLocals.GetParent(locals);
                 }
 

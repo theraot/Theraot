@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
-using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -111,7 +110,7 @@ namespace System.Linq.Expressions.Compiler
                 IL.EmitNull();
             }
 
-            IL.EmitNew(ClosureObjectArrayObjectArray);
+            IL.EmitNew(CachedReflectionInfo.ClosureObjectArrayObjectArray);
         }
 
         private void EmitDelegateConstruction(LambdaCompiler inner)

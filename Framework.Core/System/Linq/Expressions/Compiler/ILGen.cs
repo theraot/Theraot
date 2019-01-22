@@ -11,7 +11,6 @@ using System.Dynamic.Utils;
 using System.Reflection;
 using System.Reflection.Emit;
 using Theraot.Reflection;
-using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -148,7 +147,7 @@ namespace System.Linq.Expressions.Compiler
             switch (type.GetTypeCode())
             {
                 case TypeCode.DateTime:
-                    il.Emit(OpCodes.Ldsfld, DateTimeMinValue);
+                    il.Emit(OpCodes.Ldsfld, CachedReflectionInfo.DateTimeMinValue);
                     break;
 
                 case TypeCode.Object:
@@ -203,7 +202,7 @@ namespace System.Linq.Expressions.Compiler
                     break;
 
                 case TypeCode.Decimal:
-                    il.Emit(OpCodes.Ldsfld, DecimalZero);
+                    il.Emit(OpCodes.Ldsfld, CachedReflectionInfo.DecimalZero);
                     break;
 
                 default:
@@ -632,7 +631,7 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(type != null);
 
             il.Emit(OpCodes.Ldtoken, type);
-            il.Emit(OpCodes.Call, TypeGetTypeFromHandle);
+            il.Emit(OpCodes.Call, CachedReflectionInfo.TypeGetTypeFromHandle);
         }
 
         internal static bool ShouldLdtoken(MethodBase mb)
@@ -691,11 +690,11 @@ namespace System.Linq.Expressions.Compiler
                 if (dt?.IsGenericType == true)
                 {
                     il.Emit(OpCodes.Ldtoken, dt);
-                    il.Emit(OpCodes.Call, MethodBaseGetMethodFromHandleRuntimeMethodHandleRuntimeTypeHandle);
+                    il.Emit(OpCodes.Call, CachedReflectionInfo.MethodBaseGetMethodFromHandleRuntimeMethodHandleRuntimeTypeHandle);
                 }
                 else
                 {
-                    il.Emit(OpCodes.Call, MethodBaseGetMethodFromHandleRuntimeMethodHandle);
+                    il.Emit(OpCodes.Call, CachedReflectionInfo.MethodBaseGetMethodFromHandleRuntimeMethodHandle);
                 }
 
                 if (type != typeof(MethodBase))
@@ -765,7 +764,7 @@ namespace System.Linq.Expressions.Compiler
                         switch (intValue)
                         {
                             case -1:
-                                il.Emit(OpCodes.Ldsfld, DecimalMinusOne);
+                                il.Emit(OpCodes.Ldsfld, CachedReflectionInfo.DecimalMinusOne);
                                 return;
 
                             case 0:
@@ -773,12 +772,12 @@ namespace System.Linq.Expressions.Compiler
                                 return;
 
                             case 1:
-                                il.Emit(OpCodes.Ldsfld, DecimalOne);
+                                il.Emit(OpCodes.Ldsfld, CachedReflectionInfo.DecimalOne);
                                 return;
 
                             default:
                                 il.EmitPrimitive(intValue);
-                                il.EmitNew(DecimalCtorInt32);
+                                il.EmitNew(CachedReflectionInfo.DecimalCtorInt32);
                                 return;
                         }
                     }
@@ -786,7 +785,7 @@ namespace System.Linq.Expressions.Compiler
                     if (value <= uint.MaxValue)
                     {
                         il.EmitPrimitive(decimal.ToUInt32(value));
-                        il.EmitNew(DecimalCtorUInt32);
+                        il.EmitNew(CachedReflectionInfo.DecimalCtorUInt32);
                         return;
                     }
                 }
@@ -796,26 +795,26 @@ namespace System.Linq.Expressions.Compiler
                     if (value <= long.MaxValue)
                     {
                         il.EmitPrimitive(decimal.ToInt64(value));
-                        il.EmitNew(DecimalCtorInt64);
+                        il.EmitNew(CachedReflectionInfo.DecimalCtorInt64);
                         return;
                     }
 
                     if (value <= ulong.MaxValue)
                     {
                         il.EmitPrimitive(decimal.ToUInt64(value));
-                        il.EmitNew(DecimalCtorUInt64);
+                        il.EmitNew(CachedReflectionInfo.DecimalCtorUInt64);
                         return;
                     }
 
                     if (value == decimal.MaxValue)
                     {
-                        il.Emit(OpCodes.Ldsfld, DecimalMaxValue);
+                        il.Emit(OpCodes.Ldsfld, CachedReflectionInfo.DecimalMaxValue);
                         return;
                     }
                 }
                 else if (value == decimal.MinValue)
                 {
-                    il.Emit(OpCodes.Ldsfld, DecimalMinValue);
+                    il.Emit(OpCodes.Ldsfld, CachedReflectionInfo.DecimalMinValue);
                     return;
                 }
             }
@@ -825,7 +824,7 @@ namespace System.Linq.Expressions.Compiler
             il.EmitPrimitive(bits[2]);
             il.EmitPrimitive((bits[3] & 0x80000000) != 0);
             il.EmitPrimitive(unchecked((byte)scale));
-            il.EmitNew(DecimalCtorInt32Int32Int32BoolByte);
+            il.EmitNew(CachedReflectionInfo.DecimalCtorInt32Int32Int32BoolByte);
         }
 
         private static void EmitNonNullableToNullableConversion(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked, ILocalCache locals)
@@ -975,31 +974,31 @@ namespace System.Linq.Expressions.Compiler
                     switch (tf)
                     {
                         case TypeCode.Byte:
-                            method = DecimalOpImplicitByte;
+                            method = CachedReflectionInfo.DecimalOpImplicitByte;
                             break;
                         case TypeCode.SByte:
-                            method = DecimalOpImplicitSByte;
+                            method = CachedReflectionInfo.DecimalOpImplicitSByte;
                             break;
                         case TypeCode.Int16:
-                            method = DecimalOpImplicitInt16;
+                            method = CachedReflectionInfo.DecimalOpImplicitInt16;
                             break;
                         case TypeCode.UInt16:
-                            method = DecimalOpImplicitUInt16;
+                            method = CachedReflectionInfo.DecimalOpImplicitUInt16;
                             break;
                         case TypeCode.Int32:
-                            method = DecimalOpImplicitInt32;
+                            method = CachedReflectionInfo.DecimalOpImplicitInt32;
                             break;
                         case TypeCode.UInt32:
-                            method = DecimalOpImplicitUInt32;
+                            method = CachedReflectionInfo.DecimalOpImplicitUInt32;
                             break;
                         case TypeCode.Int64:
-                            method = DecimalOpImplicitInt64;
+                            method = CachedReflectionInfo.DecimalOpImplicitInt64;
                             break;
                         case TypeCode.UInt64:
-                            method = DecimalOpImplicitUInt64;
+                            method = CachedReflectionInfo.DecimalOpImplicitUInt64;
                             break;
                         case TypeCode.Char:
-                            method = DecimalOpImplicitChar;
+                            method = CachedReflectionInfo.DecimalOpImplicitChar;
                             break;
                         default:
                             throw ContractUtils.Unreachable;
