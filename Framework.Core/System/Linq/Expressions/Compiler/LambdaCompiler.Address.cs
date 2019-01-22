@@ -68,6 +68,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     EmitInstance(node.Expression, out objectType);
                 }
+
                 EmitMemberAddress(node.Member, objectType);
             }
             else
@@ -168,7 +169,7 @@ namespace System.Linq.Expressions.Compiler
             var pi = (PropertyInfo)node.Member;
 
             // emit the get
-            EmitCall(instanceType, pi.GetGetMethod(nonPublic: true));
+            EmitCall(instanceType, pi.GetGetMethod(true));
 
             // emit the address of the value
             var valueLocal = GetLocal(node.Type);
@@ -184,9 +185,10 @@ namespace System.Linq.Expressions.Compiler
                     @this.IL.Emit(OpCodes.Ldloc, instanceLocal);
                     @this.FreeLocal(instanceLocal);
                 }
+
                 @this.IL.Emit(OpCodes.Ldloc, valueLocal);
                 @this.FreeLocal(valueLocal);
-                @this.EmitCall(instanceLocal?.LocalType, pi.GetSetMethod(nonPublic: true));
+                @this.EmitCall(instanceLocal?.LocalType, pi.GetSetMethod(true));
             };
         }
 
@@ -236,11 +238,13 @@ namespace System.Linq.Expressions.Compiler
                     @this.IL.Emit(OpCodes.Ldloc, instanceLocal);
                     @this.FreeLocal(instanceLocal);
                 }
+
                 foreach (var arg in args)
                 {
                     @this.IL.Emit(OpCodes.Ldloc, arg);
                     @this.FreeLocal(arg);
                 }
+
                 @this.IL.Emit(OpCodes.Ldloc, valueLocal);
                 @this.FreeLocal(valueLocal);
 
@@ -319,10 +323,12 @@ namespace System.Linq.Expressions.Compiler
                         break;
                 }
             }
+
             if (result == null)
             {
                 EmitAddress(node, type, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
             }
+
             EmitExpressionEnd(startEmitted);
             return result;
         }

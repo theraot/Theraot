@@ -19,7 +19,7 @@ namespace System.Linq.Expressions.Compiler
             EmitNoExpressionStart = 0x0002,
             EmitAsDefaultType = 0x0010,
             EmitAsVoidType = 0x0020,
-            EmitAsTail = 0x0100,   // at the tail position of a lambda, tail call can be safely emitted
+            EmitAsTail = 0x0100, // at the tail position of a lambda, tail call can be safely emitted
             EmitAsMiddle = 0x0200, // in the middle of a lambda, tail call can be emitted if it is in a return
             EmitAsNoTail = 0x0400, // neither at the tail or in a return, or tail call is not turned on, no tail call is emitted
 

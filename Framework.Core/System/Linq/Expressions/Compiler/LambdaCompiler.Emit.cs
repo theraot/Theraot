@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace System.Linq.Expressions.Compiler
 {
-    partial class LambdaCompiler
+    internal partial class LambdaCompiler
     {
         private readonly StackGuard _guard = new StackGuard();
 
@@ -25,8 +25,9 @@ namespace System.Linq.Expressions.Compiler
                 case ExpressionType.MultiplyAssignChecked:
                 case ExpressionType.SubtractAssignChecked:
                     return true;
+                default:
+                    return false;
             }
-            return false;
         }
 
         private void EmitExpression(Expression node, CompilationFlags flags)
@@ -36,17 +37,17 @@ namespace System.Linq.Expressions.Compiler
             // another thread when we run out of stack space.
             if (!_guard.TryEnterOnCurrentStack())
             {
-                _guard.RunOnEmptyStack((LambdaCompiler @this, Expression n, CompilationFlags f) => @this.EmitExpression(n, f), this, node, flags);
+                _guard.RunOnEmptyStack((@this, n, f) => @this.EmitExpression(n, f), this, node, flags);
                 return;
             }
 
             Debug.Assert(node != null);
 
-            bool emitStart = (flags & CompilationFlags.EmitExpressionStartMask) == CompilationFlags.EmitExpressionStart;
+            var emitStart = (flags & CompilationFlags.EmitExpressionStartMask) == CompilationFlags.EmitExpressionStart;
 
-            CompilationFlags startEmitted = emitStart ? EmitExpressionStart(node) : CompilationFlags.EmitNoExpressionStart;
+            var startEmitted = emitStart ? EmitExpressionStart(node) : CompilationFlags.EmitNoExpressionStart;
             // only pass tail call flags to emit the expression
-            flags = flags & CompilationFlags.EmitAsTailCallMask;
+            flags &= CompilationFlags.EmitAsTailCallMask;
 
             switch (node.NodeType)
             {
@@ -213,6 +214,9 @@ namespace System.Linq.Expressions.Compiler
 
                 case ExpressionType.Try:
                     EmitTryExpression(node);
+                    break;
+
+                default:
                     break;
             }
 

@@ -13,7 +13,6 @@ namespace System.Linq.Expressions.Compiler
 {
     internal partial class LambdaCompiler
     {
-
         // For optimized Equal/NotEqual, we can eliminate reference
         // conversions. IL allows comparing managed pointers regardless of
         // type. See ECMA-335 "Binary Comparison or Branch Operations", in
@@ -28,8 +27,10 @@ namespace System.Linq.Expressions.Compiler
                     return convert.Operand;
                 }
             }
+
             return expression;
         }
+
         private static bool NotEmpty(Expression node)
         {
             return !(node is DefaultExpression empty) || empty.Type != typeof(void);
@@ -46,8 +47,10 @@ namespace System.Linq.Expressions.Compiler
                         return true;
                     }
                 }
+
                 return false;
             }
+
             return NotEmpty(node) && !(node is DebugInfoExpression);
         }
 
@@ -99,6 +102,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 EmitExpressionAsVoid(node.GetExpression(i));
             }
+
             EmitExpressionAndBranch(branch, node.GetExpression(count - 1), label);
 
             ExitScope(node);
@@ -131,6 +135,7 @@ namespace System.Linq.Expressions.Compiler
                     Debug.Assert(!node.Right.Type.IsValueType);
                     EmitExpression(GetEqualityOperand(node.Right));
                 }
+
                 EmitBranchOp(!branchWhenEqual, label);
             }
             else if (ConstantCheck.IsNull(node.Right))
@@ -145,6 +150,7 @@ namespace System.Linq.Expressions.Compiler
                     Debug.Assert(!node.Left.Type.IsValueType);
                     EmitExpression(GetEqualityOperand(node.Left));
                 }
+
                 EmitBranchOp(!branchWhenEqual, label);
             }
             else if (node.Left.Type.IsNullable() || node.Right.Type.IsNullable())
@@ -270,6 +276,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     IL.Emit(OpCodes.Br, labEnd);
                 }
+
                 IL.MarkLabel(labFalse);
                 EmitExpressionAsType(node.IfFalse, node.Type, flags);
                 IL.MarkLabel(labEnd);
@@ -281,31 +288,31 @@ namespace System.Linq.Expressions.Compiler
         }
 
         /// <summary>
-        /// Emits the expression and then either brtrue/brfalse to the label.
+        ///     Emits the expression and then either brtrue/brfalse to the label.
         /// </summary>
         /// <param name="branchValue">True for brtrue, false for brfalse.</param>
         /// <param name="node">The expression to emit.</param>
         /// <param name="label">The label to conditionally branch to.</param>
         /// <remarks>
-        /// <para>
-        /// This function optimizes equality and short circuiting logical
-        /// operators to avoid double-branching, minimize instruction count,
-        /// and generate similar IL to the C# compiler. This is important for
-        /// the JIT to optimize patterns like:
-        ///     x != null AndAlso x.GetType() == typeof(SomeType)
-        /// </para>
-        /// <para>
-        /// One optimization we don't do: we always emits at least one
-        /// conditional branch to the label, and always possibly falls through,
-        /// even if we know if the branch will always succeed or always fail.
-        /// We do this to avoid generating unreachable code, which is fine for
-        /// the CLR JIT, but doesn't verify with peverify.
-        /// </para>
-        /// <para>
-        /// This kind of optimization could be implemented safely, by doing
-        /// constant folding over conditionals and logical expressions at the
-        /// tree level.
-        /// </para>
+        ///     <para>
+        ///         This function optimizes equality and short circuiting logical
+        ///         operators to avoid double-branching, minimize instruction count,
+        ///         and generate similar IL to the C# compiler. This is important for
+        ///         the JIT to optimize patterns like:
+        ///         x != null AndAlso x.GetType() == typeof(SomeType)
+        ///     </para>
+        ///     <para>
+        ///         One optimization we don't do: we always emits at least one
+        ///         conditional branch to the label, and always possibly falls through,
+        ///         even if we know if the branch will always succeed or always fail.
+        ///         We do this to avoid generating unreachable code, which is fine for
+        ///         the CLR JIT, but doesn't verify with peverify.
+        ///     </para>
+        ///     <para>
+        ///         This kind of optimization could be implemented safely, by doing
+        ///         constant folding over conditionals and logical expressions at the
+        ///         tree level.
+        ///     </para>
         /// </remarks>
         private void EmitExpressionAndBranch(bool branchValue, Expression node, Label label)
         {
@@ -531,7 +538,7 @@ namespace System.Linq.Expressions.Compiler
                 IL.EmitGetValueOrDefault(b.Left.Type);
                 if (!TypeUtils.AreEquivalent(b.Type, nnLeftType))
                 {
-                    IL.EmitConvertToType(nnLeftType, b.Type, isChecked: true, locals: this);
+                    IL.EmitConvertToType(nnLeftType, b.Type, true, this);
                 }
             }
 
@@ -542,8 +549,9 @@ namespace System.Linq.Expressions.Compiler
             EmitExpression(b.Right);
             if (!TypeUtils.AreEquivalent(b.Right.Type, b.Type))
             {
-                IL.EmitConvertToType(b.Right.Type, b.Type, isChecked: true, locals: this);
+                IL.EmitConvertToType(b.Right.Type, b.Type, true, this);
             }
+
             IL.MarkLabel(labEnd);
         }
 
@@ -587,8 +595,10 @@ namespace System.Linq.Expressions.Compiler
                 {
                     IL.Emit(OpCodes.Box, b.Right.Type);
                 }
+
                 IL.Emit(OpCodes.Castclass, b.Type);
             }
+
             IL.Emit(OpCodes.Br_S, labEnd);
             IL.MarkLabel(labCast);
             if (!TypeUtils.AreEquivalent(b.Left.Type, b.Type))
@@ -596,6 +606,7 @@ namespace System.Linq.Expressions.Compiler
                 Debug.Assert(!b.Left.Type.IsValueType);
                 IL.Emit(OpCodes.Castclass, b.Type);
             }
+
             IL.MarkLabel(labEnd);
         }
 

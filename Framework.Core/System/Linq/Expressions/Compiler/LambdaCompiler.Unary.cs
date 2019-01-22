@@ -177,14 +177,14 @@ namespace System.Linq.Expressions.Compiler
 
                     // calculate 0 - operand
                     var nnType = type.GetNonNullable();
-                    IL.EmitDefault(nnType, locals: null); // locals won't be used.
+                    IL.EmitDefault(nnType, null); // locals won't be used.
                     IL.Emit(OpCodes.Ldloca, loc);
                     IL.EmitGetValueOrDefault(type);
-                    EmitBinaryOperator(ExpressionType.SubtractChecked, nnType, nnType, nnType, liftedToNull: false);
+                    EmitBinaryOperator(ExpressionType.SubtractChecked, nnType, nnType, nnType, false);
 
                     // construct result
                     // ReSharper disable once AssignNullToNotNullAttribute
-                    IL.Emit(OpCodes.Newobj, type.GetConstructor(new[] { nnType }));
+                    IL.Emit(OpCodes.Newobj, type.GetConstructor(new[] {nnType}));
                     IL.Emit(OpCodes.Br_S, end);
 
                     // if null then push back on stack
@@ -195,9 +195,9 @@ namespace System.Linq.Expressions.Compiler
                 }
                 else
                 {
-                    IL.EmitDefault(type, locals: null); // locals won't be used.
+                    IL.EmitDefault(type, null); // locals won't be used.
                     EmitExpression(node.Operand);
-                    EmitBinaryOperator(ExpressionType.SubtractChecked, type, type, type, liftedToNull: false);
+                    EmitBinaryOperator(ExpressionType.SubtractChecked, type, type, type, false);
                 }
             }
             else
@@ -216,12 +216,12 @@ namespace System.Linq.Expressions.Compiler
         {
             if (node.IsLifted)
             {
-                var v = Expression.Variable(node.Operand.Type.GetNonNullable(), name: null);
+                var v = Expression.Variable(node.Operand.Type.GetNonNullable(), null);
                 var mc = Expression.Call(node.Method, v);
 
                 var resultType = mc.Type.GetNullable();
-                EmitLift(node.NodeType, resultType, mc, new[] { v }, new[] { node.Operand });
-                IL.EmitConvertToType(resultType, node.Type, isChecked: false, locals: this);
+                EmitLift(node.NodeType, resultType, mc, new[] {v}, new[] {node.Operand});
+                IL.EmitConvertToType(resultType, node.Type, false, this);
             }
             else
             {
@@ -278,7 +278,7 @@ namespace System.Linq.Expressions.Compiler
                         EmitUnaryOperator(op, nnOperandType, nnOperandType);
 
                         // construct result
-                        var ci = resultType.GetConstructor(new[] { nnOperandType });
+                        var ci = resultType.GetConstructor(new[] {nnOperandType});
                         // ReSharper disable once AssignNullToNotNullAttribute
                         IL.Emit(OpCodes.Newobj, ci);
                         IL.Emit(OpCodes.Br_S, labEnd);
@@ -310,6 +310,7 @@ namespace System.Linq.Expressions.Compiler
                         // Guaranteed to fit within result type: no conversion
                         return;
                     }
+
                     break;
 
                 case ExpressionType.IsFalse:

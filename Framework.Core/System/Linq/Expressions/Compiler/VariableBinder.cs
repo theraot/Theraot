@@ -13,16 +13,16 @@ using Theraot.Core;
 namespace System.Linq.Expressions.Compiler
 {
     /// <summary>
-    /// Determines if variables are closed over in nested lambdas and need to
-    /// be hoisted.
+    ///     Determines if variables are closed over in nested lambdas and need to
+    ///     be hoisted.
     /// </summary>
     internal sealed class VariableBinder : ExpressionVisitor
     {
         private readonly Stack<BoundConstants> _constants = new Stack<BoundConstants>();
         private readonly StackGuard _guard = new StackGuard();
-        private bool _inQuote;
         private readonly Stack<CompilerScope> _scopes = new Stack<CompilerScope>();
         private readonly AnalyzedTree _tree = new AnalyzedTree();
+        private bool _inQuote;
 
         private VariableBinder()
         {
@@ -40,6 +40,7 @@ namespace System.Linq.Expressions.Compiler
                         return lambda.Name;
                     }
                 }
+
                 throw ContractUtils.Unreachable;
             }
         }
@@ -71,6 +72,7 @@ namespace System.Linq.Expressions.Compiler
                 Visit(node.Expressions);
                 return node;
             }
+
             _scopes.Push(_tree.Scopes[node] = new CompilerScope(node, false));
             Visit(MergeScopes(node));
             _scopes.Pop();
@@ -112,6 +114,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     Visit(node.GetArgument(i));
                 }
+
                 return node;
             }
 
@@ -168,6 +171,7 @@ namespace System.Linq.Expressions.Compiler
                 // Force hoisting of these variables
                 Reference(v, VariableStorageKind.Hoisted);
             }
+
             return node;
         }
 
@@ -184,6 +188,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 Visit(node.Operand);
             }
+
             return node;
         }
 
@@ -195,6 +200,7 @@ namespace System.Linq.Expressions.Compiler
                 Visit(node.Body);
                 return node;
             }
+
             _scopes.Push(_tree.Scopes[node] = new CompilerScope(node, false));
             Visit(node.Filter);
             Visit(node.Body);
@@ -207,7 +213,7 @@ namespace System.Linq.Expressions.Compiler
         // array accesses.
         private ReadOnlyCollection<Expression> MergeScopes(Expression node)
         {
-            var body = node is LambdaExpression lambda ? new ReadOnlyCollection<Expression>(new[] { lambda.Body }) : ((BlockExpression)node).Expressions;
+            var body = node is LambdaExpression lambda ? new ReadOnlyCollection<Expression>(new[] {lambda.Body}) : ((BlockExpression)node).Expressions;
 
             var currentScope = _scopes.Peek();
 
@@ -237,8 +243,10 @@ namespace System.Linq.Expressions.Compiler
                         currentScope.Definitions.Add(v, VariableStorageKind.Local);
                     }
                 }
+
                 body = block.Expressions;
             }
+
             return body;
         }
 
@@ -252,22 +260,26 @@ namespace System.Linq.Expressions.Compiler
                     definition = scope;
                     break;
                 }
+
                 scope.NeedsClosure = true;
                 if (scope.IsMethod)
                 {
                     storage = VariableStorageKind.Hoisted;
                 }
             }
+
             if (definition == null)
             {
                 throw new InvalidOperationException($"variable '{node.Name}' of type '{node.Type}' referenced from scope '{CurrentLambdaName}', but it is not defined");
             }
+
             if (storage == VariableStorageKind.Hoisted)
             {
                 if (node.IsByRef)
                 {
                     throw new InvalidOperationException($"Cannot close over byref parameter '{node.Name}' referenced in lambda '{CurrentLambdaName}'");
                 }
+
                 definition.Definitions[node] = VariableStorageKind.Hoisted;
             }
         }

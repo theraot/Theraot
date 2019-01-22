@@ -29,7 +29,6 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         private sealed class ChildRewriter
         {
-
             /// <summary>
             /// Indicates whether a child expression represents a ByRef value and
             /// requires use of a <see cref="ByRefAssignBinaryExpression" /> node
@@ -61,6 +60,7 @@ namespace System.Linq.Expressions.Compiler
             private List<Expression> _comma;
 
             private bool _done;
+
             /// <summary>
             /// The child expressions being rewritten.
             /// </summary>

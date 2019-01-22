@@ -20,12 +20,12 @@ namespace System.Linq.Expressions.Compiler
     /// </summary>
     internal sealed partial class StackSpiller
     {
-
         /// <summary>
         /// Lambda rewrite result. We need this for inlined lambdas to figure
         /// out whether we need to guarantee it an empty stack.
         /// </summary>
         private RewriteAction _lambdaRewrite;
+
         /// <summary>
         /// Initial stack state. Normally empty, but when inlining the lambda
         /// we might have a non-empty starting stack state.

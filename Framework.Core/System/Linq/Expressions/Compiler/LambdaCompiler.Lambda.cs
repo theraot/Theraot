@@ -7,13 +7,14 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Threading;
 using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Linq.Expressions.Compiler
 {
     /// <summary>
-    /// Dynamic Language Runtime Compiler.
-    /// This part compiles lambdas.
+    ///     Dynamic Language Runtime Compiler.
+    ///     This part compiles lambdas.
     /// </summary>
     internal partial class LambdaCompiler
     {
@@ -77,7 +78,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static string GetUniqueMethodName()
         {
-            return "<ExpressionCompilerImplementationDetails>{" + Threading.Interlocked.Increment(ref _counter) + "}lambda_method";
+            return "<ExpressionCompilerImplementationDetails>{" + Interlocked.Increment(ref _counter) + "}lambda_method";
         }
 
         private void EmitClosureCreation(LambdaCompiler inner)
@@ -100,6 +101,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 IL.EmitNull();
             }
+
             if (closure)
             {
                 _scope.EmitGet(_scope.NearestHoistedLocals.SelfVariable);
@@ -108,6 +110,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 IL.EmitNull();
             }
+
             IL.EmitNew(ClosureObjectArrayObjectArray);
         }
 
@@ -121,7 +124,7 @@ namespace System.Linq.Expressions.Compiler
                 IL.EmitType(delegateType);
                 EmitClosureCreation(inner);
                 // ReSharper disable once AssignNullToNotNullAttribute
-                IL.Emit(OpCodes.Callvirt, typeof(DynamicMethod).GetMethod(nameof(DynamicMethod.CreateDelegate), new[] { typeof(Type), typeof(object) }));
+                IL.Emit(OpCodes.Callvirt, typeof(DynamicMethod).GetMethod(nameof(DynamicMethod.CreateDelegate), new[] {typeof(Type), typeof(object)}));
                 IL.Emit(OpCodes.Castclass, delegateType);
             }
             else
@@ -134,11 +137,10 @@ namespace System.Linq.Expressions.Compiler
         }
 
         /// <summary>
-        /// Emits a delegate to the method generated for the LambdaExpression.
-        /// May end up creating a wrapper to match the requested delegate type.
+        ///     Emits a delegate to the method generated for the LambdaExpression.
+        ///     May end up creating a wrapper to match the requested delegate type.
         /// </summary>
         /// <param name="lambda">Lambda for which to generate a delegate</param>
-        ///
         private void EmitDelegateConstruction(LambdaExpression lambda)
         {
             // 1. Create the new compiler
@@ -171,13 +173,13 @@ namespace System.Linq.Expressions.Compiler
         }
 
         /// <summary>
-        /// Emits the lambda body. If inlined, the parameters should already be
-        /// pushed onto the IL stack.
+        ///     Emits the lambda body. If inlined, the parameters should already be
+        ///     pushed onto the IL stack.
         /// </summary>
         /// <param name="parent">The parent scope.</param>
         /// <param name="inlined">true if the lambda is inlined; false otherwise.</param>
         /// <param name="flags">
-        /// The enum to specify if the lambda is compiled with the tail call optimization.
+        ///     The enum to specify if the lambda is compiled with the tail call optimization.
         /// </param>
         private void EmitLambdaBody(CompilerScope parent, bool inlined, CompilationFlags flags)
         {

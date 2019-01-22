@@ -10,14 +10,15 @@ using System.Dynamic.Utils;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Theraot.Collections.Specialized;
 
 namespace System.Linq.Expressions.Compiler
 {
     /// <summary>
-    /// LambdaCompiler is responsible for compiling individual lambda (LambdaExpression). The complete tree may
-    /// contain multiple lambdas, the Compiler class is responsible for compiling the whole tree, individual
-    /// lambdas are then compiled by the LambdaCompiler.
+    ///     LambdaCompiler is responsible for compiling individual lambda (LambdaExpression). The complete tree may
+    ///     contain multiple lambdas, the Compiler class is responsible for compiling the whole tree, individual
+    ///     lambdas are then compiled by the LambdaCompiler.
     /// </summary>
     internal sealed partial class LambdaCompiler : ILocalCache
     {
@@ -30,9 +31,6 @@ namespace System.Linq.Expressions.Compiler
         // True if the method's first argument is of type Closure
         private readonly bool _hasClosureArgument;
 
-        // Currently active LabelTargets and their mapping to IL labels
-        private LabelScopeInfo _labelBlock = new LabelScopeInfo(null, LabelScopeKind.Lambda);
-
         // Mapping of labels used for "long" jumps (jumping out and into blocks)
         private readonly Dictionary<LabelTarget, LabelInfo> _labelInfo = new Dictionary<LabelTarget, LabelInfo>();
 
@@ -41,17 +39,20 @@ namespace System.Linq.Expressions.Compiler
 
         private readonly MethodInfo _method;
 
-        // The currently active variable scope
-        private CompilerScope _scope;
-
         // Information on the entire lambda tree currently being compiled
         private readonly AnalyzedTree _tree;
 
         // The TypeBuilder backing this method, if any
         private readonly TypeBuilder _typeBuilder;
 
+        // Currently active LabelTargets and their mapping to IL labels
+        private LabelScopeInfo _labelBlock = new LabelScopeInfo(null, LabelScopeKind.Lambda);
+
+        // The currently active variable scope
+        private CompilerScope _scope;
+
         /// <summary>
-        /// Creates a lambda compiler that will compile to a dynamic method
+        ///     Creates a lambda compiler that will compile to a dynamic method
         /// </summary>
         private LambdaCompiler(AnalyzedTree tree, LambdaExpression lambda)
         {
@@ -75,7 +76,7 @@ namespace System.Linq.Expressions.Compiler
         }
 
         /// <summary>
-        /// Creates a lambda compiler that will compile into the provided MethodBuilder
+        ///     Creates a lambda compiler that will compile into the provided MethodBuilder
         /// </summary>
         private LambdaCompiler(AnalyzedTree tree, LambdaExpression lambda, MethodBuilder method)
         {
@@ -110,7 +111,7 @@ namespace System.Linq.Expressions.Compiler
         }
 
         /// <summary>
-        /// Creates a lambda compiler for an inlined lambda
+        ///     Creates a lambda compiler for an inlined lambda
         /// </summary>
         private LambdaCompiler(
             LambdaCompiler parent,
@@ -127,8 +128,6 @@ namespace System.Linq.Expressions.Compiler
             _scope = _tree.Scopes[invocation];
             _boundConstants = parent._boundConstants;
         }
-
-        private delegate void WriteBack(LambdaCompiler compiler);
 
         internal bool CanEmitBoundConstants => _method is DynamicMethod;
 
@@ -148,11 +147,12 @@ namespace System.Linq.Expressions.Compiler
             {
                 return builder;
             }
+
             return IL.DeclareLocal(type);
         }
 
         /// <summary>
-        /// Compiler entry point
+        ///     Compiler entry point
         /// </summary>
         /// <param name="lambda">LambdaExpression to compile.</param>
         /// <returns>The compiled delegate.</returns>
@@ -232,7 +232,7 @@ namespace System.Linq.Expressions.Compiler
             // conflicts, so choose a long name that is unlikely to conflict.
             // Naming scheme chosen here is similar to what the C# compiler
             // uses.
-            return _typeBuilder.DefineField("<ExpressionCompilerImplementationDetails>{" + Threading.Interlocked.Increment(ref _counter) + "}" + name, type, FieldAttributes.Static | FieldAttributes.Private);
+            return _typeBuilder.DefineField("<ExpressionCompilerImplementationDetails>{" + Interlocked.Increment(ref _counter) + "}" + name, type, FieldAttributes.Static | FieldAttributes.Private);
         }
 
         private void InitializeMethod()
@@ -241,6 +241,8 @@ namespace System.Linq.Expressions.Compiler
             AddReturnLabel(_lambda);
             _boundConstants.EmitCacheConstants(this);
         }
+
+        private delegate void WriteBack(LambdaCompiler compiler);
     }
 }
 

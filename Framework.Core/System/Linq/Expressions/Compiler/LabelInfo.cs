@@ -35,38 +35,38 @@ namespace System.Linq.Expressions.Compiler
     }
 
     /// <summary>
-    /// Contains compiler state corresponding to a LabelTarget
-    /// See also LabelScopeInfo.
+    ///     Contains compiler state corresponding to a LabelTarget
+    ///     See also LabelScopeInfo.
     /// </summary>
     internal sealed class LabelInfo
     {
-
-        // True if at least one jump is across blocks
-        // If we have any jump across blocks to this label, then the
-        // LabelTarget can only be defined in one place
-        private bool _acrossBlockJump;
         // The blocks where this label is defined. If it has more than one item,
         // the blocks can't be jumped to except from a child block
         private readonly HashSet<LabelScopeInfo> _definitions = new HashSet<LabelScopeInfo>();
 
         private readonly ILGenerator _ilg;
 
+        // The tree node representing this label
+        private readonly LabelTarget _node;
+
+        // Blocks that jump to this block
+        private readonly List<LabelScopeInfo> _references = new List<LabelScopeInfo>();
+
+        // True if at least one jump is across blocks
+        // If we have any jump across blocks to this label, then the
+        // LabelTarget can only be defined in one place
+        private bool _acrossBlockJump;
+
         // The IL label, will be mutated if Node is redefined
         private Label _label;
 
         private bool _labelDefined;
-
-        // The tree node representing this label
-        private readonly LabelTarget _node;
 
         // Until we have more information, default to a leave instruction,
         // which always works. Note: leave spills the stack, so we need to
         // ensure that StackSpiller has guaranteed us an empty stack at this
         // point. Otherwise Leave and Branch are not equivalent
         private OpCode _opCode = OpCodes.Leave;
-
-        // Blocks that jump to this block
-        private readonly List<LabelScopeInfo> _references = new List<LabelScopeInfo>();
 
         // The local that carries the label's value, if any
         private LocalBuilder _value;
@@ -79,9 +79,9 @@ namespace System.Linq.Expressions.Compiler
         }
 
         /// <summary>
-        /// Indicates if it is legal to emit a "branch" instruction based on
-        /// currently available information. Call the Reference method before
-        /// using this property.
+        ///     Indicates if it is legal to emit a "branch" instruction based on
+        ///     currently available information. Call the Reference method before
+        ///     using this property.
         /// </summary>
         internal bool CanBranch => _opCode != OpCodes.Leave;
 
@@ -130,6 +130,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     throw new InvalidOperationException($"Cannot jump to ambiguous label '{_node.Name}'.");
                 }
+
                 // For local jumps, we need a new IL label
                 // This is okay because:
                 //   1. no across block jumps have been made or will be made
@@ -179,6 +180,7 @@ namespace System.Linq.Expressions.Compiler
                 // ldloc <value>
                 StoreValue();
             }
+
             MarkWithEmptyStack();
         }
 
@@ -248,10 +250,12 @@ namespace System.Linq.Expressions.Compiler
                     // found it, jump is valid!
                     return;
                 }
+
                 if (j.Kind == LabelScopeKind.Finally || j.Kind == LabelScopeKind.Filter)
                 {
                     break;
                 }
+
                 if (j.Kind == LabelScopeKind.Try || j.Kind == LabelScopeKind.Catch)
                 {
                     _opCode = OpCodes.Leave;
@@ -284,10 +288,12 @@ namespace System.Linq.Expressions.Compiler
                 {
                     throw new InvalidOperationException("Control cannot leave a finally block.");
                 }
+
                 if (j.Kind == LabelScopeKind.Filter)
                 {
                     throw new InvalidOperationException("Control cannot leave a filter test.");
                 }
+
                 if (j.Kind == LabelScopeKind.Try || j.Kind == LabelScopeKind.Catch)
                 {
                     _opCode = OpCodes.Leave;
@@ -335,7 +341,7 @@ namespace System.Linq.Expressions.Compiler
         }
 
         /// <summary>
-        /// Returns true if we can jump into this node
+        ///     Returns true if we can jump into this node
         /// </summary>
         internal bool CanJumpInto
         {
