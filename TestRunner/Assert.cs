@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Theraot.Collections;
-
-#if LESSTHAN_NET35 || GREATERTHAN_NET35 || TARGETS_NETSTANDARD || TARGETS_NETCORE
-
-using System.Linq;
-
-#endif
 
 namespace TestRunner
 {
@@ -19,6 +14,7 @@ namespace TestRunner
             {
                 return;
             }
+
             throw new AssertionFailedException(BuildMessage(expected, found, message));
         }
 
@@ -28,6 +24,7 @@ namespace TestRunner
             {
                 return;
             }
+
             throw new AssertionFailedException($"Unexpected: {typeof(T).Name}({found}){(message == null ? string.Empty : $" - Message: {message}")}");
         }
 
@@ -46,6 +43,7 @@ namespace TestRunner
             {
                 throw new AssertionFailedException(BuildMessage<TException>(exception, message), exception);
             }
+
             throw new AssertionFailedException(BuildMessage<TException>(message));
         }
 
@@ -65,6 +63,7 @@ namespace TestRunner
             {
                 throw new AssertionFailedException(BuildMessage<TException>(exception, message), exception);
             }
+
             throw new AssertionFailedException(BuildMessage<TException, T>(foundValue, message));
         }
 
@@ -76,6 +75,7 @@ namespace TestRunner
             {
                 throw new AssertionFailedException($"Expected Count: {expectedCollection.Count} - Found: {foundCollection.Count}{(message == null ? string.Empty : $" - Message: {message}")}");
             }
+
             var zip = expectedCollection.Zip(foundCollection, Tuple.Create);
             var index = 0;
             foreach (var tuple in zip)
@@ -84,6 +84,7 @@ namespace TestRunner
                 {
                     throw new AssertionFailedException($"Expected Item#{index}: {typeof(T).Name}({tuple.Item1}) - Found: {typeof(T).Name}({tuple.Item2}){(message == null ? string.Empty : $" - Message: {message}")}");
                 }
+
                 index++;
             }
         }
@@ -99,6 +100,7 @@ namespace TestRunner
             {
                 return;
             }
+
             throw new AssertionFailedException(BuildMessage(false, found, message));
         }
 
@@ -109,6 +111,7 @@ namespace TestRunner
             {
                 return;
             }
+
             throw new AssertionFailedException($"Unexpected: {null}{(message == null ? string.Empty : $" - Message: {message}")}");
         }
 
@@ -119,6 +122,7 @@ namespace TestRunner
             {
                 return;
             }
+
             throw new AssertionFailedException(BuildMessage<object, T>(null, found, message));
         }
 
@@ -128,6 +132,7 @@ namespace TestRunner
             {
                 return;
             }
+
             throw new AssertionFailedException(BuildMessage(true, found, message));
         }
 
@@ -146,6 +151,7 @@ namespace TestRunner
             {
                 throw new AssertionFailedException(BuildMessage<TException>(exception, message), exception);
             }
+
             throw new AssertionFailedException(BuildMessage<TException>(message));
         }
 
@@ -165,6 +171,7 @@ namespace TestRunner
             {
                 throw new AssertionFailedException(BuildMessage<TException>(exception, message), exception);
             }
+
             throw new AssertionFailedException(BuildMessage<TException, T>(foundValue, message));
         }
 
