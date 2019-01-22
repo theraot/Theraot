@@ -61,6 +61,7 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException(nameof(info));
             }
 
+            Theraot.No.Op(context);
             _wrapped = new NullAwareDictionary<T, object>(info.GetValue("dictionary", typeof(KeyValuePair<T, object>[])) as KeyValuePair<T, object>[]);
         }
 

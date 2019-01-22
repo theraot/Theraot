@@ -314,6 +314,7 @@ namespace System.Collections
 
         protected Hashtable(SerializationInfo info, StreamingContext context)
         {
+            Theraot.No.Op(context);
             //We can't do anything with the keys and values until the entire graph has been deserialized
             //and we have a reasonable estimate that GetHashCode is not going to fail.  For the time being,
             //we'll just cache this.  The graph is not valid until OnDeserialization has been called.

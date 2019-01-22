@@ -5,7 +5,7 @@ using Theraot.Collections.ThreadSafe;
 
 namespace TestRunner
 {
-    public class InterfaceTests
+    public static class InterfaceTests
     {
         public static readonly IReadOnlyDictionary<string, int> DictionaryExAsIReadOnlyDictionary = new DictionaryEx<string, int>();
         public static readonly IReadOnlyList<string> EmptyCollectionAsIReadOnlyCollection = EmptyCollection<string>.Instance;
