@@ -47,7 +47,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(constructor, nameof(constructor));
             ContractUtils.RequiresNotNull(constructor.DeclaringType, nameof(constructor) + "." + nameof(constructor.DeclaringType));
-            TypeUtils.ValidateType(constructor.DeclaringType, nameof(constructor), allowByRef: true, allowPointer: true);
+            TypeUtils.ValidateType(constructor.DeclaringType, nameof(constructor), true, true);
             ValidateConstructor(constructor, nameof(constructor));
             var argList = Theraot.Collections.Extensions.AsArrayInternal(arguments);
             ValidateArgumentTypes(constructor, ExpressionType.New, ref argList, nameof(constructor));
@@ -66,7 +66,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(constructor, nameof(constructor));
             ContractUtils.RequiresNotNull(constructor.DeclaringType, nameof(constructor) + "." + nameof(constructor.DeclaringType));
-            TypeUtils.ValidateType(constructor.DeclaringType, nameof(constructor), allowByRef: true, allowPointer: true);
+            TypeUtils.ValidateType(constructor.DeclaringType, nameof(constructor), true, true);
             ValidateConstructor(constructor, nameof(constructor));
             var memberList = members.ToReadOnlyCollection();
             var argList = Theraot.Collections.Extensions.AsArrayInternal(arguments);
@@ -100,16 +100,17 @@ namespace System.Linq.Expressions
             }
             TypeUtils.ValidateType(type, nameof(type));
 
-            if (!type.IsValueType)
+            if (type.IsValueType)
             {
-                var ci = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SingleOrDefault(c => c.GetParameters().Length == 0);
-                if (ci == null)
-                {
-                    throw new ArgumentException($"Type '{type}' does not have a default constructor", nameof(type));
-                }
-                return New(ci);
+                return new NewValueTypeExpression(type, ArrayReservoir<Expression>.EmptyArray, null);
             }
-            return new NewValueTypeExpression(type, ArrayReservoir<Expression>.EmptyArray, null);
+
+            var ci = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SingleOrDefault(c => c.GetParameters().Length == 0);
+            if (ci == null)
+            {
+                throw new ArgumentException($"Type '{type}' does not have a default constructor", nameof(type));
+            }
+            return New(ci);
         }
 
         private static void ValidateAnonymousTypeMember(ref MemberInfo member, out Type memberType, string paramName, int index)
@@ -138,19 +139,19 @@ namespace System.Linq.Expressions
                 return;
             }
 
-            if (member is MethodInfo method)
+            if (!(member is MethodInfo method))
             {
-                if (method.IsStatic)
-                {
-                    throw new ArgumentException("Argument must be an instance member", index >= 0 ? $"{paramName}[{index}]" : paramName);
-                }
-
-                var prop = GetProperty(method, paramName, index);
-                member = prop;
-                memberType = prop.PropertyType;
-                return;
+                throw new ArgumentException("Argument must be either a FieldInfo, PropertyInfo or MethodInfo", index >= 0 ? $"{paramName}[{index}]" : paramName);
             }
-            throw new ArgumentException("Argument must be either a FieldInfo, PropertyInfo or MethodInfo", index >= 0 ? $"{paramName}[{index}]" : paramName);
+
+            if (method.IsStatic)
+            {
+                throw new ArgumentException("Argument must be an instance member", index >= 0 ? $"{paramName}[{index}]" : paramName);
+            }
+
+            var prop = GetProperty(method, paramName, index);
+            member = prop;
+            memberType = prop.PropertyType;
         }
 
         private static void ValidateConstructor(ConstructorInfo constructor, string paramName)

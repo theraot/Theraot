@@ -211,43 +211,45 @@ namespace System.Linq.Expressions
         {
             var value = node.Value;
 
-            if (value == null)
+            switch (value)
             {
-                Out("null");
-            }
-            else if (value is string && node.Type == typeof(string))
-            {
-                Out(string.Format(
-                    CultureInfo.CurrentCulture,
-                    "\"{0}\"",
-                    value));
-            }
-            else if (value is char && node.Type == typeof(char))
-            {
-                Out(string.Format(
-                    CultureInfo.CurrentCulture,
-                    "'{0}'",
-                    value));
-            }
-            else if ((value is int && node.Type == typeof(int)) || (value is bool && node.Type == typeof(bool)))
-            {
-                Out(value.ToString());
-            }
-            else
-            {
-                var suffix = GetConstantValueSuffix(node.Type);
-                if (suffix != null)
-                {
-                    Out(value.ToString());
-                    Out(suffix);
-                }
-                else
-                {
+                case null:
+                    Out("null");
+                    break;
+                case string _ when node.Type == typeof(string):
                     Out(string.Format(
                         CultureInfo.CurrentCulture,
-                        ".Constant<{0}>({1})",
-                        node.Type.ToString(),
+                        "\"{0}\"",
                         value));
+                    break;
+                case char _ when node.Type == typeof(char):
+                    Out(string.Format(
+                        CultureInfo.CurrentCulture,
+                        "'{0}'",
+                        value));
+                    break;
+                case int _ when node.Type == typeof(int):
+                case bool _ when node.Type == typeof(bool):
+                    Out(value.ToString());
+                    break;
+                default:
+                {
+                    var suffix = GetConstantValueSuffix(node.Type);
+                    if (suffix != null)
+                    {
+                        Out(value.ToString());
+                        Out(suffix);
+                    }
+                    else
+                    {
+                        Out(string.Format(
+                            CultureInfo.CurrentCulture,
+                            ".Constant<{0}>({1})",
+                            node.Type.ToString(),
+                            value));
+                    }
+
+                    break;
                 }
             }
             return node;
@@ -277,14 +279,16 @@ namespace System.Linq.Expressions
         {
             Out(string.Format(CultureInfo.CurrentCulture, ".Extension<{0}>", node.GetType().ToString()));
 
-            if (node.CanReduce)
+            if (!node.CanReduce)
             {
-                Out(Flow.Space, "{", Flow.NewLine);
-                Indent();
-                Visit(node.Reduce());
-                Dedent();
-                Out(Flow.NewLine, "}");
+                return node;
             }
+
+            Out(Flow.Space, "{", Flow.NewLine);
+            Indent();
+            Visit(node.Reduce());
+            Dedent();
+            Out(Flow.NewLine, "}");
 
             return node;
         }
@@ -376,11 +380,13 @@ namespace System.Linq.Expressions
             Visit(node.Body);
             Dedent();
             Out(Flow.NewLine, "}");
-            if (node.BreakLabel != null)
+            if (node.BreakLabel == null)
             {
-                Out("", Flow.NewLine);
-                DumpLabel(node.BreakLabel);
+                return node;
             }
+
+            Out("", Flow.NewLine);
+            DumpLabel(node.BreakLabel);
             return node;
         }
 
@@ -728,42 +734,18 @@ namespace System.Linq.Expressions
 
         private static string GetConstantValueSuffix(Type type)
         {
-            if (type == typeof(uint))
-            {
-                return "U";
-            }
-            if (type == typeof(long))
-            {
-                return "L";
-            }
-            if (type == typeof(ulong))
-            {
-                return "UL";
-            }
-            if (type == typeof(double))
-            {
-                return "D";
-            }
-            if (type == typeof(float))
-            {
-                return "F";
-            }
-            if (type == typeof(decimal))
-            {
-                return "M";
-            }
-            return null;
+            return type == typeof(uint) ? "U"
+                 : type == typeof(long) ? "L"
+                 : type == typeof(ulong) ? "UL"
+                 : type == typeof(double) ? "D"
+                 : type == typeof(float) ? "F"
+                 : type == typeof(decimal) ? "M"
+                 : null;
         }
 
         private static string GetDisplayName(string name)
         {
-            if (ContainsWhiteSpace(name))
-            {
-                // if name has whitespace in it, quote it
-                return QuoteName(name);
-            }
-
-            return name;
+            return ContainsWhiteSpace(name) ? QuoteName(name) : name;
         }
 
         private static int GetId<T>(T e, ref Dictionary<T, int> ids)
@@ -774,12 +756,14 @@ namespace System.Linq.Expressions
                 return 1;
             }
 
-            if (!ids.TryGetValue(e, out var id))
+            if (ids.TryGetValue(e, out var id))
             {
-                // e is met the first time
-                id = ids.Count + 1;
-                ids.Add(e, id);
+                return id;
             }
+
+            // e is met the first time
+            id = ids.Count + 1;
+            ids.Add(e, id);
             return id;
         }
 
@@ -893,7 +877,6 @@ namespace System.Linq.Expressions
                 //   member access, calls, indexing, new.
                 case ExpressionType.PostIncrementAssign:
                 case ExpressionType.PostDecrementAssign:
-                default:
                     return 14;
 
                 // These aren't expressions, so never need parentheses:
@@ -901,6 +884,9 @@ namespace System.Linq.Expressions
                 case ExpressionType.Constant:
                 case ExpressionType.Parameter:
                     return 15;
+
+                default:
+                    return 14;
             }
         }
 
@@ -1002,16 +988,18 @@ namespace System.Linq.Expressions
 
         private Flow CheckBreak(Flow flow)
         {
-            if ((flow & Flow.Break) != 0)
+            if ((flow & Flow.Break) == 0)
             {
-                if (_column > _maxColumn + Depth)
-                {
-                    flow = Flow.NewLine;
-                }
-                else
-                {
-                    flow &= ~Flow.Break;
-                }
+                return flow;
+            }
+
+            if (_column > _maxColumn + Depth)
+            {
+                flow = Flow.NewLine;
+            }
+            else
+            {
+                flow &= ~Flow.Break;
             }
             return flow;
         }

@@ -246,17 +246,19 @@ namespace System.Threading
                 return;
             }
         retry:
-            if (!IsSet)
+            if (IsSet)
             {
-                if (spinCount > 0)
-                {
-                    spinCount--;
-                    spinWait.SpinOnce();
-                    goto retry;
-                }
-                var handle = GetOrCreateWaitHandle();
-                handle.WaitOne();
+                return;
             }
+
+            if (spinCount > 0)
+            {
+                spinCount--;
+                spinWait.SpinOnce();
+                goto retry;
+            }
+            var handle = GetOrCreateWaitHandle();
+            handle.WaitOne();
         }
 
         public bool Wait(int millisecondsTimeout)
@@ -270,12 +272,14 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
-            if (millisecondsTimeout == Timeout.Infinite)
+
+            if (millisecondsTimeout != Timeout.Infinite)
             {
-                Wait();
-                return true;
+                return WaitExtracted(millisecondsTimeout);
             }
-            return WaitExtracted(millisecondsTimeout);
+
+            Wait();
+            return true;
         }
 
         public bool Wait(int millisecondsTimeout, CancellationToken cancellationToken)
@@ -291,12 +295,14 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
-            if (millisecondsTimeout == Timeout.Infinite)
+
+            if (millisecondsTimeout != Timeout.Infinite)
             {
-                WaitExtracted(cancellationToken);
-                return true;
+                return WaitExtracted(millisecondsTimeout, cancellationToken);
             }
-            return WaitExtracted(millisecondsTimeout, cancellationToken);
+
+            WaitExtracted(cancellationToken);
+            return true;
         }
 
         public void Wait(CancellationToken cancellationToken)
@@ -323,12 +329,14 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             }
-            if (milliseconds == Timeout.Infinite)
+
+            if (milliseconds != Timeout.Infinite)
             {
-                Wait();
-                return true;
+                return WaitExtracted((int)milliseconds);
             }
-            return WaitExtracted((int)milliseconds);
+
+            Wait();
+            return true;
         }
 
         public bool Wait(TimeSpan timeout, CancellationToken cancellationToken)
@@ -345,24 +353,28 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             }
-            if (milliseconds == Timeout.Infinite)
+
+            if (milliseconds != Timeout.Infinite)
             {
-                Wait(cancellationToken);
-                return true;
+                return WaitExtracted((int)milliseconds, cancellationToken);
             }
-            return WaitExtracted((int)milliseconds, cancellationToken);
+
+            Wait(cancellationToken);
+            return true;
         }
 
         protected virtual void Dispose(bool disposing)
         {
             // Set disposed
-            if (disposing && Interlocked.Exchange(ref _status, (int)Status.Disposed) != (int)Status.Disposed)
+            if (!disposing || Interlocked.Exchange(ref _status, (int)Status.Disposed) == (int)Status.Disposed)
             {
-                // Get and erase handle
-                var handle = Interlocked.Exchange(ref _handle, null);
-                // Close it
-                handle?.Close();
+                return;
             }
+
+            // Get and erase handle
+            var handle = Interlocked.Exchange(ref _handle, null);
+            // Close it
+            handle?.Close();
         }
 
         private ManualResetEvent GetOrCreateWaitHandle()
@@ -454,22 +466,20 @@ namespace System.Threading
                 return true;
             }
             var elapsed = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
-            if (elapsed < millisecondsTimeout)
+            if (elapsed >= millisecondsTimeout)
             {
-                if (spinCount > 0)
-                {
-                    spinCount--;
-                    spinWait.SpinOnce();
-                    goto retry_longTimeout;
-                }
-                var handle = GetOrCreateWaitHandle();
-                var remaining = millisecondsTimeout - (int)elapsed;
-                if (remaining > 0)
-                {
-                    return handle.WaitOne(remaining);
-                }
+                return false;
             }
-            return false;
+
+            if (spinCount > 0)
+            {
+                spinCount--;
+                spinWait.SpinOnce();
+                goto retry_longTimeout;
+            }
+            var handle = GetOrCreateWaitHandle();
+            var remaining = millisecondsTimeout - (int)elapsed;
+            return remaining > 0 && handle.WaitOne(remaining);
         }
 
         private bool WaitExtracted(int millisecondsTimeout, CancellationToken cancellationToken)

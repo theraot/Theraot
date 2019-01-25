@@ -64,14 +64,16 @@ namespace Theraot.Collections.ThreadSafe
                 capacity = _minCapacity;
             }
             capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
-            if (capacity <= _maxCapacity)
+            if (capacity > _maxCapacity)
             {
-                var index = NumericHelper.Log2(capacity) - _minCapacityLog2;
-                var currentPool = _pools[index];
-                if (currentPool != null && currentPool.TryGet(out var result))
-                {
-                    return result;
-                }
+                return new T[capacity];
+            }
+
+            var index = NumericHelper.Log2(capacity) - _minCapacityLog2;
+            var currentPool = _pools[index];
+            if (currentPool != null && currentPool.TryGet(out var result))
+            {
+                return result;
             }
             return new T[capacity];
         }

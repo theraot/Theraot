@@ -55,11 +55,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
-            if (arrayIndex == array.Length)
-            {
-                return string.Empty;
-            }
-            return ConcatExtracted(array, arrayIndex, array.Length - arrayIndex);
+            return arrayIndex == array.Length ? string.Empty : ConcatExtracted(array, arrayIndex, array.Length - arrayIndex);
         }
 
         public static string Concat(string[] array, int arrayIndex, int countLimit)
@@ -80,11 +76,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentException("startIndex plus countLimit is greater than the number of elements in array.", nameof(array));
             }
-            if (arrayIndex == array.Length)
-            {
-                return string.Empty;
-            }
-            return ConcatExtracted(array, arrayIndex, countLimit);
+            return arrayIndex == array.Length ? string.Empty : ConcatExtracted(array, arrayIndex, countLimit);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -103,11 +95,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
-            if (arrayIndex == array.Length)
-            {
-                return string.Empty;
-            }
-            return ConcatExtracted(array, arrayIndex, array.Length - arrayIndex);
+            return arrayIndex == array.Length ? string.Empty : ConcatExtracted(array, arrayIndex, array.Length - arrayIndex);
         }
 
         public static string Concat(object[] array, int arrayIndex, int countLimit)
@@ -128,11 +116,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentException("startIndex plus countLimit is greater than the number of elements in array.", nameof(array));
             }
-            if (arrayIndex == array.Length)
-            {
-                return string.Empty;
-            }
-            return ConcatExtracted(array, arrayIndex, countLimit);
+            return arrayIndex == array.Length ? string.Empty : ConcatExtracted(array, arrayIndex, countLimit);
         }
 
         public static string Concat<T>(IEnumerable<T> values, Func<T, string> converter)
@@ -164,11 +148,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(text));
             }
             var length = text.Length;
-            if (length < characterCount)
-            {
-                return text;
-            }
-            return text.Substring(length - characterCount);
+            return length < characterCount ? text : text.Substring(length - characterCount);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -178,11 +158,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(text));
             }
-            if (!text.EndsWith(end, comparisonType))
-            {
-                return text.Append(end);
-            }
-            return text;
+            return !text.EndsWith(end, comparisonType) ? text.Append(end) : text;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -192,11 +168,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(text));
             }
-            if (!text.StartsWith(start, StringComparison.CurrentCulture))
-            {
-                return start.Append(text);
-            }
-            return text;
+            return !text.StartsWith(start, StringComparison.CurrentCulture) ? start.Append(text) : text;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -206,11 +178,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(text));
             }
-            if (!text.StartsWith(start, comparisonType))
-            {
-                return start.Append(text);
-            }
-            return text;
+            return !text.StartsWith(start, comparisonType) ? start.Append(text) : text;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -221,11 +189,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(text));
             }
             var length = text.Length;
-            if (length < characterCount)
-            {
-                return string.Empty;
-            }
-            return text.Substring(0, length - characterCount);
+            return length < characterCount ? string.Empty : text.Substring(0, length - characterCount);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -236,11 +200,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(text));
             }
             var length = text.Length;
-            if (length < characterCount)
-            {
-                return string.Empty;
-            }
-            return text.Substring(characterCount);
+            return length < characterCount ? string.Empty : text.Substring(characterCount);
         }
 
         public static string Implode(string separator, params object[] values)
@@ -448,13 +408,15 @@ namespace Theraot.Core
             {
                 stringList.Add(item);
             }
-            if (stringList.Count > 0)
+
+            if (stringList.Count <= 0)
             {
-                start = start ?? string.Empty;
-                end = end ?? string.Empty;
-                return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
+                return string.Empty;
             }
-            return string.Empty;
+
+            start = start ?? string.Empty;
+            end = end ?? string.Empty;
+            return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
         }
 
         public static string Implode<T>(string separator, IEnumerable<T> values, string start, string end)
@@ -472,13 +434,15 @@ namespace Theraot.Core
             {
                 stringList.Add(item?.ToString());
             }
-            if (stringList.Count > 0)
+
+            if (stringList.Count <= 0)
             {
-                start = start ?? string.Empty;
-                end = end ?? string.Empty;
-                return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
+                return string.Empty;
             }
-            return string.Empty;
+
+            start = start ?? string.Empty;
+            end = end ?? string.Empty;
+            return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
         }
 
         public static string Implode<T>(string separator, IEnumerable<T> values, Func<T, string> converter, string start, string end)
@@ -500,13 +464,15 @@ namespace Theraot.Core
             {
                 stringList.Add(item?.ToString());
             }
-            if (stringList.Count > 0)
+
+            if (stringList.Count <= 0)
             {
-                start = start ?? string.Empty;
-                end = end ?? string.Empty;
-                return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
+                return string.Empty;
             }
-            return string.Empty;
+
+            start = start ?? string.Empty;
+            end = end ?? string.Empty;
+            return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -694,11 +660,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(end));
             }
-            if (text.EndsWith(end, comparisonType))
-            {
-                return text.ExceptEnd(end.Length);
-            }
-            return text;
+            return text.EndsWith(end, comparisonType) ? text.ExceptEnd(end.Length) : text;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -712,11 +674,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(start));
             }
-            if (text.StartsWith(start, StringComparison.CurrentCulture))
-            {
-                return text.ExceptStart(start.Length);
-            }
-            return text;
+            return text.StartsWith(start, StringComparison.CurrentCulture) ? text.ExceptStart(start.Length) : text;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -730,21 +688,13 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(start));
             }
-            if (text.StartsWith(start, comparisonType))
-            {
-                return text.ExceptStart(start.Length);
-            }
-            return text;
+            return text.StartsWith(start, comparisonType) ? text.ExceptStart(start.Length) : text;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Safe(this string text)
         {
-            if (string.IsNullOrEmpty(text))
-            {
-                return string.Empty;
-            }
-            return text;
+            return string.IsNullOrEmpty(text) ? string.Empty : text;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -755,11 +705,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(text));
             }
             var length = text.Length;
-            if (length < characterCount)
-            {
-                return text;
-            }
-            return text.Substring(0, characterCount);
+            return length < characterCount ? text : text.Substring(0, characterCount);
         }
 
         private static string ConcatExtracted(object[] array, int startIndex, int count)
@@ -770,12 +716,14 @@ namespace Theraot.Core
             for (var index = startIndex; index < maxIndex; index++)
             {
                 var item = array[index];
-                if (item != null)
+                if (item == null)
                 {
-                    var itemToString = item.ToString();
-                    newArray[index - startIndex] = itemToString;
-                    length += itemToString.Length;
+                    continue;
                 }
+
+                var itemToString = item.ToString();
+                newArray[index - startIndex] = itemToString;
+                length += itemToString.Length;
             }
             return ConcatExtractedExtracted(newArray, 0, count, length);
         }
@@ -818,12 +766,14 @@ namespace Theraot.Core
             for (var index = startIndex; index < maxIndex; index++)
             {
                 var item = array[index];
-                if (item != null)
+                if (item == null)
                 {
-                    var itemToString = item.ToString();
-                    newArray[index - startIndex] = itemToString;
-                    length += itemToString.Length;
+                    continue;
                 }
+
+                var itemToString = item.ToString();
+                newArray[index - startIndex] = itemToString;
+                length += itemToString.Length;
             }
             length += separator.Length * (count - 1);
             return ImplodeExtractedExtracted(separator, newArray, 0, count, length);
@@ -1063,11 +1013,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(text));
             }
-            if (!text.EndsWith(end, false, System.Globalization.CultureInfo.CurrentCulture))
-            {
-                return text.Append(end);
-            }
-            return text;
+            return !text.EndsWith(end, false, System.Globalization.CultureInfo.CurrentCulture) ? text.Append(end) : text;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -1077,11 +1023,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(text));
             }
-            if (!text.EndsWith(end, ignoreCase, culture))
-            {
-                return text.Append(end);
-            }
-            return text;
+            return !text.EndsWith(end, ignoreCase, culture) ? text.Append(end) : text;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -1091,11 +1033,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(text));
             }
-            if (!text.StartsWith(start, ignoreCase, culture))
-            {
-                return start.Append(text);
-            }
-            return text;
+            return !text.StartsWith(start, ignoreCase, culture) ? start.Append(text) : text;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -1109,11 +1047,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(end));
             }
-            if (text.EndsWith(end, false, System.Globalization.CultureInfo.CurrentCulture))
-            {
-                return text.ExceptEnd(end.Length);
-            }
-            return text;
+            return text.EndsWith(end, false, System.Globalization.CultureInfo.CurrentCulture) ? text.ExceptEnd(end.Length) : text;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -1127,11 +1061,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(end));
             }
-            if (text.EndsWith(end, ignoreCase, culture))
-            {
-                return text.ExceptEnd(end.Length);
-            }
-            return text;
+            return text.EndsWith(end, ignoreCase, culture) ? text.ExceptEnd(end.Length) : text;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -1145,11 +1075,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(start));
             }
-            if (text.StartsWith(start, ignoreCase, culture))
-            {
-                return text.ExceptStart(start.Length);
-            }
-            return text;
+            return text.StartsWith(start, ignoreCase, culture) ? text.ExceptStart(start.Length) : text;
         }
 
 #endif

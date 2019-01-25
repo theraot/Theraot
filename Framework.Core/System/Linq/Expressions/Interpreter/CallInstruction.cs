@@ -313,12 +313,7 @@ namespace System.Linq.Expressions.Interpreter
 
         protected object InterpretLambdaInvoke(LightLambda targetLambda, object[] args)
         {
-            if (ProducedStack > 0)
-            {
-                return targetLambda.Run(args);
-            }
-
-            return targetLambda.RunVoid(args);
+            return ProducedStack > 0 ? targetLambda.Run(args) : targetLambda.RunVoid(args);
         }
 
         private static CallInstruction GetArrayAccessor(MethodInfo info, int argumentCount)
@@ -350,12 +345,7 @@ namespace System.Linq.Expressions.Interpreter
                     break;
             }
 
-            if (alternativeMethod == null)
-            {
-                return new MethodInfoCallInstruction(info, argumentCount);
-            }
-
-            return Create(alternativeMethod);
+            return alternativeMethod == null ? new MethodInfoCallInstruction(info, argumentCount) : Create(alternativeMethod);
         }
     }
 
@@ -436,19 +426,19 @@ namespace System.Linq.Expressions.Interpreter
         {
             var count = _argumentCount - skip;
 
-            if (count > 0)
+            if (count <= 0)
             {
-                var args = new object[count];
-
-                for (var i = 0; i < args.Length; i++)
-                {
-                    args[i] = frame.Data[first + i + skip];
-                }
-
-                return args;
+                return ArrayReservoir<object>.EmptyArray;
             }
 
-            return ArrayReservoir<object>.EmptyArray;
+            var args = new object[count];
+
+            for (var i = 0; i < args.Length; i++)
+            {
+                args[i] = frame.Data[first + i + skip];
+            }
+
+            return args;
         }
     }
 }

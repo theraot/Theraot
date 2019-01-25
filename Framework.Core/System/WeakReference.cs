@@ -59,19 +59,21 @@ namespace System
         {
             var oldHandle = _handle;
             _handle = GetNewHandle(value, _trackResurrection);
-            if (oldHandle.IsAllocated)
+            if (!oldHandle.IsAllocated)
+            {
+                return;
+            }
+
+            oldHandle.Free();
+            try
             {
                 oldHandle.Free();
-                try
-                {
-                    oldHandle.Free();
-                }
-                catch (InvalidOperationException exception)
-                {
-                    // The handle was freed or never initialized.
-                    // Nothing to do.
-                    No.Op(exception);
-                }
+            }
+            catch (InvalidOperationException exception)
+            {
+                // The handle was freed or never initialized.
+                // Nothing to do.
+                No.Op(exception);
             }
         }
 

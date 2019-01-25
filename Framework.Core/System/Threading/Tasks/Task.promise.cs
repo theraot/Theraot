@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 
@@ -174,11 +174,13 @@ namespace System.Threading.Tasks
             AddException(exception);
             var status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Faulted, (int)TaskStatus.WaitingForActivation);
             var succeeded = status == (int)TaskStatus.WaitingForActivation;
-            if (succeeded)
+            if (!succeeded)
             {
-                MarkCompleted();
-                FinishStageThree();
+                return succeeded;
             }
+
+            MarkCompleted();
+            FinishStageThree();
             return succeeded;
         }
 
@@ -190,11 +192,13 @@ namespace System.Threading.Tasks
             }
             var status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Faulted, (int)TaskStatus.WaitingForActivation);
             var succeeded = status == (int)TaskStatus.WaitingForActivation;
-            if (succeeded)
+            if (!succeeded)
             {
-                MarkCompleted();
-                FinishStageThree();
+                return succeeded;
             }
+
+            MarkCompleted();
+            FinishStageThree();
             return succeeded;
         }
 
@@ -206,11 +210,13 @@ namespace System.Threading.Tasks
             }
             var status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Faulted, (int)TaskStatus.WaitingForActivation);
             var succeeded = status == (int)TaskStatus.WaitingForActivation;
-            if (succeeded)
+            if (!succeeded)
             {
-                MarkCompleted();
-                FinishStageThree();
+                return succeeded;
             }
+
+            MarkCompleted();
+            FinishStageThree();
             return succeeded;
         }
 
@@ -249,14 +255,16 @@ namespace System.Threading.Tasks
             {
                 return false;
             }
-            if (SetCompleted(true))
+
+            if (!SetCompleted(true))
             {
-                InternalResult = result;
-                MarkCompleted();
-                FinishStageThree();
-                return true;
+                return false;
             }
-            return false;
+
+            InternalResult = result;
+            MarkCompleted();
+            FinishStageThree();
+            return true;
         }
     }
 }

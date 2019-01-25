@@ -442,18 +442,20 @@ namespace System.Linq.Expressions.Compiler
                 EmitExpressionAsType(node.Cases[i].Body, node.Type, flags);
 
                 // Last case doesn't need branch
-                if (node.DefaultBody != null || i < n - 1)
+                if (node.DefaultBody == null && i >= n - 1)
                 {
-                    if ((flags & CompilationFlags.EmitAsTailCallMask) == CompilationFlags.EmitAsTail)
-                    {
-                        //The switch case is at the tail of the lambda so
-                        //it is safe to emit a Ret.
-                        IL.Emit(OpCodes.Ret);
-                    }
-                    else
-                    {
-                        IL.Emit(OpCodes.Br, end);
-                    }
+                    continue;
+                }
+
+                if ((flags & CompilationFlags.EmitAsTailCallMask) == CompilationFlags.EmitAsTail)
+                {
+                    //The switch case is at the tail of the lambda so
+                    //it is safe to emit a Ret.
+                    IL.Emit(OpCodes.Ret);
+                }
+                else
+                {
+                    IL.Emit(OpCodes.Br, end);
                 }
             }
 
@@ -647,27 +649,29 @@ namespace System.Linq.Expressions.Compiler
 
         private void EnterScope(object node)
         {
-            if (HasVariables(node) && _scope.MergedScopes?.Contains(node as BlockExpression) != true)
+            if (!HasVariables(node) || _scope.MergedScopes?.Contains(node as BlockExpression) == true)
             {
-                if (!_tree.Scopes.TryGetValue(node, out var scope))
-                {
-                    //
-                    // Very often, we want to compile nodes as reductions
-                    // rather than as IL, but usually they need to allocate
-                    // some IL locals. To support this, we allow emitting a
-                    // BlockExpression that was not bound by VariableBinder.
-                    // This works as long as the variables are only used
-                    // locally -- i.e. not closed over.
-                    //
-                    // User-created blocks will never hit this case; only our
-                    // internally reduced nodes will.
-                    //
-                    scope = new CompilerScope(node, false) {NeedsClosure = _scope.NeedsClosure};
-                }
-
-                _scope = scope.Enter(this, _scope);
-                Debug.Assert(_scope.Node == node);
+                return;
             }
+
+            if (!_tree.Scopes.TryGetValue(node, out var scope))
+            {
+                //
+                // Very often, we want to compile nodes as reductions
+                // rather than as IL, but usually they need to allocate
+                // some IL locals. To support this, we allow emitting a
+                // BlockExpression that was not bound by VariableBinder.
+                // This works as long as the variables are only used
+                // locally -- i.e. not closed over.
+                //
+                // User-created blocks will never hit this case; only our
+                // internally reduced nodes will.
+                //
+                scope = new CompilerScope(node, false) {NeedsClosure = _scope.NeedsClosure};
+            }
+
+            _scope = scope.Enter(this, _scope);
+            Debug.Assert(_scope.Node == node);
         }
 
         private void ExitScope(object node)

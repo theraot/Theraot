@@ -103,11 +103,7 @@ namespace Theraot.Reflection
             {
                 return true;
             }
-            if (info.IsEnum && target == typeof(Enum))
-            {
-                return true;
-            }
-            return false;
+            return info.IsEnum && target == typeof(Enum);
         }
 
         public static bool IsImplicitNumericConversion(Type source, Type target)

@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -67,11 +67,13 @@ namespace System.Runtime.CompilerServices
                 var max = Math.Min(rules.Length, i + count);
                 for (var index = i; index < max; index++)
                 {
-                    if (rules[index] == rule)
+                    if (rules[index] != rule)
                     {
-                        oldIndex = index;
-                        break;
+                        continue;
                     }
+
+                    oldIndex = index;
+                    break;
                 }
                 if (oldIndex < 2)
                 {

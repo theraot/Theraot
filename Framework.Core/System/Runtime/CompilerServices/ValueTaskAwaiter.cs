@@ -1,4 +1,4 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 
@@ -33,12 +33,12 @@ namespace System.Runtime.CompilerServices
 
         public void OnCompleted(Action continuation)
         {
-            (_value._task ?? TaskEx.FromResult(_value._result)).ConfigureAwait(continueOnCapturedContext: true).GetAwaiter().OnCompleted(continuation);
+            (_value._task ?? TaskEx.FromResult(_value._result)).ConfigureAwait(true).GetAwaiter().OnCompleted(continuation);
         }
 
         public void UnsafeOnCompleted(Action continuation)
         {
-            (_value._task ?? TaskEx.FromResult(_value._result)).ConfigureAwait(continueOnCapturedContext: true).GetAwaiter().UnsafeOnCompleted(continuation);
+            (_value._task ?? TaskEx.FromResult(_value._result)).ConfigureAwait(true).GetAwaiter().UnsafeOnCompleted(continuation);
         }
     }
 }

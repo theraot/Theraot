@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA1063 // Implement IDisposable Correctly
 #pragma warning disable CA1068 // CancellationToken parameters must come last
@@ -673,15 +673,17 @@ namespace System.Threading
         /// </remarks>
         protected virtual void Dispose(bool disposing)
         {
-            if (!_disposed)
+            if (_disposed)
             {
-                if (disposing)
-                {
-                    _oddEvent.Dispose();
-                    _evenEvent.Dispose();
-                }
-                _disposed = true;
+                return;
             }
+
+            if (disposing)
+            {
+                _oddEvent.Dispose();
+                _evenEvent.Dispose();
+            }
+            _disposed = true;
         }
 
         /// <summary>

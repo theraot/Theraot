@@ -91,21 +91,23 @@ namespace System.Runtime.CompilerServices
                     throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
-                if (value != _items.Length)
+                if (value == _items.Length)
                 {
-                    if (value > 0)
+                    return;
+                }
+
+                if (value > 0)
+                {
+                    var newItems = new T[value];
+                    if (Count > 0)
                     {
-                        var newItems = new T[value];
-                        if (Count > 0)
-                        {
-                            Array.Copy(_items, 0, newItems, 0, Count);
-                        }
-                        _items = newItems;
+                        Array.Copy(_items, 0, newItems, 0, Count);
                     }
-                    else
-                    {
-                        _items = ArrayReservoir<T>.EmptyArray;
-                    }
+                    _items = newItems;
+                }
+                else
+                {
+                    _items = ArrayReservoir<T>.EmptyArray;
                 }
             }
         }
@@ -289,13 +291,13 @@ namespace System.Runtime.CompilerServices
         public bool Remove(T item)
         {
             var index = IndexOf(item);
-            if (index >= 0)
+            if (index < 0)
             {
-                RemoveAt(index);
-                return true;
+                return false;
             }
 
-            return false;
+            RemoveAt(index);
+            return true;
         }
 
         /// <summary>
@@ -404,12 +406,7 @@ namespace System.Runtime.CompilerServices
 
         bool IList.Contains(object value)
         {
-            if (IsCompatibleObject(value))
-            {
-                return Contains((T)value);
-            }
-
-            return false;
+            return IsCompatibleObject(value) && Contains((T)value);
         }
 
         void ICollection.CopyTo(Array array, int index)
@@ -429,19 +426,21 @@ namespace System.Runtime.CompilerServices
 
         private void EnsureCapacity(int min)
         {
-            if (_items.Length < min)
+            if (_items.Length >= min)
             {
-                var newCapacity = _defaultCapacity;
-                if (_items.Length > 0)
-                {
-                    newCapacity = _items.Length * 2;
-                }
-                if (newCapacity < min)
-                {
-                    newCapacity = min;
-                }
-                Capacity = newCapacity;
+                return;
             }
+
+            var newCapacity = _defaultCapacity;
+            if (_items.Length > 0)
+            {
+                newCapacity = _items.Length * 2;
+            }
+            if (newCapacity < min)
+            {
+                newCapacity = min;
+            }
+            Capacity = newCapacity;
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -510,20 +509,20 @@ namespace System.Runtime.CompilerServices
 
             public bool MoveNext()
             {
-                if (_version == _builder._version)
+                if (_version != _builder._version)
                 {
-                    if (_index < _builder.Count)
-                    {
-                        Current = _builder._items[_index++];
-                        return true;
-                    }
-
-                    _index = _builder.Count + 1;
-                    Current = default;
-                    return false;
+                    throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
                 }
 
-                throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
+                if (_index < _builder.Count)
+                {
+                    Current = _builder._items[_index++];
+                    return true;
+                }
+
+                _index = _builder.Count + 1;
+                Current = default;
+                return false;
             }
 
             void IEnumerator.Reset()

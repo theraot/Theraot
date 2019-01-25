@@ -66,11 +66,7 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public ElementInit Update(IEnumerable<Expression> arguments)
         {
-            if (arguments == Arguments)
-            {
-                return this;
-            }
-            return Expression.ElementInit(AddMethod, arguments);
+            return arguments == Arguments ? this : Expression.ElementInit(AddMethod, arguments);
         }
     }
 

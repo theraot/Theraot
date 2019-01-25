@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 #pragma warning disable CA1068 // CancellationToken parameters must come last
@@ -706,16 +706,18 @@ namespace System.Threading.Tasks
             // In the case of a pre-canceled token, continuationTask will have been completed
             // in a Canceled state by now.  If such is the case, there is no need to go through
             // the motions of queuing up the continuation for eventual execution.
-            if (!continuationTask.IsCompleted)
+            if (continuationTask.IsCompleted)
             {
-                // Attempt to enqueue the continuation
-                var continuationQueued = AddTaskContinuation(continuation, /*addBeforeOthers:*/ false);
+                return;
+            }
 
-                // If the continuation was not queued (because the task completed), then run it now.
-                if (!continuationQueued)
-                {
-                    continuation.Run(this, true);
-                }
+            // Attempt to enqueue the continuation
+            var continuationQueued = AddTaskContinuation(continuation, /*addBeforeOthers:*/ false);
+
+            // If the continuation was not queued (because the task completed), then run it now.
+            if (!continuationQueued)
+            {
+                continuation.Run(this, true);
             }
         }
 
@@ -728,85 +730,88 @@ namespace System.Threading.Tasks
             {
                 return;
             }
-            if (Interlocked.CompareExchange(ref _continuationsStatus, _takingContinuations, _continuationsInitialization) == _continuationsInitialization)
+
+            if (Interlocked.CompareExchange(ref _continuationsStatus, _takingContinuations, _continuationsInitialization) != _continuationsInitialization)
             {
-                var continuations = Interlocked.CompareExchange(ref _continuations, null, null);
-                if (continuations == null)
+                return;
+            }
+
+            var continuations = Interlocked.CompareExchange(ref _continuations, null, null);
+            if (continuations == null)
+            {
+                return;
+            }
+            // Wait for any concurrent adds or removes to be retired
+            try
+            {
+                var spinWait = new SpinWait();
+                LockEnter(spinWait);
+                Interlocked.CompareExchange(ref _continuations, null, continuations);
+                Volatile.Write(ref _continuationsStatus, _runningContinuations);
+            }
+            finally
+            {
+                LockExit();
+            }
+
+            // Skip synchronous execution of continuations if this task's thread was aborted
+            var canInlineContinuations =
+                Volatile.Read(ref _threadAbortedManaged) == 0
+                && Thread.CurrentThread.ThreadState != ThreadState.AbortRequested
+                && (CreationOptions & TaskCreationOptions.RunContinuationsAsynchronously) == 0;
+
+            //
+            // Begin processing of continuation list
+            //
+
+            var continuationCount = continuations.Count;
+
+            // Fire the asynchronous continuations first ...
+            for (var index = 0; index < continuationCount; index++)
+            {
+                // Synchronous continuation tasks will have the ExecuteSynchronously option,
+                // and we're looking for asynchronous tasks...
+                if (!(continuations[index] is StandardTaskContinuation tc) || (tc.Options & TaskContinuationOptions.ExecuteSynchronously) != 0)
                 {
-                    return;
+                    continue;
                 }
-                // Wait for any concurrent adds or removes to be retired
-                try
+                continuations[index] = null; // so that we can skip this later
+                tc.Run(this, canInlineContinuations);
+            }
+
+            // ... and then fire the synchronous continuations (if there are any).
+            // This includes ITaskCompletionAction, AwaitTaskContinuations, and
+            // Action delegates, which are all by default implicitly synchronous.
+            for (var index = 0; index < continuationCount; index++)
+            {
+                var currentContinuation = continuations[index];
+                if (currentContinuation == null)
                 {
-                    var spinWait = new SpinWait();
-                    LockEnter(spinWait);
-                    Interlocked.CompareExchange(ref _continuations, null, continuations);
-                    Volatile.Write(ref _continuationsStatus, _runningContinuations);
+                    continue;
                 }
-                finally
+
+                continuations[index] = null; // to enable freeing up memory earlier
+                // If the continuation is an Action delegate, it came from an await continuation,
+                // and we should use AwaitTaskContinuation to run it.
+                if (currentContinuation is Action ad)
                 {
-                    LockExit();
+                    AwaitTaskContinuation.RunOrScheduleAction(ad, canInlineContinuations, ref InternalCurrent);
                 }
-
-                // Skip synchronous execution of continuations if this task's thread was aborted
-                var canInlineContinuations =
-                    Volatile.Read(ref _threadAbortedManaged) == 0
-                    && Thread.CurrentThread.ThreadState != ThreadState.AbortRequested
-                    && (CreationOptions & TaskCreationOptions.RunContinuationsAsynchronously) == 0;
-
-                //
-                // Begin processing of continuation list
-                //
-
-                var continuationCount = continuations.Count;
-
-                // Fire the asynchronous continuations first ...
-                for (var index = 0; index < continuationCount; index++)
+                else
                 {
-                    // Synchronous continuation tasks will have the ExecuteSynchronously option,
-                    // and we're looking for asynchronous tasks...
-                    if (!(continuations[index] is StandardTaskContinuation tc) || (tc.Options & TaskContinuationOptions.ExecuteSynchronously) != 0)
+                    // If it's a TaskContinuation object of some kind, invoke it.
+                    if (currentContinuation is TaskContinuation tc)
                     {
-                        continue;
+                        // We know that this is a synchronous continuation because the
+                        // asynchronous ones have been weeded out
+                        tc.Run(this, canInlineContinuations);
                     }
-                    continuations[index] = null; // so that we can skip this later
-                    tc.Run(this, canInlineContinuations);
-                }
-
-                // ... and then fire the synchronous continuations (if there are any).
-                // This includes ITaskCompletionAction, AwaitTaskContinuations, and
-                // Action delegates, which are all by default implicitly synchronous.
-                for (var index = 0; index < continuationCount; index++)
-                {
-                    var currentContinuation = continuations[index];
-                    if (currentContinuation == null)
-                    {
-                        continue;
-                    }
-
-                    continuations[index] = null; // to enable freeing up memory earlier
-                    // If the continuation is an Action delegate, it came from an await continuation,
-                    // and we should use AwaitTaskContinuation to run it.
-                    if (currentContinuation is Action ad)
-                    {
-                        AwaitTaskContinuation.RunOrScheduleAction(ad, canInlineContinuations, ref InternalCurrent);
-                    }
+                    // Otherwise, it must be an ITaskCompletionAction, so invoke it.
                     else
                     {
-                        // If it's a TaskContinuation object of some kind, invoke it.
-                        if (currentContinuation is TaskContinuation tc)
-                        {
-                            // We know that this is a synchronous continuation because the
-                            // asynchronous ones have been weeded out
-                            tc.Run(this, canInlineContinuations);
-                        }
-                        // Otherwise, it must be an ITaskCompletionAction, so invoke it.
-                        else
-                        {
-                            Contract.Assert(currentContinuation is ITaskCompletionAction, "Expected continuation element to be Action, TaskContinuation, or ITaskContinuationAction");
-                            var action = (ITaskCompletionAction)currentContinuation;
-                            action.Invoke(this);
-                        }
+                        Contract.Assert(currentContinuation is ITaskCompletionAction, "Expected continuation element to be Action, TaskContinuation, or ITaskContinuationAction");
+                        var action = (ITaskCompletionAction)currentContinuation;
+                        action.Invoke(this);
                     }
                 }
             }
@@ -978,24 +983,21 @@ namespace System.Threading.Tasks
             {
                 return null;
             }
-            if (Volatile.Read(ref _continuationsStatus) == _continuationsInitialization)
+
+            if (Volatile.Read(ref _continuationsStatus) != _continuationsInitialization)
             {
-                // Initializing or initialized
-                var spinWait = new SpinWait();
-                List<object> continuations;
-                while ((continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
-                {
-                    spinWait.SpinOnce();
-                }
-                LockEnter(spinWait);
-                if (Volatile.Read(ref _continuationsStatus) == _continuationsInitialization)
-                {
-                    return continuations;
-                }
-                // It is being taken or has already been taken for execution
                 return null;
             }
-            return null;
+
+            // Initializing or initialized
+            var spinWait = new SpinWait();
+            List<object> continuations;
+            while ((continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
+            {
+                spinWait.SpinOnce();
+            }
+            LockEnter(spinWait);
+            return Volatile.Read(ref _continuationsStatus) == _continuationsInitialization ? continuations : null;
         }
 
         private void LockEnter(SpinWait spinWait)

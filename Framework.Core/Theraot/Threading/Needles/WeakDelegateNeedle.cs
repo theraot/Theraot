@@ -1,4 +1,4 @@
-// Needed for Workaround
+﻿// Needed for Workaround
 
 using System;
 using System.Diagnostics;
@@ -26,11 +26,7 @@ namespace Theraot.Threading.Needles
             get
             {
                 var value = Value;
-                if (IsAlive)
-                {
-                    return value.GetMethodInfo();
-                }
-                return null;
+                return IsAlive ? value.GetMethodInfo() : null;
             }
         }
 
@@ -53,17 +49,19 @@ namespace Theraot.Threading.Needles
                 return false;
             }
             var value = Value;
-            if (IsAlive)
+            if (!IsAlive)
             {
-                var otherValue = other.Value;
-                if (other.IsAlive)
-                {
-                    var method = otherValue.GetMethodInfo();
-                    return value.GetMethodInfo().Equals(method) && value.Target != otherValue.Target;
-                }
+                return !other.IsAlive;
+            }
+
+            var otherValue = other.Value;
+            if (!other.IsAlive)
+            {
                 return false;
             }
-            return !other.IsAlive;
+
+            var method = otherValue.GetMethodInfo();
+            return value.GetMethodInfo().Equals(method) && value.Target != otherValue.Target;
         }
 
         public void Invoke(object[] args)
@@ -74,12 +72,13 @@ namespace Theraot.Threading.Needles
         public bool TryInvoke(object[] args)
         {
             var value = Value;
-            if (IsAlive)
+            if (!IsAlive)
             {
-                value.DynamicInvoke(args); // Throws TargetInvocationException
-                return true;
+                return false;
             }
-            return false;
+
+            value.DynamicInvoke(args); // Throws TargetInvocationException
+            return true;
         }
 
         public bool TryInvoke(object[] args, out object result)

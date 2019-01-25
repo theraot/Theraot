@@ -1562,11 +1562,7 @@ namespace System.Linq
                 }
                 found = true;
             }
-            if (found)
-            {
-                return min;
-            }
-            return null;
+            return found ? min : null;
         }
 
         public static long? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector)
@@ -1597,11 +1593,7 @@ namespace System.Linq
                 }
                 found = true;
             }
-            if (found)
-            {
-                return min;
-            }
-            return null;
+            return found ? min : null;
         }
 
         public static float? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector)
@@ -1641,11 +1633,7 @@ namespace System.Linq
                 }
                 found = true;
             }
-            if (found)
-            {
-                return min;
-            }
-            return null;
+            return found ? min : null;
         }
 
         public static double? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector)
@@ -1685,11 +1673,7 @@ namespace System.Linq
                 }
                 found = true;
             }
-            if (found)
-            {
-                return min;
-            }
-            return null;
+            return found ? min : null;
         }
 
         public static decimal? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector)
@@ -1720,11 +1704,7 @@ namespace System.Linq
                 }
                 found = true;
             }
-            if (found)
-            {
-                return min;
-            }
-            return null;
+            return found ? min : null;
         }
 
         public static TResult Min<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)

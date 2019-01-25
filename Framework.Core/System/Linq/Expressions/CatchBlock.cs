@@ -84,7 +84,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="CatchBlock"/>.</returns>
         public static CatchBlock Catch(Type type, Expression body)
         {
-            return MakeCatchBlock(type, null, body, filter: null);
+            return MakeCatchBlock(type, null, body, null);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace System.Linq.Expressions
         public static CatchBlock Catch(ParameterExpression variable, Expression body)
         {
             ContractUtils.RequiresNotNull(variable, nameof(variable));
-            return MakeCatchBlock(variable.Type, variable, body, filter: null);
+            return MakeCatchBlock(variable.Type, variable, body, null);
         }
 
         /// <summary>
@@ -148,13 +148,15 @@ namespace System.Linq.Expressions
                 throw new ArgumentException($"Variable '{variable}' uses unsupported type '{variable.Type}'. Reference types are not supported for variables.", nameof(variable));
             }
             ExpressionUtils.RequiresCanRead(body, nameof(body));
-            if (filter != null)
+            if (filter == null)
             {
-                ExpressionUtils.RequiresCanRead(filter, nameof(filter));
-                if (filter.Type != typeof(bool))
-                {
-                    throw new ArgumentException("Argument must be boolean", nameof(filter));
-                }
+                return new CatchBlock(type, variable, body, null);
+            }
+
+            ExpressionUtils.RequiresCanRead(filter, nameof(filter));
+            if (filter.Type != typeof(bool))
+            {
+                throw new ArgumentException("Argument must be boolean", nameof(filter));
             }
 
             return new CatchBlock(type, variable, body, filter);

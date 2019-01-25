@@ -120,12 +120,14 @@ namespace Theraot.Core
                 {
                     foreach (var found in branches)
                     {
-                        if (!known.Contains(found))
+                        if (known.Contains(found))
                         {
-                            known.Add(found);
-                            yield return resultSelector(found);
-                            queue.Enqueue(found);
+                            continue;
                         }
+
+                        known.Add(found);
+                        yield return resultSelector(found);
+                        queue.Enqueue(found);
                     }
                     branches = null;
                 }
@@ -284,12 +286,14 @@ namespace Theraot.Core
                 {
                     foreach (var found in branches)
                     {
-                        if (!known.Contains(found))
+                        if (known.Contains(found))
                         {
-                            known.Add(found);
-                            yield return resultSelector(found);
-                            stack.Push(found);
+                            continue;
                         }
+
+                        known.Add(found);
+                        yield return resultSelector(found);
+                        stack.Push(found);
                     }
                     branches = null;
                 }

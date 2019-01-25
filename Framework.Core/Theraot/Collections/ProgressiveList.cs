@@ -89,12 +89,13 @@ namespace Theraot.Collections
                 input =>
                 {
                     index++;
-                    if (Comparer.Equals(input, item))
+                    if (!Comparer.Equals(input, item))
                     {
-                        found = true;
-                        return false;
+                        return true;
                     }
-                    return true;
+
+                    found = true;
+                    return false;
                 }
             ).Consume();
             if (found)

@@ -74,6 +74,7 @@ namespace System.Linq.Expressions
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Represents assignment to a member of an object.
     /// </summary>
@@ -101,11 +102,7 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public MemberAssignment Update(Expression expression)
         {
-            if (expression == Expression)
-            {
-                return this;
-            }
-            return Expression.Bind(Member, expression);
+            return expression == Expression ? this : Expression.Bind(Member, expression);
         }
 
         internal override void ValidateAsDefinedHere(int index)

@@ -86,11 +86,7 @@ namespace Theraot.Threading.Needles
             {
                 return right is null;
             }
-            if (right is null)
-            {
-                return false;
-            }
-            return left._target.Equals(right._target);
+            return !(right is null) && left._target.Equals(right._target);
         }
 
         public override bool Equals(object obj)
@@ -104,11 +100,7 @@ namespace Theraot.Threading.Needles
 
         public bool Equals(PromiseNeedle<T> other)
         {
-            if (other is null)
-            {
-                return false;
-            }
-            return _target.Equals(other._target);
+            return !(other is null) && _target.Equals(other._target);
         }
 
         public override void Free()

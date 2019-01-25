@@ -13,6 +13,7 @@ using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
+    /// <inheritdoc />
     /// <summary>
     /// Represents an expression that has a binary operator.
     /// </summary>
@@ -25,6 +26,7 @@ namespace System.Linq.Expressions
             Right = right;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Gets a value that indicates whether the expression tree node can be reduced.
         /// </summary>
@@ -48,12 +50,14 @@ namespace System.Linq.Expressions
                 {
                     return false;
                 }
-                if (Left.Type.IsNullable())
+
+                if (!Left.Type.IsNullable())
                 {
-                    var method = GetMethod();
-                    return method == null || !TypeUtils.AreEquivalent(method.GetParameters()[0].ParameterType.GetNonRefTypeInternal(), Left.Type);
+                    return false;
                 }
-                return false;
+
+                var method = GetMethod();
+                return method == null || !TypeUtils.AreEquivalent(method.GetParameters()[0].ParameterType.GetNonRefTypeInternal(), Left.Type);
             }
         }
 
@@ -110,6 +114,7 @@ namespace System.Linq.Expressions
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Reduces the binary expression node to a simpler expression.
         /// If CanReduce returns true, this should return a valid expression.
@@ -120,21 +125,22 @@ namespace System.Linq.Expressions
         public override Expression Reduce()
         {
             // Only reduce OpAssignment expressions.
-            if (IsOpAssignment(NodeType))
+            if (!IsOpAssignment(NodeType))
             {
-                switch (Left.NodeType)
-                {
-                    case ExpressionType.MemberAccess:
-                        return ReduceMember();
-
-                    case ExpressionType.Index:
-                        return ReduceIndex();
-
-                    default:
-                        return ReduceVariable();
-                }
+                return this;
             }
-            return this;
+
+            switch (Left.NodeType)
+            {
+                case ExpressionType.MemberAccess:
+                    return ReduceMember();
+
+                case ExpressionType.Index:
+                    return ReduceIndex();
+
+                default:
+                    return ReduceVariable();
+            }
         }
 
         /// <summary>
@@ -152,16 +158,13 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
-            if (IsReferenceComparison)
-            {
-                if (NodeType == ExpressionType.Equal)
-                {
-                    return ReferenceEqual(left, right);
-                }
 
-                return ReferenceNotEqual(left, right);
+            if (!IsReferenceComparison)
+            {
+                return MakeBinary(NodeType, left, right, IsLiftedToNull, Method, conversion);
             }
-            return MakeBinary(NodeType, left, right, IsLiftedToNull, Method, conversion);
+
+            return NodeType == ExpressionType.Equal ? ReferenceEqual(left, right) : ReferenceNotEqual(left, right);
         }
 
         internal static BinaryExpression Create(ExpressionType nodeType, Expression left, Expression right, Type type, MethodInfo method, LambdaExpression conversion)
@@ -470,7 +473,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression Add(Expression left, Expression right)
         {
-            return Add(left, right, method: null);
+            return Add(left, right, null);
         }
 
         /// <summary>
@@ -486,15 +489,16 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsArithmetic())
-                {
-                    return new SimpleBinaryExpression(ExpressionType.Add, left, right, left.Type);
-                }
-                return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.Add, "op_Addition", left, right, liftToNull: true);
+                return GetMethodBasedBinaryOperator(ExpressionType.Add, left, right, method, true);
             }
-            return GetMethodBasedBinaryOperator(ExpressionType.Add, left, right, method, liftToNull: true);
+
+            if (left.Type == right.Type && left.Type.IsArithmetic())
+            {
+                return new SimpleBinaryExpression(ExpressionType.Add, left, right, left.Type);
+            }
+            return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.Add, "op_Addition", left, right, true);
         }
 
         /// <summary>
@@ -506,7 +510,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression AddAssign(Expression left, Expression right)
         {
-            return AddAssign(left, right, method: null, conversion: null);
+            return AddAssign(left, right, null, null);
         }
 
         /// <summary>
@@ -520,7 +524,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression AddAssign(Expression left, Expression right, MethodInfo method)
         {
-            return AddAssign(left, right, method, conversion: null);
+            return AddAssign(left, right, method, null);
         }
 
         /// <summary>
@@ -539,20 +543,22 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsArithmetic())
-                {
-                    // conversion is not supported for binary ops on arithmetic types without operator overloading
-                    if (conversion != null)
-                    {
-                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
-                    }
-                    return new SimpleBinaryExpression(ExpressionType.AddAssign, left, right, left.Type);
-                }
-                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.AddAssign, "op_Addition", left, right, conversion, liftToNull: true);
+                return GetMethodBasedAssignOperator(ExpressionType.AddAssign, left, right, method, conversion, true);
             }
-            return GetMethodBasedAssignOperator(ExpressionType.AddAssign, left, right, method, conversion, liftToNull: true);
+
+            if (left.Type != right.Type || !left.Type.IsArithmetic())
+            {
+                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.AddAssign, "op_Addition", left, right, conversion, true);
+            }
+
+            // conversion is not supported for binary ops on arithmetic types without operator overloading
+            if (conversion != null)
+            {
+                throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
+            }
+            return new SimpleBinaryExpression(ExpressionType.AddAssign, left, right, left.Type);
         }
 
         /// <summary>
@@ -566,7 +572,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression AddAssignChecked(Expression left, Expression right)
         {
-            return AddAssignChecked(left, right, method: null);
+            return AddAssignChecked(left, right, null);
         }
 
         /// <summary>
@@ -580,7 +586,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression AddAssignChecked(Expression left, Expression right, MethodInfo method)
         {
-            return AddAssignChecked(left, right, method, conversion: null);
+            return AddAssignChecked(left, right, method, null);
         }
 
         /// <summary>
@@ -600,20 +606,22 @@ namespace System.Linq.Expressions
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
 
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsArithmetic())
-                {
-                    // conversion is not supported for binary ops on arithmetic types without operator overloading
-                    if (conversion != null)
-                    {
-                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
-                    }
-                    return new SimpleBinaryExpression(ExpressionType.AddAssignChecked, left, right, left.Type);
-                }
-                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.AddAssignChecked, "op_Addition", left, right, conversion, liftToNull: true);
+                return GetMethodBasedAssignOperator(ExpressionType.AddAssignChecked, left, right, method, conversion, true);
             }
-            return GetMethodBasedAssignOperator(ExpressionType.AddAssignChecked, left, right, method, conversion, liftToNull: true);
+
+            if (left.Type != right.Type || !left.Type.IsArithmetic())
+            {
+                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.AddAssignChecked, "op_Addition", left, right, conversion, true);
+            }
+
+            // conversion is not supported for binary ops on arithmetic types without operator overloading
+            if (conversion != null)
+            {
+                throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
+            }
+            return new SimpleBinaryExpression(ExpressionType.AddAssignChecked, left, right, left.Type);
         }
 
         /// <summary>
@@ -625,7 +633,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression AddChecked(Expression left, Expression right)
         {
-            return AddChecked(left, right, method: null);
+            return AddChecked(left, right, null);
         }
 
         /// <summary>
@@ -641,15 +649,16 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsArithmetic())
-                {
-                    return new SimpleBinaryExpression(ExpressionType.AddChecked, left, right, left.Type);
-                }
-                return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.AddChecked, "op_Addition", left, right, liftToNull: true);
+                return GetMethodBasedBinaryOperator(ExpressionType.AddChecked, left, right, method, true);
             }
-            return GetMethodBasedBinaryOperator(ExpressionType.AddChecked, left, right, method, liftToNull: true);
+
+            if (left.Type == right.Type && left.Type.IsArithmetic())
+            {
+                return new SimpleBinaryExpression(ExpressionType.AddChecked, left, right, left.Type);
+            }
+            return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.AddChecked, "op_Addition", left, right, true);
         }
 
         /// <summary>
@@ -661,7 +670,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression And(Expression left, Expression right)
         {
-            return And(left, right, method: null);
+            return And(left, right, null);
         }
 
         /// <summary>
@@ -677,15 +686,16 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsIntegerOrBool())
-                {
-                    return new SimpleBinaryExpression(ExpressionType.And, left, right, left.Type);
-                }
-                return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.And, "op_BitwiseAnd", left, right, liftToNull: true);
+                return GetMethodBasedBinaryOperator(ExpressionType.And, left, right, method, true);
             }
-            return GetMethodBasedBinaryOperator(ExpressionType.And, left, right, method, liftToNull: true);
+
+            if (left.Type == right.Type && left.Type.IsIntegerOrBool())
+            {
+                return new SimpleBinaryExpression(ExpressionType.And, left, right, left.Type);
+            }
+            return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.And, "op_BitwiseAnd", left, right, true);
         }
 
         /// <summary>
@@ -697,7 +707,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression AndAlso(Expression left, Expression right)
         {
-            return AndAlso(left, right, method: null);
+            return AndAlso(left, right, null);
         }
 
         /// <summary>
@@ -729,13 +739,14 @@ namespace System.Linq.Expressions
                     }
                 }
                 method = GetUserDefinedBinaryOperator(ExpressionType.AndAlso, left.Type, right.Type, "op_BitwiseAnd");
-                if (method != null)
+                if (method == null)
                 {
-                    ValidateUserDefinedConditionalLogicOperator(ExpressionType.AndAlso, left.Type, right.Type, method);
-                    returnType = left.Type.IsNullable() && TypeUtils.AreEquivalent(method.ReturnType, left.Type.GetNonNullable()) ? left.Type : method.ReturnType;
-                    return new MethodBinaryExpression(ExpressionType.AndAlso, left, right, returnType, method);
+                    throw new InvalidOperationException($"The binary operator {ExpressionType.AndAlso} is not defined for the types '{left.Type}' and '{right.Type}'.");
                 }
-                throw new InvalidOperationException($"The binary operator {ExpressionType.AndAlso} is not defined for the types '{left.Type}' and '{right.Type}'.");
+
+                ValidateUserDefinedConditionalLogicOperator(ExpressionType.AndAlso, left.Type, right.Type, method);
+                returnType = left.Type.IsNullable() && TypeUtils.AreEquivalent(method.ReturnType, left.Type.GetNonNullable()) ? left.Type : method.ReturnType;
+                return new MethodBinaryExpression(ExpressionType.AndAlso, left, right, returnType, method);
             }
             ValidateUserDefinedConditionalLogicOperator(ExpressionType.AndAlso, left.Type, right.Type, method);
             returnType = left.Type.IsNullable() && TypeUtils.AreEquivalent(method.ReturnType, left.Type.GetNonNullable()) ? left.Type : method.ReturnType;
@@ -751,7 +762,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression AndAssign(Expression left, Expression right)
         {
-            return AndAssign(left, right, method: null, conversion: null);
+            return AndAssign(left, right, null, null);
         }
 
         /// <summary>
@@ -765,7 +776,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression AndAssign(Expression left, Expression right, MethodInfo method)
         {
-            return AndAssign(left, right, method, conversion: null);
+            return AndAssign(left, right, method, null);
         }
 
         /// <summary>
@@ -784,20 +795,22 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsIntegerOrBool())
-                {
-                    // conversion is not supported for binary ops on arithmetic types without operator overloading
-                    if (conversion != null)
-                    {
-                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
-                    }
-                    return new SimpleBinaryExpression(ExpressionType.AndAssign, left, right, left.Type);
-                }
-                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.AndAssign, "op_BitwiseAnd", left, right, conversion, liftToNull: true);
+                return GetMethodBasedAssignOperator(ExpressionType.AndAssign, left, right, method, conversion, true);
             }
-            return GetMethodBasedAssignOperator(ExpressionType.AndAssign, left, right, method, conversion, liftToNull: true);
+
+            if (left.Type != right.Type || !left.Type.IsIntegerOrBool())
+            {
+                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.AndAssign, "op_BitwiseAnd", left, right, conversion, true);
+            }
+
+            // conversion is not supported for binary ops on arithmetic types without operator overloading
+            if (conversion != null)
+            {
+                throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
+            }
+            return new SimpleBinaryExpression(ExpressionType.AndAssign, left, right, left.Type);
         }
 
         /// <summary>
@@ -841,8 +854,8 @@ namespace System.Linq.Expressions
         {
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            TypeUtils.ValidateType(left.Type, nameof(left), allowByRef: true, allowPointer: true);
-            TypeUtils.ValidateType(right.Type, nameof(right), allowByRef: true, allowPointer: true);
+            TypeUtils.ValidateType(left.Type, nameof(left), true, true);
+            TypeUtils.ValidateType(right.Type, nameof(right), true, true);
             if (!left.Type.IsReferenceAssignableFromInternal(right.Type))
             {
                 throw new ArgumentException($"Expression of type '{right.Type}' cannot be used for assignment to type '{left.Type}'");
@@ -859,7 +872,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression Coalesce(Expression left, Expression right)
         {
-            return Coalesce(left, right, conversion: null);
+            return Coalesce(left, right, null);
         }
 
         /// <summary>
@@ -926,7 +939,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression Divide(Expression left, Expression right)
         {
-            return Divide(left, right, method: null);
+            return Divide(left, right, null);
         }
 
         /// <summary>
@@ -942,15 +955,16 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsArithmetic())
-                {
-                    return new SimpleBinaryExpression(ExpressionType.Divide, left, right, left.Type);
-                }
-                return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.Divide, "op_Division", left, right, liftToNull: true);
+                return GetMethodBasedBinaryOperator(ExpressionType.Divide, left, right, method, true);
             }
-            return GetMethodBasedBinaryOperator(ExpressionType.Divide, left, right, method, liftToNull: true);
+
+            if (left.Type == right.Type && left.Type.IsArithmetic())
+            {
+                return new SimpleBinaryExpression(ExpressionType.Divide, left, right, left.Type);
+            }
+            return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.Divide, "op_Division", left, right, true);
         }
 
         /// <summary>
@@ -962,7 +976,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression DivideAssign(Expression left, Expression right)
         {
-            return DivideAssign(left, right, method: null, conversion: null);
+            return DivideAssign(left, right, null, null);
         }
 
         /// <summary>
@@ -976,7 +990,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression DivideAssign(Expression left, Expression right, MethodInfo method)
         {
-            return DivideAssign(left, right, method, conversion: null);
+            return DivideAssign(left, right, method, null);
         }
 
         /// <summary>
@@ -995,20 +1009,22 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsArithmetic())
-                {
-                    // conversion is not supported for binary ops on arithmetic types without operator overloading
-                    if (conversion != null)
-                    {
-                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
-                    }
-                    return new SimpleBinaryExpression(ExpressionType.DivideAssign, left, right, left.Type);
-                }
-                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.DivideAssign, "op_Division", left, right, conversion, liftToNull: true);
+                return GetMethodBasedAssignOperator(ExpressionType.DivideAssign, left, right, method, conversion, true);
             }
-            return GetMethodBasedAssignOperator(ExpressionType.DivideAssign, left, right, method, conversion, liftToNull: true);
+
+            if (left.Type != right.Type || !left.Type.IsArithmetic())
+            {
+                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.DivideAssign, "op_Division", left, right, conversion, true);
+            }
+
+            // conversion is not supported for binary ops on arithmetic types without operator overloading
+            if (conversion != null)
+            {
+                throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
+            }
+            return new SimpleBinaryExpression(ExpressionType.DivideAssign, left, right, left.Type);
         }
 
         /// <summary>
@@ -1020,7 +1036,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression Equal(Expression left, Expression right)
         {
-            return Equal(left, right, liftToNull: false, method: null);
+            return Equal(left, right, false, null);
         }
 
         /// <summary>
@@ -1037,11 +1053,7 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
-            {
-                return GetEqualityComparisonOperator(ExpressionType.Equal, "op_Equality", left, right, liftToNull);
-            }
-            return GetMethodBasedBinaryOperator(ExpressionType.Equal, left, right, method, liftToNull);
+            return method == null ? GetEqualityComparisonOperator(ExpressionType.Equal, "op_Equality", left, right, liftToNull) : GetMethodBasedBinaryOperator(ExpressionType.Equal, left, right, method, liftToNull);
         }
 
         /// <summary>
@@ -1053,7 +1065,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression ExclusiveOr(Expression left, Expression right)
         {
-            return ExclusiveOr(left, right, method: null);
+            return ExclusiveOr(left, right, null);
         }
 
         /// <summary>
@@ -1069,15 +1081,16 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsIntegerOrBool())
-                {
-                    return new SimpleBinaryExpression(ExpressionType.ExclusiveOr, left, right, left.Type);
-                }
-                return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.ExclusiveOr, "op_ExclusiveOr", left, right, liftToNull: true);
+                return GetMethodBasedBinaryOperator(ExpressionType.ExclusiveOr, left, right, method, true);
             }
-            return GetMethodBasedBinaryOperator(ExpressionType.ExclusiveOr, left, right, method, liftToNull: true);
+
+            if (left.Type == right.Type && left.Type.IsIntegerOrBool())
+            {
+                return new SimpleBinaryExpression(ExpressionType.ExclusiveOr, left, right, left.Type);
+            }
+            return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.ExclusiveOr, "op_ExclusiveOr", left, right, true);
         }
 
         /// <summary>
@@ -1089,7 +1102,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression ExclusiveOrAssign(Expression left, Expression right)
         {
-            return ExclusiveOrAssign(left, right, method: null, conversion: null);
+            return ExclusiveOrAssign(left, right, null, null);
         }
 
         /// <summary>
@@ -1103,7 +1116,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression ExclusiveOrAssign(Expression left, Expression right, MethodInfo method)
         {
-            return ExclusiveOrAssign(left, right, method, conversion: null);
+            return ExclusiveOrAssign(left, right, method, null);
         }
 
         /// <summary>
@@ -1122,20 +1135,22 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsIntegerOrBool())
-                {
-                    // conversion is not supported for binary ops on arithmetic types without operator overloading
-                    if (conversion != null)
-                    {
-                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
-                    }
-                    return new SimpleBinaryExpression(ExpressionType.ExclusiveOrAssign, left, right, left.Type);
-                }
-                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.ExclusiveOrAssign, "op_ExclusiveOr", left, right, conversion, liftToNull: true);
+                return GetMethodBasedAssignOperator(ExpressionType.ExclusiveOrAssign, left, right, method, conversion, true);
             }
-            return GetMethodBasedAssignOperator(ExpressionType.ExclusiveOrAssign, left, right, method, conversion, liftToNull: true);
+
+            if (left.Type != right.Type || !left.Type.IsIntegerOrBool())
+            {
+                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.ExclusiveOrAssign, "op_ExclusiveOr", left, right, conversion, true);
+            }
+
+            // conversion is not supported for binary ops on arithmetic types without operator overloading
+            if (conversion != null)
+            {
+                throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
+            }
+            return new SimpleBinaryExpression(ExpressionType.ExclusiveOrAssign, left, right, left.Type);
         }
 
         /// <summary>
@@ -1147,7 +1162,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression GreaterThan(Expression left, Expression right)
         {
-            return GreaterThan(left, right, liftToNull: false, method: null);
+            return GreaterThan(left, right, false, null);
         }
 
         /// <summary>
@@ -1164,20 +1179,8 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
-            {
-                return GetComparisonOperator(ExpressionType.GreaterThan, "op_GreaterThan", left, right, liftToNull);
-            }
-            return GetMethodBasedBinaryOperator(ExpressionType.GreaterThan, left, right, method, liftToNull);
+            return method == null ? GetComparisonOperator(ExpressionType.GreaterThan, "op_GreaterThan", left, right, liftToNull) : GetMethodBasedBinaryOperator(ExpressionType.GreaterThan, left, right, method, liftToNull);
         }
-
-        /// <summary>
-        /// Creates a <see cref="BinaryExpression"/> that represents a "less than" numeric comparison.
-        /// </summary>
-        /// <param name="left">An <see cref="Expression"/> to set the <see cref="BinaryExpression.Left"/> property equal to.</param>
-        /// <param name="right">An <see cref="Expression"/> to set the <see cref="BinaryExpression.Right"/> property equal to.</param>
-        /// <returns>A <see cref="BinaryExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.LessThan"/>
-        /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
 
         /// <summary>
         /// Creates a <see cref="BinaryExpression"/> that represents a "greater than or equal" numeric comparison.
@@ -1188,7 +1191,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression GreaterThanOrEqual(Expression left, Expression right)
         {
-            return GreaterThanOrEqual(left, right, liftToNull: false, method: null);
+            return GreaterThanOrEqual(left, right, false, null);
         }
 
         /// <summary>
@@ -1205,11 +1208,7 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
-            {
-                return GetComparisonOperator(ExpressionType.GreaterThanOrEqual, "op_GreaterThanOrEqual", left, right, liftToNull);
-            }
-            return GetMethodBasedBinaryOperator(ExpressionType.GreaterThanOrEqual, left, right, method, liftToNull);
+            return method == null ? GetComparisonOperator(ExpressionType.GreaterThanOrEqual, "op_GreaterThanOrEqual", left, right, liftToNull) : GetMethodBasedBinaryOperator(ExpressionType.GreaterThanOrEqual, left, right, method, liftToNull);
         }
 
         /// <summary>
@@ -1221,7 +1220,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression LeftShift(Expression left, Expression right)
         {
-            return LeftShift(left, right, method: null);
+            return LeftShift(left, right, null);
         }
 
         /// <summary>
@@ -1237,16 +1236,18 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (IsSimpleShift(left.Type, right.Type))
-                {
-                    var resultType = GetResultTypeOfShift(left.Type, right.Type);
-                    return new SimpleBinaryExpression(ExpressionType.LeftShift, left, right, resultType);
-                }
-                return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.LeftShift, "op_LeftShift", left, right, liftToNull: true);
+                return GetMethodBasedBinaryOperator(ExpressionType.LeftShift, left, right, method, true);
             }
-            return GetMethodBasedBinaryOperator(ExpressionType.LeftShift, left, right, method, liftToNull: true);
+
+            if (!IsSimpleShift(left.Type, right.Type))
+            {
+                return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.LeftShift, "op_LeftShift", left, right, true);
+            }
+
+            var resultType = GetResultTypeOfShift(left.Type, right.Type);
+            return new SimpleBinaryExpression(ExpressionType.LeftShift, left, right, resultType);
         }
 
         /// <summary>
@@ -1258,7 +1259,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression LeftShiftAssign(Expression left, Expression right)
         {
-            return LeftShiftAssign(left, right, method: null, conversion: null);
+            return LeftShiftAssign(left, right, null, null);
         }
 
         /// <summary>
@@ -1272,7 +1273,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression LeftShiftAssign(Expression left, Expression right, MethodInfo method)
         {
-            return LeftShiftAssign(left, right, method, conversion: null);
+            return LeftShiftAssign(left, right, method, null);
         }
 
         /// <summary>
@@ -1291,26 +1292,36 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (IsSimpleShift(left.Type, right.Type))
-                {
-                    // conversion is not supported for binary ops on arithmetic types without operator overloading
-                    if (conversion != null)
-                    {
-                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
-                    }
-                    var resultType = GetResultTypeOfShift(left.Type, right.Type);
-                    return new SimpleBinaryExpression(ExpressionType.LeftShiftAssign, left, right, resultType);
-                }
-                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.LeftShiftAssign, "op_LeftShift", left, right, conversion, liftToNull: true);
+                return GetMethodBasedAssignOperator(ExpressionType.LeftShiftAssign, left, right, method, conversion, true);
             }
-            return GetMethodBasedAssignOperator(ExpressionType.LeftShiftAssign, left, right, method, conversion, liftToNull: true);
+
+            if (!IsSimpleShift(left.Type, right.Type))
+            {
+                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.LeftShiftAssign, "op_LeftShift", left, right, conversion, true);
+            }
+
+            // conversion is not supported for binary ops on arithmetic types without operator overloading
+            if (conversion != null)
+            {
+                throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
+            }
+
+            var resultType = GetResultTypeOfShift(left.Type, right.Type);
+            return new SimpleBinaryExpression(ExpressionType.LeftShiftAssign, left, right, resultType);
         }
 
+        /// <summary>
+        /// Creates a <see cref="BinaryExpression"/> that represents a "less than" numeric comparison.
+        /// </summary>
+        /// <param name="left">An <see cref="Expression"/> to set the <see cref="BinaryExpression.Left"/> property equal to.</param>
+        /// <param name="right">An <see cref="Expression"/> to set the <see cref="BinaryExpression.Right"/> property equal to.</param>
+        /// <returns>A <see cref="BinaryExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.LessThan"/>
+        /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression LessThan(Expression left, Expression right)
         {
-            return LessThan(left, right, liftToNull: false, method: null);
+            return LessThan(left, right, false, null);
         }
 
         /// <summary>
@@ -1327,11 +1338,7 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
-            {
-                return GetComparisonOperator(ExpressionType.LessThan, "op_LessThan", left, right, liftToNull);
-            }
-            return GetMethodBasedBinaryOperator(ExpressionType.LessThan, left, right, method, liftToNull);
+            return method == null ? GetComparisonOperator(ExpressionType.LessThan, "op_LessThan", left, right, liftToNull) : GetMethodBasedBinaryOperator(ExpressionType.LessThan, left, right, method, liftToNull);
         }
 
         /// <summary>
@@ -1343,7 +1350,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression LessThanOrEqual(Expression left, Expression right)
         {
-            return LessThanOrEqual(left, right, liftToNull: false, method: null);
+            return LessThanOrEqual(left, right, false, null);
         }
 
         /// <summary>
@@ -1360,11 +1367,7 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
-            {
-                return GetComparisonOperator(ExpressionType.LessThanOrEqual, "op_LessThanOrEqual", left, right, liftToNull);
-            }
-            return GetMethodBasedBinaryOperator(ExpressionType.LessThanOrEqual, left, right, method, liftToNull);
+            return method == null ? GetComparisonOperator(ExpressionType.LessThanOrEqual, "op_LessThanOrEqual", left, right, liftToNull) : GetMethodBasedBinaryOperator(ExpressionType.LessThanOrEqual, left, right, method, liftToNull);
         }
 
         /// <summary>
@@ -1376,7 +1379,7 @@ namespace System.Linq.Expressions
         /// <returns>The BinaryExpression that results from calling the appropriate factory method.</returns>
         public static BinaryExpression MakeBinary(ExpressionType binaryType, Expression left, Expression right)
         {
-            return MakeBinary(binaryType, left, right, liftToNull: false, method: null, conversion: null);
+            return MakeBinary(binaryType, left, right, false, null, null);
         }
 
         /// <summary>
@@ -1390,7 +1393,7 @@ namespace System.Linq.Expressions
         /// <returns>The BinaryExpression that results from calling the appropriate factory method.</returns>
         public static BinaryExpression MakeBinary(ExpressionType binaryType, Expression left, Expression right, bool liftToNull, MethodInfo method)
         {
-            return MakeBinary(binaryType, left, right, liftToNull, method, conversion: null);
+            return MakeBinary(binaryType, left, right, liftToNull, method, null);
         }
 
         ///
@@ -1539,7 +1542,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression Modulo(Expression left, Expression right)
         {
-            return Modulo(left, right, method: null);
+            return Modulo(left, right, null);
         }
 
         /// <summary>
@@ -1555,15 +1558,16 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsArithmetic())
-                {
-                    return new SimpleBinaryExpression(ExpressionType.Modulo, left, right, left.Type);
-                }
-                return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.Modulo, "op_Modulus", left, right, liftToNull: true);
+                return GetMethodBasedBinaryOperator(ExpressionType.Modulo, left, right, method, true);
             }
-            return GetMethodBasedBinaryOperator(ExpressionType.Modulo, left, right, method, liftToNull: true);
+
+            if (left.Type == right.Type && left.Type.IsArithmetic())
+            {
+                return new SimpleBinaryExpression(ExpressionType.Modulo, left, right, left.Type);
+            }
+            return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.Modulo, "op_Modulus", left, right, true);
         }
 
         /// <summary>
@@ -1575,7 +1579,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression ModuloAssign(Expression left, Expression right)
         {
-            return ModuloAssign(left, right, method: null, conversion: null);
+            return ModuloAssign(left, right, null, null);
         }
 
         /// <summary>
@@ -1589,7 +1593,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression ModuloAssign(Expression left, Expression right, MethodInfo method)
         {
-            return ModuloAssign(left, right, method, conversion: null);
+            return ModuloAssign(left, right, method, null);
         }
 
         /// <summary>
@@ -1608,20 +1612,22 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsArithmetic())
-                {
-                    // conversion is not supported for binary ops on arithmetic types without operator overloading
-                    if (conversion != null)
-                    {
-                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
-                    }
-                    return new SimpleBinaryExpression(ExpressionType.ModuloAssign, left, right, left.Type);
-                }
-                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.ModuloAssign, "op_Modulus", left, right, conversion, liftToNull: true);
+                return GetMethodBasedAssignOperator(ExpressionType.ModuloAssign, left, right, method, conversion, true);
             }
-            return GetMethodBasedAssignOperator(ExpressionType.ModuloAssign, left, right, method, conversion, liftToNull: true);
+
+            if (left.Type != right.Type || !left.Type.IsArithmetic())
+            {
+                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.ModuloAssign, "op_Modulus", left, right, conversion, true);
+            }
+
+            // conversion is not supported for binary ops on arithmetic types without operator overloading
+            if (conversion != null)
+            {
+                throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
+            }
+            return new SimpleBinaryExpression(ExpressionType.ModuloAssign, left, right, left.Type);
         }
 
         /// <summary>
@@ -1633,7 +1639,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression Multiply(Expression left, Expression right)
         {
-            return Multiply(left, right, method: null);
+            return Multiply(left, right, null);
         }
 
         /// <summary>
@@ -1649,15 +1655,16 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsArithmetic())
-                {
-                    return new SimpleBinaryExpression(ExpressionType.Multiply, left, right, left.Type);
-                }
-                return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.Multiply, "op_Multiply", left, right, liftToNull: true);
+                return GetMethodBasedBinaryOperator(ExpressionType.Multiply, left, right, method, true);
             }
-            return GetMethodBasedBinaryOperator(ExpressionType.Multiply, left, right, method, liftToNull: true);
+
+            if (left.Type == right.Type && left.Type.IsArithmetic())
+            {
+                return new SimpleBinaryExpression(ExpressionType.Multiply, left, right, left.Type);
+            }
+            return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.Multiply, "op_Multiply", left, right, true);
         }
 
         /// <summary>
@@ -1669,7 +1676,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression MultiplyAssign(Expression left, Expression right)
         {
-            return MultiplyAssign(left, right, method: null, conversion: null);
+            return MultiplyAssign(left, right, null, null);
         }
 
         /// <summary>
@@ -1683,7 +1690,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression MultiplyAssign(Expression left, Expression right, MethodInfo method)
         {
-            return MultiplyAssign(left, right, method, conversion: null);
+            return MultiplyAssign(left, right, method, null);
         }
 
         /// <summary>
@@ -1702,20 +1709,23 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsArithmetic())
-                {
-                    // conversion is not supported for binary ops on arithmetic types without operator overloading
-                    if (conversion != null)
-                    {
-                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
-                    }
-                    return new SimpleBinaryExpression(ExpressionType.MultiplyAssign, left, right, left.Type);
-                }
-                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.MultiplyAssign, "op_Multiply", left, right, conversion, liftToNull: true);
+                return GetMethodBasedAssignOperator(ExpressionType.MultiplyAssign, left, right, method, conversion, true);
             }
-            return GetMethodBasedAssignOperator(ExpressionType.MultiplyAssign, left, right, method, conversion, liftToNull: true);
+
+            if (left.Type != right.Type || !left.Type.IsArithmetic())
+            {
+                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.MultiplyAssign, "op_Multiply", left, right, conversion, true);
+            }
+
+            // conversion is not supported for binary ops on arithmetic types without operator overloading
+            if (conversion != null)
+            {
+                throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
+            }
+
+            return new SimpleBinaryExpression(ExpressionType.MultiplyAssign, left, right, left.Type);
         }
 
         /// <summary>
@@ -1727,7 +1737,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression MultiplyAssignChecked(Expression left, Expression right)
         {
-            return MultiplyAssignChecked(left, right, method: null);
+            return MultiplyAssignChecked(left, right, null);
         }
 
         /// <summary>
@@ -1741,7 +1751,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression MultiplyAssignChecked(Expression left, Expression right, MethodInfo method)
         {
-            return MultiplyAssignChecked(left, right, method, conversion: null);
+            return MultiplyAssignChecked(left, right, method, null);
         }
 
         /// <summary>
@@ -1760,20 +1770,22 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsArithmetic())
-                {
-                    // conversion is not supported for binary ops on arithmetic types without operator overloading
-                    if (conversion != null)
-                    {
-                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
-                    }
-                    return new SimpleBinaryExpression(ExpressionType.MultiplyAssignChecked, left, right, left.Type);
-                }
-                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.MultiplyAssignChecked, "op_Multiply", left, right, conversion, liftToNull: true);
+                return GetMethodBasedAssignOperator(ExpressionType.MultiplyAssignChecked, left, right, method, conversion, true);
             }
-            return GetMethodBasedAssignOperator(ExpressionType.MultiplyAssignChecked, left, right, method, conversion, liftToNull: true);
+
+            if (left.Type != right.Type || !left.Type.IsArithmetic())
+            {
+                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.MultiplyAssignChecked, "op_Multiply", left, right, conversion, true);
+            }
+
+            // conversion is not supported for binary ops on arithmetic types without operator overloading
+            if (conversion != null)
+            {
+                throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
+            }
+            return new SimpleBinaryExpression(ExpressionType.MultiplyAssignChecked, left, right, left.Type);
         }
 
         /// <summary>
@@ -1785,7 +1797,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression MultiplyChecked(Expression left, Expression right)
         {
-            return MultiplyChecked(left, right, method: null);
+            return MultiplyChecked(left, right, null);
         }
 
         /// <summary>
@@ -1801,15 +1813,16 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsArithmetic())
-                {
-                    return new SimpleBinaryExpression(ExpressionType.MultiplyChecked, left, right, left.Type);
-                }
-                return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.MultiplyChecked, "op_Multiply", left, right, liftToNull: true);
+                return GetMethodBasedBinaryOperator(ExpressionType.MultiplyChecked, left, right, method, true);
             }
-            return GetMethodBasedBinaryOperator(ExpressionType.MultiplyChecked, left, right, method, liftToNull: true);
+
+            if (left.Type == right.Type && left.Type.IsArithmetic())
+            {
+                return new SimpleBinaryExpression(ExpressionType.MultiplyChecked, left, right, left.Type);
+            }
+            return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.MultiplyChecked, "op_Multiply", left, right, true);
         }
 
         /// <summary>
@@ -1821,7 +1834,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression NotEqual(Expression left, Expression right)
         {
-            return NotEqual(left, right, liftToNull: false, method: null);
+            return NotEqual(left, right, false, null);
         }
 
         /// <summary>
@@ -1838,11 +1851,7 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
-            {
-                return GetEqualityComparisonOperator(ExpressionType.NotEqual, "op_Inequality", left, right, liftToNull);
-            }
-            return GetMethodBasedBinaryOperator(ExpressionType.NotEqual, left, right, method, liftToNull);
+            return method == null ? GetEqualityComparisonOperator(ExpressionType.NotEqual, "op_Inequality", left, right, liftToNull) : GetMethodBasedBinaryOperator(ExpressionType.NotEqual, left, right, method, liftToNull);
         }
 
         /// <summary>
@@ -1854,7 +1863,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression Or(Expression left, Expression right)
         {
-            return Or(left, right, method: null);
+            return Or(left, right, null);
         }
 
         /// <summary>
@@ -1870,15 +1879,16 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsIntegerOrBool())
-                {
-                    return new SimpleBinaryExpression(ExpressionType.Or, left, right, left.Type);
-                }
-                return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.Or, "op_BitwiseOr", left, right, liftToNull: true);
+                return GetMethodBasedBinaryOperator(ExpressionType.Or, left, right, method, true);
             }
-            return GetMethodBasedBinaryOperator(ExpressionType.Or, left, right, method, liftToNull: true);
+
+            if (left.Type == right.Type && left.Type.IsIntegerOrBool())
+            {
+                return new SimpleBinaryExpression(ExpressionType.Or, left, right, left.Type);
+            }
+            return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.Or, "op_BitwiseOr", left, right, true);
         }
 
         /// <summary>
@@ -1890,7 +1900,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression OrAssign(Expression left, Expression right)
         {
-            return OrAssign(left, right, method: null, conversion: null);
+            return OrAssign(left, right, null, null);
         }
 
         /// <summary>
@@ -1904,7 +1914,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression OrAssign(Expression left, Expression right, MethodInfo method)
         {
-            return OrAssign(left, right, method, conversion: null);
+            return OrAssign(left, right, method, null);
         }
 
         /// <summary>
@@ -1923,20 +1933,22 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsIntegerOrBool())
-                {
-                    // conversion is not supported for binary ops on arithmetic types without operator overloading
-                    if (conversion != null)
-                    {
-                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
-                    }
-                    return new SimpleBinaryExpression(ExpressionType.OrAssign, left, right, left.Type);
-                }
-                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.OrAssign, "op_BitwiseOr", left, right, conversion, liftToNull: true);
+                return GetMethodBasedAssignOperator(ExpressionType.OrAssign, left, right, method, conversion, true);
             }
-            return GetMethodBasedAssignOperator(ExpressionType.OrAssign, left, right, method, conversion, liftToNull: true);
+
+            if (left.Type != right.Type || !left.Type.IsIntegerOrBool())
+            {
+                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.OrAssign, "op_BitwiseOr", left, right, conversion, true);
+            }
+
+            // conversion is not supported for binary ops on arithmetic types without operator overloading
+            if (conversion != null)
+            {
+                throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
+            }
+            return new SimpleBinaryExpression(ExpressionType.OrAssign, left, right, left.Type);
         }
 
         /// <summary>
@@ -1948,7 +1960,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression OrElse(Expression left, Expression right)
         {
-            return OrElse(left, right, method: null);
+            return OrElse(left, right, null);
         }
 
         /// <summary>
@@ -1980,13 +1992,14 @@ namespace System.Linq.Expressions
                     }
                 }
                 method = GetUserDefinedBinaryOperator(ExpressionType.OrElse, left.Type, right.Type, "op_BitwiseOr");
-                if (method != null)
+                if (method == null)
                 {
-                    ValidateUserDefinedConditionalLogicOperator(ExpressionType.OrElse, left.Type, right.Type, method);
-                    returnType = left.Type.IsNullable() && method.ReturnType == left.Type.GetNonNullable() ? left.Type : method.ReturnType;
-                    return new MethodBinaryExpression(ExpressionType.OrElse, left, right, returnType, method);
+                    throw new InvalidOperationException($"The binary operator {ExpressionType.OrElse} is not defined for the types '{left.Type}' and '{right.Type}'.");
                 }
-                throw new InvalidOperationException($"The binary operator {ExpressionType.OrElse} is not defined for the types '{left.Type}' and '{right.Type}'.");
+
+                ValidateUserDefinedConditionalLogicOperator(ExpressionType.OrElse, left.Type, right.Type, method);
+                returnType = left.Type.IsNullable() && method.ReturnType == left.Type.GetNonNullable() ? left.Type : method.ReturnType;
+                return new MethodBinaryExpression(ExpressionType.OrElse, left, right, returnType, method);
             }
             ValidateUserDefinedConditionalLogicOperator(ExpressionType.OrElse, left.Type, right.Type, method);
             returnType = left.Type.IsNullable() && method.ReturnType == left.Type.GetNonNullable() ? left.Type : method.ReturnType;
@@ -2002,7 +2015,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression Power(Expression left, Expression right)
         {
-            return Power(left, right, method: null);
+            return Power(left, right, null);
         }
 
         /// <summary>
@@ -2018,37 +2031,39 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsArithmetic())
-                {
-                    method = CachedReflectionInfo.MathPowDoubleDouble;
-                    Debug.Assert(method != null);
-                }
-                else
-                {
-                    // VB uses op_Exponent, F# uses op_Exponentiation. This inconsistency is unfortunate, but we can
-                    // test for either.
-                    var name = "op_Exponent";
-                    var b = GetUserDefinedBinaryOperator(ExpressionType.Power, name, left, right, liftToNull: true);
-                    if (b == null)
-                    {
-                        name = "op_Exponentiation";
-                        b = GetUserDefinedBinaryOperator(ExpressionType.Power, name, left, right, liftToNull: true);
-                        if (b == null)
-                        {
-                            throw new InvalidOperationException($"The binary operator {ExpressionType.Power} is not defined for the types '{left.Type}' and '{right.Type}'.");
-                        }
-                    }
-
-                    var pis = b.Method.GetParameters();
-                    ValidateParamsWithOperandsOrThrow(pis[0].ParameterType, left.Type, ExpressionType.Power, name);
-                    ValidateParamsWithOperandsOrThrow(pis[1].ParameterType, right.Type, ExpressionType.Power, name);
-                    return b;
-                }
+                return GetMethodBasedBinaryOperator(ExpressionType.Power, left, right, method, true);
             }
 
-            return GetMethodBasedBinaryOperator(ExpressionType.Power, left, right, method, liftToNull: true);
+            if (left.Type == right.Type && left.Type.IsArithmetic())
+            {
+                method = CachedReflectionInfo.MathPowDoubleDouble;
+                Debug.Assert(method != null);
+            }
+            else
+            {
+                // VB uses op_Exponent, F# uses op_Exponentiation. This inconsistency is unfortunate, but we can
+                // test for either.
+                var name = "op_Exponent";
+                var b = GetUserDefinedBinaryOperator(ExpressionType.Power, name, left, right, true);
+                if (b == null)
+                {
+                    name = "op_Exponentiation";
+                    b = GetUserDefinedBinaryOperator(ExpressionType.Power, name, left, right, true);
+                    if (b == null)
+                    {
+                        throw new InvalidOperationException($"The binary operator {ExpressionType.Power} is not defined for the types '{left.Type}' and '{right.Type}'.");
+                    }
+                }
+
+                var pis = b.Method.GetParameters();
+                ValidateParamsWithOperandsOrThrow(pis[0].ParameterType, left.Type, ExpressionType.Power, name);
+                ValidateParamsWithOperandsOrThrow(pis[1].ParameterType, right.Type, ExpressionType.Power, name);
+                return b;
+            }
+
+            return GetMethodBasedBinaryOperator(ExpressionType.Power, left, right, method, true);
         }
 
         /// <summary>
@@ -2060,7 +2075,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression PowerAssign(Expression left, Expression right)
         {
-            return PowerAssign(left, right, method: null, conversion: null);
+            return PowerAssign(left, right, null, null);
         }
 
         /// <summary>
@@ -2074,7 +2089,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression PowerAssign(Expression left, Expression right, MethodInfo method)
         {
-            return PowerAssign(left, right, method, conversion: null);
+            return PowerAssign(left, right, method, null);
         }
 
         /// <summary>
@@ -2093,15 +2108,17 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
+            if (method != null)
+            {
+                return GetMethodBasedAssignOperator(ExpressionType.PowerAssign, left, right, method, conversion, true);
+            }
+
+            method = CachedReflectionInfo.MathPowDoubleDouble;
             if (method == null)
             {
-                method = CachedReflectionInfo.MathPowDoubleDouble;
-                if (method == null)
-                {
-                    throw new InvalidOperationException($"The binary operator {ExpressionType.PowerAssign} is not defined for the types '{left.Type}' and '{right.Type}'.");
-                }
+                throw new InvalidOperationException($"The binary operator {ExpressionType.PowerAssign} is not defined for the types '{left.Type}' and '{right.Type}'.");
             }
-            return GetMethodBasedAssignOperator(ExpressionType.PowerAssign, left, right, method, conversion, liftToNull: true);
+            return GetMethodBasedAssignOperator(ExpressionType.PowerAssign, left, right, method, conversion, true);
         }
 
         /// <summary>
@@ -2151,7 +2168,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression RightShift(Expression left, Expression right)
         {
-            return RightShift(left, right, method: null);
+            return RightShift(left, right, null);
         }
 
         /// <summary>
@@ -2167,16 +2184,18 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (IsSimpleShift(left.Type, right.Type))
-                {
-                    var resultType = GetResultTypeOfShift(left.Type, right.Type);
-                    return new SimpleBinaryExpression(ExpressionType.RightShift, left, right, resultType);
-                }
-                return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.RightShift, "op_RightShift", left, right, liftToNull: true);
+                return GetMethodBasedBinaryOperator(ExpressionType.RightShift, left, right, method, true);
             }
-            return GetMethodBasedBinaryOperator(ExpressionType.RightShift, left, right, method, liftToNull: true);
+
+            if (!IsSimpleShift(left.Type, right.Type))
+            {
+                return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.RightShift, "op_RightShift", left, right, true);
+            }
+
+            var resultType = GetResultTypeOfShift(left.Type, right.Type);
+            return new SimpleBinaryExpression(ExpressionType.RightShift, left, right, resultType);
         }
 
         /// <summary>
@@ -2188,7 +2207,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression RightShiftAssign(Expression left, Expression right)
         {
-            return RightShiftAssign(left, right, method: null, conversion: null);
+            return RightShiftAssign(left, right, null, null);
         }
 
         /// <summary>
@@ -2202,7 +2221,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression RightShiftAssign(Expression left, Expression right, MethodInfo method)
         {
-            return RightShiftAssign(left, right, method, conversion: null);
+            return RightShiftAssign(left, right, method, null);
         }
 
         /// <summary>
@@ -2221,21 +2240,23 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (IsSimpleShift(left.Type, right.Type))
-                {
-                    // conversion is not supported for binary ops on arithmetic types without operator overloading
-                    if (conversion != null)
-                    {
-                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
-                    }
-                    var resultType = GetResultTypeOfShift(left.Type, right.Type);
-                    return new SimpleBinaryExpression(ExpressionType.RightShiftAssign, left, right, resultType);
-                }
-                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.RightShiftAssign, "op_RightShift", left, right, conversion, liftToNull: true);
+                return GetMethodBasedAssignOperator(ExpressionType.RightShiftAssign, left, right, method, conversion, true);
             }
-            return GetMethodBasedAssignOperator(ExpressionType.RightShiftAssign, left, right, method, conversion, liftToNull: true);
+
+            if (!IsSimpleShift(left.Type, right.Type))
+            {
+                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.RightShiftAssign, "op_RightShift", left, right, conversion, true);
+            }
+
+            // conversion is not supported for binary ops on arithmetic types without operator overloading
+            if (conversion != null)
+            {
+                throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
+            }
+            var resultType = GetResultTypeOfShift(left.Type, right.Type);
+            return new SimpleBinaryExpression(ExpressionType.RightShiftAssign, left, right, resultType);
         }
 
         /// <summary>
@@ -2247,7 +2268,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression Subtract(Expression left, Expression right)
         {
-            return Subtract(left, right, method: null);
+            return Subtract(left, right, null);
         }
 
         /// <summary>
@@ -2263,15 +2284,16 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsArithmetic())
-                {
-                    return new SimpleBinaryExpression(ExpressionType.Subtract, left, right, left.Type);
-                }
-                return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.Subtract, "op_Subtraction", left, right, liftToNull: true);
+                return GetMethodBasedBinaryOperator(ExpressionType.Subtract, left, right, method, true);
             }
-            return GetMethodBasedBinaryOperator(ExpressionType.Subtract, left, right, method, liftToNull: true);
+
+            if (left.Type == right.Type && left.Type.IsArithmetic())
+            {
+                return new SimpleBinaryExpression(ExpressionType.Subtract, left, right, left.Type);
+            }
+            return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.Subtract, "op_Subtraction", left, right, true);
         }
 
         /// <summary>
@@ -2283,7 +2305,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression SubtractAssign(Expression left, Expression right)
         {
-            return SubtractAssign(left, right, method: null, conversion: null);
+            return SubtractAssign(left, right, null, null);
         }
 
         /// <summary>
@@ -2297,7 +2319,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression SubtractAssign(Expression left, Expression right, MethodInfo method)
         {
-            return SubtractAssign(left, right, method, conversion: null);
+            return SubtractAssign(left, right, method, null);
         }
 
         /// <summary>
@@ -2316,20 +2338,22 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsArithmetic())
-                {
-                    // conversion is not supported for binary ops on arithmetic types without operator overloading
-                    if (conversion != null)
-                    {
-                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
-                    }
-                    return new SimpleBinaryExpression(ExpressionType.SubtractAssign, left, right, left.Type);
-                }
-                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.SubtractAssign, "op_Subtraction", left, right, conversion, liftToNull: true);
+                return GetMethodBasedAssignOperator(ExpressionType.SubtractAssign, left, right, method, conversion, true);
             }
-            return GetMethodBasedAssignOperator(ExpressionType.SubtractAssign, left, right, method, conversion, liftToNull: true);
+
+            if (left.Type != right.Type || !left.Type.IsArithmetic())
+            {
+                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.SubtractAssign, "op_Subtraction", left, right, conversion, true);
+            }
+
+            // conversion is not supported for binary ops on arithmetic types without operator overloading
+            if (conversion != null)
+            {
+                throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
+            }
+            return new SimpleBinaryExpression(ExpressionType.SubtractAssign, left, right, left.Type);
         }
 
         /// <summary>
@@ -2341,7 +2365,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression SubtractAssignChecked(Expression left, Expression right)
         {
-            return SubtractAssignChecked(left, right, method: null);
+            return SubtractAssignChecked(left, right, null);
         }
 
         /// <summary>
@@ -2355,7 +2379,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression SubtractAssignChecked(Expression left, Expression right, MethodInfo method)
         {
-            return SubtractAssignChecked(left, right, method, conversion: null);
+            return SubtractAssignChecked(left, right, method, null);
         }
 
         /// <summary>
@@ -2374,20 +2398,22 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsArithmetic())
-                {
-                    // conversion is not supported for binary ops on arithmetic types without operator overloading
-                    if (conversion != null)
-                    {
-                        throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
-                    }
-                    return new SimpleBinaryExpression(ExpressionType.SubtractAssignChecked, left, right, left.Type);
-                }
-                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.SubtractAssignChecked, "op_Subtraction", left, right, conversion, liftToNull: true);
+                return GetMethodBasedAssignOperator(ExpressionType.SubtractAssignChecked, left, right, method, conversion, true);
             }
-            return GetMethodBasedAssignOperator(ExpressionType.SubtractAssignChecked, left, right, method, conversion, liftToNull: true);
+
+            if (left.Type != right.Type || !left.Type.IsArithmetic())
+            {
+                return GetUserDefinedAssignOperatorOrThrow(ExpressionType.SubtractAssignChecked, "op_Subtraction", left, right, conversion, true);
+            }
+
+            // conversion is not supported for binary ops on arithmetic types without operator overloading
+            if (conversion != null)
+            {
+                throw new InvalidOperationException("Conversion is not supported for arithmetic types without operator overloading.");
+            }
+            return new SimpleBinaryExpression(ExpressionType.SubtractAssignChecked, left, right, left.Type);
         }
 
         /// <summary>
@@ -2399,7 +2425,7 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression SubtractChecked(Expression left, Expression right)
         {
-            return SubtractChecked(left, right, method: null);
+            return SubtractChecked(left, right, null);
         }
 
         /// <summary>
@@ -2415,15 +2441,16 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
-            if (method == null)
+            if (method != null)
             {
-                if (left.Type == right.Type && left.Type.IsArithmetic())
-                {
-                    return new SimpleBinaryExpression(ExpressionType.SubtractChecked, left, right, left.Type);
-                }
-                return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.SubtractChecked, "op_Subtraction", left, right, liftToNull: true);
+                return GetMethodBasedBinaryOperator(ExpressionType.SubtractChecked, left, right, method, true);
             }
-            return GetMethodBasedBinaryOperator(ExpressionType.SubtractChecked, left, right, method, liftToNull: true);
+
+            if (left.Type == right.Type && left.Type.IsArithmetic())
+            {
+                return new SimpleBinaryExpression(ExpressionType.SubtractChecked, left, right, left.Type);
+            }
+            return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.SubtractChecked, "op_Subtraction", left, right, true);
         }
 
         internal static bool ParameterIsAssignable(ParameterInfo pi, Type argType)
@@ -2438,16 +2465,17 @@ namespace System.Linq.Expressions
 
         private static BinaryExpression GetComparisonOperator(ExpressionType binaryType, string opName, Expression left, Expression right, bool liftToNull)
         {
-            if (left.Type == right.Type && left.Type.IsNumeric())
+            if (left.Type != right.Type || !left.Type.IsNumeric())
             {
-                if (left.Type.IsNullable() && liftToNull)
-                {
-                    return new SimpleBinaryExpression(binaryType, left, right, typeof(bool?));
-                }
-
-                return new LogicalBinaryExpression(binaryType, left, right);
+                return GetUserDefinedBinaryOperatorOrThrow(binaryType, opName, left, right, liftToNull);
             }
-            return GetUserDefinedBinaryOperatorOrThrow(binaryType, opName, left, right, liftToNull);
+
+            if (left.Type.IsNullable() && liftToNull)
+            {
+                return new SimpleBinaryExpression(binaryType, left, right, typeof(bool?));
+            }
+
+            return new LogicalBinaryExpression(binaryType, left, right);
         }
 
         private static BinaryExpression GetEqualityComparisonOperator(ExpressionType binaryType, string opName, Expression left, Expression right, bool liftToNull)
@@ -2478,16 +2506,18 @@ namespace System.Linq.Expressions
             {
                 return b;
             }
-            if (TypeUtils.HasBuiltInEqualityOperator(left.Type, right.Type) || IsNullComparison(left, right))
-            {
-                if (left.Type.IsNullable() && liftToNull)
-                {
-                    return new SimpleBinaryExpression(binaryType, left, right, typeof(bool?));
-                }
 
-                return new LogicalBinaryExpression(binaryType, left, right);
+            if (!TypeUtils.HasBuiltInEqualityOperator(left.Type, right.Type) && !IsNullComparison(left, right))
+            {
+                throw new InvalidOperationException($"The binary operator {binaryType} is not defined for the types '{left.Type}' and '{right.Type}'.");
             }
-            throw new InvalidOperationException($"The binary operator {binaryType} is not defined for the types '{left.Type}' and '{right.Type}'.");
+
+            if (left.Type.IsNullable() && liftToNull)
+            {
+                return new SimpleBinaryExpression(binaryType, left, right, typeof(bool?));
+            }
+
+            return new LogicalBinaryExpression(binaryType, left, right);
         }
 
         private static BinaryExpression GetMethodBasedAssignOperator(ExpressionType binaryType, Expression left, Expression right, MethodInfo method, LambdaExpression conversion, bool liftToNull)
@@ -2527,24 +2557,17 @@ namespace System.Linq.Expressions
                 return new MethodBinaryExpression(binaryType, left, right, method.ReturnType, method);
             }
             // check for lifted call
-            if
-            (
-                left.Type.IsNullable()
-                && right.Type.IsNullable()
-                && ParameterIsAssignable(pms[0], left.Type.GetNonNullable())
-                && ParameterIsAssignable(pms[1], right.Type.GetNonNullable())
-                && method.ReturnType.IsValueType
-                && !method.ReturnType.IsNullable()
-            )
+            if (!left.Type.IsNullable() || !right.Type.IsNullable() || !ParameterIsAssignable(pms[0], left.Type.GetNonNullable()) || !ParameterIsAssignable(pms[1], right.Type.GetNonNullable()) || !method.ReturnType.IsValueType || method.ReturnType.IsNullable())
             {
-                if (method.ReturnType != typeof(bool) || liftToNull)
-                {
-                    return new MethodBinaryExpression(binaryType, left, right, method.ReturnType.GetNullable(), method);
-                }
-
-                return new MethodBinaryExpression(binaryType, left, right, typeof(bool), method);
+                throw new InvalidOperationException($"The operands for operator '{binaryType}' do not match the parameters of method '{method.Name}'.");
             }
-            throw new InvalidOperationException($"The operands for operator '{binaryType}' do not match the parameters of method '{method.Name}'.");
+
+            if (method.ReturnType != typeof(bool) || liftToNull)
+            {
+                return new MethodBinaryExpression(binaryType, left, right, method.ReturnType.GetNullable(), method);
+            }
+
+            return new MethodBinaryExpression(binaryType, left, right, typeof(bool), method);
         }
 
         private static Type GetResultTypeOfShift(Type left, Type right)
@@ -2586,22 +2609,25 @@ namespace System.Linq.Expressions
                 return new MethodBinaryExpression(binaryType, left, right, method.ReturnType, method);
             }
             // try lifted call
-            if (left.Type.IsNullable() && right.Type.IsNullable())
+            if (!left.Type.IsNullable() || !right.Type.IsNullable())
             {
-                var nnLeftType = left.Type.GetNonNullable();
-                var nnRightType = right.Type.GetNonNullable();
-                method = GetUserDefinedBinaryOperator(binaryType, nnLeftType, nnRightType, name);
-                if (method?.ReturnType.IsValueType == true && !method.ReturnType.IsNullable())
-                {
-                    if (method.ReturnType != typeof(bool) || liftToNull)
-                    {
-                        return new MethodBinaryExpression(binaryType, left, right, method.ReturnType.GetNullable(), method);
-                    }
-
-                    return new MethodBinaryExpression(binaryType, left, right, typeof(bool), method);
-                }
+                return null;
             }
-            return null;
+
+            var nnLeftType = left.Type.GetNonNullable();
+            var nnRightType = right.Type.GetNonNullable();
+            method = GetUserDefinedBinaryOperator(binaryType, nnLeftType, nnRightType, name);
+            if (method?.ReturnType.IsValueType != true || method.ReturnType.IsNullable())
+            {
+                return null;
+            }
+
+            if (method.ReturnType != typeof(bool) || liftToNull)
+            {
+                return new MethodBinaryExpression(binaryType, left, right, method.ReturnType.GetNullable(), method);
+            }
+
+            return new MethodBinaryExpression(binaryType, left, right, typeof(bool), method);
         }
 
         private static MethodInfo GetUserDefinedBinaryOperator(ExpressionType binaryType, Type leftType, Type rightType, string name)
@@ -2627,14 +2653,15 @@ namespace System.Linq.Expressions
         private static BinaryExpression GetUserDefinedBinaryOperatorOrThrow(ExpressionType binaryType, string name, Expression left, Expression right, bool liftToNull)
         {
             var b = GetUserDefinedBinaryOperator(binaryType, name, left, right, liftToNull);
-            if (b != null)
+            if (b == null)
             {
-                var pis = b.Method.GetParameters();
-                ValidateParamsWithOperandsOrThrow(pis[0].ParameterType, left.Type, binaryType, name);
-                ValidateParamsWithOperandsOrThrow(pis[1].ParameterType, right.Type, binaryType, name);
-                return b;
+                throw new InvalidOperationException($"The binary operator {binaryType} is not defined for the types '{left.Type}' and '{right.Type}'.");
             }
-            throw new InvalidOperationException($"The binary operator {binaryType} is not defined for the types '{left.Type}' and '{right.Type}'.");
+
+            var pis = b.Method.GetParameters();
+            ValidateParamsWithOperandsOrThrow(pis[0].ParameterType, left.Type, binaryType, name);
+            ValidateParamsWithOperandsOrThrow(pis[1].ParameterType, right.Type, binaryType, name);
+            return b;
         }
 
         private static bool IsLiftingConditionalLogicalOperator(Type left, Type right, MethodInfo method, ExpressionType binaryType)
@@ -2837,12 +2864,7 @@ namespace System.Linq.Expressions
 
         public static AssignBinaryExpression Make(Expression left, Expression right, bool byRef)
         {
-            if (byRef)
-            {
-                return new ByRefAssignBinaryExpression(left, right);
-            }
-
-            return new AssignBinaryExpression(left, right);
+            return byRef ? new ByRefAssignBinaryExpression(left, right) : new AssignBinaryExpression(left, right);
         }
     }
 

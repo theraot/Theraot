@@ -58,13 +58,15 @@ namespace System.Threading.Tasks
             }
             var task = new Task<TResult>();
             var value = task.TrySetCanceled(cancellationToken);
-            if (!value && !task.IsCompleted)
+            if (value || task.IsCompleted)
             {
-                var sw = new SpinWait();
-                while (!task.IsCompleted)
-                {
-                    sw.SpinOnce();
-                }
+                return task;
+            }
+
+            var sw = new SpinWait();
+            while (!task.IsCompleted)
+            {
+                sw.SpinOnce();
             }
             return task;
 #elif LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
@@ -136,13 +138,15 @@ namespace System.Threading.Tasks
             }
             var task = new Task<TResult>();
             var value = task.TrySetException(exception);
-            if (!value && !task.IsCompleted)
+            if (value || task.IsCompleted)
             {
-                var sw = new SpinWait();
-                while (!task.IsCompleted)
-                {
-                    sw.SpinOnce();
-                }
+                return task;
+            }
+
+            var sw = new SpinWait();
+            while (!task.IsCompleted)
+            {
+                sw.SpinOnce();
             }
             return task;
 #elif LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
@@ -722,19 +726,20 @@ namespace System.Threading.Tasks
             return tcs.Task;
             CancellationTokenRegistration GetRegistrationToken()
             {
-                if (cancellationToken.CanBeCanceled)
+                if (!cancellationToken.CanBeCanceled)
                 {
-                    var newRegistration = cancellationToken.Register
-                    (
-                        () =>
-                        {
-                            Interlocked.Exchange(ref timerBox[0], null)?.Dispose();
-                            tcs.TrySetCanceled();
-                        }
-                    );
-                    return newRegistration;
+                    return default;
                 }
-                return default;
+
+                var newRegistration = cancellationToken.Register
+                (
+                    () =>
+                    {
+                        Interlocked.Exchange(ref timerBox[0], null)?.Dispose();
+                        tcs.TrySetCanceled();
+                    }
+                );
+                return newRegistration;
             }
 #else
             // Missing in .NET 4.0

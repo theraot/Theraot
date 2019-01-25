@@ -217,14 +217,16 @@ namespace System.Linq.Expressions.Compiler
 
         private void EnsureLabelAndValue()
         {
-            if (!_labelDefined)
+            if (_labelDefined)
             {
-                _labelDefined = true;
-                _label = _ilg.DefineLabel();
-                if (_node != null && _node.Type != typeof(void))
-                {
-                    _value = _ilg.DeclareLocal(_node.Type);
-                }
+                return;
+            }
+
+            _labelDefined = true;
+            _label = _ilg.DefineLabel();
+            if (_node != null && _node.Type != typeof(void))
+            {
+                _value = _ilg.DeclareLocal(_node.Type);
             }
         }
 
@@ -284,34 +286,35 @@ namespace System.Linq.Expressions.Compiler
             // Validate that we aren't jumping across a finally
             for (var j = reference; j != common; j = j.Parent)
             {
-                if (j.Kind == LabelScopeKind.Finally)
+                switch (j.Kind)
                 {
-                    throw new InvalidOperationException("Control cannot leave a finally block.");
-                }
-
-                if (j.Kind == LabelScopeKind.Filter)
-                {
-                    throw new InvalidOperationException("Control cannot leave a filter test.");
-                }
-
-                if (j.Kind == LabelScopeKind.Try || j.Kind == LabelScopeKind.Catch)
-                {
-                    _opCode = OpCodes.Leave;
+                    case LabelScopeKind.Finally:
+                        throw new InvalidOperationException("Control cannot leave a finally block.");
+                    case LabelScopeKind.Filter:
+                        throw new InvalidOperationException("Control cannot leave a filter test.");
+                    case LabelScopeKind.Try:
+                    case LabelScopeKind.Catch:
+                        _opCode = OpCodes.Leave;
+                        break;
+                    default:
+                        break;
                 }
             }
 
             // Validate that we aren't jumping into a catch or an expression
             for (var j = def; j != common; j = j.Parent)
             {
-                if (!j.CanJumpInto)
+                if (j.CanJumpInto)
                 {
-                    if (j.Kind == LabelScopeKind.Expression)
-                    {
-                        throw new InvalidOperationException("Control cannot enter an expression--only statements can be jumped into.");
-                    }
-
-                    throw new InvalidOperationException("Control cannot enter a try block.");
+                    continue;
                 }
+
+                if (j.Kind == LabelScopeKind.Expression)
+                {
+                    throw new InvalidOperationException("Control cannot enter an expression--only statements can be jumped into.");
+                }
+
+                throw new InvalidOperationException("Control cannot enter a try block.");
             }
         }
     }
@@ -369,23 +372,18 @@ namespace System.Linq.Expressions.Compiler
 
         internal bool ContainsTarget(LabelTarget target)
         {
-            if (_labels == null)
-            {
-                return false;
-            }
-
-            return _labels.ContainsKey(target);
+            return _labels?.ContainsKey(target) == true;
         }
 
         internal bool TryGetLabelInfo(LabelTarget target, out LabelInfo info)
         {
-            if (_labels == null)
+            if (_labels != null)
             {
-                info = null;
-                return false;
+                return _labels.TryGetValue(target, out info);
             }
 
-            return _labels.TryGetValue(target, out info);
+            info = null;
+            return false;
         }
     }
 }

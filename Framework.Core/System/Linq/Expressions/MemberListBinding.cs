@@ -89,6 +89,7 @@ namespace System.Linq.Expressions
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Represents initializing the elements of a collection member of a newly created object.
     /// </summary>

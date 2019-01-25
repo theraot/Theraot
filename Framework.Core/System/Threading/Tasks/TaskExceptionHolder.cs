@@ -70,41 +70,43 @@ namespace System.Threading.Tasks
             // We need to do this filtering because all TaskExceptionHolders will be finalized during shutdown or unload
             // regardless of reachability of the task (i.e. even if the user code was about to observe the task's exception),
             // which can otherwise lead to spurious crashes during shutdown.
-            if (_faultExceptions != null && !_isHandled && !Environment.HasShutdownStarted && !GCMonitor.FinalizingForUnload && !_domainUnloadStarted)
+            if (_faultExceptions == null || _isHandled || Environment.HasShutdownStarted || GCMonitor.FinalizingForUnload || _domainUnloadStarted)
             {
-                // We don't want to crash the finalizer thread if any ThreadAbortExceptions
-                // occur in the list or in any nested AggregateExceptions.
-                // (Don't rethrow ThreadAbortExceptions.)
-                foreach (var edi in _faultExceptions)
+                return;
+            }
+
+            // We don't want to crash the finalizer thread if any ThreadAbortExceptions
+            // occur in the list or in any nested AggregateExceptions.
+            // (Don't rethrow ThreadAbortExceptions.)
+            foreach (var edi in _faultExceptions)
+            {
+                var exp = edi.SourceException;
+                if (exp is AggregateException aggExp)
                 {
-                    var exp = edi.SourceException;
-                    if (exp is AggregateException aggExp)
+                    var flattenedAggExp = aggExp.Flatten();
+                    foreach (var innerExp in flattenedAggExp.InnerExceptions)
                     {
-                        var flattenedAggExp = aggExp.Flatten();
-                        foreach (var innerExp in flattenedAggExp.InnerExceptions)
+                        if (innerExp is ThreadAbortException)
                         {
-                            if (innerExp is ThreadAbortException)
-                            {
-                                return;
-                            }
+                            return;
                         }
                     }
-                    else if (exp is ThreadAbortException)
-                    {
-                        return;
-                    }
                 }
-                var exceptionToThrow = CreateAggregateException();
-                var unobservedTaskExceptionEventArgs = new UnobservedTaskExceptionEventArgs(exceptionToThrow);
-                TaskScheduler.PublishUnobservedTaskException(_task, unobservedTaskExceptionEventArgs);
-
-                // Now, if we are still unobserved and we're configured to crash on unobserved, throw the exception.
-                // We need to publish the event above even if we're not going to crash, hence
-                // why this check doesn't come at the beginning of the method.
-                if (_failFastOnUnobservedException && !unobservedTaskExceptionEventArgs.Observed)
+                else if (exp is ThreadAbortException)
                 {
-                    throw exceptionToThrow;
+                    return;
                 }
+            }
+            var exceptionToThrow = CreateAggregateException();
+            var unobservedTaskExceptionEventArgs = new UnobservedTaskExceptionEventArgs(exceptionToThrow);
+            TaskScheduler.PublishUnobservedTaskException(_task, unobservedTaskExceptionEventArgs);
+
+            // Now, if we are still unobserved and we're configured to crash on unobserved, throw the exception.
+            // We need to publish the event above even if we're not going to crash, hence
+            // why this check doesn't come at the beginning of the method.
+            if (_failFastOnUnobservedException && !unobservedTaskExceptionEventArgs.Observed)
+            {
+                throw exceptionToThrow;
             }
         }
 
@@ -218,14 +220,16 @@ namespace System.Threading.Tasks
         /// <param name="calledFromFinalizer">Whether this is called from the finalizer thread.</param>
         internal void MarkAsHandled(bool calledFromFinalizer)
         {
-            if (!_isHandled)
+            if (_isHandled)
             {
-                if (!calledFromFinalizer)
-                {
-                    GC.SuppressFinalize(this);
-                }
-                _isHandled = true;
+                return;
             }
+
+            if (!calledFromFinalizer)
+            {
+                GC.SuppressFinalize(this);
+            }
+            _isHandled = true;
         }
 
         private static void AppDomainUnloadCallback(object sender, EventArgs e)
@@ -235,13 +239,15 @@ namespace System.Threading.Tasks
 
         private static void EnsureAppDomainUnloadCallbackRegistered()
         {
-            if (Volatile.Read(ref _adUnloadEventHandler) == null)
+            if (Volatile.Read(ref _adUnloadEventHandler) != null)
             {
-                EventHandler handler = AppDomainUnloadCallback;
-                if (Interlocked.CompareExchange(ref _adUnloadEventHandler, handler, null) == null)
-                {
-                    AppDomain.CurrentDomain.DomainUnload += handler;
-                }
+                return;
+            }
+
+            EventHandler handler = AppDomainUnloadCallback;
+            if (Interlocked.CompareExchange(ref _adUnloadEventHandler, handler, null) == null)
+            {
+                AppDomain.CurrentDomain.DomainUnload += handler;
             }
         }
 
@@ -370,11 +376,13 @@ namespace System.Threading.Tasks
             // should revert back to "not handled" so that subsequent exceptions
             // must also be seen. Otherwise, some could go missing. We also need
             // to reregister for finalization.
-            if (_isHandled)
+            if (!_isHandled)
             {
-                GC.ReRegisterForFinalize(this);
-                _isHandled = false;
+                return;
             }
+
+            GC.ReRegisterForFinalize(this);
+            _isHandled = false;
         }
 
         /// <summary>Sets the cancellation exception.</summary>

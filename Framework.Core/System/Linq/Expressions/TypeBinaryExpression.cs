@@ -108,12 +108,7 @@ namespace System.Linq.Expressions
                 return this;
             }
 
-            if (NodeType == ExpressionType.TypeIs)
-            {
-                return TypeIs(expression, TypeOperand);
-            }
-
-            return TypeEqual(expression, TypeOperand);
+            return NodeType == ExpressionType.TypeIs ? TypeIs(expression, TypeOperand) : TypeEqual(expression, TypeOperand);
         }
 
         internal Expression ReduceTypeEqual()
@@ -122,22 +117,23 @@ namespace System.Linq.Expressions
 
             if (cType.IsValueType || TypeOperand.IsPointer)
             {
-                if (cType.IsNullable())
+                if (!cType.IsNullable())
                 {
-                    // If the expression type is a nullable type, it will match if
-                    // the value is not null and the type operand
-                    // either matches or is its type argument (T to its T?).
-                    if (cType.GetNonNullable() != TypeOperand.GetNonNullable())
-                    {
-                        return Block(Expression, Utils.Constant(false));
-                    }
-
-                    return NotEqual(Expression, Constant(null, Expression.Type));
+                    return Block(Expression, Utils.Constant(cType == TypeOperand.GetNonNullable()));
                 }
+
+                // If the expression type is a nullable type, it will match if
+                // the value is not null and the type operand
+                // either matches or is its type argument (T to its T?).
+                if (cType.GetNonNullable() != TypeOperand.GetNonNullable())
+                {
+                    return Block(Expression, Utils.Constant(false));
+                }
+
+                return NotEqual(Expression, Constant(null, Expression.Type));
 
                 // For other value types (including Void), we can
                 // determine the result now
-                return Block(Expression, Utils.Constant(cType == TypeOperand.GetNonNullable()));
             }
 
             Debug.Assert(typeof(object).IsReferenceAssignableFromInternal(Expression.Type), "Expecting reference types only after this point.");
@@ -183,19 +179,29 @@ namespace System.Linq.Expressions
             // causing it to always return false.
             // We workaround this optimization by generating different, less optimal IL
             // if TypeOperand is an interface.
-            if (TypeOperand.IsInterface)
+            if (!TypeOperand.IsInterface)
             {
-                var temp = Parameter(typeof(Type));
-                getType = Block
+                return AndAlso
                 (
-                    ReadOnlyCollectionEx.Create(temp),
-                    ReadOnlyCollectionEx.Create<Expression>
+                    ReferenceNotEqual(value, Utils.Null),
+                    ReferenceEqual
                     (
-                        Assign(temp, getType),
-                        temp
+                        getType,
+                        Constant(TypeOperand.GetNonNullable(), typeof(Type))
                     )
                 );
             }
+
+            var temp = Parameter(typeof(Type));
+            getType = Block
+            (
+                ReadOnlyCollectionEx.Create(temp),
+                ReadOnlyCollectionEx.Create<Expression>
+                (
+                    Assign(temp, getType),
+                    temp
+                )
+            );
 
             // We use reference equality when comparing to null for correctness
             // (don't invoke a user defined operator), and reference equality

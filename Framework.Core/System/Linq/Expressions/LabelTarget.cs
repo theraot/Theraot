@@ -16,7 +16,7 @@ namespace System.Linq.Expressions
         /// <returns>The new <see cref="LabelTarget"/>.</returns>
         public static LabelTarget Label()
         {
-            return Label(typeof(void), name: null);
+            return Label(typeof(void), null);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace System.Linq.Expressions
         /// <returns>The new <see cref="LabelTarget"/>.</returns>
         public static LabelTarget Label(Type type)
         {
-            return Label(type, name: null);
+            return Label(type, null);
         }
 
         /// <summary>

@@ -120,11 +120,7 @@ namespace System.Threading
             {
                 if (_start == null)
                 {
-                    if (_probe.TryGetTarget(out _))
-                    {
-                        return ThreadState.Background;
-                    }
-                    return ThreadState.Stopped;
+                    return _probe.TryGetTarget(out _) ? ThreadState.Background : ThreadState.Stopped;
                 }
                 if (_task == null)
                 {
@@ -213,11 +209,13 @@ namespace System.Threading
                 source.Task.Wait();
                 void Handler(object sender, EventArgs args)
                 {
-                    if (!probe.TryGetTarget(out _))
+                    if (probe.TryGetTarget(out _))
                     {
-                        source.SetResult(default);
-                        GCMonitor.Collected -= Handler;
+                        return;
                     }
+
+                    source.SetResult(default);
+                    GCMonitor.Collected -= Handler;
                 }
             }
         }

@@ -1,4 +1,4 @@
-// Needed for NET40
+﻿// Needed for NET40
 
 using System;
 using System.Diagnostics;
@@ -32,12 +32,13 @@ namespace Theraot.Threading
                 FuncHelper.GetFallacyFunc(),
                 () =>
                 {
-                    if (condition.Invoke())
+                    if (!condition.Invoke())
                     {
-                        Dispose();
-                        return true;
+                        return false;
                     }
-                    return false;
+
+                    Dispose();
+                    return true;
                 }
             );
         }

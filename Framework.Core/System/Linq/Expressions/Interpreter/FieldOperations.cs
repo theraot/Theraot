@@ -56,7 +56,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            frame.Push(Field.GetValue(obj: null));
+            frame.Push(Field.GetValue(null));
             return 1;
         }
     }

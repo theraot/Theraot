@@ -65,7 +65,7 @@ namespace System.Linq.Expressions
             return ExpressionStringBuilder.MemberBindingToString(this);
         }
 
-        internal virtual void ValidateAsDefinedHere(int index) => throw (new ArgumentException("Unknown binding type", $"bindings[{index}]"));
+        internal virtual void ValidateAsDefinedHere(int index) => throw new ArgumentException("Unknown binding type", $"bindings[{index}]");
     }
 }
 

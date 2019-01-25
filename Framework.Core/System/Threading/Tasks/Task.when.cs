@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 
@@ -414,11 +414,7 @@ namespace System.Threading.Tasks
         {
             Contract.Requires(tasks != null, "Expected a non-null tasks array");
             // take shortcut if there are no tasks upon which to wait
-            if (tasks.Length == 0)
-            {
-                return TaskEx.CompletedTask;
-            }
-            return new WhenAllPromise(tasks);
+            return tasks.Length == 0 ? TaskEx.CompletedTask : new WhenAllPromise(tasks);
         }
 
         // Some common logic to support WhenAll<TResult> methods
@@ -426,11 +422,7 @@ namespace System.Threading.Tasks
         {
             Contract.Requires(tasks != null, "Expected a non-null tasks array");
             // take shortcut if there are no tasks upon which to wait
-            if (tasks.Length == 0)
-            {
-                return FromResult(new TResult[0]);
-            }
-            return new WhenAllPromise<TResult>(tasks);
+            return tasks.Length == 0 ? FromResult(new TResult[0]) : new WhenAllPromise<TResult>(tasks);
         }
     }
 }

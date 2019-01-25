@@ -149,17 +149,19 @@ namespace System.Threading
                 throw new ArgumentOutOfRangeException(nameof(millisecondsDelay));
             }
             CheckDisposed();
-            if (Volatile.Read(ref _cancelRequested) == 0 && millisecondsDelay != Timeout.Infinite && _timeout == null)
+            if (Volatile.Read(ref _cancelRequested) != 0 || millisecondsDelay == Timeout.Infinite || _timeout != null)
             {
-                // Have to be careful not to create secondary background timer
-                var newTimer = RootedTimeout.Launch(Callback, Timeout.Infinite);
-                var oldTimer = Interlocked.CompareExchange(ref _timeout, newTimer, null);
-                if (oldTimer != null)
-                {
-                    newTimer.Cancel();
-                }
-                _timeout.Change(millisecondsDelay);
+                return;
             }
+
+            // Have to be careful not to create secondary background timer
+            var newTimer = RootedTimeout.Launch(Callback, Timeout.Infinite);
+            var oldTimer = Interlocked.CompareExchange(ref _timeout, newTimer, null);
+            if (oldTimer != null)
+            {
+                newTimer.Cancel();
+            }
+            _timeout.Change(millisecondsDelay);
         }
 
         [DebuggerNonUserCode]
@@ -223,30 +225,30 @@ namespace System.Threading
         internal bool RemoveCallback(int reg)
         {
             // Ignore call if the source has been disposed
-            if (Volatile.Read(ref _disposeRequested) == 0)
+            if (Volatile.Read(ref _disposeRequested) != 0)
             {
-                var callbacks = _callbacks;
-                if (callbacks != null)
-                {
-                    return callbacks.RemoveAt(reg, out var dummy);
-                }
+                return true;
             }
-            return true;
+
+            var callbacks = _callbacks;
+            return callbacks == null || callbacks.RemoveAt(reg, out var dummy);
         }
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing && Interlocked.CompareExchange(ref _disposeRequested, 1, 0) == 0)
+            if (!disposing || Interlocked.CompareExchange(ref _disposeRequested, 1, 0) != 0)
             {
-                if (Volatile.Read(ref _cancelRequested) == 0)
-                {
-                    UnregisterLinkedTokens();
-                    _callbacks = null;
-                }
-                var timer = Interlocked.Exchange(ref _timeout, null);
-                timer?.Cancel();
-                _handle.Close();
+                return;
             }
+
+            if (Volatile.Read(ref _cancelRequested) == 0)
+            {
+                UnregisterLinkedTokens();
+                _callbacks = null;
+            }
+            var timer = Interlocked.Exchange(ref _timeout, null);
+            timer?.Cancel();
+            _handle.Close();
         }
 
         private static int CheckTimeout(TimeSpan delay)
@@ -294,47 +296,49 @@ namespace System.Threading
 
         private void CancelExtracted(bool throwOnFirstException, Bucket<Action> callbacks, bool ignoreDisposedException)
         {
-            if (Interlocked.CompareExchange(ref _cancelRequested, 1, 0) == 0)
+            if (Interlocked.CompareExchange(ref _cancelRequested, 1, 0) != 0)
             {
-                try
+                return;
+            }
+
+            try
+            {
+                // The CancellationTokenSource may have been disposed just before this call
+                _handle.Set();
+            }
+            catch (ObjectDisposedException)
+            {
+                if (!ignoreDisposedException)
                 {
-                    // The CancellationTokenSource may have been disposed just before this call
-                    _handle.Set();
+                    throw;
                 }
-                catch (ObjectDisposedException)
+            }
+            UnregisterLinkedTokens();
+            List<Exception> exceptions = null;
+            try
+            {
+                var id = _currentId;
+                do
                 {
-                    if (!ignoreDisposedException)
-                    {
-                        throw;
-                    }
-                }
-                UnregisterLinkedTokens();
-                List<Exception> exceptions = null;
-                try
-                {
-                    var id = _currentId;
-                    do
-                    {
-                        if (callbacks.RemoveAt(id, out var callback) && callback != null)
-                        {
-                            RunCallback(throwOnFirstException, callback, ref exceptions);
-                        }
-                    } while (id++ != int.MaxValue);
-                }
-                finally
-                {
-                    // Whatever was added after the cancellation process started, it should run inline in Register... if they don't, handle then here.
-                    foreach (
-                        var callback in
-                            callbacks.RemoveWhereEnumerable(_ => true))
+                    if (callbacks.RemoveAt(id, out var callback) && callback != null)
                     {
                         RunCallback(throwOnFirstException, callback, ref exceptions);
                     }
-                }
-                if (exceptions != null)
+                } while (id++ != int.MaxValue);
+            }
+            finally
+            {
+                // Whatever was added after the cancellation process started, it should run inline in Register... if they don't, handle then here.
+                foreach (
+                    var callback in
+                    callbacks.RemoveWhereEnumerable(_ => true))
                 {
-                    throw new AggregateException(exceptions);
+                    RunCallback(throwOnFirstException, callback, ref exceptions);
                 }
+            }
+            if (exceptions != null)
+            {
+                throw new AggregateException(exceptions);
             }
         }
 
@@ -351,12 +355,14 @@ namespace System.Threading
         private void UnregisterLinkedTokens()
         {
             var registrations = Interlocked.Exchange(ref _linkedTokens, null);
-            if (registrations != null)
+            if (registrations == null)
             {
-                foreach (var linked in registrations)
-                {
-                    linked.Dispose();
-                }
+                return;
+            }
+
+            foreach (var linked in registrations)
+            {
+                linked.Dispose();
             }
         }
     }

@@ -40,11 +40,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
-            if (millisecondsTimeout == -1)
-            {
-                return WaitPrivateAsync(semaphore);
-            }
-            return WaitPrivateAsync(semaphore, millisecondsTimeout);
+            return millisecondsTimeout == -1 ? WaitPrivateAsync(semaphore) : WaitPrivateAsync(semaphore, millisecondsTimeout);
         }
 
         public static Task<bool> WaitAsync(this SemaphoreSlim semaphore, TimeSpan timeout)
@@ -59,11 +55,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             }
-            if (millisecondsTimeout == -1)
-            {
-                return WaitPrivateAsync(semaphore);
-            }
-            return WaitPrivateAsync(semaphore, millisecondsTimeout);
+            return millisecondsTimeout == -1 ? WaitPrivateAsync(semaphore) : WaitPrivateAsync(semaphore, millisecondsTimeout);
         }
 
         public static Task<bool> WaitAsync(this SemaphoreSlim semaphore, TimeSpan timeout, CancellationToken cancellationToken)
@@ -78,11 +70,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             }
-            if (millisecondsTimeout == -1)
-            {
-                return WaitPrivateAsync(semaphore, cancellationToken);
-            }
-            return WaitPrivateAsync(semaphore, (int)timeout.TotalMilliseconds, cancellationToken);
+            return millisecondsTimeout == -1 ? WaitPrivateAsync(semaphore, cancellationToken) : WaitPrivateAsync(semaphore, (int)timeout.TotalMilliseconds, cancellationToken);
         }
 
         public static Task<bool> WaitAsync(this SemaphoreSlim semaphore, int millisecondsTimeout, CancellationToken cancellationToken)
@@ -96,11 +84,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
-            if (millisecondsTimeout == -1)
-            {
-                return WaitPrivateAsync(semaphore, cancellationToken);
-            }
-            return WaitPrivateAsync(semaphore, millisecondsTimeout, cancellationToken);
+            return millisecondsTimeout == -1 ? WaitPrivateAsync(semaphore, cancellationToken) : WaitPrivateAsync(semaphore, millisecondsTimeout, cancellationToken);
         }
 
         private static async Task<bool> WaitPrivateAsync(SemaphoreSlim semaphore)

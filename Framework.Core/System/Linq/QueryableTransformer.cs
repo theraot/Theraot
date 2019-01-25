@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 // QueryableTransformer.cs
 //
@@ -48,11 +48,7 @@ namespace System.Linq
                 return constant;
             }
             var enumerable = qe.GetEnumerable();
-            if (enumerable != null)
-            {
-                return Expression.Constant(enumerable);
-            }
-            return Visit(qe.Expression);
+            return enumerable != null ? Expression.Constant(enumerable) : Visit(qe.Expression);
         }
 
         protected override Expression VisitLambda(LambdaExpression lambda)
@@ -62,11 +58,7 @@ namespace System.Linq
 
         protected override Expression VisitMethodCall(MethodCallExpression methodCall)
         {
-            if (IsQueryableExtension(methodCall.Method))
-            {
-                return ReplaceQueryableMethod(methodCall);
-            }
-            return base.VisitMethodCall(methodCall);
+            return IsQueryableExtension(methodCall.Method) ? ReplaceQueryableMethod(methodCall) : base.VisitMethodCall(methodCall);
         }
 
         private static Type GetComparableType(Type type)
@@ -90,14 +82,12 @@ namespace System.Linq
         {
             foreach (var candidate in declaring.GetMethods())
             {
-                if (MethodMatch(candidate, method))
+                if (!MethodMatch(candidate, method))
                 {
-                    if (method.IsGenericMethod)
-                    {
-                        return candidate.MakeGenericMethodFrom(method);
-                    }
-                    return candidate;
+                    continue;
                 }
+
+                return method.IsGenericMethod ? candidate.MakeGenericMethodFrom(method) : candidate;
             }
             return null;
         }
@@ -182,11 +172,7 @@ namespace System.Linq
                 return expression;
             }
             var lambda = (LambdaExpression)((UnaryExpression)expression).Operand;
-            if (lambda.Type == delegateType)
-            {
-                return lambda;
-            }
-            return expression;
+            return lambda.Type == delegateType ? lambda : expression;
         }
 
         private MethodCallExpression ReplaceQueryableMethod(MethodCallExpression old)

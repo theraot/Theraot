@@ -1,4 +1,4 @@
-// Needed for Workaround
+﻿// Needed for Workaround
 
 using System;
 using System.Collections.Generic;
@@ -149,13 +149,13 @@ namespace Theraot.Threading
                 return true;
             }
 
-            if (!guard.Contains(id))
+            if (guard.Contains(id))
             {
-                guard.Add(id);
-                return true;
+                return false;
             }
 
-            return false;
+            guard.Add(id);
+            return true;
         }
 
         internal static void Leave(UniqueId id)

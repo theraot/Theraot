@@ -143,12 +143,7 @@ namespace System.Linq.Expressions.Compiler
 
         public LocalBuilder GetLocal(Type type)
         {
-            if (_freeLocals.TryTake(type, out var builder))
-            {
-                return builder;
-            }
-
-            return IL.DeclareLocal(type);
+            return _freeLocals.TryTake(type, out var builder) ? builder : IL.DeclareLocal(type);
         }
 
         /// <summary>

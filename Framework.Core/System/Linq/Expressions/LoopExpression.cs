@@ -18,7 +18,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="LoopExpression"/>.</returns>
         public static LoopExpression Loop(Expression body)
         {
-            return Loop(body, @break: null);
+            return Loop(body, null);
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="LoopExpression"/>.</returns>
         public static LoopExpression Loop(Expression body, LabelTarget @break)
         {
-            return Loop(body, @break, @continue: null);
+            return Loop(body, @break, null);
         }
 
         /// <summary>
@@ -51,6 +51,7 @@ namespace System.Linq.Expressions
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Represents an infinite loop. It can be exited with "break".
     /// </summary>
@@ -79,17 +80,19 @@ namespace System.Linq.Expressions
         /// </summary>
         public LabelTarget ContinueLabel { get; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Returns the node type of this Expression. Extension nodes should return
         /// ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public override ExpressionType NodeType => ExpressionType.Loop;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents.
+        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => BreakLabel == null ? typeof(void) : BreakLabel.Type;
 
         /// <summary>

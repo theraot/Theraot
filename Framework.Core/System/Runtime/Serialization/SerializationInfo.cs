@@ -306,14 +306,16 @@ namespace System.Runtime.Serialization
                 throw new ArgumentNullException(nameof(type));
             }
 
-            if (!ReferenceEquals(ObjectType, type))
+            if (ReferenceEquals(ObjectType, type))
             {
-                ObjectType = type;
-                _rootTypeName = type.FullName;
-                _rootTypeAssemblyName = type.GetTypeInfo().Module.Assembly.FullName;
-                IsFullTypeNameSetExplicit = false;
-                IsAssemblyNameSetExplicit = false;
+                return;
             }
+
+            ObjectType = type;
+            _rootTypeName = type.FullName;
+            _rootTypeAssemblyName = type.GetTypeInfo().Module.Assembly.FullName;
+            IsFullTypeNameSetExplicit = false;
+            IsAssemblyNameSetExplicit = false;
         }
 
         internal void AddValueInternal(string name, object value, Type type)

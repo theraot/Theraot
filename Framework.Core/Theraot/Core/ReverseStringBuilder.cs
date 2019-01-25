@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using Theraot.Collections.ThreadSafe;
@@ -26,15 +26,19 @@ namespace Theraot.Core
         ~ReverseStringBuilder()
         {
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
-            if (!GCMonitor.FinalizingForUnload)
+            if (GCMonitor.FinalizingForUnload)
             {
-                var buffer = _buffer;
-                if (buffer != null)
-                {
-                    ArrayReservoir<char>.DonateArray(buffer);
-                    _buffer = null;
-                }
+                return;
             }
+
+            var buffer = _buffer;
+            if (buffer == null)
+            {
+                return;
+            }
+
+            ArrayReservoir<char>.DonateArray(buffer);
+            _buffer = null;
         }
 
         public int Length => _capacity - _start;

@@ -104,19 +104,19 @@ namespace System.Linq.Expressions.Interpreter
 
         protected object[] GetArgs(InterpretedFrame frame, int first)
         {
-            if (ArgumentCount > 0)
+            if (ArgumentCount <= 0)
             {
-                var args = new object[ArgumentCount];
-
-                for (var i = 0; i < args.Length; i++)
-                {
-                    args[i] = frame.Data[first + i];
-                }
-
-                return args;
+                return ArrayReservoir<object>.EmptyArray;
             }
 
-            return ArrayReservoir<object>.EmptyArray;
+            var args = new object[ArgumentCount];
+
+            for (var i = 0; i < args.Length; i++)
+            {
+                args[i] = frame.Data[first + i];
+            }
+
+            return args;
         }
     }
 }

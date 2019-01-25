@@ -545,12 +545,13 @@ namespace Theraot.Collections.ThreadSafe
                 return false;
             }
             var created = itemFactory.Invoke();
-            if (bucket.Insert(index, created, out stored))
+            if (!bucket.Insert(index, created, out stored))
             {
-                stored = created;
-                return true;
+                return false;
             }
-            return false;
+
+            stored = created;
+            return true;
         }
 
 #if FAT

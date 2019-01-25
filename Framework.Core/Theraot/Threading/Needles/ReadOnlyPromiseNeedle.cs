@@ -1,4 +1,4 @@
-// Needed for Workaround
+﻿// Needed for Workaround
 
 using System;
 using System.Diagnostics;
@@ -55,11 +55,7 @@ namespace Theraot.Threading.Needles
             {
                 return right is null;
             }
-            if (right is null)
-            {
-                return false;
-            }
-            return left._promised.Equals(right._promised);
+            return !(right is null) && left._promised.Equals(right._promised);
         }
 
         public override bool Equals(object obj)
@@ -73,11 +69,7 @@ namespace Theraot.Threading.Needles
 
         public bool Equals(ReadOnlyPromiseNeedle<T> other)
         {
-            if (other is null)
-            {
-                return false;
-            }
-            return _promised.Equals(other._promised);
+            return !(other is null) && _promised.Equals(other._promised);
         }
 
         public override int GetHashCode()

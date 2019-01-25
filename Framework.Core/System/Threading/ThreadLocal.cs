@@ -115,14 +115,18 @@ namespace System.Threading
         [DebuggerNonUserCode]
         private void Dispose(bool disposeManagedResources)
         {
-            if (disposeManagedResources)
+            if (!disposeManagedResources)
             {
-                if (Interlocked.CompareExchange(ref _disposing, 1, 0) == 0)
-                {
-                    _wrapped.Dispose();
-                    _wrapped = null;
-                }
+                return;
             }
+
+            if (Interlocked.CompareExchange(ref _disposing, 1, 0) != 0)
+            {
+                return;
+            }
+
+            _wrapped.Dispose();
+            _wrapped = null;
         }
     }
 }

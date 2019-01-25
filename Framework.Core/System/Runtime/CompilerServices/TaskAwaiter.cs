@@ -197,16 +197,18 @@ namespace System.Runtime.CompilerServices
         /// <param name="exc"> The exception to prepare. </param>
         internal static Exception PrepareExceptionForRethrow(Exception exc)
         {
-            if (_prepForRemoting != null)
+            if (_prepForRemoting == null)
             {
-                try
-                {
-                    _prepForRemoting.Invoke(exc, _emptyParams);
-                }
-                catch (Exception ex)
-                {
-                    Theraot.No.Op(ex);
-                }
+                return exc;
+            }
+
+            try
+            {
+                _prepForRemoting.Invoke(exc, _emptyParams);
+            }
+            catch (Exception ex)
+            {
+                Theraot.No.Op(ex);
             }
             return exc;
         }

@@ -393,11 +393,13 @@ namespace System.Linq.Expressions.Compiler
             FreeLocal(locRight);
             IL.Emit(op == ExpressionType.Equal ? OpCodes.Ceq : OpCodes.And);
             IL.Emit(OpCodes.And);
-            if (invert)
+            if (!invert)
             {
-                IL.Emit(OpCodes.Ldc_I4_0);
-                IL.Emit(OpCodes.Ceq);
+                return;
             }
+
+            IL.Emit(OpCodes.Ldc_I4_0);
+            IL.Emit(OpCodes.Ceq);
         }
 
         private void EmitLiftedToNullRelational(ExpressionType op, Type type)
@@ -447,11 +449,13 @@ namespace System.Linq.Expressions.Compiler
             {
                 EmitAddress(e, e.Type);
                 IL.EmitHasValue(e.Type);
-                if (op == ExpressionType.Equal)
+                if (op != ExpressionType.Equal)
                 {
-                    IL.Emit(OpCodes.Ldc_I4_0);
-                    IL.Emit(OpCodes.Ceq);
+                    return;
                 }
+
+                IL.Emit(OpCodes.Ldc_I4_0);
+                IL.Emit(OpCodes.Ceq);
             }
         }
 

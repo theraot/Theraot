@@ -741,23 +741,25 @@ namespace System
 
         private static void CheckType(TRest rest)
         {
-            if (rest != null && typeof(TRest).IsGenericType)
+            if (rest == null || !typeof(TRest).IsGenericType)
             {
-                var type = typeof(TRest).GetGenericTypeDefinition();
-                if
-                (
-                    type == typeof(Tuple<>)
-                    || type == typeof(Tuple<,>)
-                    || type == typeof(Tuple<,,>)
-                    || type == typeof(Tuple<,,,>)
-                    || type == typeof(Tuple<,,,,>)
-                    || type == typeof(Tuple<,,,,,>)
-                    || type == typeof(Tuple<,,,,,,>)
-                    || type == typeof(Tuple<,,,,,,,>)
-                )
-                {
-                    return;
-                }
+                throw new ArgumentException("The last element of an eight element tuple must be a Tuple.", nameof(rest));
+            }
+
+            var type = typeof(TRest).GetGenericTypeDefinition();
+            if
+            (
+                type == typeof(Tuple<>)
+                || type == typeof(Tuple<,>)
+                || type == typeof(Tuple<,,>)
+                || type == typeof(Tuple<,,,>)
+                || type == typeof(Tuple<,,,,>)
+                || type == typeof(Tuple<,,,,,>)
+                || type == typeof(Tuple<,,,,,,>)
+                || type == typeof(Tuple<,,,,,,,>)
+            )
+            {
+                return;
             }
 
             throw new ArgumentException("The last element of an eight element tuple must be a Tuple.", nameof(rest));

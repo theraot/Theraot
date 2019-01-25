@@ -1,4 +1,4 @@
-// Needed for Workaround
+﻿// Needed for Workaround
 
 using System;
 using System.Collections.Generic;
@@ -138,11 +138,7 @@ namespace Theraot.Threading.Needles
             {
                 return $"<Faulted: {Exception}>";
             }
-            if (_handle.TryGetTarget(out var target))
-            {
-                return target.ToString();
-            }
-            return "<Dead Needle>";
+            return _handle.TryGetTarget(out var target) ? target.ToString() : "<Dead Needle>";
         }
 
         public virtual bool TryGetValue(out T value)

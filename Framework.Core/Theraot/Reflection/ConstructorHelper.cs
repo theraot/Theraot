@@ -21,11 +21,7 @@ namespace Theraot.Reflection
 
         public static TReturn CreateOrDefault<TReturn>()
         {
-            if (TryGetCreate<TReturn>(out var result))
-            {
-                return result();
-            }
-            return default;
+            return TryGetCreate<TReturn>(out var result) ? result() : default;
         }
 
         public static bool TryGetCreate<TReturn>(out Func<TReturn> create)

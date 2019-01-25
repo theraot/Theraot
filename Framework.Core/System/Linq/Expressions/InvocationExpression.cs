@@ -105,15 +105,17 @@ namespace System.Linq.Expressions
         internal static MethodInfo GetInvokeMethod(Expression expression)
         {
             var delegateType = expression.Type;
-            if (!expression.Type.IsSubclassOf(typeof(MulticastDelegate)))
+            if (expression.Type.IsSubclassOf(typeof(MulticastDelegate)))
             {
-                var exprType = TypeUtils.FindGenericType(typeof(Expression<>), expression.Type);
-                if (exprType == null)
-                {
-                    throw new ArgumentException($"Expression of type '{expression.Type}' cannot be invoked", nameof(expression));
-                }
-                delegateType = exprType.GetGenericArguments()[0];
+                return delegateType.GetInvokeMethod();
             }
+
+            var exprType = TypeUtils.FindGenericType(typeof(Expression<>), expression.Type);
+            if (exprType == null)
+            {
+                throw new ArgumentException($"Expression of type '{expression.Type}' cannot be invoked", nameof(expression));
+            }
+            delegateType = exprType.GetGenericArguments()[0];
 
             return delegateType.GetInvokeMethod();
         }
@@ -408,17 +410,19 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Expression { get; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Returns the node type of this Expression. Extension nodes should return
         /// ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Invoke;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents.
+        /// Gets the static type of the expression that this <see cref="P:System.Linq.Expressions.InvocationExpression.Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public sealed override Type Type { get; }
 
         internal LambdaExpression LambdaOperand => Expression.NodeType == ExpressionType.Quote
@@ -528,11 +532,7 @@ namespace System.Linq.Expressions
             Debug.Assert(lambda != null);
             Debug.Assert(arguments == null || arguments.Length == 1);
 
-            if (arguments != null)
-            {
-                return Invoke(lambda, arguments[0]);
-            }
-            return Invoke(lambda, ExpressionUtils.ReturnObject<Expression>(_arg0));
+            return Invoke(lambda, arguments != null ? arguments[0] : ExpressionUtils.ReturnObject<Expression>(_arg0));
         }
     }
 
@@ -571,11 +571,7 @@ namespace System.Linq.Expressions
             Debug.Assert(lambda != null);
             Debug.Assert(arguments == null || arguments.Length == 2);
 
-            if (arguments != null)
-            {
-                return Invoke(lambda, arguments[0], arguments[1]);
-            }
-            return Invoke(lambda, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1);
+            return arguments != null ? Invoke(lambda, arguments[0], arguments[1]) : Invoke(lambda, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1);
         }
     }
 
@@ -619,11 +615,7 @@ namespace System.Linq.Expressions
             Debug.Assert(lambda != null);
             Debug.Assert(arguments == null || arguments.Length == 3);
 
-            if (arguments != null)
-            {
-                return Invoke(lambda, arguments[0], arguments[1], arguments[2]);
-            }
-            return Invoke(lambda, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2);
+            return arguments != null ? Invoke(lambda, arguments[0], arguments[1], arguments[2]) : Invoke(lambda, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2);
         }
     }
 
@@ -672,11 +664,7 @@ namespace System.Linq.Expressions
             Debug.Assert(lambda != null);
             Debug.Assert(arguments == null || arguments.Length == 4);
 
-            if (arguments != null)
-            {
-                return Invoke(lambda, arguments[0], arguments[1], arguments[2], arguments[3]);
-            }
-            return Invoke(lambda, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2, _arg3);
+            return arguments != null ? Invoke(lambda, arguments[0], arguments[1], arguments[2], arguments[3]) : Invoke(lambda, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2, _arg3);
         }
     }
 
@@ -730,11 +718,7 @@ namespace System.Linq.Expressions
             Debug.Assert(lambda != null);
             Debug.Assert(arguments == null || arguments.Length == 5);
 
-            if (arguments != null)
-            {
-                return Invoke(lambda, arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]);
-            }
-            return Invoke(lambda, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2, _arg3, _arg4);
+            return arguments != null ? Invoke(lambda, arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]) : Invoke(lambda, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2, _arg3, _arg4);
         }
     }
 

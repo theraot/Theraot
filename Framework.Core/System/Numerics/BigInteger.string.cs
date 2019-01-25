@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -222,31 +222,33 @@ namespace System.Numerics
             }
             var index = 0;
             var chr = format[index];
-            if ((chr >= 'A' && chr <= 'Z') || (chr >= 'a' && chr <= 'z'))
+            if ((chr < 'A' || chr > 'Z') && (chr < 'a' || chr > 'z'))
             {
-                index++;
-                if (index < format.Length)
+                return '\0';
+            }
+
+            index++;
+            if (index < format.Length)
+            {
+                var tmp = format[index];
+                if (tmp >= '0' && tmp <= '9')
                 {
-                    var tmp = format[index];
-                    if (tmp >= '0' && tmp <= '9')
+                    index++;
+                    digits = tmp - '0';
+                    do
                     {
-                        index++;
-                        digits = tmp - '0';
-                        do
+                        if (index >= format.Length || format[index] < '0' || format[index] > '9')
                         {
-                            if (index >= format.Length || format[index] < '0' || format[index] > '9')
-                            {
-                                break;
-                            }
-                            digits = (digits * 10) + (format[index] - '0');
-                            index++;
-                        } while (digits < 10);
-                    }
+                            break;
+                        }
+                        digits = (digits * 10) + (format[index] - '0');
+                        index++;
+                    } while (digits < 10);
                 }
-                if (index >= format.Length || format[index] == 0)
-                {
-                    return chr;
-                }
+            }
+            if (index >= format.Length || format[index] == 0)
+            {
+                return chr;
             }
             return '\0';
         }
@@ -384,18 +386,22 @@ namespace System.Numerics
                         number.Scale += input.Length;
                     }
                     number.Digits.Append(input);
-                    if (allowThousands)
+                    if (!allowThousands)
                     {
-                        var currencyGroupSeparator = info.CurrencyGroupSeparator;
-                        // Testing on .NET show that combining currency and number group separators is allowed
-                        // But not if the currency symbol has already appeared
-                        reader.SkipWhile(currencyGroupSeparator);
-                        if (!isCurrency)
-                        {
-                            var numberGroupSeparator = info.NumberGroupSeparator;
-                            reader.SkipWhile(numberGroupSeparator);
-                        }
+                        continue;
                     }
+
+                    var currencyGroupSeparator = info.CurrencyGroupSeparator;
+                    // Testing on .NET show that combining currency and number group separators is allowed
+                    // But not if the currency symbol has already appeared
+                    reader.SkipWhile(currencyGroupSeparator);
+                    if (isCurrency)
+                    {
+                        continue;
+                    }
+
+                    var numberGroupSeparator = info.NumberGroupSeparator;
+                    reader.SkipWhile(numberGroupSeparator);
                 }
                 if (failure)
                 {
@@ -534,14 +540,17 @@ namespace System.Numerics
                     current = (uint)(cipherBlock % NumericBase);
                     carry = (uint)(cipherBlock / NumericBase);
                 }
+
+                if (carry == 0)
+                {
+                    continue;
+                }
+
+                converted[convertedLength++] = carry % NumericBase;
+                carry /= NumericBase;
                 if (carry != 0)
                 {
-                    converted[convertedLength++] = carry % NumericBase;
-                    carry /= NumericBase;
-                    if (carry != 0)
-                    {
-                        converted[convertedLength++] = carry;
-                    }
+                    converted[convertedLength++] = carry;
                 }
             }
             int stringCapacity;
@@ -623,12 +632,15 @@ namespace System.Numerics
                     stringBuilder.Append(byteArray[num1].ToString(str1, info));
                 }
             }
-            if (digits > 0 && digits > stringBuilder.Length)
+
+            if (digits <= 0 || digits <= stringBuilder.Length)
             {
-                var stringBuilder1 = stringBuilder;
-                var str = value.InternalSign < 0 ? format != 'x' ? "F" : "f" : "0";
-                stringBuilder1.Insert(0, str, digits - stringBuilder.Length);
+                return stringBuilder.ToString();
             }
+
+            var stringBuilder1 = stringBuilder;
+            var str = value.InternalSign < 0 ? format != 'x' ? "F" : "f" : "0";
+            stringBuilder1.Insert(0, str, digits - stringBuilder.Length);
             return stringBuilder.ToString();
         }
 

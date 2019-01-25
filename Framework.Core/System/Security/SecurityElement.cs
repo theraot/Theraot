@@ -339,12 +339,14 @@ namespace System.Security
             {
                 var strAttrName = (string)_attributes[i];
 
-                if (string.Equals(strAttrName, name, StringComparison.Ordinal))
+                if (!string.Equals(strAttrName, name, StringComparison.Ordinal))
                 {
-                    var strAttrValue = (string)_attributes[i + 1];
-
-                    return Unescape(strAttrValue);
+                    continue;
                 }
+
+                var strAttrValue = (string)_attributes[i + 1];
+
+                return Unescape(strAttrValue);
             }
 
             // In the case where we didn't find it, we are expected to
@@ -596,11 +598,13 @@ namespace System.Security
 
                 var length = strEscValue.Length;
 
-                if (length <= maxCompareLength && string.Compare(strEscValue, 0, str, index, length, StringComparison.Ordinal) == 0)
+                if (length > maxCompareLength || string.Compare(strEscValue, 0, str, index, length, StringComparison.Ordinal) != 0)
                 {
-                    newIndex = index + strEscValue.Length;
-                    return strEscSeq;
+                    continue;
                 }
+
+                newIndex = index + strEscValue.Length;
+                return strEscSeq;
             }
 
             newIndex = index + 1;

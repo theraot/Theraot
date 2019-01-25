@@ -93,12 +93,14 @@ namespace Theraot.Collections.Specialized
             }
             else
             {
-                if (enumerateAppend)
+                if (!enumerateAppend)
                 {
-                    var appendCount = _append.Count;
-                    Extensions.CanCopyTo(appendCount, array, arrayIndex);
-                    _append.CopyTo(array);
+                    return;
                 }
+
+                var appendCount = _append.Count;
+                Extensions.CanCopyTo(appendCount, array, arrayIndex);
+                _append.CopyTo(array);
             }
         }
 
@@ -116,7 +118,12 @@ namespace Theraot.Collections.Specialized
                     yield return item;
                 }
             }
-            if (_enumerateAppend())
+
+            if (!_enumerateAppend())
+            {
+                yield break;
+            }
+
             {
                 foreach (var item in _append)
                 {
@@ -137,13 +144,16 @@ namespace Theraot.Collections.Specialized
                 }
                 offset = _target.Count;
             }
-            if (_enumerateAppend())
+
+            if (!_enumerateAppend())
             {
-                var appendIndex = _append.IndexOf(item);
-                if (appendIndex != -1)
-                {
-                    return appendIndex + offset;
-                }
+                return -1;
+            }
+
+            var appendIndex = _append.IndexOf(item);
+            if (appendIndex != -1)
+            {
+                return appendIndex + offset;
             }
             return -1;
         }

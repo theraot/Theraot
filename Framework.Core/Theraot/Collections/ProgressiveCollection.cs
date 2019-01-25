@@ -75,11 +75,8 @@ namespace Theraot.Collections
 
         public bool Contains(T item)
         {
-            if (CacheContains(item))
-            {
-                return true;
-            }
-            return ProgressorWhere(Check).Any();
+            return CacheContains(item) || ProgressorWhere(Check).Any();
+
             bool Check(T found)
             {
                 return Comparer.Equals(item, found);
@@ -114,11 +111,13 @@ namespace Theraot.Collections
             var knownCount = _cache.Count;
             while (Progressor.TryTake(out var item))
             {
-                if (_cache.Count > knownCount)
+                if (_cache.Count <= knownCount)
                 {
-                    yield return item;
-                    knownCount = _cache.Count;
+                    continue;
                 }
+
+                yield return item;
+                knownCount = _cache.Count;
             }
         }
 
@@ -165,14 +164,16 @@ namespace Theraot.Collections
             var knownCount = _cache.Count;
             while (Progressor.TryTake(out var item))
             {
-                if (_cache.Count > knownCount)
+                if (_cache.Count <= knownCount)
                 {
-                    if (check(item))
-                    {
-                        yield return item;
-                    }
-                    knownCount = _cache.Count;
+                    continue;
                 }
+
+                if (check(item))
+                {
+                    yield return item;
+                }
+                knownCount = _cache.Count;
             }
         }
 
@@ -181,18 +182,20 @@ namespace Theraot.Collections
             var knownCount = _cache.Count;
             while (Progressor.TryTake(out var item))
             {
-                if (_cache.Count > knownCount)
+                if (_cache.Count <= knownCount)
                 {
-                    if (check(item))
-                    {
-                        yield return item;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                    knownCount = _cache.Count;
+                    continue;
                 }
+
+                if (check(item))
+                {
+                    yield return item;
+                }
+                else
+                {
+                    break;
+                }
+                knownCount = _cache.Count;
             }
         }
     }

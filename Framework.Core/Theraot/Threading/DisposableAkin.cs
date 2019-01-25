@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 
 namespace Theraot.Threading
@@ -52,23 +52,26 @@ namespace Theraot.Threading
             {
                 throw new ArgumentNullException(nameof(condition));
             }
-            if (Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread) == Thread.CurrentThread)
+
+            if (Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread) != Thread.CurrentThread)
             {
-                if (condition.Invoke())
-                {
-                    try
-                    {
-                        _release.Invoke();
-                        return true;
-                    }
-                    finally
-                    {
-                        _release = null;
-                    }
-                }
                 return false;
             }
-            return false;
+
+            if (!condition.Invoke())
+            {
+                return false;
+            }
+
+            try
+            {
+                _release.Invoke();
+                return true;
+            }
+            finally
+            {
+                _release = null;
+            }
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
@@ -86,20 +89,18 @@ namespace Theraot.Threading
 
         private void Dispose(bool disposeManagedResources)
         {
-            if
-            (
-                !disposeManagedResources
-                || Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread) == Thread.CurrentThread
-            )
+            if (disposeManagedResources && Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread) != Thread.CurrentThread)
             {
-                try
-                {
-                    _release.Invoke();
-                }
-                finally
-                {
-                    _release = null;
-                }
+                return;
+            }
+
+            try
+            {
+                _release.Invoke();
+            }
+            finally
+            {
+                _release = null;
             }
         }
     }

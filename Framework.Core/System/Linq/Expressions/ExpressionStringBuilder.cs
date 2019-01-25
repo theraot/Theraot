@@ -320,7 +320,7 @@ namespace System.Linq.Expressions
         {
             // Prefer an overridden ToString, if available.
             var toString = node.GetType().GetMethod(nameof(ToString), Type.EmptyTypes);
-            if ((toString != null) && (toString.DeclaringType != typeof(Expression) && !toString.IsStatic))
+            if (toString != null && toString.DeclaringType != typeof(Expression) && !toString.IsStatic)
             {
                 Out(node.ToString());
                 return node;
@@ -349,12 +349,14 @@ namespace System.Linq.Expressions
             Out(op);
             Out(' ');
             DumpLabel(node.Target);
-            if (node.Value != null)
+            if (node.Value == null)
             {
-                Out(" (");
-                Visit(node.Value);
-                Out(")");
+                return node;
             }
+
+            Out(" (");
+            Visit(node.Value);
+            Out(")");
             return node;
         }
 
@@ -787,11 +789,13 @@ namespace System.Linq.Expressions
                 _ids = new Dictionary<object, int>();
             }
 
-            if (!_ids.TryGetValue(o, out var id))
+            if (_ids.TryGetValue(o, out var id))
             {
-                id = _ids.Count;
-                _ids.Add(o, id);
+                return id;
             }
+
+            id = _ids.Count;
+            _ids.Add(o, id);
 
             return id;
         }

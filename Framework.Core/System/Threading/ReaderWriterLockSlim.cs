@@ -463,17 +463,20 @@ namespace System.Threading
             {
                 return;
             }
-            if (disposing)
+
+            if (!disposing)
             {
-                if (IsReadLockHeld || IsUpgradeableReadLockHeld || IsWriteLockHeld)
-                {
-                    throw new SynchronizationLockException("The lock is being disposed while still being used");
-                }
-                _upgradableEvent.Dispose();
-                _writerDoneEvent.Dispose();
-                _readerDoneEvent.Dispose();
-                _disposed = true;
+                return;
             }
+
+            if (IsReadLockHeld || IsUpgradeableReadLockHeld || IsWriteLockHeld)
+            {
+                throw new SynchronizationLockException("The lock is being disposed while still being used");
+            }
+            _upgradableEvent.Dispose();
+            _writerDoneEvent.Dispose();
+            _readerDoneEvent.Dispose();
+            _disposed = true;
         }
 
         private static int CheckTimeout(TimeSpan timeout)

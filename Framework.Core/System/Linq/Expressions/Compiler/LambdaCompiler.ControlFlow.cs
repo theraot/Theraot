@@ -221,13 +221,13 @@ namespace System.Linq.Expressions.Compiler
             switch (node.NodeType)
             {
                 default:
-                    if (_labelBlock.Kind != LabelScopeKind.Expression)
+                    if (_labelBlock.Kind == LabelScopeKind.Expression)
                     {
-                        PushLabelBlock(LabelScopeKind.Expression);
-                        return true;
+                        return false;
                     }
 
-                    return false;
+                    PushLabelBlock(LabelScopeKind.Expression);
+                    return true;
 
                 case ExpressionType.Label:
                     // LabelExpression is a bit special, if it's directly in a

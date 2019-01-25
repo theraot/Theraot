@@ -124,12 +124,13 @@ namespace System.Linq.Expressions
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Represents a constructor call that has a collection initializer.
     /// </summary>
     /// <remarks>
-    /// Use the <see cref="Expression.ListInit(System.Linq.Expressions.NewExpression,System.Linq.Expressions.Expression[])"/> factory methods to create a ListInitExpression.
-    /// The value of the <see cref="NodeType" /> property of a ListInitExpression is ListInit.
+    /// Use the <see cref="M:System.Linq.Expressions.Expression.ListInit(System.Linq.Expressions.NewExpression,System.Linq.Expressions.Expression[])" /> factory methods to create a ListInitExpression.
+    /// The value of the <see cref="P:System.Linq.Expressions.ListInitExpression.NodeType" /> property of a ListInitExpression is ListInit.
     /// </remarks>
     [DebuggerTypeProxy(typeof(ListInitExpressionProxy))]
     public sealed class ListInitExpression : Expression
@@ -140,6 +141,7 @@ namespace System.Linq.Expressions
             Initializers = initializers;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Gets a value that indicates whether the expression tree node can be reduced.
         /// </summary>
@@ -155,18 +157,21 @@ namespace System.Linq.Expressions
         /// </summary>
         public NewExpression NewExpression { get; }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns the node type of this <see cref="Expression"/>. (Inherited from <see cref="Expression"/>.)
+        /// Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public override ExpressionType NodeType => ExpressionType.ListInit;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents. (Inherited from <see cref="Expression"/>.)
+        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => NewExpression.Type;
 
+        /// <inheritdoc />
         /// <summary>
         /// Reduces the binary expression node to a simpler expression.
         /// If CanReduce returns true, this should return a valid expression.
@@ -176,7 +181,7 @@ namespace System.Linq.Expressions
         /// <returns>The reduced expression.</returns>
         public override Expression Reduce()
         {
-            return MemberInitExpression.ReduceListInit(NewExpression, Initializers, keepOnStack: true);
+            return MemberInitExpression.ReduceListInit(NewExpression, Initializers, true);
         }
 
         /// <summary>

@@ -222,11 +222,7 @@ namespace System.Linq.Expressions
         protected virtual Expression VisitMemberAccess(MemberExpression m)
         {
             var exp = Visit(m.Expression);
-            if (exp != m.Expression)
-            {
-                return Expression.MakeMemberAccess(exp, m.Member);
-            }
-            return m;
+            return exp != m.Expression ? Expression.MakeMemberAccess(exp, m.Member) : m;
         }
 
         protected virtual MemberAssignment VisitMemberAssignment(MemberAssignment assignment)

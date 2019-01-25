@@ -100,11 +100,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(callback));
             }
-            if (_source == null)
-            {
-                return new CancellationTokenRegistration();
-            }
-            return _source.Register(callback, useSynchronizationContext);
+            return _source == null ? new CancellationTokenRegistration() : _source.Register(callback, useSynchronizationContext);
         }
 
         public CancellationTokenRegistration Register(Action<object> callback, object state)

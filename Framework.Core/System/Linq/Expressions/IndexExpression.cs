@@ -74,12 +74,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="IndexExpression"/>.</returns>
         public static IndexExpression MakeIndex(Expression instance, PropertyInfo indexer, IEnumerable<Expression> arguments)
         {
-            if (indexer != null)
-            {
-                return Property(instance, indexer, arguments);
-            }
-
-            return ArrayAccess(instance, arguments);
+            return indexer != null ? Property(instance, indexer, arguments) : ArrayAccess(instance, arguments);
         }
 
         /// <summary>
@@ -129,16 +124,18 @@ namespace System.Linq.Expressions
                 flags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy;
                 pi = FindProperty(type, propertyName, arguments, flags);
             }
-            if (pi == null)
-            {
-                if (arguments == null || arguments.Length == 0)
-                {
-                    throw new ArgumentException($"Instance property '{propertyName}' that takes no argument is not defined for type '{type}'");
-                }
 
-                throw new ArgumentException($"Instance property '{propertyName}{GetArgTypesString(arguments)}' is not defined for type '{type}'", nameof(propertyName));
+            if (pi != null)
+            {
+                return pi;
             }
-            return pi;
+
+            if (arguments == null || arguments.Length == 0)
+            {
+                throw new ArgumentException($"Instance property '{propertyName}' that takes no argument is not defined for type '{type}'");
+            }
+
+            throw new ArgumentException($"Instance property '{propertyName}{GetArgTypesString(arguments)}' is not defined for type '{type}'", nameof(propertyName));
         }
 
         private static PropertyInfo FindProperty(Type type, string propertyName, Expression[] arguments, BindingFlags flags)
@@ -147,16 +144,18 @@ namespace System.Linq.Expressions
 
             foreach (var pi in type.GetProperties(flags))
             {
-                if (pi.Name.Equals(propertyName, StringComparison.OrdinalIgnoreCase) && IsCompatible(pi, arguments))
+                if (!pi.Name.Equals(propertyName, StringComparison.OrdinalIgnoreCase) || !IsCompatible(pi, arguments))
                 {
-                    if (property == null)
-                    {
-                        property = pi;
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException($"More than one property '{propertyName}' on type '{type}' is compatible with the supplied arguments.");
-                    }
+                    continue;
+                }
+
+                if (property == null)
+                {
+                    property = pi;
+                }
+                else
+                {
+                    throw new InvalidOperationException($"More than one property '{propertyName}' on type '{type}' is compatible with the supplied arguments.");
                 }
             }
 
@@ -181,7 +180,7 @@ namespace System.Linq.Expressions
 
         private static bool IsCompatible(PropertyInfo pi, Expression[] args)
         {
-            var mi = pi.GetGetMethod(nonPublic: true);
+            var mi = pi.GetGetMethod(true);
             ParameterInfo[] parameters;
             if (mi != null)
             {
@@ -189,7 +188,7 @@ namespace System.Linq.Expressions
             }
             else
             {
-                mi = pi.GetSetMethod(nonPublic: true);
+                mi = pi.GetSetMethod(true);
                 if (mi == null)
                 {
                     return false;
@@ -337,7 +336,7 @@ namespace System.Linq.Expressions
             }
 
             ParameterInfo[] getParameters = null;
-            var getter = indexer.GetGetMethod(nonPublic: true);
+            var getter = indexer.GetGetMethod(true);
             if (getter != null)
             {
                 if (getter.ReturnType != indexer.PropertyType)
@@ -349,7 +348,7 @@ namespace System.Linq.Expressions
                 ValidateAccessor(instance, getter, getParameters, ref argList, paramName);
             }
 
-            var setter = indexer.GetSetMethod(nonPublic: true);
+            var setter = indexer.GetSetMethod(true);
             if (setter != null)
             {
                 var setParameters = setter.GetParameters();
@@ -384,12 +383,9 @@ namespace System.Linq.Expressions
                         throw new ArgumentException("Indexing parameters of getter and setter must match.", paramName);
                     }
 
-                    for (var i = 0; i < getParameters.Length; i++)
+                    if (getParameters.Where((t, i) => t.ParameterType != setParameters[i].ParameterType).Any())
                     {
-                        if (getParameters[i].ParameterType != setParameters[i].ParameterType)
-                        {
-                            throw new ArgumentException("Indexing parameters of getter and setter must match.", paramName);
-                        }
+                        throw new ArgumentException("Indexing parameters of getter and setter must match.", paramName);
                     }
                 }
                 else
@@ -445,10 +441,11 @@ namespace System.Linq.Expressions
         /// </summary>
         public PropertyInfo Indexer { get; }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns the node type of this <see cref="Expression"/>. (Inherited from <see cref="Expression"/>.)
+        /// Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public override ExpressionType NodeType => ExpressionType.Index;
 
         /// <summary>
@@ -456,21 +453,12 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Object { get; }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents. (Inherited from <see cref="Expression"/>.)
+        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
-        public override Type Type
-        {
-            get
-            {
-                if (Indexer != null)
-                {
-                    return Indexer.PropertyType;
-                }
-                return Object.Type.GetElementType();
-            }
-        }
+        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
+        public override Type Type => Indexer != null ? Indexer.PropertyType : Object.Type.GetElementType();
 
         /// <summary>
         /// Gets the argument expression with the specified <paramref name="index"/>.

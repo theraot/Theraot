@@ -80,7 +80,7 @@ namespace System.Linq.Expressions
             }
 
             // Null paramName as there are several paths here with different parameter names at the API
-            TypeUtils.ValidateType(decType, null, allowByRef: true, allowPointer: true);
+            TypeUtils.ValidateType(decType, null, true, true);
             switch (member)
             {
                 case PropertyInfo pi:
@@ -116,11 +116,12 @@ namespace System.Linq.Expressions
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Represents initializing members of a member of a newly created object.
     /// </summary>
     /// <remarks>
-    /// The value of the <see cref="MemberBinding.BindingType"/> property of a <see cref="MemberMemberBinding"/> object is <see cref="MemberBinding"/>.
+    /// The value of the <see cref="P:System.Linq.Expressions.MemberBinding.BindingType" /> property of a <see cref="T:System.Linq.Expressions.MemberMemberBinding" /> object is <see cref="T:System.Linq.Expressions.MemberBinding" />.
     /// </remarks>
     public sealed class MemberMemberBinding : MemberBinding
     {

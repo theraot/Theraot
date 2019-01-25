@@ -1,4 +1,4 @@
-// Needed for NET40
+﻿// Needed for NET40
 
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
 
@@ -138,9 +138,9 @@ namespace Theraot.Collections
             var subscription = observable.Subscribe
             (
                 new CustomObserver<T>(
-                    onCompleted: source.Cancel,
-                    onError: _ => source.Cancel(),
-                    onNext: OnNext
+                    source.Cancel,
+                    _ => source.Cancel(),
+                    OnNext
                 )
             );
             var proxy = new ProxyObservable<T>();
@@ -179,16 +179,19 @@ namespace Theraot.Collections
                         }
                     }
                 }
-                if (!source.IsCancellationRequested && !token.IsCancellationRequested)
+
+                if (source.IsCancellationRequested || token.IsCancellationRequested)
                 {
-                    try
-                    {
-                        semaphore.Wait(source.Token);
-                    }
-                    catch (OperationCanceledException exception)
-                    {
-                        No.Op(exception);
-                    }
+                    return TakeReplacement(out value);
+                }
+
+                try
+                {
+                    semaphore.Wait(source.Token);
+                }
+                catch (OperationCanceledException exception)
+                {
+                    No.Op(exception);
                 }
                 return TakeReplacement(out value);
             }

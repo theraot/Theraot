@@ -93,19 +93,21 @@ namespace System.Runtime.CompilerServices
                 _siteCtors = ctors = new CacheDict<Type, Func<CallSiteBinder, CallSite>>(100);
             }
 
-            if (!ctors.TryGetValue(delegateType, out var ctor))
+            if (ctors.TryGetValue(delegateType, out var ctor))
             {
-                var method = typeof(CallSite<>).MakeGenericType(delegateType).GetMethod(nameof(Create));
+                return ctor(binder);
+            }
 
-                /*if (delegateType.IsCollectible)
+            var method = typeof(CallSite<>).MakeGenericType(delegateType).GetMethod(nameof(Create));
+
+            /*if (delegateType.IsCollectible)
                 {
                     // slow path
                     return (CallSite)method.Invoke(null, new object[] { binder });
                 }*/
 
-                ctor = (Func<CallSiteBinder, CallSite>)method.CreateDelegate(typeof(Func<CallSiteBinder, CallSite>));
-                ctors.Add(delegateType, ctor);
-            }
+            ctor = (Func<CallSiteBinder, CallSite>)method.CreateDelegate(typeof(Func<CallSiteBinder, CallSite>));
+            ctors.Add(delegateType, ctor);
 
             return ctor(binder);
         }
@@ -190,11 +192,13 @@ namespace System.Runtime.CompilerServices
         {
             // check if we have a cached matchmaker and attempt to atomically grab it.
             var matchmaker = CachedMatchmaker;
-            if (matchmaker != null)
+            if (matchmaker == null)
             {
-                matchmaker = Interlocked.Exchange(ref CachedMatchmaker, null);
-                Debug.Assert(matchmaker?.Match != false, "cached site should be set up for matchmaking");
+                return matchmaker ?? new CallSite<T> {Match = true};
             }
+
+            matchmaker = Interlocked.Exchange(ref CachedMatchmaker, null);
+            Debug.Assert(matchmaker?.Match != false, "cached site should be set up for matchmaking");
 
             return matchmaker ?? new CallSite<T> { Match = true };
         }
@@ -202,15 +206,17 @@ namespace System.Runtime.CompilerServices
         // moves rule +2 up.
         internal void MoveRule(int i)
         {
-            if (i > 1)
+            if (i <= 1)
             {
-                var rules = Rules;
-                var rule = rules[i];
-
-                rules[i] = rules[i - 1];
-                rules[i - 1] = rules[i - 2];
-                rules[i - 2] = rule;
+                return;
             }
+
+            var rules = Rules;
+            var rule = rules[i];
+
+            rules[i] = rules[i - 1];
+            rules[i - 1] = rules[i - 2];
+            rules[i - 2] = rule;
         }
 
         internal void ReleaseMatchmaker(CallSite matchMaker)

@@ -1,4 +1,4 @@
-// Needed for NET30
+﻿// Needed for NET30
 
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
 // ReSharper disable HeuristicUnreachableCode
@@ -104,15 +104,16 @@ namespace Theraot.Collections.Specialized
             get
             {
                 // key could be null
-                if (key == null)
+                if (key != null)
                 {
-                    if (_hasNull)
-                    {
-                        return _valueForNull[0];
-                    }
-                    throw new KeyNotFoundException();
+                    return _wrapped[key];
                 }
-                return _wrapped[key];
+
+                if (_hasNull)
+                {
+                    return _valueForNull[0];
+                }
+                throw new KeyNotFoundException();
             }
             set
             {
@@ -164,11 +165,7 @@ namespace Theraot.Collections.Specialized
             var value = item.Value;
             if (key == null)
             {
-                if (_hasNull)
-                {
-                    return _valueComparer.Equals(_valueForNull[0], value);
-                }
-                return false;
+                return _hasNull && _valueComparer.Equals(_valueForNull[0], value);
             }
             try
             {
@@ -183,11 +180,7 @@ namespace Theraot.Collections.Specialized
         public bool ContainsKey(TKey key)
         {
             // key could  be null
-            if (key == null)
-            {
-                return _hasNull; // OK
-            }
-            return _wrapped.ContainsKey(key);
+            return key == null ? _hasNull : _wrapped.ContainsKey(key);
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -228,16 +221,18 @@ namespace Theraot.Collections.Specialized
         public bool Remove(TKey key)
         {
             // key can be null
-            if (key == null)
+            if (key != null)
             {
-                if (_hasNull) // OK
-                {
-                    ClearForNull();
-                    return true;
-                }
+                return _wrapped.Remove(key);
+            }
+
+            if (!_hasNull)
+            {
                 return false;
             }
-            return _wrapped.Remove(key);
+
+            ClearForNull();
+            return true;
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
@@ -246,20 +241,17 @@ namespace Theraot.Collections.Specialized
             var value = item.Value;
             if (key == null)
             {
-                if (_valueComparer.Equals(_valueForNull[0], value))
+                if (!_valueComparer.Equals(_valueForNull[0], value))
                 {
-                    ClearForNull();
-                    return true;
+                    return false;
                 }
-                return false;
+
+                ClearForNull();
+                return true;
             }
             try
             {
-                if (_valueComparer.Equals(_wrapped[key], value))
-                {
-                    return _wrapped.Remove(key);
-                }
-                return false;
+                return _valueComparer.Equals(_wrapped[key], value) && _wrapped.Remove(key);
             }
             catch (KeyNotFoundException)
             {
@@ -270,17 +262,18 @@ namespace Theraot.Collections.Specialized
         public bool TryGetValue(TKey key, out TValue value)
         {
             // key can be null
-            if (key == null)
+            if (key != null)
             {
-                if (_hasNull)
-                {
-                    value = _valueForNull[0];
-                    return true;
-                }
-                value = default;
-                return false;
+                return _wrapped.TryGetValue(key, out value);
             }
-            return _wrapped.TryGetValue(key, out value);
+
+            if (_hasNull)
+            {
+                value = _valueForNull[0];
+                return true;
+            }
+            value = default;
+            return false;
         }
 
         private void ClearForNull()

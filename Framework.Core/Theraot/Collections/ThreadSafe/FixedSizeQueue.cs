@@ -105,19 +105,21 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool TryAdd(T item)
         {
-            if (_entries.Count < Capacity)
+            if (_entries.Count >= Capacity)
             {
-                var preCount = Interlocked.Increment(ref _preCount);
-                if (preCount <= Capacity)
-                {
-                    var index = (Interlocked.Increment(ref _indexEnqueue) - 1) & (Capacity - 1);
-                    if (_entries.InsertInternal(index, item))
-                    {
-                        return true;
-                    }
-                }
-                Interlocked.Decrement(ref _preCount);
+                return false;
             }
+
+            var preCount = Interlocked.Increment(ref _preCount);
+            if (preCount <= Capacity)
+            {
+                var index = (Interlocked.Increment(ref _indexEnqueue) - 1) & (Capacity - 1);
+                if (_entries.InsertInternal(index, item))
+                {
+                    return true;
+                }
+            }
+            Interlocked.Decrement(ref _preCount);
             return false;
         }
 

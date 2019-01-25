@@ -239,28 +239,31 @@ namespace System.Linq.Expressions.Interpreter
             // Validate that we aren't jumping across a finally
             for (var j = reference; j != common; j = j.Parent)
             {
-                if (j.Kind == LabelScopeKind.Finally)
+                switch (j.Kind)
                 {
-                    throw new InvalidOperationException("Control cannot leave a finally block.");
-                }
-                if (j.Kind == LabelScopeKind.Filter)
-                {
-                    throw new InvalidOperationException("Control cannot leave a filter test.");
+                    case LabelScopeKind.Finally:
+                        throw new InvalidOperationException("Control cannot leave a finally block.");
+                    case LabelScopeKind.Filter:
+                        throw new InvalidOperationException("Control cannot leave a filter test.");
+                    default:
+                        break;
                 }
             }
 
             // Validate that we aren't jumping into a catch or an expression
             for (var j = def; j != common; j = j.Parent)
             {
-                if (!j.CanJumpInto)
+                if (j.CanJumpInto)
                 {
-                    if (j.Kind == LabelScopeKind.Expression)
-                    {
-                        throw new InvalidOperationException("Control cannot enter an expression--only statements can be jumped into.");
-                    }
-
-                    throw new InvalidOperationException("Control cannot enter a try block.");
+                    continue;
                 }
+
+                if (j.Kind == LabelScopeKind.Expression)
+                {
+                    throw new InvalidOperationException("Control cannot enter an expression--only statements can be jumped into.");
+                }
+
+                throw new InvalidOperationException("Control cannot enter a try block.");
             }
         }
     }
@@ -324,23 +327,18 @@ namespace System.Linq.Expressions.Interpreter
 
         internal bool ContainsTarget(LabelTarget target)
         {
-            if (_labels == null)
-            {
-                return false;
-            }
-
-            return _labels.ContainsKey(target);
+            return _labels?.ContainsKey(target) == true;
         }
 
         internal bool TryGetLabelInfo(LabelTarget target, out LabelInfo info)
         {
-            if (_labels == null)
+            if (_labels != null)
             {
-                info = null;
-                return false;
+                return _labels.TryGetValue(target, out info);
             }
 
-            return _labels.TryGetValue(target, out info);
+            info = null;
+            return false;
         }
     }
 }

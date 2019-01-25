@@ -77,14 +77,16 @@ namespace Theraot.Collections.Specialized
 
             T Index(int index)
             {
-                if (index < _count())
+                if (index >= _count())
                 {
-                    using (var enumerator = wrapped.Skip(index).GetEnumerator())
+                    throw new ArgumentOutOfRangeException(nameof(index));
+                }
+
+                using (var enumerator = wrapped.Skip(index).GetEnumerator())
+                {
+                    if (enumerator.MoveNext())
                     {
-                        if (enumerator.MoveNext())
-                        {
-                            return enumerator.Current;
-                        }
+                        return enumerator.Current;
                     }
                 }
                 throw new ArgumentOutOfRangeException(nameof(index));

@@ -67,25 +67,26 @@ namespace System.Linq.Expressions
             // Type.IsInstanceOfType, and the isinst instruction were all
             // equivalent when used against a live object
             //
-            if (nnTestType.IsAssignableFrom(nnOperandType))
+            if (!nnTestType.IsAssignableFrom(nnOperandType))
             {
-                // If the operand is a value type (other than nullable), we
-                // know the result is always true.
-                if (operandType.IsValueType && !operandType.IsNullable())
-                {
-                    return AnalyzeTypeIsResult.KnownTrue;
-                }
-
-                // For reference/nullable types, we need to compare to null at runtime
-                return AnalyzeTypeIsResult.KnownAssignable;
+                return AnalyzeTypeIsResult.Unknown;
             }
+
+            // If the operand is a value type (other than nullable), we
+            // know the result is always true.
+            if (operandType.IsValueType && !operandType.IsNullable())
+            {
+                return AnalyzeTypeIsResult.KnownTrue;
+            }
+
+            // For reference/nullable types, we need to compare to null at runtime
+            return AnalyzeTypeIsResult.KnownAssignable;
 
             // We used to have an if IsSealed, return KnownFalse check here.
             // but that doesn't handle generic types & co/contravariance correctly.
             // So just use IsInst, which we know always gives us the right answer.
 
             // Otherwise we need a full runtime check
-            return AnalyzeTypeIsResult.Unknown;
         }
     }
 }

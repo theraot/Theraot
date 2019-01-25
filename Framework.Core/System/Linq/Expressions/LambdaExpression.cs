@@ -18,8 +18,9 @@ using DelegateHelpers = System.Linq.Expressions.Compiler.DelegateHelpers;
 
 namespace System.Linq.Expressions
 {
+    /// <inheritdoc />
     /// <summary>
-    /// Defines a <see cref="Expression{TDelegate}"/> node.
+    /// Defines a <see cref="T:System.Linq.Expressions.Expression`1" /> node.
     /// This captures a block of code that is similar to a .NET method body.
     /// </summary>
     /// <typeparam name="TDelegate">The type of the delegate.</typeparam>
@@ -42,7 +43,7 @@ namespace System.Linq.Expressions
         /// <returns>A delegate containing the compiled version of the lambda.</returns>
         public new TDelegate Compile()
         {
-            return Compile(preferInterpretation: false);
+            return Compile(false);
         }
 
         /// <summary>
@@ -83,48 +84,45 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public Expression<TDelegate> Update(Expression body, IEnumerable<ParameterExpression> parameters)
         {
-            if (body == Body)
+            if (body != Body)
             {
-                // Ensure parameters is safe to enumerate twice.
-                // (If this means a second call to ToReadOnlyCollection it will return quickly).
-                ICollection<ParameterExpression> pars;
-                if (parameters == null)
-                {
-                    pars = null;
-                }
-                else
-                {
-                    pars = parameters as ICollection<ParameterExpression>;
-                    if (pars == null)
-                    {
-                        parameters = pars = parameters.ToReadOnlyCollection();
-                    }
-                }
+                return Lambda<TDelegate>(body, Name, TailCall, parameters);
+            }
 
-                if (SameParameters(pars))
+            // Ensure parameters is safe to enumerate twice.
+            // (If this means a second call to ToReadOnlyCollection it will return quickly).
+            ICollection<ParameterExpression> pars;
+            if (parameters == null)
+            {
+                pars = null;
+            }
+            else
+            {
+                pars = parameters as ICollection<ParameterExpression>;
+                if (pars == null)
                 {
-                    return this;
+                    parameters = pars = parameters.ToReadOnlyCollection();
                 }
             }
 
-            return Lambda<TDelegate>(body, Name, TailCall, parameters);
+            return SameParameters(pars) ? this : Lambda<TDelegate>(body, Name, TailCall, parameters);
         }
 
         internal static Expression<TDelegate> Create(Expression body, string name, bool tailCall, ParameterExpression[] parameters)
         {
-            if (name == null && !tailCall)
+            if (name != null || tailCall)
             {
-                switch (parameters.Length)
-                {
-                    case 0: return new Expression0<TDelegate>(body);
-                    case 1: return new Expression1<TDelegate>(body, parameters[0]);
-                    case 2: return new Expression2<TDelegate>(body, parameters[0], parameters[1]);
-                    case 3: return new Expression3<TDelegate>(body, parameters[0], parameters[1], parameters[2]);
-                    default: return new ExpressionN<TDelegate>(body, parameters);
-                }
+                return new FullExpression<TDelegate>(body, name, tailCall, parameters);
             }
 
-            return new FullExpression<TDelegate>(body, name, tailCall, parameters);
+            switch (parameters.Length)
+            {
+                case 0: return new Expression0<TDelegate>(body);
+                case 1: return new Expression1<TDelegate>(body, parameters[0]);
+                case 2: return new Expression2<TDelegate>(body, parameters[0], parameters[1]);
+                case 3: return new Expression3<TDelegate>(body, parameters[0], parameters[1], parameters[2]);
+                default: return new ExpressionN<TDelegate>(body, parameters);
+            }
         }
 
         internal override LambdaExpression AcceptStackSpiller(StackSpiller spiller)
@@ -194,7 +192,7 @@ namespace System.Linq.Expressions
         /// <returns>The delegate type.</returns>
         /// <remarks>
         /// As with Func, the last argument is the return type. It can be set
-        /// to <see cref="void"/> to produce an Action.</remarks>
+        /// to <see cref="System.Void"/> to produce an Action.</remarks>
         public static Type GetDelegateType(params Type[] typeArgs)
         {
             ContractUtils.RequiresNotEmpty(typeArgs, nameof(typeArgs));
@@ -533,19 +531,21 @@ namespace System.Linq.Expressions
                 _lambdaFactories = factories = new CacheDict<Type, Func<Expression, string, bool, ParameterExpression[], LambdaExpression>>(50);
             }
 
-            if (!factories.TryGetValue(delegateType, out var fastPath))
+            if (factories.TryGetValue(delegateType, out var fastPath))
             {
-                var create = typeof(Expression<>).MakeGenericType(delegateType).GetMethod("Create", BindingFlags.Static | BindingFlags.NonPublic);
-                /*if (delegateType.IsCollectible)
+                return fastPath(body, name, tailCall, parameters);
+            }
+
+            var create = typeof(Expression<>).MakeGenericType(delegateType).GetMethod("Create", BindingFlags.Static | BindingFlags.NonPublic);
+            /*if (delegateType.IsCollectible)
                 {
                     return (LambdaExpression)create.Invoke(null, new object[] { body, name, tailCall, parameters });
                 }*/
-                factories[delegateType] = fastPath =
-                    (Func<Expression, string, bool, ParameterExpression[], LambdaExpression>)create.CreateDelegate
-                    (
-                        typeof(Func<Expression, string, bool, ParameterExpression[], LambdaExpression>)
-                    );
-            }
+            factories[delegateType] = fastPath =
+                (Func<Expression, string, bool, ParameterExpression[], LambdaExpression>)create.CreateDelegate
+                (
+                    typeof(Func<Expression, string, bool, ParameterExpression[], LambdaExpression>)
+                );
 
             return fastPath(body, name, tailCall, parameters);
         }
@@ -560,7 +560,7 @@ namespace System.Linq.Expressions
                 throw new ArgumentException("Lambda type parameter must be derived from System.Delegate", paramName);
             }
 
-            TypeUtils.ValidateType(delegateType, nameof(delegateType), allowByRef: true, allowPointer: true);
+            TypeUtils.ValidateType(delegateType, nameof(delegateType), true, true);
 
             var ldc = _lambdaDelegateCache;
             if (!ldc.TryGetValue(delegateType, out var mi))
@@ -646,7 +646,7 @@ namespace System.Linq.Expressions
     }
 
     /// <summary>
-    /// Creates a <see cref="LambdaExpression"/> node.
+    /// Creates a <see cref="T:System.Linq.Expressions.LambdaExpression" /> node.
     /// This captures a block of code that is similar to a .NET method body.
     /// </summary>
     /// <remarks>
@@ -671,10 +671,11 @@ namespace System.Linq.Expressions
         /// <remarks>Used for debugging purposes.</remarks>
         public string Name => NameCore;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns the node type of this <see cref="Expression"/>. (Inherited from <see cref="Expression"/>.)
+        /// Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Lambda;
 
         /// <summary>
@@ -693,10 +694,11 @@ namespace System.Linq.Expressions
         /// </summary>
         public bool TailCall => TailCallCore;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents. (Inherited from <see cref="Expression"/>.)
+        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="P:System.Linq.Expressions.LambdaExpression.Type" /> that represents the static type of the expression.</returns>
         public sealed override Type Type => TypeCore;
 
         internal virtual string NameCore => null;
@@ -715,7 +717,7 @@ namespace System.Linq.Expressions
         /// <returns>A delegate containing the compiled version of the lambda.</returns>
         public Delegate Compile()
         {
-            return Compile(preferInterpretation: false);
+            return Compile(false);
         }
 
         /// <summary>
@@ -858,26 +860,22 @@ namespace System.Linq.Expressions
             Debug.Assert(body != null);
             Debug.Assert(parameters == null || parameters.Length == 1);
 
-            if (parameters != null)
-            {
-                return Lambda<TDelegate>(body, parameters);
-            }
-
-            return Lambda<TDelegate>(body, ExpressionUtils.ReturnObject<ParameterExpression>(_par0));
+            return parameters != null ? Lambda<TDelegate>(body, parameters) : Lambda<TDelegate>(body, ExpressionUtils.ReturnObject<ParameterExpression>(_par0));
         }
 
         internal override bool SameParameters(ICollection<ParameterExpression> parameters)
         {
-            if (parameters?.Count == 1)
+            if (parameters?.Count != 1)
             {
-                using (var en = parameters.GetEnumerator())
-                {
-                    en.MoveNext();
-                    return en.Current == ExpressionUtils.ReturnObject<ParameterExpression>(_par0);
-                }
+                return false;
             }
 
-            return false;
+            using (var en = parameters.GetEnumerator())
+            {
+                en.MoveNext();
+                return en.Current == ExpressionUtils.ReturnObject<ParameterExpression>(_par0);
+            }
+
         }
     }
 
@@ -912,35 +910,32 @@ namespace System.Linq.Expressions
             Debug.Assert(body != null);
             Debug.Assert(parameters == null || parameters.Length == 2);
 
-            if (parameters != null)
-            {
-                return Lambda<TDelegate>(body, parameters);
-            }
-
-            return Lambda<TDelegate>(body, ExpressionUtils.ReturnObject<ParameterExpression>(_par0), _par1);
+            return parameters != null ? Lambda<TDelegate>(body, parameters) : Lambda<TDelegate>(body, ExpressionUtils.ReturnObject<ParameterExpression>(_par0), _par1);
         }
 
         internal override bool SameParameters(ICollection<ParameterExpression> parameters)
         {
-            if (parameters?.Count == 2)
+            if (parameters?.Count != 2)
             {
-                if (_par0 is ParameterExpression[] alreadyArray)
-                {
-                    return ExpressionUtils.SameElements(parameters, alreadyArray);
-                }
-
-                using (var en = parameters.GetEnumerator())
-                {
-                    en.MoveNext();
-                    if (en.Current == _par0)
-                    {
-                        en.MoveNext();
-                        return en.Current == _par1;
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (_par0 is ParameterExpression[] alreadyArray)
+            {
+                return ExpressionUtils.SameElements(parameters, alreadyArray);
+            }
+
+            using (var en = parameters.GetEnumerator())
+            {
+                en.MoveNext();
+                if (en.Current != _par0)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                return en.Current == _par1;
+            }
         }
     }
 
@@ -978,39 +973,38 @@ namespace System.Linq.Expressions
             Debug.Assert(body != null);
             Debug.Assert(parameters == null || parameters.Length == 3);
 
-            if (parameters != null)
-            {
-                return Lambda<TDelegate>(body, parameters);
-            }
-
-            return Lambda<TDelegate>(body, ExpressionUtils.ReturnObject<ParameterExpression>(_par0), _par1, _par2);
+            return parameters != null ? Lambda<TDelegate>(body, parameters) : Lambda<TDelegate>(body, ExpressionUtils.ReturnObject<ParameterExpression>(_par0), _par1, _par2);
         }
 
         internal override bool SameParameters(ICollection<ParameterExpression> parameters)
         {
-            if (parameters?.Count == 3)
+            if (parameters?.Count != 3)
             {
-                if (_par0 is ParameterExpression[] alreadyArray)
-                {
-                    return ExpressionUtils.SameElements(parameters, alreadyArray);
-                }
-
-                using (var en = parameters.GetEnumerator())
-                {
-                    en.MoveNext();
-                    if (en.Current == _par0)
-                    {
-                        en.MoveNext();
-                        if (en.Current == _par1)
-                        {
-                            en.MoveNext();
-                            return en.Current == _par2;
-                        }
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (_par0 is ParameterExpression[] alreadyArray)
+            {
+                return ExpressionUtils.SameElements(parameters, alreadyArray);
+            }
+
+            using (var en = parameters.GetEnumerator())
+            {
+                en.MoveNext();
+                if (en.Current != _par0)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                if (en.Current != _par1)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                return en.Current == _par2;
+            }
         }
     }
 

@@ -29,31 +29,21 @@ namespace System.Linq.Expressions.Compiler
 
         private static Type GetMemberType(MemberInfo member)
         {
-            if (member is FieldInfo memberFieldInfo)
+            switch (member)
             {
-                return memberFieldInfo.FieldType;
+                case FieldInfo memberFieldInfo:
+                    return memberFieldInfo.FieldType;
+                case PropertyInfo memberPropertyInfo:
+                    return memberPropertyInfo.PropertyType;
+                default:
+                    Debug.Assert(member is FieldInfo || member is PropertyInfo);
+                    throw new ArgumentException(string.Empty, nameof(member));
             }
-
-            if (member is PropertyInfo memberPropertyInfo)
-            {
-                return memberPropertyInfo.PropertyType;
-            }
-
-            Debug.Assert(member is FieldInfo || member is PropertyInfo);
-            throw new ArgumentException(string.Empty, nameof(member));
         }
 
         private static bool MethodHasByRefParameter(MethodInfo mi)
         {
-            foreach (var pi in mi.GetParameters())
-            {
-                if (pi.IsByRefParameterInternal())
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return mi.GetParameters().Any(pi => pi.IsByRefParameterInternal());
         }
 
         private static CompilationFlags UpdateEmitAsTailCallFlag(CompilationFlags flags, CompilationFlags newValue)
@@ -104,12 +94,7 @@ namespace System.Linq.Expressions.Compiler
                 return false;
             }
 
-            if (mi.DeclaringType?.IsValueType != false)
-            {
-                return false;
-            }
-
-            return true;
+            return mi.DeclaringType?.IsValueType == false;
         }
 
         private List<WriteBack> EmitArguments(MethodBase method, IArgumentProvider args, int skipParameters = 0)
@@ -343,12 +328,7 @@ namespace System.Linq.Expressions.Compiler
 
         private CompilationFlags EmitExpressionStart(Expression node)
         {
-            if (TryPushLabelBlock(node))
-            {
-                return CompilationFlags.EmitExpressionStart;
-            }
-
-            return CompilationFlags.EmitNoExpressionStart;
+            return TryPushLabelBlock(node) ? CompilationFlags.EmitExpressionStart : CompilationFlags.EmitNoExpressionStart;
         }
 
         private void EmitGetArrayElement(Type arrayType)
@@ -416,11 +396,13 @@ namespace System.Linq.Expressions.Compiler
             EmitSetIndexCall(index, objectType);
 
             // Restore the value
-            if (emitAs != CompilationFlags.EmitAsVoidType)
+            if (emitAs == CompilationFlags.EmitAsVoidType)
             {
-                IL.Emit(OpCodes.Ldloc, temp);
-                FreeLocal(temp);
+                return;
             }
+
+            IL.Emit(OpCodes.Ldloc, temp);
+            FreeLocal(temp);
         }
 
         private void EmitIndexExpression(Expression expr)
@@ -720,11 +702,13 @@ namespace System.Linq.Expressions.Compiler
             }
 
             EmitListInit(init.Initializers, loc == null, init.NewExpression.Type);
-            if (loc != null)
+            if (loc == null)
             {
-                IL.Emit(OpCodes.Ldloc, loc);
-                FreeLocal(loc);
+                return;
             }
+
+            IL.Emit(OpCodes.Ldloc, loc);
+            FreeLocal(loc);
         }
 
         // This method assumes that the list instance is on the stack and is expected, based on "keepOnStack" flag
@@ -804,11 +788,13 @@ namespace System.Linq.Expressions.Compiler
                 EmitCall(objectType, prop.GetSetMethod(true));
             }
 
-            if (emitAs != CompilationFlags.EmitAsVoidType)
+            if (emitAs == CompilationFlags.EmitAsVoidType)
             {
-                IL.Emit(OpCodes.Ldloc, temp);
-                FreeLocal(temp);
+                return;
             }
+
+            IL.Emit(OpCodes.Ldloc, temp);
+            FreeLocal(temp);
         }
 
         private void EmitMemberAssignment(MemberAssignment binding, Type objectType)
@@ -878,11 +864,13 @@ namespace System.Linq.Expressions.Compiler
             }
 
             EmitMemberInit(init.Bindings, loc == null, init.NewExpression.Type);
-            if (loc != null)
+            if (loc == null)
             {
-                IL.Emit(OpCodes.Ldloc, loc);
-                FreeLocal(loc);
+                return;
             }
+
+            IL.Emit(OpCodes.Ldloc, loc);
+            FreeLocal(loc);
         }
 
         // This method assumes that the instance is on the stack and is expected, based on "keepOnStack" flag
@@ -1152,31 +1140,29 @@ namespace System.Linq.Expressions.Compiler
             // Try to determine the result statically
             var result = ConstantCheck.AnalyzeTypeIs(node);
 
-            if (result == AnalyzeTypeIsResult.KnownTrue || result == AnalyzeTypeIsResult.KnownFalse)
+            switch (result)
             {
-                // Result is known statically, so just emit the expression for
-                // its side effects and return the result
-                EmitExpressionAsVoid(node.Expression);
-                IL.EmitPrimitive(result == AnalyzeTypeIsResult.KnownTrue);
-                return;
-            }
-
-            if (result == AnalyzeTypeIsResult.KnownAssignable)
-            {
+                case AnalyzeTypeIsResult.KnownTrue:
+                case AnalyzeTypeIsResult.KnownFalse:
+                    // Result is known statically, so just emit the expression for
+                    // its side effects and return the result
+                    EmitExpressionAsVoid(node.Expression);
+                    IL.EmitPrimitive(result == AnalyzeTypeIsResult.KnownTrue);
+                    return;
                 // We know the type can be assigned, but still need to check
                 // for null at runtime
-                if (type.IsNullable())
-                {
+                case AnalyzeTypeIsResult.KnownAssignable when type.IsNullable():
                     EmitAddress(node.Expression, type);
                     IL.EmitHasValue(type);
                     return;
-                }
-
-                Debug.Assert(!type.IsValueType);
-                EmitExpression(node.Expression);
-                IL.Emit(OpCodes.Ldnull);
-                IL.Emit(OpCodes.Cgt_Un);
-                return;
+                case AnalyzeTypeIsResult.KnownAssignable:
+                    Debug.Assert(!type.IsValueType);
+                    EmitExpression(node.Expression);
+                    IL.Emit(OpCodes.Ldnull);
+                    IL.Emit(OpCodes.Cgt_Un);
+                    return;
+                default:
+                    break;
             }
 
             Debug.Assert(result == AnalyzeTypeIsResult.Unknown);
@@ -1234,12 +1220,14 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitWriteBack(List<WriteBack> writeBacks)
         {
-            if (writeBacks != null)
+            if (writeBacks == null)
             {
-                foreach (var wb in writeBacks)
-                {
-                    wb(this);
-                }
+                return;
+            }
+
+            foreach (var wb in writeBacks)
+            {
+                wb(this);
             }
         }
     }

@@ -97,15 +97,15 @@ namespace System.Linq.Expressions
         public static MemberExpression MakeMemberAccess(Expression expression, MemberInfo member)
         {
             ContractUtils.RequiresNotNull(member, nameof(member));
-            if (member is FieldInfo fi)
+            switch (member)
             {
-                return Field(expression, fi);
+                case FieldInfo fi:
+                    return Field(expression, fi);
+                case PropertyInfo pi:
+                    return Property(expression, pi);
+                default:
+                    throw new ArgumentException($"Member '{member}' not field or property", nameof(member));
             }
-            if (member is PropertyInfo pi)
-            {
-                return Property(expression, pi);
-            }
-            throw new ArgumentException($"Member '{member}' not field or property", nameof(member));
         }
 
         /// <summary>
@@ -159,11 +159,11 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(property, nameof(property));
 
-            var mi = property.GetGetMethod(nonPublic: true);
+            var mi = property.GetGetMethod(true);
 
             if (mi == null)
             {
-                mi = property.GetSetMethod(nonPublic: true);
+                mi = property.GetSetMethod(true);
 
                 if (mi == null)
                 {
@@ -271,21 +271,22 @@ namespace System.Linq.Expressions
         private static PropertyInfo GetProperty(MethodInfo mi, string paramName, int index = -1)
         {
             var type = mi.DeclaringType;
-            if (type != null)
+            if (type == null)
             {
-                var flags = BindingFlags.Public | BindingFlags.NonPublic;
-                flags |= mi.IsStatic ? BindingFlags.Static : BindingFlags.Instance;
-                var props = type.GetProperties(flags);
-                foreach (var pi in props)
+                throw new ArgumentException($"The method '{mi.DeclaringType}.{mi.Name}' is not a property accessor", index >= 0 ? $"{paramName}[{index}]" : paramName);
+            }
+
+            var flags = BindingFlags.Public | BindingFlags.NonPublic;
+            flags |= mi.IsStatic ? BindingFlags.Static : BindingFlags.Instance;
+            foreach (var pi in type.GetProperties(flags))
+            {
+                if (pi.CanRead && CheckMethod(mi, pi.GetGetMethod(true)))
                 {
-                    if (pi.CanRead && CheckMethod(mi, pi.GetGetMethod(nonPublic: true)))
-                    {
-                        return pi;
-                    }
-                    if (pi.CanWrite && CheckMethod(mi, pi.GetSetMethod(nonPublic: true)))
-                    {
-                        return pi;
-                    }
+                    return pi;
+                }
+                if (pi.CanWrite && CheckMethod(mi, pi.GetSetMethod(true)))
+                {
+                    return pi;
                 }
             }
 
@@ -293,6 +294,7 @@ namespace System.Linq.Expressions
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Represents accessing a field or property.
     /// </summary>
@@ -315,10 +317,11 @@ namespace System.Linq.Expressions
         /// </summary>
         public MemberInfo Member => GetMember();
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns the node type of this <see cref="Expression"/>. (Inherited from <see cref="Expression"/>.)
+        /// Returns the node type of this <see cref="P:System.Linq.Expressions.MemberExpression.Expression" />. (Inherited from <see cref="P:System.Linq.Expressions.MemberExpression.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.MemberAccess;
 
         /// <summary>
@@ -330,11 +333,7 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public MemberExpression Update(Expression expression)
         {
-            if (expression == Expression)
-            {
-                return this;
-            }
-            return MakeMemberAccess(expression, Member);
+            return expression == Expression ? this : MakeMemberAccess(expression, Member);
         }
 
         internal static PropertyExpression Make(Expression expression, PropertyInfo property)

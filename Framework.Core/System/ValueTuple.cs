@@ -513,12 +513,7 @@ namespace System
         public int CompareTo(ValueTuple<T1, T2> other)
         {
             var c = Comparer<T1>.Default.Compare(Item1, other.Item1);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return Comparer<T2>.Default.Compare(Item2, other.Item2);
+            return c != 0 ? c : Comparer<T2>.Default.Compare(Item2, other.Item2);
         }
 
         /// <summary>
@@ -613,12 +608,7 @@ namespace System
             var objTuple = (ValueTuple<T1, T2>)other;
 
             var c = comparer.Compare(Item1, objTuple.Item1);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return comparer.Compare(Item2, objTuple.Item2);
+            return c != 0 ? c : comparer.Compare(Item2, objTuple.Item2);
         }
 
         /// <summary>
@@ -734,12 +724,7 @@ namespace System
             }
 
             c = Comparer<T2>.Default.Compare(Item2, other.Item2);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return Comparer<T3>.Default.Compare(Item3, other.Item3);
+            return c != 0 ? c : Comparer<T3>.Default.Compare(Item3, other.Item3);
         }
 
         /// <summary>
@@ -840,12 +825,7 @@ namespace System
             }
 
             c = comparer.Compare(Item2, objTuple.Item2);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return comparer.Compare(Item3, objTuple.Item3);
+            return c != 0 ? c : comparer.Compare(Item3, objTuple.Item3);
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
@@ -956,12 +936,7 @@ namespace System
             }
 
             c = Comparer<T3>.Default.Compare(Item3, other.Item3);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return Comparer<T4>.Default.Compare(Item4, other.Item4);
+            return c != 0 ? c : Comparer<T4>.Default.Compare(Item4, other.Item4);
         }
 
         /// <summary>
@@ -1070,12 +1045,7 @@ namespace System
             }
 
             c = comparer.Compare(Item3, objTuple.Item3);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return comparer.Compare(Item4, objTuple.Item4);
+            return c != 0 ? c : comparer.Compare(Item4, objTuple.Item4);
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
@@ -1202,12 +1172,7 @@ namespace System
             }
 
             c = Comparer<T4>.Default.Compare(Item4, other.Item4);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return Comparer<T5>.Default.Compare(Item5, other.Item5);
+            return c != 0 ? c : Comparer<T5>.Default.Compare(Item5, other.Item5);
         }
 
         /// <summary>
@@ -1324,12 +1289,7 @@ namespace System
             }
 
             c = comparer.Compare(Item4, objTuple.Item4);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return comparer.Compare(Item5, objTuple.Item5);
+            return c != 0 ? c : comparer.Compare(Item5, objTuple.Item5);
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
@@ -1472,12 +1432,7 @@ namespace System
             }
 
             c = Comparer<T5>.Default.Compare(Item5, other.Item5);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return Comparer<T6>.Default.Compare(Item6, other.Item6);
+            return c != 0 ? c : Comparer<T6>.Default.Compare(Item6, other.Item6);
         }
 
         /// <summary>
@@ -1602,12 +1557,7 @@ namespace System
             }
 
             c = comparer.Compare(Item5, objTuple.Item5);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return comparer.Compare(Item6, objTuple.Item6);
+            return c != 0 ? c : comparer.Compare(Item6, objTuple.Item6);
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
@@ -1766,12 +1716,7 @@ namespace System
             }
 
             c = Comparer<T6>.Default.Compare(Item6, other.Item6);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return Comparer<T7>.Default.Compare(Item7, other.Item7);
+            return c != 0 ? c : Comparer<T7>.Default.Compare(Item7, other.Item7);
         }
 
         /// <summary>
@@ -1904,12 +1849,7 @@ namespace System
             }
 
             c = comparer.Compare(Item6, objTuple.Item6);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return comparer.Compare(Item7, objTuple.Item7);
+            return c != 0 ? c : comparer.Compare(Item7, objTuple.Item7);
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
@@ -2090,12 +2030,7 @@ namespace System
             }
 
             c = Comparer<T7>.Default.Compare(Item7, other.Item7);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return Comparer<TRest>.Default.Compare(Rest, other.Rest);
+            return c != 0 ? c : Comparer<TRest>.Default.Compare(Rest, other.Rest);
         }
 
         /// <summary>
@@ -2325,12 +2260,7 @@ namespace System
             }
 
             c = comparer.Compare(Item7, objTuple.Item7);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return comparer.Compare(Rest, objTuple.Rest);
+            return c != 0 ? c : comparer.Compare(Rest, objTuple.Rest);
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)

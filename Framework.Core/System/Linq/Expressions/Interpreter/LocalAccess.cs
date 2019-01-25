@@ -373,11 +373,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public Instruction BoxIfIndexMatches(int index)
             {
-                if (index == Index)
-                {
-                    return InstructionList.ParameterBox(index);
-                }
-                return null;
+                return index == Index ? InstructionList.ParameterBox(index) : null;
             }
 
             public override int Run(InterpretedFrame frame)

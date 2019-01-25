@@ -47,7 +47,7 @@ namespace System.Linq.Expressions
                 Interlocked.CompareExchange(
                     ref _legacyCtorSupportTable,
                     new ConditionalWeakTable<Expression, ExtensionInfo>(),
-comparand: null
+null
                 );
             }
 

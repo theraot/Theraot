@@ -58,20 +58,22 @@ namespace Theraot.Threading
             }
             remove
             {
-                if (Volatile.Read(ref _status) == _statusReady)
+                if (Volatile.Read(ref _status) != _statusReady)
                 {
-                    try
+                    return;
+                }
+
+                try
+                {
+                    Internal.CollectedEventHandlers.Remove(value);
+                }
+                catch
+                {
+                    if (value == null)
                     {
-                        Internal.CollectedEventHandlers.Remove(value);
+                        return;
                     }
-                    catch
-                    {
-                        if (value == null)
-                        {
-                            return;
-                        }
-                        throw;
-                    }
+                    throw;
                 }
             }
         }
@@ -83,7 +85,6 @@ namespace Theraot.Threading
 #else
                 false;
 #endif
-
 
         private static void Initialize()
         {

@@ -112,16 +112,18 @@ namespace System.Linq.Expressions.Compiler
 
             // Heuristic: only emit the tree rewrite logic if we have hoisted
             // locals.
-            if (_scope.NearestHoistedLocals != null)
+            if (_scope.NearestHoistedLocals == null)
             {
-                // HoistedLocals is internal so emit as System.Object
-                EmitConstant(_scope.NearestHoistedLocals, typeof(object));
-                _scope.EmitGet(_scope.NearestHoistedLocals.SelfVariable);
-                IL.Emit(OpCodes.Call, CachedReflectionInfo.RuntimeOpsQuote);
-
-                Debug.Assert(typeof(LambdaExpression).IsAssignableFrom(quote.Type));
-                IL.Emit(OpCodes.Castclass, quote.Type);
+                return;
             }
+
+            // HoistedLocals is internal so emit as System.Object
+            EmitConstant(_scope.NearestHoistedLocals, typeof(object));
+            _scope.EmitGet(_scope.NearestHoistedLocals.SelfVariable);
+            IL.Emit(OpCodes.Call, CachedReflectionInfo.RuntimeOpsQuote);
+
+            Debug.Assert(typeof(LambdaExpression).IsAssignableFrom(quote.Type));
+            IL.Emit(OpCodes.Castclass, quote.Type);
         }
 
         private void EmitQuoteUnaryExpression(Expression expr)
@@ -246,14 +248,16 @@ namespace System.Linq.Expressions.Compiler
                         return;
 
                     case ExpressionType.TypeAs:
-                        if (operandType != resultType)
+                        if (operandType == resultType)
                         {
-                            IL.Emit(OpCodes.Box, operandType);
-                            IL.Emit(OpCodes.Isinst, resultType);
-                            if (resultType.IsNullable())
-                            {
-                                IL.Emit(OpCodes.Unbox_Any, resultType);
-                            }
+                            return;
+                        }
+
+                        IL.Emit(OpCodes.Box, operandType);
+                        IL.Emit(OpCodes.Isinst, resultType);
+                        if (resultType.IsNullable())
+                        {
+                            IL.Emit(OpCodes.Unbox_Any, resultType);
                         }
 
                         return;
@@ -336,18 +340,20 @@ namespace System.Linq.Expressions.Compiler
                     return;
 
                 case ExpressionType.TypeAs:
-                    if (operandType != resultType)
+                    if (operandType == resultType)
                     {
-                        if (operandType.IsValueType)
-                        {
-                            IL.Emit(OpCodes.Box, operandType);
-                        }
+                        return;
+                    }
 
-                        IL.Emit(OpCodes.Isinst, resultType);
-                        if (resultType.IsNullable())
-                        {
-                            IL.Emit(OpCodes.Unbox_Any, resultType);
-                        }
+                    if (operandType.IsValueType)
+                    {
+                        IL.Emit(OpCodes.Box, operandType);
+                    }
+
+                    IL.Emit(OpCodes.Isinst, resultType);
+                    if (resultType.IsNullable())
+                    {
+                        IL.Emit(OpCodes.Unbox_Any, resultType);
                     }
 
                     // Not an arithmetic operation -> no conversion

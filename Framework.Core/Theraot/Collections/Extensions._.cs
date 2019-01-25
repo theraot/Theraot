@@ -336,12 +336,14 @@ namespace Theraot.Collections
             {
                 comparer = EqualityComparer<T>.Default;
             }
-            if (comparer.Equals(item, source.Peek()))
+
+            if (!comparer.Equals(item, source.Peek()))
             {
-                source.Dequeue();
-                return true;
+                return false;
             }
-            return false;
+
+            source.Dequeue();
+            return true;
         }
 
         public static int ExceptWith<T>(this ICollection<T> source, IEnumerable<T> other)
@@ -586,12 +588,14 @@ namespace Theraot.Collections
             {
                 comparer = EqualityComparer<T>.Default;
             }
-            if (comparer.Equals(item, source.Peek()))
+
+            if (!comparer.Equals(item, source.Peek()))
             {
-                source.Pop();
-                return true;
+                return false;
             }
-            return false;
+
+            source.Pop();
+            return true;
         }
 
         public static bool ReadOnlyListEquals<T>(this IReadOnlyList<T> first, IReadOnlyList<T> second)

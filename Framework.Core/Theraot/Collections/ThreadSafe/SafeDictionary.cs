@@ -1,5 +1,6 @@
 ﻿// Needed for NET40
 
+#pragma warning disable RCS1212 // Remove redundant assignment.
 #pragma warning disable RCS1231 // Make parameter ref read-only.
 
 using System;
@@ -311,12 +312,13 @@ namespace Theraot.Collections.ThreadSafe
                 var done = false;
                 bool Check(KeyValuePair<TKey, TValue> found)
                 {
-                    if (Comparer.Equals(found.Key, key))
+                    if (!Comparer.Equals(found.Key, key))
                     {
-                        done = true;
-                        return true;
+                        return false;
                     }
-                    return false;
+
+                    done = true;
+                    return true;
                 }
                 var result = _bucket.RemoveAt
                     (
@@ -350,23 +352,26 @@ namespace Theraot.Collections.ThreadSafe
                 bool Check(KeyValuePair<TKey, TValue> found)
                 {
                     previous = found;
-                    if (Comparer.Equals(found.Key, key))
+                    if (!Comparer.Equals(found.Key, key))
                     {
-                        done = true;
-                        return true;
+                        return false;
                     }
-                    return false;
+
+                    done = true;
+                    return true;
                 }
                 var result = _bucket.RemoveAt
                     (
                         hashCode + attempts,
                         Check
                     );
-                if (done)
+                if (!done)
                 {
-                    value = previous.Value;
-                    return result;
+                    continue;
                 }
+
+                value = previous.Value;
+                return result;
             }
             return false;
         }
@@ -394,23 +399,26 @@ namespace Theraot.Collections.ThreadSafe
                 bool Check(KeyValuePair<TKey, TValue> found)
                 {
                     previous = found;
-                    if (GetHashCode(found.Key) == hashCode && keyCheck(found.Key))
+                    if (GetHashCode(found.Key) != hashCode || !keyCheck(found.Key))
                     {
-                        done = true;
-                        return true;
+                        return false;
                     }
-                    return false;
+
+                    done = true;
+                    return true;
                 }
                 var result = _bucket.RemoveAt
                     (
                         hashCode + attempts,
                         Check
                     );
-                if (done)
+                if (!done)
                 {
-                    value = previous.Value;
-                    return result;
+                    continue;
                 }
+
+                value = previous.Value;
+                return result;
             }
             return false;
         }
@@ -439,26 +447,26 @@ namespace Theraot.Collections.ThreadSafe
                 bool Check(KeyValuePair<TKey, TValue> found)
                 {
                     previous = found;
-                    if (Comparer.Equals(found.Key, key))
+                    if (!Comparer.Equals(found.Key, key))
                     {
-                        done = true;
-                        if (valueCheck(found.Value))
-                        {
-                            return true;
-                        }
+                        return false;
                     }
-                    return false;
+
+                    done = true;
+                    return valueCheck(found.Value);
                 }
                 var result = _bucket.RemoveAt
                     (
                         hashCode + attempts,
                         Check
                     );
-                if (done)
+                if (!done)
                 {
-                    value = previous.Value;
-                    return result;
+                    continue;
                 }
+
+                value = previous.Value;
+                return result;
             }
             return false;
         }
@@ -491,26 +499,26 @@ namespace Theraot.Collections.ThreadSafe
                 bool Check(KeyValuePair<TKey, TValue> found)
                 {
                     previous = found;
-                    if (GetHashCode(found.Key) == hashCode && keyCheck(found.Key))
+                    if (GetHashCode(found.Key) != hashCode || !keyCheck(found.Key))
                     {
-                        done = true;
-                        if (valueCheck(found.Value))
-                        {
-                            return true;
-                        }
+                        return false;
                     }
-                    return false;
+
+                    done = true;
+                    return valueCheck(found.Value);
                 }
                 var result = _bucket.RemoveAt
                     (
                         hashCode + attempts,
                         Check
                     );
-                if (done)
+                if (!done)
                 {
-                    value = previous.Value;
-                    return result;
+                    continue;
                 }
+
+                value = previous.Value;
+                return result;
             }
             return false;
         }
@@ -757,11 +765,13 @@ namespace Theraot.Collections.ThreadSafe
             var hashCode = GetHashCode(key);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.Equals(found.Key, key))
+                if (!_bucket.TryGet(hashCode + attempts, out var found) || !Comparer.Equals(found.Key, key))
                 {
-                    value = found.Value;
-                    return true;
+                    continue;
                 }
+
+                value = found.Value;
+                return true;
             }
             return false;
         }
@@ -1065,15 +1075,16 @@ namespace Theraot.Collections.ThreadSafe
                 ExtendProbingIfNeeded(attempts);
                 bool Check(KeyValuePair<TKey, TValue> found)
                 {
-                    if (Comparer.Equals(found.Key, key))
+                    if (!Comparer.Equals(found.Key, key))
                     {
-                        // This is the item that has been stored with the key
-                        value = found.Value;
-                        // Throw to abort overwrite
-                        throw CreateKeyArgumentException(null); // This exception will bubble up to the context where "key" is an argument.
+                        return keyOverwriteCheck(found.Key);
                     }
+
+                    // This is the item that has been stored with the key
+                    value = found.Value;
+                    // Throw to abort overwrite
+                    throw CreateKeyArgumentException(null); // This exception will bubble up to the context where "key" is an argument.
                     // This is not the key, overwrite?
-                    return keyOverwriteCheck(found.Key);
                 }
                 try
                 {
@@ -1160,15 +1171,13 @@ namespace Theraot.Collections.ThreadSafe
                         hashCode + attempts,
                         found =>
                         {
-                            if (Comparer.Equals(found.Key, item.Key))
+                            if (!Comparer.Equals(found.Key, item.Key))
                             {
-                                done = true;
-                                if (_valueComparer.Equals(found.Value, item.Value))
-                                {
-                                    return true;
-                                }
+                                return false;
                             }
-                            return false;
+
+                            done = true;
+                            return _valueComparer.Equals(found.Value, item.Value);
                         }
                     );
                 if (done)
@@ -1334,11 +1343,13 @@ namespace Theraot.Collections.ThreadSafe
             value = default;
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (_bucket.TryGet(hashCode + attempts, out var found) && GetHashCode(found.Key) == hashCode && keyCheck(found.Key))
+                if (!_bucket.TryGet(hashCode + attempts, out var found) || GetHashCode(found.Key) != hashCode || !keyCheck(found.Key))
                 {
-                    value = found.Value;
-                    return true;
+                    continue;
                 }
+
+                value = found.Value;
+                return true;
             }
             return false;
         }

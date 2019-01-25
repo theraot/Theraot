@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA1068 // CancellationToken parameters must come last
 
@@ -61,38 +61,42 @@ namespace System.Threading.Tasks
             // protect ourselves, we'll cache m_exceptionalChildren in a local variable.
             var tmp = Volatile.Read(ref _exceptionalChildren);
 
-            if (tmp != null)
+            if (tmp == null)
             {
-                // This lock is necessary because even though AddExceptionsFromChildren is last to execute, it may still
-                // be racing with the code segment at the bottom of Finish() that prunes the exceptional child array.
-                lock (tmp)
+                return;
+            }
+
+            // This lock is necessary because even though AddExceptionsFromChildren is last to execute, it may still
+            // be racing with the code segment at the bottom of Finish() that prunes the exceptional child array.
+            lock (tmp)
+            {
+                foreach (var task in tmp)
                 {
-                    foreach (var task in tmp)
+                    // Ensure any exceptions thrown by children are added to the parent.
+                    // In doing this, we are implicitly marking children as being "handled".
+                    Contract.Assert(task.IsCompleted, "Expected all tasks in list to be completed");
+                    if (!task.IsFaulted || task.IsExceptionObservedByParent)
                     {
-                        // Ensure any exceptions thrown by children are added to the parent.
-                        // In doing this, we are implicitly marking children as being "handled".
-                        Contract.Assert(task.IsCompleted, "Expected all tasks in list to be completed");
-                        if (task.IsFaulted && !task.IsExceptionObservedByParent)
-                        {
-                            var exceptionsHolder = Volatile.Read(ref task._exceptionsHolder);
-                            if (exceptionsHolder == null)
-                            {
-                                Contract.Assert(false);
-                            }
-                            else
-                            {
-                                // No locking necessary since child task is finished adding exceptions
-                                // and concurrent CreateExceptionObject() calls do not constitute
-                                // a concurrency hazard.
-                                AddException(exceptionsHolder.CreateExceptionObject(false, null));
-                            }
-                        }
+                        continue;
+                    }
+
+                    var exceptionsHolder = Volatile.Read(ref task._exceptionsHolder);
+                    if (exceptionsHolder == null)
+                    {
+                        Contract.Assert(false);
+                    }
+                    else
+                    {
+                        // No locking necessary since child task is finished adding exceptions
+                        // and concurrent CreateExceptionObject() calls do not constitute
+                        // a concurrency hazard.
+                        AddException(exceptionsHolder.CreateExceptionObject(false, null));
                     }
                 }
-
-                // Reduce memory pressure by getting rid of the array
-                Volatile.Write(ref _exceptionalChildren, null);
             }
+
+            // Reduce memory pressure by getting rid of the array
+            Volatile.Write(ref _exceptionalChildren, null);
         }
 
         /// <summary>
@@ -102,21 +106,23 @@ namespace System.Threading.Tasks
         /// </summary>
         internal void DeregisterCancellationCallback()
         {
-            if (_cancellationRegistration != null)
+            if (_cancellationRegistration == null)
             {
-                // Harden against ODEs thrown from disposing of the CTR.
-                // Since the task has already been put into a final state by the time this
-                // is called, all we can do here is suppress the exception.
-                try
-                {
-                    _cancellationRegistration.Value.Dispose();
-                }
-                catch (ObjectDisposedException exception)
-                {
-                    Theraot.No.Op(exception);
-                }
-                _cancellationRegistration = null;
+                return;
             }
+
+            // Harden against ODEs thrown from disposing of the CTR.
+            // Since the task has already been put into a final state by the time this
+            // is called, all we can do here is suppress the exception.
+            try
+            {
+                _cancellationRegistration.Value.Dispose();
+            }
+            catch (ObjectDisposedException exception)
+            {
+                Theraot.No.Op(exception);
+            }
+            _cancellationRegistration = null;
         }
 
         // This is called in the case where a new child is added, but then encounters a CancellationToken-related exception.
@@ -160,12 +166,14 @@ namespace System.Threading.Tasks
                 // we use a local variable for exceptional children here because some other thread may be nulling out _exceptionalChildren
                 var exceptionalChildren = Volatile.Read(ref _exceptionalChildren);
 
-                if (exceptionalChildren != null)
+                if (exceptionalChildren == null)
                 {
-                    lock (exceptionalChildren)
-                    {
-                        exceptionalChildren.RemoveAll(_isExceptionObservedByParentPredicate); // RemoveAll has better performance than doing it ourselves
-                    }
+                    return;
+                }
+
+                lock (exceptionalChildren)
+                {
+                    exceptionalChildren.RemoveAll(_isExceptionObservedByParentPredicate); // RemoveAll has better performance than doing it ourselves
                 }
             }
         }
@@ -212,19 +220,21 @@ namespace System.Threading.Tasks
 
         internal void FinishThreadAbortedTask(bool exceptionAdded, bool delegateRan)
         {
-            if (Interlocked.CompareExchange(ref _threadAbortedManaged, 1, 0) == 0)
+            if (Interlocked.CompareExchange(ref _threadAbortedManaged, 1, 0) != 0)
             {
-                var exceptionsHolder = Volatile.Read(ref _exceptionsHolder);
-                if (exceptionsHolder == null)
-                {
-                    return;
-                }
-                if (exceptionAdded)
-                {
-                    exceptionsHolder.MarkAsHandled(false);
-                }
-                Finish(delegateRan);
+                return;
             }
+
+            var exceptionsHolder = Volatile.Read(ref _exceptionsHolder);
+            if (exceptionsHolder == null)
+            {
+                return;
+            }
+            if (exceptionAdded)
+            {
+                exceptionsHolder.MarkAsHandled(false);
+            }
+            Finish(delegateRan);
         }
 
         /// <summary>
@@ -303,11 +313,13 @@ namespace System.Threading.Tasks
         {
             Contract.Requires(IsCompleted, "ThrowIfExceptional(): Expected IsCompleted == true");
             Exception exception = GetExceptions(includeTaskCanceledExceptions);
-            if (exception != null)
+            if (exception == null)
             {
-                UpdateExceptionObservedStatus();
-                throw exception;
+                return;
             }
+
+            UpdateExceptionObservedStatus();
+            throw exception;
         }
 
         /// <summary>
@@ -389,19 +401,21 @@ namespace System.Threading.Tasks
                 // The only way to accomplish this is to register a callback on the CT.
                 // We exclude Promise tasks from this, because TaskCompletionSource needs to fully control the inner tasks's lifetime (i.e. not allow external cancellations)
 
-                if ((_internalOptions & (InternalTaskOptions.QueuedByRuntime | InternalTaskOptions.PromiseTask | InternalTaskOptions.LazyCancellation)) == 0)
+                if ((_internalOptions & (InternalTaskOptions.QueuedByRuntime | InternalTaskOptions.PromiseTask | InternalTaskOptions.LazyCancellation)) != 0)
                 {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        // Fast path for an already-canceled cancellationToken
-                        InternalCancel(false);
-                    }
-                    else
-                    {
-                        // Regular path for an uncanceled cancellationToken
-                        var registration = cancellationToken.Register(_taskCancelCallback, antecedent == null ? (object)this : new Tuple<Task, Task, TaskContinuation>(this, antecedent, continuation));
-                        _cancellationRegistration = new StrongBox<CancellationTokenRegistration>(registration);
-                    }
+                    return;
+                }
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    // Fast path for an already-canceled cancellationToken
+                    InternalCancel(false);
+                }
+                else
+                {
+                    // Regular path for an uncanceled cancellationToken
+                    var registration = cancellationToken.Register(_taskCancelCallback, antecedent == null ? (object)this : new Tuple<Task, Task, TaskContinuation>(this, antecedent, continuation));
+                    _cancellationRegistration = new StrongBox<CancellationTokenRegistration>(registration);
                 }
             }
             catch (Exception)
@@ -533,13 +547,7 @@ namespace System.Threading.Tasks
                 // before they have been completely processed.
                 return _exceptionsHolder.CreateExceptionObject(false, canceledException);
             }
-            if (canceledException != null)
-            {
-                // No exceptions, but there was a cancellation. Aggregate and return it.
-                return new AggregateException(canceledException);
-            }
-
-            return null;
+            return canceledException != null ? new AggregateException(canceledException) : null;
         }
 
         /// <summary>

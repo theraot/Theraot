@@ -40,27 +40,31 @@ namespace System.Linq.Expressions
         /// </summary>
         public CallSiteBinder Binder { get; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Gets a value that indicates whether the expression tree node can be reduced.
         /// </summary>
         public override bool CanReduce => true;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the type of the delegate used by the <see cref="CallSite" />.
+        /// Gets the type of the delegate used by the <see cref="T:System.Runtime.CompilerServices.CallSite" />.
         /// </summary>
         public Type DelegateType { get; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Returns the node type of this Expression. Extension nodes should return
         /// ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Dynamic;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression" /> represents.
+        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="P:System.Linq.Expressions.DynamicExpression.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => typeof(object);
 
         int IArgumentProvider.ArgumentCount => throw ContractUtils.Unreachable;
@@ -311,6 +315,7 @@ namespace System.Linq.Expressions
             return ExpressionExtension.MakeDynamic(delegateType, binder, arg0, arg1, arg2, arg3);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Reduces the dynamic expression node to a simpler expression.
         /// </summary>
@@ -348,62 +353,32 @@ namespace System.Linq.Expressions
                 }
             }
 
-            if (SameArguments(args))
-            {
-                return this;
-            }
-
-            return ExpressionExtension.MakeDynamic(DelegateType, Binder, arguments);
+            return SameArguments(args) ? this : ExpressionExtension.MakeDynamic(DelegateType, Binder, arguments);
         }
 
         internal static DynamicExpression Make(Type returnType, Type delegateType, CallSiteBinder binder, Expression[] arguments)
         {
-            if (returnType == typeof(object))
-            {
-                return new DynamicExpressionN(delegateType, binder, arguments);
-            }
-
-            return new TypedDynamicExpressionN(returnType, delegateType, binder, arguments);
+            return returnType == typeof(object) ? new DynamicExpressionN(delegateType, binder, arguments) : new TypedDynamicExpressionN(returnType, delegateType, binder, arguments);
         }
 
         internal static DynamicExpression Make(Type returnType, Type delegateType, CallSiteBinder binder, Expression arg0)
         {
-            if (returnType == typeof(object))
-            {
-                return new DynamicExpression1(delegateType, binder, arg0);
-            }
-
-            return new TypedDynamicExpression1(returnType, delegateType, binder, arg0);
+            return returnType == typeof(object) ? new DynamicExpression1(delegateType, binder, arg0) : new TypedDynamicExpression1(returnType, delegateType, binder, arg0);
         }
 
         internal static DynamicExpression Make(Type returnType, Type delegateType, CallSiteBinder binder, Expression arg0, Expression arg1)
         {
-            if (returnType == typeof(object))
-            {
-                return new DynamicExpression2(delegateType, binder, arg0, arg1);
-            }
-
-            return new TypedDynamicExpression2(returnType, delegateType, binder, arg0, arg1);
+            return returnType == typeof(object) ? new DynamicExpression2(delegateType, binder, arg0, arg1) : new TypedDynamicExpression2(returnType, delegateType, binder, arg0, arg1);
         }
 
         internal static DynamicExpression Make(Type returnType, Type delegateType, CallSiteBinder binder, Expression arg0, Expression arg1, Expression arg2)
         {
-            if (returnType == typeof(object))
-            {
-                return new DynamicExpression3(delegateType, binder, arg0, arg1, arg2);
-            }
-
-            return new TypedDynamicExpression3(returnType, delegateType, binder, arg0, arg1, arg2);
+            return returnType == typeof(object) ? new DynamicExpression3(delegateType, binder, arg0, arg1, arg2) : new TypedDynamicExpression3(returnType, delegateType, binder, arg0, arg1, arg2);
         }
 
         internal static DynamicExpression Make(Type returnType, Type delegateType, CallSiteBinder binder, Expression arg0, Expression arg1, Expression arg2, Expression arg3)
         {
-            if (returnType == typeof(object))
-            {
-                return new DynamicExpression4(delegateType, binder, arg0, arg1, arg2, arg3);
-            }
-
-            return new TypedDynamicExpression4(returnType, delegateType, binder, arg0, arg1, arg2, arg3);
+            return returnType == typeof(object) ? new DynamicExpression4(delegateType, binder, arg0, arg1, arg2, arg3) : new TypedDynamicExpression4(returnType, delegateType, binder, arg0, arg1, arg2, arg3);
         }
 
         internal virtual ReadOnlyCollection<Expression> GetOrMakeArguments()
@@ -470,16 +445,16 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments?.Count == 1)
+            if (arguments?.Count != 1)
             {
-                using (var en = arguments.GetEnumerator())
-                {
-                    en.MoveNext();
-                    return en.Current == ExpressionUtils.ReturnObject<Expression>(_arg0);
-                }
+                return false;
             }
 
-            return false;
+            using (var en = arguments.GetEnumerator())
+            {
+                en.MoveNext();
+                return en.Current == ExpressionUtils.ReturnObject<Expression>(_arg0);
+            }
         }
 
         Expression IArgumentProvider.GetArgument(int index)
@@ -521,25 +496,27 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments?.Count == 2)
+            if (arguments?.Count != 2)
             {
-                if (_arg0 is Expression[] alreadyArray)
-                {
-                    return ExpressionUtils.SameElements(arguments, alreadyArray);
-                }
-
-                using (var en = arguments.GetEnumerator())
-                {
-                    en.MoveNext();
-                    if (en.Current == _arg0)
-                    {
-                        en.MoveNext();
-                        return en.Current == _arg1;
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (_arg0 is Expression[] alreadyArray)
+            {
+                return ExpressionUtils.SameElements(arguments, alreadyArray);
+            }
+
+            using (var en = arguments.GetEnumerator())
+            {
+                en.MoveNext();
+                if (en.Current != _arg0)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                return en.Current == _arg1;
+            }
         }
 
         Expression IArgumentProvider.GetArgument(int index)
@@ -583,29 +560,33 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments?.Count == 3)
+            if (arguments?.Count != 3)
             {
-                if (_arg0 is Expression[] alreadyArray)
-                {
-                    return ExpressionUtils.SameElements(arguments, alreadyArray);
-                }
-
-                using (var en = arguments.GetEnumerator())
-                {
-                    en.MoveNext();
-                    if (en.Current == _arg0)
-                    {
-                        en.MoveNext();
-                        if (en.Current == _arg1)
-                        {
-                            en.MoveNext();
-                            return en.Current == _arg2;
-                        }
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (_arg0 is Expression[] alreadyArray)
+            {
+                return ExpressionUtils.SameElements(arguments, alreadyArray);
+            }
+
+            using (var en = arguments.GetEnumerator())
+            {
+                en.MoveNext();
+                if (en.Current != _arg0)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                if (en.Current != _arg1)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                return en.Current == _arg2;
+            }
         }
 
         Expression IArgumentProvider.GetArgument(int index)
@@ -651,33 +632,39 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments?.Count == 4)
+            if (arguments?.Count != 4)
             {
-                if (_arg0 is Expression[] alreadyArray)
-                {
-                    return ExpressionUtils.SameElements(arguments, alreadyArray);
-                }
-
-                using (var en = arguments.GetEnumerator())
-                {
-                    en.MoveNext();
-                    if (en.Current == _arg0)
-                    {
-                        en.MoveNext();
-                        if (en.Current == _arg1)
-                        {
-                            en.MoveNext();
-                            if (en.Current == _arg2)
-                            {
-                                en.MoveNext();
-                                return en.Current == _arg3;
-                            }
-                        }
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (_arg0 is Expression[] alreadyArray)
+            {
+                return ExpressionUtils.SameElements(arguments, alreadyArray);
+            }
+
+            using (var en = arguments.GetEnumerator())
+            {
+                en.MoveNext();
+                if (en.Current != _arg0)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                if (en.Current != _arg1)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                if (en.Current != _arg2)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                return en.Current == _arg3;
+            }
         }
 
         Expression IArgumentProvider.GetArgument(int index)
@@ -1252,7 +1239,7 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(arg, paramName, index);
             var type = arg.Type;
             ContractUtils.RequiresNotNull(type, nameof(type));
-            TypeUtils.ValidateType(type, nameof(type), allowByRef: true, allowPointer: true);
+            TypeUtils.ValidateType(type, nameof(type), true, true);
             if (type == typeof(void))
             {
                 throw new ArgumentException("Argument type cannot be void");

@@ -1,4 +1,4 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable CA1822 // Mark members as static
@@ -374,12 +374,7 @@ namespace System.Runtime.CompilerServices
         private static TaskCompletionSource<TResult> GetTaskForResult(TResult result)
         {
             var asyncMethodTaskCache = AsyncMethodTaskCache<TResult>.Singleton;
-            if (asyncMethodTaskCache == null)
-            {
-                return AsyncMethodTaskCache<TResult>.CreateCompleted(result);
-            }
-
-            return asyncMethodTaskCache.FromResult(result);
+            return asyncMethodTaskCache == null ? AsyncMethodTaskCache<TResult>.CreateCompleted(result) : asyncMethodTaskCache.FromResult(result);
         }
 
         void IAsyncMethodBuilder.PreBoxInitialization()

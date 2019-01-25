@@ -53,11 +53,7 @@ namespace System.Linq.Expressions
                     newNodes[i] = node;
                 }
             }
-            if (newNodes == null)
-            {
-                return nodes;
-            }
-            return ReadOnlyCollectionEx.Create(newNodes);
+            return newNodes == null ? nodes : ReadOnlyCollectionEx.Create(newNodes);
         }
 
         /// <summary>
@@ -96,11 +92,7 @@ namespace System.Linq.Expressions
                     newNodes[i] = node;
                 }
             }
-            if (newNodes == null)
-            {
-                return nodes;
-            }
-            return ReadOnlyCollectionEx.Create(newNodes);
+            return newNodes == null ? nodes : ReadOnlyCollectionEx.Create(newNodes);
         }
 
         /// <summary>
@@ -160,11 +152,7 @@ namespace System.Linq.Expressions
                     newNodes[i] = node;
                 }
             }
-            if (newNodes == null)
-            {
-                return nodes;
-            }
-            return ReadOnlyCollectionEx.Create(newNodes);
+            return newNodes == null ? nodes : ReadOnlyCollectionEx.Create(newNodes);
         }
 
         /// <summary>
@@ -258,12 +246,7 @@ namespace System.Linq.Expressions
         protected internal virtual Expression VisitDynamic(DynamicExpression node)
         {
             var a = VisitArguments(node);
-            if (a == null)
-            {
-                return node;
-            }
-
-            return node.Rewrite(a);
+            return a == null ? node : node.Rewrite(a);
         }
 
         /// <summary>
@@ -438,12 +421,7 @@ namespace System.Linq.Expressions
         protected internal virtual Expression VisitNew(NewExpression node)
         {
             var a = VisitArguments(node);
-            if (a == null)
-            {
-                return node;
-            }
-
-            return node.Update(a);
+            return a == null ? node : node.Update(a);
         }
 
         /// <summary>
@@ -638,16 +616,18 @@ namespace System.Linq.Expressions
 
         private static BinaryExpression ValidateBinary(BinaryExpression before, BinaryExpression after)
         {
-            if (before != after && before.Method == null)
+            if (before == after || before.Method != null)
             {
-                if (after.Method != null)
-                {
-                    throw new InvalidOperationException($"Rewritten expression calls operator method '{after.Method}', but the original node had no operator method. If this is is intentional, override '{nameof(VisitBinary)}' and change it to allow this rewrite.");
-                }
-
-                ValidateChildType(before.Left.Type, after.Left.Type, nameof(VisitBinary));
-                ValidateChildType(before.Right.Type, after.Right.Type, nameof(VisitBinary));
+                return after;
             }
+
+            if (after.Method != null)
+            {
+                throw new InvalidOperationException($"Rewritten expression calls operator method '{after.Method}', but the original node had no operator method. If this is is intentional, override '{nameof(VisitBinary)}' and change it to allow this rewrite.");
+            }
+
+            ValidateChildType(before.Left.Type, after.Left.Type, nameof(VisitBinary));
+            ValidateChildType(before.Right.Type, after.Right.Type, nameof(VisitBinary));
             return after;
         }
 
@@ -695,18 +675,20 @@ namespace System.Linq.Expressions
         //
         private static UnaryExpression ValidateUnary(UnaryExpression before, UnaryExpression after)
         {
-            if (before != after && before.Method == null)
+            if (before == after || before.Method != null)
             {
-                if (after.Method != null)
-                {
-                    throw new InvalidOperationException($"Rewritten expression calls operator method '{after.Method}', but the original node had no operator method. If this is is intentional, override '{nameof(VisitUnary)}' and change it to allow this rewrite.");
-                }
+                return after;
+            }
 
-                // rethrow has null operand
-                if (before.Operand != null && after.Operand != null)
-                {
-                    ValidateChildType(before.Operand.Type, after.Operand.Type, nameof(VisitUnary));
-                }
+            if (after.Method != null)
+            {
+                throw new InvalidOperationException($"Rewritten expression calls operator method '{after.Method}', but the original node had no operator method. If this is is intentional, override '{nameof(VisitUnary)}' and change it to allow this rewrite.");
+            }
+
+            // rethrow has null operand
+            if (before.Operand != null && after.Operand != null)
+            {
+                ValidateChildType(before.Operand.Type, after.Operand.Type, nameof(VisitUnary));
             }
             return after;
         }

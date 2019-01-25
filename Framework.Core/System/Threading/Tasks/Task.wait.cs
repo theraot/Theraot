@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 
@@ -255,7 +255,11 @@ namespace System.Threading.Tasks
                 // Block waiting for the tasks to complete.
                 allCompleted = WaitAllBlockingCore(waitedOnTaskList, millisecondsTimeout, cancellationToken);
             }
-            if (allCompleted)
+
+            if (!allCompleted)
+            {
+                return allCompleted;
+            }
             {
                 for (var taskIndex = tasks.Length - 1; taskIndex >= 0; taskIndex--)
                 {
@@ -290,13 +294,14 @@ namespace System.Threading.Tasks
                     cancellationToken.ThrowIfCancellationRequested();
                 }
                 // If one or more threw exceptions, aggregate and throw them.
-                if (exceptionSeen || cancellationSeen)
+                if (!exceptionSeen && !cancellationSeen)
                 {
-                    Contract.Assert(exceptions != null, "Should have seen at least one exception");
-                    throw new AggregateException(exceptions);
+                    return allCompleted;
                 }
+
+                Contract.Assert(exceptions != null, "Should have seen at least one exception");
+                throw new AggregateException(exceptions);
             }
-            return allCompleted;
         }
 
         /// <summary>
@@ -493,12 +498,13 @@ namespace System.Threading.Tasks
         internal bool NotifyDebuggerOfWaitCompletionIfNecessary()
         {
             // Notify the debugger if of any of the tasks we've waited on requires notification
-            if (IsWaitNotificationEnabled && ShouldNotifyDebuggerOfWaitCompletion)
+            if (!IsWaitNotificationEnabled || !ShouldNotifyDebuggerOfWaitCompletion)
             {
-                NotifyDebuggerOfWaitCompletion();
-                return true;
+                return false;
             }
-            return false;
+
+            NotifyDebuggerOfWaitCompletion();
+            return true;
         }
 
         /// <summary>
@@ -518,13 +524,15 @@ namespace System.Threading.Tasks
         private static void PrivateWaitAny(Task[] tasks, int millisecondsTimeout, CancellationToken cancellationToken, ref int signaledTaskIndex)
         {
             var firstCompleted = PrivateWhenAny(tasks, ref signaledTaskIndex);
-            if (signaledTaskIndex == -1)
+            if (signaledTaskIndex != -1)
             {
-                var waitCompleted = firstCompleted.Wait(millisecondsTimeout, cancellationToken);
-                if (waitCompleted)
-                {
-                    signaledTaskIndex = Array.IndexOf(tasks, firstCompleted.Result);
-                }
+                return;
+            }
+
+            var waitCompleted = firstCompleted.Wait(millisecondsTimeout, cancellationToken);
+            if (waitCompleted)
+            {
+                signaledTaskIndex = Array.IndexOf(tasks, firstCompleted.Result);
             }
         }
 

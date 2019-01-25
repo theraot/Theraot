@@ -88,11 +88,7 @@ namespace Theraot.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Type GetNonNullable(this Type type)
         {
-            if (type.IsNullable())
-            {
-                return Nullable.GetUnderlyingType(type);
-            }
-            return type;
+            return type.IsNullable() ? Nullable.GetUnderlyingType(type) : type;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -343,25 +339,18 @@ namespace Theraot.Reflection
             {
                 return true;
             }
-            if
-            (
-                type == typeof(bool)
-                || type == typeof(byte)
-                || type == typeof(sbyte)
-                || type == typeof(short)
-                || type == typeof(int)
-                || type == typeof(long)
-                || type == typeof(ushort)
-                || type == typeof(uint)
-                || type == typeof(ulong)
-                || type == typeof(float)
-                || type == typeof(double)
-                || type == typeof(char)
-            )
-            {
-                return true;
-            }
-            return false;
+            return type == typeof(bool)
+                   || type == typeof(byte)
+                   || type == typeof(sbyte)
+                   || type == typeof(short)
+                   || type == typeof(int)
+                   || type == typeof(long)
+                   || type == typeof(ushort)
+                   || type == typeof(uint)
+                   || type == typeof(ulong)
+                   || type == typeof(float)
+                   || type == typeof(double)
+                   || type == typeof(char);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -580,11 +569,7 @@ namespace Theraot.Reflection
 
         internal static bool IsSameOrSubclassOfInternal(this Type type, Type baseType)
         {
-            if (type == baseType)
-            {
-                return true;
-            }
-            return type.IsSubclassOfInternal(baseType);
+            return type == baseType || type.IsSubclassOfInternal(baseType);
         }
 
         internal static bool IsUnsigned(this Type type)
@@ -617,18 +602,20 @@ namespace Theraot.Reflection
                     && type != typeof(char)
                     && type != typeof(bool);
             }
-            if (info.IsValueType)
+
+            if (!info.IsValueType)
             {
-                foreach (var field in info.GetFields())
-                {
-                    if (!IsBinaryPortableExtracted(field.FieldType))
-                    {
-                        return false;
-                    }
-                }
-                return !info.IsAutoLayout && type.GetStructLayoutAttribute().Pack > 0;
+                return false;
             }
-            return false;
+
+            foreach (var field in info.GetFields())
+            {
+                if (!IsBinaryPortableExtracted(field.FieldType))
+                {
+                    return false;
+                }
+            }
+            return !info.IsAutoLayout && type.GetStructLayoutAttribute().Pack > 0;
         }
 
         private static bool GetBlittableResult(Type type)
@@ -639,18 +626,20 @@ namespace Theraot.Reflection
                 return type != typeof(char)
                     && type != typeof(bool);
             }
-            if (info.IsValueType)
+
+            if (!info.IsValueType)
             {
-                foreach (var field in type.GetTypeInfo().GetFields())
-                {
-                    if (!IsBlittableExtracted(field.FieldType))
-                    {
-                        return false;
-                    }
-                }
-                return true;
+                return false;
             }
-            return false;
+
+            foreach (var field in type.GetTypeInfo().GetFields())
+            {
+                if (!IsBlittableExtracted(field.FieldType))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private static bool GetValueTypeRecursiveResult(Type type)
@@ -660,18 +649,20 @@ namespace Theraot.Reflection
             {
                 return true;
             }
-            if (info.IsValueType)
+
+            if (!info.IsValueType)
             {
-                foreach (var field in type.GetTypeInfo().GetFields())
-                {
-                    if (!IsValueTypeRecursiveExtracted(field.FieldType))
-                    {
-                        return false;
-                    }
-                }
-                return true;
+                return false;
             }
-            return false;
+
+            foreach (var field in type.GetTypeInfo().GetFields())
+            {
+                if (!IsValueTypeRecursiveExtracted(field.FieldType))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private static bool IsBinaryPortableExtracted(Type type)
@@ -745,67 +736,23 @@ namespace Theraot.Reflection
                     break;
                 }
             }
-            if (type == typeof(bool))
-            {
-                return TypeCode.Boolean;
-            }
-            if (type == typeof(char))
-            {
-                return TypeCode.Char;
-            }
-            if (type == typeof(sbyte))
-            {
-                return TypeCode.SByte;
-            }
-            if (type == typeof(byte))
-            {
-                return TypeCode.Byte;
-            }
-            if (type == typeof(short))
-            {
-                return TypeCode.Int16;
-            }
-            if (type == typeof(ushort))
-            {
-                return TypeCode.UInt16;
-            }
-            if (type == typeof(int))
-            {
-                return TypeCode.Int32;
-            }
-            if (type == typeof(uint))
-            {
-                return TypeCode.UInt32;
-            }
-            if (type == typeof(long))
-            {
-                return TypeCode.Int64;
-            }
-            if (type == typeof(ulong))
-            {
-                return TypeCode.UInt64;
-            }
-            if (type == typeof(float))
-            {
-                return TypeCode.Single;
-            }
-            if (type == typeof(double))
-            {
-                return TypeCode.Double;
-            }
-            if (type == typeof(decimal))
-            {
-                return TypeCode.Decimal;
-            }
-            if (type == typeof(DateTime))
-            {
-                return TypeCode.DateTime;
-            }
-            if (type == typeof(string))
-            {
-                return TypeCode.String;
-            }
-            return TypeCode.Object;
+
+            return type == typeof(bool) ? TypeCode.Boolean
+                 : type == typeof(char) ? TypeCode.Char
+                 : type == typeof(sbyte) ? TypeCode.SByte
+                 : type == typeof(byte) ? TypeCode.Byte
+                 : type == typeof(short) ? TypeCode.Int16
+                 : type == typeof(ushort) ? TypeCode.UInt16
+                 : type == typeof(int) ? TypeCode.Int32
+                 : type == typeof(uint) ? TypeCode.UInt32
+                 : type == typeof(long) ? TypeCode.Int64
+                 : type == typeof(ulong) ? TypeCode.UInt64
+                 : type == typeof(float) ? TypeCode.Single
+                 : type == typeof(double) ? TypeCode.Double
+                 : type == typeof(decimal) ? TypeCode.Decimal
+                 : type == typeof(DateTime) ? TypeCode.DateTime
+                 : type == typeof(string) ? TypeCode.String
+                 : TypeCode.Object;
         }
     }
 
@@ -892,11 +839,13 @@ namespace Theraot.Reflection
                 var ok = true;
                 for (var index = 0; index < typeArguments.Length; index++)
                 {
-                    if (parameters[index].GetType() != typeArguments[index])
+                    if (parameters[index].GetType() == typeArguments[index])
                     {
-                        ok = false;
-                        break;
+                        continue;
                     }
+
+                    ok = false;
+                    break;
                 }
                 if (!ok)
                 {
@@ -943,32 +892,36 @@ namespace Theraot.Reflection
             var members = typeInfo.DeclaredMembers;
             foreach (var member in members)
             {
-                if (member is MethodInfo methodInfo)
+                if (!(member is MethodInfo methodInfo))
                 {
-                    if (!string.Equals(member.Name, name, StringComparison.Ordinal))
-                    {
-                        continue;
-                    }
-                    var parameters = methodInfo.GetParameters();
-                    if (parameters.Length != typeArguments.Length)
-                    {
-                        continue;
-                    }
-                    var ok = true;
-                    for (var index = 0; index < typeArguments.Length; index++)
-                    {
-                        if (parameters[index].GetType() != typeArguments[index])
-                        {
-                            ok = false;
-                            break;
-                        }
-                    }
-                    if (!ok)
-                    {
-                        continue;
-                    }
-                    return methodInfo;
+                    continue;
                 }
+
+                if (!string.Equals(member.Name, name, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+                var parameters = methodInfo.GetParameters();
+                if (parameters.Length != typeArguments.Length)
+                {
+                    continue;
+                }
+                var ok = true;
+                for (var index = 0; index < typeArguments.Length; index++)
+                {
+                    if (parameters[index].GetType() == typeArguments[index])
+                    {
+                        continue;
+                    }
+
+                    ok = false;
+                    break;
+                }
+                if (!ok)
+                {
+                    continue;
+                }
+                return methodInfo;
             }
             return null;
         }
@@ -980,18 +933,20 @@ namespace Theraot.Reflection
             MethodInfo found = null;
             foreach (var member in members)
             {
-                if (member is MethodInfo methodInfo)
+                if (!(member is MethodInfo methodInfo))
                 {
-                    if (!string.Equals(member.Name, name, StringComparison.Ordinal))
-                    {
-                        continue;
-                    }
-                    if (found != null)
-                    {
-                        throw new AmbiguousMatchException();
-                    }
-                    found = methodInfo;
+                    continue;
                 }
+
+                if (!string.Equals(member.Name, name, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+                if (found != null)
+                {
+                    throw new AmbiguousMatchException();
+                }
+                found = methodInfo;
             }
             return found;
         }
@@ -1032,32 +987,36 @@ namespace Theraot.Reflection
             var members = typeInfo.DeclaredMembers;
             foreach (var member in members)
             {
-                if (member is PropertyInfo propertyInfo)
+                if (!(member is PropertyInfo propertyInfo))
                 {
-                    if (!string.Equals(member.Name, name, StringComparison.Ordinal))
-                    {
-                        continue;
-                    }
-                    var parameters = propertyInfo.GetIndexParameters();
-                    if (parameters.Length != typeArguments.Length)
-                    {
-                        continue;
-                    }
-                    var ok = true;
-                    for (var index = 0; index < typeArguments.Length; index++)
-                    {
-                        if (parameters[index].GetType() != typeArguments[index])
-                        {
-                            ok = false;
-                            break;
-                        }
-                    }
-                    if (!ok)
-                    {
-                        continue;
-                    }
-                    return propertyInfo;
+                    continue;
                 }
+
+                if (!string.Equals(member.Name, name, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+                var parameters = propertyInfo.GetIndexParameters();
+                if (parameters.Length != typeArguments.Length)
+                {
+                    continue;
+                }
+                var ok = true;
+                for (var index = 0; index < typeArguments.Length; index++)
+                {
+                    if (parameters[index].GetType() == typeArguments[index])
+                    {
+                        continue;
+                    }
+
+                    ok = false;
+                    break;
+                }
+                if (!ok)
+                {
+                    continue;
+                }
+                return propertyInfo;
             }
             return null;
         }
@@ -1069,18 +1028,20 @@ namespace Theraot.Reflection
             PropertyInfo found = null;
             foreach (var member in members)
             {
-                if (member is PropertyInfo propertyInfo)
+                if (!(member is PropertyInfo propertyInfo))
                 {
-                    if (!string.Equals(member.Name, name, StringComparison.Ordinal))
-                    {
-                        continue;
-                    }
-                    if (found != null)
-                    {
-                        throw new AmbiguousMatchException();
-                    }
-                    found = propertyInfo;
+                    continue;
                 }
+
+                if (!string.Equals(member.Name, name, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+                if (found != null)
+                {
+                    throw new AmbiguousMatchException();
+                }
+                found = propertyInfo;
             }
             return found;
         }

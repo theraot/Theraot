@@ -1725,12 +1725,7 @@ namespace System.Numerics
         /// <param name="right">The second value to compare.</param>
         public static BigInteger Max(BigInteger left, BigInteger right)
         {
-            if (left.CompareTo(right) < 0)
-            {
-                return right;
-            }
-
-            return left;
+            return left.CompareTo(right) < 0 ? right : left;
         }
 
         /// <summary>Returns the smaller of two <see cref="T:System.Numerics.BigInteger" /> values.</summary>
@@ -1739,12 +1734,7 @@ namespace System.Numerics
         /// <param name="right">The second value to compare.</param>
         public static BigInteger Min(BigInteger left, BigInteger right)
         {
-            if (left.CompareTo(right) <= 0)
-            {
-                return left;
-            }
-
-            return right;
+            return left.CompareTo(right) <= 0 ? left : right;
         }
 
         /// <summary>Performs modulus division on a number raised to the power of another number.</summary>
@@ -2101,18 +2091,20 @@ namespace System.Numerics
                 return ((long)InternalSign).CompareTo(other);
             }
 
-            if ((InternalSign ^ other) >= 0)
+            if ((InternalSign ^ other) < 0)
             {
-                var length = Length(InternalBits);
-                if (length <= 2)
-                {
-                    var magnitude = other >= 0 ? (ulong)other : (ulong)-other;
-                    var unsigned = ULong(length, InternalBits);
-                    return InternalSign * unsigned.CompareTo(magnitude);
-                }
+                return InternalSign;
             }
 
-            return InternalSign;
+            var length = Length(InternalBits);
+            if (length > 2)
+            {
+                return InternalSign;
+            }
+
+            var magnitude = other >= 0 ? (ulong)other : (ulong)-other;
+            var unsigned = ULong(length, InternalBits);
+            return InternalSign * unsigned.CompareTo(magnitude);
         }
 
         /// <summary>
@@ -2140,12 +2132,7 @@ namespace System.Numerics
             }
 
             var length = Length(InternalBits);
-            if (length > 2)
-            {
-                return 1;
-            }
-
-            return ULong(length, InternalBits).CompareTo(other);
+            return length > 2 ? 1 : ULong(length, InternalBits).CompareTo(other);
         }
 
         /// <summary>
@@ -2177,28 +2164,30 @@ namespace System.Numerics
                 return InternalSign >= other.InternalSign ? InternalSign <= other.InternalSign ? 0 : 1 : -1;
             }
 
-            if (other.InternalBits != null)
+            if (other.InternalBits == null)
             {
-                var length = Length(InternalBits);
-                var otherLength = Length(other.InternalBits);
-                if (length <= otherLength)
-                {
-                    if (length < otherLength)
-                    {
-                        return -InternalSign;
-                    }
-
-                    var diffLength = GetDiffLength(InternalBits, other.InternalBits, length);
-                    if (diffLength == 0)
-                    {
-                        return 0;
-                    }
-
-                    return InternalBits[diffLength - 1] >= other.InternalBits[diffLength - 1] ? InternalSign : -InternalSign;
-                }
+                return InternalSign;
             }
 
-            return InternalSign;
+            var length = Length(InternalBits);
+            var otherLength = Length(other.InternalBits);
+            if (length > otherLength)
+            {
+                return InternalSign;
+            }
+
+            if (length < otherLength)
+            {
+                return -InternalSign;
+            }
+
+            var diffLength = GetDiffLength(InternalBits, other.InternalBits, length);
+            if (diffLength == 0)
+            {
+                return 0;
+            }
+
+            return InternalBits[diffLength - 1] >= other.InternalBits[diffLength - 1] ? InternalSign : -InternalSign;
         }
 
         /// <summary>
@@ -2239,12 +2228,7 @@ namespace System.Numerics
         /// <param name="obj">The object to compare. </param>
         public override bool Equals(object obj)
         {
-            if (!(obj is BigInteger))
-            {
-                return false;
-            }
-
-            return Equals((BigInteger)obj);
+            return obj is BigInteger bigInteger && Equals(bigInteger);
         }
 
         /// <summary>Returns a value that indicates whether the current instance and a signed 64-bit integer have the same value.</summary>
@@ -2257,17 +2241,19 @@ namespace System.Numerics
                 return InternalSign == other;
             }
 
-            if ((InternalSign ^ other) >= 0)
+            if ((InternalSign ^ other) < 0)
             {
-                var length = Length(InternalBits);
-                if (length <= 2)
-                {
-                    var magnitude = other >= 0 ? (ulong)other : (ulong)-other;
-                    return ULong(length, InternalBits) == magnitude;
-                }
+                return false;
             }
 
-            return false;
+            var length = Length(InternalBits);
+            if (length > 2)
+            {
+                return false;
+            }
+
+            var magnitude = other >= 0 ? (ulong)other : (ulong)-other;
+            return ULong(length, InternalBits) == magnitude;
         }
 
         /// <summary>

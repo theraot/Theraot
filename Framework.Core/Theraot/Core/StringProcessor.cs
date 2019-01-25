@@ -338,16 +338,18 @@ namespace Theraot.Core
             }
 
             var read = _length - _position;
-            if (read > 0)
+            if (read <= 0)
             {
-                if (read > count)
-                {
-                    read = count;
-                }
-
-                String.CopyTo(_position, destination, destinationIndex, read);
-                _position += read;
+                return read;
             }
+
+            if (read > count)
+            {
+                read = count;
+            }
+
+            String.CopyTo(_position, destination, destinationIndex, read);
+            _position += read;
 
             return read;
         }
@@ -369,13 +371,13 @@ namespace Theraot.Core
             }
 
             var length = target.Length;
-            if (_position + length <= _length && string.CompareOrdinal(target, 0, String, _position, length) == 0)
+            if (_position + length > _length || string.CompareOrdinal(target, 0, String, _position, length) != 0)
             {
-                _position += length;
-                return true;
+                return false;
             }
 
-            return false;
+            _position += length;
+            return true;
         }
 
         /// <summary>
@@ -394,13 +396,13 @@ namespace Theraot.Core
             }
 
             var result = String[_position];
-            if (result == target)
+            if (result != target)
             {
-                _position++;
-                return true;
+                return false;
             }
 
-            return false;
+            _position++;
+            return true;
         }
 
         /// <summary>
@@ -411,14 +413,14 @@ namespace Theraot.Core
         /// <returns>The read string if there was enough characters left; otherwise null.</returns>
         public string Read(int length)
         {
-            if (_position + length <= _length)
+            if (_position + length > _length)
             {
-                var result = String.Substring(_position, length);
-                _position += length;
-                return result;
+                return null;
             }
 
-            return null;
+            var result = String.Substring(_position, length);
+            _position += length;
+            return result;
         }
 
         /// <summary>
@@ -450,15 +452,19 @@ namespace Theraot.Core
                 }
 
                 var length = target.Length;
-                if (_position + length <= _length)
+                if (_position + length > _length)
                 {
-                    var result = String.Substring(_position, length);
-                    if (string.Equals(result, target, StringComparison.Ordinal))
-                    {
-                        _position += length;
-                        return result;
-                    }
+                    continue;
                 }
+
+                var result = String.Substring(_position, length);
+                if (!string.Equals(result, target, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                _position += length;
+                return result;
             }
 
             return null;
@@ -577,21 +583,18 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(target), "The target string is null.");
             }
 
-            if (target.Length != 0)
+            if (target.Length == 0)
             {
-                var position = String.IndexOf(target, _position, stringComparison);
-                if (position != -1)
-                {
-                    return PrivateReadToPosition(position);
-                }
+                return Greedy ? ReadToEnd() : null;
             }
 
-            if (Greedy)
+            var position = String.IndexOf(target, _position, stringComparison);
+            if (position != -1)
             {
-                return ReadToEnd();
+                return PrivateReadToPosition(position);
             }
 
-            return null;
+            return Greedy ? ReadToEnd() : null;
         }
 
         /// <summary>
@@ -612,12 +615,7 @@ namespace Theraot.Core
                 return PrivateReadToPosition(position);
             }
 
-            if (Greedy)
-            {
-                return ReadToEnd();
-            }
-
-            return null;
+            return Greedy ? ReadToEnd() : null;
         }
 
         /// <summary>
@@ -653,12 +651,7 @@ namespace Theraot.Core
         public string ReadUntil(IEnumerable<string> targets, StringComparison stringComparison)
         {
             var oldPosition = _position;
-            if (SkipUntil(targets, stringComparison))
-            {
-                return String.Substring(oldPosition, _position - oldPosition);
-            }
-
-            return null;
+            return SkipUntil(targets, stringComparison) ? String.Substring(oldPosition, _position - oldPosition) : null;
         }
 
         /// <summary>
@@ -696,12 +689,7 @@ namespace Theraot.Core
         public string ReadUntil(IEnumerable<string> targets, out string found, StringComparison stringComparison)
         {
             var oldPosition = _position;
-            if (SkipUntil(targets, out found, stringComparison))
-            {
-                return String.Substring(oldPosition, _position - oldPosition);
-            }
-
-            return null;
+            return SkipUntil(targets, out found, stringComparison) ? String.Substring(oldPosition, _position - oldPosition) : null;
         }
 
         /// <summary>
@@ -719,12 +707,7 @@ namespace Theraot.Core
         public string ReadUntil(IEnumerable<char> targets)
         {
             var oldPosition = _position;
-            if (SkipUntil(targets))
-            {
-                return String.Substring(oldPosition, _position - oldPosition);
-            }
-
-            return null;
+            return SkipUntil(targets) ? String.Substring(oldPosition, _position - oldPosition) : null;
         }
 
         /// <summary>
@@ -763,12 +746,7 @@ namespace Theraot.Core
         public string ReadUntil(Func<char, bool> predicate)
         {
             var oldPosition = _position;
-            if (SkipUntil(predicate))
-            {
-                return String.Substring(oldPosition, _position - oldPosition);
-            }
-
-            return null;
+            return SkipUntil(predicate) ? String.Substring(oldPosition, _position - oldPosition) : null;
         }
 
         /// <summary>
@@ -800,21 +778,18 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(target), "The target string is null.");
             }
 
-            if (target.Length != 0)
+            if (target.Length == 0)
             {
-                var position = String.IndexOf(target, _position, stringComparison);
-                if (position != -1)
-                {
-                    return PrivateReadToPosition(position + target.Length);
-                }
+                return Greedy ? ReadToEnd() : null;
             }
 
-            if (Greedy)
+            var position = String.IndexOf(target, _position, stringComparison);
+            if (position != -1)
             {
-                return ReadToEnd();
+                return PrivateReadToPosition(position + target.Length);
             }
 
-            return null;
+            return Greedy ? ReadToEnd() : null;
         }
 
         /// <summary>
@@ -835,12 +810,7 @@ namespace Theraot.Core
                 return PrivateReadToPosition(position + 1);
             }
 
-            if (Greedy)
-            {
-                return ReadToEnd();
-            }
-
-            return null;
+            return Greedy ? ReadToEnd() : null;
         }
 
         /// <summary>
@@ -918,13 +888,14 @@ namespace Theraot.Core
             }
 
             var character = String[_position];
-            if (predicate(character))
+            if (!predicate(character))
             {
-                _position++;
-                return true;
+                return false;
             }
 
-            return false;
+            _position++;
+            return true;
+
         }
 
         /// <summary>
@@ -1187,15 +1158,19 @@ namespace Theraot.Core
                     throw new ArgumentException("Found nulls in the targets collection.", nameof(targets));
                 }
 
-                if (target.Length != 0)
+                if (target.Length == 0)
                 {
-                    var position = String.IndexOf(target, _position, stringComparison);
-                    if (position != -1 && (!result || position < bestPosition))
-                    {
-                        bestPosition = position;
-                        result = true;
-                    }
+                    continue;
                 }
+
+                var position = String.IndexOf(target, _position, stringComparison);
+                if (position == -1 || (result && position >= bestPosition))
+                {
+                    continue;
+                }
+
+                bestPosition = position;
+                result = true;
             }
 
             if (result)
@@ -1253,16 +1228,20 @@ namespace Theraot.Core
                     throw new ArgumentException("Found nulls in the targets collection.", nameof(targets));
                 }
 
-                if (target.Length != 0)
+                if (target.Length == 0)
                 {
-                    var position = String.IndexOf(target, _position, stringComparison);
-                    if (position != -1 && (!result || position < bestPosition))
-                    {
-                        found = target;
-                        bestPosition = position;
-                        result = true;
-                    }
+                    continue;
                 }
+
+                var position = String.IndexOf(target, _position, stringComparison);
+                if (position == -1 || (result && position >= bestPosition))
+                {
+                    continue;
+                }
+
+                found = target;
+                bestPosition = position;
+                result = true;
             }
 
             if (result)
@@ -1298,11 +1277,13 @@ namespace Theraot.Core
             foreach (var target in targets)
             {
                 var position = String.IndexOf(target, _position);
-                if (position != -1 && (!result || position < bestPosition))
+                if (position == -1 || (result && position >= bestPosition))
                 {
-                    bestPosition = position;
-                    result = true;
+                    continue;
                 }
+
+                bestPosition = position;
+                result = true;
             }
 
             if (result)
@@ -1622,12 +1603,7 @@ namespace Theraot.Core
                 return PrivateReadToPosition(position);
             }
 
-            if (Greedy)
-            {
-                return ReadToEnd();
-            }
-
-            return null;
+            return Greedy ? ReadToEnd() : null;
         }
 
         private bool PrivateSkipUntil(char[] targets)

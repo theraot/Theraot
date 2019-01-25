@@ -78,12 +78,14 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
+
+            if (Milliseconds(TicksNow() - start) >= milliseconds)
             {
-                spinWait.SpinOnce();
-                goto retry;
+                return false;
             }
-            return false;
+
+            spinWait.SpinOnce();
+            goto retry;
         }
 
         public static bool SpinWaitSet(ref int check, int value, int comparand, int milliseconds)
@@ -104,12 +106,14 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
+
+            if (Milliseconds(TicksNow() - start) >= milliseconds)
             {
-                spinWait.SpinOnce();
-                goto retry;
+                return false;
             }
-            return false;
+
+            spinWait.SpinOnce();
+            goto retry;
         }
 
         public static void SpinWaitSet(ref int check, int value, int comparand)
@@ -178,12 +182,14 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
+
+            if (Milliseconds(TicksNow() - start) >= milliseconds)
             {
-                spinWait.SpinOnce();
-                goto retry;
+                return false;
             }
-            return false;
+
+            spinWait.SpinOnce();
+            goto retry;
         }
 
         public static void SpinWaitWhile(ref int check, int comparand)

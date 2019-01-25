@@ -19,16 +19,13 @@ namespace System.Linq.Expressions.Compiler
         // Partition III, Section 1.5 Table 4.
         private static Expression GetEqualityOperand(Expression expression)
         {
-            if (expression.NodeType == ExpressionType.Convert)
+            if (expression.NodeType != ExpressionType.Convert)
             {
-                var convert = (UnaryExpression)expression;
-                if (convert.Type.IsReferenceAssignableFromInternal(convert.Operand.Type))
-                {
-                    return convert.Operand;
-                }
+                return expression;
             }
 
-            return expression;
+            var convert = (UnaryExpression)expression;
+            return convert.Type.IsReferenceAssignableFromInternal(convert.Operand.Type) ? convert.Operand : expression;
         }
 
         private static bool NotEmpty(Expression node)
@@ -38,20 +35,20 @@ namespace System.Linq.Expressions.Compiler
 
         private static bool Significant(Expression node)
         {
-            if (node is BlockExpression block)
+            if (!(node is BlockExpression block))
             {
-                for (var i = 0; i < block.ExpressionCount; i++)
-                {
-                    if (Significant(block.GetExpression(i)))
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
+                return NotEmpty(node) && !(node is DebugInfoExpression);
             }
 
-            return NotEmpty(node) && !(node is DebugInfoExpression);
+            for (var i = 0; i < block.ExpressionCount; i++)
+            {
+                if (Significant(block.GetExpression(i)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void EmitAndAlsoBinaryExpression(Expression expr, CompilationFlags flags)

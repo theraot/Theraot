@@ -40,12 +40,14 @@ namespace Theraot.Collections
                 {
                     group.Add(item);
                     count--;
-                    if (count == 0)
+                    if (count != 0)
                     {
-                        yield return group;
-                        group = new List<T>();
-                        count = _partitionSize;
+                        continue;
                     }
+
+                    yield return group;
+                    group = new List<T>();
+                    count = _partitionSize;
                 }
                 if (count < _partitionSize)
                 {

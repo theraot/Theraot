@@ -123,11 +123,13 @@ namespace Theraot.Threading
 
         public void Cancel()
         {
-            if (Interlocked.CompareExchange(ref _status, _canceling, _created) == _created)
+            if (Interlocked.CompareExchange(ref _status, _canceling, _created) != _created)
             {
-                Close();
-                Volatile.Write(ref _status, _canceled);
+                return;
             }
+
+            Close();
+            Volatile.Write(ref _status, _canceled);
         }
 
         public bool Change(long dueTime)
@@ -137,30 +139,30 @@ namespace Theraot.Threading
                 throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
 
-            if (Interlocked.CompareExchange(ref _status, _changing, _created) == _created)
+            if (Interlocked.CompareExchange(ref _status, _changing, _created) != _created)
             {
-                _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
-                var wrapped = Interlocked.CompareExchange(ref _wrapped, null, null);
-                if (wrapped == null)
-                {
-                    return false;
-                }
-
-                if (dueTime == -1)
-                {
-                    _targetTime = -1;
-                }
-                else
-                {
-                    _targetTime = _startTime + dueTime;
-                    wrapped.Change(Finish, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
-                }
-
-                Volatile.Write(ref _status, _created);
-                return true;
+                return false;
             }
 
-            return false;
+            _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
+            var wrapped = Interlocked.CompareExchange(ref _wrapped, null, null);
+            if (wrapped == null)
+            {
+                return false;
+            }
+
+            if (dueTime == -1)
+            {
+                _targetTime = -1;
+            }
+            else
+            {
+                _targetTime = _startTime + dueTime;
+                wrapped.Change(Finish, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
+            }
+
+            Volatile.Write(ref _status, _created);
+            return true;
         }
 
         public void Change(TimeSpan dueTime)
@@ -176,13 +178,13 @@ namespace Theraot.Threading
             }
 
             var remaining = _targetTime - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
-            if (remaining <= 0)
+            if (remaining > 0)
             {
-                Finish();
-                return 0;
+                return remaining;
             }
 
-            return remaining;
+            Finish();
+            return 0;
         }
 
         public override bool Equals(object obj)
@@ -237,16 +239,20 @@ namespace Theraot.Threading
         private void Finish()
         {
             ThreadingHelper.SpinWaitWhile(ref _status, _changing);
-            if (Interlocked.CompareExchange(ref _status, _executing, _created) == _created)
+            if (Interlocked.CompareExchange(ref _status, _executing, _created) != _created)
             {
-                var callback = Volatile.Read(ref Callback);
-                if (callback != null)
-                {
-                    callback.Invoke();
-                    Close();
-                    Volatile.Write(ref _status, _executed);
-                }
+                return;
             }
+
+            var callback = Volatile.Read(ref Callback);
+            if (callback == null)
+            {
+                return;
+            }
+
+            callback.Invoke();
+            Close();
+            Volatile.Write(ref _status, _executed);
         }
     }
 }

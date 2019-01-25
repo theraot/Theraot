@@ -166,13 +166,15 @@ namespace Theraot.Core
                     // treating the mantissa as m.0 rather than 0.m, so we need
                     // to subtract another 23 from it.
                     exponent -= 150;
-                    if (mantissa != 0)
+                    if (mantissa == 0)
                     {
-                        while ((mantissa & 1) == 0)
-                        {
-                            mantissa >>= 1;
-                            exponent++;
-                        }
+                        return;
+                    }
+
+                    while ((mantissa & 1) == 0)
+                    {
+                        mantissa >>= 1;
+                        exponent++;
                     }
                 }
             }

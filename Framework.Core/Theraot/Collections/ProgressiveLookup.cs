@@ -116,11 +116,8 @@ namespace Theraot.Collections
 
         public bool Contains(TKey key)
         {
-            if (_cache.ContainsKey(key))
-            {
-                return true;
-            }
-            return ProgressorWhere(Check).Any();
+            return _cache.ContainsKey(key) || ProgressorWhere(Check).Any();
+
             bool Check(IGrouping<TKey, T> item)
             {
                 return Comparer.Equals(key, item.Key);
@@ -214,14 +211,16 @@ namespace Theraot.Collections
             var knownCount = _cache.Count;
             while (Progressor.TryTake(out var item))
             {
-                if (_cache.Count > knownCount)
+                if (_cache.Count <= knownCount)
                 {
-                    if (check(item))
-                    {
-                        yield return item;
-                    }
-                    knownCount = _cache.Count;
+                    continue;
                 }
+
+                if (check(item))
+                {
+                    yield return item;
+                }
+                knownCount = _cache.Count;
             }
         }
 
@@ -230,18 +229,20 @@ namespace Theraot.Collections
             var knownCount = _cache.Count;
             while (Progressor.TryTake(out var item))
             {
-                if (_cache.Count > knownCount)
+                if (_cache.Count <= knownCount)
                 {
-                    if (check(item))
-                    {
-                        yield return item;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                    knownCount = _cache.Count;
+                    continue;
                 }
+
+                if (check(item))
+                {
+                    yield return item;
+                }
+                else
+                {
+                    break;
+                }
+                knownCount = _cache.Count;
             }
         }
 

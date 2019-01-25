@@ -42,6 +42,7 @@ namespace System.Linq.Expressions
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Represents calling a constructor and initializing one or more members of the new object.
     /// </summary>
@@ -62,6 +63,7 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="ReadOnlyCollection{T}"/> of <see cref="MemberBinding"/> objects which describe how to initialize the members.</returns>
         public ReadOnlyCollection<MemberBinding> Bindings => _bindingsAsReadOnlyCollection;
 
+        /// <inheritdoc />
         /// <summary>
         /// Gets a value that indicates whether the expression tree node can be reduced.
         /// </summary>
@@ -71,21 +73,24 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="Expressions.NewExpression"/> that represents the constructor call.</returns>
         public NewExpression NewExpression { get; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Returns the node type of this Expression. Extension nodes should return
         /// ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public override ExpressionType NodeType => ExpressionType.MemberInit;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents.
+        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => NewExpression.Type;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Reduces the <see cref="MemberInitExpression"/> to a simpler expression.
+        /// Reduces the <see cref="T:System.Linq.Expressions.MemberInitExpression" /> to a simpler expression.
         /// If CanReduce returns true, this should return a valid expression.
         /// This method is allowed to return another node which itself
         /// must be reduced.
@@ -93,7 +98,7 @@ namespace System.Linq.Expressions
         /// <returns>The reduced expression.</returns>
         public override Expression Reduce()
         {
-            return ReduceMemberInit(NewExpression, Bindings, keepOnStack: true);
+            return ReduceMemberInit(NewExpression, Bindings, true);
         }
 
         /// <summary>
@@ -140,10 +145,10 @@ namespace System.Linq.Expressions
                     return Assign(member, ((MemberAssignment)binding).Expression);
 
                 case MemberBindingType.ListBinding:
-                    return ReduceListInit(member, ((MemberListBinding)binding).Initializers, keepOnStack: false);
+                    return ReduceListInit(member, ((MemberListBinding)binding).Initializers, false);
 
                 case MemberBindingType.MemberBinding:
-                    return ReduceMemberInit(member, ((MemberMemberBinding)binding).Bindings, keepOnStack: false);
+                    return ReduceMemberInit(member, ((MemberMemberBinding)binding).Bindings, false);
 
                 default: throw ContractUtils.Unreachable;
             }

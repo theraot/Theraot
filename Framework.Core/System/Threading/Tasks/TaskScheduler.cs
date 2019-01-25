@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 #pragma warning disable RCS1079 // Throwing of new NotImplementedException.
 #pragma warning disable RECS0083 // Shows NotImplementedException throws in the quick task bar
@@ -22,11 +22,7 @@ namespace System.Threading.Tasks
             get
             {
                 var currentTask = Task.InternalCurrent;
-                if (currentTask != null)
-                {
-                    return currentTask.ExecutingTaskScheduler;
-                }
-                return Default;
+                return currentTask != null ? currentTask.ExecutingTaskScheduler : Default;
             }
         }
 

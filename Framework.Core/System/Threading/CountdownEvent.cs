@@ -112,17 +112,19 @@ namespace System.Threading
                 throw new ArgumentOutOfRangeException(nameof(signalCount));
             }
             var e = GetEvent();
-            if (ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _currentCount, -signalCount, out var lastValue))
+            if (!ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _currentCount, -signalCount, out var lastValue))
             {
-                var result = lastValue - signalCount;
-                if (result == 0)
-                {
-                    e.Set();
-                    return true;
-                }
+                throw new InvalidOperationException("Below Zero");
+            }
+
+            var result = lastValue - signalCount;
+            if (result != 0)
+            {
                 return false;
             }
-            throw new InvalidOperationException("Below Zero");
+
+            e.Set();
+            return true;
         }
 
         public bool TryAddCount()
@@ -165,12 +167,14 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             }
-            if (milliseconds == -1)
+
+            if (milliseconds != -1)
             {
-                Wait();
-                return true;
+                return Wait((int)milliseconds, CancellationToken.None);
             }
-            return Wait((int)milliseconds, CancellationToken.None);
+
+            Wait();
+            return true;
         }
 
         public bool Wait(TimeSpan timeout, CancellationToken cancellationToken)
@@ -198,11 +202,13 @@ namespace System.Threading
         protected virtual void Dispose(bool disposing)
         {
             // Thread Safe Dispose
-            if (disposing)
+            if (!disposing)
             {
-                var e = Interlocked.Exchange(ref _event, null);
-                e?.Dispose();
+                return;
             }
+
+            var e = Interlocked.Exchange(ref _event, null);
+            e?.Dispose();
         }
 
         private ManualResetEventSlim GetEvent()

@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+ï»¿#if LESSTHAN_NET40
 
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 #pragma warning disable CA1068 // CancellationToken parameters must come last
@@ -98,7 +98,7 @@ namespace System.Threading.Tasks
         /// <param name="scheduler">A task scheduler under which the task will run.</param>
         internal Task(Delegate action, object state, Task parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
         {
-#pragma warning disable IDE0016 // Usar expresión "throw"
+#pragma warning disable IDE0016 // Usar expresiÃ³n "throw"
             if (action == null)
             {
                 throw new ArgumentNullException(nameof(action));
@@ -107,7 +107,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(scheduler));
             }
-#pragma warning restore IDE0016 // Usar expresión "throw"
+#pragma warning restore IDE0016 // Usar expresiÃ³n "throw"
             Contract.EndContractBlock();
             // This is readonly, and so must be set in the constructor
             // Keep a link to your parent if: (A) You are attached, or (B) you are self-replicating.
@@ -378,12 +378,14 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             }
-            if (milliseconds == -1)
+
+            if (milliseconds != -1)
             {
-                Wait(CancellationToken);
-                return true;
+                return Wait((int)milliseconds, CancellationToken);
             }
-            return Wait((int)milliseconds, CancellationToken);
+
+            Wait(CancellationToken);
+            return true;
         }
 
         public bool Wait(int milliseconds, CancellationToken cancellationToken)
@@ -473,18 +475,21 @@ namespace System.Threading.Tasks
             {
                 return false;
             }
-            if (!IsCanceled)
+
+            if (IsCanceled)
             {
-                if (CancellationToken.IsCancellationRequested)
-                {
-                    Volatile.Write(ref _status, (int)TaskStatus.Canceled);
-                    MarkCompleted();
-                    FinishStageThree();
-                }
-                else
-                {
-                    ExecuteWithThreadLocal();
-                }
+                return true;
+            }
+
+            if (CancellationToken.IsCancellationRequested)
+            {
+                Volatile.Write(ref _status, (int)TaskStatus.Canceled);
+                MarkCompleted();
+                FinishStageThree();
+            }
+            else
+            {
+                ExecuteWithThreadLocal();
             }
             return true;
         }
@@ -520,11 +525,14 @@ namespace System.Threading.Tasks
                 status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.WaitingForChildrenToComplete);
                 cancelSucceeded = cancelSucceeded || status == (int)TaskStatus.WaitingForChildrenToComplete;
             }
-            if (cancelSucceeded)
+
+            if (!cancelSucceeded)
             {
-                MarkCompleted();
-                FinishStageThree();
+                return cancelSucceeded;
             }
+
+            MarkCompleted();
+            FinishStageThree();
             return cancelSucceeded;
         }
 
@@ -557,11 +565,13 @@ namespace System.Threading.Tasks
             }
             catch (ThreadAbortException exception)
             {
-                if (!didInline)
+                if (didInline)
                 {
-                    AddException(exception);
-                    FinishThreadAbortedTask(true, false);
+                    return true;
                 }
+
+                AddException(exception);
+                FinishThreadAbortedTask(true, false);
             }
             catch (Exception exception)
             {
@@ -601,11 +611,7 @@ namespace System.Threading.Tasks
 
         internal bool TryStart(TaskScheduler scheduler, bool inline)
         {
-            if (Volatile.Read(ref _isDisposed) == 1)
-            {
-                return false;
-            }
-            return InternalStart(scheduler, inline, true);
+            return Volatile.Read(ref _isDisposed) != 1 && InternalStart(scheduler, inline, true);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -650,11 +656,13 @@ namespace System.Threading.Tasks
 
         void IThreadPoolWorkItem.MarkAborted(ThreadAbortException exception)
         {
-            if (!IsCompleted)
+            if (IsCompleted)
             {
-                HandleException(exception);
-                FinishThreadAbortedTask(true, false);
+                return;
             }
+
+            HandleException(exception);
+            FinishThreadAbortedTask(true, false);
         }
 
         private void PrivateRunSynchronously(TaskScheduler scheduler)
@@ -781,24 +789,28 @@ namespace System.Threading.Tasks
 
         private void WaitAntecedent(CancellationToken cancellationToken)
         {
-            if (IsContinuationTask)
+            if (!IsContinuationTask)
             {
-                var antecedent = ((IContinuationTask)this).Antecedent;
-                antecedent?.Wait(cancellationToken);
+                return;
             }
+
+            var antecedent = ((IContinuationTask)this).Antecedent;
+            antecedent?.Wait(cancellationToken);
         }
 
         private void WaitAntecedent(CancellationToken cancellationToken, int milliseconds, long start)
         {
-            if (IsContinuationTask)
+            if (!IsContinuationTask)
             {
-                var antecedent = ((IContinuationTask)this).Antecedent;
-                antecedent?.Wait
-                (
-                    milliseconds - (int)ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start),
-                    cancellationToken
-                );
+                return;
             }
+
+            var antecedent = ((IContinuationTask)this).Antecedent;
+            antecedent?.Wait
+            (
+                milliseconds - (int)ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start),
+                cancellationToken
+            );
         }
     }
 }

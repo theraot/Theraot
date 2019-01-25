@@ -9,6 +9,7 @@ using System.Dynamic.Utils;
 
 namespace System.Linq.Expressions
 {
+    /// <inheritdoc />
     /// <summary>
     /// <para>Emits or clears a sequence point for debug information.</para>
     /// <para>
@@ -44,10 +45,11 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual bool IsClear => throw ContractUtils.Unreachable;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns the node type of this <see cref="Expression"/>. (Inherited from <see cref="Expression"/>.)
+        /// Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.DebugInfo;
 
         /// <summary>
@@ -60,10 +62,11 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual int StartLine => throw ContractUtils.Unreachable;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents. (Inherited from <see cref="Expression"/>.)
+        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public sealed override Type Type => typeof(void);
 
         protected internal override Expression Accept(ExpressionVisitor visitor)

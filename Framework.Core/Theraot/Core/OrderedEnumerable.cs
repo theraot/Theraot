@@ -1,5 +1,7 @@
 ﻿//Needed for NET20 (Linq)
 
+#pragma warning disable RCS1231 // Make parameter ref read-only.
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -53,11 +55,7 @@ namespace Theraot.Core
             int Compare(KeyValuePair<TKey, TNewKey> x, KeyValuePair<TKey, TNewKey> y)
             {
                 var check = _comparer.Compare(x.Key, y.Key);
-                if (check == 0)
-                {
-                    return comparer.Compare(x.Value, y.Value);
-                }
-                return check;
+                return check == 0 ? comparer.Compare(x.Value, y.Value) : check;
             }
         }
 

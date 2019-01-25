@@ -19,16 +19,18 @@ namespace System.Threading
                 throw new ArgumentNullException(nameof(callBack));
             }
             _work.Add(() => callBack(null));
-            if (Volatile.Read(ref _threadCount) < EnvironmentHelper.ProcessorCount)
+            if (Volatile.Read(ref _threadCount) >= EnvironmentHelper.ProcessorCount)
             {
-                if (_pool.TryGet(out var thread))
-                {
-                    thread.Awake();
-                }
-                else
-                {
-                    GC.KeepAlive(new ThreadPoolThread());
-                }
+                return true;
+            }
+
+            if (_pool.TryGet(out var thread))
+            {
+                thread.Awake();
+            }
+            else
+            {
+                GC.KeepAlive(new ThreadPoolThread());
             }
             return true;
         }

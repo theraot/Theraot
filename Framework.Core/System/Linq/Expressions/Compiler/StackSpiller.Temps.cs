@@ -113,12 +113,14 @@ namespace System.Linq.Expressions.Compiler
                 // (_usedTemps == null) ==> (mark == 0)
                 Debug.Assert(mark == 0 || _usedTemps != null);
 
-                if (_usedTemps != null)
+                if (_usedTemps == null)
                 {
-                    while (mark < _usedTemps.Count)
-                    {
-                        FreeTemp(_usedTemps.Pop());
-                    }
+                    return;
+                }
+
+                while (mark < _usedTemps.Count)
+                {
+                    FreeTemp(_usedTemps.Pop());
                 }
             }
 
@@ -154,16 +156,18 @@ namespace System.Linq.Expressions.Compiler
                     for (var i = _freeTemps.Count - 1; i >= 0; i--)
                     {
                         temp = _freeTemps[i];
-                        if (temp.Type == type)
+                        if (temp.Type != type)
                         {
-                            _freeTemps.RemoveAt(i);
-                            return UseTemp(temp);
+                            continue;
                         }
+
+                        _freeTemps.RemoveAt(i);
+                        return UseTemp(temp);
                     }
                 }
 
                 // Not on the free-list, create a brand new one.
-                temp = ParameterExpression.Make(type, "$temp$" + _temp++, isByRef: false);
+                temp = ParameterExpression.Make(type, "$temp$" + _temp++, false);
                 Temps.Add(temp);
 
                 return UseTemp(temp);

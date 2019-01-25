@@ -9,6 +9,7 @@ using System.Dynamic.Utils;
 
 namespace System.Linq.Expressions
 {
+    /// <inheritdoc />
     /// <summary>
     /// Represents the default value of a type or an empty expression.
     /// </summary>
@@ -20,17 +21,19 @@ namespace System.Linq.Expressions
             Type = type;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Returns the node type of this Expression. Extension nodes should return
         /// ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public override ExpressionType NodeType => ExpressionType.Default;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents.
+        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type { get; }
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
@@ -57,11 +60,11 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Creates an empty expression that has <see cref="void"/> type.
+        /// Creates an empty expression that has <see cref="System.Void"/> type.
         /// </summary>
         /// <returns>
         /// A <see cref="DefaultExpression"/> that has the <see cref="NodeType"/> property equal to
-        /// <see cref="ExpressionType.Default"/> and the <see cref="Type"/> property set to <see cref="void"/>.
+        /// <see cref="ExpressionType.Default"/> and the <see cref="Type"/> property set to <see cref="System.Void"/>.
         /// </returns>
         public static DefaultExpression Empty()
         {

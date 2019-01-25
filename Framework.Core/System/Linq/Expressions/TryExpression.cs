@@ -81,7 +81,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="TryExpression"/>.</returns>
         public static TryExpression TryFault(Expression body, Expression fault)
         {
-            return MakeTry(null, body, null, fault, handlers: null);
+            return MakeTry(null, body, null, fault, null);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="TryExpression"/>.</returns>
         public static TryExpression TryFinally(Expression body, Expression @finally)
         {
-            return MakeTry(null, body, @finally, fault: null, handlers: null);
+            return MakeTry(null, body, @finally, null, null);
         }
 
         //Validate that the body of the try expression must have the same type as the body of every try block.
@@ -102,18 +102,20 @@ namespace System.Linq.Expressions
             // Type unification ... all parts must be reference assignable to "type"
             if (type != null)
             {
-                if (type != typeof(void))
+                if (type == typeof(void))
                 {
-                    if (!type.IsReferenceAssignableFromInternal(tryBody.Type))
+                    return;
+                }
+
+                if (!type.IsReferenceAssignableFromInternal(tryBody.Type))
+                {
+                    throw new ArgumentException("Argument types do not match");
+                }
+                foreach (var cb in handlers)
+                {
+                    if (!type.IsReferenceAssignableFromInternal(cb.Body.Type))
                     {
                         throw new ArgumentException("Argument types do not match");
-                    }
-                    foreach (var cb in handlers)
-                    {
-                        if (!type.IsReferenceAssignableFromInternal(cb.Body.Type))
-                        {
-                            throw new ArgumentException("Argument types do not match");
-                        }
                     }
                 }
             }

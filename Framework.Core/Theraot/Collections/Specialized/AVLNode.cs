@@ -106,26 +106,28 @@ namespace Theraot.Collections.Specialized
 
         internal static IEnumerable<AVLNode<TKey, TValue>> EnumerateRoot(AVLNode<TKey, TValue> node)
         {
-            if (node != null)
+            if (node == null)
             {
-                var stack = new Stack<AVLNode<TKey, TValue>>();
-                while (true)
+                yield break;
+            }
+
+            var stack = new Stack<AVLNode<TKey, TValue>>();
+            while (true)
+            {
+                while (node != null)
                 {
-                    while (node != null)
-                    {
-                        stack.Push(node);
-                        node = node.Left;
-                    }
-                    if (stack.Count > 0)
-                    {
-                        node = stack.Pop();
-                        yield return node;
-                        node = node.Right;
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    stack.Push(node);
+                    node = node.Left;
+                }
+                if (stack.Count > 0)
+                {
+                    node = stack.Pop();
+                    yield return node;
+                    node = node.Right;
+                }
+                else
+                {
+                    break;
                 }
             }
         }
@@ -217,11 +219,7 @@ namespace Theraot.Collections.Specialized
             }
             try
             {
-                if (compare < 0)
-                {
-                    return Remove(ref node._left, key, comparer);
-                }
-                return Remove(ref node._right, key, comparer);
+                return compare < 0 ? Remove(ref node._left, key, comparer) : Remove(ref node._right, key, comparer);
             }
             finally
             {
@@ -301,11 +299,7 @@ namespace Theraot.Collections.Specialized
             }
             try
             {
-                if (compare < 0)
-                {
-                    return AddNonDuplicateExtracted(ref node._left, key, value, comparer, created);
-                }
-                return AddNonDuplicateExtracted(ref node._right, key, value, comparer, created);
+                return compare < 0 ? AddNonDuplicateExtracted(ref node._left, key, value, comparer, created) : AddNonDuplicateExtracted(ref node._right, key, value, comparer, created);
             }
             finally
             {
@@ -315,20 +309,24 @@ namespace Theraot.Collections.Specialized
 
         private static void DoubleLeft(ref AVLNode<TKey, TValue> node)
         {
-            if (node._right != null)
+            if (node._right == null)
             {
-                RotateRight(ref node._right);
-                RotateLeft(ref node);
+                return;
             }
+
+            RotateRight(ref node._right);
+            RotateLeft(ref node);
         }
 
         private static void DoubleRight(ref AVLNode<TKey, TValue> node)
         {
-            if (node._left != null)
+            if (node._left == null)
             {
-                RotateLeft(ref node._left);
-                RotateRight(ref node);
+                return;
             }
+
+            RotateLeft(ref node._left);
+            RotateRight(ref node);
         }
 
 #if FAT
@@ -492,11 +490,13 @@ namespace Theraot.Collections.Specialized
             else
             {
                 tmp = RemoveNearestLeftExtracted(ref node._right, ref node, key, comparer);
-                if (tmp == null)
+                if (tmp != null)
                 {
-                    tmp = node;
-                    RemoveExtracted(ref node);
+                    return tmp;
                 }
+
+                tmp = node;
+                RemoveExtracted(ref node);
             }
             return tmp;
         }
@@ -518,11 +518,13 @@ namespace Theraot.Collections.Specialized
             if (compare < 0)
             {
                 tmp = RemoveNearestRightExtracted(ref node._left, ref node, key, comparer);
-                if (tmp == null)
+                if (tmp != null)
                 {
-                    tmp = node;
-                    RemoveExtracted(ref node);
+                    return tmp;
                 }
+
+                tmp = node;
+                RemoveExtracted(ref node);
             }
             else
             {
@@ -541,30 +543,34 @@ namespace Theraot.Collections.Specialized
         {
             var root = node;
             var right = node._right;
-            if (right != null)
+            if (right == null)
             {
-                var rightLeft = right._left;
-                node._right = rightLeft;
-                right._left = root;
-                node = right;
-                Update(root);
-                Update(right);
+                return;
             }
+
+            var rightLeft = right._left;
+            node._right = rightLeft;
+            right._left = root;
+            node = right;
+            Update(root);
+            Update(right);
         }
 
         private static void RotateRight(ref AVLNode<TKey, TValue> node)
         {
             var root = node;
             var left = node._left;
-            if (left != null)
+            if (left == null)
             {
-                var leftRight = left._right;
-                node._left = leftRight;
-                left._right = root;
-                node = left;
-                Update(root);
-                Update(left);
+                return;
             }
+
+            var leftRight = left._right;
+            node._left = leftRight;
+            left._right = root;
+            node = left;
+            Update(root);
+            Update(left);
         }
 
         private static void Update(AVLNode<TKey, TValue> node)

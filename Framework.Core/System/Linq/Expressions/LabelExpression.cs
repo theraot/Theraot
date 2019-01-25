@@ -17,7 +17,7 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="LabelExpression"/> with no default value.</returns>
         public static LabelExpression Label(LabelTarget target)
         {
-            return Label(target, defaultValue: null);
+            return Label(target, null);
         }
 
         /// <summary>
@@ -28,16 +28,17 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="LabelExpression"/> with the given default value.</returns>
         public static LabelExpression Label(LabelTarget target, Expression defaultValue)
         {
-            ValidateGoto(target, ref defaultValue, nameof(target), nameof(defaultValue), type: null);
+            ValidateGoto(target, ref defaultValue, nameof(target), nameof(defaultValue), null);
             return new LabelExpression(target, defaultValue);
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
-    /// Represents a label, which can be placed in any <see cref="Expression"/> context. If
+    /// Represents a label, which can be placed in any <see cref="T:System.Linq.Expressions.Expression" /> context. If
     /// it is jumped to, it will get the value provided by the corresponding
-    /// <see cref="GotoExpression"/>. Otherwise, it gets the value in <see cref="DefaultValue"/>. If the
-    /// <see cref="Type"/> equals System.Void, no value should be provided.
+    /// <see cref="T:System.Linq.Expressions.GotoExpression" />. Otherwise, it gets the value in <see cref="P:System.Linq.Expressions.LabelExpression.DefaultValue" />. If the
+    /// <see cref="P:System.Linq.Expressions.LabelExpression.Type" /> equals System.Void, no value should be provided.
     /// </summary>
     [DebuggerTypeProxy(typeof(LabelExpressionProxy))]
     public sealed class LabelExpression : Expression
@@ -54,10 +55,11 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression DefaultValue { get; }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns the node type of this <see cref="Expression"/>. (Inherited from <see cref="Expression"/>.)
+        /// Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public override ExpressionType NodeType => ExpressionType.Label;
 
         /// <summary>
@@ -65,10 +67,11 @@ namespace System.Linq.Expressions
         /// </summary>
         public LabelTarget Target { get; }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents. (Inherited from <see cref="Expression"/>.)
+        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => Target.Type;
 
         /// <summary>

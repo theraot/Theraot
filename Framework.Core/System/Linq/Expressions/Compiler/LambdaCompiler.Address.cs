@@ -144,12 +144,7 @@ namespace System.Linq.Expressions.Compiler
 
         private WriteBack AddressOfWriteBack(IndexExpression node)
         {
-            if (node.Indexer?.CanWrite != true)
-            {
-                return null;
-            }
-
-            return AddressOfWriteBackCore(node); // avoids closure allocation
+            return node.Indexer?.CanWrite != true ? null : AddressOfWriteBackCore(node);
         }
 
         private WriteBack AddressOfWriteBackCore(MemberExpression node)

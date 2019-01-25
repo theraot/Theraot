@@ -257,12 +257,13 @@ namespace Theraot.Collections.ThreadSafe
                         hashCode + attempts,
                         found =>
                         {
-                            if (Comparer.Equals(found, value))
+                            if (!Comparer.Equals(found, value))
                             {
-                                done = true;
-                                return true;
+                                return false;
                             }
-                            return false;
+
+                            done = true;
+                            return true;
                         }
                     );
                 if (done)
@@ -294,19 +295,22 @@ namespace Theraot.Collections.ThreadSafe
                         found =>
                         {
                             tmp = found;
-                            if (Comparer.Equals(found, value))
+                            if (!Comparer.Equals(found, value))
                             {
-                                done = true;
-                                return true;
+                                return false;
                             }
-                            return false;
+
+                            done = true;
+                            return true;
                         }
                     );
-                if (done)
+                if (!done)
                 {
-                    previous = tmp;
-                    return result;
+                    continue;
                 }
+
+                previous = tmp;
+                return result;
             }
             previous = default;
             return false;
@@ -338,19 +342,22 @@ namespace Theraot.Collections.ThreadSafe
                         found =>
                         {
                             previous = found;
-                            if (Comparer.GetHashCode(found) == hashCode && check(found))
+                            if (Comparer.GetHashCode(found) != hashCode || !check(found))
                             {
-                                done = true;
-                                return true;
+                                return false;
                             }
-                            return false;
+
+                            done = true;
+                            return true;
                         }
                     );
-                if (done)
+                if (!done)
                 {
-                    value = previous;
-                    return result;
+                    continue;
                 }
+
+                value = previous;
+                return result;
             }
             return false;
         }
@@ -442,11 +449,13 @@ namespace Theraot.Collections.ThreadSafe
             value = default;
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.GetHashCode(found) == hashCode && check(found))
+                if (!_bucket.TryGet(hashCode + attempts, out var found) || Comparer.GetHashCode(found) != hashCode || !check(found))
                 {
-                    value = found;
-                    return true;
+                    continue;
                 }
+
+                value = found;
+                return true;
             }
             return false;
         }

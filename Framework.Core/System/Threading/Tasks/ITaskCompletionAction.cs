@@ -28,27 +28,29 @@ namespace System.Threading.Tasks
 
             public void Invoke(Task completingTask)
             {
-                if (Interlocked.CompareExchange(ref _firstTaskAlreadyCompleted, 1, 0) == 0)
+                if (Interlocked.CompareExchange(ref _firstTaskAlreadyCompleted, 1, 0) != 0)
                 {
-                    var success = TrySetResult(completingTask);
-                    Contract.Assert(success, "Only one task should have gotten to this point, and thus this must be successful.");
-
-                    // We need to remove continuations that may be left straggling on other tasks.
-                    // Otherwise, repeated calls to WhenAny using the same task could leak actions.
-                    // This may also help to avoided unnecessary invocations of this whenComplete delegate.
-                    // Note that we may be attempting to remove a continuation from a task that hasn't had it
-                    // added yet; while there's overhead there, the operation won't hurt anything.
-                    foreach (var task in _tasks)
-                    {
-                        // if an element was erroneously nulled out concurrently, just skip it; worst case is we don't remove a continuation
-                        if (task?.IsCompleted != false)
-                        {
-                            continue;
-                        }
-                        task.RemoveContinuation(this);
-                    }
-                    _tasks = null;
+                    return;
                 }
+
+                var success = TrySetResult(completingTask);
+                Contract.Assert(success, "Only one task should have gotten to this point, and thus this must be successful.");
+
+                // We need to remove continuations that may be left straggling on other tasks.
+                // Otherwise, repeated calls to WhenAny using the same task could leak actions.
+                // This may also help to avoided unnecessary invocations of this whenComplete delegate.
+                // Note that we may be attempting to remove a continuation from a task that hasn't had it
+                // added yet; while there's overhead there, the operation won't hurt anything.
+                foreach (var task in _tasks)
+                {
+                    // if an element was erroneously nulled out concurrently, just skip it; worst case is we don't remove a continuation
+                    if (task?.IsCompleted != false)
+                    {
+                        continue;
+                    }
+                    task.RemoveContinuation(this);
+                }
+                _tasks = null;
             }
         }
 
@@ -123,11 +125,13 @@ namespace System.Threading.Tasks
                 for (var index = 0; index < tasks.Length; index++)
                 {
                     ref var current = ref tasks[index];
-                    if (current == completingTask)
+                    if (current != completingTask)
                     {
-                        current = null;
-                        break;
+                        continue;
                     }
+
+                    current = null;
+                    break;
                 }
                 // Decrement count
                 Interlocked.Decrement(ref _count);

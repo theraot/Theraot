@@ -15,6 +15,7 @@ using Theraot.Collections.ThreadSafe;
 
 namespace System.Linq.Expressions
 {
+    /// <inheritdoc />
     /// <summary>
     /// Represents a block that contains a sequence of expressions where variables can be defined.
     /// </summary>
@@ -31,11 +32,12 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<Expression> Expressions => GetOrMakeExpressions();
 
+        /// <inheritdoc />
         /// <summary>
         /// Returns the node type of this Expression. Extension nodes should return
         /// ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Block;
 
         /// <summary>
@@ -43,10 +45,11 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Result => GetExpression(ExpressionCount - 1);
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents.
+        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => GetExpression(ExpressionCount - 1).Type;
 
         /// <summary>
@@ -66,40 +69,39 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public BlockExpression Update(IEnumerable<ParameterExpression> variables, IEnumerable<Expression> expressions)
         {
-            if (expressions != null)
+            if (expressions == null)
             {
-                // Ensure variables is safe to enumerate twice.
-                // (If this means a second call to ToReadOnlyCollection it will return quickly).
-                ICollection<ParameterExpression> vars;
-                if (variables == null)
-                {
-                    vars = null;
-                }
-                else
-                {
-                    vars = variables as ICollection<ParameterExpression>;
-                    if (vars == null)
-                    {
-                        variables = vars = variables.ToReadOnlyCollection();
-                    }
-                }
+                return Block(Type, variables, expressions);
+            }
 
-                if (SameVariables(vars))
+            // Ensure variables is safe to enumerate twice.
+            // (If this means a second call to ToReadOnlyCollection it will return quickly).
+            ICollection<ParameterExpression> vars;
+            if (variables == null)
+            {
+                vars = null;
+            }
+            else
+            {
+                vars = variables as ICollection<ParameterExpression>;
+                if (vars == null)
                 {
-                    // Ensure expressions is safe to enumerate twice.
-                    // (If this means a second call to ToReadOnlyCollection it will return quickly).
-                    if (!(expressions is ICollection<Expression> expressionsAsCollection))
-                    {
-                        expressions = expressionsAsCollection = expressions.ToReadOnlyCollection();
-                    }
-                    if (SameExpressions(expressionsAsCollection))
-                    {
-                        return this;
-                    }
+                    variables = vars = variables.ToReadOnlyCollection();
                 }
             }
 
-            return Block(Type, variables, expressions);
+            if (!SameVariables(vars))
+            {
+                return Block(Type, variables, expressions);
+            }
+
+            // Ensure expressions is safe to enumerate twice.
+            // (If this means a second call to ToReadOnlyCollection it will return quickly).
+            if (!(expressions is ICollection<Expression> expressionsAsCollection))
+            {
+                expressions = expressionsAsCollection = expressions.ToReadOnlyCollection();
+            }
+            return SameExpressions(expressionsAsCollection) ? this : Block(Type, variables, expressions);
         }
 
         internal static ReadOnlyCollection<Expression> ReturnReadOnlyExpressions(BlockExpression provider, ref object collection)
@@ -193,25 +195,27 @@ namespace System.Linq.Expressions
         internal override bool SameExpressions(ICollection<Expression> expressions)
         {
             Debug.Assert(expressions != null);
-            if (expressions.Count == 2)
+            if (expressions.Count != 2)
             {
-                if (_arg0 is Expression[] alreadyArray)
-                {
-                    return ExpressionUtils.SameElements(expressions, alreadyArray);
-                }
-
-                using (var en = expressions.GetEnumerator())
-                {
-                    en.MoveNext();
-                    if (en.Current == _arg0)
-                    {
-                        en.MoveNext();
-                        return en.Current == _arg1;
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (_arg0 is Expression[] alreadyArray)
+            {
+                return ExpressionUtils.SameElements(expressions, alreadyArray);
+            }
+
+            using (var en = expressions.GetEnumerator())
+            {
+                en.MoveNext();
+                if (en.Current != _arg0)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                return en.Current == _arg1;
+            }
         }
     }
 
@@ -258,29 +262,33 @@ namespace System.Linq.Expressions
         internal override bool SameExpressions(ICollection<Expression> expressions)
         {
             Debug.Assert(expressions != null);
-            if (expressions.Count == 3)
+            if (expressions.Count != 3)
             {
-                if (_arg0 is Expression[] alreadyArray)
-                {
-                    return ExpressionUtils.SameElements(expressions, alreadyArray);
-                }
-
-                using (var en = expressions.GetEnumerator())
-                {
-                    en.MoveNext();
-                    if (en.Current == _arg0)
-                    {
-                        en.MoveNext();
-                        if (en.Current == _arg1)
-                        {
-                            en.MoveNext();
-                            return en.Current == _arg2;
-                        }
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (_arg0 is Expression[] alreadyArray)
+            {
+                return ExpressionUtils.SameElements(expressions, alreadyArray);
+            }
+
+            using (var en = expressions.GetEnumerator())
+            {
+                en.MoveNext();
+                if (en.Current != _arg0)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                if (en.Current != _arg1)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                return en.Current == _arg2;
+            }
         }
     }
 
@@ -329,33 +337,39 @@ namespace System.Linq.Expressions
         internal override bool SameExpressions(ICollection<Expression> expressions)
         {
             Debug.Assert(expressions != null);
-            if (expressions.Count == 4)
+            if (expressions.Count != 4)
             {
-                if (_arg0 is Expression[] alreadyArray)
-                {
-                    return ExpressionUtils.SameElements(expressions, alreadyArray);
-                }
-
-                using (var en = expressions.GetEnumerator())
-                {
-                    en.MoveNext();
-                    if (en.Current == _arg0)
-                    {
-                        en.MoveNext();
-                        if (en.Current == _arg1)
-                        {
-                            en.MoveNext();
-                            if (en.Current == _arg2)
-                            {
-                                en.MoveNext();
-                                return en.Current == _arg3;
-                            }
-                        }
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (_arg0 is Expression[] alreadyArray)
+            {
+                return ExpressionUtils.SameElements(expressions, alreadyArray);
+            }
+
+            using (var en = expressions.GetEnumerator())
+            {
+                en.MoveNext();
+                if (en.Current != _arg0)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                if (en.Current != _arg1)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                if (en.Current != _arg2)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                return en.Current == _arg3;
+            }
         }
     }
 
@@ -406,37 +420,45 @@ namespace System.Linq.Expressions
         internal override bool SameExpressions(ICollection<Expression> expressions)
         {
             Debug.Assert(expressions != null);
-            if (expressions.Count == 5)
+            if (expressions.Count != 5)
             {
-                if (_arg0 is Expression[] alreadyArray)
-                {
-                    return ExpressionUtils.SameElements(expressions, alreadyArray);
-                }
-
-                using (var en = expressions.GetEnumerator())
-                {
-                    en.MoveNext();
-                    if (en.Current == _arg0)
-                    {
-                        en.MoveNext();
-                        if (en.Current == _arg1)
-                        {
-                            en.MoveNext();
-                            if (en.Current == _arg2)
-                            {
-                                en.MoveNext();
-                                if (en.Current == _arg3)
-                                {
-                                    en.MoveNext();
-                                    return en.Current == _arg4;
-                                }
-                            }
-                        }
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (_arg0 is Expression[] alreadyArray)
+            {
+                return ExpressionUtils.SameElements(expressions, alreadyArray);
+            }
+
+            using (var en = expressions.GetEnumerator())
+            {
+                en.MoveNext();
+                if (en.Current != _arg0)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                if (en.Current != _arg1)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                if (en.Current != _arg2)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                if (en.Current != _arg3)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                return en.Current == _arg4;
+            }
         }
     }
 
@@ -528,21 +550,21 @@ namespace System.Linq.Expressions
         internal override bool SameExpressions(ICollection<Expression> expressions)
         {
             Debug.Assert(expressions != null);
-            if (expressions.Count == 1)
+            if (expressions.Count != 1)
             {
-                if (_body is Expression[] alreadyArray)
-                {
-                    return ExpressionUtils.SameElements(expressions, alreadyArray);
-                }
-
-                using (var en = expressions.GetEnumerator())
-                {
-                    en.MoveNext();
-                    return ExpressionUtils.ReturnObject<Expression>(_body) == en.Current;
-                }
+                return false;
             }
 
-            return false;
+            if (_body is Expression[] alreadyArray)
+            {
+                return ExpressionUtils.SameElements(expressions, alreadyArray);
+            }
+
+            using (var en = expressions.GetEnumerator())
+            {
+                en.MoveNext();
+                return ExpressionUtils.ReturnObject<Expression>(_body) == en.Current;
+            }
         }
     }
 
@@ -567,14 +589,14 @@ namespace System.Linq.Expressions
         // Used for rewrite of the nodes to either reuse existing set of variables if not rewritten.
         internal ParameterExpression[] ReuseOrValidateVariables(ParameterExpression[] variables)
         {
-            if (variables != null && variables != _variables)
+            if (variables == null || variables == _variables)
             {
-                // Need to validate the new variables (uniqueness, not byref)
-                ValidateVariables(variables, nameof(variables));
-                return variables;
+                return _variables;
             }
 
-            return _variables;
+            // Need to validate the new variables (uniqueness, not byref)
+            ValidateVariables(variables, nameof(variables));
+            return variables;
         }
 
         internal override bool SameVariables(ICollection<ParameterExpression> variables) =>
@@ -649,6 +671,7 @@ namespace System.Linq.Expressions
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Provides a wrapper around an IArgumentProvider which exposes the argument providers
     /// members out as an IList of Expression.  This is used to avoid allocating an array
@@ -676,15 +699,7 @@ namespace System.Linq.Expressions
 
         public Expression this[int index]
         {
-            get
-            {
-                if (index == 0)
-                {
-                    return _arg0;
-                }
-
-                return _block.GetExpression(index);
-            }
+            get => index == 0 ? _arg0 : _block.GetExpression(index);
             set => throw ContractUtils.Unreachable;
         }
 
@@ -923,12 +938,7 @@ namespace System.Linq.Expressions
             var variableArray = Theraot.Collections.Extensions.AsArrayInternal(variables);
             var expressionArray = Theraot.Collections.Extensions.AsArrayInternal(expressions);
             RequiresCanRead(expressionArray, nameof(expressions));
-            if (variableArray.Length == 0)
-            {
-                return GetOptimizedBlockExpression(expressionArray);
-            }
-
-            return BlockCore(null, variableArray, expressionArray);
+            return variableArray.Length == 0 ? GetOptimizedBlockExpression(expressionArray) : BlockCore(null, variableArray, expressionArray);
         }
 
         /// <summary>
@@ -948,43 +958,44 @@ namespace System.Linq.Expressions
 
             var variableList = Theraot.Collections.Extensions.AsArrayInternal(variables);
 
-            if (variableList.Length == 0 && expressionList.Length != 0)
+            if (variableList.Length != 0 || expressionList.Length == 0)
             {
-                var expressionCount = expressionList.Length;
-
-                if (expressionCount != 0)
-                {
-                    var lastExpression = expressionList[expressionCount - 1];
-
-                    if (lastExpression.Type == type)
-                    {
-                        return GetOptimizedBlockExpression(expressionList);
-                    }
-                }
+                return BlockCore(type, variableList, expressionList);
             }
 
-            return BlockCore(type, variableList, expressionList);
+            var expressionCount = expressionList.Length;
+
+            if (expressionCount == 0)
+            {
+                return BlockCore(type, variableList, expressionList);
+            }
+
+            var lastExpression = expressionList[expressionCount - 1];
+
+            return lastExpression.Type == type ? GetOptimizedBlockExpression(expressionList) : BlockCore(type, variableList, expressionList);
         }
 
         // Checks that all variables are non-null, not byref, and unique.
         internal static void ValidateVariables(ParameterExpression[] varList, string collectionName)
         {
             var count = varList.Length;
-            if (count != 0)
+            if (count == 0)
             {
-                var set = new HashSet<ParameterExpression>();
-                for (var i = 0; i < count; i++)
+                return;
+            }
+
+            var set = new HashSet<ParameterExpression>();
+            for (var i = 0; i < count; i++)
+            {
+                var v = varList[i];
+                ContractUtils.RequiresNotNull(v, collectionName, i);
+                if (v.IsByRef)
                 {
-                    var v = varList[i];
-                    ContractUtils.RequiresNotNull(v, collectionName, i);
-                    if (v.IsByRef)
-                    {
-                        throw new ArgumentException($"Variable '{v}' uses unsupported type '{v.Type}'. Reference types are not supported for variables.", i >= 0 ? $"{collectionName}[{i}]" : collectionName);
-                    }
-                    if (!set.Add(v))
-                    {
-                        throw new ArgumentException($"Found duplicate parameter '{v}'. Each ParameterExpression in the list must be a unique object.", i >= 0 ? $"{collectionName}[{i}]" : collectionName);
-                    }
+                    throw new ArgumentException($"Variable '{v}' uses unsupported type '{v.Type}'. Reference types are not supported for variables.", i >= 0 ? $"{collectionName}[{i}]" : collectionName);
+                }
+                if (!set.Add(v))
+                {
+                    throw new ArgumentException($"Found duplicate parameter '{v}'. Each ParameterExpression in the list must be a unique object.", i >= 0 ? $"{collectionName}[{i}]" : collectionName);
                 }
             }
         }

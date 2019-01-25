@@ -37,24 +37,27 @@ namespace Theraot.Core
                 {
                     throw new ArgumentException("invalid characters in path");
                 }
-                if (current.Length != 0)
-                {
-                    if
-                    (
-                        combine.Count > 0
-                        && !current.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
-                        && !current.EndsWith(AltDirectorySeparatorString, StringComparison.Ordinal)
-                        && !current.EndsWith(VolumeSeparatorString, StringComparison.Ordinal)
-                    )
-                    {
-                        current += DirectorySeparatorString;
-                    }
 
-                    combine.Insert(0, current);
-                    if (Path.IsPathRooted(current))
-                    {
-                        break;
-                    }
+                if (current.Length == 0)
+                {
+                    continue;
+                }
+
+                if
+                (
+                    combine.Count > 0
+                    && !current.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
+                    && !current.EndsWith(AltDirectorySeparatorString, StringComparison.Ordinal)
+                    && !current.EndsWith(VolumeSeparatorString, StringComparison.Ordinal)
+                )
+                {
+                    current += DirectorySeparatorString;
+                }
+
+                combine.Insert(0, current);
+                if (Path.IsPathRooted(current))
+                {
+                    break;
                 }
             }
             return StringHelper.Concat(combine);
@@ -210,11 +213,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(path));
             }
-            if (path.Length == 0)
-            {
-                return false;
-            }
-            return path.ContainsAny(Path.GetInvalidPathChars());
+            return path.Length != 0 && path.ContainsAny(Path.GetInvalidPathChars());
         }
     }
 }

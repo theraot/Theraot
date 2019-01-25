@@ -62,21 +62,21 @@ namespace System.Linq.Expressions.Compiler
 
             VerifyTemps();
 
-            if (body.Action != RewriteAction.None)
+            if (body.Action == RewriteAction.None)
             {
-                // Create a new scope for temps.
-                // Note that none of these will be hoisted so there is no closure impact.
-                var newBody = body.Node;
-                if (_tm.Temps.Count > 0)
-                {
-                    newBody = Expression.Block(_tm.Temps, ReadOnlyCollectionEx.Create(newBody));
-                }
-
-                // Clone the lambda, replacing the body & variables.
-                return Expression<T>.Create(newBody, lambda.Name, lambda.TailCall, new ParameterList(lambda).ToArray());
+                return lambda;
             }
 
-            return lambda;
+            // Create a new scope for temps.
+            // Note that none of these will be hoisted so there is no closure impact.
+            var newBody = body.Node;
+            if (_tm.Temps.Count > 0)
+            {
+                newBody = Expression.Block(_tm.Temps, ReadOnlyCollectionEx.Create(newBody));
+            }
+
+            // Clone the lambda, replacing the body & variables.
+            return Expression<T>.Create(newBody, lambda.Name, lambda.TailCall, new ParameterList(lambda).ToArray());
         }
 
         private static T[] Clone<T>(T[] original, int max)
@@ -407,7 +407,7 @@ namespace System.Linq.Expressions.Compiler
 
                 if (cr.Action == RewriteAction.SpillStack)
                 {
-                    cr.MarkRefArgs(Expression.GetInvokeMethod(node.Expression), startIndex: 0);
+                    cr.MarkRefArgs(Expression.GetInvokeMethod(node.Expression), 0);
                 }
 
                 // Lambda body also executes on current stack.
@@ -433,7 +433,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (cr.Action == RewriteAction.SpillStack)
             {
-                cr.MarkRefArgs(Expression.GetInvokeMethod(node.Expression), startIndex: 1);
+                cr.MarkRefArgs(Expression.GetInvokeMethod(node.Expression), 1);
             }
 
             return cr.Finish(cr.Rewrite ? new InvocationExpressionN(cr[0], cr[1, -1], node.Type) : expr);
@@ -629,16 +629,20 @@ namespace System.Linq.Expressions.Compiler
             // Expression is emitted on top of the stack in current state.
             var expression = RewriteExpression(node.Expression, stack);
 
-            if (expression.Action != RewriteAction.None)
+            switch (expression.Action)
             {
-                if (expression.Action == RewriteAction.SpillStack && node.Member is PropertyInfo)
-                {
+                case RewriteAction.None:
+                    return new Result(expression.Action, expr);
+                case RewriteAction.SpillStack when node.Member is PropertyInfo:
                     // Only need to validate properties because reading a field
                     // is always side-effect free.
                     RequireNotRefInstance(node.Expression);
-                }
-                expr = MemberExpression.Make(expression.Node, node.Member);
+                    break;
+                default:
+                    break;
             }
+
+            expr = MemberExpression.Make(expression.Node, node.Member);
 
             return new Result(expression.Action, expr);
         }
@@ -730,7 +734,7 @@ namespace System.Linq.Expressions.Compiler
             if (cr.Action == RewriteAction.SpillStack)
             {
                 cr.MarkRefInstance(node.Object);
-                cr.MarkRefArgs(node.Method, startIndex: 1);
+                cr.MarkRefArgs(node.Method, 1);
             }
 
             if (cr.Rewrite)
@@ -777,7 +781,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (cr.Action == RewriteAction.SpillStack)
             {
-                cr.MarkRefArgs(node.Constructor, startIndex: 0);
+                cr.MarkRefArgs(node.Constructor, 0);
             }
 
             return cr.Finish(cr.Rewrite ? new NewExpression(node.Constructor, cr[0, -1], node.Members) : expr);
@@ -854,16 +858,18 @@ namespace System.Linq.Expressions.Compiler
             var defaultBody = RewriteExpression(node.DefaultBody, stack);
             action |= defaultBody.Action;
 
-            if (action != RewriteAction.None)
+            if (action == RewriteAction.None)
             {
-                if (clone != null)
-                {
-                    // okay to wrap because we aren't modifying the array
-                    cases = clone;
-                }
-
-                expr = new SwitchExpression(node.Type, switchValue.Node, defaultBody.Node, node.Comparison, cases);
+                return new Result(action, expr);
             }
+
+            if (clone != null)
+            {
+                // okay to wrap because we aren't modifying the array
+                cases = clone;
+            }
+
+            expr = new SwitchExpression(node.Type, switchValue.Node, defaultBody.Node, node.Comparison, cases);
 
             return new Result(action, expr);
         }
@@ -957,15 +963,17 @@ namespace System.Linq.Expressions.Compiler
                 action = RewriteAction.SpillStack;
             }
 
-            if (action != RewriteAction.None)
+            if (action == RewriteAction.None)
             {
-                if (clone != null)
-                {
-                    handlers = clone;
-                }
-
-                expr = new TryExpression(node.Type, body.Node, @finally.Node, fault.Node, handlers);
+                return new Result(action, expr);
             }
+
+            if (clone != null)
+            {
+                handlers = clone;
+            }
+
+            expr = new TryExpression(node.Type, body.Node, @finally.Node, fault.Node, handlers);
 
             return new Result(action, expr);
         }

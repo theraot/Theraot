@@ -97,20 +97,21 @@ namespace System.Runtime.ExceptionServices
 
         private static FieldInfo GetFieldInfo()
         {
-            if (_remoteStackTraceString == null)
+            if (_remoteStackTraceString != null)
             {
-                // ---
-                // Code by Miguel de Icaza
+                return _remoteStackTraceString;
+            }
+            // ---
+            // Code by Miguel de Icaza
 
 #pragma warning disable CC0021 // Use nameof
-                var remoteStackTraceString = typeof(Exception).GetField("_remoteStackTraceString",
-                    BindingFlags.Instance | BindingFlags.NonPublic) ?? typeof(Exception).GetField("remote_stack_trace",
-                        BindingFlags.Instance | BindingFlags.NonPublic); // MS.Net
+            var remoteStackTraceString = typeof(Exception).GetField("_remoteStackTraceString",
+                                             BindingFlags.Instance | BindingFlags.NonPublic) ?? typeof(Exception).GetField("remote_stack_trace",
+                                             BindingFlags.Instance | BindingFlags.NonPublic); // MS.Net
 #pragma warning restore CC0021 // Use nameof
 
-                // ---
-                _remoteStackTraceString = remoteStackTraceString;
-            }
+            // ---
+            _remoteStackTraceString = remoteStackTraceString;
             return _remoteStackTraceString;
         }
 

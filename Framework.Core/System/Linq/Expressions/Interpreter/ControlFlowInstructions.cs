@@ -109,12 +109,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             Debug.Assert(Offset != Unknown);
 
-            if (frame.Peek() != null)
-            {
-                return Offset;
-            }
-
-            return 1;
+            return frame.Peek() != null ? Offset : 1;
         }
     }
 
@@ -294,7 +289,7 @@ namespace System.Linq.Expressions.Interpreter
             catch (Exception exception) when (Handler.HasHandler(frame, exception, out var exHandler, out var unwrappedException))
             {
                 Debug.Assert(!(unwrappedException is RethrowException));
-                frame.InstructionIndex += frame.Goto(exHandler.LabelIndex, unwrappedException, gotoExceptionHandler: true);
+                frame.InstructionIndex += frame.Goto(exHandler.LabelIndex, unwrappedException, true);
 
 #if FEATURE_THREAD_ABORT
                 // stay in the current catch so that ThreadAbortException is not rethrown by CLR:
@@ -522,17 +517,18 @@ namespace System.Linq.Expressions.Interpreter
 
             // goto the target label or the current finally continuation:
             var value = _hasValue ? frame.Pop() : Interpreter.NoValue;
-            return frame.Goto(LabelIndex, _labelTargetGetsValue ? value : Interpreter.NoValue, gotoExceptionHandler: false);
+            return frame.Goto(LabelIndex, _labelTargetGetsValue ? value : Interpreter.NoValue, false);
         }
 
         internal static GotoInstruction Create(int labelIndex, bool hasResult, bool hasValue, bool labelTargetGetsValue)
         {
-            if (labelIndex < CacheSize)
+            if (labelIndex >= CacheSize)
             {
-                var index = _variants * labelIndex | (labelTargetGetsValue ? 4 : 0) | (hasResult ? 2 : 0) | (hasValue ? 1 : 0);
-                return _cache[index] ?? (_cache[index] = new GotoInstruction(labelIndex, hasResult, hasValue, labelTargetGetsValue));
+                return new GotoInstruction(labelIndex, hasResult, hasValue, labelTargetGetsValue);
             }
-            return new GotoInstruction(labelIndex, hasResult, hasValue, labelTargetGetsValue);
+
+            var index = _variants * labelIndex | (labelTargetGetsValue ? 4 : 0) | (hasResult ? 2 : 0) | (hasValue ? 1 : 0);
+            return _cache[index] ?? (_cache[index] = new GotoInstruction(labelIndex, hasResult, hasValue, labelTargetGetsValue));
         }
     }
 
@@ -604,12 +600,13 @@ namespace System.Linq.Expressions.Interpreter
 
         internal static LeaveExceptionHandlerInstruction Create(int labelIndex, bool hasValue)
         {
-            if (labelIndex < CacheSize)
+            if (labelIndex >= CacheSize)
             {
-                var index = (2 * labelIndex) | (hasValue ? 1 : 0);
-                return _cache[index] ?? (_cache[index] = new LeaveExceptionHandlerInstruction(labelIndex, hasValue));
+                return new LeaveExceptionHandlerInstruction(labelIndex, hasValue);
             }
-            return new LeaveExceptionHandlerInstruction(labelIndex, hasValue);
+
+            var index = (2 * labelIndex) | (hasValue ? 1 : 0);
+            return _cache[index] ?? (_cache[index] = new LeaveExceptionHandlerInstruction(labelIndex, hasValue));
         }
     }
 
@@ -655,9 +652,8 @@ namespace System.Linq.Expressions.Interpreter
 
             // If _pendingContinuation == -1 then we were getting into the finally block because an exception was thrown
             // In this case we just return 1, and the real instruction index will be calculated by GotoHandler later
-            if (!frame.IsJumpHappened()) { return 1; }
+            return !frame.IsJumpHappened() ? 1 : frame.YieldToPendingContinuation();
             // jump to goto target or to the next finally:
-            return frame.YieldToPendingContinuation();
         }
     }
 

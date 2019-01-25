@@ -137,7 +137,7 @@ namespace System.Threading.Tasks
         /// </param>
         public ConfiguredValueTaskAwaitable<TResult> ConfigureAwait(bool continueOnCapturedContext)
         {
-            return new ConfiguredValueTaskAwaitable<TResult>(this, continueOnCapturedContext: continueOnCapturedContext);
+            return new ConfiguredValueTaskAwaitable<TResult>(this, continueOnCapturedContext);
         }
 
         public override bool Equals(object obj)

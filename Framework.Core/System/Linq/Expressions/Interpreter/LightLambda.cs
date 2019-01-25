@@ -82,12 +82,8 @@ namespace System.Linq.Expressions.Interpreter
         {
 #if !NO_FEATURE_STATIC_DELEGATE
             var method = delegateType.GetInvokeMethod();
-            if (method.ReturnType == typeof(void))
-            {
-                return DelegateHelpers.CreateObjectArrayDelegate(delegateType, RunVoid);
-            }
+            return method.ReturnType == typeof(void) ? DelegateHelpers.CreateObjectArrayDelegate(delegateType, RunVoid) : DelegateHelpers.CreateObjectArrayDelegate(delegateType, Run);
 
-            return DelegateHelpers.CreateObjectArrayDelegate(delegateType, Run);
 #else
             Func<LightLambda, Delegate> fastCtor = GetRunDelegateCtor(delegateType);
             if (fastCtor != null)
@@ -193,37 +189,48 @@ namespace System.Linq.Expressions.Interpreter
 
                 foreach (var instruction in instructions)
                 {
-                    if (instruction is EnterTryCatchFinallyInstruction enterTryCatchFinally)
+                    switch (instruction)
                     {
-                        var handler = enterTryCatchFinally.Handler;
+                        case EnterTryCatchFinallyInstruction enterTryCatchFinally:
+                            var handler = enterTryCatchFinally.Handler;
 
-                        AddTryStart(handler.TryStartIndex);
-                        AddHandlerExit(handler.TryEndIndex + 1 /* include Goto instruction that acts as a "leave" */);
+                            AddTryStart(handler.TryStartIndex);
+                            AddHandlerExit(handler.TryEndIndex + 1 /* include Goto instruction that acts as a "leave" */);
 
-                        if (handler.IsFinallyBlockExist)
-                        {
-                            _handlerEnter.Add(handler.FinallyStartIndex, "finally");
-                            AddHandlerExit(handler.FinallyEndIndex);
-                        }
-
-                        if (handler.IsCatchBlockExist)
-                        {
-                            foreach (var catchHandler in handler.Handlers)
+                            if (handler.IsFinallyBlockExist)
                             {
-                                _handlerEnter.Add(catchHandler.HandlerStartIndex - 1 /* include EnterExceptionHandler instruction */, catchHandler.ToString());
-                                AddHandlerExit(catchHandler.HandlerEndIndex);
+                                _handlerEnter.Add(handler.FinallyStartIndex, "finally");
+                                AddHandlerExit(handler.FinallyEndIndex);
+                            }
 
-                                var filter = catchHandler.Filter;
-                                if (filter != null)
+                            if (handler.IsCatchBlockExist)
+                            {
+                                foreach (var catchHandler in handler.Handlers)
                                 {
+                                    _handlerEnter.Add(catchHandler.HandlerStartIndex - 1 /* include EnterExceptionHandler instruction */, catchHandler.ToString());
+                                    AddHandlerExit(catchHandler.HandlerEndIndex);
+
+                                    var filter = catchHandler.Filter;
+                                    if (filter == null)
+                                    {
+                                        continue;
+                                    }
+
                                     _handlerEnter.Add(filter.StartIndex - 1 /* include EnterExceptionFilter instruction */, "filter");
                                     AddHandlerExit(filter.EndIndex);
                                 }
                             }
-                        }
+
+                            break;
+
+                        default:
+                            break;
                     }
 
-                    if (instruction is EnterTryFaultInstruction enterTryFault)
+                    if (!(instruction is EnterTryFaultInstruction enterTryFault))
+                    {
+                        continue;
+                    }
                     {
                         var handler = enterTryFault.Handler;
 
@@ -243,13 +250,15 @@ namespace System.Linq.Expressions.Interpreter
 
             private void EmitExits(StringBuilder sb, int index)
             {
-                if (_handlerExit.TryGetValue(index, out var exitCount))
+                if (!_handlerExit.TryGetValue(index, out var exitCount))
                 {
-                    for (var j = 0; j < exitCount; j++)
-                    {
-                        Dedent();
-                        sb.Append(_indent).AppendLine("}");
-                    }
+                    return;
+                }
+
+                for (var j = 0; j < exitCount; j++)
+                {
+                    Dedent();
+                    sb.Append(_indent).AppendLine("}");
                 }
             }
 

@@ -229,12 +229,15 @@ namespace TestRunner
                         capturedResult = _delegate.DynamicInvoke(parameters);
                     }
                 }
-                if (capturedResult is Task task)
+
+                if (!(capturedResult is Task task))
                 {
-                    capturedResult = null;
-                    task.Wait();
-                    capturedResult = task.GetType().GetTypeInfo().GetProperty("Result")?.GetValue(task, ArrayReservoir<object>.EmptyArray);
+                    return capturedResult;
                 }
+
+                capturedResult = null;
+                task.Wait();
+                capturedResult = task.GetType().GetTypeInfo().GetProperty("Result")?.GetValue(task, ArrayReservoir<object>.EmptyArray);
                 return capturedResult;
             }
         }

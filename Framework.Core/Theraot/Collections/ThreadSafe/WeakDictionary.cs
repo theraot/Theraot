@@ -1,5 +1,7 @@
 ﻿// Needed for NET35 (ConditionalWeakTable)
 
+#pragma warning disable RCS1231 // Make parameter ref read-only.
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -143,11 +145,7 @@ namespace Theraot.Collections.ThreadSafe
             var needle = PrivateGetNeedle(key);
             TValue Factory(WeakNeedle<TKey> pairKey, TValue foundValue)
             {
-                if (PrivateTryGetValue(pairKey, out var foundKey))
-                {
-                    return updateValueFactory(foundKey, foundValue);
-                }
-                return addValueFactory(key);
+                return PrivateTryGetValue(pairKey, out var foundKey) ? updateValueFactory(foundKey, foundValue) : addValueFactory(key);
             }
             TValue ValueFactory(WeakNeedle<TKey> _) => addValueFactory(key);
             var result = Wrapped.AddOrUpdate
@@ -173,11 +171,7 @@ namespace Theraot.Collections.ThreadSafe
             var needle = PrivateGetNeedle(key);
             TValue Factory(WeakNeedle<TKey> pairKey, TValue foundValue)
             {
-                if (PrivateTryGetValue(pairKey, out var foundKey))
-                {
-                    return updateValueFactory(foundKey, foundValue);
-                }
-                return addValue;
+                return PrivateTryGetValue(pairKey, out var foundKey) ? updateValueFactory(foundKey, foundValue) : addValue;
             }
             var result = Wrapped.AddOrUpdate
                 (
@@ -206,11 +200,7 @@ namespace Theraot.Collections.ThreadSafe
             var needle = PrivateGetNeedle(key);
             TValue Factory(WeakNeedle<TKey> pairKey, TValue foundValue)
             {
-                if (PrivateTryGetValue(pairKey, out var foundKey))
-                {
-                    return updateValueFactory(foundKey, foundValue);
-                }
-                return addValueFactory(key);
+                return PrivateTryGetValue(pairKey, out var foundKey) ? updateValueFactory(foundKey, foundValue) : addValueFactory(key);
             }
             TValue ValueFactory(WeakNeedle<TKey> _) => addValueFactory(key);
             var result = Wrapped.AddOrUpdate
@@ -236,11 +226,7 @@ namespace Theraot.Collections.ThreadSafe
             var needle = PrivateGetNeedle(key);
             TValue Factory(WeakNeedle<TKey> pairKey, TValue foundValue)
             {
-                if (PrivateTryGetValue(pairKey, out var foundKey))
-                {
-                    return updateValueFactory(foundKey, foundValue);
-                }
-                return addValue;
+                return PrivateTryGetValue(pairKey, out var foundKey) ? updateValueFactory(foundKey, foundValue) : addValue;
             }
             var result = Wrapped.AddOrUpdate
                 (
@@ -275,12 +261,14 @@ namespace Theraot.Collections.ThreadSafe
             // No risk of dead needles here
             foreach (var item in Wrapped.ClearEnumerable())
             {
-                if (PrivateTryGetValue(item.Key, out var foundKey))
+                if (!PrivateTryGetValue(item.Key, out var foundKey))
                 {
-                    var value = item.Value;
-                    yield return new KeyValuePair<TKey, TValue>(foundKey, value);
-                    _reservoir.DonateNeedle(item.Key);
+                    continue;
                 }
+
+                var value = item.Value;
+                yield return new KeyValuePair<TKey, TValue>(foundKey, value);
+                _reservoir.DonateNeedle(item.Key);
             }
         }
 
@@ -289,11 +277,7 @@ namespace Theraot.Collections.ThreadSafe
             // No risk of dead needles here
             bool Check(WeakNeedle<TKey> input)
             {
-                if (PrivateTryGetValue(input, out var foundKey))
-                {
-                    return Comparer.Equals(foundKey, item.Key);
-                }
-                return false;
+                return PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, item.Key);
             }
             return Wrapped.ContainsKey
                 (
@@ -315,15 +299,8 @@ namespace Theraot.Collections.ThreadSafe
             return Wrapped.ContainsKey
                 (
                     Comparer.GetHashCode(key),
-                    input =>
-                    {
-                        if (PrivateTryGetValue(input, out var foundKey))
-                        {
-                            return Comparer.Equals(foundKey, key);
-                        }
-                        return false;
-                    }
-                );
+                    input => PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, key)
+            );
         }
 
         /// <summary>
@@ -344,15 +321,8 @@ namespace Theraot.Collections.ThreadSafe
             return Wrapped.ContainsKey
                 (
                     hashCode,
-                    input =>
-                    {
-                        if (PrivateTryGetValue(input, out var foundKey))
-                        {
-                            return keyCheck(foundKey);
-                        }
-                        return false;
-                    }
-                );
+                    input => PrivateTryGetValue(input, out var foundKey) && keyCheck(foundKey)
+            );
         }
 
         /// <summary>
@@ -378,14 +348,7 @@ namespace Theraot.Collections.ThreadSafe
             return Wrapped.ContainsKey
                 (
                     hashCode,
-                    input =>
-                    {
-                        if (PrivateTryGetValue(input, out var foundKey))
-                        {
-                            return keyCheck(foundKey);
-                        }
-                        return false;
-                    },
+                    input => PrivateTryGetValue(input, out var foundKey) && keyCheck(foundKey),
                     valueCheck
                 );
         }
@@ -474,11 +437,13 @@ namespace Theraot.Collections.ThreadSafe
             var result = new List<KeyValuePair<TKey, TValue>>(Wrapped.Count);
             foreach (var pair in Wrapped)
             {
-                if (PrivateTryGetValue(pair.Key, out var foundKey))
+                if (!PrivateTryGetValue(pair.Key, out var foundKey))
                 {
-                    var value = pair.Value;
-                    result.Add(new KeyValuePair<TKey, TValue>(foundKey, value));
+                    continue;
                 }
+
+                var value = pair.Value;
+                result.Add(new KeyValuePair<TKey, TValue>(foundKey, value));
             }
             return result;
         }
@@ -497,14 +462,7 @@ namespace Theraot.Collections.ThreadSafe
             return Wrapped.Remove
                 (
                     Comparer.GetHashCode(key),
-                    input =>
-                    {
-                        if (PrivateTryGetValue(input, out var foundKey))
-                        {
-                            return Comparer.Equals(foundKey, key);
-                        }
-                        return false;
-                    },
+                    input => PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, key),
                     valueCheck,
                     out value
                 );
@@ -522,14 +480,7 @@ namespace Theraot.Collections.ThreadSafe
             return Wrapped.Remove
             (
                 Comparer.GetHashCode(key),
-                input =>
-                {
-                    if (PrivateTryGetValue(input, out var foundKey))
-                    {
-                        return Comparer.Equals(foundKey, key);
-                    }
-                    return false;
-                },
+                input => PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, key),
                 out _
             );
         }
@@ -547,14 +498,7 @@ namespace Theraot.Collections.ThreadSafe
             return Wrapped.Remove
                 (
                     Comparer.GetHashCode(key),
-                    input =>
-                    {
-                        if (PrivateTryGetValue(input, out var foundKey))
-                        {
-                            return Comparer.Equals(foundKey, key);
-                        }
-                        return false;
-                    },
+                    input => PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, key),
                     out value
                 );
         }
@@ -578,14 +522,7 @@ namespace Theraot.Collections.ThreadSafe
             return Wrapped.Remove
                 (
                     hashCode,
-                    input =>
-                    {
-                        if (PrivateTryGetValue(input, out var foundKey))
-                        {
-                            return keyCheck.Invoke(foundKey);
-                        }
-                        return false;
-                    },
+                    input => PrivateTryGetValue(input, out var foundKey) && keyCheck.Invoke(foundKey),
                     out value
                 );
         }
@@ -614,14 +551,7 @@ namespace Theraot.Collections.ThreadSafe
             return Wrapped.Remove
                 (
                     hashCode,
-                    input =>
-                    {
-                        if (PrivateTryGetValue(input, out var foundKey))
-                        {
-                            return keyCheck.Invoke(foundKey);
-                        }
-                        return false;
-                    },
+                    input => PrivateTryGetValue(input, out var foundKey) && keyCheck.Invoke(foundKey),
                     valueCheck,
                     out value
                 );
@@ -632,11 +562,7 @@ namespace Theraot.Collections.ThreadSafe
             // No risk of dead needles here
             bool Check(WeakNeedle<TKey> input)
             {
-                if (PrivateTryGetValue(input, out var foundKey))
-                {
-                    return Comparer.Equals(foundKey, item.Key);
-                }
-                return false;
+                return PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, item.Key);
             }
             return Wrapped.Remove
                 (
@@ -671,15 +597,8 @@ namespace Theraot.Collections.ThreadSafe
             }
             return Wrapped.RemoveWhereKey
                 (
-                    input =>
-                    {
-                        if (PrivateTryGetValue(input, out var foundKey))
-                        {
-                            return keyCheck.Invoke(foundKey);
-                        }
-                        return false;
-                    }
-                );
+                    input => PrivateTryGetValue(input, out var foundKey) && keyCheck.Invoke(foundKey)
+            );
         }
 
         /// <summary>
@@ -701,15 +620,8 @@ namespace Theraot.Collections.ThreadSafe
             }
             return Wrapped.RemoveWhereKeyEnumerable
                 (
-                    input =>
-                    {
-                        if (PrivateTryGetValue(input, out var foundKey))
-                        {
-                            return keyCheck.Invoke(foundKey);
-                        }
-                        return false;
-                    }
-                );
+                    input => PrivateTryGetValue(input, out var foundKey) && keyCheck.Invoke(foundKey)
+            );
         }
 
         /// <summary>
@@ -809,17 +721,18 @@ namespace Theraot.Collections.ThreadSafe
             var needle = PrivateGetNeedle(key);
             bool Check(WeakNeedle<TKey> found)
             {
-                if (PrivateTryGetValue(found, out var foundKey))
+                if (!PrivateTryGetValue(found, out var foundKey))
                 {
-                    // Keeping the found key alive
-                    // If we found a key, key will be the key found
-                    // If we didn't key will be the key added
-                    // So, either way key is the key that is stored
-                    // By having it here, we don't need to read _stored.Key
-                    key = foundKey;
-                    return false;
+                    return true;
                 }
-                return true;
+
+                // Keeping the found key alive
+                // If we found a key, key will be the key found
+                // If we didn't key will be the key added
+                // So, either way key is the key that is stored
+                // By having it here, we don't need to read _stored.Key
+                key = foundKey;
+                return false;
             }
             var result = Wrapped.TryAdd(needle, Check, value, out var storedPair);
             if (!result)
@@ -869,11 +782,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             bool Check(WeakNeedle<TKey> found)
             {
-                if (PrivateTryGetValue(found, out var foundKey))
-                {
-                    return Comparer.Equals(key, foundKey);
-                }
-                return false;
+                return PrivateTryGetValue(found, out var foundKey) && Comparer.Equals(key, foundKey);
             }
             return Wrapped.TryGetValue(Comparer.GetHashCode(key), Check, out value);
         }
@@ -896,11 +805,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             bool Check(WeakNeedle<TKey> found)
             {
-                if (PrivateTryGetValue(found, out var foundKey))
-                {
-                    return keyCheck(foundKey);
-                }
-                return false;
+                return PrivateTryGetValue(found, out var foundKey) && keyCheck(foundKey);
             }
             return Wrapped.TryGetValue(hashCode, Check, out value);
         }
@@ -957,15 +862,8 @@ namespace Theraot.Collections.ThreadSafe
             }
             return Wrapped.Where
                 (
-                    input =>
-                    {
-                        if (PrivateTryGetValue(input, out var foundKey))
-                        {
-                            return keyCheck(foundKey);
-                        }
-                        return false;
-                    }
-                );
+                    input => PrivateTryGetValue(input, out var foundKey) && keyCheck(foundKey)
+            );
         }
 
         /// <summary>
@@ -1004,14 +902,7 @@ namespace Theraot.Collections.ThreadSafe
                 Wrapped.AddNew
                     (
                         needle,
-                        input =>
-                        {
-                            if (PrivateTryGetValue(input, out var foundKey))
-                            {
-                                return keyOverwriteCheck(foundKey);
-                            }
-                            return true;
-                        },
+                        input => !PrivateTryGetValue(input, out var foundKey) || keyOverwriteCheck(foundKey),
                         value
                     );
             }
@@ -1030,14 +921,7 @@ namespace Theraot.Collections.ThreadSafe
                 !Wrapped.TryGetOrAdd
                 (
                     needle,
-                    input =>
-                    {
-                        if (PrivateTryGetValue(input, out var foundKey))
-                        {
-                            return keyOverwriteCheck(foundKey);
-                        }
-                        return true;
-                    },
+                    input => !PrivateTryGetValue(input, out var foundKey) || keyOverwriteCheck(foundKey),
                     value,
                     out var stored
                 )
@@ -1061,14 +945,7 @@ namespace Theraot.Collections.ThreadSafe
             Wrapped.Set
                 (
                     needle,
-                    input =>
-                    {
-                        if (PrivateTryGetValue(input, out var foundKey))
-                        {
-                            return keyOverwriteCheck(foundKey);
-                        }
-                        return true;
-                    },
+                    input => !PrivateTryGetValue(input, out var foundKey) || keyOverwriteCheck(foundKey),
                     value
                 );
         }
@@ -1087,14 +964,7 @@ namespace Theraot.Collections.ThreadSafe
             Wrapped.Set
                 (
                     needle,
-                    input =>
-                    {
-                        if (PrivateTryGetValue(input, out var foundKey))
-                        {
-                            return keyOverwriteCheck(foundKey);
-                        }
-                        return true;
-                    },
+                    input => !PrivateTryGetValue(input, out var foundKey) || keyOverwriteCheck(foundKey),
                     value,
                     out isNew
                 );
@@ -1118,14 +988,7 @@ namespace Theraot.Collections.ThreadSafe
                     Wrapped.TryAdd
                     (
                         needle,
-                        input =>
-                        {
-                            if (PrivateTryGetValue(input, out var foundKey))
-                            {
-                                return keyOverwriteCheck(foundKey);
-                            }
-                            return true;
-                        },
+                        input => !PrivateTryGetValue(input, out var foundKey) || keyOverwriteCheck(foundKey),
                         value
                     )
                 )
@@ -1145,14 +1008,7 @@ namespace Theraot.Collections.ThreadSafe
                     Wrapped.TryGetOrAdd
                     (
                         needle,
-                        input =>
-                        {
-                            if (PrivateTryGetValue(input, out var foundKey))
-                            {
-                                return keyOverwriteCheck(foundKey);
-                            }
-                            return true;
-                        },
+                        input => !PrivateTryGetValue(input, out var foundKey) || keyOverwriteCheck(foundKey),
                         value,
                         out stored
                     )

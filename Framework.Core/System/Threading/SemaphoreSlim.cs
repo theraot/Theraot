@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -316,17 +316,20 @@ namespace System.Threading
                 {
                     return false;
                 }
-                if ((found = Volatile.Read(ref _count)) == 0 == canEnter.IsSet)
+
+                if ((found = Volatile.Read(ref _count)) == 0 != canEnter.IsSet)
                 {
-                    if (found == 0)
-                    {
-                        canEnter.Reset();
-                    }
-                    else
-                    {
-                        canEnter.Set();
-                        return true;
-                    }
+                    return false;
+                }
+
+                if (found == 0)
+                {
+                    canEnter.Reset();
+                }
+                else
+                {
+                    canEnter.Set();
+                    return true;
                 }
                 return false;
             }
@@ -346,12 +349,13 @@ namespace System.Threading
                 return false;
             }
             var found = Interlocked.CompareExchange(ref _count, result, expected);
-            if (found == expected)
+            if (found != expected)
             {
-                SyncWaitHandle();
-                return true;
+                return false;
             }
-            return false;
+
+            SyncWaitHandle();
+            return true;
         }
     }
 }

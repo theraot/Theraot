@@ -261,12 +261,14 @@ namespace System.Linq.Expressions.Compiler
             {
                 EnsureDone();
 
-                if (Action == RewriteAction.SpillStack)
+                if (Action != RewriteAction.SpillStack)
                 {
-                    Debug.Assert(_comma.Capacity == _comma.Count + 1);
-                    _comma.Add(expression);
-                    expression = MakeBlock(_comma.ToArray());
+                    return new Result(Action, expression);
                 }
+
+                Debug.Assert(_comma.Capacity == _comma.Count + 1);
+                _comma.Add(expression);
+                expression = MakeBlock(_comma.ToArray());
 
                 return new Result(Action, expression);
             }
@@ -386,28 +388,34 @@ namespace System.Linq.Expressions.Compiler
             private void EnsureDone()
             {
                 // Done adding child expressions, build the comma if necessary.
-                if (!_done)
+                if (_done)
                 {
-                    _done = true;
-
-                    if (Action == RewriteAction.SpillStack)
-                    {
-                        var clone = _expressions;
-                        var count = _lastSpillIndex + 1;
-                        var comma = new List<Expression>(count + 1);
-                        for (var i = 0; i < count; i++)
-                        {
-                            var current = clone[i];
-                            if (ShouldSaveToTemp(current))
-                            {
-                                clone[i] = _self.ToTemp(current, out var temp, _byRefs?[i] ?? false);
-                                comma.Add(temp);
-                            }
-                        }
-                        comma.Capacity = comma.Count + 1;
-                        _comma = comma;
-                    }
+                    return;
                 }
+
+                _done = true;
+
+                if (Action != RewriteAction.SpillStack)
+                {
+                    return;
+                }
+
+                var clone = _expressions;
+                var count = _lastSpillIndex + 1;
+                var comma = new List<Expression>(count + 1);
+                for (var i = 0; i < count; i++)
+                {
+                    var current = clone[i];
+                    if (!ShouldSaveToTemp(current))
+                    {
+                        continue;
+                    }
+
+                    clone[i] = _self.ToTemp(current, out var temp, _byRefs?[i] ?? false);
+                    comma.Add(temp);
+                }
+                comma.Capacity = comma.Count + 1;
+                _comma = comma;
             }
 
             /// <summary>

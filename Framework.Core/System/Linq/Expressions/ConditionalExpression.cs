@@ -10,6 +10,7 @@ using AstUtils = System.Linq.Expressions.Utils;
 
 namespace System.Linq.Expressions
 {
+    /// <inheritdoc />
     /// <summary>
     /// Represents an expression that has a conditional operator.
     /// </summary>
@@ -32,11 +33,12 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression IfTrue { get; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Returns the node type of this Expression. Extension nodes should return
         /// ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Conditional;
 
         /// <summary>
@@ -44,10 +46,11 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Test { get; }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents.
+        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => IfTrue.Type;
 
         /// <summary>
@@ -135,7 +138,7 @@ namespace System.Linq.Expressions
         /// and <see cref="ConditionalExpression.IfFalse"/> properties set to the specified values.</returns>
         /// <remarks>This method allows explicitly unifying the result type of the conditional expression in cases where the types of <paramref name="ifTrue"/>
         /// and <paramref name="ifFalse"/> expressions are not equal. Types of both <paramref name="ifTrue"/> and <paramref name="ifFalse"/> must be implicitly
-        /// reference assignable to the result type. The <paramref name="type"/> is allowed to be <see cref="void"/>.</remarks>
+        /// reference assignable to the result type. The <paramref name="type"/> is allowed to be <see cref="System.Void"/>.</remarks>
         public static ConditionalExpression Condition(Expression test, Expression ifTrue, Expression ifFalse, Type type)
         {
             ExpressionUtils.RequiresCanRead(test, nameof(test));
@@ -164,7 +167,7 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="ConditionalExpression"/> that has the <see cref="NodeType"/> property equal to
         /// <see cref="ExpressionType.Conditional"/> and the <see cref="ConditionalExpression.Test"/>, <see cref="ConditionalExpression.IfTrue"/>,
         /// properties set to the specified values. The <see cref="ConditionalExpression.IfFalse"/> property is set to default expression and
-        /// the type of the resulting <see cref="ConditionalExpression"/> returned by this method is <see cref="void"/>.</returns>
+        /// the type of the resulting <see cref="ConditionalExpression"/> returned by this method is <see cref="System.Void"/>.</returns>
         public static ConditionalExpression IfThen(Expression test, Expression ifTrue)
         {
             return Condition(test, ifTrue, Empty(), typeof(void));
@@ -179,7 +182,7 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="ConditionalExpression"/> that has the <see cref="NodeType"/> property equal to
         /// <see cref="ExpressionType.Conditional"/> and the <see cref="ConditionalExpression.Test"/>, <see cref="ConditionalExpression.IfTrue"/>,
         /// and <see cref="ConditionalExpression.IfFalse"/> properties set to the specified values. The type of the resulting <see cref="ConditionalExpression"/>
-        /// returned by this method is <see cref="void"/>.</returns>
+        /// returned by this method is <see cref="System.Void"/>.</returns>
         public static ConditionalExpression IfThenElse(Expression test, Expression ifTrue, Expression ifFalse)
         {
             return Condition(test, ifTrue, ifFalse, typeof(void));

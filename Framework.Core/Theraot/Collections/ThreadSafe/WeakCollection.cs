@@ -209,28 +209,12 @@ namespace Theraot.Collections.ThreadSafe
 
         private static Predicate<TNeedle> Check(Predicate<T> itemCheck)
         {
-            return input =>
-            {
-                if (input.TryGetValue(out var value))
-                {
-                    return itemCheck(value);
-                }
-
-                return false;
-            };
+            return input => input.TryGetValue(out var value) && itemCheck(value);
         }
 
         private Predicate<TNeedle> Check(T item)
         {
-            return input =>
-            {
-                if (input.TryGetValue(out var value))
-                {
-                    return _comparer.Equals(item, value);
-                }
-
-                return false;
-            };
+            return input => input.TryGetValue(out var value) && _comparer.Equals(item, value);
         }
 
         private void GarbageCollected(object sender, EventArgs e)

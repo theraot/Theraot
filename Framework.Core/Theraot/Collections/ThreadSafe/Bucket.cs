@@ -176,20 +176,25 @@ namespace Theraot.Collections.ThreadSafe
                     (ref object target) =>
                     {
                         var found = Interlocked.CompareExchange(ref target, null, null);
-                        if (found != null)
+                        if (found == null)
                         {
-                            var comparisonItem = found == BucketHelper.Null ? default : (T)found;
-                            if (check(comparisonItem))
-                            {
-                                var compare = Interlocked.CompareExchange(ref target, null, found);
-                                if (found == compare)
-                                {
-                                    Interlocked.Decrement(ref _count);
-                                    return true;
-                                }
-                            }
+                            return false;
                         }
-                        return false;
+
+                        var comparisonItem = found == BucketHelper.Null ? default : (T)found;
+                        if (!check(comparisonItem))
+                        {
+                            return false;
+                        }
+
+                        var compare = Interlocked.CompareExchange(ref target, null, found);
+                        if (found != compare)
+                        {
+                            return false;
+                        }
+
+                        Interlocked.Decrement(ref _count);
+                        return true;
                     }
                 );
         }
@@ -250,16 +255,20 @@ namespace Theraot.Collections.ThreadSafe
                     (ref object target) =>
                     {
                         found = Interlocked.CompareExchange(ref target, null, null);
-                        if (found != null)
+                        if (found == null)
                         {
-                            var comparisonItem = found == BucketHelper.Null ? default : (T)found;
-                            if (check(comparisonItem))
-                            {
-                                var item = itemUpdateFactory(comparisonItem);
-                                compare = Interlocked.CompareExchange(ref target, (object)item ?? BucketHelper.Null, found);
-                                result = found == compare;
-                            }
+                            return true;
                         }
+
+                        var comparisonItem = found == BucketHelper.Null ? default : (T)found;
+                        if (!check(comparisonItem))
+                        {
+                            return true;
+                        }
+
+                        var item = itemUpdateFactory(comparisonItem);
+                        compare = Interlocked.CompareExchange(ref target, (object)item ?? BucketHelper.Null, found);
+                        result = found == compare;
                         return true;
                     }
                 );
@@ -305,11 +314,13 @@ namespace Theraot.Collections.ThreadSafe
                 foreach (var value in _bucketCore)
                 {
                     var castValue = value == BucketHelper.Null ? default : (T)value;
-                    if (check(castValue))
+                    if (!check(castValue))
                     {
-                        yield return new KeyValuePair<int, T>(index, castValue);
-                        index++;
+                        continue;
                     }
+
+                    yield return new KeyValuePair<int, T>(index, castValue);
+                    index++;
                 }
             }
         }

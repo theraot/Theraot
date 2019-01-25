@@ -361,11 +361,13 @@ namespace System.Linq.Expressions.Interpreter
 
             public override int Run(InterpretedFrame frame)
             {
-                if (frame.Peek() == null)
+                if (frame.Peek() != null)
                 {
-                    frame.Pop();
-                    frame.Push(Activator.CreateInstance(_defaultValueType));
+                    return 1;
                 }
+
+                frame.Pop();
+                frame.Push(Activator.CreateInstance(_defaultValueType));
                 return 1;
             }
         }
@@ -463,11 +465,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     _shadowedVars.Pop();
                 }
-                if (b == null)
-                {
-                    return node;
-                }
-                return node.Rewrite(node.Variables, b);
+                return b == null ? node : node.Rewrite(node.Variables, b);
             }
 
             protected internal override Expression VisitLambda<T>(Expression<T> node)
@@ -488,11 +486,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     _shadowedVars.Pop();
                 }
-                if (b == node.Body)
-                {
-                    return node;
-                }
-                return node.Rewrite(b, parameters: null);
+                return b == node.Body ? node : node.Rewrite(b, null);
             }
 
             protected internal override Expression VisitParameter(ParameterExpression node)
@@ -574,17 +568,17 @@ namespace System.Linq.Expressions.Interpreter
 
             private IStrongBox GetBox(ParameterExpression variable)
             {
-                if (_variables.TryGetValue(variable, out var var))
+                if (!_variables.TryGetValue(variable, out var var))
                 {
-                    if (var.InClosure)
-                    {
-                        return _frame.Closure[var.Index];
-                    }
-
-                    return (IStrongBox)_frame.Data[var.Index];
+                    return null;
                 }
 
-                return null;
+                if (var.InClosure)
+                {
+                    return _frame.Closure[var.Index];
+                }
+
+                return (IStrongBox)_frame.Data[var.Index];
             }
         }
     }

@@ -48,11 +48,14 @@ namespace Theraot.Core
                     {
                         break;
                     }
-                    if (--cv == 0)
+
+                    if (--cv != 0)
                     {
-                        left %= right;
-                        break;
+                        continue;
                     }
+
+                    left %= right;
+                    break;
                 }
                 Swap(ref left, ref right);
             }
@@ -93,11 +96,13 @@ namespace Theraot.Core
                         break;
                     }
 
-                    if (--cv == 0)
+                    if (--cv != 0)
                     {
-                        uu1 %= uu2;
-                        break;
+                        continue;
                     }
+
+                    uu1 %= uu2;
+                    break;
                 }
                 Swap(ref uu1, ref uu2);
             }

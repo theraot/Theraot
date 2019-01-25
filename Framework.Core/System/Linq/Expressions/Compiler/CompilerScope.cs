@@ -259,17 +259,15 @@ namespace System.Linq.Expressions.Compiler
 
         private static ParameterExpression[] GetVariables(object scope)
         {
-            if (scope is LambdaExpression lambda)
+            switch (scope)
             {
-                return Theraot.Collections.Extensions.AsArrayInternal(new ParameterList(lambda));
+                case LambdaExpression lambda:
+                    return Theraot.Collections.Extensions.AsArrayInternal(new ParameterList(lambda));
+                case BlockExpression block:
+                    return Theraot.Collections.Extensions.AsArrayInternal(block.Variables);
+                default:
+                    return new[] {((CatchBlock)scope).Variable};
             }
-
-            if (scope is BlockExpression block)
-            {
-                return Theraot.Collections.Extensions.AsArrayInternal(block.Variables);
-            }
-
-            return new[] {((CatchBlock)scope).Variable};
         }
 
         // Allocates slots for IL locals or IL arguments
@@ -277,18 +275,20 @@ namespace System.Linq.Expressions.Compiler
         {
             foreach (var v in GetVariables())
             {
-                if (Definitions[v] == VariableStorageKind.Local)
+                if (Definitions[v] != VariableStorageKind.Local)
                 {
-                    //
-                    // If v is in lc.Parameters, it is a parameter.
-                    // Otherwise, it is a local variable.
-                    //
-                    // Also, for inlined lambdas we'll create a local, which
-                    // is possibly a byref local if the parameter is byref.
-                    //
-                    var s = IsMethod && lc.Parameters.Contains(v) ? (Storage)new ArgumentStorage(lc, v) : new LocalStorage(lc, v);
-                    _locals.Add(v, s);
+                    continue;
                 }
+
+                //
+                // If v is in lc.Parameters, it is a parameter.
+                // Otherwise, it is a local variable.
+                //
+                // Also, for inlined lambdas we'll create a local, which
+                // is possibly a byref local if the parameter is byref.
+                //
+                var s = IsMethod && lc.Parameters.Contains(v) ? (Storage)new ArgumentStorage(lc, v) : new LocalStorage(lc, v);
+                _locals.Add(v, s);
             }
         }
 
@@ -312,11 +312,13 @@ namespace System.Linq.Expressions.Compiler
 
             foreach (var refCount in ReferenceCount)
             {
-                if (ShouldCache(refCount.Key, refCount.Value) && ResolveVariable(refCount.Key) is ElementBoxStorage storage)
+                if (!ShouldCache(refCount.Key, refCount.Value) || !(ResolveVariable(refCount.Key) is ElementBoxStorage storage))
                 {
-                    storage.EmitLoadBox();
-                    CacheBoxToLocal(storage.Compiler, refCount.Key);
+                    continue;
                 }
+
+                storage.EmitLoadBox();
+                CacheBoxToLocal(storage.Compiler, refCount.Key);
             }
         }
 
@@ -482,11 +484,13 @@ namespace System.Linq.Expressions.Compiler
 
             var hoistedVars = GetVariables().Where(p => Definitions[p] == VariableStorageKind.Hoisted).ToReadOnlyCollection();
 
-            if (hoistedVars.Count > 0)
+            if (hoistedVars.Count <= 0)
             {
-                _hoistedLocals = new HoistedLocals(_closureHoistedLocals, hoistedVars);
-                AddLocal(lc, _hoistedLocals.SelfVariable);
+                return;
             }
+
+            _hoistedLocals = new HoistedLocals(_closureHoistedLocals, hoistedVars);
+            AddLocal(lc, _hoistedLocals.SelfVariable);
         }
 
         private bool ShouldCache(ParameterExpression v, int refCount)

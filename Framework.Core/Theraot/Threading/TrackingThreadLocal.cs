@@ -65,11 +65,13 @@ namespace Theraot.Threading
         [DebuggerNonUserCode]
         public void Dispose()
         {
-            if (Interlocked.CompareExchange(ref _disposing, 1, 0) == 0)
+            if (Interlocked.CompareExchange(ref _disposing, 1, 0) != 0)
             {
-                _slots = null;
-                _valueFactory = null;
+                return;
             }
+
+            _slots = null;
+            _valueFactory = null;
         }
 
         public void EraseValue()
@@ -117,21 +119,24 @@ namespace Theraot.Threading
             {
                 throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
             }
-            if (_slots.TryGetOrAdd(thread, ThreadLocalHelper<T>.RecursionGuardNeedle, out var needle))
+
+            if (!_slots.TryGetOrAdd(thread, ThreadLocalHelper<T>.RecursionGuardNeedle, out var needle))
             {
-                try
-                {
-                    needle = new ReadOnlyStructNeedle<T>(_valueFactory.Invoke());
-                }
-                catch (Exception exception)
-                {
-                    if (exception != ThreadLocalHelper.RecursionGuardException)
-                    {
-                        needle = new ExceptionStructNeedle<T>(exception);
-                    }
-                }
-                _slots.Set(thread, needle);
+                return needle.Value;
             }
+
+            try
+            {
+                needle = new ReadOnlyStructNeedle<T>(_valueFactory.Invoke());
+            }
+            catch (Exception exception)
+            {
+                if (exception != ThreadLocalHelper.RecursionGuardException)
+                {
+                    needle = new ExceptionStructNeedle<T>(exception);
+                }
+            }
+            _slots.Set(thread, needle);
             return needle.Value;
         }
 

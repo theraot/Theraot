@@ -16,9 +16,11 @@ namespace TestRunner
 
         public static object Get(Type type, IEnumerable<Type> preferredTypes)
         {
-            if (_dataGenerators.TryGetValue(type, out var dictionary))
+            if (!_dataGenerators.TryGetValue(type, out var dictionary))
             {
-                Delegate @delegate = null;
+                return type.GetTypeInfo().IsValueType ? Activator.CreateInstance(type) : null;
+            }
+            Delegate @delegate = null;
                 foreach (var preferredType in preferredTypes)
                 {
                     if (!dictionary.TryGetValue(preferredType, out var found))
@@ -33,8 +35,6 @@ namespace TestRunner
                     @delegate = dictionary.First().Value;
                 }
                 return @delegate.DynamicInvoke(ArrayReservoir<object>.EmptyArray);
-            }
-            return type.GetTypeInfo().IsValueType ? Activator.CreateInstance(type) : null;
         }
 
         private static Dictionary<Type, SortedDictionary<Type, Delegate>> FindAllGenerators()

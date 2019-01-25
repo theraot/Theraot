@@ -29,7 +29,7 @@ namespace System.Linq.Expressions.Interpreter
         internal readonly object[] Objects;
 
         internal InstructionArray(int maxStackDepth, int maxContinuationDepth, Instruction[] instructions,
-            object[] objects, RuntimeLabel[] labels, IList<KeyValuePair<int, object>> debugCookies)
+            object[] objects, RuntimeLabel[] labels, IEnumerable<KeyValuePair<int, object>> debugCookies)
         {
             MaxStackDepth = maxStackDepth;
             MaxContinuationDepth = maxContinuationDepth;
@@ -50,7 +50,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public InstructionList.DebugView.InstructionView[]/*!*/ A0 => GetInstructionViews(includeDebugCookies: true);
+            public InstructionList.DebugView.InstructionView[]/*!*/ A0 => GetInstructionViews(true);
 
             public InstructionList.DebugView.InstructionView[] GetInstructionViews(bool includeDebugCookies = false)
             {
@@ -427,7 +427,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public void EmitLoad(object value)
         {
-            EmitLoad(value, type: null);
+            EmitLoad(value, null);
         }
 
         public void EmitLoad(bool value)
@@ -452,21 +452,23 @@ namespace System.Linq.Expressions.Interpreter
 
             if (type?.IsValueType != false)
             {
-                if (value is bool b)
+                switch (value)
                 {
-                    EmitLoad(b);
-                    return;
-                }
+                    case bool b:
+                        EmitLoad(b);
+                        return;
+                    case int i when i >= _pushIntMinCachedValue && i <= _pushIntMaxCachedValue:
+                        if (_ints == null)
+                        {
+                            _ints = new Instruction[_pushIntMaxCachedValue - _pushIntMinCachedValue + 1];
+                        }
 
-                if (value is int i && i >= _pushIntMinCachedValue && i <= _pushIntMaxCachedValue)
-                {
-                    if (_ints == null)
-                    {
-                        _ints = new Instruction[_pushIntMaxCachedValue - _pushIntMinCachedValue + 1];
-                    }
-                    i -= _pushIntMinCachedValue;
-                    Emit(_ints[i] ?? (_ints[i] = new LoadObjectInstruction(i)));
-                    return;
+                        i -= _pushIntMinCachedValue;
+                        Emit(_ints[i] ?? (_ints[i] = new LoadObjectInstruction(i)));
+                        return;
+
+                    default:
+                        break;
                 }
             }
 
@@ -898,13 +900,15 @@ namespace System.Linq.Expressions.Interpreter
 
         internal void SwitchToBoxed(int index, int instructionIndex)
         {
-            if (_instructions[instructionIndex] is IBoxableInstruction instruction)
+            if (!(_instructions[instructionIndex] is IBoxableInstruction instruction))
             {
-                var newInstruction = instruction.BoxIfIndexMatches(index);
-                if (newInstruction != null)
-                {
-                    _instructions[instructionIndex] = newInstruction;
-                }
+                return;
+            }
+
+            var newInstruction = instruction.BoxIfIndexMatches(index);
+            if (newInstruction != null)
+            {
+                _instructions[instructionIndex] = newInstruction;
             }
         }
 
@@ -912,11 +916,13 @@ namespace System.Linq.Expressions.Interpreter
         {
             lock (_loadFields)
             {
-                if (!_loadFields.TryGetValue(field, out var instruction))
+                if (_loadFields.TryGetValue(field, out var instruction))
                 {
-                    instruction = field.IsStatic ? (Instruction)new LoadStaticFieldInstruction(field) : new LoadFieldInstruction(field);
-                    _loadFields.Add(field, instruction);
+                    return instruction;
                 }
+
+                instruction = field.IsStatic ? (Instruction)new LoadStaticFieldInstruction(field) : new LoadFieldInstruction(field);
+                _loadFields.Add(field, instruction);
                 return instruction;
             }
         }
@@ -991,7 +997,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public InstructionView[]/*!*/ A0 => GetInstructionViews(includeDebugCookies: true);
+            public InstructionView[]/*!*/ A0 => GetInstructionViews(true);
 
             public InstructionView[] GetInstructionViews(bool includeDebugCookies = false)
             {

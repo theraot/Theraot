@@ -76,11 +76,7 @@ namespace Theraot.Threading.Needles
 
         public override string ToString()
         {
-            if (IsAlive)
-            {
-                return $"<Exception: {Exception}>";
-            }
-            return "<Dead Needle>";
+            return IsAlive ? $"<Exception: {Exception}>" : "<Dead Needle>";
         }
     }
 }

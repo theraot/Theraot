@@ -80,19 +80,21 @@ namespace System.Linq.Expressions.Compiler
 
             foreach (var reference in _references)
             {
-                if (ShouldCache(reference.Value))
+                if (!ShouldCache(reference.Value))
                 {
-                    if (--count > 0)
-                    {
-                        // Dup array to keep it on the stack
-                        lc.IL.Emit(OpCodes.Dup);
-                    }
-
-                    var local = lc.IL.DeclareLocal(reference.Key.Type);
-                    EmitConstantFromArray(lc, reference.Key.Value, local.LocalType);
-                    lc.IL.Emit(OpCodes.Stloc, local);
-                    _cache.Add(reference.Key, local);
+                    continue;
                 }
+
+                if (--count > 0)
+                {
+                    // Dup array to keep it on the stack
+                    lc.IL.Emit(OpCodes.Dup);
+                }
+
+                var local = lc.IL.DeclareLocal(reference.Key.Type);
+                EmitConstantFromArray(lc, reference.Key.Value, local.LocalType);
+                lc.IL.Emit(OpCodes.Stloc, local);
+                _cache.Add(reference.Key, local);
             }
         }
 
