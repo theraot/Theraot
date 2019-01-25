@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 using System.Diagnostics.Contracts;
 
@@ -18,6 +18,7 @@ namespace System.Threading.Tasks
 
         public Task Antecedent => _antecedent;
 
+        /// <inheritdoc />
         /// <summary>
         /// Evaluates the value selector of the Task which is passed in as an object and stores the result.
         /// </summary>

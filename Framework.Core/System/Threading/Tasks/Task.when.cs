@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 
 namespace System.Threading.Tasks
 {
@@ -43,21 +44,25 @@ namespace System.Threading.Tasks
             {
                 return WhenAll(taskArray);
             }
-            // Skip a List allocation/copy if tasks is a collection
-            if (tasks is ICollection<Task> taskCollection)
+
+            switch (tasks)
             {
-                var index = 0;
-                taskArray = new Task[taskCollection.Count];
-                foreach (var task in tasks)
+                // Skip a List allocation/copy if tasks is a collection
+                case ICollection<Task> taskCollection:
                 {
-                    taskArray[index++] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
+                    var index = 0;
+                    taskArray = new Task[taskCollection.Count];
+                    foreach (var task in tasks)
+                    {
+                        taskArray[index++] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
+                    }
+                    return InternalWhenAll(taskArray);
                 }
-                return InternalWhenAll(taskArray);
-            }
-            // Do some argument checking and convert tasks to a List (and later an array).
-            if (tasks == null)
-            {
-                throw new ArgumentNullException(nameof(tasks));
+                // Do some argument checking and convert tasks to a List (and later an array).
+                case null:
+                    throw new ArgumentNullException(nameof(tasks));
+                default:
+                    break;
             }
 
             var taskList = new List<Task>();
@@ -164,21 +169,25 @@ namespace System.Threading.Tasks
             {
                 return WhenAll(taskArray);
             }
-            // Skip a List allocation/copy if tasks is a collection
-            if (tasks is ICollection<Task<TResult>> taskCollection)
+
+            switch (tasks)
             {
-                var index = 0;
-                taskArray = new Task<TResult>[taskCollection.Count];
-                foreach (var task in tasks)
+                // Skip a List allocation/copy if tasks is a collection
+                case ICollection<Task<TResult>> taskCollection:
                 {
-                    taskArray[index++] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
+                    var index = 0;
+                    taskArray = new Task<TResult>[taskCollection.Count];
+                    foreach (var task in tasks)
+                    {
+                        taskArray[index++] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
+                    }
+                    return InternalWhenAll(taskArray);
                 }
-                return InternalWhenAll(taskArray);
-            }
-            // Do some argument checking and convert tasks into a List (later an array)
-            if (tasks == null)
-            {
-                throw new ArgumentNullException(nameof(tasks));
+                // Do some argument checking and convert tasks into a List (later an array)
+                case null:
+                    throw new ArgumentNullException(nameof(tasks));
+                default:
+                    break;
             }
 
             var taskList = new List<Task<TResult>>();
@@ -389,23 +398,14 @@ namespace System.Threading.Tasks
         /// <returns>true if any of the tasks require notification; otherwise, false.</returns>
         internal static bool AnyTaskRequiresNotifyDebuggerOfWaitCompletion(IEnumerable<Task> tasks)
         {
-            if (tasks == null)
+            if (tasks != null)
             {
-                Contract.Assert(false, "Expected non-null array of tasks");
-                throw new ArgumentNullException(nameof(tasks));
+                return tasks.Any(task => task?.IsWaitNotificationEnabled == true && task.ShouldNotifyDebuggerOfWaitCompletion);
             }
-            foreach (var task in tasks)
-            {
-                if
-                (
-                    task?.IsWaitNotificationEnabled == true
-                    && task.ShouldNotifyDebuggerOfWaitCompletion
-                ) // potential recursion
-                {
-                    return true;
-                }
-            }
-            return false;
+
+            Contract.Assert(false, "Expected non-null array of tasks");
+            throw new ArgumentNullException(nameof(tasks));
+
         }
 
         // Some common logic to support WhenAll() methods

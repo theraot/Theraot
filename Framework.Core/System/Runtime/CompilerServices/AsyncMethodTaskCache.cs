@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace System.Runtime.CompilerServices
 {
+    /// <inheritdoc />
     /// <summary>
     /// Provides a cache for Boolean tasks.
     /// </summary>
@@ -19,6 +20,7 @@ namespace System.Runtime.CompilerServices
         /// </summary>
         private readonly TaskCompletionSource<bool> _true = CreateCompleted(true);
 
+        /// <inheritdoc />
         /// <summary>
         /// Gets a cached task for the Boolean result.
         /// </summary>
@@ -32,6 +34,7 @@ namespace System.Runtime.CompilerServices
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Provides a cache for zero Int32 tasks.
     /// </summary>
@@ -52,6 +55,7 @@ namespace System.Runtime.CompilerServices
         /// </summary>
         private static readonly TaskCompletionSource<int>[] _int32Tasks = CreateInt32Tasks();
 
+        /// <inheritdoc />
         /// <summary>
         /// Gets a cached task for the zero Int32 result.
         /// </summary>

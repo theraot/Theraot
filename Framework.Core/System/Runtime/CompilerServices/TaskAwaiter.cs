@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace System.Runtime.CompilerServices
 {
     /// <summary>
-    ///   Provides an awaiter for awaiting a <see cref="Task" /> .
+    ///   Provides an awaiter for awaiting a <see cref="T:System.Threading.Tasks.Task" /> .
     /// </summary>
     /// <remarks>
     ///   This type is intended for compiler use only.
@@ -301,7 +301,7 @@ namespace System.Runtime.CompilerServices
     }
 
     /// <summary>
-    ///   Provides an awaiter for awaiting a <see cref="Task{TResult}" /> .
+    ///   Provides an awaiter for awaiting a <see cref="T:System.Threading.Tasks.Task`1" /> .
     /// </summary>
     /// <remarks>
     ///   This type is intended for compiler use only.

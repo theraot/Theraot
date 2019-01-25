@@ -33,6 +33,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
 
@@ -114,13 +115,7 @@ namespace System.Threading
             var src = new CancellationTokenSource();
             Action action = src.SafeLinkedCancel;
             var registrations = new List<CancellationTokenRegistration>(tokens.Length);
-            foreach (var token in tokens)
-            {
-                if (token.CanBeCanceled)
-                {
-                    registrations.Add(token.Register(action));
-                }
-            }
+            registrations.AddRange(from token in tokens where token.CanBeCanceled select token.Register(action));
             src._linkedTokens = registrations.ToArray();
             return src;
         }

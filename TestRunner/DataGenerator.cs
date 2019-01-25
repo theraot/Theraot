@@ -48,25 +48,23 @@ namespace TestRunner
                 (
                     (left, right) => string.Compare(left.Name, right.Name, StringComparison.Ordinal)
                 );
-            foreach (var generator in generators)
+            foreach (var (returnType, generatorType, @delegate) in generators)
             {
-                var type = generator.ReturnType;
-                var @delegate = generator.Delegate;
                 if (@delegate == null)
                 {
                     continue;
                 }
-                if (result.TryGetValue(type, out var dictionary))
+                if (result.TryGetValue(returnType, out var dictionary))
                 {
-                    dictionary.TryAdd(generator.GeneratorType, @delegate);
+                    dictionary.TryAdd(generatorType, @delegate);
                 }
                 else
                 {
                     dictionary = new SortedDictionary<Type, Delegate>(typeComparer)
                     {
-                        {generator.GeneratorType, @delegate}
+                        {generatorType, @delegate}
                     };
-                    result.Add(type, dictionary);
+                    result.Add(returnType, dictionary);
                 }
             }
             return result;

@@ -115,43 +115,30 @@ namespace System.Linq.Expressions
 
         private static void ValidateAnonymousTypeMember(ref MemberInfo member, out Type memberType, string paramName, int index)
         {
-            if (member is FieldInfo field)
+            switch (member)
             {
-                if (field.IsStatic)
-                {
+                case FieldInfo field when field.IsStatic:
                     throw new ArgumentException("Argument must be an instance member", index >= 0 ? $"{paramName}[{index}]" : paramName);
-                }
-                memberType = field.FieldType;
-                return;
-            }
-
-            if (member is PropertyInfo pi)
-            {
-                if (!pi.CanRead)
-                {
+                case FieldInfo field:
+                    memberType = field.FieldType;
+                    return;
+                case PropertyInfo pi when !pi.CanRead:
                     throw new ArgumentException($"The property '{pi}' has no 'get' accessor", index >= 0 ? $"{paramName}[{index}]" : paramName);
-                }
-                if (pi.GetGetMethod().IsStatic)
-                {
+                case PropertyInfo pi when pi.GetGetMethod().IsStatic:
                     throw new ArgumentException("Argument must be an instance member", index >= 0 ? $"{paramName}[{index}]" : paramName);
-                }
-                memberType = pi.PropertyType;
-                return;
+                case PropertyInfo pi:
+                    memberType = pi.PropertyType;
+                    return;
+                case MethodInfo method when method.IsStatic:
+                    throw new ArgumentException("Argument must be an instance member", index >= 0 ? $"{paramName}[{index}]" : paramName);
+                case MethodInfo method:
+                    var prop = GetProperty(method, paramName, index);
+                    member = prop;
+                    memberType = prop.PropertyType;
+                    break;
+                default:
+                    throw new ArgumentException("Argument must be either a FieldInfo, PropertyInfo or MethodInfo", index >= 0 ? $"{paramName}[{index}]" : paramName);
             }
-
-            if (!(member is MethodInfo method))
-            {
-                throw new ArgumentException("Argument must be either a FieldInfo, PropertyInfo or MethodInfo", index >= 0 ? $"{paramName}[{index}]" : paramName);
-            }
-
-            if (method.IsStatic)
-            {
-                throw new ArgumentException("Argument must be an instance member", index >= 0 ? $"{paramName}[{index}]" : paramName);
-            }
-
-            var prop = GetProperty(method, paramName, index);
-            member = prop;
-            memberType = prop.PropertyType;
         }
 
         private static void ValidateConstructor(ConstructorInfo constructor, string paramName)
@@ -288,16 +275,18 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<MemberInfo> Members { get; }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns the node type of this <see cref="Expression"/>. (Inherited from <see cref="Expression"/>.)
+        /// Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.New;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents. (Inherited from <see cref="Expression"/>.)
+        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => Constructor.DeclaringType;
 
         /// <summary>

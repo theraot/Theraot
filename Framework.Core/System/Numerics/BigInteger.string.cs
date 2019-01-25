@@ -14,185 +14,187 @@ namespace System.Numerics
         internal static string FormatBigInteger(BigInteger value, string format, NumberFormatInfo info)
         {
             var fmt = ParseFormatSpecifier(format, out var digits);
-            if (fmt == 'x' || fmt == 'X')
+            switch (fmt)
             {
-                return FormatBigIntegerToHexString(value, fmt, digits, info);
-            }
-
-            if (fmt == 'e' || fmt == 'E')
-            {
-                var precision = digits != -1 ? digits : 6;
-
-                if (value.InternalBits == null)
+                case 'x':
+                case 'X':
+                    return FormatBigIntegerToHexString(value, fmt, digits, info);
+                case 'e':
+                case 'E':
                 {
-                    return value.InternalSign.ToString(format, info);
-                }
+                    var precision = digits != -1 ? digits : 6;
 
-                var scale = (int)Math.Floor(Log10(value));
-                // ---
-                if (scale > precision + 10)
-                {
-                    do
+                    if (value.InternalBits == null)
                     {
-                        value /= 1000000000;
-                    } while (Log10(value) > precision + 10);
-                }
-                while (Log10(value) > precision + 2)
-                {
-                    value /= 10;
-                }
-                if (Log10(value) > precision + 1)
-                {
-                    var round = value % 10 >= 5;
-                    value = (value / 10) + (round ? One : Zero);
-                }
-
-                ReverseStringBuilder builder;
-
-                if (value.InternalBits == null)
-                {
-                    builder = new ReverseStringBuilder(10);
-                    builder.Prepend($"{value.InternalSign:D}");
-                }
-                else
-                {
-                    builder = CreateBuilder(value, info, false, 0);
-                }
-
-                // ---
-                var decimalSeparator = info.NumberDecimalSeparator;
-
-                var result = new StringBuilder(builder.Length + 6);
-
-                var extra = 0;
-
-                if (precision >= builder.Length)
-                {
-                    extra = precision - (builder.Length - 1);
-                    precision = builder.Length - 1;
-                }
-                result.Append(builder.ToString(builder.Length, 1));
-                result.Append(decimalSeparator);
-                result.Append(builder.ToString(builder.Length - 1, precision));
-                result.Append(new string('0', extra));
-                result.Append(fmt);
-                result.Append(info.PositiveSign);
-                if (scale < 10)
-                {
-                    result.Append("00");
-                }
-                else if (scale < 100)
-                {
-                    result.Append('0');
-                }
-                result.Append(scale);
-
-                return result.ToString();
-            }
-            else
-            {
-                var decimalFmt = fmt == 'g' || fmt == 'G' || fmt == 'd' || fmt == 'D' || fmt == 'r' || fmt == 'R';
-                if (value.InternalBits == null)
-                {
-                    if (fmt == 'g' || fmt == 'G' || fmt == 'r' || fmt == 'R')
-                    {
-                        format = digits > 0 ? "D" + digits.ToString(CultureInfo.InvariantCulture) : "D";
+                        return value.InternalSign.ToString(format, info);
                     }
-                    return value.InternalSign.ToString(format, info);
-                }
-                var builder = CreateBuilder(value, info, decimalFmt, digits);
-                if (decimalFmt)
-                {
-                    // Format Round-trip decimal
-                    // This format is supported for integral types only. The number is converted to a string of
-                    // decimal digits (0-9), prefixed by a minus sign if the number is negative. The precision
-                    // specifier indicates the minimum number of digits desired in the resulting string. If required,
-                    // the number is padded with zeros to its left to produce the number of digits given by the
-                    // precision specifier.
-                    while (digits > 0 && digits >= builder.Length)
+
+                    var scale = (int)Math.Floor(Log10(value));
+                    // ---
+                    if (scale > precision + 10)
                     {
-                        builder.Prepend('0');
-                        digits--;
+                        do
+                        {
+                            value /= 1000000000;
+                        } while (Log10(value) > precision + 10);
                     }
-                    if (value.InternalSign < 0)
+                    while (Log10(value) > precision + 2)
                     {
-                        builder.Prepend(info.NegativeSign);
+                        value /= 10;
                     }
-                    return builder.ToString();
-                }
-                // 'c', 'C', 'e', 'E', 'f', 'F', 'n', 'N', 'p', 'P', custom
-                var precision = -1;
-                var groupingSizes = new[] { 3 };
-                var groupingSeparator = info.NumberGroupSeparator;
-                var decimalSeparator = info.NumberDecimalSeparator;
-                var groups = false;
-                var type = 0;
-                if (fmt == '\0')
-                {
-                    // parse custom
-                }
-                else
-                {
-                    if (fmt == 'c' || fmt == 'C')
+                    if (Log10(value) > precision + 1)
                     {
-                        decimalSeparator = info.CurrencyDecimalSeparator;
-                        precision = digits != -1 ? digits : info.CurrencyDecimalDigits;
-                        groupingSeparator = info.CurrencyGroupSeparator;
-                        groupingSizes = info.CurrencyGroupSizes;
-                        groups = true;
-                        type = 1;
+                        var round = value % 10 >= 5;
+                        value = (value / 10) + (round ? One : Zero);
                     }
-                    else if (fmt == 'f' || fmt == 'F')
+
+                    ReverseStringBuilder builder;
+
+                    if (value.InternalBits == null)
                     {
-                        precision = digits != -1 ? digits : info.NumberDecimalDigits;
-                    }
-                    else if (fmt == 'n' || fmt == 'N')
-                    {
-                        precision = digits != -1 ? digits : info.NumberDecimalDigits;
-                        groups = true;
-                    }
-                    else if (fmt == 'p' || fmt == 'P')
-                    {
-                        decimalSeparator = info.PercentDecimalSeparator;
-                        precision = digits != -1 ? digits : info.PercentDecimalDigits;
-                        groups = true;
-                        type = 2;
+                        builder = new ReverseStringBuilder(10);
+                        builder.Prepend($"{value.InternalSign:D}");
                     }
                     else
                     {
-                        throw new NotSupportedException();
+                        builder = CreateBuilder(value, info, false, 0);
                     }
-                }
-                var result = new StringBuilder(builder.Length + 20);
-                var close = SetWrap(value, info, type, result);
-                var append = builder;
-                if (groups)
-                {
-                    var extra = groupingSizes.Length - 1;
-                    if (groupingSizes[groupingSizes.Length - 1] != 0)
+
+                    // ---
+                    var decimalSeparator = info.NumberDecimalSeparator;
+
+                    var result = new StringBuilder(builder.Length + 6);
+
+                    var extra = 0;
+
+                    if (precision >= builder.Length)
                     {
-                        var totalDigits = builder.Length;
-                        extra += (int)Math.Ceiling(totalDigits * 1.0 / groupingSizes[groupingSizes.Length - 1]);
+                        extra = precision - (builder.Length - 1);
+                        precision = builder.Length - 1;
                     }
-                    var length = extra + builder.Length;
-                    if (type == 2)
-                    {
-                        length += 2;
-                        append = StringWithGroups(length, new ExtendedEnumerable<char>(new[] { '0', '0' }, builder), groupingSizes, groupingSeparator);
-                    }
-                    else
-                    {
-                        append = StringWithGroups(length, builder, groupingSizes, groupingSeparator);
-                    }
-                }
-                result.Append(append);
-                if (precision > 0)
-                {
+                    result.Append(builder.ToString(builder.Length, 1));
                     result.Append(decimalSeparator);
-                    result.Append(new string('0', precision));
+                    result.Append(builder.ToString(builder.Length - 1, precision));
+                    result.Append(new string('0', extra));
+                    result.Append(fmt);
+                    result.Append(info.PositiveSign);
+                    if (scale < 10)
+                    {
+                        result.Append("00");
+                    }
+                    else if (scale < 100)
+                    {
+                        result.Append('0');
+                    }
+                    result.Append(scale);
+
+                    return result.ToString();
                 }
-                result.Append(close);
-                return result.ToString();
+                default:
+                {
+                    var decimalFmt = fmt == 'g' || fmt == 'G' || fmt == 'd' || fmt == 'D' || fmt == 'r' || fmt == 'R';
+                    if (value.InternalBits == null)
+                    {
+                        if (fmt == 'g' || fmt == 'G' || fmt == 'r' || fmt == 'R')
+                        {
+                            format = digits > 0 ? "D" + digits.ToString(CultureInfo.InvariantCulture) : "D";
+                        }
+                        return value.InternalSign.ToString(format, info);
+                    }
+                    var builder = CreateBuilder(value, info, decimalFmt, digits);
+                    if (decimalFmt)
+                    {
+                        // Format Round-trip decimal
+                        // This format is supported for integral types only. The number is converted to a string of
+                        // decimal digits (0-9), prefixed by a minus sign if the number is negative. The precision
+                        // specifier indicates the minimum number of digits desired in the resulting string. If required,
+                        // the number is padded with zeros to its left to produce the number of digits given by the
+                        // precision specifier.
+                        while (digits > 0 && digits >= builder.Length)
+                        {
+                            builder.Prepend('0');
+                            digits--;
+                        }
+                        if (value.InternalSign < 0)
+                        {
+                            builder.Prepend(info.NegativeSign);
+                        }
+                        return builder.ToString();
+                    }
+                    // 'c', 'C', 'e', 'E', 'f', 'F', 'n', 'N', 'p', 'P', custom
+                    var precision = -1;
+                    var groupingSizes = new[] { 3 };
+                    var groupingSeparator = info.NumberGroupSeparator;
+                    var decimalSeparator = info.NumberDecimalSeparator;
+                    var groups = false;
+                    var type = 0;
+                    if (fmt == '\0')
+                    {
+                        // parse custom
+                    }
+                    else
+                    {
+                        if (fmt == 'c' || fmt == 'C')
+                        {
+                            decimalSeparator = info.CurrencyDecimalSeparator;
+                            precision = digits != -1 ? digits : info.CurrencyDecimalDigits;
+                            groupingSeparator = info.CurrencyGroupSeparator;
+                            groupingSizes = info.CurrencyGroupSizes;
+                            groups = true;
+                            type = 1;
+                        }
+                        else if (fmt == 'f' || fmt == 'F')
+                        {
+                            precision = digits != -1 ? digits : info.NumberDecimalDigits;
+                        }
+                        else if (fmt == 'n' || fmt == 'N')
+                        {
+                            precision = digits != -1 ? digits : info.NumberDecimalDigits;
+                            groups = true;
+                        }
+                        else if (fmt == 'p' || fmt == 'P')
+                        {
+                            decimalSeparator = info.PercentDecimalSeparator;
+                            precision = digits != -1 ? digits : info.PercentDecimalDigits;
+                            groups = true;
+                            type = 2;
+                        }
+                        else
+                        {
+                            throw new NotSupportedException();
+                        }
+                    }
+                    var result = new StringBuilder(builder.Length + 20);
+                    var close = SetWrap(value, info, type, result);
+                    var append = builder;
+                    if (groups)
+                    {
+                        var extra = groupingSizes.Length - 1;
+                        if (groupingSizes[groupingSizes.Length - 1] != 0)
+                        {
+                            var totalDigits = builder.Length;
+                            extra += (int)Math.Ceiling(totalDigits * 1.0 / groupingSizes[groupingSizes.Length - 1]);
+                        }
+                        var length = extra + builder.Length;
+                        if (type == 2)
+                        {
+                            length += 2;
+                            append = StringWithGroups(length, new ExtendedEnumerable<char>(new[] { '0', '0' }, builder), groupingSizes, groupingSeparator);
+                        }
+                        else
+                        {
+                            append = StringWithGroups(length, builder, groupingSizes, groupingSeparator);
+                        }
+                    }
+                    result.Append(append);
+                    if (precision > 0)
+                    {
+                        result.Append(decimalSeparator);
+                        result.Append(new string('0', precision));
+                    }
+                    result.Append(close);
+                    return result.ToString();
+                }
             }
         }
 

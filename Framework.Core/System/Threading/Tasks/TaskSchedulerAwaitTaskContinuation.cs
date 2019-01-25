@@ -1,16 +1,18 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 using System.Diagnostics.Contracts;
 using System.Security;
 
 namespace System.Threading.Tasks
 {
+    /// <inheritdoc />
     /// <summary>Task continuation for awaiting with a task scheduler.</summary>
     internal sealed class TaskSchedulerAwaitTaskContinuation : AwaitTaskContinuation
     {
         /// <summary>The scheduler on which to run the action.</summary>
         private readonly TaskScheduler _scheduler;
 
+        /// <inheritdoc />
         /// <summary>Initializes the TaskSchedulerAwaitTaskContinuation.</summary>
         /// <param name="scheduler">The task scheduler with which to invoke the action.  Must not be null.</param>
         /// <param name="action">The action to invoke. Must not be null.</param>

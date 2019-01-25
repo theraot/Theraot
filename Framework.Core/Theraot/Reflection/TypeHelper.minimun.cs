@@ -1,6 +1,7 @@
 ﻿// Needed for NET40
 
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 
@@ -76,24 +77,16 @@ namespace Theraot.Reflection
 
         public static MethodInfo FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly)
         {
-            foreach (var method in methods)
-            {
-                if (!string.Equals(method.Name, "op_Implicit", StringComparison.Ordinal) && (implicitOnly || !string.Equals(method.Name, "op_Explicit", StringComparison.Ordinal)))
-                {
-                    continue;
-                }
-                if (method.ReturnType != typeTo)
-                {
-                    continue;
-                }
-                var parameters = method.GetParameters();
-                if (parameters[0].ParameterType != typeFrom)
-                {
-                    continue;
-                }
-                return method;
-            }
-            return null;
+            return
+                (
+                    from method
+                    in methods
+                    where
+                        string.Equals(method.Name, "op_Implicit", StringComparison.Ordinal)
+                        || (!implicitOnly && string.Equals(method.Name, "op_Explicit", StringComparison.Ordinal))
+                    where method.ReturnType == typeTo let parameters = method.GetParameters()
+                    where parameters[0].ParameterType == typeFrom select method
+                ).FirstOrDefault();
         }
 
         public static bool IsImplicitBoxingConversion(Type source, Type target)

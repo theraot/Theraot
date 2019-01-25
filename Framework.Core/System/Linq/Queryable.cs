@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 using System.Collections;
 using System.Collections.Generic;
@@ -116,29 +116,27 @@ namespace System.Linq
 
         public static IQueryable<TElement> AsQueryable<TElement>(this IEnumerable<TElement> source)
         {
-            if (source == null)
+            switch (source)
             {
-                throw new ArgumentNullException(nameof(source));
+                case null:
+                    throw new ArgumentNullException(nameof(source));
+                case IQueryable<TElement> queryable:
+                    return queryable;
+                default:
+                    return new QueryableEnumerable<TElement>(source);
             }
-
-            if (source is IQueryable<TElement> queryable)
-            {
-                return queryable;
-            }
-
-            return new QueryableEnumerable<TElement>(source);
         }
 
         public static IQueryable AsQueryable(this IEnumerable source)
         {
-            if (source == null)
+            switch (source)
             {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            if (source is IQueryable queryable)
-            {
-                return queryable;
+                case null:
+                    throw new ArgumentNullException(nameof(source));
+                case IQueryable queryable:
+                    return queryable;
+                default:
+                    break;
             }
 
             if (!source.GetType().IsGenericImplementationOf(out var iEnumerable, typeof(IEnumerable<>)))

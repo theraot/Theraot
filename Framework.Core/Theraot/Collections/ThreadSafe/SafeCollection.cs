@@ -6,6 +6,7 @@ using System.Threading;
 
 namespace Theraot.Collections.ThreadSafe
 {
+    /// <inheritdoc />
     /// <summary>
     /// Represent a thread-safe lock-free hash based collection.
     /// </summary>
@@ -15,8 +16,9 @@ namespace Theraot.Collections.ThreadSafe
         private int _maxIndex;
         private Bucket<T> _wrapped;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="SafeCollection{T}" /> class.
+        /// Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeCollection`1" /> class.
         /// </summary>
         public SafeCollection()
             : this(EqualityComparer<T>.Default)
@@ -46,6 +48,7 @@ namespace Theraot.Collections.ThreadSafe
             _wrapped.Set(Interlocked.Increment(ref _maxIndex), item);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Removes all the elements.
         /// </summary>
@@ -65,6 +68,7 @@ namespace Theraot.Collections.ThreadSafe
             return replacement;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Determines whether the specified value is contained.
         /// </summary>
@@ -83,31 +87,34 @@ namespace Theraot.Collections.ThreadSafe
             return _wrapped.Where(itemCheck).Any();
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="ArgumentNullException">array</exception>
-        /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
+        /// <exception cref="T:System.ArgumentNullException">array</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="T:System.ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
             Extensions.CanCopyTo(Count, array, arrayIndex);
             Extensions.CopyTo(_wrapped, array, arrayIndex);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
+        /// Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="System.Collections.Generic.IEnumerator{T}" /> object that can be used to iterate through the collection.
+        /// An <see cref="T:System.Collections.Generic.IEnumerator`1" /> object that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
             return _wrapped.GetEnumerator();
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Removes the specified value.
         /// </summary>

@@ -66,26 +66,29 @@ namespace Theraot.Core
             sign = 1 - ((int)(du.Uu >> 62) & 2);
             man = du.Uu & 0x000FFFFFFFFFFFFF;
             exp = (int)(du.Uu >> 52) & 0x7FF;
-            if (exp == 0)
+            switch (exp)
             {
-                // Denormalized number.
-                fFinite = true;
-                if (man != 0)
+                case 0:
                 {
-                    exp = -1074;
+                    // Denormalized number.
+                    fFinite = true;
+                    if (man != 0)
+                    {
+                        exp = -1074;
+                    }
+
+                    break;
                 }
-            }
-            else if (exp == 0x7FF)
-            {
-                // NaN or Infinite.
-                fFinite = false;
-                exp = int.MaxValue;
-            }
-            else
-            {
-                fFinite = true;
-                man |= 0x0010000000000000;
-                exp -= 1075;
+                case 0x7FF:
+                    // NaN or Infinite.
+                    fFinite = false;
+                    exp = int.MaxValue;
+                    break;
+                default:
+                    fFinite = true;
+                    man |= 0x0010000000000000;
+                    exp -= 1075;
+                    break;
             }
         }
 

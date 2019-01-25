@@ -23,16 +23,18 @@ namespace TestRunner
             }
             while (true)
             {
-                if (exception is TargetInvocationException targetInvocationException && targetInvocationException.InnerException != null)
+                switch (exception)
                 {
-                    exception = targetInvocationException.InnerException;
-                    continue;
+                    case TargetInvocationException targetInvocationException when targetInvocationException.InnerException != null:
+                        exception = targetInvocationException.InnerException;
+                        continue;
+                    case AggregateException aggregateException when aggregateException.InnerException != null:
+                        exception = aggregateException.InnerException;
+                        continue;
+                    default:
+                        break;
                 }
-                if (exception is AggregateException aggregateException && aggregateException.InnerException != null)
-                {
-                    exception = aggregateException.InnerException;
-                    continue;
-                }
+
                 break;
             }
             if (exception is AssertionFailedException)

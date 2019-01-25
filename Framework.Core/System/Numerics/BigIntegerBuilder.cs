@@ -1126,7 +1126,7 @@ namespace System.Numerics
             if (num7 > 0)
             {
                 num5 = num5 << (num7 & 31) | num6 >> (num8 & 31);
-                num6 <<= (num7 & 31);
+                num6 <<= num7 & 31;
                 if (num1 > 2)
                 {
                     num6 |= regDen._bits[num1 - 3] >> (num8 & 31);
@@ -1149,7 +1149,7 @@ namespace System.Numerics
                 if (num7 > 0)
                 {
                     num12 = num12 << (num7 & 63) | num13 >> (num8 & 31);
-                    num13 <<= (num7 & 31);
+                    num13 <<= num7 & 31;
                     if (num9 + num1 >= 3)
                     {
                         num13 |= regNum._bits[num9 + num1 - 3] >> (num8 & 31);
@@ -1172,7 +1172,7 @@ namespace System.Numerics
                     var num16 = (ulong)0;
                     for (var i = 0; i < num1; i++)
                     {
-                        num16 += (regDen._bits[i] * num14);
+                        num16 += regDen._bits[i] * num14;
                         var num17 = (uint)num16;
                         num16 >>= 32;
                         if (regNum._bits[num9 + i] < num17)

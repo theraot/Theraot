@@ -113,6 +113,7 @@ namespace System.Runtime.CompilerServices
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Dynamic site type.
     /// </summary>

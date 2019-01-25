@@ -791,27 +791,26 @@ namespace System.Threading.Tasks
                 }
 
                 continuations[index] = null; // to enable freeing up memory earlier
-                // If the continuation is an Action delegate, it came from an await continuation,
-                // and we should use AwaitTaskContinuation to run it.
-                if (currentContinuation is Action ad)
+                switch (currentContinuation)
                 {
-                    AwaitTaskContinuation.RunOrScheduleAction(ad, canInlineContinuations, ref InternalCurrent);
-                }
-                else
-                {
+                    // If the continuation is an Action delegate, it came from an await continuation,
+                    // and we should use AwaitTaskContinuation to run it.
+                    case Action ad:
+                        AwaitTaskContinuation.RunOrScheduleAction(ad, canInlineContinuations, ref InternalCurrent);
+                        break;
                     // If it's a TaskContinuation object of some kind, invoke it.
-                    if (currentContinuation is TaskContinuation tc)
-                    {
+                    // Otherwise, it must be an ITaskCompletionAction, so invoke it.
+                    case TaskContinuation tc:
                         // We know that this is a synchronous continuation because the
                         // asynchronous ones have been weeded out
                         tc.Run(this, canInlineContinuations);
-                    }
-                    // Otherwise, it must be an ITaskCompletionAction, so invoke it.
-                    else
+                        break;
+                    default:
                     {
                         Contract.Assert(currentContinuation is ITaskCompletionAction, "Expected continuation element to be Action, TaskContinuation, or ITaskContinuationAction");
                         var action = (ITaskCompletionAction)currentContinuation;
                         action.Invoke(this);
+                        break;
                     }
                 }
             }

@@ -860,7 +860,7 @@ namespace System.Linq.Expressions.Interpreter
             CompileBlockEnd(end);
         }
 
-        private LocalDefinition[] CompileBlockStart(BlockExpression node)
+        private IEnumerable<LocalDefinition> CompileBlockStart(BlockExpression node)
         {
             var start = Instructions.Count;
 

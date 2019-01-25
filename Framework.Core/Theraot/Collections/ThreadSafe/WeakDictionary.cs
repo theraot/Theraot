@@ -242,6 +242,7 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Removes all the elements.
         /// </summary>
@@ -287,6 +288,7 @@ namespace Theraot.Collections.ThreadSafe
                 );
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Determines whether the specified key is contained.
         /// </summary>
@@ -353,14 +355,15 @@ namespace Theraot.Collections.ThreadSafe
                 );
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="ArgumentNullException">array</exception>
-        /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
+        /// <exception cref="T:System.ArgumentNullException">array</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="T:System.ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             if (array == null)
@@ -378,11 +381,12 @@ namespace Theraot.Collections.ThreadSafe
             GetPairs().CopyTo(array, arrayIndex);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
+        /// Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="System.Collections.Generic.IEnumerator{T}" /> object that can be used to iterate through the collection.
+        /// An <see cref="T:System.Collections.Generic.IEnumerator`1" /> object that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
@@ -468,6 +472,7 @@ namespace Theraot.Collections.ThreadSafe
                 );
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Removes the specified key.
         /// </summary>
@@ -770,6 +775,7 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Tries to retrieve the value associated with the specified key.
         /// </summary>

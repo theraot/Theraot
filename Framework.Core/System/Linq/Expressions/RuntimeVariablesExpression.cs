@@ -43,10 +43,11 @@ namespace System.Linq.Expressions
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// An expression that provides runtime read/write access to variables.
     /// Needed to implement "eval" in some dynamic languages.
-    /// Evaluates to an instance of <see cref="IList{T}"/> when executed.
+    /// Evaluates to an instance of <see cref="T:System.Collections.Generic.IList`1" /> when executed.
     /// </summary>
     [DebuggerTypeProxy(typeof(RuntimeVariablesExpressionProxy))]
     public sealed class RuntimeVariablesExpression : Expression
@@ -60,17 +61,19 @@ namespace System.Linq.Expressions
             _variablesAsReadOnlyCollection = ReadOnlyCollectionEx.Create(_variables);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Returns the node type of this Expression. Extension nodes should return
         /// ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public override ExpressionType NodeType => ExpressionType.RuntimeVariables;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents.
+        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => typeof(IRuntimeVariables);
 
         /// <summary>

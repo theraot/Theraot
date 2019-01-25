@@ -81,20 +81,25 @@ namespace System.Threading.Tasks
             foreach (var edi in _faultExceptions)
             {
                 var exp = edi.SourceException;
-                if (exp is AggregateException aggExp)
+                switch (exp)
                 {
-                    var flattenedAggExp = aggExp.Flatten();
-                    foreach (var innerExp in flattenedAggExp.InnerExceptions)
+                    case AggregateException aggExp:
                     {
-                        if (innerExp is ThreadAbortException)
+                        var flattenedAggExp = aggExp.Flatten();
+                        foreach (var innerExp in flattenedAggExp.InnerExceptions)
                         {
-                            return;
+                            if (innerExp is ThreadAbortException)
+                            {
+                                return;
+                            }
                         }
+
+                        break;
                     }
-                }
-                else if (exp is ThreadAbortException)
-                {
-                    return;
+                    case ThreadAbortException _:
+                        return;
+                    default:
+                        break;
                 }
             }
             var exceptionToThrow = CreateAggregateException();
@@ -276,59 +281,51 @@ namespace System.Threading.Tasks
                 Debug.Assert(exceptions.Count > 0, "Expected existing exceptions list to have > 0 exceptions.");
             }
 
-            // Handle Exception by capturing it into an ExceptionDispatchInfo and storing that
-            if (exceptionObject is Exception exception)
+            switch (exceptionObject)
             {
-                exceptions.Add(ExceptionDispatchInfo.Capture(exception));
-            }
-            else
-            {
+                // Handle Exception by capturing it into an ExceptionDispatchInfo and storing that
+                case Exception exception:
+                    exceptions.Add(ExceptionDispatchInfo.Capture(exception));
+                    break;
                 // Handle ExceptionDispatchInfo by storing it into the list
-                if (exceptionObject is ExceptionDispatchInfo edi)
-                {
+                case ExceptionDispatchInfo edi:
                     exceptions.Add(edi);
-                }
-                else
+                    break;
+                // Handle enumerables of exceptions by capturing each of the contained exceptions into an EDI and storing it
+                case IEnumerable<Exception> exColl:
                 {
-                    // Handle enumerables of exceptions by capturing each of the contained exceptions into an EDI and storing it
-                    if (exceptionObject is IEnumerable<Exception> exColl)
+#if DEBUG
+                    var numExceptions = 0;
+#endif
+                    foreach (var exc in exColl)
                     {
 #if DEBUG
-                        var numExceptions = 0;
+                        Debug.Assert(exc != null, "No exceptions should be null");
+                        numExceptions++;
 #endif
-                        foreach (var exc in exColl)
-                        {
-#if DEBUG
-                            Debug.Assert(exc != null, "No exceptions should be null");
-                            numExceptions++;
-#endif
-                            exceptions.Add(ExceptionDispatchInfo.Capture(exc));
-                        }
-#if DEBUG
-                        Debug.Assert(numExceptions > 0, "Collection should contain at least one exception.");
-#endif
+                        exceptions.Add(ExceptionDispatchInfo.Capture(exc));
                     }
-                    else
-                    {
-                        // Handle enumerables of EDIs by storing them directly
-                        if (exceptionObject is IEnumerable<ExceptionDispatchInfo> ediColl)
-                        {
-                            exceptions.AddRange(ediColl);
 #if DEBUG
-                            Debug.Assert(exceptions.Count > 0, "There should be at least one dispatch info.");
-                            foreach (var tmp in exceptions)
-                            {
-                                Debug.Assert(tmp != null, "No dispatch infos should be null");
-                            }
+                    Debug.Assert(numExceptions > 0, "Collection should contain at least one exception.");
 #endif
-                        }
-                        // Anything else is a programming error
-                        else
-                        {
-                            throw new ArgumentException("(Internal)Expected an Exception or an IEnumerable<Exception>", nameof(exceptionObject));
-                        }
-                    }
+                    break;
                 }
+                // Handle enumerables of EDIs by storing them directly
+                // Anything else is a programming error
+                case IEnumerable<ExceptionDispatchInfo> ediColl:
+                {
+                    exceptions.AddRange(ediColl);
+#if DEBUG
+                    Debug.Assert(exceptions.Count > 0, "There should be at least one dispatch info.");
+                    foreach (var tmp in exceptions)
+                    {
+                        Debug.Assert(tmp != null, "No dispatch infos should be null");
+                    }
+#endif
+                    break;
+                }
+                default:
+                    throw new ArgumentException("(Internal)Expected an Exception or an IEnumerable<Exception>", nameof(exceptionObject));
             }
 
             // If all of the exceptions are ThreadAbortExceptions and/or

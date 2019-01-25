@@ -1,4 +1,4 @@
-// Needed for NET35 (ConditionalWeakTable)
+﻿// Needed for NET35 (ConditionalWeakTable)
 
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
 

@@ -96,7 +96,7 @@ namespace System.Linq.Expressions
         }
 
         //Validate that the body of the try expression must have the same type as the body of every try block.
-        private static void ValidateTryAndCatchHaveSameType(Type type, Expression tryBody, CatchBlock[] handlers)
+        private static void ValidateTryAndCatchHaveSameType(Type type, Expression tryBody, IEnumerable<CatchBlock> handlers)
         {
             Debug.Assert(tryBody != null);
             // Type unification ... all parts must be reference assignable to "type"
@@ -111,12 +111,9 @@ namespace System.Linq.Expressions
                 {
                     throw new ArgumentException("Argument types do not match");
                 }
-                foreach (var cb in handlers)
+                if (handlers.Any(cb => !type.IsReferenceAssignableFromInternal(cb.Body.Type)))
                 {
-                    if (!type.IsReferenceAssignableFromInternal(cb.Body.Type))
-                    {
-                        throw new ArgumentException("Argument types do not match");
-                    }
+                    throw new ArgumentException("Argument types do not match");
                 }
             }
             else if (tryBody.Type == typeof(void))
@@ -147,11 +144,12 @@ namespace System.Linq.Expressions
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// <para>Represents a try/catch/finally/fault block.</para>
     /// <para>
     /// The body is protected by the try block.
-    /// The handlers consist of a set of <see cref="CatchBlock"/>s that can either be catch or filters.
+    /// The handlers consist of a set of <see cref="T:System.Linq.Expressions.CatchBlock" />s that can either be catch or filters.
     /// The fault runs if an exception is thrown.
     /// The finally runs regardless of how control exits the body.
     /// Only one of fault or finally can be supplied.
@@ -194,16 +192,18 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<CatchBlock> Handlers => _handlersAsReadOnlyCollection;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns the node type of this <see cref="Expression"/>. (Inherited from <see cref="Expression"/>.)
+        /// Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public override ExpressionType NodeType => ExpressionType.Try;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents. (Inherited from <see cref="Expression"/>.)
+        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type { get; }
 
         /// <summary>

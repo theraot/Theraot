@@ -45,20 +45,21 @@ namespace System.Threading.Tasks
             _task = new Task<TResult>();
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Creates a <see cref="TaskCompletionSource{TResult}"/>
+        /// Creates a <see cref="T:System.Threading.Tasks.TaskCompletionSource`1" />
         /// with the specified options.
         /// </summary>
         /// <remarks>
-        /// The <see cref="T:System.Threading.Tasks.Task{TResult}"/> created
-        /// by this instance and accessible through its <see cref="Task"/> property
-        /// will be instantiated using the specified <paramref name="creationOptions"/>.
+        /// The <see cref="T:System.Threading.Tasks.Task{TResult}" /> created
+        /// by this instance and accessible through its <see cref="P:System.Threading.Tasks.TaskCompletionSource`1.Task" /> property
+        /// will be instantiated using the specified <paramref name="creationOptions" />.
         /// </remarks>
         /// <param name="creationOptions">The options to use when creating the underlying
-        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}" />.</param>
         /// <exception cref="T:System.ArgumentOutOfRangeException">
-        /// The <paramref name="creationOptions"/> represent options invalid for use
-        /// with a <see cref="TaskCompletionSource{TResult}"/>.
+        /// The <paramref name="creationOptions" /> represent options invalid for use
+        /// with a <see cref="T:System.Threading.Tasks.TaskCompletionSource`1" />.
         /// </exception>
         public TaskCompletionSource(TaskCreationOptions creationOptions)
             : this(null, creationOptions)
@@ -66,12 +67,13 @@ namespace System.Threading.Tasks
             // Empty
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Creates a <see cref="TaskCompletionSource{TResult}"/>
+        /// Creates a <see cref="T:System.Threading.Tasks.TaskCompletionSource`1" />
         /// with the specified state.
         /// </summary>
         /// <param name="state">The state to use as the underlying
-        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/>'s AsyncState.</param>
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}" />'s AsyncState.</param>
         public TaskCompletionSource(object state)
             : this(state, TaskCreationOptions.None)
         {

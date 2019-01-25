@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace Theraot.Collections.ThreadSafe
@@ -15,8 +16,9 @@ namespace Theraot.Collections.ThreadSafe
         private Bucket<T> _bucket;
         private int _probing;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="SafeSet{T}" /> class.
+        /// Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeSet`1" /> class.
         /// </summary>
         public SafeSet()
             : this(EqualityComparer<T>.Default, _defaultProbing)
@@ -24,8 +26,9 @@ namespace Theraot.Collections.ThreadSafe
             // Empty
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="SafeSet{T}" /> class.
+        /// Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeSet`1" /> class.
         /// </summary>
         /// <param name="initialProbing">The number of steps in linear probing.</param>
         public SafeSet(int initialProbing)
@@ -34,8 +37,9 @@ namespace Theraot.Collections.ThreadSafe
             // Empty
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="SafeSet{T}" /> class.
+        /// Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeSet`1" /> class.
         /// </summary>
         /// <param name="comparer">The value comparer.</param>
         public SafeSet(IEqualityComparer<T> comparer)
@@ -105,6 +109,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Removes all the elements.
         /// </summary>
@@ -122,6 +127,7 @@ namespace Theraot.Collections.ThreadSafe
             return Interlocked.Exchange(ref _bucket, _bucket = new Bucket<T>());
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Determines whether the specified value is contained.
         /// </summary>
@@ -131,6 +137,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Contains(T value)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             var hashCode = Comparer.GetHashCode(value);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
@@ -166,14 +173,15 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="ArgumentNullException">array</exception>
-        /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
+        /// <exception cref="T:System.ArgumentNullException">array</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="T:System.ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
             _bucket.CopyTo(array, arrayIndex);
@@ -184,11 +192,12 @@ namespace Theraot.Collections.ThreadSafe
             Extensions.ExceptWith(this, other);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
+        /// Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="System.Collections.Generic.IEnumerator{T}" /> object that can be used to iterate through the collection.
+        /// An <see cref="T:System.Collections.Generic.IEnumerator`1" /> object that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
@@ -239,6 +248,7 @@ namespace Theraot.Collections.ThreadSafe
             return Extensions.Overlaps(this, other);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Removes the specified value.
         /// </summary>
@@ -248,6 +258,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(T value)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             var hashCode = Comparer.GetHashCode(value);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
@@ -379,15 +390,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException(nameof(check));
             }
             var matches = _bucket.Where(check);
-            var count = 0;
-            foreach (var value in matches)
-            {
-                if (Remove(value))
-                {
-                    count++;
-                }
-            }
-            return count;
+            return matches.Count(Remove);
         }
 
         /// <summary>

@@ -18,15 +18,15 @@ namespace Theraot.Collections.Specialized
 
             IEnumerator<T> ConvertEnumerator(IEnumerator enumerator)
             {
-                if (enumerator == null)
+                switch (enumerator)
                 {
-                    return null;
+                    case null:
+                        return null;
+                    case IEnumerator<T> genericEnumerator:
+                        return genericEnumerator;
+                    default:
+                        return ConvertEnumeratorExtracted(enumerator);
                 }
-                if (enumerator is IEnumerator<T> genericEnumerator)
-                {
-                    return genericEnumerator;
-                }
-                return ConvertEnumeratorExtracted(enumerator);
             }
 
             IEnumerator<T> ConvertEnumeratorExtracted(IEnumerator enumerator)

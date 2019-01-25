@@ -78,11 +78,11 @@ namespace TestRunner
 
             var zip = expectedCollection.Zip(foundCollection, Tuple.Create);
             var index = 0;
-            foreach (var tuple in zip)
+            foreach (var (expectedItem, foundItem) in zip)
             {
-                if (!Equals(tuple.Item1, tuple.Item2))
+                if (!Equals(expectedItem, foundItem))
                 {
-                    throw new AssertionFailedException($"Expected Item#{index}: {typeof(T).Name}({tuple.Item1}) - Found: {typeof(T).Name}({tuple.Item2}){(message == null ? string.Empty : $" - Message: {message}")}");
+                    throw new AssertionFailedException($"Expected Item#{index}: {typeof(T).Name}({expectedItem}) - Found: {typeof(T).Name}({foundItem}){(message == null ? string.Empty : $" - Message: {message}")}");
                 }
 
                 index++;

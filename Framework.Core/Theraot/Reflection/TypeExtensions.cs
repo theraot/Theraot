@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Theraot.Collections.ThreadSafe;
@@ -527,27 +528,14 @@ namespace Theraot.Reflection
         internal static MethodInfo GetStaticMethodInternal(this Type type, string name)
         {
             // Don't use BindingFlags.Static
-            foreach (var method in type.GetTypeInfo().GetMethods())
-            {
-                if (string.Equals(method.Name, name, StringComparison.Ordinal) && method.IsStatic)
-                {
-                    return method;
-                }
-            }
-            return null;
+            return type.GetTypeInfo().GetMethods().FirstOrDefault(method => string.Equals(method.Name, name, StringComparison.Ordinal) && method.IsStatic);
         }
 
         internal static MethodInfo[] GetStaticMethodsInternal(this Type type)
         {
             var methods = type.GetTypeInfo().GetMethods();
             var list = new List<MethodInfo>(methods.Length);
-            foreach (var method in methods)
-            {
-                if (method.IsStatic)
-                {
-                    list.Add(method);
-                }
-            }
+            list.AddRange(methods.Where(method => method.IsStatic));
             return list.ToArray();
         }
 
@@ -608,12 +596,9 @@ namespace Theraot.Reflection
                 return false;
             }
 
-            foreach (var field in info.GetFields())
+            if (info.GetFields().Any(field => !IsBinaryPortableExtracted(field.FieldType)))
             {
-                if (!IsBinaryPortableExtracted(field.FieldType))
-                {
-                    return false;
-                }
+                return false;
             }
             return !info.IsAutoLayout && type.GetStructLayoutAttribute().Pack > 0;
         }
@@ -627,19 +612,7 @@ namespace Theraot.Reflection
                     && type != typeof(bool);
             }
 
-            if (!info.IsValueType)
-            {
-                return false;
-            }
-
-            foreach (var field in type.GetTypeInfo().GetFields())
-            {
-                if (!IsBlittableExtracted(field.FieldType))
-                {
-                    return false;
-                }
-            }
-            return true;
+            return info.IsValueType && type.GetTypeInfo().GetFields().All(field => IsBlittableExtracted(field.FieldType));
         }
 
         private static bool GetValueTypeRecursiveResult(Type type)
@@ -650,19 +623,7 @@ namespace Theraot.Reflection
                 return true;
             }
 
-            if (!info.IsValueType)
-            {
-                return false;
-            }
-
-            foreach (var field in type.GetTypeInfo().GetFields())
-            {
-                if (!IsValueTypeRecursiveExtracted(field.FieldType))
-                {
-                    return false;
-                }
-            }
-            return true;
+            return info.IsValueType && type.GetTypeInfo().GetFields().All(field => IsValueTypeRecursiveExtracted(field.FieldType));
         }
 
         private static bool IsBinaryPortableExtracted(Type type)

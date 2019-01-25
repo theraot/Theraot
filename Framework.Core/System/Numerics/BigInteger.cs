@@ -615,30 +615,29 @@ namespace System.Numerics
                 dwordCount--;
             }
 
-            if (dwordCount == 0)
+            switch (dwordCount)
             {
-                this = Zero;
-                return;
-            }
-
-            if (dwordCount == 1)
-            {
-                if ((int)value[0] < 0 && !isNegative)
-                {
-                    InternalBits = new[] {value[0]};
-                    InternalSign = 1;
-                }
-                else if (value[0] != unchecked((uint)int.MinValue))
-                {
-                    InternalSign = (int)value[0];
-                    InternalBits = null;
-                }
-                else
-                {
-                    this = _bigIntegerMinInt;
-                }
-
-                return;
+                case 0:
+                    this = Zero;
+                    return;
+                case 1:
+                    if ((int)value[0] < 0 && !isNegative)
+                    {
+                        InternalBits = new[] {value[0]};
+                        InternalSign = 1;
+                    }
+                    else if (value[0] != unchecked((uint)int.MinValue))
+                    {
+                        InternalSign = (int)value[0];
+                        InternalBits = null;
+                    }
+                    else
+                    {
+                        this = _bigIntegerMinInt;
+                    }
+                    return;
+                default:
+                    break;
             }
 
             if (!isNegative)
@@ -1157,14 +1156,14 @@ namespace System.Numerics
         /// <param name="shift">The number of bits to shift <paramref name="value" /> to the left.</param>
         public static BigInteger operator <<(BigInteger value, int shift)
         {
-            if (shift == 0)
+            switch (shift)
             {
-                return value;
-            }
-
-            if (shift == int.MinValue)
-            {
-                return value >> int.MaxValue >> 1;
+                case 0:
+                    return value;
+                case int.MinValue:
+                    return value >> int.MaxValue >> 1;
+                default:
+                    break;
             }
 
             if (shift < 0)
@@ -1470,14 +1469,14 @@ namespace System.Numerics
         /// <param name="shift">The number of bits to shift <paramref name="value" /> to the right.</param>
         public static BigInteger operator >>(BigInteger value, int shift)
         {
-            if (shift == 0)
+            switch (shift)
             {
-                return value;
-            }
-
-            if (shift == int.MinValue)
-            {
-                return value << int.MaxValue << 1;
+                case 0:
+                    return value;
+                case int.MinValue:
+                    return value << int.MaxValue << 1;
+                default:
+                    break;
             }
 
             if (shift < 0)
@@ -1904,31 +1903,28 @@ namespace System.Numerics
                 throw new ArgumentOutOfRangeException(nameof(exponent), "The number must be greater than or equal to zero.");
             }
 
-            if (exponent == 0)
+            switch (exponent)
             {
-                return One;
-            }
-
-            if (exponent == 1)
-            {
-                return value;
+                case 0:
+                    return One;
+                case 1:
+                    return value;
+                default:
+                    break;
             }
 
             if (value.InternalBits == null)
             {
-                if (value.InternalSign == 1)
+                switch (value.InternalSign)
                 {
-                    return value;
-                }
-
-                if (value.InternalSign == -1)
-                {
-                    return (exponent & 1) == 0 ? 1 : value;
-                }
-
-                if (value.InternalSign == 0)
-                {
-                    return value;
+                    case 1:
+                        return value;
+                    case -1:
+                        return (exponent & 1) == 0 ? 1 : value;
+                    case 0:
+                        return value;
+                    default:
+                        break;
                 }
             }
 
@@ -2135,6 +2131,7 @@ namespace System.Numerics
             return length > 2 ? 1 : ULong(length, InternalBits).CompareTo(other);
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Compares this instance to a second <see cref="T:System.Numerics.BigInteger" /> and returns an integer that
         ///     indicates whether the value of this instance is less than, equal to, or greater than the value of the specified
@@ -2190,6 +2187,7 @@ namespace System.Numerics
             return InternalBits[diffLength - 1] >= other.InternalBits[diffLength - 1] ? InternalSign : -InternalSign;
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Compares this instance to a specified object and returns an integer that indicates whether the value of this
         ///     instance is less than, equal to, or greater than the value of the specified object.
@@ -2284,6 +2282,7 @@ namespace System.Numerics
             return ULong(length, InternalBits) == other;
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Returns a value that indicates whether the current instance and a specified
         ///     <see cref="T:System.Numerics.BigInteger" /> object have the same value.
@@ -2351,26 +2350,30 @@ namespace System.Numerics
         {
             uint[] internalBits;
             byte highByte;
-            if (InternalBits == null && InternalSign == 0)
+            switch (InternalBits)
             {
-                return new byte[1];
-            }
+                case null when InternalSign == 0:
+                    return new byte[1];
+                case null:
+                    internalBits = new[] {unchecked((uint)InternalSign)};
+                    highByte = InternalSign < 0 ? (byte)0xff : (byte)0x00;
+                    break;
+                default:
+                {
+                    if (InternalSign != -1)
+                    {
+                        internalBits = InternalBits;
+                        highByte = 0;
+                    }
+                    else
+                    {
+                        internalBits = (uint[])InternalBits.Clone();
+                        NumericsHelpers.DangerousMakeTwosComplement(internalBits);
+                        highByte = 255;
+                    }
 
-            if (InternalBits == null)
-            {
-                internalBits = new[] {unchecked((uint)InternalSign)};
-                highByte = InternalSign < 0 ? (byte)0xff : (byte)0x00;
-            }
-            else if (InternalSign != -1)
-            {
-                internalBits = InternalBits;
-                highByte = 0;
-            }
-            else
-            {
-                internalBits = (uint[])InternalBits.Clone();
-                NumericsHelpers.DangerousMakeTwosComplement(internalBits);
-                highByte = 255;
+                    break;
+                }
             }
 
             var bytes = new byte[checked(4 * internalBits.Length)];
@@ -2451,6 +2454,7 @@ namespace System.Numerics
             return FormatBigInteger(this, format, NumberFormatInfo.CurrentInfo);
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Converts the numeric value of the current <see cref="T:System.Numerics.BigInteger" /> object to its equivalent
         ///     string representation by using the specified format and culture-specific format information.
@@ -2686,26 +2690,30 @@ namespace System.Numerics
         {
             uint[] internalBits;
             uint highDword;
-            if (InternalBits == null && InternalSign == 0)
+            switch (InternalBits)
             {
-                return new uint[1];
-            }
+                case null when InternalSign == 0:
+                    return new uint[1];
+                case null:
+                    internalBits = new[] {unchecked((uint)InternalSign)};
+                    highDword = (uint)(InternalSign >= 0 ? 0 : -1);
+                    break;
+                default:
+                {
+                    if (InternalSign != -1)
+                    {
+                        internalBits = InternalBits;
+                        highDword = 0;
+                    }
+                    else
+                    {
+                        internalBits = (uint[])InternalBits.Clone();
+                        NumericsHelpers.DangerousMakeTwosComplement(internalBits);
+                        highDword = unchecked((uint)-1);
+                    }
 
-            if (InternalBits == null)
-            {
-                internalBits = new[] {unchecked((uint)InternalSign)};
-                highDword = (uint)(InternalSign >= 0 ? 0 : -1);
-            }
-            else if (InternalSign != -1)
-            {
-                internalBits = InternalBits;
-                highDword = 0;
-            }
-            else
-            {
-                internalBits = (uint[])InternalBits.Clone();
-                NumericsHelpers.DangerousMakeTwosComplement(internalBits);
-                highDword = unchecked((uint)-1);
+                    break;
+                }
             }
 
             var length = internalBits.Length - 1;

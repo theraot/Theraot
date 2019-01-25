@@ -13,13 +13,14 @@ using Theraot.Reflection;
 
 namespace Theraot.Collections.ThreadSafe
 {
+    /// <inheritdoc />
     /// <summary>
     /// Represent a thread-safe lock-free hash based dictionary.
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <remarks>
-    /// Consider wrapping this class to implement <see cref="IDictionary{TKey,TValue}" /> or any other desired interface.
+    /// Consider wrapping this class to implement <see cref="T:System.Collections.Generic.IDictionary`2" /> or any other desired interface.
     /// </remarks>
     [Serializable]
     public sealed partial class SafeDictionary<TKey, TValue> : IDictionary<TKey, TValue>
@@ -50,8 +51,9 @@ namespace Theraot.Collections.ThreadSafe
             _probing = initialProbing;
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="SafeDictionary{TKey,TValue}" /> class.
+        /// Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeDictionary`2" /> class.
         /// </summary>
         public SafeDictionary()
             : this(EqualityComparer<TKey>.Default, _defaultProbing)
@@ -59,8 +61,9 @@ namespace Theraot.Collections.ThreadSafe
             // Empty
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="SafeDictionary{TKey,TValue}" /> class.
+        /// Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeDictionary`2" /> class.
         /// </summary>
         /// <param name="initialProbing">The number of steps in linear probing.</param>
         public SafeDictionary(int initialProbing)
@@ -69,8 +72,9 @@ namespace Theraot.Collections.ThreadSafe
             // Empty
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="SafeDictionary{TKey,TValue}" /> class.
+        /// Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeDictionary`2" /> class.
         /// </summary>
         /// <param name="comparer">The key comparer.</param>
         public SafeDictionary(IEqualityComparer<TKey> comparer)
@@ -129,6 +133,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Removes all the elements.
         /// </summary>
@@ -146,6 +151,7 @@ namespace Theraot.Collections.ThreadSafe
             return Interlocked.Exchange(ref _bucket, _bucket = new Bucket<KeyValuePair<TKey, TValue>>());
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Determines whether the specified key is contained.
         /// </summary>
@@ -219,24 +225,26 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="ArgumentNullException">array</exception>
-        /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
+        /// <exception cref="T:System.ArgumentNullException">array</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="T:System.ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             _bucket.CopyTo(array, arrayIndex);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
+        /// Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="System.Collections.Generic.IEnumerator{T}" /> object that can be used to iterate through the collection.
+        /// An <see cref="T:System.Collections.Generic.IEnumerator`1" /> object that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
@@ -297,6 +305,7 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Removes the specified key.
         /// </summary>
@@ -751,6 +760,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Tries to retrieve the value associated with the specified key.
         /// </summary>

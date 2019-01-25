@@ -571,6 +571,7 @@ namespace System.Threading
                 RuntimeHelpers.PrepareConstrainedRegions();
                 try
                 {
+                    // Empty
                 }
                 finally
                 {

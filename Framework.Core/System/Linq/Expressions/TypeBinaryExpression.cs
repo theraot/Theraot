@@ -58,6 +58,7 @@ namespace System.Linq.Expressions
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     ///     Represents an operation between an expression and a type.
     /// </summary>
@@ -76,17 +77,19 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Expression { get; }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="ExpressionType" /> of the expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public override ExpressionType NodeType { get; }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
+        ///     Gets the static type of the expression that this <see cref="P:System.Linq.Expressions.TypeBinaryExpression.Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => typeof(bool);
 
         /// <summary>

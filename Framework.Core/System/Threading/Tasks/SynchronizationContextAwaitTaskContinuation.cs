@@ -5,6 +5,7 @@ using System.Security;
 
 namespace System.Threading.Tasks
 {
+    /// <inheritdoc />
     /// <summary>Task continuation for awaiting with a current synchronization context.</summary>
     internal sealed class SynchronizationContextAwaitTaskContinuation : AwaitTaskContinuation
     {
@@ -18,6 +19,7 @@ namespace System.Threading.Tasks
         /// <summary>The context with which to run the action.</summary>
         private readonly SynchronizationContext _syncContext;
 
+        /// <inheritdoc />
         /// <summary>Initializes the SynchronizationContextAwaitTaskContinuation.</summary>
         /// <param name="context">The synchronization context with which to invoke the action.  Must not be null.</param>
         /// <param name="action">The action to invoke. Must not be null.</param>

@@ -181,14 +181,7 @@ namespace Theraot.Collections
             }
             IEqualityComparer<T> comparer = EqualityComparer<T>.Default;
             var localCollection = AsICollection(source);
-            foreach (var item in items)
-            {
-                if (localCollection.Contains(item, comparer))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return items.Any(item => localCollection.Contains(item, comparer));
         }
 
         public static List<TOutput> ConvertFiltered<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)
@@ -205,15 +198,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(filter));
             }
-            var result = new List<TOutput>();
-            foreach (var item in source)
-            {
-                if (filter(item))
-                {
-                    result.Add(converter(item));
-                }
-            }
-            return result;
+
+            return (from item in source where filter(item) select converter(item)).ToList();
         }
 
         public static IEnumerable<TOutput> ConvertProgressive<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter)
@@ -632,11 +618,8 @@ namespace Theraot.Collections
             {
                 comparer = EqualityComparer<T>.Default;
             }
-            foreach (var _ in source.RemoveWhereEnumerable(input => comparer.Equals(input, item)))
-            {
-                return true;
-            }
-            return false;
+
+            return source.RemoveWhereEnumerable(input => comparer.Equals(input, item)).Any();
         }
 
         public static T[] RemoveFirst<T>(this T[] array)
@@ -728,15 +711,12 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(other));
             }
             var thatAsCollection = AsICollection(other);
-            foreach (var _ in thatAsCollection.Where(input => !source.Contains(input)))
+            if (thatAsCollection.Any(input => !source.Contains(input)))
             {
                 return false;
             }
-            foreach (var _ in source.Where(input => !thatAsCollection.Contains(input)))
-            {
-                return false;
-            }
-            return true;
+
+            return !source.Any(input => !thatAsCollection.Contains(input));
         }
 
         public static void Swap<T>(this IList<T> list, int indexA, int indexB)
@@ -854,12 +834,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(converter));
             }
-            var result = new List<TOutput>();
-            foreach (var item in source)
-            {
-                result.Add(converter(item));
-            }
-            return result;
+
+            return source.Select(item => converter(item)).ToList();
         }
 
         public static TList ConvertAll<T, TOutput, TList>(this IEnumerable<T> source, Func<T, TOutput> converter)
@@ -928,39 +904,18 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static int CountItems<T>(this IEnumerable<T> source)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            var result = 0;
-            foreach (var _ in source)
-            {
-                result++;
-            }
-            return result;
-        }
-
         public static int CountItems<T>(this IEnumerable<T> source, T item)
         {
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            var result = 0;
+
             var equalityComparer = EqualityComparer<T>.Default;
-            foreach (var value in source)
-            {
-                if (equalityComparer.Equals(value, item))
-                {
-                    result++;
-                }
-            }
-            return result;
+            return source.Count(value => equalityComparer.Equals(value, item));
         }
 
-        public static int CountItemsWhere<T>(this IEnumerable<T> source, Predicate<T> predicate)
+        public static int CountItemsWhere<T>(this IEnumerable<T> source, Func<T, bool> predicate)
         {
             if (source == null)
             {
@@ -970,15 +925,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
-            var result = 0;
-            foreach (var item in source)
-            {
-                if (predicate(item))
-                {
-                    result++;
-                }
-            }
-            return result;
+
+            return source.Count(predicate);
         }
     }
 
@@ -998,14 +946,7 @@ namespace Theraot.Collections
             }
             var localComparer = EqualityComparer<T>.Default;
             var localCollection = AsICollection(source);
-            foreach (var item in items)
-            {
-                if (!localCollection.Contains(item, localComparer))
-                {
-                    return false;
-                }
-            }
-            return true;
+            return items.All(item => localCollection.Contains(item, localComparer));
         }
 
         public static bool Contains<T>(this IEnumerable<T> source, IEnumerable<T> items, IEqualityComparer<T> comparer)
@@ -1020,14 +961,7 @@ namespace Theraot.Collections
             }
             var localComparer = comparer ?? EqualityComparer<T>.Default;
             var localCollection = AsICollection(source);
-            foreach (var item in items)
-            {
-                if (!localCollection.Contains(item, localComparer))
-                {
-                    return false;
-                }
-            }
-            return true;
+            return items.All(item => localCollection.Contains(item, localComparer));
         }
 
 #endif

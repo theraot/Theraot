@@ -1,4 +1,4 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 #pragma warning disable CA1030 // Use events where appropriate
 
@@ -128,14 +128,7 @@ namespace System.Runtime.CompilerServices
             }
             finally
             {
-                if (eventArgs?.Handled == true)
-                {
-                    returnValue = null; // handled
-                }
-                else
-                {
-                    returnValue = displayMessage;
-                }
+                returnValue = eventArgs?.Handled == true ? null : displayMessage;
             }
             resultFailureMessage = returnValue;
         }

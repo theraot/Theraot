@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace System.Runtime.CompilerServices
 {
-    /// <summary>Provides an awaiter for a <see cref="ValueTask{TResult}"/>.</summary>
+    /// <summary>Provides an awaiter for a <see cref="T:System.Threading.Tasks.ValueTask`1" />.</summary>
     public struct ValueTaskAwaiter<TResult> : ICriticalNotifyCompletion
     {
         /// <summary>The value being awaited.</summary>

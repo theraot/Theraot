@@ -133,25 +133,31 @@ namespace System.Threading
                     case Status.HandleReadySet:
                         // Reset if Set
                         status = (Status)Interlocked.CompareExchange(ref _status, (int)Status.HandleReadyNotSet, (int)Status.HandleReadySet);
-                        if (status == Status.HandleReadySet)
+                        switch (status)
                         {
-                            // We reset it
-                            // Update the wait handle
-                            var handle = Volatile.Read(ref _handle);
-                            if (handle != null)
+                            case Status.HandleReadySet:
                             {
-                                // Reset it
-                                handle.Reset();
-                                // Done
-                                return;
+                                // We reset it
+                                // Update the wait handle
+                                var handle = Volatile.Read(ref _handle);
+                                if (handle != null)
+                                {
+                                    // Reset it
+                                    handle.Reset();
+                                    // Done
+                                    return;
+                                }
+
+                                break;
                             }
+                            case Status.HandleReadyNotSet:
+                                // Another thread reset it
+                                // we are done
+                                return;
+                            default:
+                                break;
                         }
-                        if (status == Status.HandleReadyNotSet)
-                        {
-                            // Another thread reset it
-                            // we are done
-                            return;
-                        }
+
                         // Probably Disposed
                         break;
 
@@ -196,25 +202,31 @@ namespace System.Threading
                     case Status.HandleReadyNotSet:
                         // Set if Reset
                         status = (Status)Interlocked.CompareExchange(ref _status, (int)Status.HandleReadySet, (int)Status.HandleReadyNotSet);
-                        if (status == Status.HandleReadyNotSet)
+                        switch (status)
                         {
-                            // We set it
-                            // Update the wait handle
-                            var handle = Volatile.Read(ref _handle);
-                            if (handle != null)
+                            case Status.HandleReadyNotSet:
                             {
-                                // Reset it
-                                handle.Set();
-                                // Done
-                                return;
+                                // We set it
+                                // Update the wait handle
+                                var handle = Volatile.Read(ref _handle);
+                                if (handle != null)
+                                {
+                                    // Reset it
+                                    handle.Set();
+                                    // Done
+                                    return;
+                                }
+
+                                break;
                             }
+                            case Status.HandleReadySet:
+                                // Another thread set it
+                                // we are done
+                                return;
+                            default:
+                                break;
                         }
-                        if (status == Status.HandleReadySet)
-                        {
-                            // Another thread set it
-                            // we are done
-                            return;
-                        }
+
                         // Probably Disposed
                         break;
 

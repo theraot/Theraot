@@ -6,20 +6,22 @@
 
 namespace System.Threading.Tasks
 {
+    /// <inheritdoc />
     /// <summary>
-    /// Provides data for the event that is raised when a faulted <see cref="Task"/>'s
+    /// Provides data for the event that is raised when a faulted <see cref="T:System.Threading.Tasks.Task" />'s
     /// exception goes unobserved.
     /// </summary>
     /// <remarks>
     /// The Exception property is used to examine the exception without marking it
-    /// as observed, whereas the <see cref="SetObserved"/> method is used to mark the exception
+    /// as observed, whereas the <see cref="M:System.Threading.Tasks.UnobservedTaskExceptionEventArgs.SetObserved" /> method is used to mark the exception
     /// as observed.  Marking the exception as observed prevents it from triggering exception escalation policy
     /// which, by default, terminates the process.
     /// </remarks>
     public class UnobservedTaskExceptionEventArgs : EventArgs
     {
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="UnobservedTaskExceptionEventArgs"/> class
+        /// Initializes a new instance of the <see cref="T:System.Threading.Tasks.UnobservedTaskExceptionEventArgs" /> class
         /// with the unobserved exception.
         /// </summary>
         /// <param name="exception">The Exception that has gone unobserved.</param>

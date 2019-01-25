@@ -1,7 +1,8 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 namespace System.Runtime.CompilerServices
 {
+    /// <inheritdoc />
     /// <summary>
     /// Allows you to obtain the full path of the source file that contains the caller. This is the file path at the time of compile.
     /// </summary>

@@ -115,14 +115,14 @@ namespace System.IO
 
         private static IAsyncResult BeginRead(AsyncCallback callback, object state)
         {
-            var (stream, buffer, offset, count) = (Tuple<Stream, byte[], int, int>)state;
-            return stream.BeginRead(buffer, offset, count, callback, count);
+            var tuple = (Tuple<Stream, byte[], int, int>)state;
+            return tuple.Item1.BeginRead(tuple.Item2, tuple.Item3, tuple.Item4, callback, tuple.Item4);
         }
 
         private static IAsyncResult BeginWrite(AsyncCallback callback, object state)
         {
-            var (stream, buffer, offset, count) = (Tuple<Stream, byte[], int, int>)state;
-            return stream.BeginWrite(buffer, offset, count, callback, count);
+            var tuple = (Tuple<Stream, byte[], int, int>)state;
+            return tuple.Item1.BeginWrite(tuple.Item2, tuple.Item3, tuple.Item4, callback, tuple.Item4);
         }
     }
 }

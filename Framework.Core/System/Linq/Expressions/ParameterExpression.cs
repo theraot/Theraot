@@ -74,6 +74,7 @@ namespace System.Linq.Expressions
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Represents a named parameter expression.
     /// </summary>
@@ -95,16 +96,18 @@ namespace System.Linq.Expressions
         /// </summary>
         public string Name { get; }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns the node type of this <see cref="Expression"/>. (Inherited from <see cref="Expression"/>.)
+        /// Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Parameter;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents. (Inherited from <see cref="Expression"/>.)
+        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => typeof(object);
 
         internal static ParameterExpression Make(Type type, string name, bool isByRef)
@@ -169,6 +172,7 @@ namespace System.Linq.Expressions
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Specialized subclass to avoid holding onto the byref flag in a
     /// parameter expression.  This version always holds onto the expression
@@ -184,6 +188,7 @@ namespace System.Linq.Expressions
         internal override bool GetIsByRef() => true;
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Generic type to avoid needing explicit storage for primitive data types
     /// which are commonly used.
@@ -198,6 +203,7 @@ namespace System.Linq.Expressions
         public override Type Type => typeof(T);
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Specialized subclass which holds onto the type of the expression for
     /// uncommon types.

@@ -186,7 +186,7 @@ namespace Theraot.Collections.Specialized
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             Extensions.CanCopyTo(Count, array, arrayIndex);
-            Extensions.CopyTo(this, array);
+            this.CopyTo(array);
         }
 
         public void Deconstruct(out KeyValuePair<TKey, TValue>[] dictionary)

@@ -1,4 +1,4 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CA1815 // Override equals and operator equals on value types
@@ -11,11 +11,10 @@ using System.Threading.Tasks;
 
 namespace System.Runtime.CompilerServices
 {
-    /// <summary>
-    /// Provides a builder for asynchronous methods that return void.
-    ///             This type is intended for compiler use only.
-    ///
-    /// </summary>
+    ///  <summary>
+    ///  Provides a builder for asynchronous methods that return void.
+    ///              This type is intended for compiler use only.
+    ///  </summary>
     public struct AsyncVoidMethodBuilder : IAsyncMethodBuilder
     {
         /// <summary>

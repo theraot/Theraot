@@ -38,10 +38,7 @@ namespace System.Linq
         public IEnumerable<TResult> ApplyResultSelector<TResult>(Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
         {
             // MICROSFT does not null check resultSelector
-            foreach (var group in _groupings.Values)
-            {
-                yield return resultSelector(group.Key, group);
-            }
+            return _groupings.Values.Select(group => resultSelector(group.Key, group));
         }
 
         public bool Contains(TKey key)
@@ -51,10 +48,7 @@ namespace System.Linq
 
         public IEnumerator<IGrouping<TKey, TElement>> GetEnumerator()
         {
-            foreach (var grouping in _groupings.Values)
-            {
-                yield return grouping;
-            }
+            return _groupings.Values.Cast<IGrouping<TKey, TElement>>().GetEnumerator();
         }
 
         internal static Lookup<TKey, TElement> Create<TSource>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)

@@ -344,8 +344,7 @@ namespace System.Threading.Tasks
 
         private static void TaskCancelCallback(object obj)
         {
-            var task = obj as Task;
-            if (task == null)
+            if (!(obj is Task task))
             {
                 if (!(obj is Tuple<Task, Task, TaskContinuation> tuple))
                 {

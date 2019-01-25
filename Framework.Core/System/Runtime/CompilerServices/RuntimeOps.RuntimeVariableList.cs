@@ -52,6 +52,7 @@ namespace System.Runtime.CompilerServices
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Provides a list of variables, supporting read/write of the values
         /// Exposed via RuntimeVariablesExpression

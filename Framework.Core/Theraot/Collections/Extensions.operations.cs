@@ -185,16 +185,18 @@ namespace Theraot.Collections
 
         public static ReadOnlyCollectionEx<T> ToReadOnlyCollection<T>(this IEnumerable<T> enumerable)
         {
-            if (enumerable == null)
+            switch (enumerable)
             {
-                return EmptyCollection<T>.Instance;
+                case null:
+                    return EmptyCollection<T>.Instance;
+                case ReadOnlyCollectionEx<T> arrayReadOnlyCollection:
+                    return arrayReadOnlyCollection;
+                default:
+                {
+                    var array = AsArrayInternal(enumerable);
+                    return array.Length == 0 ? EmptyCollection<T>.Instance : ReadOnlyCollectionEx.Create(array);
+                }
             }
-            if (enumerable is ReadOnlyCollectionEx<T> arrayReadOnlyCollection)
-            {
-                return arrayReadOnlyCollection;
-            }
-            var array = AsArrayInternal(enumerable);
-            return array.Length == 0 ? EmptyCollection<T>.Instance : ReadOnlyCollectionEx.Create(array);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

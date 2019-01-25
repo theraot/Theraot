@@ -9,6 +9,7 @@
 // ReSharper disable MergeSequentialChecks
 // ReSharper disable NonReadonlyMemberInGetHashCode
 // ReSharper disable SuspiciousTypeConversion.Global
+// ReSharper disable UseDeconstructionOnParameter
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -182,13 +183,14 @@ namespace System
             return new ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8>>(item1, item2, item3, item4, item5, item6, item7, Create(item8));
         }
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple other)
         {
@@ -205,9 +207,10 @@ namespace System
             return obj is ValueTuple;
         }
 
+        /// <inheritdoc />
         /// <summary>Returns a value indicating whether this instance is equal to a specified value.</summary>
         /// <param name="other">An instance to compare to this instance.</param>
-        /// <returns>true if <paramref name="other"/> has the same value as this instance; otherwise, false.</returns>
+        /// <returns>true if <paramref name="other" /> has the same value as this instance; otherwise, false.</returns>
         public bool Equals(ValueTuple other)
         {
             return true;
@@ -339,13 +342,14 @@ namespace System
 
         int ITupleInternal.Size => 1;
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple<T1> other)
         {
@@ -370,14 +374,15 @@ namespace System
             return obj is ValueTuple<T1> valueTuple && Equals(valueTuple);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1}"/>
-        /// instance is equal to a specified <see cref="ValueTuple{T1}"/>.
+        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`1" />
+        /// instance is equal to a specified <see cref="T:System.ValueTuple`1" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
-        /// <returns><see langword="true"/> if the current instance is equal to the specified tuple; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
         /// <remarks>
-        /// The <paramref name="other"/> parameter is considered to be equal to the current instance if each of its field
+        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its field
         /// is equal to that of the current instance, using the default comparer for that field's type.
         /// </remarks>
         public bool Equals(ValueTuple<T1> other)
@@ -502,13 +507,14 @@ namespace System
 
         int ITupleInternal.Size => 2;
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2> other)
         {
@@ -535,13 +541,14 @@ namespace System
             return obj is ValueTuple<T1, T2> valueTuple && Equals(valueTuple);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2}"/> instance is equal to a specified <see cref="ValueTuple{T1, T2}"/>.
+        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`2" /> instance is equal to a specified <see cref="T:System.ValueTuple`2" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
-        /// <returns><see langword="true"/> if the current instance is equal to the specified tuple; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
         /// <remarks>
-        /// The <paramref name="other"/> parameter is considered to be equal to the current instance if each of its fields
+        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its fields
         /// are equal to that of the current instance, using the default comparer for that field's type.
         /// </remarks>
         public bool Equals(ValueTuple<T1, T2> other)
@@ -707,13 +714,14 @@ namespace System
 
         int ITupleInternal.Size => 3;
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3> other)
         {
@@ -745,14 +753,15 @@ namespace System
             return obj is ValueTuple<T1, T2, T3> valueTuple && Equals(valueTuple);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3}"/>
-        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3}"/>.
+        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`3" />
+        /// instance is equal to a specified <see cref="T:System.ValueTuple`3" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
-        /// <returns><see langword="true"/> if the current instance is equal to the specified tuple; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
         /// <remarks>
-        /// The <paramref name="other"/> parameter is considered to be equal to the current instance if each of its fields
+        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its fields
         /// are equal to that of the current instance, using the default comparer for that field's type.
         /// </remarks>
         public bool Equals(ValueTuple<T1, T2, T3> other)
@@ -913,13 +922,14 @@ namespace System
 
         int ITupleInternal.Size => 4;
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4> other)
         {
@@ -957,14 +967,15 @@ namespace System
             return obj is ValueTuple<T1, T2, T3, T4> valueTuple && Equals(valueTuple);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3, T4}"/>
-        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3, T4}"/>.
+        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`4" />
+        /// instance is equal to a specified <see cref="T:System.ValueTuple`4" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
-        /// <returns><see langword="true"/> if the current instance is equal to the specified tuple; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
         /// <remarks>
-        /// The <paramref name="other"/> parameter is considered to be equal to the current instance if each of its fields
+        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its fields
         /// are equal to that of the current instance, using the default comparer for that field's type.
         /// </remarks>
         public bool Equals(ValueTuple<T1, T2, T3, T4> other)
@@ -1143,13 +1154,14 @@ namespace System
 
         int ITupleInternal.Size => 5;
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4, T5> other)
         {
@@ -1193,14 +1205,15 @@ namespace System
             return obj is ValueTuple<T1, T2, T3, T4, T5> valueTuple && Equals(valueTuple);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3, T4, T5}"/>
-        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3, T4, T5}"/>.
+        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`5" />
+        /// instance is equal to a specified <see cref="T:System.ValueTuple`5" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
-        /// <returns><see langword="true"/> if the current instance is equal to the specified tuple; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
         /// <remarks>
-        /// The <paramref name="other"/> parameter is considered to be equal to the current instance if each of its fields
+        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its fields
         /// are equal to that of the current instance, using the default comparer for that field's type.
         /// </remarks>
         public bool Equals(ValueTuple<T1, T2, T3, T4, T5> other)
@@ -1397,13 +1410,14 @@ namespace System
 
         int ITupleInternal.Size => 6;
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4, T5, T6> other)
         {
@@ -1453,14 +1467,15 @@ namespace System
             return obj is ValueTuple<T1, T2, T3, T4, T5, T6> valueTuple && Equals(valueTuple);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6}"/>
-        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3, T4, T5, T6}"/>.
+        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`6" />
+        /// instance is equal to a specified <see cref="T:System.ValueTuple`6" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
-        /// <returns><see langword="true"/> if the current instance is equal to the specified tuple; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
         /// <remarks>
-        /// The <paramref name="other"/> parameter is considered to be equal to the current instance if each of its fields
+        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its fields
         /// are equal to that of the current instance, using the default comparer for that field's type.
         /// </remarks>
         public bool Equals(ValueTuple<T1, T2, T3, T4, T5, T6> other)
@@ -1675,13 +1690,14 @@ namespace System
 
         int ITupleInternal.Size => 7;
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4, T5, T6, T7> other)
         {
@@ -1737,14 +1753,15 @@ namespace System
             return obj is ValueTuple<T1, T2, T3, T4, T5, T6, T7> valueTuple && Equals(valueTuple);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7}"/>
-        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7}"/>.
+        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`7" />
+        /// instance is equal to a specified <see cref="T:System.ValueTuple`7" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
-        /// <returns><see langword="true"/> if the current instance is equal to the specified tuple; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
         /// <remarks>
-        /// The <paramref name="other"/> parameter is considered to be equal to the current instance if each of its fields
+        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its fields
         /// are equal to that of the current instance, using the default comparer for that field's type.
         /// </remarks>
         public bool Equals(ValueTuple<T1, T2, T3, T4, T5, T6, T7> other)
@@ -1983,13 +2000,14 @@ namespace System
 
         int ITupleInternal.Size => !(Rest is ITupleInternal rest) ? 8 : 7 + rest.Size;
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> other)
         {
@@ -2051,14 +2069,15 @@ namespace System
             return obj is ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> tuple && Equals(tuple);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}"/>
-        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}"/>.
+        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`8" />
+        /// instance is equal to a specified <see cref="T:System.ValueTuple`8" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
-        /// <returns><see langword="true"/> if the current instance is equal to the specified tuple; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
         /// <remarks>
-        /// The <paramref name="other"/> parameter is considered to be equal to the current instance if each of its fields
+        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its fields
         /// are equal to that of the current instance, using the default comparer for that field's type.
         /// </remarks>
         public bool Equals(ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> other)

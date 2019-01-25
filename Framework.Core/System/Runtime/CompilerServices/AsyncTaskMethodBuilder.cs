@@ -11,18 +11,15 @@ using Theraot;
 
 namespace System.Runtime.CompilerServices
 {
-    /// <summary>
-    /// Provides a builder for asynchronous methods that return <see cref="T:System.Threading.Tasks.Task"/>.
-    ///             This type is intended for compiler use only.
-    ///
-    /// </summary>
-    ///
-    /// <remarks>
-    /// AsyncTaskMethodBuilder is a value type, and thus it is copied by value.
-    ///             Prior to being copied, one of its Task, SetResult, or SetException members must be accessed,
-    ///             or else the copies may end up building distinct Task instances.
-    ///
-    /// </remarks>
+    ///  <summary>
+    ///  Provides a builder for asynchronous methods that return <see cref="T:System.Threading.Tasks.Task" />.
+    ///              This type is intended for compiler use only.
+    ///  </summary>
+    ///  <remarks>
+    ///  AsyncTaskMethodBuilder is a value type, and thus it is copied by value.
+    ///              Prior to being copied, one of its Task, SetResult, or SetException members must be accessed,
+    ///              or else the copies may end up building distinct Task instances.
+    ///  </remarks>
     public struct AsyncTaskMethodBuilder : IAsyncMethodBuilder
     {
         /// <summary>
@@ -145,18 +142,15 @@ namespace System.Runtime.CompilerServices
         }
     }
 
-    /// <summary>
-    /// Provides a builder for asynchronous methods that return <see cref="T:System.Threading.Tasks.Task`1"/>.
-    ///             This type is intended for compiler use only.
-    ///
-    /// </summary>
-    ///
-    /// <remarks>
-    /// AsyncTaskMethodBuilder{TResult} is a value type, and thus it is copied by value.
-    ///             Prior to being copied, one of its Task, SetResult, or SetException members must be accessed,
-    ///             or else the copies may end up building distinct Task instances.
-    ///
-    /// </remarks>
+    ///  <summary>
+    ///  Provides a builder for asynchronous methods that return <see cref="T:System.Threading.Tasks.Task`1" />.
+    ///              This type is intended for compiler use only.
+    ///  </summary>
+    ///  <remarks>
+    ///  AsyncTaskMethodBuilder{TResult} is a value type, and thus it is copied by value.
+    ///              Prior to being copied, one of its Task, SetResult, or SetException members must be accessed,
+    ///              or else the copies may end up building distinct Task instances.
+    ///  </remarks>
     public struct AsyncTaskMethodBuilder<TResult> : IAsyncMethodBuilder
     {
         /// <summary>

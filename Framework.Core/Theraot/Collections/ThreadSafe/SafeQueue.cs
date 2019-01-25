@@ -38,6 +38,7 @@ namespace Theraot.Collections.ThreadSafe
             _tail = _root;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Gets the number of items actually contained.
         /// </summary>
@@ -78,11 +79,12 @@ namespace Theraot.Collections.ThreadSafe
             this.DeprecatedCopyTo(array, index);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
+        /// Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.Collections.Generic.IEnumerator{T}" /> that can be used to iterate through the collection.
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {

@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -345,11 +346,7 @@ namespace Theraot.Core
             {
                 return Concat(values);
             }
-            var stringList = new List<string>();
-            foreach (var item in values)
-            {
-                stringList.Add(item);
-            }
+            var stringList = values.ToList();
             return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
         }
 
@@ -363,11 +360,7 @@ namespace Theraot.Core
             {
                 return Concat(values);
             }
-            var stringList = new List<string>();
-            foreach (var item in values)
-            {
-                stringList.Add(item?.ToString());
-            }
+            var stringList = values.Select(item => item?.ToString()).ToList();
             return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
         }
 
@@ -385,11 +378,7 @@ namespace Theraot.Core
             {
                 return Concat(values, converter);
             }
-            var stringList = new List<string>();
-            foreach (var item in values)
-            {
-                stringList.Add(item?.ToString());
-            }
+            var stringList = values.Select(item => item?.ToString()).ToList();
             return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
         }
 
@@ -403,11 +392,7 @@ namespace Theraot.Core
             {
                 return Concat(values);
             }
-            var stringList = new List<string>();
-            foreach (var item in values)
-            {
-                stringList.Add(item);
-            }
+            var stringList = values.ToList();
 
             if (stringList.Count <= 0)
             {
@@ -429,11 +414,7 @@ namespace Theraot.Core
             {
                 return Concat(values);
             }
-            var stringList = new List<string>();
-            foreach (var item in values)
-            {
-                stringList.Add(item?.ToString());
-            }
+            var stringList = values.Select(item => item?.ToString()).ToList();
 
             if (stringList.Count <= 0)
             {
@@ -459,11 +440,7 @@ namespace Theraot.Core
             {
                 return Concat(values, converter);
             }
-            var stringList = new List<string>();
-            foreach (var item in values)
-            {
-                stringList.Add(item?.ToString());
-            }
+            var stringList = values.Select(item => item?.ToString()).ToList();
 
             if (stringList.Count <= 0)
             {

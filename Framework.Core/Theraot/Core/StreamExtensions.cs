@@ -40,14 +40,16 @@ namespace Theraot.Core
 
         public static byte[] ToArray(this Stream stream)
         {
-            if (stream == null)
+            switch (stream)
             {
-                throw new ArgumentNullException(nameof(stream));
+                case null:
+                    throw new ArgumentNullException(nameof(stream));
+                case MemoryStream streamAsMemoryStream:
+                    return streamAsMemoryStream.ToArray();
+                default:
+                    break;
             }
-            if (stream is MemoryStream streamAsMemoryStream)
-            {
-                return streamAsMemoryStream.ToArray();
-            }
+
             using (var memoryStream = new MemoryStream())
             {
                 stream.CopyTo(memoryStream);

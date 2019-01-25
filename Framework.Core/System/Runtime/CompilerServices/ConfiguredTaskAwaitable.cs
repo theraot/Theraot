@@ -1,4 +1,4 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 #pragma warning disable CA1034 // Nested types should not be visible
 #pragma warning disable CA1815 // Override equals and operator equals on value types
@@ -44,13 +44,12 @@ namespace System.Runtime.CompilerServices
             return _configuredTaskAwaiter;
         }
 
-        /// <summary>
-        /// Provides an awaiter for a <see cref="T:System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1"/>.
-        /// </summary>
-        ///
-        /// <remarks>
-        /// This type is intended for compiler use only.
-        /// </remarks>
+        ///  <summary>
+        ///  Provides an awaiter for a <see cref="T:System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1" />.
+        ///  </summary>
+        ///  <remarks>
+        ///  This type is intended for compiler use only.
+        ///  </remarks>
         public struct ConfiguredTaskAwaiter : ICriticalNotifyCompletion
         {
             /// <summary>
@@ -161,13 +160,12 @@ namespace System.Runtime.CompilerServices
             return _configuredTaskAwaiter;
         }
 
-        /// <summary>
-        /// Provides an awaiter for a <see cref="T:System.Runtime.CompilerServices.ConfiguredTaskAwaitable"/>.
-        /// </summary>
-        ///
-        /// <remarks>
-        /// This type is intended for compiler use only.
-        /// </remarks>
+        ///  <summary>
+        ///  Provides an awaiter for a <see cref="T:System.Runtime.CompilerServices.ConfiguredTaskAwaitable" />.
+        ///  </summary>
+        ///  <remarks>
+        ///  This type is intended for compiler use only.
+        ///  </remarks>
         public struct ConfiguredTaskAwaiter : ICriticalNotifyCompletion
         {
             /// <summary>

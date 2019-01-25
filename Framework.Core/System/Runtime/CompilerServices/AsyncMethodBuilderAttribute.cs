@@ -1,4 +1,4 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -6,6 +6,7 @@
 
 namespace System.Runtime.CompilerServices
 {
+    /// <inheritdoc />
     /// <summary>
     /// Indicates the type of the async method builder that should be used by a language compiler to
     /// build the attributed type when used as the return type of an async method.
@@ -13,8 +14,9 @@ namespace System.Runtime.CompilerServices
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface | AttributeTargets.Delegate | AttributeTargets.Enum, Inherited = false)]
     public sealed class AsyncMethodBuilderAttribute : Attribute
     {
-        /// <summary>Initializes the <see cref="AsyncMethodBuilderAttribute"/>.</summary>
-        /// <param name="builderType">The <see cref="Type"/> of the associated builder.</param>
+        /// <inheritdoc />
+        /// <summary>Initializes the <see cref="T:System.Runtime.CompilerServices.AsyncMethodBuilderAttribute" />.</summary>
+        /// <param name="builderType">The <see cref="T:System.Type" /> of the associated builder.</param>
         public AsyncMethodBuilderAttribute(Type builderType)
         {
             BuilderType = builderType;

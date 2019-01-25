@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections.Specialized
@@ -91,11 +92,8 @@ namespace Theraot.Collections.Specialized
             {
                 comparer = EqualityComparer<T>.Default;
             }
-            foreach (var _ in Instance.RemoveWhereEnumerable(input => comparer.Equals(input, item)))
-            {
-                return true;
-            }
-            return false;
+
+            return Instance.RemoveWhereEnumerable(input => comparer.Equals(input, item)).Any();
         }
 
         public T[] ToArray()

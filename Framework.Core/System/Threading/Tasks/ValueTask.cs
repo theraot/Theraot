@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 namespace System.Threading.Tasks
 {
     /// <summary>
-    /// Provides a value type that wraps a <see cref="Task{TResult}"/> and a <typeparamref name="TResult"/>,
+    /// Provides a value type that wraps a <see cref="T:System.Threading.Tasks.Task`1" /> and a <typeparamref name="TResult" />,
     /// only one of which is used.
     /// </summary>
     /// <typeparam name="TResult">The type of the result.</typeparam>
@@ -23,13 +23,13 @@ namespace System.Threading.Tasks
     /// <para>
     /// Methods may return an instance of this value type when it's likely that the result of their
     /// operations will be available synchronously and when the method is expected to be invoked so
-    /// frequently that the cost of allocating a new <see cref="Task{TResult}"/> for each call will
+    /// frequently that the cost of allocating a new <see cref="T:System.Threading.Tasks.Task`1" /> for each call will
     /// be prohibitive.
     /// </para>
     /// <para>
-    /// There are tradeoffs to using a <see cref="ValueTask{TResult}"/> instead of a <see cref="Task{TResult}"/>.
-    /// For example, while a <see cref="ValueTask{TResult}"/> can help avoid an allocation in the case where the
-    /// successful result is available synchronously, it also contains two fields whereas a <see cref="Task{TResult}"/>
+    /// There are tradeoffs to using a <see cref="T:System.Threading.Tasks.ValueTask`1" /> instead of a <see cref="T:System.Threading.Tasks.Task`1" />.
+    /// For example, while a <see cref="T:System.Threading.Tasks.ValueTask`1" /> can help avoid an allocation in the case where the
+    /// successful result is available synchronously, it also contains two fields whereas a <see cref="T:System.Threading.Tasks.Task`1" />
     /// as a reference type is a single field.  This means that a method call ends up returning two fields worth of
     /// data instead of one, which is more data to copy.  It also means that if a method that returns one of these
     /// is awaited within an async method, the state machine for that async method will be larger due to needing
@@ -37,20 +37,20 @@ namespace System.Threading.Tasks
     /// </para>
     /// <para>
     /// Further, for uses other than consuming the result of an asynchronous operation via await,
-    /// <see cref="ValueTask{TResult}"/> can lead to a more convoluted programming model, which can in turn actually
-    /// lead to more allocations.  For example, consider a method that could return either a <see cref="Task{TResult}"/>
-    /// with a cached task as a common result or a <see cref="ValueTask{TResult}"/>.  If the consumer of the result
-    /// wants to use it as a <see cref="Task{TResult}"/>, such as to use with in methods like Task.WhenAll and Task.WhenAny,
-    /// the <see cref="ValueTask{TResult}"/> would first need to be converted into a <see cref="Task{TResult}"/> using
-    /// <see cref="ValueTask{TResult}.AsTask"/>, which leads to an allocation that would have been avoided if a cached
-    /// <see cref="Task{TResult}"/> had been used in the first place.
+    /// <see cref="T:System.Threading.Tasks.ValueTask`1" /> can lead to a more convoluted programming model, which can in turn actually
+    /// lead to more allocations.  For example, consider a method that could return either a <see cref="T:System.Threading.Tasks.Task`1" />
+    /// with a cached task as a common result or a <see cref="T:System.Threading.Tasks.ValueTask`1" />.  If the consumer of the result
+    /// wants to use it as a <see cref="T:System.Threading.Tasks.Task`1" />, such as to use with in methods like Task.WhenAll and Task.WhenAny,
+    /// the <see cref="T:System.Threading.Tasks.ValueTask`1" /> would first need to be converted into a <see cref="T:System.Threading.Tasks.Task`1" /> using
+    /// <see cref="M:System.Threading.Tasks.ValueTask`1.AsTask" />, which leads to an allocation that would have been avoided if a cached
+    /// <see cref="T:System.Threading.Tasks.Task`1" /> had been used in the first place.
     /// </para>
     /// <para>
-    /// As such, the default choice for any asynchronous method should be to return a <see cref="Task"/> or
-    /// <see cref="Task{TResult}"/>. Only if performance analysis proves it worthwhile should a <see cref="ValueTask{TResult}"/>
-    /// be used instead of <see cref="Task{TResult}"/>.  There is no non-generic version of <see cref="ValueTask{TResult}"/>
+    /// As such, the default choice for any asynchronous method should be to return a <see cref="T:System.Threading.Tasks.Task" /> or
+    /// <see cref="T:System.Threading.Tasks.Task`1" />. Only if performance analysis proves it worthwhile should a <see cref="T:System.Threading.Tasks.ValueTask`1" />
+    /// be used instead of <see cref="T:System.Threading.Tasks.Task`1" />.  There is no non-generic version of <see cref="T:System.Threading.Tasks.ValueTask`1" />
     /// as the Task.CompletedTask property may be used to hand back a successfully completed singleton in the case where
-    /// a <see cref="Task"/>-returning method completes synchronously and successfully.
+    /// a <see cref="T:System.Threading.Tasks.Task" />-returning method completes synchronously and successfully.
     /// </para>
     /// </remarks>
     [AsyncMethodBuilder(typeof(AsyncValueTaskMethodBuilder<>))]

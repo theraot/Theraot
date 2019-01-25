@@ -485,15 +485,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException(nameof(check));
             }
             var matches = bucket.WhereIndexed(check);
-            var count = 0;
-            foreach (var pair in matches)
-            {
-                if (bucket.RemoveAt(pair.Key))
-                {
-                    count++;
-                }
-            }
-            return count;
+            return matches.Count(pair => bucket.RemoveAt(pair.Key));
         }
 
         public static IEnumerable<T> RemoveWhereEnumerable<T>(this IBucket<T> bucket, Predicate<T> check)

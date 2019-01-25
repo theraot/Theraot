@@ -13,19 +13,20 @@ using System.Security;
 
 namespace System.Threading
 {
+    /// <inheritdoc />
     /// <summary>
     /// Enables multiple tasks to cooperatively work on an algorithm in parallel through multiple phases.
     /// </summary>
     /// <remarks>
     /// <para>
     /// A group of tasks cooperate by moving through a series of phases, where each in the group signals it
-    /// has arrived at the <see cref="Barrier"/> in a given phase and implicitly waits for all others to
-    /// arrive. The same <see cref="Barrier"/> can be used for multiple phases.
+    /// has arrived at the <see cref="T:System.Threading.Barrier" /> in a given phase and implicitly waits for all others to
+    /// arrive. The same <see cref="T:System.Threading.Barrier" /> can be used for multiple phases.
     /// </para>
     /// <para>
-    /// All public and protected members of <see cref="Barrier"/> are thread-safe and may be used
+    /// All public and protected members of <see cref="T:System.Threading.Barrier" /> are thread-safe and may be used
     /// concurrently from multiple threads, with the exception of Dispose, which
-    /// must only be used when all other operations on the <see cref="Barrier"/> have
+    /// must only be used when all other operations on the <see cref="T:System.Threading.Barrier" /> have
     /// completed.
     /// </para>
     /// </remarks>
@@ -86,15 +87,17 @@ namespace System.Threading
         // Post phase action after each phase
         private readonly Action<Barrier> _postPhaseAction;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="Barrier"/> class.
+        /// Initializes a new instance of the <see cref="T:System.Threading.Barrier" /> class.
         /// </summary>
         /// <param name="participantCount">The number of participating threads.</param>
-        /// <exception cref="ArgumentOutOfRangeException"> <paramref name="participantCount"/> is less than 0
-        /// or greater than <see cref="T:System.Int16.MaxValue"/>.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"> <paramref name="participantCount" /> is less than 0
+        /// or greater than <see cref="T:System.Int16.MaxValue" />.</exception>
         public Barrier(int participantCount)
             : this(participantCount, null)
         {
+            // Empty
         }
 
         /// <summary>
@@ -290,14 +293,15 @@ namespace System.Threading
             return newPhase;
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Releases all resources used by the current instance of <see cref="Barrier"/>.
+        /// Releases all resources used by the current instance of <see cref="T:System.Threading.Barrier" />.
         /// </summary>
         /// <exception cref="T:System.InvalidOperationException">
         /// The method was invoked from within a post-phase action.
         /// </exception>
         /// <remarks>
-        /// Unlike most of the members of <see cref="Barrier"/>, Dispose is not thread-safe and may not be
+        /// Unlike most of the members of <see cref="T:System.Threading.Barrier" />, Dispose is not thread-safe and may not be
         /// used concurrently with other members of this instance.
         /// </remarks>
         public void Dispose()
@@ -873,48 +877,58 @@ namespace System.Threading
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
-    /// The exception that is thrown when the post-phase action of a <see cref="Barrier"/> fails.
+    /// The exception that is thrown when the post-phase action of a <see cref="T:System.Threading.Barrier" /> fails.
     /// </summary>
     [Serializable]
     public class BarrierPostPhaseException : Exception
     {
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="BarrierPostPhaseException"/> class.
+        /// Initializes a new instance of the <see cref="T:System.Threading.BarrierPostPhaseException" /> class.
         /// </summary>
         public BarrierPostPhaseException()
             : this((string)null)
         {
+            // Empty
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="BarrierPostPhaseException"/> class with the specified inner exception.
+        /// Initializes a new instance of the <see cref="T:System.Threading.BarrierPostPhaseException" /> class with the specified inner exception.
         /// </summary>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
         public BarrierPostPhaseException(Exception innerException)
             : this(null, innerException)
         {
+            // Empty
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="BarrierPostPhaseException"/> class with a specified error message.
+        /// Initializes a new instance of the <see cref="T:System.Threading.BarrierPostPhaseException" /> class with a specified error message.
         /// </summary>
         /// <param name="message">A string that describes the exception.</param>
         public BarrierPostPhaseException(string message)
             : this(message, null)
         {
+            // Empty
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="BarrierPostPhaseException"/> class with a specified error message and inner exception.
+        /// Initializes a new instance of the <see cref="T:System.Threading.BarrierPostPhaseException" /> class with a specified error message and inner exception.
         /// </summary>
         /// <param name="message">A string that describes the exception.</param>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
         public BarrierPostPhaseException(string message, Exception innerException)
             : base(message ?? "The postPhaseAction failed with an exception.", innerException)
         {
+            // Empty
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Initializes a new instance of the BarrierPostPhaseException class with serialized data.
         /// </summary>
@@ -923,6 +937,7 @@ namespace System.Threading
         protected BarrierPostPhaseException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
+            // Empty
         }
     }
 }

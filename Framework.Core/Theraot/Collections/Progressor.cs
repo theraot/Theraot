@@ -56,22 +56,20 @@ namespace Theraot.Collections
 
         public static Progressor<T> CreateFromIEnumerable(IEnumerable<T> enumerable)
         {
-            if (enumerable == null)
+            switch (enumerable)
             {
-                throw new ArgumentNullException(nameof(enumerable));
+                case null:
+                    throw new ArgumentNullException(nameof(enumerable));
+                case T[] array:
+                    return CreateFromArray(array);
+                case IList<T> list:
+                    return CreateFromIList(list);
+                case IReadOnlyList<T> readOnlyList:
+                    return CreateFromIReadOnlyList(readOnlyList);
+                default:
+                    break;
             }
-            if (enumerable is T[] array)
-            {
-                return CreateFromArray(array);
-            }
-            if (enumerable is IList<T> list)
-            {
-                return CreateFromIList(list);
-            }
-            if (enumerable is IReadOnlyList<T> readOnlyList)
-            {
-                return CreateFromIReadOnlyList(readOnlyList);
-            }
+
             var enumerator = enumerable.GetEnumerator();
             var proxy = new ProxyObservable<T>();
             bool Take(out T value)

@@ -80,16 +80,12 @@ namespace System.Linq
 
         private static MethodInfo GetMatchingMethod(MethodInfo method, Type declaring)
         {
-            foreach (var candidate in declaring.GetMethods())
-            {
-                if (!MethodMatch(candidate, method))
-                {
-                    continue;
-                }
-
-                return method.IsGenericMethod ? candidate.MakeGenericMethodFrom(method) : candidate;
-            }
-            return null;
+            return (
+                    from candidate
+                    in declaring.GetMethods()
+                    where MethodMatch(candidate, method)
+                    select method.IsGenericMethod ? candidate.MakeGenericMethodFrom(method) : candidate
+                ).FirstOrDefault();
         }
 
         private static Type GetTargetDeclaringType(MethodInfo method)
