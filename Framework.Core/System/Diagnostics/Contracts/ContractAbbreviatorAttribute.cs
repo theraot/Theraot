@@ -6,6 +6,7 @@
 
 namespace System.Diagnostics.Contracts
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Enables writing abbreviations for contracts that get copied to other methods
     /// </summary>

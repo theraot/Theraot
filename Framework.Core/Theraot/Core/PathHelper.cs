@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35 || NET40 || NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+﻿#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD12
 
 // Needed for Workaround
 
@@ -17,14 +17,14 @@ namespace Theraot.Core
 {
     public static class PathHelper
     {
-        public static string AltDirectorySeparatorString { get; } = Path.AltDirectorySeparatorChar.ToString();
-        public static string DirectorySeparatorString { get; } = Path.DirectorySeparatorChar.ToString();
-        public static string VolumeSeparatorString { get; } = Path.VolumeSeparatorChar.ToString();
+        public static string AltDirectorySeparatorString { get; } = new string(new []{Path.AltDirectorySeparatorChar});
+        public static string DirectorySeparatorString { get; } = new string(new []{Path.DirectorySeparatorChar});
+        public static string VolumeSeparatorString { get; } = new string(new []{Path.VolumeSeparatorChar});
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Combine(params string[] paths)
         {
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
             if (paths == null)
             {
                 throw new ArgumentNullException(nameof(paths));
@@ -39,9 +39,13 @@ namespace Theraot.Core
                 }
                 if (current.Length != 0)
                 {
-                    if (combine.Count > 0 && !current.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
-    && !current.EndsWith(AltDirectorySeparatorString, StringComparison.Ordinal)
-    && !current.EndsWith(VolumeSeparatorString, StringComparison.Ordinal))
+                    if
+                    (
+                        combine.Count > 0
+                        && !current.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
+                        && !current.EndsWith(AltDirectorySeparatorString, StringComparison.Ordinal)
+                        && !current.EndsWith(VolumeSeparatorString, StringComparison.Ordinal)
+                    )
                     {
                         current += DirectorySeparatorString;
                     }
@@ -62,7 +66,7 @@ namespace Theraot.Core
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Combine(string path1, string path2)
         {
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
 
             if (HasInvalidPathChars(path1) || HasInvalidPathChars(path2))
             {
@@ -73,9 +77,13 @@ namespace Theraot.Core
                 return path2;
             }
 
-            if (path1.Length != 0 && !path1.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
-    && !path1.EndsWith(AltDirectorySeparatorString, StringComparison.Ordinal)
-    && !path1.EndsWith(VolumeSeparatorString, StringComparison.Ordinal))
+            if
+            (
+                path1.Length != 0
+                && !path1.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
+                && !path1.EndsWith(AltDirectorySeparatorString, StringComparison.Ordinal)
+                && !path1.EndsWith(VolumeSeparatorString, StringComparison.Ordinal)
+            )
             {
                 path1 += DirectorySeparatorString;
             }
@@ -89,7 +97,7 @@ namespace Theraot.Core
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Combine(string path1, string path2, string path3)
         {
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
             if (HasInvalidPathChars(path1) || HasInvalidPathChars(path2) || HasInvalidPathChars(path3))
             {
                 throw new ArgumentException("invalid characters in path");
@@ -112,9 +120,13 @@ namespace Theraot.Core
                     return string.Concat(path2, path3);
                 }
             }
-            if (path1.Length != 0 && !path1.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
-    && !path1.EndsWith(AltDirectorySeparatorString, StringComparison.Ordinal)
-    && !path1.EndsWith(VolumeSeparatorString, StringComparison.Ordinal))
+            if
+            (
+                path1.Length != 0
+                && !path1.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
+                && !path1.EndsWith(AltDirectorySeparatorString, StringComparison.Ordinal)
+                && !path1.EndsWith(VolumeSeparatorString, StringComparison.Ordinal)
+            )
             {
                 path1 += DirectorySeparatorString;
             }
@@ -128,7 +140,7 @@ namespace Theraot.Core
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Combine(string path1, string path2, string path3, string path4)
         {
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
             if (HasInvalidPathChars(path1) || HasInvalidPathChars(path2) || HasInvalidPathChars(path3) || HasInvalidPathChars(path4))
             {
                 throw new ArgumentException("invalid characters in path");
@@ -164,9 +176,13 @@ namespace Theraot.Core
                     return string.Concat(path2, path3, path4);
                 }
             }
-            if (path1.Length != 0 && !path1.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
-    && !path1.EndsWith(AltDirectorySeparatorString, StringComparison.Ordinal)
-    && !path1.EndsWith(VolumeSeparatorString, StringComparison.Ordinal))
+            if
+            (
+                path1.Length != 0
+                && !path1.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
+                && !path1.EndsWith(AltDirectorySeparatorString, StringComparison.Ordinal)
+                && !path1.EndsWith(VolumeSeparatorString, StringComparison.Ordinal)
+            )
             {
                 path1 += DirectorySeparatorString;
             }

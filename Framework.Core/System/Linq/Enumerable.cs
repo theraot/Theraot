@@ -2,6 +2,7 @@
 
 #pragma warning disable CC0031 // Check for null before calling a delegate
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
+// ReSharper disable LoopCanBeConvertedToQuery
 
 using System.Collections;
 using System.Collections.Generic;
@@ -24,17 +25,18 @@ namespace System.Linq
             var enumerator = source.GetEnumerator();
             using (enumerator)
             {
-                if (enumerator.MoveNext())
+                if (!enumerator.MoveNext())
                 {
-                    var folded = enumerator.Current;
-                    while (enumerator.MoveNext())
-                    {
-                        folded = func(folded, enumerator.Current);
-                    }
-                    return folded;
+                    throw new InvalidOperationException("No elements in source list");
                 }
 
-                throw new InvalidOperationException("No elements in source list");
+                var folded = enumerator.Current;
+                while (enumerator.MoveNext())
+                {
+                    folded = func(folded, enumerator.Current);
+                }
+                return folded;
+
             }
         }
 
@@ -104,19 +106,21 @@ namespace System.Linq
 
         public static bool Any<TSource>(this IEnumerable<TSource> source)
         {
-            if (source == null)
+            switch (source)
             {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (!(source is ICollection<TSource> collection))
-            {
-                using (var enumerator = source.GetEnumerator())
-                {
-                    return enumerator.MoveNext();
-                }
+                case null:
+                    throw new ArgumentNullException(nameof(source));
+                case ICollection<TSource> collection:
+                    return collection.Count > 0;
+                default:
+                    break;
             }
 
-            return collection.Count > 0;
+            using (var enumerator = source.GetEnumerator())
+            {
+                return enumerator.MoveNext();
+            }
+
         }
 
         public static bool Any<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -146,15 +150,15 @@ namespace System.Linq
 
         public static IEnumerable<TResult> Cast<TResult>(this IEnumerable source)
         {
-            if (source == null)
+            switch (source)
             {
-                throw new ArgumentNullException(nameof(source));
+                case null:
+                    throw new ArgumentNullException(nameof(source));
+                case IEnumerable<TResult> enumerable:
+                    return enumerable;
+                default:
+                    return CastExtracted();
             }
-            if (source is IEnumerable<TResult> enumerable)
-            {
-                return enumerable;
-            }
-            return CastExtracted();
 
             IEnumerable<TResult> CastExtracted()
             {
@@ -217,23 +221,25 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (!(source is ICollection<TSource> collection))
+
+            if (source is ICollection<TSource> collection)
             {
-                var result = 0;
-                using (var item = source.GetEnumerator())
-                {
-                    while (item.MoveNext())
-                    {
-                        checked
-                        {
-                            result++;
-                        }
-                    }
-                }
-                return result;
+                return collection.Count;
             }
 
-            return collection.Count;
+            var result = 0;
+            using (var item = source.GetEnumerator())
+            {
+                while (item.MoveNext())
+                {
+                    checked
+                    {
+                        result++;
+                    }
+                }
+            }
+            return result;
+
         }
 
         public static int Count<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -361,21 +367,11 @@ namespace System.Linq
 
             if (source is IList<TSource> list)
             {
-                if (index < list.Count)
-                {
-                    return list[index];
-                }
-
-                return default;
+                return index < list.Count ? list[index] : default;
             }
             if (source is IReadOnlyList<TSource> readOnlyList)
             {
-                if (index < readOnlyList.Count)
-                {
-                    return readOnlyList[index];
-                }
-
-                return default;
+                return index < readOnlyList.Count ? readOnlyList[index] : default;
             }
             var count = 0L;
             foreach (var item in source)
@@ -522,24 +518,25 @@ namespace System.Linq
                 throw new InvalidOperationException();
             }
 
-            if (!(source is IList<TSource> list))
+            if (source is IList<TSource> list)
             {
-                var found = false;
-                var result = default(TSource);
-                foreach (var item in source)
-                {
-                    result = item;
-                    found = true;
-                }
-                if (found)
-                {
-                    return result;
-                }
-
-                throw new InvalidOperationException();
+                return list[list.Count - 1];
             }
 
-            return list[list.Count - 1];
+            var found = false;
+            var result = default(TSource);
+            foreach (var item in source)
+            {
+                result = item;
+                found = true;
+            }
+            if (found)
+            {
+                return result;
+            }
+
+            throw new InvalidOperationException();
+
         }
 
         public static TSource Last<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -577,24 +574,26 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (!(source is IList<TSource> list))
-            {
-                var found = false;
-                var result = default(TSource);
-                foreach (var item in source)
-                {
-                    result = item;
-                    found = true;
-                }
-                if (found)
-                {
-                    return result;
-                }
 
-                return default;
+            if (source is IList<TSource> list)
+            {
+                return list.Count > 0 ? list[list.Count - 1] : default;
             }
 
-            return list.Count > 0 ? list[list.Count - 1] : default;
+            var found = false;
+            var result = default(TSource);
+            foreach (var item in source)
+            {
+                result = item;
+                found = true;
+            }
+            if (found)
+            {
+                return result;
+            }
+
+            return default;
+
         }
 
         public static TSource LastOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -625,20 +624,22 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (!(source is TSource[] array))
+
+            if (source is TSource[] array)
             {
-                long count = 0;
-                using (var item = source.GetEnumerator())
-                {
-                    while (item.MoveNext())
-                    {
-                        count++;
-                    }
-                }
-                return count;
+                return array.LongLength;
             }
 
-            return array.LongLength;
+            long count = 0;
+            using (var item = source.GetEnumerator())
+            {
+                while (item.MoveNext())
+                {
+                    count++;
+                }
+            }
+            return count;
+
         }
 
         public static long LongCount<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -1231,14 +1232,16 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (source is string str)
+
+            if (!(source is string str))
             {
-                var array = (TSource[])(object)str.ToCharArray();
-                var result = new List<TSource>(array.Length);
-                result.AddRange(array);
-                return result;
+                return new List<TSource>(source);
             }
-            return new List<TSource>(source);
+
+            var array = (TSource[])(object)str.ToCharArray();
+            var result = new List<TSource>(array.Length);
+            result.AddRange(array);
+            return result;
         }
 
         public static ILookup<TKey, TSource> ToLookup<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)

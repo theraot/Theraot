@@ -1,4 +1,4 @@
-#if FAT
+﻿#if FAT
 
 using System;
 using System.Collections.Generic;
@@ -11,13 +11,13 @@ namespace Theraot.Collections
         public ConversionSet(IEnumerable<TInput> wrapped, Func<TInput, TOutput> converter)
             : base(BuildEnumerable(wrapped, converter))
         {
-            //Empty
+            // Empty
         }
 
         public ConversionSet(IEnumerable<TInput> wrapped, Func<TInput, TOutput> converter, Predicate<TInput> filter)
             : base(BuildEnumerable(wrapped, converter, filter))
         {
-            //Empty
+            // Empty
         }
 
         private static IEnumerable<TOutput> BuildEnumerable(IEnumerable<TInput> wrapped, Func<TInput, TOutput> converter)

@@ -18,7 +18,6 @@ namespace System.Security
 
     public abstract class CodeAccessPermission : IPermission, IStackWalk
     {
-
         public static void RevertAll()
         {
             // Empty
@@ -39,6 +38,7 @@ namespace System.Security
         {
             // Empty
         }
+
         public void Assert()
         {
             // Empty

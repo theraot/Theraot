@@ -16,7 +16,6 @@ namespace System.Linq.Expressions.Compiler
 {
     internal static class ILGen
     {
-        // matches TryEmitConstant
         internal static bool CanEmitConstant(object value, Type type)
         {
             if (value == null || CanEmitILConstant(type))
@@ -646,9 +645,6 @@ namespace System.Linq.Expressions.Compiler
             return dt == null || ShouldLdtoken(dt);
         }
 
-        //
-        // Note: we support emitting more things as IL constants than
-        // Linq does
         internal static bool TryEmitConstant(this ILGenerator il, object value, Type type, ILocalCache locals)
         {
             if (value == null)
@@ -666,11 +662,10 @@ namespace System.Linq.Expressions.Compiler
                 return true;
             }
 
-            // Check for a few more types that we support emitting as constants
-            if (value is Type t)
+            switch (value)
             {
-                if (ShouldLdtoken(t))
-                {
+                // Check for a few more types that we support emitting as constants
+                case Type t when ShouldLdtoken(t):
                     il.EmitType(t);
                     if (type != typeof(Type))
                     {
@@ -678,37 +673,32 @@ namespace System.Linq.Expressions.Compiler
                     }
 
                     return true;
-                }
+                case Type _:
+                    return false;
+                case MethodBase mb when ShouldLdtoken(mb):
+                    il.Emit(OpCodes.Ldtoken, mb);
+                    var dt = mb.DeclaringType;
+                    if (dt?.IsGenericType == true)
+                    {
+                        il.Emit(OpCodes.Ldtoken, dt);
+                        il.Emit(OpCodes.Call, CachedReflectionInfo.MethodBaseGetMethodFromHandleRuntimeMethodHandleRuntimeTypeHandle);
+                    }
+                    else
+                    {
+                        il.Emit(OpCodes.Call, CachedReflectionInfo.MethodBaseGetMethodFromHandleRuntimeMethodHandle);
+                    }
 
-                return false;
+                    if (type != typeof(MethodBase))
+                    {
+                        il.Emit(OpCodes.Castclass, type);
+                    }
+
+                    return true;
+                default:
+                    return false;
             }
-
-            if (value is MethodBase mb && ShouldLdtoken(mb))
-            {
-                il.Emit(OpCodes.Ldtoken, mb);
-                var dt = mb.DeclaringType;
-                if (dt?.IsGenericType == true)
-                {
-                    il.Emit(OpCodes.Ldtoken, dt);
-                    il.Emit(OpCodes.Call, CachedReflectionInfo.MethodBaseGetMethodFromHandleRuntimeMethodHandleRuntimeTypeHandle);
-                }
-                else
-                {
-                    il.Emit(OpCodes.Call, CachedReflectionInfo.MethodBaseGetMethodFromHandleRuntimeMethodHandle);
-                }
-
-                if (type != typeof(MethodBase))
-                {
-                    il.Emit(OpCodes.Castclass, type);
-                }
-
-                return true;
-            }
-
-            return false;
         }
 
-        // matches TryEmitILConstant
         private static bool CanEmitILConstant(Type type)
         {
             switch (type.GetNonNullable().GetTypeCode())
@@ -1225,13 +1215,13 @@ namespace System.Linq.Expressions.Compiler
             if (type.IsNullable())
             {
                 var nonNullType = type.GetNonNullable();
-                if (TryEmitILConstant(il, value, nonNullType))
+                if (!TryEmitILConstant(il, value, nonNullType))
                 {
-                    il.Emit(OpCodes.Newobj, type.GetConstructor(new[] {nonNullType}));
-                    return true;
+                    return false;
                 }
 
-                return false;
+                il.Emit(OpCodes.Newobj, type.GetConstructor(new[] {nonNullType}));
+                return true;
             }
 
             switch (type.GetTypeCode())

@@ -20,20 +20,24 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
-            using (var enumerator1 = first.GetEnumerator())
-            using (var enumerator2 = second.GetEnumerator())
+            return ZipIterator();
+            IEnumerable<TReturn> ZipIterator()
             {
-                while
-                (
-                    enumerator1.MoveNext()
-                    && enumerator2.MoveNext()
-                )
+                using (var enumerator1 = first.GetEnumerator())
+                using (var enumerator2 = second.GetEnumerator())
                 {
-                    yield return resultSelector
+                    while
                     (
-                        enumerator1.Current,
-                        enumerator2.Current
-                    );
+                        enumerator1.MoveNext()
+                        && enumerator2.MoveNext()
+                    )
+                    {
+                        yield return resultSelector
+                        (
+                            enumerator1.Current,
+                            enumerator2.Current
+                        );
+                    }
                 }
             }
         }

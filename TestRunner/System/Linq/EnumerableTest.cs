@@ -2,6 +2,7 @@
 
 using System;
 using System.Linq;
+using Theraot.Collections.ThreadSafe;
 
 namespace TestRunner.System.Linq
 {
@@ -11,15 +12,15 @@ namespace TestRunner.System.Linq
         [Test]
         public static void MaxOfEmptyEnumerableThrows()
         {
-            Assert.Throws<InvalidOperationException, double>(() => new double[] { }.Max());
-            Assert.Throws<InvalidOperationException, float>(() => new float[] { }.Max());
+            Assert.Throws<InvalidOperationException, double>(() => ArrayReservoir<double>.EmptyArray.Max());
+            Assert.Throws<InvalidOperationException, float>(() => ArrayReservoir<float>.EmptyArray.Max());
         }
 
         [Test]
         public static void MaxOfEmptyNullableEnumerableIsNull()
         {
-            Assert.AreEqual(null, new double?[] { }.Max());
-            Assert.AreEqual(null, new float?[] { }.Max());
+            Assert.AreEqual(null, ArrayReservoir<double?>.EmptyArray.Max());
+            Assert.AreEqual(null, ArrayReservoir<float?>.EmptyArray.Max());
         }
 
         [Test]
@@ -76,15 +77,15 @@ namespace TestRunner.System.Linq
         [Test]
         public static void MinOfEmptyEnumerableThrows()
         {
-            Assert.Throws<InvalidOperationException, double>(() => new double[] { }.Min());
-            Assert.Throws<InvalidOperationException, float>(() => new float[] { }.Min());
+            Assert.Throws<InvalidOperationException, double>(() => ArrayReservoir<double>.EmptyArray.Min());
+            Assert.Throws<InvalidOperationException, float>(() => ArrayReservoir<float>.EmptyArray.Min());
         }
 
         [Test]
         public static void MinOfEmptyNullableEnumerableIsNull()
         {
-            Assert.AreEqual(null, new double?[] { }.Min());
-            Assert.AreEqual(null, new float?[] { }.Min());
+            Assert.AreEqual(null, ArrayReservoir<double?>.EmptyArray.Min());
+            Assert.AreEqual(null, ArrayReservoir<float?>.EmptyArray.Min());
         }
 
         [Test]

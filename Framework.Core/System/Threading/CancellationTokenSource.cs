@@ -73,7 +73,7 @@ namespace System.Threading
         public CancellationTokenSource(TimeSpan delay)
             : this(CheckTimeout(delay))
         {
-            //Empty
+            // Empty
         }
 
         public bool IsCancellationRequested => _cancelRequested == 1;

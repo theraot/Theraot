@@ -279,37 +279,39 @@ namespace System.Collections.Generic
         protected virtual void OnDeserialization(object sender)
         {
             No.Op(sender);
-            if (Comparer == null)
+            if (Comparer != null)
             {
-                if (_serializationInfo == null)
-                {
-                    throw new SerializationException();
-                }
-
-                Comparer = (IComparer<T>)_serializationInfo.GetValue(nameof(Comparer), typeof(IComparer<T>));
-                var count = _serializationInfo.GetInt32(nameof(Count));
-                if (count != 0)
-                {
-                    var value = (T[])_serializationInfo.GetValue("Items", typeof(T[]));
-                    if (value == null)
-                    {
-                        throw new SerializationException();
-                    }
-
-                    foreach (var item in value)
-                    {
-                        Add(item);
-                    }
-                }
-
-                _serializationInfo.GetInt32("Version");
-                if (Count != count)
-                {
-                    throw new SerializationException();
-                }
-
-                _serializationInfo = null;
+                return;
             }
+
+            if (_serializationInfo == null)
+            {
+                throw new SerializationException();
+            }
+
+            Comparer = (IComparer<T>)_serializationInfo.GetValue(nameof(Comparer), typeof(IComparer<T>));
+            var count = _serializationInfo.GetInt32(nameof(Count));
+            if (count != 0)
+            {
+                var value = (T[])_serializationInfo.GetValue("Items", typeof(T[]));
+                if (value == null)
+                {
+                    throw new SerializationException();
+                }
+
+                foreach (var item in value)
+                {
+                    Add(item);
+                }
+            }
+
+            _serializationInfo.GetInt32("Version");
+            if (Count != count)
+            {
+                throw new SerializationException();
+            }
+
+            _serializationInfo = null;
         }
 
         protected virtual bool RemoveExtracted(T item)
@@ -339,12 +341,7 @@ namespace System.Collections.Generic
 
             public override bool Contains(T item)
             {
-                if (!InRange(item))
-                {
-                    return false;
-                }
-
-                return _wrapped.Contains(item);
+                return InRange(item) && _wrapped.Contains(item);
             }
 
             public override SortedSet<T> GetViewBetween(T lowerValue, T upperValue)
@@ -438,12 +435,7 @@ namespace System.Collections.Generic
 
             protected override bool RemoveExtracted(T item)
             {
-                if (!InRange(item))
-                {
-                    return false;
-                }
-
-                return _wrapped.RemoveExtracted(item);
+                return InRange(item) && _wrapped.RemoveExtracted(item);
             }
 
             private bool InRange(T item)

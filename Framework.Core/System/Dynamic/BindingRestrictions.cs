@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using AstUtils = System.Linq.Expressions.Utils;
@@ -53,18 +54,7 @@ namespace System.Dynamic
         public static BindingRestrictions Combine(IList<DynamicMetaObject> contributingObjects)
         {
             var res = Empty;
-            if (contributingObjects != null)
-            {
-                foreach (var mo in contributingObjects)
-                {
-                    if (mo != null)
-                    {
-                        res = res.Merge(mo.Restrictions);
-                    }
-                }
-            }
-
-            return res;
+            return contributingObjects == null ? res : contributingObjects.Where(mo => mo != null).Aggregate(res, (current, mo) => current.Merge(mo.Restrictions));
         }
 
         /// <summary>
@@ -123,12 +113,7 @@ namespace System.Dynamic
                 return restrictions;
             }
 
-            if (restrictions == Empty)
-            {
-                return this;
-            }
-
-            return new MergedRestriction(this, restrictions);
+            return restrictions == Empty ? this : new MergedRestriction(this, restrictions);
         }
 
         /// <summary>

@@ -78,8 +78,8 @@ namespace TestRunner.System.Threading
         private static bool WaitAsyncWaitCorrectlyExtractedExtracted(int maxCount, int maxTasks)
         {
             // Note: if WaitAsync takes to long, "x" can happen before the chunk of "a" has completed.
-            var log = new CircularBucket<string>(maxTasks * 4 + 2);
-            var logCount = new CircularBucket<int>(maxTasks * 2 + 2);
+            var log = new CircularBucket<string>((maxTasks * 4) + 2);
+            var logCount = new CircularBucket<int>((maxTasks * 2) + 2);
             var source = new CancellationTokenSource[1];
             using (source[0] = new CancellationTokenSource())
             {
@@ -105,7 +105,7 @@ namespace TestRunner.System.Threading
                                         await semaphore[0].WaitAsync
                                         (
                                             source[0].Token
-                                        );
+                                        ).ConfigureAwait(false);
                                         Interlocked.Add(ref padding, 100);
                                         logCount.Add(-1);
                                         log.Add("b");

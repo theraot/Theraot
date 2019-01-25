@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET45
 
+// ReSharper disable HeuristicUnreachableCode
+
 using System.Collections.Generic;
 using Theraot;
 using Theraot.Collections.Specialized;
@@ -33,17 +35,15 @@ namespace System.Collections.ObjectModel
         {
             get
             {
-                if (key == null)
+                switch (key)
                 {
-                    throw new ArgumentNullException(nameof(key));
+                    case null:
+                        throw new ArgumentNullException(nameof(key));
+                    case TKey keyAsTKey:
+                        return this[keyAsTKey];
+                    default:
+                        return null;
                 }
-
-                if (key is TKey keyAsTKey)
-                {
-                    return this[keyAsTKey];
-                }
-
-                return null;
             }
 
             set => throw new NotSupportedException();

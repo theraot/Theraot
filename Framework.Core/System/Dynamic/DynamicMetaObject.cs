@@ -44,15 +44,16 @@ namespace System.Dynamic
             Restrictions = restrictions;
         }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="DynamicMetaObject" /> class.
+        ///     Initializes a new instance of the <see cref="T:System.Dynamic.DynamicMetaObject" /> class.
         /// </summary>
         /// <param name="expression">
-        ///     The expression representing this <see cref="DynamicMetaObject" /> during the dynamic binding
+        ///     The expression representing this <see cref="T:System.Dynamic.DynamicMetaObject" /> during the dynamic binding
         ///     process.
         /// </param>
         /// <param name="restrictions">The set of binding restrictions under which the binding is valid.</param>
-        /// <param name="value">The runtime value represented by the <see cref="DynamicMetaObject" />.</param>
+        /// <param name="value">The runtime value represented by the <see cref="T:System.Dynamic.DynamicMetaObject" />.</param>
         public DynamicMetaObject(Expression expression, BindingRestrictions restrictions, object value)
             : this(expression, restrictions)
         {
@@ -91,19 +92,14 @@ namespace System.Dynamic
         {
             get
             {
-                if (HasValue)
+                if (!HasValue)
                 {
-                    var ct = Expression.Type;
-                    // ValueType at compile time, type cannot change.
-                    if (ct.IsValueType)
-                    {
-                        return ct;
-                    }
-
-                    return Value?.GetType();
+                    return null;
                 }
 
-                return null;
+                var ct = Expression.Type;
+                // ValueType at compile time, type cannot change.
+                return ct.IsValueType ? ct : Value?.GetType();
             }
         }
 
@@ -131,21 +127,21 @@ namespace System.Dynamic
         {
             ContractUtils.RequiresNotNull(expression, nameof(expression));
 
-            if (value is IDynamicMetaObjectProvider ido)
+            if (!(value is IDynamicMetaObjectProvider ido))
             {
-                var idoMetaObject = ido.GetMetaObject(expression);
-
-                if (idoMetaObject?.HasValue != true
-                    || idoMetaObject.Value == null
-                    || idoMetaObject.Expression != expression)
-                {
-                    throw new InvalidOperationException($"An IDynamicMetaObjectProvider {ido.GetType()} created an invalid DynamicMetaObject instance.");
-                }
-
-                return idoMetaObject;
+                return new DynamicMetaObject(expression, BindingRestrictions.Empty, value);
             }
 
-            return new DynamicMetaObject(expression, BindingRestrictions.Empty, value);
+            var idoMetaObject = ido.GetMetaObject(expression);
+
+            if (idoMetaObject?.HasValue != true
+                || idoMetaObject.Value == null
+                || idoMetaObject.Expression != expression)
+            {
+                throw new InvalidOperationException($"An IDynamicMetaObjectProvider {ido.GetType()} created an invalid DynamicMetaObject instance.");
+            }
+
+            return idoMetaObject;
         }
 
         /// <summary>

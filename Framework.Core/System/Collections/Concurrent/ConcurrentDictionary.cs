@@ -1,8 +1,10 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
+// ReSharper disable HeuristicUnreachableCode
 
 using System.Collections.Generic;
+using System.Linq;
 using Theraot;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
@@ -22,13 +24,13 @@ namespace System.Collections.Concurrent
         public ConcurrentDictionary()
             : this(4, 31, EqualityComparer<TKey>.Default)
         {
-            //Empty
+            // Empty
         }
 
         public ConcurrentDictionary(int concurrencyLevel, int capacity)
             : this(concurrencyLevel, capacity, EqualityComparer<TKey>.Default)
         {
-            //Empty
+            // Empty
         }
 
         public ConcurrentDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection)
@@ -40,7 +42,7 @@ namespace System.Collections.Concurrent
         public ConcurrentDictionary(IEqualityComparer<TKey> comparer)
             : this(4, 31, comparer)
         {
-            //Empty
+            // Empty
         }
 
         public ConcurrentDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection, IEqualityComparer<TKey> comparer)
@@ -84,33 +86,30 @@ namespace System.Collections.Concurrent
         {
             get
             {
-                // key could be null
-                if (key == null)
+                switch (key)
                 {
-                    throw new ArgumentNullException(nameof(key));
+                    case null:
+                        // key could be null
+                        throw new ArgumentNullException(nameof(key));
+                    case TKey keyAsTKey when _wrapped.TryGetValue(keyAsTKey, out var result):
+                        return result;
+                    default:
+                        return null;
                 }
-
-                // keep the is operator
-                if (key is TKey keyAsTKey && _wrapped.TryGetValue(keyAsTKey, out var result))
-                {
-                    return result;
-                }
-
-                return null;
             }
             set
             {
-                // key could be null
-                if (key == null)
+                switch (key)
                 {
-                    // ConcurrentDictionary hates null
-                    throw new ArgumentNullException(nameof(key));
-                }
-
-                // keep the is operator
-                if (key is TKey keyAsTKey && value is TValue valueAsTValue)
-                {
-                    this[keyAsTKey] = valueAsTValue;
+                    case null:
+                        // key could be null
+                        // ConcurrentDictionary hates null
+                        throw new ArgumentNullException(nameof(key));
+                    case TKey keyAsTKey when value is TValue valueAsTValue:
+                        this[keyAsTKey] = valueAsTValue;
+                        break;
+                    default:
+                        break;
                 }
 
                 throw new ArgumentException(string.Empty, nameof(value));
@@ -119,17 +118,17 @@ namespace System.Collections.Concurrent
 
         void IDictionary.Add(object key, object value)
         {
-            // key could be null
-            if (key == null)
+            switch (key)
             {
-                // ConcurrentDictionary hates null
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            // keep the is operator
-            if (key is TKey keyAsTKey && value is TValue valueAsTValue)
-            {
-                _wrapped.AddNew(keyAsTKey, valueAsTValue);
+                case null:
+                    // key could be null
+                    // ConcurrentDictionary hates null
+                    throw new ArgumentNullException(nameof(key));
+                case TKey keyAsTKey when value is TValue valueAsTValue:
+                    _wrapped.AddNew(keyAsTKey, valueAsTValue);
+                    break;
+                default:
+                    break;
             }
 
             throw new ArgumentException(string.Empty, nameof(value));
@@ -137,20 +136,18 @@ namespace System.Collections.Concurrent
 
         bool IDictionary.Contains(object key)
         {
-            // key could be null
-            if (key == null)
+            switch (key)
             {
-                // ConcurrentDictionary hates null
-                throw new ArgumentNullException(nameof(key));
+                case null:
+                    // key could be null
+                    // ConcurrentDictionary hates null
+                    throw new ArgumentNullException(nameof(key));
+                // keep the is operator
+                case TKey keyAsTKey:
+                    return ContainsKey(keyAsTKey);
+                default:
+                    return false;
             }
-
-            // keep the is operator
-            if (key is TKey keyAsTKey)
-            {
-                return ContainsKey(keyAsTKey);
-            }
-
-            return false;
         }
 
         void ICollection.CopyTo(Array array, int index)
@@ -215,17 +212,17 @@ namespace System.Collections.Concurrent
 
         void IDictionary.Remove(object key)
         {
-            // key could be null
-            if (key == null)
+            switch (key)
             {
-                // ConcurrentDictionary hates null
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            // keep the is operator
-            if (key is TKey keyAsTKey)
-            {
-                _wrapped.Remove(keyAsTKey);
+                case null:
+                    // key could be null
+                    // ConcurrentDictionary hates null
+                    throw new ArgumentNullException(nameof(key));
+                case TKey keyAsTKey:
+                    _wrapped.Remove(keyAsTKey);
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -486,12 +483,9 @@ namespace System.Collections.Concurrent
 
         private void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> collection)
         {
-            foreach (var pair in collection)
+            if (collection.Any(pair => !_wrapped.TryAdd(pair.Key, pair.Value)))
             {
-                if (!_wrapped.TryAdd(pair.Key, pair.Value))
-                {
-                    throw new ArgumentException("The source contains duplicate keys.");
-                }
+                throw new ArgumentException("The source contains duplicate keys.");
             }
         }
 

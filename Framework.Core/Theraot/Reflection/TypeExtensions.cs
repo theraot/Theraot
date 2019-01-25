@@ -874,7 +874,6 @@ namespace Theraot.Reflection
 
     public static partial class TypeExtensions
     {
-
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static ConstructorInfo GetConstructor(this TypeInfo typeInfo, Type[] typeArguments)
         {
@@ -907,6 +906,7 @@ namespace Theraot.Reflection
             }
             return null;
         }
+
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static ConstructorInfo[] GetConstructors(this TypeInfo typeInfo)
         {

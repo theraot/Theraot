@@ -2,6 +2,7 @@
 
 #pragma warning disable CC0091 // Use static method
 
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using Theraot.Collections;
@@ -181,15 +182,7 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException(nameof(other));
             }
 
-            foreach (var item in other)
-            {
-                if (_wrapped.ContainsKey(item))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return other.Any(item => _wrapped.ContainsKey(item));
         }
 
         public bool Remove(T item)
@@ -385,7 +378,7 @@ namespace System.Collections.Generic
             return true;
         }
 
-        private HashSet<T> ToHashSet(IEnumerable<T> other)
+        private IEnumerable<T> ToHashSet(IEnumerable<T> other)
         {
             var comparer = Comparer;
             if (other is HashSet<T> test && comparer.Equals(test.Comparer))
@@ -432,25 +425,27 @@ namespace System.Collections.Generic
             public bool MoveNext()
             {
                 var enumerator = _enumerator;
-                if (enumerator != null)
+                if (enumerator == null)
                 {
-                    _valid = _enumerator.MoveNext();
-                    Current = _enumerator.Current.Key;
-                    return _valid;
+                    return false;
                 }
 
-                return false;
+                _valid = _enumerator.MoveNext();
+                Current = _enumerator.Current.Key;
+                return _valid;
             }
 
             void IEnumerator.Reset()
             {
                 _valid = false;
                 var enumerator = _enumerator;
-                if (enumerator != null)
+                if (enumerator == null)
                 {
-                    Current = _enumerator.Current.Key;
-                    _enumerator.Reset();
+                    return;
                 }
+
+                Current = _enumerator.Current.Key;
+                _enumerator.Reset();
             }
         }
 

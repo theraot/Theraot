@@ -39,69 +39,69 @@ namespace System.Collections
 
                 var typeX = x.GetType();
                 var typeY = y.GetType();
-                if (typeX.IsArray && typeY.IsArray)
+                if (!typeX.IsArray || !typeY.IsArray)
                 {
-                    if (typeX.GetElementType() == typeY.GetElementType())
-                    {
-                        CheckRank(x, y, typeX, typeY);
-                        var xLengthInfo = typeX.GetProperty("Length");
-                        var yLengthInfo = typeY.GetProperty("Length");
-                        if (xLengthInfo == null || yLengthInfo == null)
-                        {
-                            // should never happen
-                            throw new ArgumentException("Valid arrays required");
-                        }
+                    return EqualityComparer<object>.Default.Equals(x, y);
+                }
 
-                        if ((int)xLengthInfo.GetValue(x, ArrayReservoir<object>.EmptyArray) != (int)yLengthInfo.GetValue(y, ArrayReservoir<object>.EmptyArray))
+                if (typeX.GetElementType() != typeY.GetElementType())
+                {
+                    return false;
+                }
+
+                CheckRank(x, y, typeX, typeY);
+                var xLengthInfo = typeX.GetProperty("Length");
+                var yLengthInfo = typeY.GetProperty("Length");
+                if (xLengthInfo == null || yLengthInfo == null)
+                {
+                    // should never happen
+                    throw new ArgumentException("Valid arrays required");
+                }
+
+                if ((int)xLengthInfo.GetValue(x, ArrayReservoir<object>.EmptyArray) != (int)yLengthInfo.GetValue(y, ArrayReservoir<object>.EmptyArray))
+                {
+                    return false;
+                }
+
+                var xEnumeratorInfo = typeX.GetMethod("GetEnumerator");
+                var yEnumeratorInfo = typeX.GetMethod("GetEnumerator");
+                IEnumerator firstEnumerator = null;
+                IEnumerator secondEnumerator = null;
+                var comparer = this as IEqualityComparer;
+                try
+                {
+                    // If there comes the day when an array has no enumerator, let this code fail
+                    // ReSharper disable once PossibleNullReferenceException
+                    firstEnumerator = (IEnumerator)xEnumeratorInfo.Invoke(x, ArrayReservoir<object>.EmptyArray);
+                    // ReSharper disable once PossibleNullReferenceException
+                    secondEnumerator = (IEnumerator)yEnumeratorInfo.Invoke(y, ArrayReservoir<object>.EmptyArray);
+                    while (firstEnumerator.MoveNext())
+                    {
+                        if (!secondEnumerator.MoveNext())
                         {
                             return false;
                         }
 
-                        var xEnumeratorInfo = typeX.GetMethod("GetEnumerator");
-                        var yEnumeratorInfo = typeX.GetMethod("GetEnumerator");
-                        IEnumerator firstEnumerator = null;
-                        IEnumerator secondEnumerator = null;
-                        var comparer = this as IEqualityComparer;
-                        try
+                        if (!comparer.Equals(firstEnumerator.Current, secondEnumerator.Current))
                         {
-                            // If there comes the day when an array has no enumerator, let this code fail
-                            // ReSharper disable once PossibleNullReferenceException
-                            firstEnumerator = (IEnumerator)xEnumeratorInfo.Invoke(x, ArrayReservoir<object>.EmptyArray);
-                            // ReSharper disable once PossibleNullReferenceException
-                            secondEnumerator = (IEnumerator)yEnumeratorInfo.Invoke(y, ArrayReservoir<object>.EmptyArray);
-                            while (firstEnumerator.MoveNext())
-                            {
-                                if (!secondEnumerator.MoveNext())
-                                {
-                                    return false;
-                                }
-
-                                if (!comparer.Equals(firstEnumerator.Current, secondEnumerator.Current))
-                                {
-                                    return false;
-                                }
-                            }
-
-                            return !secondEnumerator.MoveNext();
-                        }
-                        finally
-                        {
-                            if (firstEnumerator is IDisposable disposableX)
-                            {
-                                disposableX.Dispose();
-                            }
-
-                            if (secondEnumerator is IDisposable disposableY)
-                            {
-                                disposableY.Dispose();
-                            }
+                            return false;
                         }
                     }
 
-                    return false;
+                    return !secondEnumerator.MoveNext();
                 }
+                finally
+                {
+                    if (firstEnumerator is IDisposable disposableX)
+                    {
+                        disposableX.Dispose();
+                    }
 
-                return EqualityComparer<object>.Default.Equals(x, y);
+                    if (secondEnumerator is IDisposable disposableY)
+                    {
+                        disposableY.Dispose();
+                    }
+                }
             }
 
             int IEqualityComparer.GetHashCode(object obj)

@@ -630,12 +630,7 @@ namespace System.Collections.Concurrent
             public bool TryTake(out T item)
             {
                 item = default;
-                if (_collection.Count == 0)
-                {
-                    return false;
-                }
-
-                return TryTake(out item, -1, CancellationToken.None);
+                return _collection.Count != 0 && TryTake(out item, -1, CancellationToken.None);
             }
 
             public bool TryTake(out T item, int millisecondsTimeout, CancellationToken cancellationToken)

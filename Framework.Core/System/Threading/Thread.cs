@@ -19,6 +19,7 @@ namespace System.Threading
         [ThreadStatic]
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         private static object _threadProbe;
+
         private string _name;
 
         private readonly WeakReference<object> _probe;

@@ -24,6 +24,7 @@ namespace System.Dynamic
     /// <summary>
     ///     Represents an object with members that can be dynamically added and removed at runtime.
     /// </summary>
+    // ReSharper disable once InheritdocConsiderUsage
     public sealed class ExpandoObject : IDynamicMetaObjectProvider, IDictionary<string, object>, INotifyPropertyChanged
     {
         internal const int AmbiguousMatchFound = -2;
@@ -135,12 +136,7 @@ namespace System.Dynamic
 
         bool ICollection<KeyValuePair<string, object>>.Contains(KeyValuePair<string, object> item)
         {
-            if (!TryGetValueForKey(item.Key, out var value))
-            {
-                return false;
-            }
-
-            return Equals(value, item.Value);
+            return TryGetValueForKey(item.Key, out var value) && Equals(value, item.Value);
         }
 
         bool IDictionary<string, object>.ContainsKey(string key)
@@ -341,31 +337,33 @@ namespace System.Dynamic
                     // don't have the value then we need to promote the class - that
                     // should only happen when we have multiple concurrent writers.
                     index = data.Class.GetValueIndex(name, ignoreCase, this);
-                    if (index == AmbiguousMatchFound)
+                    switch (index)
                     {
-                        throw new AmbiguousMatchException($"More than one key matching '{name}' was found in the ExpandoObject.");
-                    }
+                        case AmbiguousMatchFound:
+                            throw new AmbiguousMatchException($"More than one key matching '{name}' was found in the ExpandoObject.");
+                        case NoMatch:
+                            // Before creating a new class with the new member, need to check
+                            // if there is the exact same member but is deleted. We should reuse
+                            // the class if there is such a member.
+                            var exactMatch = ignoreCase ? data.Class.GetValueIndexCaseSensitive(name, LockObject) : index;
+                            if (exactMatch != NoMatch)
+                            {
+                                Debug.Assert(data[exactMatch] == Uninitialized);
+                                index = exactMatch;
+                            }
+                            else
+                            {
+                                var newClass = data.Class.FindNewClass(name, LockObject);
+                                _data = PromoteClassCore(data.Class, newClass);
+                                // After the class promotion, there must be an exact match,
+                                // so we can do case-sensitive search here.
+                                index = data.Class.GetValueIndexCaseSensitive(name, LockObject);
+                                Debug.Assert(index != NoMatch);
+                            }
 
-                    if (index == NoMatch)
-                    {
-                        // Before creating a new class with the new member, need to check
-                        // if there is the exact same member but is deleted. We should reuse
-                        // the class if there is such a member.
-                        var exactMatch = ignoreCase ? data.Class.GetValueIndexCaseSensitive(name, LockObject) : index;
-                        if (exactMatch != NoMatch)
-                        {
-                            Debug.Assert(data[exactMatch] == Uninitialized);
-                            index = exactMatch;
-                        }
-                        else
-                        {
-                            var newClass = data.Class.FindNewClass(name, LockObject);
-                            _data = PromoteClassCore(data.Class, newClass);
-                            // After the class promotion, there must be an exact match,
-                            // so we can do case-sensitive search here.
-                            index = data.Class.GetValueIndexCaseSensitive(name, LockObject);
-                            Debug.Assert(index != NoMatch);
-                        }
+                            break;
+                        default:
+                            break;
                     }
                 }
 
@@ -772,27 +770,44 @@ namespace System.Dynamic
             private DynamicMetaObject AddDynamicTestAndDefer(DynamicMetaObjectBinder binder, ExpandoClass @class, ExpandoClass originalClass, DynamicMetaObject succeeds)
             {
                 var ifTestSucceeds = succeeds.Expression;
-                if (originalClass != null)
+                if (originalClass == null)
                 {
-                    // we are accessing a member which has not yet been defined on this class.
-                    // We force a class promotion after the type check.  If the class changes the
-                    // promotion will fail and the set/delete will do a full lookup using the new
-                    // class to discover the name.
-                    Debug.Assert(originalClass != @class);
-
-                    ifTestSucceeds = Expression.Block
+                    return new DynamicMetaObject
                     (
-                        Expression.Call
+                        Expression.Condition
                         (
-                            null,
-                            _expandoPromoteClass,
-                            GetLimitedSelf(),
-                            Expression.Constant(originalClass, typeof(object)),
-                            Expression.Constant(@class, typeof(object))
+                            Expression.Call
+                            (
+                                null,
+                                _expandoCheckVersion,
+                                GetLimitedSelf(),
+                                Expression.Constant(@class, typeof(object))
+                            ),
+                            ifTestSucceeds,
+                            binder.GetUpdateExpression(ifTestSucceeds.Type)
                         ),
-                        succeeds.Expression
+                        GetRestrictions().Merge(succeeds.Restrictions)
                     );
                 }
+
+                // we are accessing a member which has not yet been defined on this class.
+                // We force a class promotion after the type check.  If the class changes the
+                // promotion will fail and the set/delete will do a full lookup using the new
+                // class to discover the name.
+                Debug.Assert(originalClass != @class);
+
+                ifTestSucceeds = Expression.Block
+                (
+                    Expression.Call
+                    (
+                        null,
+                        _expandoPromoteClass,
+                        GetLimitedSelf(),
+                        Expression.Constant(originalClass, typeof(object)),
+                        Expression.Constant(@class, typeof(object))
+                    ),
+                    succeeds.Expression
+                );
 
                 return new DynamicMetaObject
                 (
@@ -803,7 +818,7 @@ namespace System.Dynamic
                             null,
                             _expandoCheckVersion,
                             GetLimitedSelf(),
-                            Expression.Constant(originalClass ?? @class, typeof(object))
+                            Expression.Constant(originalClass, typeof(object))
                         ),
                         ifTestSucceeds,
                         binder.GetUpdateExpression(ifTestSucceeds.Type)
@@ -865,26 +880,24 @@ namespace System.Dynamic
                 var originalClass = Value.Class;
 
                 index = originalClass.GetValueIndex(name, caseInsensitive, obj);
-                if (index == AmbiguousMatchFound)
+                switch (index)
                 {
-                    @class = originalClass;
-                    return null;
+                    case AmbiguousMatchFound:
+                        @class = originalClass;
+                        return null;
+                    case NoMatch:
+                        // go ahead and find a new class now...
+                        var newClass = originalClass.FindNewClass(name, obj.LockObject);
+
+                        @class = newClass;
+                        index = newClass.GetValueIndexCaseSensitive(name, obj.LockObject);
+
+                        Debug.Assert(index != NoMatch);
+                        return originalClass;
+                    default:
+                        @class = originalClass;
+                        return null;
                 }
-
-                if (index == NoMatch)
-                {
-                    // go ahead and find a new class now...
-                    var newClass = originalClass.FindNewClass(name, obj.LockObject);
-
-                    @class = newClass;
-                    index = newClass.GetValueIndexCaseSensitive(name, obj.LockObject);
-
-                    Debug.Assert(index != NoMatch);
-                    return originalClass;
-                }
-
-                @class = originalClass;
-                return null;
             }
 
             /// <summary>
@@ -892,12 +905,7 @@ namespace System.Dynamic
             /// </summary>
             private Expression GetLimitedSelf()
             {
-                if (TypeUtils.AreEquivalent(Expression.Type, LimitType))
-                {
-                    return Expression;
-                }
-
-                return Expression.Convert(Expression, LimitType);
+                return TypeUtils.AreEquivalent(Expression.Type, LimitType) ? Expression : Expression.Convert(Expression, LimitType);
             }
 
             /// <summary>

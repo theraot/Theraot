@@ -1,4 +1,4 @@
-#if FAT
+﻿#if FAT
 
 using System;
 using System.Collections.Generic;
@@ -10,25 +10,25 @@ namespace Theraot.Collections.Specialized
         public EnumerationSet(IEnumerable<T> wrapped)
             : base(wrapped)
         {
-            //Empty
+            // Empty
         }
 
         public EnumerationSet(T[] wrapped)
             : base(wrapped)
         {
-            //Empty
+            // Empty
         }
 
         public EnumerationSet(ICollection<T> wrapped)
             : base(wrapped)
         {
-            //Empty
+            // Empty
         }
 
         public EnumerationSet(IEnumerable<T> wrapped, Func<int> count, Func<T, bool> contains)
             : base(wrapped, count, contains)
         {
-            //Empty
+            // Empty
         }
 
         bool ISet<T>.Add(T item)

@@ -8,10 +8,11 @@
 
 namespace System.ComponentModel.DataAnnotations
 {
+    /// <inheritdoc />
     /// <summary>
     ///     DisplayAttribute is a general-purpose attribute to specify user-visible globalizable strings for types and members.
     ///     The string properties of this class can be used either as literals or as resource identifiers into a specified
-    ///     <see cref="ResourceType" />
+    ///     <see cref="P:System.ComponentModel.DataAnnotations.DisplayAttribute.ResourceType" />
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Method)]
     public sealed class DisplayAttribute : Attribute
@@ -243,16 +244,18 @@ namespace System.ComponentModel.DataAnnotations
             get => _resourceType;
             set
             {
-                if (_resourceType != value)
+                if (_resourceType == value)
                 {
-                    _resourceType = value;
-
-                    _shortName.ResourceType = value;
-                    _name.ResourceType = value;
-                    _description.ResourceType = value;
-                    _prompt.ResourceType = value;
-                    _groupName.ResourceType = value;
+                    return;
                 }
+
+                _resourceType = value;
+
+                _shortName.ResourceType = value;
+                _name.ResourceType = value;
+                _description.ResourceType = value;
+                _prompt.ResourceType = value;
+                _groupName.ResourceType = value;
             }
         }
 

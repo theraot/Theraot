@@ -120,32 +120,34 @@ namespace System.Dynamic.Utils
             // works consistently for lambdas
             var quoteable = typeof(LambdaExpression);
 
-            if (parameterType.IsSameOrSubclassOfInternal(quoteable) && parameterType.IsInstanceOfType(argument))
+            if (!parameterType.IsSameOrSubclassOfInternal(quoteable) || !parameterType.IsInstanceOfType(argument))
             {
-                argument = Expression.Quote(argument);
-                return true;
+                return false;
             }
 
-            return false;
+            argument = Expression.Quote(argument);
+            return true;
         }
 
         public static void ValidateArgumentCount(MethodBase method, ExpressionType nodeKind, int count, ParameterInfo[] pis)
         {
-            if (pis.Length != count)
+            if (pis.Length == count)
             {
-                // Throw the right error for the node we were given
-                switch (nodeKind)
-                {
-                    case ExpressionType.New:
-                        throw new ArgumentException("Incorrect number of arguments for constructor");
-                    case ExpressionType.Invoke:
-                        throw new InvalidOperationException("Incorrect number of arguments supplied for lambda invocation");
-                    case ExpressionType.Dynamic:
-                    case ExpressionType.Call:
-                        throw new ArgumentException($"Incorrect number of arguments supplied for call to method '{method}'", nameof(method));
-                    default:
-                        throw ContractUtils.Unreachable;
-                }
+                return;
+            }
+
+            // Throw the right error for the node we were given
+            switch (nodeKind)
+            {
+                case ExpressionType.New:
+                    throw new ArgumentException("Incorrect number of arguments for constructor");
+                case ExpressionType.Invoke:
+                    throw new InvalidOperationException("Incorrect number of arguments supplied for lambda invocation");
+                case ExpressionType.Dynamic:
+                case ExpressionType.Call:
+                    throw new ArgumentException($"Incorrect number of arguments supplied for call to method '{method}'", nameof(method));
+                default:
+                    throw ContractUtils.Unreachable;
             }
         }
 
@@ -203,24 +205,24 @@ namespace System.Dynamic.Utils
             }
 
             TypeUtils.ValidateType(pType, methodParamName, true, true);
-            if (!pType.IsReferenceAssignableFromInternal(arguments.Type) && !TryQuote(pType, ref arguments))
+            if (pType.IsReferenceAssignableFromInternal(arguments.Type) || TryQuote(pType, ref arguments))
             {
-                // Throw the right error for the node we were given
-                switch (nodeKind)
-                {
-                    case ExpressionType.New:
-                        throw new ArgumentException($"Expression of type '{arguments.Type}' cannot be used for constructor parameter of type '{pType}'", index >= 0 ? $"{argumentParamName}[{index}]" : argumentParamName);
-                    case ExpressionType.Invoke:
-                        throw new ArgumentException($"Expression of type '{arguments.Type}' cannot be used for parameter of type '{pType}'", index >= 0 ? $"{argumentParamName}[{index}]" : argumentParamName);
-                    case ExpressionType.Dynamic:
-                    case ExpressionType.Call:
-                        throw new ArgumentException($"Expression of type '{arguments.Type}' cannot be used for parameter of type '{pType}' of method '{method}'", index >= 0 ? $"{argumentParamName}[{index}]" : argumentParamName);
-                    default:
-                        throw ContractUtils.Unreachable;
-                }
+                return arguments;
             }
 
-            return arguments;
+            // Throw the right error for the node we were given
+            switch (nodeKind)
+            {
+                case ExpressionType.New:
+                    throw new ArgumentException($"Expression of type '{arguments.Type}' cannot be used for constructor parameter of type '{pType}'", index >= 0 ? $"{argumentParamName}[{index}]" : argumentParamName);
+                case ExpressionType.Invoke:
+                    throw new ArgumentException($"Expression of type '{arguments.Type}' cannot be used for parameter of type '{pType}'", index >= 0 ? $"{argumentParamName}[{index}]" : argumentParamName);
+                case ExpressionType.Dynamic:
+                case ExpressionType.Call:
+                    throw new ArgumentException($"Expression of type '{arguments.Type}' cannot be used for parameter of type '{pType}' of method '{method}'", index >= 0 ? $"{argumentParamName}[{index}]" : argumentParamName);
+                default:
+                    throw ContractUtils.Unreachable;
+            }
         }
 
         internal static ParameterInfo[] GetParametersForValidation(MethodBase method, ExpressionType nodeKind)
@@ -283,18 +285,20 @@ namespace System.Dynamic.Utils
                 return false;
             }
 
-            if (count != 0)
+            if (count == 0)
             {
-                var index = 0;
-                foreach (var replacementObject in replacement)
-                {
-                    if (replacementObject != current[index])
-                    {
-                        return false;
-                    }
+                return true;
+            }
 
-                    index++;
+            var index = 0;
+            foreach (var replacementObject in replacement)
+            {
+                if (replacementObject != current[index])
+                {
+                    return false;
                 }
+
+                index++;
             }
 
             return true;

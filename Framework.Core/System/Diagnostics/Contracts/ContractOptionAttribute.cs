@@ -6,6 +6,7 @@
 
 namespace System.Diagnostics.Contracts
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Allows setting contract and tool options at assembly, type, or method granularity.
     /// </summary>

@@ -19,7 +19,7 @@ namespace System
         public WeakReference(T target)
             : this(target, false)
         {
-            //Empty
+            // Empty
         }
 
         public WeakReference(T target, bool trackResurrection)

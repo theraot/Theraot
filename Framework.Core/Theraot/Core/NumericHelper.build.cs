@@ -324,6 +324,7 @@ namespace Theraot.Core
 
             return du.Dbl;
         }
+
         [StructLayout(LayoutKind.Explicit)]
         private struct DoubleUlong
         {

@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,37 +18,37 @@ namespace System
         public Lazy()
             : this(LazyThreadSafetyMode.ExecutionAndPublication)
         {
-            //Empty
+            // Empty
         }
 
         public Lazy(Func<T> valueFactory)
             : this(valueFactory, LazyThreadSafetyMode.ExecutionAndPublication)
         {
-            //Empty
+            // Empty
         }
 
         public Lazy(bool isThreadSafe)
             : this(isThreadSafe ? LazyThreadSafetyMode.ExecutionAndPublication : LazyThreadSafetyMode.None)
         {
-            //Empty
+            // Empty
         }
 
         public Lazy(LazyThreadSafetyMode mode)
             : this(ConstructorHelper.Create<T>, mode, false)
         {
-            //Empty
+            // Empty
         }
 
         public Lazy(Func<T> valueFactory, bool isThreadSafe)
             : this(valueFactory, isThreadSafe ? LazyThreadSafetyMode.ExecutionAndPublication : LazyThreadSafetyMode.None)
         {
-            //Empty
+            // Empty
         }
 
         public Lazy(Func<T> valueFactory, LazyThreadSafetyMode mode)
             : this(valueFactory, mode, true)
         {
-            //Empty
+            // Empty
         }
 
         private Lazy(Func<T> valueFactory, LazyThreadSafetyMode mode, bool cacheExceptions)
@@ -105,74 +105,76 @@ namespace System
 
             T CachingNoneMode(HashSet<Thread> threads)
             {
-                if (Volatile.Read(ref _isValueCreated) == 0)
+                if (Volatile.Read(ref _isValueCreated) != 0)
                 {
-                    try
+                    return _valueFactory.Invoke();
+                }
+
+                try
+                {
+                    // lock (threads) // This is meant to not be thread-safe
                     {
-                        // lock (threads) // This is meant to not be thread-safe
+                        var currentThread = Thread.CurrentThread;
+                        if (threads.Contains(currentThread))
                         {
-                            var currentThread = Thread.CurrentThread;
-                            if (threads.Contains(currentThread))
-                            {
-                                throw new InvalidOperationException();
-                            }
-                            threads.Add(currentThread);
+                            throw new InvalidOperationException();
                         }
-                        ValueForDebugDisplay = valueFactory();
-                        _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
-                        Volatile.Write(ref _isValueCreated, 1);
-                        return ValueForDebugDisplay;
+                        threads.Add(currentThread);
                     }
-                    catch (Exception exception)
+                    ValueForDebugDisplay = valueFactory();
+                    _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
+                    Volatile.Write(ref _isValueCreated, 1);
+                    return ValueForDebugDisplay;
+                }
+                catch (Exception exception)
+                {
+                    _valueFactory = FuncHelper.GetThrowFunc<T>(exception);
+                    throw;
+                }
+                finally
+                {
+                    // lock (threads) // This is meant to not be thread-safe
                     {
-                        _valueFactory = FuncHelper.GetThrowFunc<T>(exception);
-                        throw;
-                    }
-                    finally
-                    {
-                        // lock (threads) // This is meant to not be thread-safe
-                        {
-                            threads.Remove(Thread.CurrentThread);
-                        }
+                        threads.Remove(Thread.CurrentThread);
                     }
                 }
-                return _valueFactory.Invoke();
             }
 
             T NoneMode(HashSet<Thread> threads)
             {
-                if (Volatile.Read(ref _isValueCreated) == 0)
+                if (Volatile.Read(ref _isValueCreated) != 0)
                 {
-                    try
+                    return _valueFactory.Invoke();
+                }
+
+                try
+                {
+                    // lock (threads) // This is meant to not be thread-safe
                     {
-                        // lock (threads) // This is meant to not be thread-safe
+                        var currentThread = Thread.CurrentThread;
+                        if (threads.Contains(currentThread))
                         {
-                            var currentThread = Thread.CurrentThread;
-                            if (threads.Contains(currentThread))
-                            {
-                                throw new InvalidOperationException();
-                            }
-                            threads.Add(currentThread);
+                            throw new InvalidOperationException();
                         }
-                        ValueForDebugDisplay = valueFactory();
-                        _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
-                        Volatile.Write(ref _isValueCreated, 1);
-                        return ValueForDebugDisplay;
+                        threads.Add(currentThread);
                     }
-                    catch (Exception)
+                    ValueForDebugDisplay = valueFactory();
+                    _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
+                    Volatile.Write(ref _isValueCreated, 1);
+                    return ValueForDebugDisplay;
+                }
+                catch (Exception)
+                {
+                    Volatile.Write(ref _isValueCreated, 0);
+                    throw;
+                }
+                finally
+                {
+                    // lock (threads) // This is meant to not be thread-safe
                     {
-                        Volatile.Write(ref _isValueCreated, 0);
-                        throw;
-                    }
-                    finally
-                    {
-                        // lock (threads) // This is meant to not be thread-safe
-                        {
-                            threads.Remove(Thread.CurrentThread);
-                        }
+                        threads.Remove(Thread.CurrentThread);
                     }
                 }
-                return _valueFactory.Invoke();
             }
 
             T PublicationOnlyMode()
@@ -193,7 +195,7 @@ namespace System
 
         internal T ValueForDebugDisplay { get; private set; }
 
-        private T CachingFullMode(Func<T> valueFactory, ManualResetEvent waitHandle, ref Thread thread)
+        private T CachingFullMode(Func<T> valueFactory, EventWaitHandle waitHandle, ref Thread thread)
         {
             if (Interlocked.CompareExchange(ref _isValueCreated, 1, 0) == 0)
             {
@@ -224,7 +226,7 @@ namespace System
             return _valueFactory.Invoke();
         }
 
-        private T FullMode(Func<T> valueFactory, ManualResetEvent waitHandle, ref Thread thread, ref int preIsValueCreated)
+        private T FullMode(Func<T> valueFactory, EventWaitHandle waitHandle, ref Thread thread, ref int preIsValueCreated)
         {
         back:
             if (Interlocked.CompareExchange(ref preIsValueCreated, 1, 0) == 0)

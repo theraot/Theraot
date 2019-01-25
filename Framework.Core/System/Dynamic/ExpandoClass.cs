@@ -86,12 +86,7 @@ namespace System.Dynamic
 
         internal int GetValueIndex(string name, bool caseInsensitive, ExpandoObject obj)
         {
-            if (caseInsensitive)
-            {
-                return GetValueIndexCaseInsensitive(name, obj);
-            }
-
-            return GetValueIndexCaseSensitive(name, obj.LockObject);
+            return caseInsensitive ? GetValueIndexCaseInsensitive(name, obj) : GetValueIndexCaseSensitive(name, obj.LockObject);
         }
 
         internal int GetValueIndexCaseSensitive(string name, object lockObject)
@@ -154,22 +149,28 @@ namespace System.Dynamic
                 for (var i = keys.Length - 1; i >= 0; i--)
                 {
                     //if the matching member is deleted, continue searching
-                    if (string.Equals
+                    if
+                    (
+                        !string.Equals
                         (
                             keys[i],
                             name,
                             StringComparison.OrdinalIgnoreCase
-                        ) && !obj.IsDeletedMember(i))
+                        )
+                        || obj.IsDeletedMember(i)
+                    )
                     {
-                        if (caseInsensitiveMatch == ExpandoObject.NoMatch)
-                        {
-                            caseInsensitiveMatch = i;
-                        }
-                        else
-                        {
-                            //Ambiguous match, stop searching
-                            return ExpandoObject.AmbiguousMatchFound;
-                        }
+                        continue;
+                    }
+
+                    if (caseInsensitiveMatch == ExpandoObject.NoMatch)
+                    {
+                        caseInsensitiveMatch = i;
+                    }
+                    else
+                    {
+                        //Ambiguous match, stop searching
+                        return ExpandoObject.AmbiguousMatchFound;
                     }
                 }
             }

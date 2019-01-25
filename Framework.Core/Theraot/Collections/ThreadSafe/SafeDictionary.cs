@@ -1,5 +1,7 @@
 ﻿// Needed for NET40
 
+#pragma warning disable RCS1231 // Make parameter ref read-only.
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -1114,7 +1116,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return _valueComparer.Equals(found.Value, item.Value);
                 }
-
             }
             return false;
         }
@@ -1338,7 +1339,6 @@ namespace Theraot.Collections.ThreadSafe
                     value = found.Value;
                     return true;
                 }
-
             }
             return false;
         }

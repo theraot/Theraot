@@ -74,7 +74,6 @@ namespace Theraot.Collections
             return ReadOnlyCollectionEx.Create(res);
         }
 
-
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CanCopyTo(int count, Array array)
         {
@@ -616,6 +615,7 @@ namespace Theraot.Collections
             }
             return true;
         }
+
         public static bool Remove<T>(this ICollection<T> source, T item, IEqualityComparer<T> comparer)
         {
             if (source == null)

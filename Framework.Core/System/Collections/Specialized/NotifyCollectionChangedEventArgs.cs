@@ -16,60 +16,56 @@ namespace System.Collections.Specialized
         public NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction action, IList changedItems)
             : this(action, changedItems, -1)
         {
-            //Empty
+            // Empty
         }
 
         public NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction action, object changedItem)
             : this(action, changedItem, -1)
         {
-            //Empty
+            // Empty
         }
 
         public NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction action, IList newItems, IList oldItems)
             : this(action, newItems, oldItems, -1)
         {
-            //Empty
+            // Empty
         }
 
         public NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction action, IList changedItems, int startingIndex)
         {
             Action = action;
-            if (action == NotifyCollectionChangedAction.Add || action == NotifyCollectionChangedAction.Remove)
+            switch (action)
             {
-                if (changedItems == null)
-                {
-                    throw new ArgumentNullException(nameof(changedItems));
-                }
+                case NotifyCollectionChangedAction.Add:
+                case NotifyCollectionChangedAction.Remove:
+                    if (changedItems == null)
+                    {
+                        throw new ArgumentNullException(nameof(changedItems));
+                    }
 
-                if (startingIndex < -1)
-                {
-                    throw new ArgumentException("The value of startingIndex must be -1 or greater.", nameof(startingIndex));
-                }
+                    if (startingIndex < -1)
+                    {
+                        throw new ArgumentException("The value of startingIndex must be -1 or greater.", nameof(startingIndex));
+                    }
 
-                if (action == NotifyCollectionChangedAction.Add)
-                {
-                    InitializeAdd(changedItems, startingIndex);
-                }
-                else
-                {
-                    InitializeRemove(changedItems, startingIndex);
-                }
-            }
-            else if (action == NotifyCollectionChangedAction.Reset)
-            {
-                if (changedItems != null)
-                {
+                    if (action == NotifyCollectionChangedAction.Add)
+                    {
+                        InitializeAdd(changedItems, startingIndex);
+                    }
+                    else
+                    {
+                        InitializeRemove(changedItems, startingIndex);
+                    }
+
+                    break;
+                case NotifyCollectionChangedAction.Reset when changedItems != null:
                     throw new ArgumentException("This constructor can only be used with the Reset action if changedItems is null", nameof(changedItems));
-                }
-
-                if (startingIndex != -1)
-                {
+                case NotifyCollectionChangedAction.Reset when startingIndex != -1:
                     throw new ArgumentException("This constructor can only be used with the Reset action if startingIndex is -1", nameof(startingIndex));
-                }
-            }
-            else
-            {
-                throw new ArgumentException("This constructor can only be used with the Reset, Add, or Remove actions.", nameof(action));
+                case NotifyCollectionChangedAction.Reset:
+                    break;
+                default:
+                    throw new ArgumentException("This constructor can only be used with the Reset, Add, or Remove actions.", nameof(action));
             }
         }
 
@@ -108,7 +104,7 @@ namespace System.Collections.Specialized
         public NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction action, object newItem, object oldItem)
             : this(action, newItem, oldItem, -1)
         {
-            //Empty
+            // Empty
         }
 
         public NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction action, IList newItems, IList oldItems, int startingIndex)
@@ -144,7 +140,7 @@ namespace System.Collections.Specialized
         public NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction action, object changedItem, int index, int oldIndex)
             : this(action, new[] {changedItem}, index, oldIndex)
         {
-            //Empty
+            // Empty
         }
 
         public NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction action, object newItem, object oldItem, int index)

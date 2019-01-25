@@ -1,5 +1,8 @@
 ﻿// Needed for NET40
 
+#pragma warning disable RECS0017 // Possible compare of value type with 'null'
+#pragma warning disable RECS0063 // Warns when a culture-aware 'StartsWith' call is used by default.
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -872,7 +875,7 @@ namespace Theraot.Core
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Concat(IEnumerable<string> values)
         {
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
             if (values == null)
             {
                 throw new ArgumentNullException(nameof(values));
@@ -893,7 +896,7 @@ namespace Theraot.Core
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Concat<T>(IEnumerable<T> values)
         {
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
             if (values == null)
             {
                 throw new ArgumentNullException(nameof(values));
@@ -919,7 +922,7 @@ namespace Theraot.Core
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool IsNullOrWhiteSpace(string value)
         {
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
             //Added in .NET 4.0
             if (string.IsNullOrEmpty(value))
             {
@@ -944,7 +947,7 @@ namespace Theraot.Core
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Join(string separator, IEnumerable<string> values)
         {
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
             if (values == null)
             {
                 throw new ArgumentNullException(nameof(values));
@@ -975,7 +978,7 @@ namespace Theraot.Core
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Join<T>(string separator, IEnumerable<T> values)
         {
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
             if (values == null)
             {
                 throw new ArgumentNullException(nameof(values));
@@ -1007,7 +1010,7 @@ namespace Theraot.Core
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Join(string separator, params object[] values)
         {
-#if NET20 || NET30 || NET35
+#if LESSTHAN_NET40
             if (values == null)
             {
                 throw new ArgumentNullException(nameof(values));
@@ -1036,10 +1039,7 @@ namespace Theraot.Core
 #endif
         }
 
-#if NET45 || NET46 || NET47 || NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-#endif
-
         public static string Join(string separator, params string[] values)
         {
             return string.Join(separator, values);
@@ -1054,7 +1054,7 @@ namespace Theraot.Core
 
     public static partial class StringHelper
     {
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
+#if LESSTHAN_NET45 || GREATERTHAN_NETCOREAPP11
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string EnsureEnd(this string text, string end)

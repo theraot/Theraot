@@ -17,19 +17,19 @@ namespace System.Threading
         public ThreadLocal()
             : this(FuncHelper.GetDefaultFunc<T>(), false)
         {
-            //Empty
+            // Empty
         }
 
         public ThreadLocal(bool trackAllValues)
             : this(FuncHelper.GetDefaultFunc<T>(), trackAllValues)
         {
-            //Empty
+            // Empty
         }
 
         public ThreadLocal(Func<T> valueFactory)
             : this(valueFactory, false)
         {
-            //Empty
+            // Empty
         }
 
         public ThreadLocal(Func<T> valueFactory, bool trackAllValues)
@@ -99,7 +99,7 @@ namespace System.Threading
         {
             try
             {
-                //Empty
+                // Empty
             }
             finally
             {

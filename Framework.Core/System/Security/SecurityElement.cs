@@ -16,7 +16,6 @@ namespace System.Security
 {
     public sealed class SecurityElement : ISecurityElementFactory
     {
-
         private const int _attributesTypical = 4 * 2;  // 4 attributes, times 2 strings per attribute
         private const int _childrenTypical = 1;
         private static readonly char[] _escapeChars = { '<', '>', '\"', '\'', '&' };

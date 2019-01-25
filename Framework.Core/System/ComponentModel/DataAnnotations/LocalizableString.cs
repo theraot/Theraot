@@ -48,11 +48,13 @@ namespace System.ComponentModel.DataAnnotations
             get => _resourceType;
             set
             {
-                if (_resourceType != value)
+                if (_resourceType == value)
                 {
-                    ClearCache();
-                    _resourceType = value;
+                    return;
                 }
+
+                ClearCache();
+                _resourceType = value;
             }
         }
 
@@ -66,11 +68,13 @@ namespace System.ComponentModel.DataAnnotations
             get => _propertyValue;
             set
             {
-                if (!string.Equals(_propertyValue, value, StringComparison.Ordinal))
+                if (string.Equals(_propertyValue, value, StringComparison.Ordinal))
                 {
-                    ClearCache();
-                    _propertyValue = value;
+                    return;
                 }
+
+                ClearCache();
+                _propertyValue = value;
             }
         }
 

@@ -15,7 +15,7 @@ namespace System.Threading
         public ManualResetEventSlim()
             : this(false)
         {
-            //Empty
+            // Empty
         }
 
         public ManualResetEventSlim(bool initialState)

@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -53,15 +55,7 @@ namespace System.Dynamic.Utils
 
         public T this[int index]
         {
-            get
-            {
-                if (index == 0)
-                {
-                    return First;
-                }
-
-                return GetElement(index);
-            }
+            get => index == 0 ? First : GetElement(index);
             set => throw ContractUtils.Unreachable;
         }
 

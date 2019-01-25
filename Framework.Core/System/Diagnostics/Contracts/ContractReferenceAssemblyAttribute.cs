@@ -6,6 +6,7 @@
 
 namespace System.Diagnostics.Contracts
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Attribute that specifies that an assembly is a reference assembly with contracts.
     /// </summary>

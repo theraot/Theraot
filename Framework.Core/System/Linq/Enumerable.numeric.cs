@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
+// ReSharper disable LoopCanBeConvertedToQuery
 
 using System.Collections.Generic;
 using Theraot.Reflection;
@@ -406,15 +407,17 @@ namespace System.Linq
             var max = int.MinValue;
             foreach (var element in source)
             {
-                if (element.HasValue)
+                if (!element.HasValue)
                 {
-                    var value = element.Value;
-                    if (value > max)
-                    {
-                        max = value;
-                    }
-                    found = true;
+                    continue;
                 }
+
+                var value = element.Value;
+                if (value > max)
+                {
+                    max = value;
+                }
+                found = true;
             }
             if (found)
             {
@@ -433,15 +436,17 @@ namespace System.Linq
             var max = long.MinValue;
             foreach (var element in source)
             {
-                if (element.HasValue)
+                if (!element.HasValue)
                 {
-                    var value = element.Value;
-                    if (value > max)
-                    {
-                        max = value;
-                    }
-                    found = true;
+                    continue;
                 }
+
+                var value = element.Value;
+                if (value > max)
+                {
+                    max = value;
+                }
+                found = true;
             }
             if (found)
             {
@@ -588,15 +593,17 @@ namespace System.Linq
             var max = decimal.MinValue;
             foreach (var element in source)
             {
-                if (element.HasValue)
+                if (!element.HasValue)
                 {
-                    var value = element.Value;
-                    if (value > max)
-                    {
-                        max = value;
-                    }
-                    found = true;
+                    continue;
                 }
+
+                var value = element.Value;
+                if (value > max)
+                {
+                    max = value;
+                }
+                found = true;
             }
             if (found)
             {
@@ -835,11 +842,7 @@ namespace System.Linq
                 }
                 found = true;
             }
-            if (found)
-            {
-                return max;
-            }
-            return null;
+            return found ? max : null;
         }
 
         public static long? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector)
@@ -870,11 +873,7 @@ namespace System.Linq
                 }
                 found = true;
             }
-            if (found)
-            {
-                return max;
-            }
-            return null;
+            return found ? max : null;
         }
 
         public static double? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector)
@@ -1041,11 +1040,7 @@ namespace System.Linq
                 }
                 found = true;
             }
-            if (found)
-            {
-                return max;
-            }
-            return null;
+            return found ? max : null;
         }
 
         public static TResult Max<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
@@ -1202,15 +1197,17 @@ namespace System.Linq
             var min = int.MaxValue;
             foreach (var element in source)
             {
-                if (element.HasValue)
+                if (!element.HasValue)
                 {
-                    var value = element.Value;
-                    if (value < min)
-                    {
-                        min = value;
-                    }
-                    found = true;
+                    continue;
                 }
+
+                var value = element.Value;
+                if (value < min)
+                {
+                    min = value;
+                }
+                found = true;
             }
             if (found)
             {
@@ -1229,15 +1226,17 @@ namespace System.Linq
             var min = long.MaxValue;
             foreach (var element in source)
             {
-                if (element.HasValue)
+                if (!element.HasValue)
                 {
-                    var value = element.Value;
-                    if (value < min)
-                    {
-                        min = value;
-                    }
-                    found = true;
+                    continue;
                 }
+
+                var value = element.Value;
+                if (value < min)
+                {
+                    min = value;
+                }
+                found = true;
             }
             if (found)
             {
@@ -1256,19 +1255,21 @@ namespace System.Linq
             var min = double.MaxValue;
             foreach (var element in source)
             {
-                if (element.HasValue)
+                if (!element.HasValue)
                 {
-                    var value = element.Value;
-                    if (double.IsNaN(value))
-                    {
-                        return value;
-                    }
-                    if (value < min)
-                    {
-                        min = value;
-                    }
-                    found = true;
+                    continue;
                 }
+
+                var value = element.Value;
+                if (double.IsNaN(value))
+                {
+                    return value;
+                }
+                if (value < min)
+                {
+                    min = value;
+                }
+                found = true;
             }
             if (found)
             {
@@ -1287,19 +1288,21 @@ namespace System.Linq
             var min = float.MaxValue;
             foreach (var element in source)
             {
-                if (element.HasValue)
+                if (!element.HasValue)
                 {
-                    var value = element.Value;
-                    if (float.IsNaN(value))
-                    {
-                        return value;
-                    }
-                    if (value < min)
-                    {
-                        min = value;
-                    }
-                    found = true;
+                    continue;
                 }
+
+                var value = element.Value;
+                if (float.IsNaN(value))
+                {
+                    return value;
+                }
+                if (value < min)
+                {
+                    min = value;
+                }
+                found = true;
             }
             if (found)
             {
@@ -1318,15 +1321,17 @@ namespace System.Linq
             var min = decimal.MaxValue;
             foreach (var element in source)
             {
-                if (element.HasValue)
+                if (!element.HasValue)
                 {
-                    var value = element.Value;
-                    if (value < min)
-                    {
-                        min = value;
-                    }
-                    found = true;
+                    continue;
                 }
+
+                var value = element.Value;
+                if (value < min)
+                {
+                    min = value;
+                }
+                found = true;
             }
             if (found)
             {

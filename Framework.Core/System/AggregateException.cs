@@ -39,25 +39,25 @@ namespace System
         public AggregateException(params Exception[] innerExceptions)
             : this(innerExceptions, string.Empty)
         {
-            //Empty
+            // Empty
         }
 
         public AggregateException(string message, params Exception[] innerExceptions)
             : this(innerExceptions, message)
         {
-            //Empty
+            // Empty
         }
 
         public AggregateException(IEnumerable<Exception> innerExceptions)
             : this(innerExceptions, string.Empty)
         {
-            //Empty
+            // Empty
         }
 
         public AggregateException(string message, IEnumerable<Exception> innerExceptions)
             : this(innerExceptions, message)
         {
-            //Empty
+            // Empty
         }
 
         [SecurityCritical]

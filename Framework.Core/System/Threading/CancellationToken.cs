@@ -42,7 +42,7 @@ namespace System.Threading
         public CancellationToken(bool canceled)
             : this(canceled ? CancellationTokenSource.CanceledSource : null)
         {
-            //Empty
+            // Empty
         }
 
         internal CancellationToken(CancellationTokenSource source)

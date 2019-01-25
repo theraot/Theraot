@@ -1,4 +1,4 @@
-#if FAT
+﻿#if FAT
 
 using System;
 using System.ComponentModel;
@@ -12,7 +12,7 @@ namespace Theraot.Collections.ThreadSafe
         public StrongCancellableEvent(bool freeReentry)
             : base(freeReentry)
         {
-            //Empty
+            // Empty
         }
 
         public override void Invoke(object sender, TCancelEventArgs eventArgs)
@@ -53,13 +53,13 @@ namespace Theraot.Collections.ThreadSafe
     {
         public WeakCancellableEvent()
         {
-            //Empty
+            // Empty
         }
 
         public WeakCancellableEvent(bool freeReentry)
             : base(freeReentry)
         {
-            //Empty
+            // Empty
         }
 
         public override void Invoke(object sender, TCancelEventArgs eventArgs)

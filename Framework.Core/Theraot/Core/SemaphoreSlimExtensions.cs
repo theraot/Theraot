@@ -16,7 +16,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(semaphore));
             }
             GC.KeepAlive(semaphore.AvailableWaitHandle);
-            return WaitAsyncPrivate(semaphore);
+            return WaitPrivateAsync(semaphore);
         }
 
         public static Task WaitAsync(this SemaphoreSlim semaphore, CancellationToken cancellationToken)
@@ -26,7 +26,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(semaphore));
             }
             GC.KeepAlive(semaphore.AvailableWaitHandle);
-            return WaitAsyncPrivate(semaphore, cancellationToken);
+            return WaitPrivateAsync(semaphore, cancellationToken);
         }
 
         public static Task<bool> WaitAsync(this SemaphoreSlim semaphore, int millisecondsTimeout)
@@ -42,9 +42,9 @@ namespace Theraot.Core
             }
             if (millisecondsTimeout == -1)
             {
-                return WaitAsyncPrivate(semaphore);
+                return WaitPrivateAsync(semaphore);
             }
-            return WaitAsyncPrivate(semaphore, millisecondsTimeout);
+            return WaitPrivateAsync(semaphore, millisecondsTimeout);
         }
 
         public static Task<bool> WaitAsync(this SemaphoreSlim semaphore, TimeSpan timeout)
@@ -61,9 +61,9 @@ namespace Theraot.Core
             }
             if (millisecondsTimeout == -1)
             {
-                return WaitAsyncPrivate(semaphore);
+                return WaitPrivateAsync(semaphore);
             }
-            return WaitAsyncPrivate(semaphore, millisecondsTimeout);
+            return WaitPrivateAsync(semaphore, millisecondsTimeout);
         }
 
         public static Task<bool> WaitAsync(this SemaphoreSlim semaphore, TimeSpan timeout, CancellationToken cancellationToken)
@@ -80,9 +80,9 @@ namespace Theraot.Core
             }
             if (millisecondsTimeout == -1)
             {
-                return WaitAsyncPrivate(semaphore, cancellationToken);
+                return WaitPrivateAsync(semaphore, cancellationToken);
             }
-            return WaitAsyncPrivate(semaphore, (int)timeout.TotalMilliseconds, cancellationToken);
+            return WaitPrivateAsync(semaphore, (int)timeout.TotalMilliseconds, cancellationToken);
         }
 
         public static Task<bool> WaitAsync(this SemaphoreSlim semaphore, int millisecondsTimeout, CancellationToken cancellationToken)
@@ -98,12 +98,12 @@ namespace Theraot.Core
             }
             if (millisecondsTimeout == -1)
             {
-                return WaitAsyncPrivate(semaphore, cancellationToken);
+                return WaitPrivateAsync(semaphore, cancellationToken);
             }
-            return WaitAsyncPrivate(semaphore, millisecondsTimeout, cancellationToken);
+            return WaitPrivateAsync(semaphore, millisecondsTimeout, cancellationToken);
         }
 
-        private static async Task<bool> WaitAsyncPrivate(SemaphoreSlim semaphore)
+        private static async Task<bool> WaitPrivateAsync(SemaphoreSlim semaphore)
         {
             if (semaphore.Wait(0))
             {
@@ -111,7 +111,7 @@ namespace Theraot.Core
             }
             while (true)
             {
-                await TaskEx.FromWaitHandleInternal(semaphore.AvailableWaitHandle);
+                await TaskEx.FromWaitHandleInternal(semaphore.AvailableWaitHandle).ConfigureAwait(false);
                 if (semaphore.Wait(0))
                 {
                     return true;
@@ -119,7 +119,7 @@ namespace Theraot.Core
             }
         }
 
-        private static async Task<bool> WaitAsyncPrivate(SemaphoreSlim semaphore, int millisecondsTimeout)
+        private static async Task<bool> WaitPrivateAsync(SemaphoreSlim semaphore, int millisecondsTimeout)
         {
             if (semaphore.Wait(0))
             {
@@ -133,7 +133,7 @@ namespace Theraot.Core
                 (
                     semaphore.AvailableWaitHandle,
                     timeout
-                )
+                ).ConfigureAwait(false)
             )
             {
                 if (semaphore.Wait(0))
@@ -145,7 +145,7 @@ namespace Theraot.Core
             return false;
         }
 
-        private static async Task<bool> WaitAsyncPrivate(SemaphoreSlim semaphore, CancellationToken cancellationToken)
+        private static async Task<bool> WaitPrivateAsync(SemaphoreSlim semaphore, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (semaphore.Wait(0))
@@ -154,7 +154,7 @@ namespace Theraot.Core
             }
             while (true)
             {
-                await TaskEx.FromWaitHandleInternal(semaphore.AvailableWaitHandle, cancellationToken);
+                await TaskEx.FromWaitHandleInternal(semaphore.AvailableWaitHandle, cancellationToken).ConfigureAwait(false);
                 if (semaphore.Wait(0))
                 {
                     return true;
@@ -162,7 +162,7 @@ namespace Theraot.Core
             }
         }
 
-        private static async Task<bool> WaitAsyncPrivate(SemaphoreSlim semaphore, int millisecondsTimeout, CancellationToken cancellationToken)
+        private static async Task<bool> WaitPrivateAsync(SemaphoreSlim semaphore, int millisecondsTimeout, CancellationToken cancellationToken)
         {
             if (semaphore.Wait(0))
             {
@@ -172,13 +172,13 @@ namespace Theraot.Core
             var timeout = millisecondsTimeout;
             while
             (
-                timeout > 0 &&
-                await TaskEx.FromWaitHandleInternal
+                timeout > 0
+                && await TaskEx.FromWaitHandleInternal
                 (
                     semaphore.AvailableWaitHandle,
                     timeout,
                     cancellationToken
-                )
+                ).ConfigureAwait(false)
             )
             {
                 if (semaphore.Wait(0))

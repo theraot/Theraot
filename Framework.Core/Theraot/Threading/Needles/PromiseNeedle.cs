@@ -1,4 +1,6 @@
-// Needed for Workaround
+﻿// Needed for Workaround
+
+#pragma warning disable RECS0017 // Possible compare of value type with 'null'
 
 using System;
 

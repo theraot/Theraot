@@ -1,4 +1,6 @@
-// Needed for NET40
+﻿// Needed for NET40
+
+#pragma warning disable 659, 660, 661
 
 using System;
 using System.Diagnostics;
@@ -70,11 +72,6 @@ namespace Theraot.Threading.Needles
         public bool Equals(ExceptionStructNeedle<T> other)
         {
             return this == other;
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
         }
 
         public override string ToString()

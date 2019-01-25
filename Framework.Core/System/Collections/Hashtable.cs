@@ -1,4 +1,6 @@
 ﻿#if LESSTHAN_NETSTANDARD13
+
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
 #pragma warning disable CA2235 // Mark all non-serializable fields
 #pragma warning disable CC0021 // Use nameof
@@ -1137,7 +1139,6 @@ namespace System.Collections
                     _occupancy++;
                 }
 
-
                 bucketNumber = (int)((bucketNumber + incr) % (uint)_buckets.Length);
             } while (++attempt < _buckets.Length);
 
@@ -1247,6 +1248,7 @@ namespace System.Collections
             public object Val;
             // Store hash code; sign bit means there was a collision.
         }
+
         // internal debug view class for hashtable
         internal class HashtableDebugView
         {

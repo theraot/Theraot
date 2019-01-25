@@ -1,4 +1,4 @@
-#if FAT
+﻿#if FAT
 
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ namespace Theraot.Core
     {
         private DelegateDeepEqualityComparer()
         {
-            //Empty
+            // Empty
         }
 
         public static DelegateDeepEqualityComparer Default { get; } = new DelegateDeepEqualityComparer();
