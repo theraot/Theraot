@@ -711,12 +711,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(other));
             }
             var thatAsCollection = AsICollection(other);
-            if (thatAsCollection.Any(input => !source.Contains(input)))
-            {
-                return false;
-            }
-
-            return !source.Any(input => !thatAsCollection.Contains(input));
+            return thatAsCollection.All(source.Contains) && source.All(input => thatAsCollection.Contains(input));
         }
 
         public static void Swap<T>(this IList<T> list, int indexA, int indexB)
@@ -835,7 +830,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(converter));
             }
 
-            return source.Select(item => converter(item)).ToList();
+            return source.Select(converter).ToList();
         }
 
         public static TList ConvertAll<T, TOutput, TList>(this IEnumerable<T> source, Func<T, TOutput> converter)

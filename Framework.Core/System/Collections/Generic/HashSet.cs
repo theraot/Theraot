@@ -5,6 +5,7 @@
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using Theraot;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
 
@@ -62,7 +63,7 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException(nameof(info));
             }
 
-            Theraot.No.Op(context);
+            No.Op(context);
             _wrapped = new NullAwareDictionary<T, object>(info.GetValue("dictionary", typeof(KeyValuePair<T, object>[])) as KeyValuePair<T, object>[]);
         }
 

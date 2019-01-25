@@ -18,10 +18,12 @@ namespace System.Dynamic
 {
     /// <inheritdoc />
     /// <summary>
-    ///     The dynamic call site binder that participates in the <see cref="T:System.Dynamic.DynamicMetaObject" /> binding protocol.
+    ///     The dynamic call site binder that participates in the <see cref="T:System.Dynamic.DynamicMetaObject" /> binding
+    ///     protocol.
     /// </summary>
     /// <remarks>
-    ///     The <see cref="T:System.Runtime.CompilerServices.CallSiteBinder" /> performs the binding of the dynamic operation using the runtime values
+    ///     The <see cref="T:System.Runtime.CompilerServices.CallSiteBinder" /> performs the binding of the dynamic operation
+    ///     using the runtime values
     ///     as input. On the other hand, the <see cref="T:System.Dynamic.DynamicMetaObjectBinder" /> participates in the
     ///     <see cref="T:System.Dynamic.DynamicMetaObject" />
     ///     binding protocol.
@@ -44,7 +46,8 @@ namespace System.Dynamic
         /// </summary>
         /// <param name="args">An array of arguments to the dynamic operation.</param>
         /// <param name="parameters">
-        ///     The array of <see cref="T:System.Linq.Expressions.ParameterExpression" /> instances that represent the parameters of the
+        ///     The array of <see cref="T:System.Linq.Expressions.ParameterExpression" /> instances that represent the parameters
+        ///     of the
         ///     call site in the binding process.
         /// </param>
         /// <param name="returnLabel">A LabelTarget used to return the result of the dynamic binding.</param>

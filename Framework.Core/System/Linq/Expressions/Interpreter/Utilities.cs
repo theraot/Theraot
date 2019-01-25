@@ -281,7 +281,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             var keysAndValues = _keysAndValues;
-            return keysAndValues != null && keysAndValues.Any(pair => pair.Key == key);
+            return keysAndValues?.Any(pair => pair.Key == key) == true;
         }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()

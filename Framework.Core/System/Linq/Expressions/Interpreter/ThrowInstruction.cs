@@ -1,5 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable CA2201 // Do not raise reserved exception types
 #pragma warning disable CC0021 // Use nameof
 
 namespace System.Linq.Expressions.Interpreter

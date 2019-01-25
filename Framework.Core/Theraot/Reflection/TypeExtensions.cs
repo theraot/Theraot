@@ -528,7 +528,7 @@ namespace Theraot.Reflection
         internal static MethodInfo GetStaticMethodInternal(this Type type, string name)
         {
             // Don't use BindingFlags.Static
-            return type.GetTypeInfo().GetMethods().FirstOrDefault(method => string.Equals(method.Name, name, StringComparison.Ordinal) && method.IsStatic);
+            return Array.Find(type.GetTypeInfo().GetMethods(), method => string.Equals(method.Name, name, StringComparison.Ordinal) && method.IsStatic);
         }
 
         internal static MethodInfo[] GetStaticMethodsInternal(this Type type)

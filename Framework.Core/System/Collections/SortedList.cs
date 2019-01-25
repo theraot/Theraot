@@ -1,4 +1,6 @@
 ﻿#if LESSTHAN_NETSTANDARD13
+
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes
 #pragma warning disable CA2235 // Mark all non-serializable fields
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
 

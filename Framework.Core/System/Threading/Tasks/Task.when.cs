@@ -405,7 +405,6 @@ namespace System.Threading.Tasks
 
             Contract.Assert(false, "Expected non-null array of tasks");
             throw new ArgumentNullException(nameof(tasks));
-
         }
 
         // Some common logic to support WhenAll() methods

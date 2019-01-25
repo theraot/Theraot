@@ -895,7 +895,6 @@ namespace Theraot.Core
 
             _position++;
             return true;
-
         }
 
         /// <summary>

@@ -24,8 +24,11 @@ namespace System.Dynamic
     /// <summary>
     ///     <para>
     ///         Provides a simple class that can be inherited from to create an object with dynamic behavior
-    ///         at runtime.  Subclasses can override the various binder methods (<see cref="M:System.Dynamic.DynamicObject.TryGetMember(System.Dynamic.GetMemberBinder,System.Object@)" />,
-    ///         <see cref="M:System.Dynamic.DynamicObject.TrySetMember(System.Dynamic.SetMemberBinder,System.Object)" />, <see cref="M:System.Dynamic.DynamicObject.TryInvokeMember(System.Dynamic.InvokeMemberBinder,System.Object[],System.Object@)" />, etc.) to provide custom behavior
+    ///         at runtime.  Subclasses can override the various binder methods (
+    ///         <see cref="M:System.Dynamic.DynamicObject.TryGetMember(System.Dynamic.GetMemberBinder,System.Object@)" />,
+    ///         <see cref="M:System.Dynamic.DynamicObject.TrySetMember(System.Dynamic.SetMemberBinder,System.Object)" />,
+    ///         <see cref="M:System.Dynamic.DynamicObject.TryInvokeMember(System.Dynamic.InvokeMemberBinder,System.Object[],System.Object@)" />
+    ///         , etc.) to provide custom behavior
     ///         that will be invoked at runtime.
     ///     </para>
     ///     <para>
@@ -48,12 +51,14 @@ namespace System.Dynamic
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns the <see cref="T:System.Dynamic.DynamicMetaObject" /> responsible for binding operations performed on this object,
+        ///     Returns the <see cref="T:System.Dynamic.DynamicMetaObject" /> responsible for binding operations performed on this
+        ///     object,
         ///     using the virtual methods provided by this class.
         /// </summary>
         /// <param name="parameter">The expression tree representation of the runtime value.</param>
         /// <returns>
-        ///     The <see cref="T:System.Dynamic.DynamicMetaObject" /> to bind this object.  The object can be encapsulated inside of another
+        ///     The <see cref="T:System.Dynamic.DynamicMetaObject" /> to bind this object.  The object can be encapsulated inside
+        ///     of another
         ///     <see cref="T:System.Dynamic.DynamicMetaObject" /> to provide custom behavior for individual actions.
         /// </returns>
         public virtual DynamicMetaObject GetMetaObject(Expression parameter)

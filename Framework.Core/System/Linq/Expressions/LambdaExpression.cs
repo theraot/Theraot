@@ -875,7 +875,6 @@ namespace System.Linq.Expressions
                 en.MoveNext();
                 return en.Current == ExpressionUtils.ReturnObject<ParameterExpression>(_par0);
             }
-
         }
     }
 

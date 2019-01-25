@@ -239,8 +239,7 @@ namespace TestRunner
 
                 capturedResult = null;
                 task.Wait();
-                capturedResult = task.GetType().GetTypeInfo().GetProperty("Result")?.GetValue(task, ArrayReservoir<object>.EmptyArray);
-                return capturedResult;
+                return task.GetType().GetTypeInfo().GetProperty("Result")?.GetValue(task, ArrayReservoir<object>.EmptyArray);
             }
         }
 
