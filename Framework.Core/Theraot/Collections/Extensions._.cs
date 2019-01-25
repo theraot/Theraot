@@ -1,5 +1,7 @@
 ﻿// Needed for NET40
 
+#pragma warning disable RCS1224 // Make method an extension method.
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -663,13 +665,13 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static int RemoveWhere<T>(this ICollection<T> source, Predicate<T> predicate)
+        public static int RemoveWhere<T>(this ICollection<T> source, Func<T, bool> predicate)
         {
             if (predicate == null)
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
-            return RemoveWhere(source, items => Where(items, predicate));
+            return RemoveWhere(source, items => items.Where(predicate));
         }
 
         public static int RemoveWhere<T>(this ICollection<T> source, Func<IEnumerable<T>, IEnumerable<T>> converter)
@@ -689,13 +691,13 @@ namespace Theraot.Collections
                    );
         }
 
-        public static IEnumerable<T> RemoveWhereEnumerable<T>(this ICollection<T> source, Predicate<T> predicate)
+        public static IEnumerable<T> RemoveWhereEnumerable<T>(this ICollection<T> source, Func<T, bool> predicate)
         {
             if (predicate == null)
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
-            return RemoveWhereEnumerable(source, items => Where(items, predicate));
+            return RemoveWhereEnumerable(source, items => items.Where(predicate));
         }
 
         public static IEnumerable<T> RemoveWhereEnumerable<T>(this ICollection<T> source, Func<IEnumerable<T>, IEnumerable<T>> converter)
@@ -764,7 +766,7 @@ namespace Theraot.Collections
 
         public static int SymmetricExceptWith<T>(this ICollection<T> source, IEnumerable<T> other)
         {
-            return source.AddRange(Where(other.Distinct(), input => !source.Remove(input)));
+            return source.AddRange(other.Distinct().Where(input => !source.Remove(input)));
         }
 
         public static bool TryTake<T>(this Stack<T> stack, out T item)
@@ -788,30 +790,6 @@ namespace Theraot.Collections
         public static int UnionWith<T>(this ICollection<T> source, IEnumerable<T> other)
         {
             return source.AddRange(other.Where(input => !source.Contains(input)));
-        }
-
-        public static IEnumerable<T> Where<T>(IEnumerable<T> source, Predicate<T> predicate)
-        {
-            if (predicate == null)
-            {
-                throw new ArgumentNullException(nameof(predicate));
-            }
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            return WhereExtracted();
-
-            IEnumerable<T> WhereExtracted()
-            {
-                foreach (var item in source)
-                {
-                    if (predicate(item))
-                    {
-                        yield return item;
-                    }
-                }
-            }
         }
 
         private static bool IsSubsetOf<T>(this IEnumerable<T> source, IEnumerable<T> other, bool proper)

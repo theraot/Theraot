@@ -203,7 +203,7 @@ namespace System.Collections.Generic
 
         public int RemoveWhere(Predicate<T> match)
         {
-            return Extensions.RemoveWhere(this, match);
+            return this.RemoveWhere(new Func<T, bool>(match));
         }
 
         public IEnumerable<T> Reverse()
