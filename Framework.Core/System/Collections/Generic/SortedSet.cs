@@ -12,10 +12,10 @@ namespace System.Collections.Generic
     [Serializable]
     public class SortedSet<T> : ISet<T>, ICollection, ISerializable, IDeserializationCallback
     {
-        private readonly AVLTree<T, T> _wrapped;
 
         [NonSerialized]
         private SerializationInfo _serializationInfo;
+        private readonly AVLTree<T, T> _wrapped;
 
         public SortedSet()
         {
@@ -62,31 +62,14 @@ namespace System.Collections.Generic
         }
 
         public IComparer<T> Comparer { get; private set; }
-        public T Max => GetMax();
-        public T Min => GetMin();
-        bool ICollection.IsSynchronized => false;
-        object ICollection.SyncRoot => this;
-
-        public void CopyTo(Array array, int index)
-        {
-            Extensions.CanCopyTo(Count, array, index);
-            this.DeprecatedCopyTo(array, index);
-        }
-
-        void IDeserializationCallback.OnDeserialization(object sender)
-        {
-            OnDeserialization(sender);
-        }
-
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            GetObjectData(info, context);
-        }
 
         public int Count => GetCount();
+        public T Max => GetMax();
+        public T Min => GetMin();
 
         bool ICollection<T>.IsReadOnly => false;
+        bool ICollection.IsSynchronized => false;
+        object ICollection.SyncRoot => this;
 
         public bool Add(T item)
         {
@@ -103,10 +86,28 @@ namespace System.Collections.Generic
             return _wrapped.Get(item) != null;
         }
 
+        public void CopyTo(Array array, int index)
+        {
+            Extensions.CanCopyTo(Count, array, index);
+            this.DeprecatedCopyTo(array, index);
+        }
+
         public void CopyTo(T[] array, int index)
         {
             Extensions.CanCopyTo(Count, array, index);
             Extensions.CopyTo(this, array, index);
+        }
+
+        public void CopyTo(T[] array)
+        {
+            Extensions.CanCopyTo(Count, array);
+            Extensions.CopyTo(this, array);
+        }
+
+        public void CopyTo(T[] array, int index, int count)
+        {
+            Extensions.CanCopyTo(array, index, count);
+            Extensions.CopyTo(this, array, index, count);
         }
 
         public void ExceptWith(IEnumerable<T> other)
@@ -117,6 +118,16 @@ namespace System.Collections.Generic
         public IEnumerator<T> GetEnumerator()
         {
             return GetEnumeratorExtracted();
+        }
+
+        public virtual SortedSet<T> GetViewBetween(T lowerValue, T upperValue)
+        {
+            if (Comparer.Compare(lowerValue, upperValue) <= 0)
+            {
+                return new SortedSubSet(this, lowerValue, upperValue);
+            }
+
+            throw new ArgumentException("lowerBound is greater than upperBound.");
         }
 
         public virtual void IntersectWith(IEnumerable<T> other)
@@ -154,6 +165,16 @@ namespace System.Collections.Generic
             return RemoveExtracted(item);
         }
 
+        public int RemoveWhere(Predicate<T> match)
+        {
+            return this.RemoveWhere(new Func<T, bool>(match));
+        }
+
+        public IEnumerable<T> Reverse()
+        {
+            return Enumerable.Reverse(this);
+        }
+
         public bool SetEquals(IEnumerable<T> other)
         {
             return Extensions.SetEquals(this, other);
@@ -167,48 +188,6 @@ namespace System.Collections.Generic
         public void UnionWith(IEnumerable<T> other)
         {
             Extensions.UnionWith(this, other);
-        }
-
-        void ICollection<T>.Add(T item)
-        {
-            AddExtracted(item);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public void CopyTo(T[] array)
-        {
-            Extensions.CanCopyTo(Count, array);
-            Extensions.CopyTo(this, array);
-        }
-
-        public void CopyTo(T[] array, int index, int count)
-        {
-            Extensions.CanCopyTo(array, index, count);
-            Extensions.CopyTo(this, array, index, count);
-        }
-
-        public virtual SortedSet<T> GetViewBetween(T lowerValue, T upperValue)
-        {
-            if (Comparer.Compare(lowerValue, upperValue) <= 0)
-            {
-                return new SortedSubSet(this, lowerValue, upperValue);
-            }
-
-            throw new ArgumentException("lowerBound is greater than upperBound.");
-        }
-
-        public int RemoveWhere(Predicate<T> match)
-        {
-            return this.RemoveWhere(new Func<T, bool>(match));
-        }
-
-        public IEnumerable<T> Reverse()
-        {
-            return Enumerable.Reverse(this);
         }
 
         protected virtual bool AddExtracted(T item)
@@ -317,6 +296,27 @@ namespace System.Collections.Generic
         protected virtual bool RemoveExtracted(T item)
         {
             return _wrapped.Remove(item);
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            AddExtracted(item);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            GetObjectData(info, context);
+        }
+
+        void IDeserializationCallback.OnDeserialization(object sender)
+        {
+            OnDeserialization(sender);
         }
 
         [Serializable]

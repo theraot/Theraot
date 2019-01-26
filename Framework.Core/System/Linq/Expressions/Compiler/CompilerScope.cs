@@ -56,11 +56,6 @@ namespace System.Linq.Expressions.Compiler
     /// </summary>
     internal sealed partial class CompilerScope
     {
-        /// <summary>
-        ///     Mutable dictionary that maps non-hoisted variables to either local
-        ///     slots or argument slots
-        /// </summary>
-        private readonly Dictionary<ParameterExpression, Storage> _locals = new Dictionary<ParameterExpression, Storage>();
 
         /// <summary>
         ///     Variables defined in this scope, and whether they're hoisted or not
@@ -76,28 +71,6 @@ namespace System.Linq.Expressions.Compiler
         internal readonly bool IsMethod;
 
         /// <summary>
-        ///     The expression node for this scope
-        ///     Can be LambdaExpression, BlockExpression, or CatchBlock
-        /// </summary>
-        internal readonly object Node;
-
-        /// <summary>
-        ///     The closed over hoisted locals
-        /// </summary>
-        private HoistedLocals _closureHoistedLocals;
-
-        /// <summary>
-        ///     The scope's hoisted locals, if any.
-        ///     Provides storage for variables that are referenced from nested lambdas
-        /// </summary>
-        private HoistedLocals _hoistedLocals;
-
-        /// <summary>
-        ///     parent scope, if any
-        /// </summary>
-        private CompilerScope _parent;
-
-        /// <summary>
         ///     <para>Scopes whose variables were merged into this one</para>
         ///     <para>Created lazily as we create hundreds of compiler scopes w/o merging scopes when compiling rules.</para>
         /// </summary>
@@ -111,10 +84,37 @@ namespace System.Linq.Expressions.Compiler
         internal bool NeedsClosure;
 
         /// <summary>
+        ///     The expression node for this scope
+        ///     Can be LambdaExpression, BlockExpression, or CatchBlock
+        /// </summary>
+        internal readonly object Node;
+
+        /// <summary>
         ///     Each variable referenced within this scope, and how often it was referenced
         ///     Populated by VariableBinder
         /// </summary>
         internal Dictionary<ParameterExpression, int> ReferenceCount;
+
+        /// <summary>
+        ///     The closed over hoisted locals
+        /// </summary>
+        private HoistedLocals _closureHoistedLocals;
+
+        /// <summary>
+        ///     The scope's hoisted locals, if any.
+        ///     Provides storage for variables that are referenced from nested lambdas
+        /// </summary>
+        private HoistedLocals _hoistedLocals;
+        /// <summary>
+        ///     Mutable dictionary that maps non-hoisted variables to either local
+        ///     slots or argument slots
+        /// </summary>
+        private readonly Dictionary<ParameterExpression, Storage> _locals = new Dictionary<ParameterExpression, Storage>();
+
+        /// <summary>
+        ///     parent scope, if any
+        /// </summary>
+        private CompilerScope _parent;
 
         internal CompilerScope(object node, bool isMethod)
         {
@@ -266,7 +266,7 @@ namespace System.Linq.Expressions.Compiler
                 case BlockExpression block:
                     return Theraot.Collections.Extensions.AsArrayInternal(block.Variables);
                 default:
-                    return new[] {((CatchBlock)scope).Variable};
+                    return new[] { ((CatchBlock)scope).Variable };
             }
         }
 
@@ -376,14 +376,14 @@ namespace System.Linq.Expressions.Compiler
                     // array[i] = new StrongBox<T>(argument);
                     lc.EmitLambdaArgument(index);
                     // ReSharper disable once AssignNullToNotNullAttribute
-                    lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new[] {v.Type}));
+                    lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new[] { v.Type }));
                 }
                 else if (v == _hoistedLocals.ParentVariable)
                 {
                     // array[i] = new StrongBox<T>(closure.Locals);
                     ResolveVariable(v, _closureHoistedLocals).EmitLoad();
                     // ReSharper disable once AssignNullToNotNullAttribute
-                    lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new[] {v.Type}));
+                    lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new[] { v.Type }));
                 }
                 else
                 {

@@ -17,15 +17,15 @@ namespace System.ComponentModel.DataAnnotations
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Method)]
     public sealed class DisplayAttribute : Attribute
     {
+        private bool? _autoGenerateField;
+        private bool? _autoGenerateFilter;
         private readonly LocalizableString _description = new LocalizableString(nameof(Description));
         private readonly LocalizableString _groupName = new LocalizableString(nameof(GroupName));
         private readonly LocalizableString _name = new LocalizableString(nameof(Name));
-        private readonly LocalizableString _prompt = new LocalizableString(nameof(Prompt));
-        private readonly LocalizableString _shortName = new LocalizableString(nameof(ShortName));
-        private bool? _autoGenerateField;
-        private bool? _autoGenerateFilter;
         private int? _order;
+        private readonly LocalizableString _prompt = new LocalizableString(nameof(Prompt));
         private Type _resourceType;
+        private readonly LocalizableString _shortName = new LocalizableString(nameof(ShortName));
 
         /// <summary>
         ///     Gets or sets whether UI should be generated automatically to display this field. If this property is not

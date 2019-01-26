@@ -38,33 +38,6 @@ namespace Theraot.Collections
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        internal static T[] AsArrayInternal<T>(IEnumerable<T> source)
-        {
-            switch (source)
-            {
-                case null:
-                    return ArrayReservoir<T>.EmptyArray;
-
-                case T[] array:
-                    return array;
-
-                case ReadOnlyCollectionEx<T> readOnlyCollectionEx when readOnlyCollectionEx.Wrapped is T[] array:
-                    return array;
-
-                case ICollection<T> collection when collection.Count == 0:
-                    return ArrayReservoir<T>.EmptyArray;
-
-                case ICollection<T> collection:
-                    var result = new T[collection.Count];
-                    collection.CopyTo(result, 0);
-                    return result;
-
-                default:
-                    return new List<T>(source).ToArray();
-            }
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static ICollection<T> AsDistinctICollection<T>(IEnumerable<T> source)
         {
 #if NET35
@@ -192,10 +165,10 @@ namespace Theraot.Collections
                 case ReadOnlyCollectionEx<T> arrayReadOnlyCollection:
                     return arrayReadOnlyCollection;
                 default:
-                {
-                    var array = AsArrayInternal(enumerable);
-                    return array.Length == 0 ? EmptyCollection<T>.Instance : ReadOnlyCollectionEx.Create(array);
-                }
+                    {
+                        var array = AsArrayInternal(enumerable);
+                        return array.Length == 0 ? EmptyCollection<T>.Instance : ReadOnlyCollectionEx.Create(array);
+                    }
             }
         }
 
@@ -280,6 +253,33 @@ namespace Theraot.Collections
 
                 default:
                     return new EnumerationList<T>(source);
+            }
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        internal static T[] AsArrayInternal<T>(IEnumerable<T> source)
+        {
+            switch (source)
+            {
+                case null:
+                    return ArrayReservoir<T>.EmptyArray;
+
+                case T[] array:
+                    return array;
+
+                case ReadOnlyCollectionEx<T> readOnlyCollectionEx when readOnlyCollectionEx.Wrapped is T[] array:
+                    return array;
+
+                case ICollection<T> collection when collection.Count == 0:
+                    return ArrayReservoir<T>.EmptyArray;
+
+                case ICollection<T> collection:
+                    var result = new T[collection.Count];
+                    collection.CopyTo(result, 0);
+                    return result;
+
+                default:
+                    return new List<T>(source).ToArray();
             }
         }
     }

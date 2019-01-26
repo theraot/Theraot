@@ -29,6 +29,16 @@ namespace Theraot.Threading
 {
     public class AtomicBoolean
     {
+
+        public static implicit operator AtomicBoolean(bool value)
+        {
+            return new AtomicBoolean { Value = value };
+        }
+
+        public static implicit operator bool(AtomicBoolean atomicBoolean)
+        {
+            return atomicBoolean.Value;
+        }
         private const int _set = 1;
         private const int _unset = 0;
         private int _value;
@@ -38,16 +48,6 @@ namespace Theraot.Threading
             get => _value == _set;
 
             set => Exchange(value);
-        }
-
-        public static implicit operator AtomicBoolean(bool value)
-        {
-            return new AtomicBoolean {Value = value};
-        }
-
-        public static implicit operator bool(AtomicBoolean atomicBoolean)
-        {
-            return atomicBoolean.Value;
         }
 
         public static bool operator !=(AtomicBoolean left, AtomicBoolean right)

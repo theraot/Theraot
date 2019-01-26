@@ -49,6 +49,15 @@ namespace System.Dynamic
         {
         }
 
+        /// <summary>
+        ///     Returns the enumeration of all dynamic member names.
+        /// </summary>
+        /// <returns>The list of dynamic member names.</returns>
+        public virtual IEnumerable<string> GetDynamicMemberNames()
+        {
+            return ArrayReservoir<string>.EmptyArray;
+        }
+
         /// <inheritdoc />
         /// <summary>
         ///     Returns the <see cref="T:System.Dynamic.DynamicMetaObject" /> responsible for binding operations performed on this
@@ -64,15 +73,6 @@ namespace System.Dynamic
         public virtual DynamicMetaObject GetMetaObject(Expression parameter)
         {
             return new MetaDynamic(parameter, this);
-        }
-
-        /// <summary>
-        ///     Returns the enumeration of all dynamic member names.
-        /// </summary>
-        /// <returns>The list of dynamic member names.</returns>
-        public virtual IEnumerable<string> GetDynamicMemberNames()
-        {
-            return ArrayReservoir<string>.EmptyArray;
         }
 
         /// <summary>
@@ -274,6 +274,8 @@ namespace System.Dynamic
             {
             }
 
+            private delegate DynamicMetaObject Fallback<in TBinder>(MetaDynamic @this, TBinder binder, DynamicMetaObject errorSuggestion);
+
             private new DynamicObject Value => (DynamicObject)base.Value;
 
             public override DynamicMetaObject BindBinaryOperation(BinaryOperationBinder binder, DynamicMetaObject arg)
@@ -289,7 +291,7 @@ namespace System.Dynamic
                 (
                     CachedReflectionInfo.DynamicObjectTryBinaryOperation,
                     binder,
-                    new[] {arg.Expression},
+                    new[] { arg.Expression },
                     (@this, b, e) => b.FallbackBinaryOperation(@this, localArg, e)
                 );
             }
@@ -517,10 +519,10 @@ namespace System.Dynamic
             {
                 if (parameters != _noArgs)
                 {
-                    return arg1 != null ? new[] {Constant(binder), arg0, arg1} : new[] {Constant(binder), arg0};
+                    return arg1 != null ? new[] { Constant(binder), arg0, arg1 } : new[] { Constant(binder), arg0 };
                 }
 
-                return arg1 != null ? new[] {Constant(binder), arg1} : new Expression[] {Constant(binder)};
+                return arg1 != null ? new[] { Constant(binder), arg1 } : new Expression[] { Constant(binder) };
             }
 
             private static ConstantExpression Constant<TBinder>(TBinder binder)
@@ -886,8 +888,6 @@ namespace System.Dynamic
 
                 return methods.Cast<MethodInfo>().Any(methodInfo => methodInfo.DeclaringType != typeof(DynamicObject) && methodInfo.GetBaseDefinition() == method);
             }
-
-            private delegate DynamicMetaObject Fallback<in TBinder>(MetaDynamic @this, TBinder binder, DynamicMetaObject errorSuggestion);
 
             // It is okay to throw NotSupported from this binder. This object
             // is only used by DynamicObject.GetMember--it is not expected to

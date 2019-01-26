@@ -18,18 +18,27 @@ namespace System.Collections.ObjectModel
             Values = new ValueCollection(new ProxyCollection<TValue>(() => Dictionary.Values));
         }
 
+        public int Count => Dictionary.Count;
+
         public KeyCollection Keys { get; }
         public ValueCollection Values { get; }
         protected IDictionary<TKey, TValue> Dictionary { get; }
 
         bool IDictionary.IsFixedSize => ((IDictionary)Dictionary).IsFixedSize;
         bool IDictionary.IsReadOnly => true;
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => true;
         bool ICollection.IsSynchronized => ((ICollection)Dictionary).IsSynchronized;
 
         ICollection IDictionary.Keys => Keys;
+        ICollection<TKey> IDictionary<TKey, TValue>.Keys => Keys;
+
+        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Keys;
         object ICollection.SyncRoot => ((ICollection)Dictionary).SyncRoot;
 
         ICollection IDictionary.Values => Values;
+        ICollection<TValue> IDictionary<TKey, TValue>.Values => Values;
+        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Values;
+        public TValue this[TKey key] => Dictionary[key];
 
         object IDictionary.this[object key]
         {
@@ -48,46 +57,6 @@ namespace System.Collections.ObjectModel
 
             set => throw new NotSupportedException();
         }
-
-        void IDictionary.Add(object key, object value)
-        {
-            throw new NotSupportedException();
-        }
-
-        void IDictionary.Clear()
-        {
-            throw new NotSupportedException();
-        }
-
-        bool IDictionary.Contains(object key)
-        {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            return key is TKey keyAsTKey && ContainsKey(keyAsTKey);
-        }
-
-        void ICollection.CopyTo(Array array, int index)
-        {
-            ((ICollection)Dictionary).CopyTo(array, index);
-        }
-
-        IDictionaryEnumerator IDictionary.GetEnumerator()
-        {
-            return ((IDictionary)Dictionary).GetEnumerator();
-        }
-
-        void IDictionary.Remove(object key)
-        {
-            throw new NotSupportedException();
-        }
-
-        public int Count => Dictionary.Count;
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => true;
-        ICollection<TKey> IDictionary<TKey, TValue>.Keys => Keys;
-        ICollection<TValue> IDictionary<TKey, TValue>.Values => Values;
 
         TValue IDictionary<TKey, TValue>.this[TKey key]
         {
@@ -111,6 +80,11 @@ namespace System.Collections.ObjectModel
             return Dictionary.TryGetValue(key, out value);
         }
 
+        void IDictionary.Add(object key, object value)
+        {
+            throw new NotSupportedException();
+        }
+
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
             No.Op(item);
@@ -122,9 +96,24 @@ namespace System.Collections.ObjectModel
             throw new NotSupportedException();
         }
 
+        void IDictionary.Clear()
+        {
+            throw new NotSupportedException();
+        }
+
         void ICollection<KeyValuePair<TKey, TValue>>.Clear()
         {
             throw new NotSupportedException();
+        }
+
+        bool IDictionary.Contains(object key)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            return key is TKey keyAsTKey && ContainsKey(keyAsTKey);
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
@@ -132,14 +121,29 @@ namespace System.Collections.ObjectModel
             return Dictionary.Contains(item);
         }
 
+        void ICollection.CopyTo(Array array, int index)
+        {
+            ((ICollection)Dictionary).CopyTo(array, index);
+        }
+
         void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             Dictionary.CopyTo(array, arrayIndex);
         }
 
+        IDictionaryEnumerator IDictionary.GetEnumerator()
+        {
+            return ((IDictionary)Dictionary).GetEnumerator();
+        }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        void IDictionary.Remove(object key)
+        {
+            throw new NotSupportedException();
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
@@ -152,10 +156,6 @@ namespace System.Collections.ObjectModel
         {
             throw new NotSupportedException();
         }
-
-        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Keys;
-        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Values;
-        public TValue this[TKey key] => Dictionary[key];
     }
 }
 

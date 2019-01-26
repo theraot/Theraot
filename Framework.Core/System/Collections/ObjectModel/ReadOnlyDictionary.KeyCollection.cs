@@ -20,18 +20,13 @@ namespace System.Collections.ObjectModel
                 _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
             }
 
-            bool ICollection.IsSynchronized => ((ICollection)_wrapped).IsSynchronized;
-
-            object ICollection.SyncRoot => ((ICollection)_wrapped).SyncRoot;
-
-            void ICollection.CopyTo(Array array, int index)
-            {
-                ((ICollection)_wrapped).CopyTo(array, index);
-            }
-
             public int Count => _wrapped.Count;
 
             bool ICollection<TKey>.IsReadOnly => true;
+
+            bool ICollection.IsSynchronized => ((ICollection)_wrapped).IsSynchronized;
+
+            object ICollection.SyncRoot => ((ICollection)_wrapped).SyncRoot;
 
             public void CopyTo(TKey[] array, int arrayIndex)
             {
@@ -56,6 +51,11 @@ namespace System.Collections.ObjectModel
             bool ICollection<TKey>.Contains(TKey item)
             {
                 return _wrapped.Contains(item);
+            }
+
+            void ICollection.CopyTo(Array array, int index)
+            {
+                ((ICollection)_wrapped).CopyTo(array, index);
             }
 
             IEnumerator IEnumerable.GetEnumerator()

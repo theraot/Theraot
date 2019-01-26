@@ -46,12 +46,12 @@ namespace System.Dynamic.Utils
     internal abstract class ListProvider<T> : IList<T>
         where T : class
     {
-        protected abstract int ElementCount { get; }
-        protected abstract T First { get; }
 
         public int Count => ElementCount;
 
         public bool IsReadOnly => true;
+        protected abstract int ElementCount { get; }
+        protected abstract T First { get; }
 
         public T this[int index]
         {
@@ -139,12 +139,12 @@ namespace System.Dynamic.Utils
             throw ContractUtils.Unreachable;
         }
 
+        protected abstract T GetElement(int index);
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
-
-        protected abstract T GetElement(int index);
     }
 }
 

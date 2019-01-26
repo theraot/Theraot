@@ -9,6 +9,27 @@ namespace TestRunner.System.Collections.Concurrent
     [TestFixture]
     public static class BlockingCollectionTest
     {
+
+        [Test]
+        public static void GetConsumingEnumerableShouldBlockWithCancellationTokenNone()
+        {
+            GetConsumingEnumerableTestImpl(CancellationToken.None);
+        }
+
+        [Test]
+        public static void GetConsumingEnumerableShouldBlockWithCancellationTokenNotNone()
+        {
+            using (var cancellationTokenSource = new CancellationTokenSource())
+            {
+                GetConsumingEnumerableTestImpl(cancellationTokenSource.Token);
+            }
+        }
+
+        [Test]
+        public static void GetConsumingEnumerableShouldBlockWithNoCancellationToken()
+        {
+            GetConsumingEnumerableTestImpl(null);
+        }
         [Test]
         public static void TryTakeFromEmptyBlockingCollectionShouldNotThrow()
         {
@@ -82,27 +103,6 @@ namespace TestRunner.System.Collections.Concurrent
                     t.Join();
                     Assert.AreEqual(2, called);
                 }
-            }
-        }
-
-        [Test]
-        public static void GetConsumingEnumerableShouldBlockWithNoCancellationToken()
-        {
-            GetConsumingEnumerableTestImpl(null);
-        }
-
-        [Test]
-        public static void GetConsumingEnumerableShouldBlockWithCancellationTokenNone()
-        {
-            GetConsumingEnumerableTestImpl(CancellationToken.None);
-        }
-
-        [Test]
-        public static void GetConsumingEnumerableShouldBlockWithCancellationTokenNotNone()
-        {
-            using (var cancellationTokenSource = new CancellationTokenSource())
-            {
-                GetConsumingEnumerableTestImpl(cancellationTokenSource.Token);
             }
         }
     }

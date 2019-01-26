@@ -25,14 +25,14 @@ namespace System.Dynamic
     [DebuggerDisplay("{DebugView}")]
     public abstract class BindingRestrictions
     {
-        private const int _customRestrictionHash = 613566756;
-        private const int _instanceRestrictionHash = -1840700270;
-        private const int _typeRestrictionHash = 1227133513; // 00100 1001 0010 0100 1001 0010 0100 1001₂
 
         /// <summary>
         ///     Represents an empty set of binding restrictions. This field is read-only.
         /// </summary>
         public static readonly BindingRestrictions Empty = new CustomRestriction(AstUtils.Constant(true));
+        private const int _customRestrictionHash = 613566756;
+        private const int _instanceRestrictionHash = -1840700270;
+        private const int _typeRestrictionHash = 1227133513; // 00100 1001 0010 0100 1001 0010 0100 1001₂
         // 01001 0010 0100 1001 0010 0100 1001 0010₂
         // 10010 0100 1001 0010 0100 1001 0010 0100₂
 
@@ -277,7 +277,7 @@ namespace System.Dynamic
                 // left most node each iteration.
                 var stack = new Stack<BindingRestrictions>();
                 BindingRestrictions top = this;
-                for (;;)
+                for (; ; )
                 {
                     if (top is MergedRestriction m)
                     {
@@ -335,7 +335,7 @@ namespace System.Dynamic
                     depth++;
                 }
 
-                _tests.Push(new AndNode {Node = node, Depth = depth});
+                _tests.Push(new AndNode { Node = node, Depth = depth });
             }
 
             private struct AndNode

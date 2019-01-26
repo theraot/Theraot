@@ -21,9 +21,9 @@ namespace System.Linq.Expressions.Compiler
     {
         private readonly Stack<BoundConstants> _constants = new Stack<BoundConstants>();
         private readonly StackGuard _guard = new StackGuard();
+        private bool _inQuote;
         private readonly Stack<CompilerScope> _scopes = new Stack<CompilerScope>();
         private readonly AnalyzedTree _tree = new AnalyzedTree();
-        private bool _inQuote;
 
         private VariableBinder()
         {
@@ -211,7 +211,7 @@ namespace System.Linq.Expressions.Compiler
         // array accesses.
         private ReadOnlyCollection<Expression> MergeScopes(Expression node)
         {
-            var body = node is LambdaExpression lambda ? new ReadOnlyCollection<Expression>(new[] {lambda.Body}) : ((BlockExpression)node).Expressions;
+            var body = node is LambdaExpression lambda ? new ReadOnlyCollection<Expression>(new[] { lambda.Body }) : ((BlockExpression)node).Expressions;
 
             var currentScope = _scopes.Peek();
 

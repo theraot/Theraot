@@ -26,13 +26,18 @@ namespace System.Collections.Concurrent
             _wrapped = new SafeStack<T>(collection);
         }
 
-        public bool IsEmpty => _wrapped.Count == 0;
-
         public int Count => _wrapped.Count;
+
+        public bool IsEmpty => _wrapped.Count == 0;
 
         bool ICollection.IsSynchronized => false;
 
         object ICollection.SyncRoot => throw new NotSupportedException();
+
+        public void Clear()
+        {
+            Volatile.Write(ref _wrapped, new SafeStack<T>());
+        }
 
         public void CopyTo(T[] array, int index)
         {
@@ -43,38 +48,6 @@ namespace System.Collections.Concurrent
         public IEnumerator<T> GetEnumerator()
         {
             return _wrapped.GetEnumerator();
-        }
-
-        public T[] ToArray()
-        {
-            return _wrapped.ToArray();
-        }
-
-        void ICollection.CopyTo(Array array, int index)
-        {
-            Extensions.CanCopyTo(Count, array, index);
-            this.DeprecatedCopyTo(array, index);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        bool IProducerConsumerCollection<T>.TryAdd(T item)
-        {
-            Push(item);
-            return true;
-        }
-
-        bool IProducerConsumerCollection<T>.TryTake(out T item)
-        {
-            return TryPop(out item);
-        }
-
-        public void Clear()
-        {
-            Volatile.Write(ref _wrapped, new SafeStack<T>());
         }
 
         public void Push(T item)
@@ -121,6 +94,11 @@ namespace System.Collections.Concurrent
             {
                 _wrapped.Add(items[index + startIndex]);
             }
+        }
+
+        public T[] ToArray()
+        {
+            return _wrapped.ToArray();
         }
 
         public bool TryPeek(out T result)
@@ -184,6 +162,28 @@ namespace System.Collections.Concurrent
             }
 
             return index;
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            Extensions.CanCopyTo(Count, array, index);
+            this.DeprecatedCopyTo(array, index);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        bool IProducerConsumerCollection<T>.TryAdd(T item)
+        {
+            Push(item);
+            return true;
+        }
+
+        bool IProducerConsumerCollection<T>.TryTake(out T item)
+        {
+            return TryPop(out item);
         }
     }
 }

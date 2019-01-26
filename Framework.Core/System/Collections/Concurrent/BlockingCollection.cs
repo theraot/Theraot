@@ -64,6 +64,8 @@ namespace System.Collections.Concurrent
 
         public int BoundedCapacity => Data.Capacity;
 
+        public int Count => Data.Count;
+
         public bool IsAddingCompleted => !Data.CanAdd;
 
         public bool IsCompleted
@@ -89,8 +91,6 @@ namespace System.Collections.Concurrent
             }
         }
 
-        public int Count => Data.Count;
-
         bool ICollection.IsSynchronized
         {
             get
@@ -101,27 +101,6 @@ namespace System.Collections.Concurrent
         }
 
         object ICollection.SyncRoot => throw new NotSupportedException();
-
-        void ICollection.CopyTo(Array array, int index)
-        {
-            Data.CopyTo(array, index);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable<T>)this).GetEnumerator();
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        {
-            return Data.GetEnumerator();
-        }
 
         public static int AddToAny(BlockingCollection<T>[] collections, T item)
         {
@@ -459,6 +438,12 @@ namespace System.Collections.Concurrent
             ((ICollection)this).CopyTo(array, index);
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         public IEnumerable<T> GetConsumingEnumerable()
         {
             while (TryTake(out var item, -1, CancellationToken.None))
@@ -543,14 +528,29 @@ namespace System.Collections.Concurrent
             }
         }
 
+        void ICollection.CopyTo(Array array, int index)
+        {
+            Data.CopyTo(array, index);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<T>)this).GetEnumerator();
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return Data.GetEnumerator();
+        }
+
         private sealed class PrivateData : IDisposable, IReadOnlyCollection<T>
         {
-            private readonly SemaphoreSlim _addSemaphore;
-            private readonly IProducerConsumerCollection<T> _collection;
-            private readonly SemaphoreSlim _takeSemaphore;
             public readonly int Capacity;
+            private readonly SemaphoreSlim _addSemaphore;
             private int _addWaiters;
             private int _canAdd;
+            private readonly IProducerConsumerCollection<T> _collection;
+            private readonly SemaphoreSlim _takeSemaphore;
 
             public PrivateData(IProducerConsumerCollection<T> collection, int capacity)
             {
@@ -566,7 +566,14 @@ namespace System.Collections.Concurrent
                 set => Volatile.Write(ref _canAdd, value ? 1 : 0);
             }
 
+            public int Count => _collection.Count;
+
             public WaitHandle WaitHandle => _addSemaphore.AvailableWaitHandle;
+
+            public void CopyTo(Array array, int index)
+            {
+                _collection.CopyTo(array, index);
+            }
 
             public void Dispose()
             {
@@ -574,21 +581,9 @@ namespace System.Collections.Concurrent
                 _takeSemaphore?.Dispose();
             }
 
-            public int Count => _collection.Count;
-
             public IEnumerator<T> GetEnumerator()
             {
                 return _collection.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-
-            public void CopyTo(Array array, int index)
-            {
-                _collection.CopyTo(array, index);
             }
 
             public T[] ToArray()
@@ -650,6 +645,11 @@ namespace System.Collections.Concurrent
 
                 _addSemaphore.Release();
                 return true;
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
             }
         }
     }
