@@ -201,8 +201,7 @@ namespace System.Linq.Expressions
     /// </summary>
     /// <remarks>
     ///     Use the
-    ///     <see
-    ///         cref="M:System.Linq.Expressions.Expression.ListInit(System.Linq.Expressions.NewExpression,System.Linq.Expressions.Expression[])" />
+    ///     <see cref="M:System.Linq.Expressions.Expression.ListInit(System.Linq.Expressions.NewExpression,System.Linq.Expressions.Expression[])" />
     ///     factory methods to create a ListInitExpression.
     ///     The value of the <see cref="P:System.Linq.Expressions.ListInitExpression.NodeType" /> property of a
     ///     ListInitExpression is ListInit.

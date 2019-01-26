@@ -310,6 +310,7 @@ namespace System.Linq.Expressions
             {
                 return new InstanceMethodCallExpression3(method, instance, arg0, arg1, arg2);
             }
+
             return new MethodCallExpression3(method, arg0, arg1, arg2);
         }
 
@@ -392,6 +393,7 @@ namespace System.Linq.Expressions
 
                 case 3:
                     return Call(instance, method, argumentList[0], argumentList[1], argumentList[2]);
+
                 default:
                     break;
             }
@@ -405,6 +407,7 @@ namespace System.Linq.Expressions
 
                     case 5:
                         return Call(method, argumentList[0], argumentList[1], argumentList[2], argumentList[3], argumentList[4]);
+
                     default:
                         break;
                 }
@@ -486,6 +489,7 @@ namespace System.Linq.Expressions
                     return m.MakeGenericMethod(typeArgs);
                 }
             }
+
             return null;
         }
 
@@ -561,11 +565,13 @@ namespace System.Linq.Expressions
                 {
                     pType = pType.GetElementType();
                 }
+
                 if (pType?.IsReferenceAssignableFromInternal(argType) == false && !(pType.IsSameOrSubclassOfInternal(typeof(LambdaExpression)) && pType.IsInstanceOfType(arg)))
                 {
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -718,7 +724,10 @@ namespace System.Linq.Expressions
             return SameArguments(args) ? this : Call(@object, Method, arguments);
         }
 
-        internal virtual Expression GetInstance() => null;
+        internal virtual Expression GetInstance()
+        {
+            return null;
+        }
 
         internal virtual ReadOnlyCollection<Expression> GetOrMakeArguments()
         {
@@ -753,7 +762,10 @@ namespace System.Linq.Expressions
             _instance = instance;
         }
 
-        internal override Expression GetInstance() => _instance;
+        internal override Expression GetInstance()
+        {
+            return _instance;
+        }
     }
 
     internal sealed class InstanceMethodCallExpression0 : InstanceMethodCallExpression, IArgumentProvider
@@ -783,13 +795,15 @@ namespace System.Linq.Expressions
             return Call(instance, Method);
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments) =>
-                    arguments == null || arguments.Count == 0;
+        internal override bool SameArguments(ICollection<Expression> arguments)
+        {
+            return arguments == null || arguments.Count == 0;
+        }
     }
 
     internal sealed class InstanceMethodCallExpression1 : InstanceMethodCallExpression, IArgumentProvider
     {
-        private object _arg0;                // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
 
         public InstanceMethodCallExpression1(MethodInfo method, Expression instance, Expression arg0)
             : base(method, instance)
@@ -838,7 +852,8 @@ namespace System.Linq.Expressions
 
     internal sealed class InstanceMethodCallExpression2 : InstanceMethodCallExpression, IArgumentProvider
     {
-        private object _arg0;                // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+
         private readonly Expression _arg1;
         // storage for the 2nd argument
 
@@ -902,7 +917,8 @@ namespace System.Linq.Expressions
 
     internal sealed class InstanceMethodCallExpression3 : InstanceMethodCallExpression, IArgumentProvider
     {
-        private object _arg0;                       // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+
         private readonly Expression _arg1, _arg2;
         // storage for the 2nd - 3rd argument
 
@@ -986,7 +1002,10 @@ namespace System.Linq.Expressions
 
         public override int ArgumentCount => _arguments.Length;
 
-        public override Expression GetArgument(int index) => _arguments[index];
+        public override Expression GetArgument(int index)
+        {
+            return _arguments[index];
+        }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
         {
@@ -1001,8 +1020,10 @@ namespace System.Linq.Expressions
             return Call(instance, Method, args == null ? _arguments : Theraot.Collections.Extensions.AsArrayInternal(args));
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments) =>
-                            ExpressionUtils.SameElements(arguments, _arguments);
+        internal override bool SameArguments(ICollection<Expression> arguments)
+        {
+            return ExpressionUtils.SameElements(arguments, _arguments);
+        }
     }
 
     internal sealed class MethodCallExpression0 : MethodCallExpression, IArgumentProvider
@@ -1032,13 +1053,15 @@ namespace System.Linq.Expressions
             return Call(Method);
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments) =>
-                    arguments == null || arguments.Count == 0;
+        internal override bool SameArguments(ICollection<Expression> arguments)
+        {
+            return arguments == null || arguments.Count == 0;
+        }
     }
 
     internal sealed class MethodCallExpression1 : MethodCallExpression, IArgumentProvider
     {
-        private object _arg0;       // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
 
         public MethodCallExpression1(MethodInfo method, Expression arg0)
             : base(method)
@@ -1087,7 +1110,8 @@ namespace System.Linq.Expressions
 
     internal sealed class MethodCallExpression2 : MethodCallExpression, IArgumentProvider
     {
-        private object _arg0;               // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+
         private readonly Expression _arg1;
         // storage for the 2nd arg
 
@@ -1151,7 +1175,8 @@ namespace System.Linq.Expressions
 
     internal sealed class MethodCallExpression3 : MethodCallExpression, IArgumentProvider
     {
-        private object _arg0;           // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+
         private readonly Expression _arg1, _arg2;
         // storage for the 2nd - 3rd args.
 
@@ -1223,7 +1248,8 @@ namespace System.Linq.Expressions
 
     internal sealed class MethodCallExpression4 : MethodCallExpression, IArgumentProvider
     {
-        private object _arg0;               // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+
         private readonly Expression _arg1, _arg2, _arg3;
         // storage for the 2nd - 4th args.
 
@@ -1303,7 +1329,8 @@ namespace System.Linq.Expressions
 
     internal sealed class MethodCallExpression5 : MethodCallExpression, IArgumentProvider
     {
-        private object _arg0;           // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+
         private readonly Expression _arg1, _arg2, _arg3, _arg4;
         // storage for the 2nd - 5th args.
 
@@ -1403,7 +1430,10 @@ namespace System.Linq.Expressions
 
         public override int ArgumentCount => _arguments.Length;
 
-        public override Expression GetArgument(int index) => _arguments[index];
+        public override Expression GetArgument(int index)
+        {
+            return _arguments[index];
+        }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
         {
@@ -1418,8 +1448,10 @@ namespace System.Linq.Expressions
             return Call(Method, args == null ? _arguments : Theraot.Collections.Extensions.AsArrayInternal(args));
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments) =>
-                    ExpressionUtils.SameElements(arguments, _arguments);
+        internal override bool SameArguments(ICollection<Expression> arguments)
+        {
+            return ExpressionUtils.SameElements(arguments, _arguments);
+        }
     }
 }
 
