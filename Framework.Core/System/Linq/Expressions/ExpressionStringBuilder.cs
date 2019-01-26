@@ -16,10 +16,11 @@ namespace System.Linq.Expressions
 {
     internal sealed class ExpressionStringBuilder : ExpressionVisitor
     {
+        private readonly StringBuilder _out;
+
         // Associate every unique label or anonymous parameter in the tree with an integer.
         // Labels are displayed as UnnamedLabel_#; parameters are displayed as Param_#.
         private Dictionary<object, int> _ids;
-        private readonly StringBuilder _out;
 
         private ExpressionStringBuilder()
         {
@@ -236,6 +237,7 @@ namespace System.Linq.Expressions
                 Visit(node.Right);
                 Out(')');
             }
+
             return node;
         }
 
@@ -248,6 +250,7 @@ namespace System.Linq.Expressions
                 Visit(v);
                 Out(';');
             }
+
             Out(" ... }");
             return node;
         }
@@ -290,12 +293,14 @@ namespace System.Linq.Expressions
             {
                 Out("null");
             }
+
             return node;
         }
 
         protected internal override Expression VisitDebugInfo(DebugInfoExpression node)
         {
-            var s = string.Format(
+            var s = string.Format
+            (
                 CultureInfo.CurrentCulture,
                 "<DebugInfo({0}: {1}, {2}, {3}, {4})>",
                 node.Document.FileName,
@@ -339,13 +344,22 @@ namespace System.Linq.Expressions
             string op;
             switch (node.Kind)
             {
-                case GotoExpressionKind.Goto: op = "goto"; break;
-                case GotoExpressionKind.Break: op = "break"; break;
-                case GotoExpressionKind.Continue: op = "continue"; break;
-                case GotoExpressionKind.Return: op = "return"; break;
+                case GotoExpressionKind.Goto:
+                    op = "goto";
+                    break;
+                case GotoExpressionKind.Break:
+                    op = "break";
+                    break;
+                case GotoExpressionKind.Continue:
+                    op = "continue";
+                    break;
+                case GotoExpressionKind.Return:
+                    op = "return";
+                    break;
                 default:
                     throw new InvalidOperationException();
             }
+
             Out(op);
             Out(' ');
             DumpLabel(node.Target);
@@ -371,6 +385,7 @@ namespace System.Linq.Expressions
                 Debug.Assert(node.Indexer != null);
                 Out(node.Indexer.DeclaringType?.Name);
             }
+
             if (node.Indexer != null)
             {
                 Out('.');
@@ -387,6 +402,7 @@ namespace System.Linq.Expressions
 
                 Visit(node.GetArgument(i));
             }
+
             Out(']');
 
             return node;
@@ -401,6 +417,7 @@ namespace System.Linq.Expressions
                 Out(", ");
                 Visit(node.GetArgument(i));
             }
+
             Out(')');
             return node;
         }
@@ -430,10 +447,13 @@ namespace System.Linq.Expressions
                     {
                         Out(", ");
                     }
+
                     Visit(node.GetParameter(i));
                 }
+
                 Out(')');
             }
+
             Out(" => ");
             Visit(node.Body);
             return node;
@@ -449,8 +469,10 @@ namespace System.Linq.Expressions
                 {
                     Out(", ");
                 }
+
                 VisitElementInit(node.Initializers[i]);
             }
+
             Out('}');
             return node;
         }
@@ -478,6 +500,7 @@ namespace System.Linq.Expressions
             {
                 Visit(node.NewExpression);
             }
+
             Out(" {");
             for (int i = 0, n = node.Bindings.Count; i < n; i++)
             {
@@ -486,8 +509,10 @@ namespace System.Linq.Expressions
                 {
                     Out(", ");
                 }
+
                 VisitMemberBinding(b);
             }
+
             Out('}');
             return node;
         }
@@ -508,6 +533,7 @@ namespace System.Linq.Expressions
                 Visit(ob);
                 Out('.');
             }
+
             Out(node.Method.Name);
             Out('(');
             for (int i = start, n = node.ArgumentCount; i < n; i++)
@@ -519,6 +545,7 @@ namespace System.Linq.Expressions
 
                 Visit(node.GetArgument(i));
             }
+
             Out(')');
             return node;
         }
@@ -535,14 +562,17 @@ namespace System.Linq.Expressions
                 {
                     Out(", ");
                 }
+
                 if (members != null)
                 {
                     var name = members[i].Name;
                     Out(name);
                     Out(" = ");
                 }
+
                 Visit(node.GetArgument(i));
             }
+
             Out(')');
             return node;
         }
@@ -566,6 +596,7 @@ namespace System.Linq.Expressions
                 default:
                     break;
             }
+
             return node;
         }
 
@@ -575,6 +606,7 @@ namespace System.Linq.Expressions
             {
                 Out("ref ");
             }
+
             var name = node.Name;
             if (string.IsNullOrEmpty(name))
             {
@@ -584,6 +616,7 @@ namespace System.Linq.Expressions
             {
                 Out(name);
             }
+
             return node;
         }
 
@@ -624,6 +657,7 @@ namespace System.Linq.Expressions
                 default:
                     break;
             }
+
             Out(node.TypeOperand.Name);
             Out(')');
             return node;
@@ -634,22 +668,54 @@ namespace System.Linq.Expressions
             switch (node.NodeType)
             {
                 case ExpressionType.Negate:
-                case ExpressionType.NegateChecked: Out('-'); break;
-                case ExpressionType.Not: Out("Not("); break;
-                case ExpressionType.IsFalse: Out("IsFalse("); break;
-                case ExpressionType.IsTrue: Out("IsTrue("); break;
-                case ExpressionType.OnesComplement: Out("~("); break;
-                case ExpressionType.ArrayLength: Out("ArrayLength("); break;
-                case ExpressionType.Convert: Out("Convert("); break;
-                case ExpressionType.ConvertChecked: Out("ConvertChecked("); break;
-                case ExpressionType.Throw: Out("throw("); break;
-                case ExpressionType.TypeAs: Out('('); break;
-                case ExpressionType.UnaryPlus: Out('+'); break;
-                case ExpressionType.Unbox: Out("Unbox("); break;
-                case ExpressionType.Increment: Out("Increment("); break;
-                case ExpressionType.Decrement: Out("Decrement("); break;
-                case ExpressionType.PreIncrementAssign: Out("++"); break;
-                case ExpressionType.PreDecrementAssign: Out("--"); break;
+                case ExpressionType.NegateChecked:
+                    Out('-');
+                    break;
+                case ExpressionType.Not:
+                    Out("Not(");
+                    break;
+                case ExpressionType.IsFalse:
+                    Out("IsFalse(");
+                    break;
+                case ExpressionType.IsTrue:
+                    Out("IsTrue(");
+                    break;
+                case ExpressionType.OnesComplement:
+                    Out("~(");
+                    break;
+                case ExpressionType.ArrayLength:
+                    Out("ArrayLength(");
+                    break;
+                case ExpressionType.Convert:
+                    Out("Convert(");
+                    break;
+                case ExpressionType.ConvertChecked:
+                    Out("ConvertChecked(");
+                    break;
+                case ExpressionType.Throw:
+                    Out("throw(");
+                    break;
+                case ExpressionType.TypeAs:
+                    Out('(');
+                    break;
+                case ExpressionType.UnaryPlus:
+                    Out('+');
+                    break;
+                case ExpressionType.Unbox:
+                    Out("Unbox(");
+                    break;
+                case ExpressionType.Increment:
+                    Out("Increment(");
+                    break;
+                case ExpressionType.Decrement:
+                    Out("Decrement(");
+                    break;
+                case ExpressionType.PreIncrementAssign:
+                    Out("++");
+                    break;
+                case ExpressionType.PreDecrementAssign:
+                    Out("--");
+                    break;
                 case ExpressionType.Quote:
                 case ExpressionType.PostIncrementAssign:
                 case ExpressionType.PostDecrementAssign:
@@ -674,16 +740,25 @@ namespace System.Linq.Expressions
                 case ExpressionType.TypeAs:
                     Out(" As ");
                     Out(node.Type.Name);
-                    Out(')'); break;
+                    Out(')');
+                    break;
                 case ExpressionType.Convert:
                 case ExpressionType.ConvertChecked:
                     /*Out(", ");
                     Out(node.Type.Name);*/
-                    Out(')'); break; // These were changed in CoreFx to add the type name
-                case ExpressionType.PostIncrementAssign: Out("++"); break;
-                case ExpressionType.PostDecrementAssign: Out("--"); break;
-                default: Out(')'); break;
+                    Out(')');
+                    break; // These were changed in CoreFx to add the type name
+                case ExpressionType.PostIncrementAssign:
+                    Out("++");
+                    break;
+                case ExpressionType.PostDecrementAssign:
+                    Out("--");
+                    break;
+                default:
+                    Out(')');
+                    break;
             }
+
             return node;
         }
 
@@ -696,6 +771,7 @@ namespace System.Linq.Expressions
                 Out(' ');
                 Out(node.Variable.Name);
             }
+
             Out(") { ... }");
             return node;
         }
@@ -710,8 +786,10 @@ namespace System.Linq.Expressions
                 {
                     Out(", ");
                 }
+
                 Visit(node.GetArgument(i));
             }
+
             Out(')');
             return node;
         }
@@ -734,8 +812,10 @@ namespace System.Linq.Expressions
                 {
                     Out(", ");
                 }
+
                 VisitElementInit(node.Initializers[i]);
             }
+
             Out('}');
             return node;
         }
@@ -750,8 +830,10 @@ namespace System.Linq.Expressions
                 {
                     Out(", ");
                 }
+
                 VisitMemberBinding(node.Bindings[i]);
             }
+
             Out('}');
             return node;
         }
@@ -800,9 +882,15 @@ namespace System.Linq.Expressions
             return id;
         }
 
-        private int GetLabelId(LabelTarget label) => GetId(label);
+        private int GetLabelId(LabelTarget label)
+        {
+            return GetId(label);
+        }
 
-        private int GetParamId(ParameterExpression p) => GetId(p);
+        private int GetParamId(ParameterExpression p)
+        {
+            return GetId(p);
+        }
 
         private void Out(string s)
         {
@@ -847,9 +935,11 @@ namespace System.Linq.Expressions
                     {
                         Out(separator);
                     }
+
                     Visit(e);
                 }
             }
+
             Out(close);
         }
     }

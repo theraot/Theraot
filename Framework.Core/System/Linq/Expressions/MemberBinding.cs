@@ -9,33 +9,35 @@ using System.Reflection;
 namespace System.Linq.Expressions
 {
     /// <summary>
-    /// Describes the binding types that are used in MemberInitExpression objects.
+    ///     Describes the binding types that are used in MemberInitExpression objects.
     /// </summary>
     public enum MemberBindingType
     {
         /// <summary>
-        /// A binding that represents initializing a member with the value of an expression.
+        ///     A binding that represents initializing a member with the value of an expression.
         /// </summary>
         Assignment = 0,
 
         /// <summary>
-        /// A binding that represents recursively initializing members of a member.
+        ///     A binding that represents recursively initializing members of a member.
         /// </summary>
         MemberBinding = 1,
 
         /// <summary>
-        /// A binding that represents initializing a member of type <see cref="Collections.IList"/> or <see cref="Collections.Generic.ICollection{T}"/> from a list of elements.
+        ///     A binding that represents initializing a member of type <see cref="Collections.IList" /> or
+        ///     <see cref="Collections.Generic.ICollection{T}" /> from a list of elements.
         /// </summary>
         ListBinding = 2
     }
 
     /// <summary>
-    /// Provides the base class from which the classes that represent bindings that are used to initialize members of a newly created object derive.
+    ///     Provides the base class from which the classes that represent bindings that are used to initialize members of a
+    ///     newly created object derive.
     /// </summary>
     public abstract class MemberBinding
     {
         /// <summary>
-        /// Initializes an instance of <see cref="MemberBinding"/> class.
+        ///     Initializes an instance of <see cref="MemberBinding" /> class.
         /// </summary>
         /// <param name="type">The type of member binding.</param>
         /// <param name="member">The field or property to be initialized.</param>
@@ -47,25 +49,28 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Gets the type of binding that is represented.
+        ///     Gets the type of binding that is represented.
         /// </summary>
         public MemberBindingType BindingType { get; }
 
         /// <summary>
-        /// Gets the field or property to be initialized.
+        ///     Gets the field or property to be initialized.
         /// </summary>
         public MemberInfo Member { get; }
 
         /// <summary>
-        /// Returns a <see cref="string"/> that represents the current <see cref="object"/>.
+        ///     Returns a <see cref="string" /> that represents the current <see cref="object" />.
         /// </summary>
-        /// <returns>A <see cref="string"/> that represents the current <see cref="object"/>.</returns>
+        /// <returns>A <see cref="string" /> that represents the current <see cref="object" />.</returns>
         public override string ToString()
         {
             return ExpressionStringBuilder.MemberBindingToString(this);
         }
 
-        internal virtual void ValidateAsDefinedHere(int index) => throw new ArgumentException("Unknown binding type", $"bindings[{index}]");
+        internal virtual void ValidateAsDefinedHere(int index)
+        {
+            throw new ArgumentException("Unknown binding type", $"bindings[{index}]");
+        }
     }
 }
 

@@ -11,40 +11,40 @@ namespace System.Linq.Expressions
     public partial class Expression
     {
         /// <summary>
-        /// Creates a <see cref="LabelTarget"/> representing a label with void type and no name.
+        ///     Creates a <see cref="LabelTarget" /> representing a label with void type and no name.
         /// </summary>
-        /// <returns>The new <see cref="LabelTarget"/>.</returns>
+        /// <returns>The new <see cref="LabelTarget" />.</returns>
         public static LabelTarget Label()
         {
             return Label(typeof(void), null);
         }
 
         /// <summary>
-        /// Creates a <see cref="LabelTarget"/> representing a label with void type and the given name.
+        ///     Creates a <see cref="LabelTarget" /> representing a label with void type and the given name.
         /// </summary>
         /// <param name="name">The name of the label.</param>
-        /// <returns>The new <see cref="LabelTarget"/>.</returns>
+        /// <returns>The new <see cref="LabelTarget" />.</returns>
         public static LabelTarget Label(string name)
         {
             return Label(typeof(void), name);
         }
 
         /// <summary>
-        /// Creates a <see cref="LabelTarget"/> representing a label with the given type.
+        ///     Creates a <see cref="LabelTarget" /> representing a label with the given type.
         /// </summary>
         /// <param name="type">The type of value that is passed when jumping to the label.</param>
-        /// <returns>The new <see cref="LabelTarget"/>.</returns>
+        /// <returns>The new <see cref="LabelTarget" />.</returns>
         public static LabelTarget Label(Type type)
         {
             return Label(type, null);
         }
 
         /// <summary>
-        /// Creates a <see cref="LabelTarget"/> representing a label with the given type and name.
+        ///     Creates a <see cref="LabelTarget" /> representing a label with the given type and name.
         /// </summary>
         /// <param name="type">The type of value that is passed when jumping to the label.</param>
         /// <param name="name">The name of the label.</param>
-        /// <returns>The new <see cref="LabelTarget"/>.</returns>
+        /// <returns>The new <see cref="LabelTarget" />.</returns>
         public static LabelTarget Label(Type type, string name)
         {
             ContractUtils.RequiresNotNull(type, nameof(type));
@@ -54,7 +54,7 @@ namespace System.Linq.Expressions
     }
 
     /// <summary>
-    /// Used to denote the target of a <see cref="GotoExpression"/>.
+    ///     Used to denote the target of a <see cref="GotoExpression" />.
     /// </summary>
     public sealed class LabelTarget
     {
@@ -65,21 +65,21 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Gets the name of the label.
+        ///     Gets the name of the label.
         /// </summary>
         /// <remarks>The label's name is provided for information purposes only.</remarks>
         public string Name { get; }
 
         /// <summary>
-        /// The type of value that is passed when jumping to the label
-        /// (or System.Void if no value should be passed).
+        ///     The type of value that is passed when jumping to the label
+        ///     (or System.Void if no value should be passed).
         /// </summary>
         public Type Type { get; }
 
         /// <summary>
-        /// Returns a <see cref="string"/> that represents the current <see cref="object"/>.
+        ///     Returns a <see cref="string" /> that represents the current <see cref="object" />.
         /// </summary>
-        /// <returns>A <see cref="string"/> that represents the current <see cref="object"/>.</returns>
+        /// <returns>A <see cref="string" /> that represents the current <see cref="object" />.</returns>
         public override string ToString()
         {
             return string.IsNullOrEmpty(Name) ? "UnamedLabel" : Name;

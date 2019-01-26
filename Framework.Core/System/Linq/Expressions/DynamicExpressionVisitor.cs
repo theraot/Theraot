@@ -12,11 +12,13 @@ namespace System.Linq.Expressions
     {
         /// <inheritdoc />
         /// <summary>
-        /// Visits the children of the <see cref="T:System.Linq.Expressions.DynamicExpression" />.
+        ///     Visits the children of the <see cref="T:System.Linq.Expressions.DynamicExpression" />.
         /// </summary>
         /// <param name="node">The expression to visit.</param>
-        /// <returns>The modified expression, if it or any subexpression was modified;
-        /// otherwise, returns the original expression.</returns>
+        /// <returns>
+        ///     The modified expression, if it or any subexpression was modified;
+        ///     otherwise, returns the original expression.
+        /// </returns>
         protected internal override Expression VisitDynamic(DynamicExpression node)
         {
             var a = ExpressionVisitorUtils.VisitArguments(this, node);

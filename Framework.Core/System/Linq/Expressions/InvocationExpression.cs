@@ -16,54 +16,66 @@ namespace System.Linq.Expressions
     public partial class Expression
     {
         /// <summary>
-        /// Creates an <see cref="InvocationExpression"/> that
-        /// applies a delegate or lambda expression to a list of argument expressions.
+        ///     Creates an <see cref="InvocationExpression" /> that
+        ///     applies a delegate or lambda expression to a list of argument expressions.
         /// </summary>
         /// <returns>
-        /// An <see cref="InvocationExpression"/> that
-        /// applies the specified delegate or lambda expression to the provided arguments.
+        ///     An <see cref="InvocationExpression" /> that
+        ///     applies the specified delegate or lambda expression to the provided arguments.
         /// </returns>
         /// <param name="expression">
-        /// An <see cref="Expression"/> that represents the delegate
-        /// or lambda expression to be applied.
+        ///     An <see cref="Expression" /> that represents the delegate
+        ///     or lambda expression to be applied.
         /// </param>
         /// <param name="arguments">
-        /// An array of <see cref="Expression"/> objects
-        /// that represent the arguments that the delegate or lambda expression is applied to.
+        ///     An array of <see cref="Expression" /> objects
+        ///     that represent the arguments that the delegate or lambda expression is applied to.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="expression"/> is null.</exception>
+        ///     <paramref name="expression" /> is null.
+        /// </exception>
         /// <exception cref="ArgumentException">
-        /// <paramref name="expression"/>.Type does not represent a delegate type or an <see cref="Expression{TDelegate}"/>.-or-The <see cref="Type"/> property of an element of <paramref name="arguments"/> is not assignable to the type of the corresponding parameter of the delegate represented by <paramref name="expression"/>.</exception>
+        ///     <paramref name="expression" />.Type does not represent a delegate type or an <see cref="Expression{TDelegate}" />
+        ///     .-or-The <see cref="Type" /> property of an element of <paramref name="arguments" /> is not assignable to the type
+        ///     of the corresponding parameter of the delegate represented by <paramref name="expression" />.
+        /// </exception>
         /// <exception cref="InvalidOperationException">
-        /// <paramref name="arguments"/> does not contain the same number of elements as the list of parameters for the delegate represented by <paramref name="expression"/>.</exception>
+        ///     <paramref name="arguments" /> does not contain the same number of elements as the list of parameters for the
+        ///     delegate represented by <paramref name="expression" />.
+        /// </exception>
         public static InvocationExpression Invoke(Expression expression, params Expression[] arguments)
         {
             return Invoke(expression, (IEnumerable<Expression>)arguments);
         }
 
         /// <summary>
-        /// Creates an <see cref="InvocationExpression"/> that
-        /// applies a delegate or lambda expression to a list of argument expressions.
+        ///     Creates an <see cref="InvocationExpression" /> that
+        ///     applies a delegate or lambda expression to a list of argument expressions.
         /// </summary>
         /// <returns>
-        /// An <see cref="InvocationExpression"/> that
-        /// applies the specified delegate or lambda expression to the provided arguments.
+        ///     An <see cref="InvocationExpression" /> that
+        ///     applies the specified delegate or lambda expression to the provided arguments.
         /// </returns>
         /// <param name="expression">
-        /// An <see cref="Expression"/> that represents the delegate
-        /// or lambda expression to be applied.
+        ///     An <see cref="Expression" /> that represents the delegate
+        ///     or lambda expression to be applied.
         /// </param>
         /// <param name="arguments">
-        /// An <see cref="Collections.Generic.IEnumerable{TDelegate}"/> of <see cref="Expression"/> objects
-        /// that represent the arguments that the delegate or lambda expression is applied to.
+        ///     An <see cref="Collections.Generic.IEnumerable{TDelegate}" /> of <see cref="Expression" /> objects
+        ///     that represent the arguments that the delegate or lambda expression is applied to.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="expression"/> is null.</exception>
+        ///     <paramref name="expression" /> is null.
+        /// </exception>
         /// <exception cref="ArgumentException">
-        /// <paramref name="expression"/>.Type does not represent a delegate type or an <see cref="Expression{TDelegate}"/>.-or-The <see cref="Type"/> property of an element of <paramref name="arguments"/> is not assignable to the type of the corresponding parameter of the delegate represented by <paramref name="expression"/>.</exception>
+        ///     <paramref name="expression" />.Type does not represent a delegate type or an <see cref="Expression{TDelegate}" />
+        ///     .-or-The <see cref="Type" /> property of an element of <paramref name="arguments" /> is not assignable to the type
+        ///     of the corresponding parameter of the delegate represented by <paramref name="expression" />.
+        /// </exception>
         /// <exception cref="InvalidOperationException">
-        /// <paramref name="arguments"/> does not contain the same number of elements as the list of parameters for the delegate represented by <paramref name="expression"/>.</exception>
+        ///     <paramref name="arguments" /> does not contain the same number of elements as the list of parameters for the
+        ///     delegate represented by <paramref name="expression" />.
+        /// </exception>
         public static InvocationExpression Invoke(Expression expression, IEnumerable<Expression> arguments)
         {
             var argumentList = Theraot.Collections.Extensions.AsArrayInternal(arguments);
@@ -99,7 +111,7 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Gets the delegate's Invoke method; used by InvocationExpression.
+        ///     Gets the delegate's Invoke method; used by InvocationExpression.
         /// </summary>
         /// <param name="expression">The expression to be invoked.</param>
         internal static MethodInfo GetInvokeMethod(Expression expression)
@@ -115,29 +127,34 @@ namespace System.Linq.Expressions
             {
                 throw new ArgumentException($"Expression of type '{expression.Type}' cannot be invoked", nameof(expression));
             }
+
             delegateType = exprType.GetGenericArguments()[0];
 
             return delegateType.GetInvokeMethod();
         }
 
         /// <summary>
-        /// Creates an <see cref="InvocationExpression"/> that
-        /// applies a delegate or lambda expression with no arguments.
+        ///     Creates an <see cref="InvocationExpression" /> that
+        ///     applies a delegate or lambda expression with no arguments.
         /// </summary>
         /// <returns>
-        /// An <see cref="InvocationExpression"/> that
-        /// applies the specified delegate or lambda expression.
+        ///     An <see cref="InvocationExpression" /> that
+        ///     applies the specified delegate or lambda expression.
         /// </returns>
         /// <param name="expression">
-        /// An <see cref="Expression"/> that represents the delegate
-        /// or lambda expression to be applied.
+        ///     An <see cref="Expression" /> that represents the delegate
+        ///     or lambda expression to be applied.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="expression"/> is null.</exception>
+        ///     <paramref name="expression" /> is null.
+        /// </exception>
         /// <exception cref="ArgumentException">
-        /// <paramref name="expression"/>.Type does not represent a delegate type or an <see cref="Expression{TDelegate}"/>.</exception>
+        ///     <paramref name="expression" />.Type does not represent a delegate type or an <see cref="Expression{TDelegate}" />.
+        /// </exception>
         /// <exception cref="InvalidOperationException">
-        /// The number of arguments does not contain match the number of parameters for the delegate represented by <paramref name="expression"/>.</exception>
+        ///     The number of arguments does not contain match the number of parameters for the delegate represented by
+        ///     <paramref name="expression" />.
+        /// </exception>
         internal static InvocationExpression Invoke(Expression expression)
         {
             // COMPAT: This method is marked as non-public to avoid a gap between a 0-ary and 2-ary overload (see remark for the unary case below).
@@ -154,26 +171,32 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Creates an <see cref="InvocationExpression"/> that
-        /// applies a delegate or lambda expression to one argument expression.
+        ///     Creates an <see cref="InvocationExpression" /> that
+        ///     applies a delegate or lambda expression to one argument expression.
         /// </summary>
         /// <returns>
-        /// An <see cref="InvocationExpression"/> that
-        /// applies the specified delegate or lambda expression to the provided arguments.
+        ///     An <see cref="InvocationExpression" /> that
+        ///     applies the specified delegate or lambda expression to the provided arguments.
         /// </returns>
         /// <param name="expression">
-        /// An <see cref="Expression"/> that represents the delegate
-        /// or lambda expression to be applied.
+        ///     An <see cref="Expression" /> that represents the delegate
+        ///     or lambda expression to be applied.
         /// </param>
         /// <param name="arg0">
-        /// The <see cref="Expression"/> that represents the first argument.
+        ///     The <see cref="Expression" /> that represents the first argument.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="expression"/> is null.</exception>
+        ///     <paramref name="expression" /> is null.
+        /// </exception>
         /// <exception cref="ArgumentException">
-        /// <paramref name="expression"/>.Type does not represent a delegate type or an <see cref="Expression{TDelegate}"/>.-or-The <see cref="Type"/> property of an argument expression is not assignable to the type of the corresponding parameter of the delegate represented by <paramref name="expression"/>.</exception>
+        ///     <paramref name="expression" />.Type does not represent a delegate type or an <see cref="Expression{TDelegate}" />
+        ///     .-or-The <see cref="Type" /> property of an argument expression is not assignable to the type of the corresponding
+        ///     parameter of the delegate represented by <paramref name="expression" />.
+        /// </exception>
         /// <exception cref="InvalidOperationException">
-        /// The number of arguments does not contain match the number of parameters for the delegate represented by <paramref name="expression"/>.</exception>
+        ///     The number of arguments does not contain match the number of parameters for the delegate represented by
+        ///     <paramref name="expression" />.
+        /// </exception>
         internal static InvocationExpression Invoke(Expression expression, Expression arg0)
         {
             // COMPAT: This method is marked as non-public to ensure compile-time compatibility for Expression.Invoke(e, null).
@@ -192,29 +215,35 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Creates an <see cref="InvocationExpression"/> that
-        /// applies a delegate or lambda expression to two argument expressions.
+        ///     Creates an <see cref="InvocationExpression" /> that
+        ///     applies a delegate or lambda expression to two argument expressions.
         /// </summary>
         /// <returns>
-        /// An <see cref="InvocationExpression"/> that
-        /// applies the specified delegate or lambda expression to the provided arguments.
+        ///     An <see cref="InvocationExpression" /> that
+        ///     applies the specified delegate or lambda expression to the provided arguments.
         /// </returns>
         /// <param name="expression">
-        /// An <see cref="Expression"/> that represents the delegate
-        /// or lambda expression to be applied.
+        ///     An <see cref="Expression" /> that represents the delegate
+        ///     or lambda expression to be applied.
         /// </param>
         /// <param name="arg0">
-        /// The <see cref="Expression"/> that represents the first argument.
+        ///     The <see cref="Expression" /> that represents the first argument.
         /// </param>
         /// <param name="arg1">
-        /// The <see cref="Expression"/> that represents the second argument.
+        ///     The <see cref="Expression" /> that represents the second argument.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="expression"/> is null.</exception>
+        ///     <paramref name="expression" /> is null.
+        /// </exception>
         /// <exception cref="ArgumentException">
-        /// <paramref name="expression"/>.Type does not represent a delegate type or an <see cref="Expression{TDelegate}"/>.-or-The <see cref="Type"/> property of an argument expression is not assignable to the type of the corresponding parameter of the delegate represented by <paramref name="expression"/>.</exception>
+        ///     <paramref name="expression" />.Type does not represent a delegate type or an <see cref="Expression{TDelegate}" />
+        ///     .-or-The <see cref="Type" /> property of an argument expression is not assignable to the type of the corresponding
+        ///     parameter of the delegate represented by <paramref name="expression" />.
+        /// </exception>
         /// <exception cref="InvalidOperationException">
-        /// The number of arguments does not contain match the number of parameters for the delegate represented by <paramref name="expression"/>.</exception>
+        ///     The number of arguments does not contain match the number of parameters for the delegate represented by
+        ///     <paramref name="expression" />.
+        /// </exception>
         internal static InvocationExpression Invoke(Expression expression, Expression arg0, Expression arg1)
         {
             // NB: This method is marked as non-public to avoid public API additions at this point.
@@ -233,32 +262,38 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Creates an <see cref="InvocationExpression"/> that
-        /// applies a delegate or lambda expression to three argument expressions.
+        ///     Creates an <see cref="InvocationExpression" /> that
+        ///     applies a delegate or lambda expression to three argument expressions.
         /// </summary>
         /// <returns>
-        /// An <see cref="InvocationExpression"/> that
-        /// applies the specified delegate or lambda expression to the provided arguments.
+        ///     An <see cref="InvocationExpression" /> that
+        ///     applies the specified delegate or lambda expression to the provided arguments.
         /// </returns>
         /// <param name="expression">
-        /// An <see cref="Expression"/> that represents the delegate
-        /// or lambda expression to be applied.
+        ///     An <see cref="Expression" /> that represents the delegate
+        ///     or lambda expression to be applied.
         /// </param>
         /// <param name="arg0">
-        /// The <see cref="Expression"/> that represents the first argument.
+        ///     The <see cref="Expression" /> that represents the first argument.
         /// </param>
         /// <param name="arg1">
-        /// The <see cref="Expression"/> that represents the second argument.
+        ///     The <see cref="Expression" /> that represents the second argument.
         /// </param>
         /// <param name="arg2">
-        /// The <see cref="Expression"/> that represents the third argument.
+        ///     The <see cref="Expression" /> that represents the third argument.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="expression"/> is null.</exception>
+        ///     <paramref name="expression" /> is null.
+        /// </exception>
         /// <exception cref="ArgumentException">
-        /// <paramref name="expression"/>.Type does not represent a delegate type or an <see cref="Expression{TDelegate}"/>.-or-The <see cref="Type"/> property of an argument expression is not assignable to the type of the corresponding parameter of the delegate represented by <paramref name="expression"/>.</exception>
+        ///     <paramref name="expression" />.Type does not represent a delegate type or an <see cref="Expression{TDelegate}" />
+        ///     .-or-The <see cref="Type" /> property of an argument expression is not assignable to the type of the corresponding
+        ///     parameter of the delegate represented by <paramref name="expression" />.
+        /// </exception>
         /// <exception cref="InvalidOperationException">
-        /// The number of arguments does not contain match the number of parameters for the delegate represented by <paramref name="expression"/>.</exception>
+        ///     The number of arguments does not contain match the number of parameters for the delegate represented by
+        ///     <paramref name="expression" />.
+        /// </exception>
         internal static InvocationExpression Invoke(Expression expression, Expression arg0, Expression arg1, Expression arg2)
         {
             // NB: This method is marked as non-public to avoid public API additions at this point.
@@ -279,35 +314,41 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Creates an <see cref="InvocationExpression"/> that
-        /// applies a delegate or lambda expression to four argument expressions.
+        ///     Creates an <see cref="InvocationExpression" /> that
+        ///     applies a delegate or lambda expression to four argument expressions.
         /// </summary>
         /// <returns>
-        /// An <see cref="InvocationExpression"/> that
-        /// applies the specified delegate or lambda expression to the provided arguments.
+        ///     An <see cref="InvocationExpression" /> that
+        ///     applies the specified delegate or lambda expression to the provided arguments.
         /// </returns>
         /// <param name="expression">
-        /// An <see cref="Expression"/> that represents the delegate
-        /// or lambda expression to be applied.
+        ///     An <see cref="Expression" /> that represents the delegate
+        ///     or lambda expression to be applied.
         /// </param>
         /// <param name="arg0">
-        /// The <see cref="Expression"/> that represents the first argument.
+        ///     The <see cref="Expression" /> that represents the first argument.
         /// </param>
         /// <param name="arg1">
-        /// The <see cref="Expression"/> that represents the second argument.
+        ///     The <see cref="Expression" /> that represents the second argument.
         /// </param>
         /// <param name="arg2">
-        /// The <see cref="Expression"/> that represents the third argument.
+        ///     The <see cref="Expression" /> that represents the third argument.
         /// </param>
         /// <param name="arg3">
-        /// The <see cref="Expression"/> that represents the fourth argument.
+        ///     The <see cref="Expression" /> that represents the fourth argument.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="expression"/> is null.</exception>
+        ///     <paramref name="expression" /> is null.
+        /// </exception>
         /// <exception cref="ArgumentException">
-        /// <paramref name="expression"/>.Type does not represent a delegate type or an <see cref="Expression{TDelegate}"/>.-or-The <see cref="Type"/> property of an argument expression is not assignable to the type of the corresponding parameter of the delegate represented by <paramref name="expression"/>.</exception>
+        ///     <paramref name="expression" />.Type does not represent a delegate type or an <see cref="Expression{TDelegate}" />
+        ///     .-or-The <see cref="Type" /> property of an argument expression is not assignable to the type of the corresponding
+        ///     parameter of the delegate represented by <paramref name="expression" />.
+        /// </exception>
         /// <exception cref="InvalidOperationException">
-        /// The number of arguments does not contain match the number of parameters for the delegate represented by <paramref name="expression"/>.</exception>
+        ///     The number of arguments does not contain match the number of parameters for the delegate represented by
+        ///     <paramref name="expression" />.
+        /// </exception>
         internal static InvocationExpression Invoke(Expression expression, Expression arg0, Expression arg1, Expression arg2, Expression arg3)
         {
             // NB: This method is marked as non-public to avoid public API additions at this point.
@@ -329,38 +370,44 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Creates an <see cref="InvocationExpression"/> that
-        /// applies a delegate or lambda expression to five argument expressions.
+        ///     Creates an <see cref="InvocationExpression" /> that
+        ///     applies a delegate or lambda expression to five argument expressions.
         /// </summary>
         /// <returns>
-        /// An <see cref="InvocationExpression"/> that
-        /// applies the specified delegate or lambda expression to the provided arguments.
+        ///     An <see cref="InvocationExpression" /> that
+        ///     applies the specified delegate or lambda expression to the provided arguments.
         /// </returns>
         /// <param name="expression">
-        /// An <see cref="Expression"/> that represents the delegate
-        /// or lambda expression to be applied.
+        ///     An <see cref="Expression" /> that represents the delegate
+        ///     or lambda expression to be applied.
         /// </param>
         /// <param name="arg0">
-        /// The <see cref="Expression"/> that represents the first argument.
+        ///     The <see cref="Expression" /> that represents the first argument.
         /// </param>
         /// <param name="arg1">
-        /// The <see cref="Expression"/> that represents the second argument.
+        ///     The <see cref="Expression" /> that represents the second argument.
         /// </param>
         /// <param name="arg2">
-        /// The <see cref="Expression"/> that represents the third argument.
+        ///     The <see cref="Expression" /> that represents the third argument.
         /// </param>
         /// <param name="arg3">
-        /// The <see cref="Expression"/> that represents the fourth argument.
+        ///     The <see cref="Expression" /> that represents the fourth argument.
         /// </param>
         /// <param name="arg4">
-        /// The <see cref="Expression"/> that represents the fifth argument.
+        ///     The <see cref="Expression" /> that represents the fifth argument.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="expression"/> is null.</exception>
+        ///     <paramref name="expression" /> is null.
+        /// </exception>
         /// <exception cref="ArgumentException">
-        /// <paramref name="expression"/>.Type does not represent a delegate type or an <see cref="Expression{TDelegate}"/>.-or-The <see cref="Type"/> property of an argument expression is not assignable to the type of the corresponding parameter of the delegate represented by <paramref name="expression"/>.</exception>
+        ///     <paramref name="expression" />.Type does not represent a delegate type or an <see cref="Expression{TDelegate}" />
+        ///     .-or-The <see cref="Type" /> property of an argument expression is not assignable to the type of the corresponding
+        ///     parameter of the delegate represented by <paramref name="expression" />.
+        /// </exception>
         /// <exception cref="InvalidOperationException">
-        /// The number of arguments does not contain match the number of parameters for the delegate represented by <paramref name="expression"/>.</exception>
+        ///     The number of arguments does not contain match the number of parameters for the delegate represented by
+        ///     <paramref name="expression" />.
+        /// </exception>
         internal static InvocationExpression Invoke(Expression expression, Expression arg0, Expression arg1, Expression arg2, Expression arg3, Expression arg4)
         {
             // NB: This method is marked as non-public to avoid public API additions at this point.
@@ -384,7 +431,7 @@ namespace System.Linq.Expressions
     }
 
     /// <summary>
-    /// Represents an expression that applies a delegate or lambda expression to a list of argument expressions.
+    ///     Represents an expression that applies a delegate or lambda expression to a list of argument expressions.
     /// </summary>
     [DebuggerTypeProxy(typeof(InvocationExpressionProxy))]
     public class InvocationExpression : Expression, IArgumentProvider
@@ -396,31 +443,27 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Gets the number of argument expressions of the node.
-        /// </summary>
-        public virtual int ArgumentCount => throw ContractUtils.Unreachable;
-
-        /// <summary>
-        /// Gets the arguments that the delegate or lambda expression is applied to.
+        ///     Gets the arguments that the delegate or lambda expression is applied to.
         /// </summary>
         public ReadOnlyCollection<Expression> Arguments => GetOrMakeArguments();
 
         /// <summary>
-        /// Gets the delegate or lambda expression to be applied.
+        ///     Gets the delegate or lambda expression to be applied.
         /// </summary>
         public Expression Expression { get; }
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns the node type of this Expression. Extension nodes should return
-        /// ExpressionType.Extension when overriding this method.
+        ///     Returns the node type of this Expression. Extension nodes should return
+        ///     ExpressionType.Extension when overriding this method.
         /// </summary>
         /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Invoke;
 
         /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="P:System.Linq.Expressions.InvocationExpression.Expression" /> represents.
+        ///     Gets the static type of the expression that this
+        ///     <see cref="P:System.Linq.Expressions.InvocationExpression.Expression" /> represents.
         /// </summary>
         /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public sealed override Type Type { get; }
@@ -430,22 +473,27 @@ namespace System.Linq.Expressions
             : Expression as LambdaExpression;
 
         /// <summary>
-        /// Gets the argument expression with the specified <paramref name="index"/>.
+        ///     Gets the number of argument expressions of the node.
+        /// </summary>
+        public virtual int ArgumentCount => throw ContractUtils.Unreachable;
+
+        /// <summary>
+        ///     Gets the argument expression with the specified <paramref name="index" />.
         /// </summary>
         /// <param name="index">The index of the argument expression to get.</param>
-        /// <returns>The expression representing the argument at the specified <paramref name="index"/>.</returns>
+        /// <returns>The expression representing the argument at the specified <paramref name="index" />.</returns>
         public virtual Expression GetArgument(int index)
         {
             throw ContractUtils.Unreachable;
         }
 
         /// <summary>
-        /// Creates a new expression that is like this one, but using the
-        /// supplied children. If all of the children are the same, it will
-        /// return this expression.
+        ///     Creates a new expression that is like this one, but using the
+        ///     supplied children. If all of the children are the same, it will
+        ///     return this expression.
         /// </summary>
-        /// <param name="expression">The <see cref="Expression"/> property of the result.</param>
-        /// <param name="arguments">The <see cref="Arguments"/> property of the result.</param>
+        /// <param name="expression">The <see cref="Expression" /> property of the result.</param>
+        /// <param name="arguments">The <see cref="Arguments" /> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public InvocationExpression Update(Expression expression, IEnumerable<Expression> arguments)
         {
@@ -503,7 +551,7 @@ namespace System.Linq.Expressions
 
     internal sealed class InvocationExpression1 : InvocationExpression
     {
-        private object _arg0;       // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
 
         public InvocationExpression1(Expression lambda, Type returnType, Expression arg0)
             : base(lambda, returnType)
@@ -538,8 +586,9 @@ namespace System.Linq.Expressions
 
     internal sealed class InvocationExpression2 : InvocationExpression
     {
-        private object _arg0;               // storage for the 1st argument or a read-only collection.  See IArgumentProvider
         private readonly Expression _arg1;
+
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
         // storage for the 2nd argument
 
         public InvocationExpression2(Expression lambda, Type returnType, Expression arg0, Expression arg1)
@@ -577,11 +626,12 @@ namespace System.Linq.Expressions
 
     internal sealed class InvocationExpression3 : InvocationExpression
     {
-        private object _arg0;               // storage for the 1st argument or a read-only collection.  See IArgumentProvider
         private readonly Expression _arg1;
 
         // storage for the 2nd argument
         private readonly Expression _arg2;
+
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
         // storage for the 3rd argument
 
         public InvocationExpression3(Expression lambda, Type returnType, Expression arg0, Expression arg1, Expression arg2)
@@ -621,7 +671,6 @@ namespace System.Linq.Expressions
 
     internal sealed class InvocationExpression4 : InvocationExpression
     {
-        private object _arg0;               // storage for the 1st argument or a read-only collection.  See IArgumentProvider
         private readonly Expression _arg1;
 
         // storage for the 2nd argument
@@ -629,6 +678,8 @@ namespace System.Linq.Expressions
 
         // storage for the 3rd argument
         private readonly Expression _arg3;
+
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
         // storage for the 4th argument
 
         public InvocationExpression4(Expression lambda, Type returnType, Expression arg0, Expression arg1, Expression arg2, Expression arg3)
@@ -670,7 +721,6 @@ namespace System.Linq.Expressions
 
     internal sealed class InvocationExpression5 : InvocationExpression
     {
-        private object _arg0;               // storage for the 1st argument or a read-only collection.  See IArgumentProvider
         private readonly Expression _arg1;
 
         // storage for the 2nd argument
@@ -681,6 +731,8 @@ namespace System.Linq.Expressions
 
         // storage for the 4th argument
         private readonly Expression _arg4;
+
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
         // storage for the 5th argument
 
         public InvocationExpression5(Expression lambda, Type returnType, Expression arg0, Expression arg1, Expression arg2, Expression arg3, Expression arg4)
@@ -736,7 +788,10 @@ namespace System.Linq.Expressions
 
         public override int ArgumentCount => _arguments.Length;
 
-        public override Expression GetArgument(int index) => _arguments[index];
+        public override Expression GetArgument(int index)
+        {
+            return _arguments[index];
+        }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
         {

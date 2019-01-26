@@ -13,11 +13,11 @@ namespace System.Linq.Expressions
     public partial class Expression
     {
         /// <summary>
-        /// Creates a <see cref="MemberExpression"/> accessing a field.
+        ///     Creates a <see cref="MemberExpression" /> accessing a field.
         /// </summary>
         /// <param name="expression">The containing object of the field.  This can be null for static fields.</param>
         /// <param name="field">The field to be accessed.</param>
-        /// <returns>The created <see cref="MemberExpression"/>.</returns>
+        /// <returns>The created <see cref="MemberExpression" />.</returns>
         public static MemberExpression Field(Expression expression, FieldInfo field)
         {
             ContractUtils.RequiresNotNull(field, nameof(field));
@@ -42,15 +42,16 @@ namespace System.Linq.Expressions
                     throw new ArgumentException($"Field '{field.DeclaringType}.{field.Name}' is not defined for type '{expression.Type}'");
                 }
             }
+
             return MemberExpression.Make(expression, field);
         }
 
         /// <summary>
-        /// Creates a <see cref="MemberExpression"/> accessing a field.
+        ///     Creates a <see cref="MemberExpression" /> accessing a field.
         /// </summary>
         /// <param name="expression">The containing object of the field.  This can be null for static fields.</param>
         /// <param name="fieldName">The field to be accessed.</param>
-        /// <returns>The created <see cref="MemberExpression"/>.</returns>
+        /// <returns>The created <see cref="MemberExpression" />.</returns>
         public static MemberExpression Field(Expression expression, string fieldName)
         {
             ExpressionUtils.RequiresCanRead(expression, nameof(expression));
@@ -58,42 +59,44 @@ namespace System.Linq.Expressions
 
             // bind to public names first
             var fi = expression.Type.GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy)
-                           ?? expression.Type.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+                     ?? expression.Type.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
             if (fi == null)
             {
                 throw new ArgumentException($"Instance field '{fieldName}' is not defined for type '{expression.Type}'");
             }
+
             return Field(expression, fi);
         }
 
         /// <summary>
-        /// Creates a <see cref="MemberExpression"/> accessing a field.
+        ///     Creates a <see cref="MemberExpression" /> accessing a field.
         /// </summary>
         /// <param name="expression">The containing object of the field.  This can be null for static fields.</param>
-        /// <param name="type">The <see cref="Type"/> containing the field.</param>
+        /// <param name="type">The <see cref="Type" /> containing the field.</param>
         /// <param name="fieldName">The field to be accessed.</param>
-        /// <returns>The created <see cref="MemberExpression"/>.</returns>
+        /// <returns>The created <see cref="MemberExpression" />.</returns>
         public static MemberExpression Field(Expression expression, Type type, string fieldName)
         {
             ContractUtils.RequiresNotNull(type, nameof(type));
 
             // bind to public names first
             var fi = type.GetField(fieldName, BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy)
-                           ?? type.GetField(fieldName, BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+                     ?? type.GetField(fieldName, BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
 
             if (fi == null)
             {
                 throw new ArgumentException($"Field '{fieldName}' is not defined for type '{type}'");
             }
+
             return Field(expression, fi);
         }
 
         /// <summary>
-        /// Creates a <see cref="MemberExpression"/> accessing a property or field.
+        ///     Creates a <see cref="MemberExpression" /> accessing a property or field.
         /// </summary>
         /// <param name="expression">The containing object of the member.  This can be null for static members.</param>
         /// <param name="member">The member to be accessed.</param>
-        /// <returns>The created <see cref="MemberExpression"/>.</returns>
+        /// <returns>The created <see cref="MemberExpression" />.</returns>
         public static MemberExpression MakeMemberAccess(Expression expression, MemberInfo member)
         {
             ContractUtils.RequiresNotNull(member, nameof(member));
@@ -109,52 +112,54 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Creates a <see cref="MemberExpression"/> accessing a property.
+        ///     Creates a <see cref="MemberExpression" /> accessing a property.
         /// </summary>
         /// <param name="expression">The containing object of the property.  This can be null for static properties.</param>
         /// <param name="propertyName">The property to be accessed.</param>
-        /// <returns>The created <see cref="MemberExpression"/>.</returns>
+        /// <returns>The created <see cref="MemberExpression" />.</returns>
         public static MemberExpression Property(Expression expression, string propertyName)
         {
             ExpressionUtils.RequiresCanRead(expression, nameof(expression));
             ContractUtils.RequiresNotNull(propertyName, nameof(propertyName));
             // bind to public names first
             var pi = expression.Type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy)
-                              ?? expression.Type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+                     ?? expression.Type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
             if (pi == null)
             {
                 throw new ArgumentException($"Instance property '{propertyName}' is not defined for type '{expression.Type}'", nameof(propertyName));
             }
+
             return Property(expression, pi);
         }
 
         /// <summary>
-        /// Creates a <see cref="MemberExpression"/> accessing a property.
+        ///     Creates a <see cref="MemberExpression" /> accessing a property.
         /// </summary>
         /// <param name="expression">The containing object of the property.  This can be null for static properties.</param>
-        /// <param name="type">The <see cref="Type"/> containing the property.</param>
+        /// <param name="type">The <see cref="Type" /> containing the property.</param>
         /// <param name="propertyName">The property to be accessed.</param>
-        /// <returns>The created <see cref="MemberExpression"/>.</returns>
+        /// <returns>The created <see cref="MemberExpression" />.</returns>
         public static MemberExpression Property(Expression expression, Type type, string propertyName)
         {
             ContractUtils.RequiresNotNull(type, nameof(type));
             ContractUtils.RequiresNotNull(propertyName, nameof(propertyName));
             // bind to public names first
             var pi = type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy)
-                              ?? type.GetProperty(propertyName, BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+                     ?? type.GetProperty(propertyName, BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
             if (pi == null)
             {
                 throw new ArgumentException($"Property '{propertyName}' is not defined for type '{type}'", nameof(propertyName));
             }
+
             return Property(expression, pi);
         }
 
         /// <summary>
-        /// Creates a <see cref="MemberExpression"/> accessing a property.
+        ///     Creates a <see cref="MemberExpression" /> accessing a property.
         /// </summary>
         /// <param name="expression">The containing object of the property.  This can be null for static properties.</param>
         /// <param name="property">The property to be accessed.</param>
-        /// <returns>The created <see cref="MemberExpression"/>.</returns>
+        /// <returns>The created <see cref="MemberExpression" />.</returns>
         public static MemberExpression Property(Expression expression, PropertyInfo property)
         {
             ContractUtils.RequiresNotNull(property, nameof(property));
@@ -207,11 +212,11 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Creates a <see cref="MemberExpression"/> accessing a property.
+        ///     Creates a <see cref="MemberExpression" /> accessing a property.
         /// </summary>
         /// <param name="expression">The containing object of the property.  This can be null for static properties.</param>
         /// <param name="propertyAccessor">An accessor method of the property to be accessed.</param>
-        /// <returns>The created <see cref="MemberExpression"/>.</returns>
+        /// <returns>The created <see cref="MemberExpression" />.</returns>
         public static MemberExpression Property(Expression expression, MethodInfo propertyAccessor)
         {
             ContractUtils.RequiresNotNull(propertyAccessor, nameof(propertyAccessor));
@@ -220,11 +225,11 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Creates a <see cref="MemberExpression"/> accessing a property or field.
+        ///     Creates a <see cref="MemberExpression" /> accessing a property or field.
         /// </summary>
         /// <param name="expression">The containing object of the member.  This can be null for static members.</param>
         /// <param name="propertyOrFieldName">The member to be accessed.</param>
-        /// <returns>The created <see cref="MemberExpression"/>.</returns>
+        /// <returns>The created <see cref="MemberExpression" />.</returns>
         public static MemberExpression PropertyOrField(Expression expression, string propertyOrFieldName)
         {
             ExpressionUtils.RequiresCanRead(expression, nameof(expression));
@@ -252,6 +257,7 @@ namespace System.Linq.Expressions
             {
                 return Field(expression, fi);
             }
+
             throw new ArgumentException($"{propertyOrFieldName}' is not a member of type '{expression.Type}'", nameof(propertyOrFieldName));
         }
 
@@ -261,6 +267,7 @@ namespace System.Linq.Expressions
             {
                 return true;
             }
+
             // If the type is an interface then the handle for the method got by the compiler will not be the
             // same as that returned by reflection.
             // Check for this condition and try and get the method from reflection.
@@ -284,6 +291,7 @@ namespace System.Linq.Expressions
                 {
                     return pi;
                 }
+
                 if (pi.CanWrite && CheckMethod(mi, pi.GetSetMethod(true)))
                 {
                     return pi;
@@ -296,7 +304,7 @@ namespace System.Linq.Expressions
 
     /// <inheritdoc />
     /// <summary>
-    /// Represents accessing a field or property.
+    ///     Represents accessing a field or property.
     /// </summary>
     [DebuggerTypeProxy(typeof(MemberExpressionProxy))]
     public class MemberExpression : Expression
@@ -308,28 +316,29 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Gets the containing object of the field or property.
+        ///     Gets the containing object of the field or property.
         /// </summary>
         public Expression Expression { get; }
 
         /// <summary>
-        /// Gets the field or property to be accessed.
+        ///     Gets the field or property to be accessed.
         /// </summary>
         public MemberInfo Member => GetMember();
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns the node type of this <see cref="P:System.Linq.Expressions.MemberExpression.Expression" />. (Inherited from <see cref="P:System.Linq.Expressions.MemberExpression.Expression" />.)
+        ///     Returns the node type of this <see cref="P:System.Linq.Expressions.MemberExpression.Expression" />. (Inherited from
+        ///     <see cref="P:System.Linq.Expressions.MemberExpression.Expression" />.)
         /// </summary>
         /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.MemberAccess;
 
         /// <summary>
-        /// Creates a new expression that is like this one, but using the
-        /// supplied children. If all of the children are the same, it will
-        /// return this expression.
+        ///     Creates a new expression that is like this one, but using the
+        ///     supplied children. If all of the children are the same, it will
+        ///     return this expression.
         /// </summary>
-        /// <param name="expression">The <see cref="Expression"/> property of the result.</param>
+        /// <param name="expression">The <see cref="Expression" /> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public MemberExpression Update(Expression expression)
         {
@@ -376,7 +385,10 @@ namespace System.Linq.Expressions
 
         public override Type Type => _field.FieldType;
 
-        internal override MemberInfo GetMember() => _field;
+        internal override MemberInfo GetMember()
+        {
+            return _field;
+        }
     }
 
     internal sealed class PropertyExpression : MemberExpression
@@ -391,7 +403,10 @@ namespace System.Linq.Expressions
 
         public override Type Type => _property.PropertyType;
 
-        internal override MemberInfo GetMember() => _property;
+        internal override MemberInfo GetMember()
+        {
+            return _property;
+        }
     }
 }
 
